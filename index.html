@@ -751,6 +751,36 @@
   .sampall { font-size: 14px; font-weight: bold; color: var(--muted); text-decoration: none; white-space: nowrap; }
   .sampall:hover { color: var(--ink); }
   .samprow { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; grid-auto-rows: 122px; }
+  /* ===== first-visit gate ===== */
+  #gate {
+    position: fixed; inset: 0; z-index: 999;
+    background: var(--canvas, #f9f6f2);
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+  }
+  #gate .gatecard {
+    background: var(--card, #ffffff); border: 1px solid rgba(9,15,21,.08);
+    border-radius: 20px; corner-shape: squircle;
+    box-shadow: 0 1px 2px rgba(60,45,25,.08), 0 2px 5px rgba(60,45,25,.08), 0 5px 12px rgba(60,45,25,.08);
+    padding: 36px 40px; max-width: 420px; width: 100%; text-align: center;
+  }
+  #gate h2 { font-family: "Fraunces", serif; font-weight: 600; font-size: 26px; margin: 0 0 10px; color: var(--ink, #141414); }
+  #gate p { font-size: 15px; color: var(--muted, #4e4d4c); margin: 0 0 22px; }
+  #gate input {
+    width: 100%; box-sizing: border-box; font-family: inherit; font-size: 17px; text-align: center;
+    padding: 11px 14px; border-radius: 12px; border: 1px solid rgba(9,15,21,.2);
+    background: var(--surface, #fff); color: var(--ink, #141414); outline: none;
+  }
+  #gate input:focus { border-color: var(--accent, #00a82d); }
+  #gate button {
+    margin-top: 14px; width: 100%; font-family: inherit; font-size: 16px; font-weight: bold;
+    padding: 12px 16px; border-radius: 12px; border: none; cursor: pointer;
+    background: var(--accent, #00a82d); color: var(--accent-ink, #ffffff);
+  }
+  #gate .gate-err { color: #c0392b; font-size: 14px; margin: 10px 0 0; min-height: 18px; }
+  #gate.gate-shake .gatecard { animation: gateshake .4s; }
+  @keyframes gateshake { 25% { transform: translateX(-7px); } 50% { transform: translateX(6px); } 75% { transform: translateX(-3px); } }
+  body.gated { overflow: hidden; }
 </style>
 </head>
 <body class="evernote play-raph layout-heroed16 anim-none font-fraunbulo shadow-soft edge-softlight tex-grain cat-split">
@@ -1722,6 +1752,48 @@
     clearTimeout(t);
     t = setTimeout(function () { toastEl.classList.remove("on"); }, 1200);
   }
+</script>
+<script>
+  (function () {
+    var KEY = "wocg3-gate", HASH = "970ec274ca867815174ebe4eff19282000f9495a6c7254e94991d1fb4dc3df30";
+    try { if (localStorage.getItem(KEY) === "ok") return; } catch (e) { return; }
+    var gate = document.createElement("div");
+    gate.id = "gate";
+    gate.innerHTML =
+      '<div class="gatecard">' +
+      '<h2>One quick question</h2>' +
+      '<p>What is the first name of Holger’s firstborn?</p>' +
+      '<input id="gate-in" type="text" autocomplete="off" autocapitalize="off" placeholder="First name">' +
+      '<button id="gate-go">Come on in</button>' +
+      '<p class="gate-err" id="gate-err"></p>' +
+      '</div>';
+    document.body.appendChild(gate);
+    document.body.classList.add("gated");
+    var inp = document.getElementById("gate-in");
+    inp.focus();
+    function sha256hex(str) {
+      return crypto.subtle.digest("SHA-256", new TextEncoder().encode(str)).then(function (buf) {
+        return Array.from(new Uint8Array(buf)).map(function (b) { return b.toString(16).padStart(2, "0"); }).join("");
+      });
+    }
+    function attempt() {
+      var guess = inp.value.trim().toLowerCase();
+      if (!guess) return;
+      sha256hex(guess).then(function (hex) {
+        if (hex === HASH) {
+          try { localStorage.setItem(KEY, "ok"); } catch (e) {}
+          gate.remove();
+          document.body.classList.remove("gated");
+        } else {
+          document.getElementById("gate-err").textContent = "Not quite — try again.";
+          gate.classList.remove("gate-shake"); void gate.offsetWidth; gate.classList.add("gate-shake");
+          inp.select();
+        }
+      });
+    }
+    document.getElementById("gate-go").onclick = attempt;
+    inp.addEventListener("keydown", function (e) { if (e.key === "Enter") attempt(); });
+  })();
 </script>
 </body>
 </html>
