@@ -65,11 +65,11 @@
      has no tabular figures) with rolling reels, masked top and bottom. Changes
      roll like the main page; numbers never flash green. */
   .vcard b { display: inline-flex; vertical-align: middle; }
-  .dcell { display: block; width: 0.52em; height: 1.4em; overflow: hidden;
-    -webkit-mask-image: linear-gradient(transparent, #000 30%, #000 70%, transparent);
-    mask-image: linear-gradient(transparent, #000 30%, #000 70%, transparent); }
+  .dcell { display: block; width: 0.52em; height: 1.6em; overflow: hidden;
+    -webkit-mask-image: linear-gradient(transparent, #000 18%, #000 82%, transparent);
+    mask-image: linear-gradient(transparent, #000 18%, #000 82%, transparent); }
   .dreel { display: block; transition: transform .75s cubic-bezier(.22,1.1,.34,1); will-change: transform; }
-  .dreel span { display: block; height: 1.4em; line-height: 1.4em; text-align: center; }
+  .dreel span { display: block; height: 1.6em; line-height: 1.6em; text-align: center; }
   .pulseshell { position: relative; }
   .pulseshell .pspan { position: absolute; pointer-events: none; }
 
@@ -645,8 +645,12 @@
   <!-- ======================= G. ROUND THREE ======================= -->
   <style>
     .capsule.h32 { height: 32px; }
-    .capsule.h32 .st { padding: 0 13px; align-self: stretch; }
-    .capsule.h32 .stdot { padding: 0 6px 0 13px; }
+    .capsule.h32 .st { padding: 0 11px; align-self: stretch; }
+    .capsule.h32 .stdot { padding: 0 6px 0 12px; }
+    /* the live cell: dot 8px in a 32px shell = 12px above and below, so the
+       left inset is 12px too - the dot nests concentrically in the cap's curve */
+    .capsule.h32 .stlive { padding: 0 9px 0 12px; gap: 6px; align-self: stretch; }
+    .greencap { font-size: 11px; font-weight: bold; letter-spacing: .1em; color: var(--live); }
     .capsule.h24 { height: 24px; font-size: 13px; }
     .capsule.h24 .st { padding: 0 11px; gap: 5px; align-self: stretch; }
     .capsule.h24 .stdot { padding: 0 5px 0 11px; }
@@ -858,6 +862,54 @@
     </span></div>
   </div>
 
+  <!-- ======================= I. THE WINNER, REFINED ======================= -->
+  <h2>I &middot; The winner, refined</h2>
+  <p class="secsub">H2&rsquo;s shape in the house green: dot + uppercase LIVE, 32px shell, the dot nested concentrically in the cap&rsquo;s curve (12px from left, top and bottom), tighter text cells, un-clipped digits. Four label sets to hear side by side &mdash; shortest first.</p>
+
+  <div class="vcard">
+    <div class="vhead"><span class="vname">I1 &middot; Bare nouns</span></div>
+    <p class="vwhy">&ldquo;players &middot; tables &middot; seats open&rdquo; &mdash; the numbers carry everything; only the last cell needs a state word. As short as it gets while staying honest.</p>
+    <div class="stage"><span class="capsule pulseshell h32">
+      <span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>
+      <span class="st"><b data-k="p">1214</b> players</span>
+      <span class="st"><b data-k="g">143</b> tables</span>
+      <span class="st"><b data-k="s">87</b> seats open</span>
+    </span></div>
+  </div>
+
+  <div class="vcard">
+    <div class="vhead"><span class="vname">I2 &middot; Playing</span></div>
+    <p class="vwhy">&ldquo;playing &middot; tables &middot; seats open&rdquo; &mdash; the first cell becomes a verb, which reads warmer than a noun and saves a word.</p>
+    <div class="stage"><span class="capsule pulseshell h32">
+      <span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>
+      <span class="st"><b data-k="p">1214</b> playing</span>
+      <span class="st"><b data-k="g">143</b> tables</span>
+      <span class="st"><b data-k="s">87</b> seats open</span>
+    </span></div>
+  </div>
+
+  <div class="vcard">
+    <div class="vhead"><span class="vname">I3 &middot; Parallel states</span></div>
+    <p class="vwhy">&ldquo;players online &middot; tables live &middot; seats open&rdquo; &mdash; your suggestion, made fully parallel: noun + one-word state, three times. The most rhythmic set; note &ldquo;live&rdquo; echoes the caption.</p>
+    <div class="stage"><span class="capsule pulseshell h32">
+      <span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>
+      <span class="st"><b data-k="p">1214</b> players online</span>
+      <span class="st"><b data-k="g">143</b> tables live</span>
+      <span class="st"><b data-k="s">87</b> seats open</span>
+    </span></div>
+  </div>
+
+  <div class="vcard">
+    <div class="vhead"><span class="vname">I4 &middot; The room&rsquo;s voice</span></div>
+    <p class="vwhy">&ldquo;at the tables &middot; games going &middot; chairs free&rdquo; &mdash; the warm register, a few characters longer. The host speaking rather than the system.</p>
+    <div class="stage"><span class="capsule pulseshell h32">
+      <span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>
+      <span class="st"><b data-k="p">1214</b> at the tables</span>
+      <span class="st"><b data-k="g">143</b> games going</span>
+      <span class="st"><b data-k="s">87</b> chairs free</span>
+    </span></div>
+  </div>
+
 </div>
 <script>
 (function () {
@@ -877,7 +929,7 @@
       el.innerHTML = s.split("").map(function () { return '<span class="dcell">' + reel + "</span>"; }).join("");
     }
     el.querySelectorAll(".dreel").forEach(function (r, i) {
-      r.style.transform = "translateY(-" + (parseInt(s[i], 10) * 1.4) + "em)";
+      r.style.transform = "translateY(-" + (parseInt(s[i], 10) * 1.6) + "em)";
     });
     return true;
   }
