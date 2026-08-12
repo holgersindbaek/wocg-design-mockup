@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Motion lab — ambient concepts &amp; live counters</title>
+<style>
+  body { margin: 0; padding: 28px 24px 60px; background: #f9f6f2; color: #2b2722;
+    font-family: -apple-system, "Helvetica Neue", Arial, sans-serif; }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  h2 { font-size: 17px; margin: 36px 0 12px; }
+  p.note { font-size: 13px; color: #8a857c; margin: 0 0 18px; max-width: 720px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 14px; }
+  .card { background: #ffffff; border: 1px solid rgba(9,15,21,.08); border-radius: 10px; padding: 14px 16px 16px; }
+  .card h3 { font-size: 13.5px; margin: 0 0 2px; }
+  .card .src { font-size: 11.5px; color: #999488; margin: 0 0 12px; }
+  .demo { position: relative; height: 190px; border-radius: 8px; overflow: hidden; background: #f6f1e8; }
+
+  /* ===== 1 suit dust ===== */
+  .dust span { position: absolute; bottom: -30px; animation: rise linear infinite; }
+  @keyframes rise { 0% { transform: translateY(0); opacity: 0; } 12% { opacity: 1; }
+    82% { opacity: 1; } 100% { transform: translateY(-230px); opacity: 0; } }
+
+  /* ===== 2 color blobs under grain ===== */
+  .blobs .blob { position: absolute; width: 170px; height: 170px; border-radius: 50%; filter: blur(38px); opacity: .34; }
+  .blobs .b1 { background: #c0392b; animation: b1 21s ease-in-out infinite alternate; left: -20px; top: -10px; }
+  .blobs .b2 { background: #2f9e44; animation: b2 26s ease-in-out infinite alternate; right: -10px; top: 30px; }
+  .blobs .b3 { background: #f5a623; animation: b3 18s ease-in-out infinite alternate; left: 130px; bottom: -50px; }
+  @keyframes b1 { to { transform: translate(150px, 60px) scale(1.25); } }
+  @keyframes b2 { to { transform: translate(-140px, 40px) scale(.85); } }
+  @keyframes b3 { to { transform: translate(60px, -70px) scale(1.15); } }
+  .grain { position: absolute; inset: 0; background: url(noise.png); background-size: 256px;
+    mix-blend-mode: overlay; opacity: .5; image-rendering: pixelated; pointer-events: none; }
+
+  /* ===== 3 breathing fan ===== */
+  .fanwrap { position: absolute; left: 50%; bottom: -26px; animation: fansway 7s ease-in-out infinite; transform-origin: 0 90px; }
+  @keyframes fansway { 0%, 100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }
+  .fcard { position: absolute; left: -27px; bottom: 0; width: 54px; height: 76px; border-radius: 6px;
+    background: #fff; border: 1px solid rgba(0,0,0,.16); box-shadow: 0 3px 8px rgba(0,0,0,.12);
+    display: flex; align-items: center; justify-content: center; font-size: 21px; font-weight: bold;
+    transform-origin: 50% 130%; animation: fbob 7s ease-in-out infinite; }
+  @keyframes fbob { 0%, 100% { margin-bottom: 0; } 50% { margin-bottom: 5px; } }
+  .fcard.red { color: #c0392b; }
+
+  /* ===== 5 felt lamp ===== */
+  .felt { background: url(green-felt.jpg) center/cover; }
+  .lamp { position: absolute; top: -30%; left: -50%; width: 200%; height: 160%;
+    background: radial-gradient(360px 260px at 50% 45%, rgba(255,252,214,.30), transparent 68%);
+    animation: lampmove 13s ease-in-out infinite alternate; }
+  @keyframes lampmove { from { transform: translateX(-14%); } to { transform: translateX(14%); } }
+  .vig { position: absolute; inset: 0; box-shadow: inset 0 0 60px 18px rgba(0,20,8,.35); }
+
+  /* ===== 6 chatter ticker ===== */
+  .chatter { display: flex; align-items: center; height: 100%; }
+  .chatbelt { white-space: nowrap; font-size: 14.5px; color: #7d776c; animation: belt 26s linear infinite; }
+  @keyframes belt { to { transform: translateX(-50%); } }
+  .chatbelt b { color: #4c473f; font-weight: 600; }
+  .chatbelt .cdot { color: #c9c2b4; margin: 0 14px; }
+
+  /* ===== 7 deal-ins ===== */
+  .dealins .toastcard { position: absolute; right: 14px; top: 22px; display: flex; align-items: center; gap: 9px;
+    background: #fff; border: 1px solid rgba(0,0,0,.09); border-radius: 9px; padding: 9px 13px;
+    font-size: 13px; color: #4c473f; box-shadow: 0 4px 14px rgba(60,45,25,.13); }
+  .dealins .toastcard img { width: 26px; height: 26px; }
+  .dealins .cornercard { position: absolute; width: 34px; height: 48px; background: #fff; border-radius: 4px;
+    border: 1px solid rgba(0,0,0,.14); display: flex; align-items: center; justify-content: center;
+    font-size: 15px; font-weight: bold; }
+
+  /* ===== 8 trick loop ===== */
+  .trick .mini { position: absolute; width: 40px; height: 56px; background: #fff; border-radius: 5px;
+    border: 1px solid rgba(0,0,0,.16); box-shadow: 0 2px 7px rgba(0,0,0,.13);
+    display: flex; align-items: center; justify-content: center; font-size: 14.5px; font-weight: bold; }
+  .trick .mini.red { color: #c0392b; }
+
+  /* ===== stats lines & dots ===== */
+  .line { display: flex; align-items: center; gap: 8px; font-size: 15px; color: #5c5850; min-height: 24px; }
+  .dot { position: relative; width: 8px; height: 8px; border-radius: 50%; background: #2f9e44; flex-shrink: 0; }
+  .ring { position: absolute; inset: 0; border-radius: 50%; background: #2f9e44; pointer-events: none; }
+  .p-current::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: #2f9e44;
+    animation: ping 1.5s cubic-bezier(0,0,.2,1) infinite; }
+  @keyframes ping { 0% { transform: scale(1); opacity: .55; } 75%, 100% { transform: scale(2.6); opacity: 0; } }
+  .p-slow::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: #2f9e44;
+    animation: pingslow 3.4s cubic-bezier(0,0,.2,1) infinite; }
+  @keyframes pingslow { 0% { transform: scale(1); opacity: .55; } 30%, 100% { transform: scale(2.6); opacity: 0; } }
+  .p-soft::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: #2f9e44;
+    animation: pingsoft 2.4s ease-out infinite; }
+  @keyframes pingsoft { 0% { transform: scale(1); opacity: .3; } 60%, 100% { transform: scale(1.9); opacity: 0; } }
+  .p-double::before, .p-double::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: #2f9e44;
+    animation: pingdouble 3.6s cubic-bezier(0,0,.2,1) infinite; }
+  .p-double::after { animation-delay: .28s; }
+  @keyframes pingdouble { 0% { transform: scale(1); opacity: .5; } 22%, 100% { transform: scale(2.4); opacity: 0; } }
+  .glowing { animation: dotglow .9s ease-out; }
+  @keyframes dotglow { 0% { box-shadow: 0 0 0 0 rgba(47,158,68,.0); } 30% { box-shadow: 0 0 7px 2px rgba(47,158,68,.55); } 100% { box-shadow: 0 0 0 0 rgba(47,158,68,0); } }
+
+  .numwrap { display: inline-flex; font-weight: bold; color: #2b2722; transition: color .5s; }
+  .numwrap.flash { color: #2f9e44; transition: color .12s; }
+  .cell { display: block; height: 20px; line-height: 20px; overflow: hidden; }
+  .cell.digit { width: .52em;
+    -webkit-mask-image: linear-gradient(transparent, #000 32%, #000 68%, transparent);
+    mask-image: linear-gradient(transparent, #000 32%, #000 68%, transparent); }
+  .cell.gap { width: .14em; }
+  .reel { display: block; transition: transform .75s cubic-bezier(.22,1.1,.34,1); will-change: transform; }
+  .reel span { display: block; height: 20px; line-height: 20px; text-align: center; }
+  .sep { opacity: .55; }
+</style>
+</head>
+<body>
+
+<h1>Motion lab</h1>
+<p class="note">The ElevenLabs orb works because the motion is made of the product itself (the artwork's own colors, stirred).
+The WOCG equivalent is not abstract fluid; it is the quiet motion of a card room: cards, felt, suits, table talk.
+Section one explores that. Section two refines the ping live counter.</p>
+
+<h2>Ambient concepts</h2>
+<div class="grid" id="ambient"></div>
+
+<h2>Ping live-counter variations</h2>
+<p class="note">All lines share the same value changes (every ~4 s), so the dots can be compared honestly.</p>
+<div class="grid" id="pings"></div>
+
+<script>
+  // ---------- helpers ----------
+  function el(tag, cls, html) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (html !== undefined) e.innerHTML = html;
+    return e;
+  }
+  function card(parent, title, desc) {
+    var c = el("div", "card", "<h3>" + title + "</h3><p class='src'>" + desc + "</p>");
+    parent.appendChild(c);
+    return c;
+  }
+
+  var ambient = document.getElementById("ambient");
+
+  // 1 — suit dust
+  (function () {
+    var c = card(ambient, "Floating suit dust", "Faint suits drift up the hero background like dust in lamplight. Barely there.");
+    var d = el("div", "demo dust");
+    var suits = ["♠", "♥", "♦", "♣"];
+    for (var i = 0; i < 14; i++) {
+      var s = el("span", "", suits[i % 4]);
+      var red = i % 4 === 1 || i % 4 === 2;
+      s.style.cssText = "left:" + (4 + (i * 7.1) % 92) + "%;font-size:" + (13 + (i * 5) % 18) + "px;" +
+        "color:" + (red ? "rgba(192,57,43,.09)" : "rgba(43,39,34,.08)") + ";" +
+        "animation-duration:" + (14 + (i * 3) % 15) + "s;animation-delay:-" + (i * 2.3) + "s;";
+      d.appendChild(s);
+    }
+    c.appendChild(d);
+  })();
+
+  // 2 — color blobs under grain
+  (function () {
+    var c = card(ambient, "Suit-colored blobs under grain", "The doable cousin of the ElevenLabs orb: blurred red/green/gold drifting under the film grain. Amplemarket/Wispr style.");
+    var d = el("div", "demo blobs");
+    d.appendChild(el("div", "blob b1"));
+    d.appendChild(el("div", "blob b2"));
+    d.appendChild(el("div", "blob b3"));
+    d.appendChild(el("div", "grain"));
+    c.appendChild(d);
+  })();
+
+  // 3 — breathing fan
+  (function () {
+    var c = card(ambient, "The breathing fan", "A held hand of cards that sways and breathes like a patient player. Anchors the hero without demanding attention.");
+    var d = el("div", "demo");
+    var wrap = el("div", "fanwrap");
+    var faces = [["A", ""], ["K", "red"], ["Q", ""], ["J", "red"], ["10", ""]];
+    var suits = ["♠", "♥", "♣", "♦", "♠"];
+    faces.forEach(function (f, i) {
+      var fc = el("div", "fcard " + f[1], f[0] + suits[i]);
+      fc.style.transform = "rotate(" + ((i - 2) * 13) + "deg)";
+      fc.style.animationDelay = (i * .18) + "s";
+      wrap.appendChild(fc);
+    });
+    d.appendChild(wrap);
+    c.appendChild(d);
+  })();
+
+  // 4 — riffle ribbon
+  (function () {
+    var c = card(ambient, "The riffle", "Every ten seconds a ribbon of cards arcs across and is gone. A blink of showmanship, then quiet.");
+    var d = el("div", "demo");
+    c.appendChild(d);
+    function run() {
+      for (var i = 0; i < 9; i++) (function (i) {
+        setTimeout(function () {
+          var m = el("div", "", "");
+          m.style.cssText = "position:absolute;width:34px;height:48px;background:#fff;border-radius:4px;" +
+            "border:1px solid rgba(0,0,0,.15);box-shadow:0 2px 6px rgba(0,0,0,.14);left:-40px;top:120px;";
+          d.appendChild(m);
+          m.animate([
+            { transform: "translate(0,0) rotate(-22deg)" },
+            { transform: "translate(" + (d.clientWidth * .55) + "px,-72px) rotate(4deg)" },
+            { transform: "translate(" + (d.clientWidth + 60) + "px,-30px) rotate(26deg)" }
+          ], { duration: 1150, easing: "cubic-bezier(.3,.4,.4,1)" }).onfinish = function () { m.remove(); };
+        }, i * 55);
+      })(i);
+    }
+    run();
+    setInterval(run, 10000);
+  })();
+
+  // 5 — felt lamp
+  (function () {
+    var c = card(ambient, "Lamplight on felt", "A warm light drifts across the table felt, like a lamp over a card table. Pure atmosphere.");
+    var d = el("div", "demo felt");
+    d.appendChild(el("div", "lamp"));
+    d.appendChild(el("div", "vig"));
+    c.appendChild(d);
+  })();
+
+  // 6 — table chatter
+  (function () {
+    var c = card(ambient, "Table-chatter ticker", "Real (pre-moderated) table talk drifts by. The sound of the room, visualized.");
+    var d = el("div", "demo chatter");
+    var quotes = ["<b>Marge:</b> nice hand!", "<b>BobK:</b> one more?", "<b>Vera:</b> gg everyone",
+      "<b>Duckling:</b> lucky ace…", "<b>Hank:</b> well played", "<b>Rosie:</b> again tomorrow?"];
+    var belt = quotes.join("<span class='cdot'>·</span>");
+    d.appendChild(el("div", "chatbelt", belt + "<span class='cdot'>·</span>" + belt));
+    c.appendChild(d);
+  })();
+
+  // 7 — activity deal-ins
+  (function () {
+    var c = card(ambient, "Activity deal-ins", "Live events dealt onto the page as little cards, not toasts. Proof the room is alive.");
+    var d = el("div", "demo dealins");
+    c.appendChild(d);
+    var events = [
+      ["AnimalCat.svg", "<b>Duckling</b> joined table Rose42"],
+      ["AnimalFox.svg", "<b>BobK</b> opened a Euchre table"],
+      ["AnimalGopher.svg", "<b>Marge</b> won a Hearts hand"],
+      ["AnimalChicken.svg", "<b>Vera</b> is one seat short"]
+    ];
+    var n = 0, cur = null;
+    function spawn() {
+      var ev = events[n++ % events.length];
+      var t = el("div", "toastcard", "<img src='" + ev[0] + "' alt=''><span>" + ev[1] + "</span>");
+      d.appendChild(t);
+      t.animate([
+        { transform: "translateX(120%) rotate(4deg)", opacity: 0 },
+        { transform: "translateX(0) rotate(0deg)", opacity: 1 }
+      ], { duration: 480, easing: "cubic-bezier(.2,.9,.3,1)" });
+      if (cur) (function (old) {
+        old.animate([{ opacity: 1, transform: "translateY(0)" }, { opacity: 0, transform: "translateY(26px)" }],
+          { duration: 420, fill: "forwards" }).onfinish = function () { old.remove(); };
+      })(cur);
+      cur = t;
+    }
+    spawn();
+    setInterval(spawn, 5200);
+  })();
+
+  // 8 — trick loop
+  (function () {
+    var c = card(ambient, "The endless trick", "Four cards played to the middle, swept to the winner, dealt again. A tiny living table.");
+    var d = el("div", "demo trick");
+    c.appendChild(d);
+    var defs = [
+      ["A♠", "", "50%", "-64px", "8%", "0deg"],
+      ["K♥", "red", "104%", "42%", "31%", "11deg"],
+      ["Q♦", "red", "50%", "115%", "54%", "-8deg"],
+      ["J♣", "", "-52px", "42%", "77%", "17deg"]
+    ];
+    function round() {
+      d.querySelectorAll(".mini").forEach(function (m) { m.remove(); });
+      var cards = [];
+      defs.forEach(function (df, i) {
+        setTimeout(function () {
+          var m = el("div", "mini " + df[1], df[0]);
+          m.style.cssText = "left:" + df[2] + ";top:" + df[3] + ";z-index:" + (i + 1) + ";";
+          d.appendChild(m);
+          cards.push(m);
+          var cx = d.clientWidth / 2 - 20 - m.offsetLeft, cy = d.clientHeight / 2 - 28 - m.offsetTop;
+          m.animate([
+            { transform: "translate(0,0) rotate(0deg)" },
+            { transform: "translate(" + cx + "px," + cy + "px) rotate(" + df[5] + ")" }
+          ], { duration: 520, easing: "cubic-bezier(.25,.9,.3,1)", fill: "forwards" });
+        }, i * 620);
+      });
+      setTimeout(function () {
+        cards.forEach(function (m, i) {
+          m.animate([
+            { opacity: 1, transform: getComputedStyle(m).transform },
+            { opacity: 0, transform: "translate(" + (d.clientWidth - m.offsetLeft) + "px,-90px) rotate(24deg)" }
+          ], { duration: 560, delay: i * 40, easing: "ease-in", fill: "forwards" })
+            .onfinish = function () { m.remove(); };
+        });
+      }, 4000);
+    }
+    round();
+    setInterval(round, 6400);
+  })();
+
+  // ---------- section 2: ping variations ----------
+  var THIN = " ";
+  function fmt(v) { return Number(v).toLocaleString("en-US").replace(/,/g, THIN); }
+  function Odo(host, v) {
+    var wrap = el("b", "numwrap");
+    host.appendChild(wrap);
+    var cells = fmt(v).split("").map(function (ch) {
+      var isD = ch >= "0" && ch <= "9";
+      var cell = el("span", "cell" + (isD ? " digit" : " gap"));
+      if (isD) {
+        var reel = el("span", "reel");
+        for (var d2 = 0; d2 <= 9; d2++) reel.appendChild(el("span", "", String(d2)));
+        reel.style.transform = "translateY(-" + ch * 20 + "px)";
+        cell.appendChild(reel);
+        cell.reel = reel;
+      } else cell.textContent = ch;
+      wrap.appendChild(cell);
+      return cell;
+    });
+    this.wrap = wrap;
+    this.set = function (nv) {
+      var str = fmt(nv);
+      cells.forEach(function (cell, i) {
+        if (cell.reel) cell.reel.style.transform = "translateY(-" + str[i] * 20 + "px)";
+      });
+    };
+  }
+  function fireRing(dot, scale, dur, op) {
+    var r = el("span", "ring");
+    dot.appendChild(r);
+    r.animate([
+      { transform: "scale(1)", opacity: op || .55 },
+      { transform: "scale(" + (scale || 2.6) + ")", opacity: 0 }
+    ], { duration: dur || 750, easing: "cubic-bezier(0,0,.2,1)" }).onfinish = function () { r.remove(); };
+  }
+
+  var PINGS = [
+    ["Current: constant ping", "The 1.5s loop now in the mockup. Alive, but pings whether or not anything happened.", "p-current", null],
+    ["Event ping", "The dot only pings when a number actually changes. The dot answers the data, honest like a heartbeat monitor.", "", function (dot) { fireRing(dot); }],
+    ["Event ping + glow", "On change the dot also glows briefly. A slightly warmer version of the event ping.", "", function (dot) {
+      fireRing(dot);
+      dot.classList.remove("glowing"); void dot.offsetWidth; dot.classList.add("glowing");
+    }],
+    ["Event ping + green flash", "The ripple fires and the changed number flashes green, then settles back to ink.", "", function (dot, insts) {
+      fireRing(dot);
+      insts.forEach(function (o) {
+        o.wrap.classList.add("flash");
+        setTimeout(function () { o.wrap.classList.remove("flash"); }, 350);
+      });
+    }],
+    ["Burst ping", "Three quick ripples in a row when something changes. Feels like a flurry of activity.", "", function (dot) {
+      fireRing(dot); setTimeout(function () { fireRing(dot); }, 190); setTimeout(function () { fireRing(dot); }, 380);
+    }],
+    ["Slow ping", "The constant loop, but a ripple only every 3.4s. Same idea, half the noise.", "p-slow", null],
+    ["Soft ping", "Constant, but smaller and fainter (scale 1.9, 30% opacity). The most discreet loop.", "p-soft", null],
+    ["Double-beat ping", "Two rings close together, then a long rest. A pulse, literally.", "p-double", null]
+  ];
+
+  var pingsEl = document.getElementById("pings");
+  var players = 1214, tables = 46;
+  var rows = [];
+  PINGS.forEach(function (p) {
+    var c = card(pingsEl, p[0], p[1]);
+    var line = el("div", "line");
+    var dot = el("span", "dot " + p[2]);
+    line.appendChild(dot);
+    var o1 = new Odo(line, players);
+    line.appendChild(document.createTextNode(" players online "));
+    line.appendChild(el("span", "sep", "·"));
+    line.appendChild(document.createTextNode(" "));
+    var o2 = new Odo(line, tables);
+    line.appendChild(document.createTextNode(" open tables"));
+    c.appendChild(line);
+    rows.push({ dot: dot, insts: [o1, o2], hook: p[3] });
+  });
+
+  function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+  setInterval(function () {
+    players = clamp(players + Math.round((Math.random() * 2 - 1) * 18), 1150, 1290);
+    tables = clamp(tables + Math.round((Math.random() * 2 - 1) * 5), 38, 58);
+    rows.forEach(function (r) {
+      r.insts[0].set(players);
+      r.insts[1].set(tables);
+      if (r.hook) r.hook(r.dot, r.insts);
+    });
+  }, 4000);
+</script>
+</body>
+</html>
