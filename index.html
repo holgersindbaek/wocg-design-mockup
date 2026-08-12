@@ -423,10 +423,7 @@
   .stats .sep { opacity: 0.55; }
   .sicon { width: 15px; height: 15px; color: var(--second); flex-shrink: 0; }
   .ldot { position: relative; width: 8px; height: 8px; border-radius: 50%; background: #2f9e44; flex-shrink: 0; }
-  .ldot::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: #2f9e44;
-    animation: ping 1.5s cubic-bezier(0, 0, .2, 1) infinite; }
-  @keyframes ping { 0% { transform: scale(1); opacity: .55; } 75%, 100% { transform: scale(2.6); opacity: 0; } }
-  @media (prefers-reduced-motion: reduce) { .ldot::after { animation: none; display: none; } }
+  .lring { position: absolute; inset: 0; border-radius: 50%; background: #2f9e44; pointer-events: none; }
   .stats b { color: var(--ink); font-weight: bold; transition: color 0.5s ease; }
   .stats b.tick { color: #2f9e44; transition: none; }
   .peek {
@@ -1570,37 +1567,56 @@
     if (el) buildOdo(el);
   });
 
-  // live-feel: stats drift gently like real counters
+  // live-feel: one 1.4s ping clock; numbers change on every sixth beat
   (function () {
     if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     var defs = [
-      { id: "st-players", min: 1150, max: 1290, step: 7 },
-      { id: "st-games", min: 128, max: 158, step: 2 },
-      { id: "st-seats", min: 74, max: 102, step: 3 },
-      { id: "st-players2", min: 1150, max: 1290, step: 7 },
-      { id: "st-tables", min: 38, max: 58, step: 2 }
+      { id: "st-players", min: 1150, max: 1290, step: 18 },
+      { id: "st-games", min: 128, max: 158, step: 4 },
+      { id: "st-seats", min: 74, max: 102, step: 6 },
+      { id: "st-players2", min: 1150, max: 1290, step: 18 },
+      { id: "st-tables", min: 38, max: 58, step: 5 }
     ];
-    defs.forEach(function (d) {
-      var el = document.getElementById(d.id);
-      if (!el) return;
-      (function loop() {
-        setTimeout(function () {
-          var v = parseInt(el.dataset.v, 10);
-          var delta = Math.round((Math.random() * 2 - 1) * d.step);
-          if (delta === 0) delta = Math.random() < 0.5 ? -1 : 1;
-          v = Math.max(d.min, Math.min(d.max, v + delta));
-          el.dataset.v = v;
-          if (el.odoCells) {
-            setOdo(el, v);
-          } else {
-            el.textContent = v.toLocaleString("en-US");
-            el.classList.add("tick");
-            setTimeout(function () { el.classList.remove("tick"); }, 60);
-          }
-          loop();
-        }, 3500 + Math.random() * 6500);
-      })();
-    });
+    function fireRing(dot, scale, dur, op) {
+      var r = document.createElement("span");
+      r.className = "lring";
+      dot.appendChild(r);
+      r.animate([
+        { transform: "scale(1)", opacity: op },
+        { transform: "scale(" + scale + ")", opacity: 0 }
+      ], { duration: dur, easing: "cubic-bezier(0,0,.2,1)" }).onfinish = function () { r.remove(); };
+    }
+    function snappySwell(dot) {
+      dot.animate([
+        { transform: "scale(1)", easing: "cubic-bezier(0,0,.2,1)" },
+        { transform: "scale(1.4)", offset: .3, easing: "cubic-bezier(.5,0,.5,1)" },
+        { transform: "scale(.85)", offset: .52, easing: "ease-out" },
+        { transform: "scale(1)", offset: .66 },
+        { transform: "scale(1)" }
+      ], { duration: 620 });
+    }
+    var dots = Array.prototype.slice.call(document.querySelectorAll(".ldot"));
+    var beat = 0;
+    setInterval(function () {
+      beat++;
+      var change = beat % 6 === 0;
+      dots.forEach(function (dot) {
+        fireRing(dot, change ? 3 : 2.6, change ? 850 : 750, change ? .6 : .5);
+        if (change) snappySwell(dot);
+      });
+      if (!change) return;
+      defs.forEach(function (d) {
+        var el = document.getElementById(d.id);
+        if (!el) return;
+        var v = parseInt(el.dataset.v, 10);
+        var delta = Math.round((Math.random() * 2 - 1) * d.step);
+        if (delta === 0) delta = Math.random() < 0.5 ? -1 : 1;
+        v = Math.max(d.min, Math.min(d.max, v + delta));
+        el.dataset.v = v;
+        if (el.odoCells) setOdo(el, v);
+        else el.textContent = v.toLocaleString("en-US");
+      });
+    }, 1400);
   })();
 
   var toastEl = document.getElementById("toast"), t;
