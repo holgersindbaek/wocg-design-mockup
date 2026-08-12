@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Motion lab — ambient concepts &amp; live counters</title>
+<title>Motion lab — ambient concepts</title>
 <style>
   body { margin: 0; padding: 28px 24px 60px; background: #f9f6f2; color: #2b2722;
     font-family: -apple-system, "Helvetica Neue", Arial, sans-serif; }
@@ -53,22 +53,7 @@
     border: 1px solid rgba(0,0,0,.14); display: flex; align-items: center; justify-content: center;
     font-size: 15px; font-weight: bold; }
 
-  /* ===== stats lines & dots ===== */
-  .line { display: flex; align-items: center; gap: 8px; font-size: 15px; color: #5c5850; min-height: 24px; }
-  .dot { position: relative; width: 8px; height: 8px; border-radius: 50%; background: #2f9e44; flex-shrink: 0; }
-  .ring { position: absolute; inset: 0; border-radius: 50%; background: #2f9e44; pointer-events: none; }
-  .p-current::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: #2f9e44;
-    animation: ping 1.5s cubic-bezier(0,0,.2,1) infinite; }
-  @keyframes ping { 0% { transform: scale(1); opacity: .55; } 75%, 100% { transform: scale(2.6); opacity: 0; } }
-  .numwrap { display: inline-flex; font-weight: bold; color: #2b2722; }
-  .cell { display: block; height: 20px; line-height: 20px; overflow: hidden; }
-  .cell.digit { width: .52em;
-    -webkit-mask-image: linear-gradient(transparent, #000 32%, #000 68%, transparent);
-    mask-image: linear-gradient(transparent, #000 32%, #000 68%, transparent); }
-  .cell.gap { width: .14em; }
-  .reel { display: block; transition: transform .75s cubic-bezier(.22,1.1,.34,1); will-change: transform; }
-  .reel span { display: block; height: 20px; line-height: 20px; text-align: center; }
-  .sep { opacity: .55; }
+
 </style>
 </head>
 <body>
@@ -76,15 +61,11 @@
 <h1>Motion lab</h1>
 <p class="note">The ElevenLabs orb works because the motion is made of the product itself (the artwork's own colors, stirred).
 The WOCG equivalent is not abstract fluid; it is the quiet motion of a card room: cards, felt, suits, table talk.
-Section one explores that. Section two refines the ping live counter.</p>
+Every card below explores that.</p>
 
 <h2>Ambient concepts</h2>
 <div class="grid" id="ambient"></div>
 
-<h2>Ping live-counter variations</h2>
-<p class="note">All bounce variants pulse constantly at 1.4 s. Every sixth beat (8.4 s) the numbers roll exactly on the ping,
-and that beat does something special. The reference card is today's mockup behavior.</p>
-<div class="grid" id="pings"></div>
 
 <script>
   // ---------- helpers ----------
@@ -211,127 +192,7 @@ and that beat does something special. The reference card is today's mockup behav
     setInterval(spawn, 5200);
   })();
 
-  // ---------- section 2: ping variations ----------
-  var THIN = " ";
-  function fmt(v) { return Number(v).toLocaleString("en-US").replace(/,/g, THIN); }
-  function Odo(host, v) {
-    var wrap = el("b", "numwrap");
-    host.appendChild(wrap);
-    var cells = fmt(v).split("").map(function (ch) {
-      var isD = ch >= "0" && ch <= "9";
-      var cell = el("span", "cell" + (isD ? " digit" : " gap"));
-      if (isD) {
-        var reel = el("span", "reel");
-        for (var d2 = 0; d2 <= 9; d2++) reel.appendChild(el("span", "", String(d2)));
-        reel.style.transform = "translateY(-" + ch * 20 + "px)";
-        cell.appendChild(reel);
-        cell.reel = reel;
-      } else cell.textContent = ch;
-      wrap.appendChild(cell);
-      return cell;
-    });
-    this.wrap = wrap;
-    this.set = function (nv) {
-      var str = fmt(nv);
-      cells.forEach(function (cell, i) {
-        if (cell.reel) cell.reel.style.transform = "translateY(-" + str[i] * 20 + "px)";
-      });
-    };
-  }
-  function fireRing(dot, scale, dur, op) {
-    var r = el("span", "ring");
-    dot.appendChild(r);
-    r.animate([
-      { transform: "scale(1)", opacity: op || .55 },
-      { transform: "scale(" + (scale || 2.6) + ")", opacity: 0 }
-    ], { duration: dur || 750, easing: "cubic-bezier(0,0,.2,1)" }).onfinish = function () { r.remove(); };
-  }
 
-  function springSwell(dot, frames, dur) {
-    dot.animate(frames.map(function (f) {
-      var k = { transform: "scale(" + f[0] + ")" };
-      if (f[1] !== undefined) k.offset = f[1];
-      if (f[2]) k.easing = f[2];
-      return k;
-    }), { duration: dur });
-  }
-  function changeBeat(dot, frames, dur) {
-    fireRing(dot, 3, 850, .6);
-    springSwell(dot, frames, dur);
-  }
-  var PINGS = [
-    ["Current: constant ping (reference)", "Today's mockup: a 1.5s loop on its own clock; the numbers change whenever they happen to.", "p-current", null],
-    ["Spring: gentle", "Up to 1.4, back down to 0.90, settle. The undershoot is finally visible but stays polite.", "", function (dot) {
-      changeBeat(dot, [
-        [1, 0, "cubic-bezier(0,0,.2,1)"], [1.4, .26, "cubic-bezier(.45,0,.6,1)"],
-        [.9, .5, "ease-out"], [1, .68], [1, 1]
-      ], 850);
-    }],
-    ["Spring: clear", "Down to 0.82, one small rebound above rest, then settle. Reads unmistakably as a spring.", "", function (dot) {
-      changeBeat(dot, [
-        [1, 0, "cubic-bezier(0,0,.2,1)"], [1.4, .26, "cubic-bezier(.45,0,.6,1)"],
-        [.82, .48, "ease-in-out"], [1.05, .64, "ease-out"], [1, .8], [1, 1]
-      ], 850);
-    }],
-    ["Spring: bouncy", "Two wobbles before it rests: 0.78, up to 1.08, dip to 0.95, done. The most alive.", "", function (dot) {
-      changeBeat(dot, [
-        [1, 0, "cubic-bezier(0,0,.2,1)"], [1.4, .24, "cubic-bezier(.45,0,.6,1)"],
-        [.78, .44, "ease-in-out"], [1.08, .6, "ease-in-out"], [.95, .74, "ease-out"], [1, .86], [1, 1]
-      ], 900);
-    }],
-    ["Spring: snappy", "The whole gesture in 0.6s: quick up, quick down to 0.85, settle. Tight and energetic.", "", function (dot) {
-      changeBeat(dot, [
-        [1, 0, "cubic-bezier(0,0,.2,1)"], [1.4, .3, "cubic-bezier(.5,0,.5,1)"],
-        [.85, .52, "ease-out"], [1, .66], [1, 1]
-      ], 620);
-    }]
-  ];
-
-  var pingsEl = document.getElementById("pings");
-  var players = 1214, tables = 46;
-  var rows = [];
-  function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
-  PINGS.forEach(function (p) {
-    var c = card(pingsEl, p[0], p[1]);
-    var line = el("div", "line");
-    var dot = el("span", "dot " + p[2]);
-    line.appendChild(dot);
-    var o1 = new Odo(line, players);
-    line.appendChild(document.createTextNode(" players online "));
-    line.appendChild(el("span", "sep", "·"));
-    line.appendChild(document.createTextNode(" "));
-    var o2 = new Odo(line, tables);
-    line.appendChild(document.createTextNode(" open tables"));
-    c.appendChild(line);
-    if (p[3]) {
-      (function (dot, o1, o2, special) {
-        var sp = players, st = tables, beat = 0;
-        setInterval(function () {
-          beat++;
-          if (beat % 6 === 0) {
-            special(dot);
-            sp = clamp(sp + Math.round((Math.random() * 2 - 1) * 18), 1150, 1290);
-            st = clamp(st + Math.round((Math.random() * 2 - 1) * 5), 38, 58);
-            o1.set(sp);
-            o2.set(st);
-          } else {
-            fireRing(dot, 2.6, 750, .5);
-          }
-        }, 1400);
-      })(dot, o1, o2, p[3]);
-    } else {
-      rows.push({ dot: dot, insts: [o1, o2] });
-    }
-  });
-
-  setInterval(function () {
-    players = clamp(players + Math.round((Math.random() * 2 - 1) * 18), 1150, 1290);
-    tables = clamp(tables + Math.round((Math.random() * 2 - 1) * 5), 38, 58);
-    rows.forEach(function (r) {
-      r.insts[0].set(players);
-      r.insts[1].set(tables);
-    });
-  }, 4000);
 </script>
 </body>
 </html>
