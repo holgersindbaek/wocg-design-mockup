@@ -409,9 +409,9 @@
   .heroarea > * { position: relative; z-index: 1; }
   .stats { display: flex; align-items: center; justify-content: center; gap: 9px; margin-top: 12px; flex-wrap: wrap; font-size: 14px; color: var(--muted); }
   body:not(.stats-brief) .statsBrief { display: none; }
-  body.stats-brief .statsFull, body.stats-capsule .statsFull, body.stats-sign .statsFull, body.stats-signsolid .statsFull, body.stats-signbtn .statsFull, body.stats-signpulse .statsFull { display: none; }
+  body.stats-brief .statsFull, body.stats-capsule .statsFull, body.stats-sign .statsFull, body.stats-signsolid .statsFull, body.stats-signbtn .statsFull, body.stats-signpulse .statsFull, body.stats-signtag .statsFull { display: none; }
   body:not(.stats-capsule) .statsCapsule { display: none; }
-  body:not(.stats-sign):not(.stats-signsolid):not(.stats-signbtn):not(.stats-signpulse) .statsSign { display: none; }
+  body:not(.stats-sign):not(.stats-signsolid):not(.stats-signbtn):not(.stats-signpulse):not(.stats-signtag) .statsSign { display: none; }
   /* the LIVE sign strip leading bare, separator-free counts. Base recipe = the
      lightblue button's formula on Mantine's GREEN scale (the codebase's own
      greens are lime): blue-2 #A5D8FF / blue-8 #1971C2 becomes green-2 #B2F2BB /
@@ -437,7 +437,13 @@
   body.stats-signpulse .statsSign .signchip { background: #66A80F; position: relative; }
   body.stats-signpulse .statsSign .greencap { color: #fff; }
   body.stats-signpulse .statsSign .ldot { display: none; }
-  .chipring { position: absolute; inset: 0; border-radius: 7px; pointer-events: none; }
+  /* the online-solitaire "Playing" tag recipe in green: text-height sign,
+     fill green-2, 1px inset ring green-4, ink green-8
+     (gold original: #ffec99 fill / #ffd43b ring / #e67700 ink, 12px/16px) */
+  body.stats-signtag .statsSign .signchip { height: auto; padding: 0 8px; border-radius: 6px; background: #B2F2BB; box-shadow: inset 0 0 0 1px #69DB7C; position: relative; }
+  body.stats-signtag .statsSign .greencap { color: #2B8A3E; font-size: 12px; line-height: 16px; letter-spacing: .06em; top: 0; }
+  body.stats-signtag .statsSign .ldot { display: none; }
+  .chipring { position: absolute; inset: 0; pointer-events: none; }
   /* the live-light capsule strip: 32px shell on the button chrome; dot at the
      eye-approved 13px left inset (4px shell + 9px cell) vs 12px top; LIVE at
      11px caps nudged 1px against BuloRounded's ascent-heavy centering; digits
@@ -1359,6 +1365,7 @@
     ["signsolid", "Sign: solid green"],
     ["signbtn", "Sign: white button"],
     ["signpulse", "Sign: solid green, pulsing (no dot)"],
+    ["signtag", "Sign: solitaire tag (small, pulsing)"],
     ["full", "Three counters (players / games / seats)"],
     ["brief", "One line: players & open tables"]
   ];
@@ -1694,17 +1701,20 @@
         fireRing(dot, 2.6, 750, .5);
         if (change) snappySwell(dot);
       });
-      if (document.body.classList.contains("stats-signpulse")) {
+      var pulseColor = document.body.classList.contains("stats-signpulse") ? "102,168,15" :
+        document.body.classList.contains("stats-signtag") ? "43,138,62" : null;
+      if (pulseColor) {
         var chip = document.querySelector(".statsSign .signchip");
         if (chip) {
           var oldRings = chip.querySelectorAll(".chipring");
           if (oldRings.length > 2) oldRings.forEach(function (o) { o.remove(); });
           var cr = document.createElement("span");
           cr.className = "chipring";
+          cr.style.borderRadius = getComputedStyle(chip).borderRadius;
           chip.appendChild(cr);
           cr.animate([
-            { boxShadow: "0 0 0 0 rgba(102,168,15,.5)" },
-            { boxShadow: "0 0 0 10px rgba(102,168,15,0)" }
+            { boxShadow: "0 0 0 0 rgba(" + pulseColor + ",.5)" },
+            { boxShadow: "0 0 0 10px rgba(" + pulseColor + ",0)" }
           ], { duration: 750, easing: "cubic-bezier(0,0,.2,1)" }).onfinish = function () { cr.remove(); };
           if (change) chip.animate([
             { transform: "scale(1)" },
