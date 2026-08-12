@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>WOCG — live counter gallery</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vollkorn:wght@400..900&display=swap" rel="stylesheet">
+<style>
+  @font-face {
+    font-family: 'BuloRounded';
+    src: url("BuloRounded-Regular.woff2") format('woff2');
+    font-style: normal; font-weight: normal; font-display: swap;
+  }
+  @font-face {
+    font-family: 'BuloRounded';
+    src: url("BuloRounded-Bold.woff2") format('woff2');
+    font-style: normal; font-weight: bold; font-display: swap;
+  }
+  :root {
+    --canvas:#f9f6f2; --band:#f4eee5; --surface:#ffffff;
+    --ink:#141414; --ink-soft:#262626; --muted:#4e4d4c; --hairline:#e7e7e7;
+    --accent:#00a82d; --second:#4d64ff;
+    --live:#2f9e44; --amber:#e8862f;
+    --evershadow: 0 8px 24px -8px rgba(0,0,21,0.12), 0 14px 40px -8px rgba(0,0,21,0.04), 0 0 0 1px rgba(0,0,21,0.08);
+    --btnshadow: 0 0 1px rgba(0,0,0,0.4), 0 1px 1px rgba(0,0,0,0.04), 0 2px 4px rgba(0,0,0,0.04);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--canvas); color: var(--ink);
+    font-family: 'BuloRounded', system-ui, sans-serif; font-size: 15px; line-height: 1.5;
+    padding: 40px 20px 90px;
+  }
+  .page { max-width: 860px; margin: 0 auto; }
+  h1 { font-family: "Vollkorn", serif; font-weight: 500; font-size: 34px; margin: 0 0 6px; }
+  .lede { color: var(--muted); max-width: 640px; margin: 0 0 8px; }
+  .note { color: var(--muted); font-size: 13px; max-width: 640px; margin: 0 0 34px; }
+  h2 { font-family: "Vollkorn", serif; font-weight: 500; font-size: 24px; margin: 44px 0 4px; }
+  .secsub { color: var(--muted); font-size: 14px; margin: 0 0 18px; max-width: 680px; }
+
+  .vcard {
+    background: var(--surface); border-radius: 20px; corner-shape: squircle;
+    box-shadow: var(--evershadow); padding: 22px 26px 24px; margin: 0 0 18px;
+  }
+  .vhead { display: flex; align-items: baseline; gap: 10px; margin-bottom: 2px; }
+  .vname { font-weight: bold; font-size: 15px; }
+  .vtag { font-size: 11px; font-weight: bold; letter-spacing: .04em; text-transform: uppercase; color: var(--surface); background: var(--ink); border-radius: 20px; padding: 2px 8px; }
+  .vtag.cur { background: var(--amber); }
+  .vwhy { color: var(--muted); font-size: 13px; margin: 0 0 16px; }
+  .stage { background: var(--band); border-radius: 14px; padding: 26px 18px; text-align: center; }
+
+  /* ===== the stats row, as in the artifact ===== */
+  .stats { display: flex; align-items: center; justify-content: center; gap: 9px; flex-wrap: wrap; font-size: 14px; color: var(--muted); }
+  .stats .sep { opacity: 0.55; }
+  .st { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+  .stats b { color: var(--ink); font-weight: bold; font-variant-numeric: tabular-nums; transition: color 0.5s ease; }
+  .stats b.tick { color: var(--live); transition: none; }
+  .sicon { width: 15px; height: 15px; color: var(--muted); flex-shrink: 0; }
+  .ldot { position: relative; width: 8px; height: 8px; border-radius: 50%; background: var(--live); flex-shrink: 0; }
+  .ldot::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: var(--live); animation: ping 1.5s cubic-bezier(0,0,.2,1) infinite; }
+  @keyframes ping { 0% { transform: scale(1); opacity: .55; } 75%, 100% { transform: scale(2.6); opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { .ldot::after { animation: none; display: none; } }
+
+  /* dots system */
+  .adot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .adot.solid { background: var(--amber); }
+  .adot.hollow { background: transparent; border: 2px solid var(--muted); width: 7px; height: 7px; }
+
+  /* pills */
+  .pillrow { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+  .pill { display: inline-flex; align-items: center; gap: 6px; background: var(--surface); border-radius: 20px; padding: 7px 13px; box-shadow: var(--btnshadow); font-size: 14px; color: var(--muted); }
+  .pill b { color: var(--ink); font-variant-numeric: tabular-nums; }
+  .capsule { display: inline-flex; align-items: center; background: var(--surface); border-radius: 20px; box-shadow: var(--btnshadow); padding: 0 4px; }
+  .capsule .st { padding: 8px 14px; }
+  .capsule .st + .st { border-left: 1px solid var(--hairline); }
+
+  /* stacked + tiles */
+  .stackcol { display: inline-flex; flex-direction: column; align-items: flex-start; gap: 3px; font-size: 14px; color: var(--muted); }
+  .tilerow { display: flex; justify-content: center; gap: 26px; }
+  .mtile { display: flex; flex-direction: column; align-items: center; gap: 1px; }
+  .mtile b { font-size: 20px; color: var(--ink); font-variant-numeric: tabular-nums; font-weight: bold; transition: color .5s ease; }
+  .mtile b.tick { color: var(--live); transition: none; }
+  .mtile span { font-size: 12.5px; color: var(--muted); }
+
+  /* table-ring occupancy glyph */
+  .ring { position: relative; width: 18px; height: 14px; flex-shrink: 0; }
+  .ring::before { content: ""; position: absolute; inset: 3px 2px; border: 1.6px solid var(--muted); border-radius: 50%; opacity: .6; }
+  .ring i { position: absolute; width: 4.6px; height: 4.6px; border-radius: 50%; background: var(--muted); }
+  .ring i.n { top: -1px; left: 6.7px; }
+  .ring i.s { bottom: -1px; left: 6.7px; }
+  .ring i.w { left: -1px; top: 4.7px; }
+  .ring i.e { right: -1px; top: 4.7px; background: transparent; border: 1.4px solid var(--live); width: 3.8px; height: 3.8px; }
+
+  /* sparkline */
+  .spark { display: inline-flex; align-items: flex-end; gap: 1.5px; height: 13px; flex-shrink: 0; }
+  .spark i { width: 2.5px; background: var(--muted); opacity: .55; border-radius: 1px; transition: height .6s ease; }
+  .spark i:last-child { background: var(--live); opacity: 1; }
+
+  /* ticker */
+  .whisper { margin-top: 10px; font-size: 13px; color: var(--muted); opacity: .85; min-height: 20px; }
+  .whisper b { color: var(--ink); font-weight: bold; }
+
+  .herotitle { font-family: "Vollkorn", serif; font-weight: 500; font-size: 30px; margin: 0 0 4px; color: var(--ink); }
+  .herosub { font-size: 15px; color: var(--muted); margin: 0 0 14px; }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>The live counters</h1>
+  <p class="lede">Every way to show &ldquo;1,214 players online &middot; 143 games live &middot; 87 seats open,&rdquo; researched and rendered live. The green dot stays; the question is the other two counters. All numbers tick like the real thing.</p>
+  <p class="note">Research notes: the industry default is <b>no icons at all</b> (lichess, PokerStars, PlayOK: bold number, quiet word). <b>No surveyed product shows three live counts</b> &mdash; a third dimension is always an occupancy fraction, a clickable empty seat, or prose. The 16px icon test killed the poker chip (reads as a spinner) and top-down tables (blur into blobs); it crowned fanned cards with a pip, the filled spade, the cinema seat, the armchair, the dashed slot and the open door. The artifact currently defaults to <code>stats-brief</code> (one counter) &mdash; when you pick a winner here, we flip the full row back on.</p>
+
+  <!-- ======================= A. ICON SYSTEMS ======================= -->
+  <h2>A &middot; Icon systems</h2>
+  <p class="secsub">Same line, different glyphs for the last two counters. Captions say where each metaphor is proven.</p>
+
+  <div class="vcard">
+    <div class="vhead"><span class="vname">A0 &middot; What we have now</span><span class="vtag cur">current</span></div>
+    <p class="vwhy">Two laid cards for games, a dashed card with a plus for seats. Both are private metaphors: they need the label to be understood, so they add ink without adding meaning.</p>
+    <div class="stage"><div class="stats">
+      <span class="st"><span class="ldot"></span><b data-k="p">1,214</b> players online</span><span class="sep">&middot;</span>
+      <span class="st"><svg class="sicon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="4" y="5.8" width="8.6" height="12.4" rx="1.6" transform="rotate(-10 8.3 12)" stroke="currentColor" stroke-width="1.6" opacity=".6"/><rect x="10.6" y="4.6" width="9" height="13.4" rx="1.6" transform="rotate(9 15.1 11.3)" fill="currentColor"/></svg><b data-k="g">143</b> games live</span><span class="sep">&middot;</span>
+      <span class="st"><svg class="sicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><rect x="6" y="3.8" width="12" height="16.4" rx="2" stroke-width="1.6" stroke-dasharray="3 2.4" stroke-linecap="round"/><path d="M12 9.4v5.2M9.4 12h5.2" stroke-width="1.9" stroke-linecap="round"/></svg><b data-k="s">87</b> seats open</span>
+    </div></div>
+  </div>
+
+  <div class="vcard">
+    <div class="vhead"><span class="vname">A1 &middot; Card with a pip + a proper seat</span></div>
+    <p class="vwhy">Fanned cards where the front card carries one solid pip &mdash; the pip is what makes it a <i>playing</i> card instead of an index card. The seat is the cinema/venue seat, the strongest one-seat silhouette at 16px.</p>
+    <div class="stage"><div class="stats">
+      <span class="st"><span class="ldot"></span><b data-k="p">1,214</b> players online</span><span class="sep">&middot;</span>
+      <span class="st"><svg class="sicon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3.6" y="5.4" width="9" height="13" rx="1.6" transform="rotate(-12 8.1 11.9)" stroke="currentColor" stroke-width="1.6" opacity=".55"/><rect x="10.2" y="4.4" width="9.6" height="13.8" rx="1.6" transform="rotate(8 15 11.3)" stroke="currentColor" stroke-width="1.6" fill="var(--surface)"/><path d="M15.6 8.6l2 2.6-2 2.6-2-2.6z" fill="currentColor" transform="rotate(8 15.6 11.2)"/></svg><b data-k="g">143</b> games live</span><span class="sep">&middot;</span>
+      <span class="st"><svg class="sicon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.5 4.5c0-1.1.9-2 2-2h7c1.1 0 2 .9 2 2V13h-11z"/><rect x="4.6" y="13.6" width="14.8" height="3.4" rx="1.2"/><rect x="2.6" y="9.6" width="2.6" height="7.4" rx="1.2"/><rect x="18.8" y="9.6" width="2.6" height="7.4" rx="1.2"/><path d="M6.6 17.6h2.2v3h-2.2zM15.2 17.6h2.2v3h-2.2z"/></svg><b data-k="s">87</b> seats open</span>
+    </div></div>
+  </div>
+
+  <div class="vcard">
+    <div class="vhead"><span class="vname">A2 &middot; Solid fan + armchair</span></div>
+    <p class="vwhy">The heaviest, most instant card silhouette, and the armchair &mdash; domestic, warm, literally &ldquo;pull up a chair.&rdquo; The coziest system on the page.</p>
+    <div class="stage"><div class="stats">
+      <span class="st"><span class="ldot"></span><b data-k="p">1,214</b> players online</span><span class="sep">&middot;</span>
+      <span class="st"><svg class="sicon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3.6" y="5.4" width="9" height="13" rx="1.6" transform="rotate(-12 8.1 11.9)" stroke="currentColor" stroke-width="1.6" opacity=".5"/><rect x="10.2" y="4.4" width="9.6" height="13.8" rx="1.6" transform="rotate(8 15 11.3)" fill="currentColor"/></svg><b data-k="g">143</b> games live</span><span class="sep">&middot;</span>
+      <span class="st"><svg class="sicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 10V7a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v3"/><path d="M4.5 12.5a2 2 0 0 1 2-2c1.1 0 2 .9 2 2v1.5h7V12.5a2 2 0 0 1 2-2 2 2 0 0 1 2 2c0 1.4-.9 2.6-2 3.2V18a1.5 1.5 0 0 1-1.5 1.5h-8A1.5 1.5 0 0 1 6.5 18v-2.3c-1.1-.6-2-1.8-2-3.2z"/></svg><b data-k="s">87</b> seats open</span>
+    </div></div>
+  </div>
+
+  <div class="vcard">
+    <div class="vhead"><span class="vname">A3 &middot; Spade + open door</span></div>
+    <p class="vwhy">The filled spade is the crispest mark in the whole study and the public&rsquo;s shorthand for &ldquo;card games.&rdquo; The open door says &ldquo;come in&rdquo; &mdash; it reads join-a-room more than a-chair-is-free, which may be the truer promise.</p>
+    <div class="stage"><div class="stats">
+      <span class="st"><span class="ldot"></span><b data-k="p">1,214</b> players online</span><span class="sep">&middot;</span>
+      <span class="st"><svg class="sicon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.8c2.6 3 7 5.2 7 9a4.1 4.1 0 0 1-6.6 3.3c.2 1.6.7 3 1.6 4.3h-4c.9-1.3 1.4-2.7 1.6-4.3A4.1 4.1 0 0 1 5 11.8c0-3.8 4.4-6 7-9z"/></svg><b data-k="g">143</b> games live</span><span class="sep">&middot;</span>
+      <span class="st"><svg class="sicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 21h16"/><path d="M6 21V5a1 1 0 0 1 1-1h6"/><path d="M18 21V4.6a.9.9 0 0 0-1.1-.9L13 4.6a1.3 1.3 0 0 0-1 1.3V19.2a1.3 1.3 0 0 0 1 1.3l3.9.9a.9.9 0 0 0 1.1-.9z" fill="var(--band)"/><circle cx="14.6" cy="12.4" r="1" fill="currentColor" stroke="none"/></svg><b data-k="s">87</b> seats open</span>
+    </div></div>
+  </div>
+
+  <div class="vcard">
+    <div class="vhead"><span class="vname">A4 &middot; Broadcast + empty slot</span></div>
+    <p class="vwhy">The broadcast mark encodes the actual claim &mdash; happening right now &mdash; and rhymes with the pulsing dot. The dashed slot is what poker tables literally draw for an open place (an empty plate on the rail), and what every lobby uses as the &ldquo;someone could sit here&rdquo; shape.</p>
+    <div class="stage"><div class="stats">
+      <span class="st"><span class="ldot"></span><b data-k="p">1,214</b> players online</span><span class="sep">&middot;</span>
+      <span class="st"><svg class="sicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="2.2" fill="currentColor" stroke="none"/><path d="M7.8 16.2a6 6 0 0 1 0-8.4M16.2 7.8a6 6 0 0 1 0 8.4"/><path d="M5 19a10 10 0 0 1 0-14M19 5a10 10 0 0 1 0 14" opacity=".5"/></svg><b data-k="g">143</b> games live</span><span class="sep">&middot;</span>
+      <span class="st"><svg class="sicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="8.4" stroke-width="1.7" stroke-dasharray="3.4 3" stroke-linecap="round"/><path d="M12 9v6M9 12h6" stroke-width="1.8" stroke-linecap="round"/></svg><b data-k="s">87</b> seats open</span>
+    </div></div>
+  </div>
+
+  <div class="vcard">
+    <div class="vhead"><span class="vname">A5 &middot; Three dots &mdash; pure state language</span></div>
+    <p class="vwhy">No metaphors at all: pulsing green = people here, solid amber = games running, hollow ring = places free. One dialect for the whole row; everything else is words.</p>
+    <div class="stage"><div class="stats">
+      <span class="st"><span class="ldot"></span><b data-k="p">1,214</b> players online</span><span class="sep">&middot;</span>
+      <span class="st"><span class="adot solid"></span><b data-k="g">143</b> games live</span><span class="sep">&middot;</span>
+      <span class="st"><span class="adot hollow"></span><b data-k="s">87</b> seats open</span>
+    </div></div>
+  </div>
+
+  <div class="vcard">
+    <div class="vhead"><span class="vname">A6 &middot; No icons at all</span></div>
+    <p class="vwhy">What lichess, PokerStars, PlayOK and VIP Games all ship: bold number, quiet word, nothing else. The most credible register there is &mdash; decoration is what salesmen add. The one dot that earns its place stays on the first counter.</p>
+    <div class="stage"><div class="stats">
+      <span class="st"><span class="ldot"></span><b data-k="p">1,214</b> players online</span><span class="sep">&middot;</span>
+      <span class="st"><b data-k="g">143</b> games live</span><span class="sep">&middot;</span>
+      <span class="st"><b data-k="s">87</b> seats open</span>
+    </div></div>
+  </div>
+
+  <!-- ======================= B. LAYOUTS ======================= -->
+  <h2>B &middot; Layouts</h2>
+  <p class="secsub">The same three facts arranged differently (shown with the A1 icons where icons apply).</p>
+
+  <div class="vcard">
+    <div class="vhead"><span class="vname">B1 &middot; Three chips</span></div>
+    <p class="vwhy">Each counter in its own pill on the ElevenLabs button chrome (Casual Arena and Discord's pattern). Reads as three tappable facts; heavier than a text line.</p>
+    <div class="stage"><div class="pillrow">
+      <span class="pill"><span class="ldot"></span><b data-k="p">1,214</b>&nbsp;players online</span>
+      <span class="pill"><svg class="sicon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3.6" y="5.4" width="9" height="13" rx="1.6" transform="rotate(-12 8.1 11.9)" stroke="currentColor" stroke-width="1.6" opacity=".5"/><rect x="10.2" y="4.4" width="9.6" height="13.8" rx="1.6" transform="rotate(8 15 11.3)" fill="currentColor"/></svg><b data-k="g">143</b>&nbsp;games live</span>
+      <span class="pill"><svg class="sicon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.5 4.5c0-1.1.9-2 2-2h7c1.1 0 2 .9 2 2V13h-11z"/><rect x="4.6" y="13.6" width="14.8" height="3.4" rx="1.2"/><rect x="2.6" y="9.6" width="2.6" height="7.4" rx="1.2"/><rect x="18.8" y="9.6" width="2.6" height="7.4" rx="1.2"/><path d="M6.6 17.6h2.2v3h-2.2zM15.2 17.6h2.2v3h-2.2z"/></svg><b data-k="s">87</b>&nbsp;seats open</span>
+    </div></div>
+  </div>
+
+  <div class="vcard">
+    <div class="vhead"><span class="vname">B2 &middot; One capsule, three facts</span></div>
+    <p class="vwhy">A single segmented pill with hairline dividers &mdash; one object instead of three, calmer than chips, still a touch more furniture than plain text.</p>
+    <div class="stage"><span class="capsule">
+      <span class="st"><span class="ldot"></span><b data-k="p">1,214</b>&nbsp;players</span>
+      <span class="st"><b data-k="g">143</b>&nbsp;games live</span>
+      <span class="st"><b data-k="s">87</b>&nbsp;seats open</span>
+    </span></div>
+  </div>
+
+  <div class="vcard">
+    <div class="vhead"><span class="vname">B3 &middot; Quiet stack</span></div>
+    <p class="vwhy">lichess&rsquo;s desktop answer: a small left-aligned column tucked into dead space, not centered in the hero. The most modest possible placement.</p>
+    <div class="stage" style="text-align:left; padding-left:34px;"><span class="stackcol">
+      <span class="st"><span class="ldot"></span><b data-k="p">1,214</b>&nbsp;players online</span>
+      <span class="st"><b data-k="g">143</b>&nbsp;games in play</span>
+      <span class="st"><b data-k="s">87</b>&nbsp;open seats</span>
+    </span></div>
+  </div>
+
+  <div class="vcard">
+    <div class="vhead"><span class="vname">B4 &middot; Micro stat tiles</span></div>
+    <p class="vwhy">Number over label, the old Pogo header pattern &mdash; kept small (20px numerals) since the big-block version was already rejected. Scans fastest; most dashboard-like.</p>
+    <div class="stage"><div class="tilerow">
+      <span class="mtile"><b data-k="p">1,214</b><span>players online</span></span>
+      <span class="mtile"><b data-k="g">143</b><span>games live</span></span>
+      <span class="mtile"><b data-k="s">87</b><span>seats open</span></span>
+    </div></div>
+  </div>
+
+  <div class="vcard">
+    <div class="vhead"><span class="vname">B5 &middot; A sentence, not a dashboard</span></div>
+    <p class="vwhy">The counts woven into prose &mdash; the host speaking, not the system reporting. Hardest to scan, warmest to read.</p>
+    <div class="stage"><div class="stats" style="display:block;">
+      <span class="st" style="white-space:normal; display:inline;"><span class="ldot" style="display:inline-block; vertical-align:baseline; margin-right:2px;"></span> <b data-k="p">1,214</b> people are at the tables right now, <b data-k="g">143</b> hands are being played, and <b data-k="s">87</b> chairs are waiting.</span>
+    </div></div>
+  </div>
+
+  <!-- ======================= C. CONCEPTS ======================= -->
+  <h2>C &middot; Rethinking the row</h2>
+  <p class="secsub">The research's sharpest finding: nobody ships three live counts. These variants change what gets counted, not just how it looks.</p>
+
+  <div class="vcard">
+    <div class="vhead"><span class="vname">C1 &middot; Two counts + the promise</span></div>
+    <p class="vwhy">Seats stop being a number and become the reassurance it was always standing in for. Two different-in-kind counts (people + activity) is exactly the lichess/Discord/Steam shape.</p>
+    <div class="stage"><div class="stats">
+      <span class="st"><span class="ldot"></span><b data-k="p">1,214</b> players online</span><span class="sep">&middot;</span>
+      <span class="st"><b data-k="g">143</b> games live</span><span class="sep">&middot;</span>
+      <span class="st" style="font-style:italic;">there&rsquo;s always a seat open</span>
+    </div></div>
+  </div>
+
+  <div class="vcard">
+    <div class="vhead"><span class="vname">C2 &middot; Seats as a table ring</span></div>
+    <p class="vwhy">A tiny top-down table: three seats filled, one glowing open. Poker lobbies normalized this exact preview for card players &mdash; it shows an open seat instead of naming one. Drawn at 18px, the floor of legibility for this metaphor.</p>
+    <div class="stage"><div class="stats">
+      <span class="st"><span class="ldot"></span><b data-k="p">1,214</b> players online</span><span class="sep">&middot;</span>
+      <span class="st"><b data-k="g">143</b> games live</span><span class="sep">&middot;</span>
+      <span class="st"><span class="ring"><i class="n"></i><i class="w"></i><i class="s"></i><i class="e"></i></span><b data-k="s">87</b> seats open</span>
+    </div></div>
+  </div>
+
+  <div class="vcard">
+    <div class="vhead"><span class="vname">C3 &middot; Games with a heartbeat</span></div>
+    <p class="vwhy">A per-minute sparkline beside the games count (the analytics-realtime pattern): the number carries its own recent history, which is what makes a number believable without any icon.</p>
+    <div class="stage"><div class="stats">
+      <span class="st"><span class="ldot"></span><b data-k="p">1,214</b> players online</span><span class="sep">&middot;</span>
+      <span class="st"><span class="spark" id="spark"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><b data-k="g">143</b> games live</span><span class="sep">&middot;</span>
+      <span class="st"><b data-k="s">87</b> seats open</span>
+    </div></div>
+  </div>
+
+  <div class="vcard">
+    <div class="vhead"><span class="vname">C4 &middot; The verdict line</span></div>
+    <p class="vwhy">Google-Maps framing: one number plus a plain-language verdict. The site says what the number means so the visitor doesn&rsquo;t have to judge it.</p>
+    <div class="stage"><div class="stats">
+      <span class="st"><span class="ldot"></span><b data-k="p">1,214</b> players online</span><span class="sep">&middot;</span>
+      <span class="st">livelier than usual for a Tuesday</span>
+    </div></div>
+  </div>
+
+  <div class="vcard">
+    <div class="vhead"><span class="vname">C5 &middot; Counters + a whisper</span></div>
+    <p class="vwhy">The clean two-count line, with real table life drifting beneath it &mdash; activity as proof instead of a third number. The whisper rotates slowly and never repeats names back to back.</p>
+    <div class="stage">
+      <div class="stats">
+        <span class="st"><span class="ldot"></span><b data-k="p">1,214</b> players online</span><span class="sep">&middot;</span>
+        <span class="st"><b data-k="g">143</b> games live</span>
+      </div>
+      <div class="whisper" id="whisper">Marge just joined a <b>Hearts</b> table</div>
+    </div>
+  </div>
+
+  <div class="vcard">
+    <div class="vhead"><span class="vname">C6 &middot; Copy variants</span></div>
+    <p class="vwhy">Sometimes the fix is the noun, not the icon. Three alternative wordings for the same two problem counters, no glyphs.</p>
+    <div class="stage" style="display:grid; gap:12px;">
+      <div class="stats"><span class="st"><span class="ldot"></span><b data-k="p">1,214</b> players online</span><span class="sep">&middot;</span><span class="st"><b data-k="g">143</b> tables mid-hand</span><span class="sep">&middot;</span><span class="st"><b data-k="s">87</b> open chairs</span></div>
+      <div class="stats"><span class="st"><span class="ldot"></span><b data-k="p">1,214</b> playing right now</span><span class="sep">&middot;</span><span class="st"><b data-k="g">143</b> hands in play</span><span class="sep">&middot;</span><span class="st"><b data-k="s">87</b> seats waiting</span></div>
+      <div class="stats"><span class="st"><span class="ldot"></span><b data-k="p">1,214</b> at the tables</span><span class="sep">&middot;</span><span class="st"><b data-k="g">143</b> games going</span><span class="sep">&middot;</span><span class="st">pull up a chair &mdash; <b data-k="s">87</b> free</span></div>
+    </div>
+  </div>
+
+</div>
+<script>
+(function () {
+  "use strict";
+  var vals = { p: 1214, g: 143, s: 87 };
+  var fmt = function (n) { return n.toLocaleString("en-US"); };
+  function tickAll() {
+    vals.p = Math.max(900, vals.p + Math.round((Math.random() - 0.48) * 14));
+    vals.g = Math.max(90, vals.g + Math.round((Math.random() - 0.48) * 5));
+    vals.s = Math.max(30, vals.s + Math.round((Math.random() - 0.5) * 7));
+    ["p", "g", "s"].forEach(function (k) {
+      document.querySelectorAll('[data-k="' + k + '"]').forEach(function (el) {
+        if (el.textContent === fmt(vals[k])) return;
+        el.textContent = fmt(vals[k]);
+        el.classList.remove("tick");
+        void el.offsetWidth;
+        el.classList.add("tick");
+        setTimeout(function () { el.classList.remove("tick"); }, 700);
+      });
+    });
+  }
+  setInterval(tickAll, 4200);
+
+  var spark = document.getElementById("spark");
+  function sparkTick() {
+    if (!spark) return;
+    spark.querySelectorAll("i").forEach(function (bar) {
+      bar.style.height = (4 + Math.round(Math.random() * 9)) + "px";
+    });
+  }
+  sparkTick();
+  setInterval(sparkTick, 2600);
+
+  var lines = [
+    'Marge just joined a <b>Hearts</b> table',
+    'BobK won a hand of <b>Spades</b>',
+    'a new <b>Euchre</b> table just opened',
+    'Vera is one card from going out in <b>Gin Rummy</b>',
+    'Duckling sat down at a <b>Canasta</b> table',
+    'a <b>Cribbage</b> game just reached the show'
+  ];
+  var wi = 0, whisper = document.getElementById("whisper");
+  setInterval(function () {
+    if (!whisper) return;
+    wi = (wi + 1) % lines.length;
+    whisper.style.opacity = 0;
+    setTimeout(function () { whisper.innerHTML = lines[wi]; whisper.style.opacity = 0.85; }, 400);
+  }, 5200);
+  if (whisper) whisper.style.transition = "opacity .4s ease";
+})();
+</script>
+</body>
+</html>
