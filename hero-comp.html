@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>WOCG — hero composition lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vollkorn:wght@400..900&display=swap" rel="stylesheet">
+<style>
+  @font-face {
+    font-family: 'BuloRounded';
+    src: url("BuloRounded-Regular.woff2") format('woff2');
+    font-style: normal; font-weight: normal; font-display: swap;
+  }
+  @font-face {
+    font-family: 'BuloRounded';
+    src: url("BuloRounded-Bold.woff2") format('woff2');
+    font-style: normal; font-weight: bold; font-display: swap;
+  }
+  :root {
+    --canvas:#f9f6f2; --band:#f4eee5; --surface:#ffffff;
+    --ink:#141414; --muted:#4e4d4c; --hairline:#e7e7e7;
+    --live:#2f9e44; --warm:#8A7B6A;
+    --btnshadow: 0 0 1px rgba(0,0,0,0.4), 0 1px 1px rgba(0,0,0,0.04), 0 2px 4px rgba(0,0,0,0.04);
+    --evershadow: 0 8px 24px -8px rgba(0,0,21,0.12), 0 14px 40px -8px rgba(0,0,21,0.04), 0 0 0 1px rgba(0,0,21,0.08);
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--canvas); color: var(--ink); font-family: 'BuloRounded', system-ui, sans-serif; font-size: 15px; line-height: 1.5; padding: 40px 20px 90px; }
+  .page { max-width: 900px; margin: 0 auto; }
+  h1 { font-family: "Vollkorn", serif; font-weight: 500; font-size: 34px; margin: 0 0 6px; }
+  .lede { color: var(--muted); max-width: 660px; margin: 0 0 34px; }
+  .vcard { background: var(--surface); border-radius: 20px; corner-shape: squircle; box-shadow: var(--evershadow); padding: 22px 26px 24px; margin: 0 0 18px; }
+  .vname { font-weight: bold; font-size: 15px; }
+  .vwhy { color: var(--muted); font-size: 13px; margin: 2px 0 16px; }
+  .stage { background: var(--band); border-radius: 14px; padding: 44px 30px 46px; }
+
+  /* ===== hero pieces ===== */
+  .hero { display: flex; flex-direction: column; align-items: center; text-align: center; }
+  .hero.left { align-items: flex-start; text-align: left; }
+  .htitle { font-family: "Vollkorn", serif; font-weight: 500; font-size: 36px; line-height: 1.18; margin: 0; color: var(--ink); }
+  .hsub { font-size: 15px; color: var(--muted); margin: 0; }
+
+  /* the installed capsule, verbatim geometry */
+  .capsule { display: inline-flex; align-items: center; height: 32px; font-size: 14px; color: var(--muted); background: var(--surface); border-radius: 20px; box-shadow: var(--btnshadow); padding: 0 4px; }
+  .capsule.h28 { height: 28px; font-size: 13.5px; }
+  .st { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; padding: 0 11px; align-self: stretch; }
+  .st + .st { border-left: 1px solid var(--hairline); }
+  .stlive { padding: 0 9px; gap: 6px; }
+  .stlive + .st { border-left: none; }
+  .greencap { font-size: 11px; font-weight: bold; letter-spacing: .1em; color: var(--live); position: relative; top: 1px; }
+  .ldot { position: relative; width: 8px; height: 8px; border-radius: 50%; background: var(--live); flex-shrink: 0; }
+  .lring { position: absolute; inset: 0; border-radius: 50%; background: var(--live); pointer-events: none; }
+
+  b[data-k] { display: inline-flex; position: relative; color: var(--ink); font-weight: bold; }
+  .dcell { display: block; width: 0.52em; height: 1.5em; overflow: hidden; user-select: none;
+    -webkit-mask-image: linear-gradient(transparent, #000 18%, #000 82%, transparent);
+    mask-image: linear-gradient(transparent, #000 18%, #000 82%, transparent); }
+  .dreel { display: block; transition: transform .75s cubic-bezier(.22,1.1,.34,1); will-change: transform; }
+  .dreel span { display: block; height: 1.5em; line-height: 1.5em; text-align: center; }
+  .srnum { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+
+  /* shell-less strip */
+  .bare { display: inline-flex; align-items: center; gap: 9px; font-size: 14px; color: var(--muted); flex-wrap: wrap; justify-content: center; }
+  .bare .bs { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+  .bare .sep { opacity: .55; }
+
+  /* mini kicker pill */
+  .kick { display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 11px; border-radius: 20px; background: var(--surface); box-shadow: var(--btnshadow); font-size: 12.5px; color: var(--muted); }
+  .kick .greencap { font-size: 10.5px; top: 0.5px; }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>The hero, composed</h1>
+  <p class="lede">The problem: two lines of prose and then one piece of furniture &mdash; the capsule is the only chromed object in a column of text, so it reads as bolted on. Eight ways to make the three parts one composition. Same title, same numbers, live beat everywhere.</p>
+
+  <div class="vcard">
+    <div class="vname">K1 &middot; Baseline (what we have)</div>
+    <p class="vwhy">Title, subtitle, capsule &mdash; evenly stacked, evenly centered. For comparison.</p>
+    <div class="stage"><div class="hero" style="gap:10px;">
+      <h2 class="htitle">Take a seat. Let&rsquo;s play cards.</h2>
+      <p class="hsub">Classic card games. Join a table or play solo. Free to play, hard to stop.</p>
+      <span class="capsule" style="margin-top:6px;">
+        <span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>
+        <span class="st"><b data-k="p">1212</b> players online</span>
+        <span class="st"><b data-k="g">137</b> tables live</span>
+        <span class="st"><b data-k="s">94</b> seats open</span>
+      </span>
+    </div></div>
+  </div>
+
+  <div class="vcard">
+    <div class="vname">K2 &middot; Two groups, honest air</div>
+    <p class="vwhy">The classic fix: title and subtitle tightened into one voice (6px), then real air (28px) before the capsule. The gap tells the eye these are two different kinds of thing on purpose &mdash; a statement, then an instrument.</p>
+    <div class="stage"><div class="hero">
+      <h2 class="htitle" style="margin-bottom:6px;">Take a seat. Let&rsquo;s play cards.</h2>
+      <p class="hsub">Classic card games. Join a table or play solo. Free to play, hard to stop.</p>
+      <span class="capsule" style="margin-top:28px;">
+        <span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>
+        <span class="st"><b data-k="p">1212</b> players online</span>
+        <span class="st"><b data-k="g">137</b> tables live</span>
+        <span class="st"><b data-k="s">94</b> seats open</span>
+      </span>
+    </div></div>
+  </div>
+
+  <div class="vcard">
+    <div class="vname">K3 &middot; The kicker</div>
+    <p class="vwhy">The capsule moves above the title &mdash; the announcement-pill position every modern hero uses. Order becomes proof, promise, invitation: the room is live, here&rsquo;s what it is, sit down. The strip stops competing with the subtitle because it now opens the show.</p>
+    <div class="stage"><div class="hero">
+      <span class="capsule" style="margin-bottom:18px;">
+        <span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>
+        <span class="st"><b data-k="p">1212</b> players online</span>
+        <span class="st"><b data-k="g">137</b> tables live</span>
+        <span class="st"><b data-k="s">94</b> seats open</span>
+      </span>
+      <h2 class="htitle" style="margin-bottom:6px;">Take a seat. Let&rsquo;s play cards.</h2>
+      <p class="hsub">Classic card games. Join a table or play solo. Free to play, hard to stop.</p>
+    </div></div>
+  </div>
+
+  <div class="vcard">
+    <div class="vname">K4 &middot; Left-aligned</div>
+    <p class="vwhy">Everything ranged left on one axis. Centered stacks make every element float on its own; a shared left edge chains them into one object. Often the whole fix for &ldquo;looks funny together.&rdquo;</p>
+    <div class="stage"><div class="hero left">
+      <h2 class="htitle" style="margin-bottom:6px;">Take a seat. Let&rsquo;s play cards.</h2>
+      <p class="hsub">Classic card games. Join a table or play solo. Free to play, hard to stop.</p>
+      <span class="capsule" style="margin-top:24px;">
+        <span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>
+        <span class="st"><b data-k="p">1212</b> players online</span>
+        <span class="st"><b data-k="g">137</b> tables live</span>
+        <span class="st"><b data-k="s">94</b> seats open</span>
+      </span>
+    </div></div>
+  </div>
+
+  <div class="vcard">
+    <div class="vname">K5 &middot; Shell off</div>
+    <p class="vwhy">Maybe the furniture is the problem: same content, no pill &mdash; dot, LIVE, and the counts as a quiet text line with middots. The strip becomes a third line of prose that happens to tick. Nothing to look &ldquo;bolted on.&rdquo;</p>
+    <div class="stage"><div class="hero">
+      <h2 class="htitle" style="margin-bottom:6px;">Take a seat. Let&rsquo;s play cards.</h2>
+      <p class="hsub" style="margin-bottom:16px;">Classic card games. Join a table or play solo. Free to play, hard to stop.</p>
+      <span class="bare">
+        <span class="bs"><span class="ldot"></span><span class="greencap">LIVE</span></span><span class="sep">&middot;</span>
+        <span class="bs"><b data-k="p">1212</b> players online</span><span class="sep">&middot;</span>
+        <span class="bs"><b data-k="g">137</b> tables live</span><span class="sep">&middot;</span>
+        <span class="bs"><b data-k="s">94</b> seats open</span>
+      </span>
+    </div></div>
+  </div>
+
+  <div class="vcard">
+    <div class="vname">K6 &middot; Split: mini kicker + bare counts</div>
+    <p class="vwhy">The state and the numbers separate: a small &ldquo;LIVE &middot; 1212 playing&rdquo; pill above the title carries the proof; the full counts sit as a bare line under the subtitle. Each piece smaller; the composition breathes.</p>
+    <div class="stage"><div class="hero">
+      <span class="kick" style="margin-bottom:16px;"><span class="ldot"></span><span class="greencap">LIVE</span><span><b data-k="p">1212</b> playing</span></span>
+      <h2 class="htitle" style="margin-bottom:6px;">Take a seat. Let&rsquo;s play cards.</h2>
+      <p class="hsub" style="margin-bottom:14px;">Classic card games. Join a table or play solo. Free to play, hard to stop.</p>
+      <span class="bare">
+        <span class="bs"><b data-k="g">137</b> tables live</span><span class="sep">&middot;</span>
+        <span class="bs"><b data-k="s">94</b> seats open</span>
+      </span>
+    </div></div>
+  </div>
+
+  <div class="vcard">
+    <div class="vname">K7 &middot; Subtitle and capsule share a row</div>
+    <p class="vwhy">On wide heroes: the subtitle ranges left, the capsule right, one row below the title. Prose and instrument stop stacking and start balancing. (Collapses back to a stack on narrow screens.)</p>
+    <div class="stage"><div class="hero">
+      <h2 class="htitle" style="margin-bottom:14px;">Take a seat. Let&rsquo;s play cards.</h2>
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:18px; width:100%; max-width:760px; flex-wrap:wrap;">
+        <p class="hsub" style="text-align:left;">Classic card games. Join a table or play solo.<br>Free to play, hard to stop.</p>
+        <span class="capsule">
+          <span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>
+          <span class="st"><b data-k="p">1212</b> players online</span>
+          <span class="st"><b data-k="g">137</b> tables live</span>
+          <span class="st"><b data-k="s">94</b> seats open</span>
+        </span>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="vcard">
+    <div class="vname">K8 &middot; Smaller capsule, tuned rhythm</div>
+    <p class="vwhy">The capsule at 28px with grouped spacing &mdash; the same composition as K2 but the instrument yields a size step to the prose. Less furniture, same information.</p>
+    <div class="stage"><div class="hero">
+      <h2 class="htitle" style="margin-bottom:6px;">Take a seat. Let&rsquo;s play cards.</h2>
+      <p class="hsub">Classic card games. Join a table or play solo. Free to play, hard to stop.</p>
+      <span class="capsule h28" style="margin-top:24px;">
+        <span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>
+        <span class="st"><b data-k="p">1212</b> players online</span>
+        <span class="st"><b data-k="g">137</b> tables live</span>
+        <span class="st"><b data-k="s">94</b> seats open</span>
+      </span>
+    </div></div>
+  </div>
+
+</div>
+<script>
+(function () {
+  "use strict";
+  var vals = { p: 1212, g: 137, s: 94 };
+  var RANGE = { p: [1150, 1290, 18], g: [128, 158, 4], s: [74, 99, 6] };
+  function setReel(el, v) {
+    var s = String(v);
+    if (el.dataset.cur === s) return;
+    var rebuild = !el.dataset.cur || el.dataset.cur.length !== s.length || !el.querySelector(".dreel");
+    el.dataset.cur = s;
+    if (rebuild) {
+      var reel = '<span class="dreel">' + "0123456789".split("").map(function (d) { return "<span>" + d + "</span>"; }).join("") + "</span>";
+      el.innerHTML = '<span class="srnum">' + s + "</span>" +
+        s.split("").map(function () { return '<span class="dcell" aria-hidden="true">' + reel + "</span>"; }).join("");
+    }
+    el.querySelector(".srnum").textContent = s;
+    el.querySelectorAll(".dreel").forEach(function (r, i) {
+      r.style.transform = "translateY(-" + (parseInt(s[i], 10) * 1.5) + "em)";
+    });
+  }
+  function renderAll() {
+    ["p", "g", "s"].forEach(function (k) {
+      document.querySelectorAll('[data-k="' + k + '"]').forEach(function (el) { setReel(el, vals[k]); });
+    });
+  }
+  renderAll();
+  function fireRing(dot) {
+    var olds = dot.querySelectorAll(".lring");
+    if (olds.length > 2) olds.forEach(function (o) { o.remove(); });
+    var r = document.createElement("span");
+    r.className = "lring";
+    dot.appendChild(r);
+    r.animate([
+      { transform: "scale(1)", opacity: .5 },
+      { transform: "scale(2.6)", opacity: 0 }
+    ], { duration: 750, easing: "cubic-bezier(0,0,.2,1)" }).onfinish = function () { r.remove(); };
+  }
+  function snappySwell(dot) {
+    dot.animate([
+      { transform: "scale(1)", easing: "cubic-bezier(0,0,.2,1)" },
+      { transform: "scale(1.32)", offset: .3, easing: "cubic-bezier(.5,0,.5,1)" },
+      { transform: "scale(.88)", offset: .52, easing: "ease-out" },
+      { transform: "scale(1)", offset: .66 },
+      { transform: "scale(1)" }
+    ], { duration: 620 });
+  }
+  if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  var beat = 0;
+  setInterval(function () {
+    beat++;
+    var change = beat % 6 === 0;
+    document.querySelectorAll(".ldot").forEach(function (dot) {
+      fireRing(dot);
+      if (change) snappySwell(dot);
+    });
+    if (!change) return;
+    ["p", "g", "s"].forEach(function (k) {
+      var r = RANGE[k];
+      var d = Math.round((Math.random() * 2 - 1) * r[2]);
+      if (d === 0) d = Math.random() < 0.5 ? -1 : 1;
+      vals[k] = Math.max(r[0], Math.min(r[1], vals[k] + d));
+    });
+    renderAll();
+  }, 1400);
+})();
+</script>
+</body>
+</html>
