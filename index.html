@@ -192,8 +192,9 @@
     width: 100%; flex-shrink: 0;
     border: none; cursor: pointer; border-radius: 6px;
     background-color: #A5D8FF; color: #1971C2;
+    box-shadow: 0 0 1px rgba(0,0,0,0.4), 0 1px 1px rgba(0,0,0,0.04), 0 2px 4px rgba(0,0,0,0.04);
     font-family: -apple-system, "Helvetica Neue", Arial, sans-serif;
-    font-size: 14px; font-weight: bold; line-height: 30px; padding: 0;
+    font-size: 16px; font-weight: bold; height: 24px; line-height: 24px; padding: 0;
   }
   #adrail .adhide:hover { background-color: #9ACFF8; }
   #adrail .adhide:active { transform: scale(0.98); }
@@ -202,34 +203,30 @@
     #adrail { display: none; }
   }
 
-  /* anonymous switchers — never themed; hidden until you hover the top edge */
-  .switchzone { position: fixed; top: 0; left: 0; right: var(--adrail-w); height: 16px; z-index: 21; }
+  /* anonymous switchers — never themed; hidden until you hover the right edge */
+  .switchzone { position: fixed; top: 0; right: 0; bottom: 0; width: 16px; z-index: 21; }
   .switchbar {
-    position: fixed; top: 0; left: 0; right: var(--adrail-w); z-index: 22;
-    transform: translateY(-100%);
+    position: fixed; top: 0; right: 0; bottom: 0; width: 336px; z-index: 22;
+    box-sizing: border-box; overflow-y: auto;
+    transform: translateX(100%);
     transition: transform .06s ease-out;
-    padding: 6px 14px;
+    padding: 18px 16px 20px;
     background: rgba(255, 255, 255, .65); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
-    border-bottom: 1px solid rgba(229, 229, 229, .8);
-    display: flex; flex-direction: column; gap: 4px; align-items: center;
+    border-left: 1px solid rgba(229, 229, 229, .8);
     font-family: -apple-system, "Helvetica Neue", Arial, sans-serif;
   }
-  .switchzone:hover ~ .switchbar, .switchbar:hover, .switchbar:focus-within { transform: translateY(0); }
-  .ctl { display: flex; align-items: center; gap: 5px; }
-  .ctl span { font-size: 9.5px; text-transform: uppercase; letter-spacing: .06em; color: #999; }
-  .switchrow { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; align-items: center; }
-  .switchrow select {
-    font-family: inherit; font-size: 12px; font-weight: 600; color: #555;
-    padding: 4px 6px; border-radius: 7px; border: 1px solid #dddddd; background: #ffffff;
-    max-width: 130px;
+  .switchzone:hover ~ .switchbar, .switchbar:hover, .switchbar:focus-within { transform: translateX(0); }
+  .swgroup { margin-bottom: 22px; }
+  .swgroup:last-child { margin-bottom: 0; }
+  .swhead { font-size: 14px; font-weight: 700; color: #222222; margin-bottom: 10px;
+    padding-bottom: 5px; border-bottom: 1px solid #e5e5e5; }
+  .ctl { display: flex; flex-direction: column; gap: 3px; margin-bottom: 10px; }
+  .ctl span { font-size: 12px; color: #777777; }
+  .switchbar select {
+    font-family: inherit; font-size: 13px; font-weight: 600; color: #555;
+    padding: 5px 6px; border-radius: 7px; border: 1px solid #dddddd; background: #ffffff;
+    width: 100%;
   }
-  #titlesel, #subsel { max-width: 200px; }
-  .switchrow button {
-    font-family: inherit; font-size: 13px; font-weight: 600;
-    border: 1px solid #dddddd; background: #ffffff; color: #666666;
-    padding: 6px 14px; cursor: pointer; border-radius: 30px;
-  }
-  .switchrow button.on { background: #111111; color: #ffffff; border-color: #111111; }
 
   /* ===== the stage: WOCG-styled frontpage, full above-the-fold ===== */
   .stage {
@@ -411,25 +408,6 @@
   .gchip::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: #2f9e44; }
   .heroarea { position: relative; overflow: hidden; min-height: 230px; }
   .heroarea > * { position: relative; z-index: 1; }
-  /* ===== theatre: rough prototypes of the new animation concepts ===== */
-  .stage { position: relative; }
-  body:not(.anim-none) .heroarea { min-height: 380px; justify-content: flex-start; padding-top: 26px; }
-  #theatre { position: absolute; inset: 0; pointer-events: none; z-index: 6; overflow: hidden; }
-  .tcard {
-    position: absolute; background: #fff;
-    border: 1px solid rgba(0,0,0,0.22); border-radius: 6px;
-    box-shadow: 0 3px 9px rgba(0,0,0,0.18);
-    display: flex; align-items: center; justify-content: center;
-    font-weight: bold; color: #2c3e50;
-  }
-  .tcard.red { color: #c0392b; }
-  .tchar { position: absolute; transition: transform 0.9s cubic-bezier(.2,.7,.25,1); will-change: transform; }
-  .tplate {
-    position: absolute; font-weight: bold; color: var(--ink);
-    font-size: 17px; text-align: center; white-space: nowrap;
-  }
-  @media (prefers-reduced-motion: reduce) { #theatre { display: none; } }
-
   .stats { display: flex; align-items: center; justify-content: center; gap: 9px; margin-top: 12px; flex-wrap: wrap; font-size: 14px; color: var(--muted); }
   .st { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
   .stats .sep { opacity: 0.55; }
@@ -826,7 +804,7 @@
   body.gated { overflow: hidden; }
 </style>
 </head>
-<body class="evernote play-raph layout-heroed16 anim-none font-vollkorn shadow-soft edge-softlight tex-grain cat-split">
+<body class="evernote play-raph layout-heroed16 font-vollkorn shadow-soft edge-softlight tex-grain cat-split">
 
 <aside id="adrail" aria-hidden="true">
   <div class="adslot"><img src="adMedrec1.png" width="300" height="250" alt=""></div>
@@ -837,23 +815,28 @@
 
 <div class="switchzone"></div>
 <div class="switchbar">
-  <div class="switchrow">
-    <label class="ctl"><span>Scheme</span><select id="sel-base"></select></label>
-    <label class="ctl"><span>Tiles</span><select id="sel-play"></select></label>
-    <label class="ctl"><span>Layout</span><select id="sel-layout"></select></label>
-    <label class="ctl"><span>Motion</span><select id="sel-anim"></select></label>
-    <label class="ctl"><span>Shadow</span><select id="sel-shadow"></select></label>
-    <label class="ctl"><span>Edge</span><select id="sel-edge"></select></label>
+  <div class="swgroup">
+    <div class="swhead">Look</div>
+    <label class="ctl"><span>Color scheme</span><select id="sel-base"></select></label>
+    <label class="ctl"><span>Heading font</span><select id="sel-font"></select></label>
     <label class="ctl"><span>Texture</span><select id="sel-texture"></select></label>
-    <label class="ctl"><span>Catalog</span><select id="sel-catalog"></select></label>
-    <label class="ctl"><span>Font</span><select id="sel-font"></select></label>
-    <label class="ctl"><span>Title</span><select id="titlesel"></select></label>
-    <label class="ctl"><span>Sub</span><select id="subsel"></select></label>
+  </div>
+  <div class="swgroup">
+    <div class="swhead">Game tiles</div>
+    <label class="ctl"><span>Tile artwork</span><select id="sel-play"></select></label>
+    <label class="ctl"><span>Hero layout</span><select id="sel-layout"></select></label>
+    <label class="ctl"><span>Tile shadow</span><select id="sel-shadow"></select></label>
+    <label class="ctl"><span>Tile edge</span><select id="sel-edge"></select></label>
+  </div>
+  <div class="swgroup">
+    <div class="swhead">Page</div>
+    <label class="ctl"><span>Catalog layout</span><select id="sel-catalog"></select></label>
+    <label class="ctl"><span>Hero title</span><select id="titlesel"></select></label>
+    <label class="ctl"><span>Hero subtitle</span><select id="subsel"></select></label>
   </div>
 </div>
 
 <div class="stage">
-<div id="theatre" aria-hidden="true"></div>
   <nav class="menubar">
     <a class="mlogo" href="#"><img src="wocg-logo.png" alt="World of Card Games"></a>
     <ul class="mnav">
@@ -1222,9 +1205,8 @@
     }
   ];
 
-  var ANIMS = [["none", "None"], ["deal", "The Deal"], ["still", "Hold Still"], ["cut", "Cut the Deck"], ["court", "The Court"]];
   var LAYOUTS = [["hero18", "Hero 208/18 (research)"], ["hero12", "Hero 12px gutters"], ["heroed", "Hero editorial 3:2 (18px)"], ["heroed16", "Hero editorial 16px"], ["heroed20", "Hero editorial 20px"], ["sq", "Poki squares"], ["mixed", "Mixed"], ["theatre", "Theatre"], ["theatreslim", "Theatre slim"], ["spot3", "Spotlight slim"], ["duo", "2 + 5"], ["trio", "3 + 5"]];
-  var curBase = "evernote", curPlay = "raph", curLayout = "heroed16", curAnim = "none";
+  var curBase = "evernote", curPlay = "raph", curLayout = "heroed16";
   
   var FONTS = [
     ["default", "BuloRounded (site today)"],
@@ -1292,18 +1274,16 @@
     if (lobby && slot) slot.parentNode.insertBefore(lobby, slot.nextSibling);
   }
   function applyBody() {
-    document.body.className = curBase + " play-" + curPlay + " layout-" + curLayout + " anim-" + curAnim + " font-" + curFont + " shadow-" + curShadow + " edge-" + curEdge + " tex-" + curTexture + " cat-" + curCatalog;
+    document.body.className = curBase + " play-" + curPlay + " layout-" + curLayout + " font-" + curFont + " shadow-" + curShadow + " edge-" + curEdge + " tex-" + curTexture + " cat-" + curCatalog;
     document.getElementById("sel-base").value = curBase;
     document.getElementById("sel-play").value = curPlay;
     document.getElementById("sel-layout").value = curLayout;
-    document.getElementById("sel-anim").value = curAnim;
     document.getElementById("sel-font").value = curFont;
     document.getElementById("sel-shadow").value = curShadow;
     document.getElementById("sel-edge").value = curEdge;
     document.getElementById("sel-texture").value = curTexture;
     document.getElementById("sel-catalog").value = curCatalog;
     moveLobby();
-    if (window.switchMotion) switchMotion(curAnim);
   }
   function buildSel(id, list, setter) {
     var el = document.getElementById(id);
@@ -1313,7 +1293,6 @@
   buildSel("sel-base", THEMES, function (v) { curBase = v; });
   buildSel("sel-play", PLAYS, function (v) { curPlay = v; });
   buildSel("sel-layout", LAYOUTS, function (v) { curLayout = v; });
-  buildSel("sel-anim", ANIMS, function (v) { curAnim = v; });
   buildSel("sel-font", FONTS, function (v) { curFont = v; });
   buildSel("sel-shadow", SHADOWS, function (v) { curShadow = v; });
   buildSel("sel-edge", EDGES, function (v) { curEdge = v; });
@@ -1513,262 +1492,8 @@
   subsel.onchange = applyCopy;
   titlesel.selectedIndex = 0;
   applyCopy();
-  var hm = location.hash.match(/m=([a-z]+)/);
-  if (hm) { curAnim = hm[1]; setTimeout(applyBody, 400); }
 
 
-
-  // ===== theatre: rough prototypes =====
-  var T = document.getElementById("theatre");
-  var MODS = {}, curMod = null;
-  var reducedMotion = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
-  function switchMotion(key) {
-    if (!MODS) return;
-    if (curMod && MODS[curMod]) MODS[curMod].stop();
-    curMod = key;
-    if (MODS[key] && !reducedMotion) MODS[key].start();
-  }
-  window.switchMotion = switchMotion;
-  function rel(el) { // element rect relative to stage
-    var r = el.getBoundingClientRect(), sr = document.querySelector(".stage").getBoundingClientRect();
-    return { x: r.left - sr.left, y: r.top - sr.top, w: r.width, h: r.height };
-  }
-  function mkCard(x, y, w, h, txt, red) {
-    var c = document.createElement("div");
-    c.className = "tcard" + (red ? " red" : "");
-    c.style.left = x + "px"; c.style.top = y + "px";
-    c.style.width = w + "px"; c.style.height = h + "px";
-    c.style.fontSize = Math.round(h * 0.42) + "px";
-    if (txt) c.textContent = txt;
-    T.appendChild(c);
-    return c;
-  }
-  var SUITCHARS = ["♥", "♠", "♦", "♣"];
-  var RANKS = ["Ace", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King"];
-
-  // --- The Deal: the page deals itself ---
-  MODS.deal = (function () {
-    var timers = [];
-    function deckPos() { var h = rel(document.querySelector(".heroarea")); return { x: h.x + h.w / 2 - 24, y: h.y + h.h - 86 }; }
-    function run() {
-      T.innerHTML = "";
-      var d = deckPos();
-      for (var i = 0; i < 7; i++) {
-        var b = mkCard(d.x - i * 0.7, d.y - i * 1.2, 48, 66, "");
-        b.style.background = "repeating-linear-gradient(45deg,#fff,#fff 4px,#e8e2d4 4px,#e8e2d4 8px)";
-      }
-      var deckTop = T.lastChild;
-      deckTop.style.pointerEvents = "auto"; deckTop.style.cursor = "pointer";
-      deckTop.title = "Deal again";
-      deckTop.onclick = run;
-      var tiles = document.querySelectorAll(".games .gimg");
-      var visible = [];
-      tiles.forEach(function (t) { if (t.offsetParent) visible.push(t); });
-      visible.forEach(function (tile, i) {
-        timers.push(setTimeout(function () {
-          var tr = rel(tile);
-          var fly = mkCard(d.x, d.y, 48, 66, SUITCHARS[i % 4], i % 4 === 0 || i % 4 === 2);
-          fly.animate([
-            { transform: "translate(0,0) rotate(0deg)" },
-            { transform: "translate(" + (tr.x + tr.w / 2 - d.x - 24) + "px," + (tr.y + tr.h / 2 - d.y - 33) + "px) rotate(360deg)", opacity: 0.9 }
-          ], { duration: 430, easing: "cubic-bezier(.2,.7,.3,1)", fill: "forwards" }).onfinish = function () {
-            fly.remove();
-            tile.animate([{ filter: "brightness(1)" }, { filter: "brightness(1.35)" }, { filter: "brightness(1)" }], { duration: 320 });
-          };
-        }, 350 + i * 130));
-      });
-      timers.push(setTimeout(function () {
-        var h = rel(document.querySelector(".heroarea"));
-        var last = mkCard(d.x, d.y, 56, 78, "");
-        last.textContent = "♠";
-        last.style.flexDirection = "column"; last.style.fontSize = "20px";
-        var lbl = document.createElement("div");
-        lbl.textContent = "Deal me in"; lbl.style.fontSize = "9px"; lbl.style.marginTop = "2px";
-        last.appendChild(lbl);
-        last.animate([
-          { transform: "translate(0,0) rotate(0deg) scale(1)" },
-          { transform: "translate(" + (h.x + h.w / 2 - d.x - 90) + "px," + (h.y + h.h - 100 - d.y) + "px) rotate(722deg) scale(1.25)" }
-        ], { duration: 650, easing: "cubic-bezier(.2,.7,.3,1)", fill: "forwards" });
-      }, 350 + visible.length * 130 + 250));
-    }
-    return { start: run, stop: function () { timers.forEach(clearTimeout); timers = []; T.innerHTML = ""; } };
-  })();
-
-  // --- Hold Still: they only move when you are still ---
-  MODS.still = (function () {
-    var chars = [], timers = [], out = false, listening = false;
-    var SPRITES = [
-      { src: "hearts_logo.png", up: -52, rot: -7 },
-      { src: "euchre_logo.png", up: -66, rot: 4 },
-      { src: "spades_logo.png", up: -48, rot: -3 }
-    ];
-    function build() {
-      T.innerHTML = ""; chars = [];
-      var h = rel(document.querySelector(".heroarea"));
-      var cx = h.x + h.w / 2, cy = h.y + h.h - 6;
-      for (var i = 0; i < 5; i++) {
-        var ang = (i - 2) * 13;
-        var px = cx - 44 + (i - 2) * 96;
-        if (i === 0 || i === 4) {
-          mkCard(px, cy - 96, 88, 122, SUITCHARS[i === 0 ? 2 : 0], true).style.transform = "rotate(" + ang + "deg)";
-          continue;
-        }
-        var sp = SPRITES[i - 1];
-        var ch = document.createElement("img");
-        ch.src = sp.src; ch.className = "tchar";
-        ch.style.width = "104px";
-        ch.style.left = (px - 8) + "px"; ch.style.top = (cy - 88) + "px";
-        ch.style.zIndex = 1; ch.dataset.up = sp.up; ch.dataset.rot = sp.rot;
-        T.appendChild(ch); chars.push(ch);
-        var card = mkCard(px, cy - 96, 88, 122, "");
-        card.style.transform = "rotate(" + ang + "deg)"; card.style.zIndex = 2;
-        card.style.background = "repeating-linear-gradient(45deg,#fff,#fff 5px,#ece6d8 5px,#ece6d8 10px)";
-      }
-    }
-    function stage(n) {
-      if (n < chars.length) {
-        var ch = chars[n];
-        ch.style.transform = "translateY(" + ch.dataset.up + "px) rotate(" + ch.dataset.rot + "deg)";
-        out = true;
-        timers.push(setTimeout(function () { stage(n + 1); }, 1400));
-      } else {
-        chars.forEach(function (ch) {
-          ch.style.transform = "translateY(" + (parseInt(ch.dataset.up) - 14) + "px) rotate(" + (-ch.dataset.rot) + "deg)";
-        });
-      }
-    }
-    function armIdle() {
-      timers.push(setTimeout(function () { stage(0); }, 1500));
-    }
-    function disturb() {
-      timers.forEach(clearTimeout); timers = [];
-      if (out) {
-        chars.forEach(function (ch, i) {
-          var delay = i === chars.length - 1 ? 340 : i * 70;
-          setTimeout(function () {
-            ch.style.transition = "transform 0.26s cubic-bezier(.4,0,.7,1)";
-            ch.style.transform = "translateY(0) rotate(0deg)";
-            setTimeout(function () { ch.style.transition = "transform 0.9s cubic-bezier(.2,.7,.25,1)"; }, 300);
-          }, delay);
-        });
-        out = false;
-      }
-      armIdle();
-    }
-    return {
-      start: function () { build(); armIdle(); if (!listening) { window.addEventListener("pointermove", disturb); window.addEventListener("scroll", disturb, true); listening = true; } },
-      stop: function () { timers.forEach(clearTimeout); timers = []; out = false; if (listening) { window.removeEventListener("pointermove", disturb); window.removeEventListener("scroll", disturb, true); listening = false; } T.innerHTML = ""; }
-    };
-  })();
-
-  // --- Cut the Deck: drag to cut, the card names your table ---
-  MODS.cut = (function () {
-    var topHalf = null, plate = null, dragging = false, sx = 0, dx = 0;
-    function build() {
-      T.innerHTML = "";
-      var h = rel(document.querySelector(".heroarea"));
-      var x = h.x + h.w * 0.76, y = h.y + h.h * 0.34;
-      for (var i = 0; i < 6; i++) {
-        var b = mkCard(x - i * 0.8, y + 34 - i * 1.4, 74, 100, "");
-        b.style.background = "repeating-linear-gradient(45deg,#fff,#fff 5px,#e4ddcc 5px,#e4ddcc 10px)";
-      }
-      topHalf = document.createElement("div");
-      topHalf.style.position = "absolute"; topHalf.style.left = "0"; topHalf.style.top = "0";
-      topHalf.style.pointerEvents = "auto"; topHalf.style.cursor = "grab";
-      T.appendChild(topHalf);
-      for (var j = 0; j < 6; j++) {
-        var c = mkCard(x - 5 - j * 0.8, y + 24 - j * 1.4, 74, 100, "");
-        c.style.background = "repeating-linear-gradient(45deg,#fff,#fff 5px,#e4ddcc 5px,#e4ddcc 10px)";
-        topHalf.appendChild(c);
-      }
-      var hint = document.createElement("div");
-      hint.className = "tplate"; hint.textContent = "← drag to cut the deck";
-      hint.style.left = (x - 88) + "px"; hint.style.top = (y + 140) + "px";
-      hint.style.fontSize = "12.5px"; hint.style.opacity = "0.6";
-      T.appendChild(hint);
-      topHalf.addEventListener("pointerdown", down);
-      window.addEventListener("pointermove", move);
-      window.addEventListener("pointerup", up);
-    }
-    function down(e) { dragging = true; sx = e.clientX; topHalf.style.cursor = "grabbing"; e.preventDefault(); }
-    function move(e) {
-      if (!dragging) return;
-      dx = Math.max(0, Math.min(150, e.clientX - sx));
-      topHalf.style.transform = "translate(" + dx + "px," + (-dx * 0.16) + "px) rotate(" + (dx * 0.05) + "deg)";
-    }
-    function up() {
-      if (!dragging) return;
-      dragging = false; topHalf.style.cursor = "grab";
-      if (dx > 55) reveal(); else { topHalf.style.transition = "transform .25s"; topHalf.style.transform = "none"; setTimeout(function(){ if(topHalf) topHalf.style.transition = ""; }, 260); }
-      dx = 0;
-    }
-    function reveal() {
-      var h = rel(document.querySelector(".heroarea"));
-      var x = h.x + h.w * 0.76, y = h.y + h.h * 0.34;
-      topHalf.animate([{ opacity: 1 }, { transform: "translate(120px,40px) rotate(9deg)", opacity: 0 }], { duration: 380, fill: "forwards", easing: "ease-in" });
-      var si = Math.floor(Math.random() * 4), rk = RANKS[Math.floor(Math.random() * 13)];
-      var suitName = ["Hearts", "Spades", "Diamonds", "Clubs"][si];
-      var card = mkCard(x, y + 26, 74, 100, SUITCHARS[si], si === 0 || si === 2);
-      card.animate([
-        { transform: "rotateY(90deg) scale(1)" },
-        { transform: "rotateY(0deg) scale(1.15)" }
-      ], { duration: 420, easing: "cubic-bezier(.2,.7,.3,1)", fill: "forwards" });
-      if (plate) plate.remove();
-      plate = document.createElement("div");
-      plate.className = "tplate";
-      plate.style.left = "0"; plate.style.right = "0"; plate.style.top = (y + 150) + "px";
-      T.appendChild(plate);
-      var msg = "The " + rk + " of " + suitName + " table is yours";
-      var k = 0;
-      var typer = setInterval(function () {
-        plate.textContent = msg.slice(0, ++k);
-        if (k >= msg.length) clearInterval(typer);
-      }, 26);
-      setTimeout(build, 3800);
-    }
-    return {
-      start: build,
-      stop: function () { window.removeEventListener("pointermove", move); window.removeEventListener("pointerup", up); topHalf = null; T.innerHTML = ""; }
-    };
-  })();
-
-  // --- The Court: characters step out and frame the headline ---
-  MODS.court = (function () {
-    var timers = [];
-    function start() {
-      T.innerHTML = "";
-      var h = rel(document.querySelector(".heroarea"));
-      var spots = [
-        { src: "hearts_logo.png", cardX: h.x + h.w * 0.16, endX: h.x + h.w * 0.07, endY: h.y + h.h * 0.5 },
-        { src: "euchre_logo.png", cardX: h.x + h.w * 0.5 - 45, endX: h.x + h.w * 0.5 - 66, endY: h.y + h.h - 126 },
-        { src: "spades_logo.png", cardX: h.x + h.w * 0.8, endX: h.x + h.w * 0.87, endY: h.y + h.h * 0.5 }
-      ];
-      spots.forEach(function (sp, i) {
-        var cardY = h.y + h.h * 0.52;
-        var card = mkCard(sp.cardX, cardY, 82, 114, "");
-        card.style.background = "repeating-linear-gradient(45deg,#fff,#fff 5px,#ece6d8 5px,#ece6d8 10px)";
-        timers.push(setTimeout(function () {
-          card.animate([{ transform: "rotateY(0deg)" }, { transform: "rotateY(180deg)" }], { duration: 340, fill: "forwards" });
-          setTimeout(function () { card.textContent = SUITCHARS[i]; card.style.fontSize = "44px"; if (i === 0) card.classList.add("red"); }, 170);
-        }, 400 + i * 170));
-        timers.push(setTimeout(function () {
-          var ch = document.createElement("img");
-          ch.src = sp.src; ch.className = "tchar";
-          ch.style.width = "118px";
-          ch.style.left = sp.cardX - 18 + "px"; ch.style.top = cardY - 10 + "px";
-          ch.style.pointerEvents = "auto"; ch.style.cursor = "pointer";
-          T.appendChild(ch);
-          ch.animate([
-            { transform: "translateY(26px) scale(0.6)", opacity: 0 },
-            { transform: "translate(" + (sp.endX - sp.cardX + 18) + "px," + (sp.endY - cardY + 10) + "px) scale(1)", opacity: 1 }
-          ], { duration: 700, easing: "cubic-bezier(.2,.7,.25,1)", fill: "forwards" });
-          ch.onmouseenter = function () { ch.animate([{ marginTop: "0px" }, { marginTop: "-9px" }, { marginTop: "0px" }], { duration: 420 }); };
-          card.animate([{ opacity: 1 }, { opacity: 0.35 }], { duration: 700, delay: 200, fill: "forwards" });
-        }, 1100 + i * 240));
-      });
-    }
-    return { start: start, stop: function () { timers.forEach(clearTimeout); timers = []; T.innerHTML = ""; } };
-  })();
 
   // live-feel: stats drift gently like real counters
   (function () {
