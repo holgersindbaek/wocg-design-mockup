@@ -61,9 +61,11 @@
   /* frontpage Swell ping: JS ring + swell on a shared 1.4s beat (see engine below) */
   .ldot { position: relative; width: 8px; height: 8px; border-radius: 50%; background: var(--live); flex-shrink: 0; }
   .lring { position: absolute; inset: 0; border-radius: 50%; background: var(--live); pointer-events: none; }
-  /* every number in every variant holds its width: fixed digit ranges + tabular figures */
-  .vcard b { font-variant-numeric: tabular-nums; transition: color 0.5s ease; }
+  /* every number in every variant holds its width: the frontpage's odometer trick —
+     each digit sits in a hard-width cell (BuloRounded has no tabular figures) */
+  .vcard b { transition: color 0.5s ease; }
   .vcard b.tick { color: var(--live); transition: none; }
+  .dcell { display: inline-block; width: 0.52em; text-align: center; }
   .pulseshell { position: relative; }
   .pulseshell .pspan { position: absolute; pointer-events: none; }
 
@@ -522,13 +524,13 @@
     </div></div>
   </div>
 
-  <!-- ======================= F. ROUND TWO ======================= -->
-  <h2>F &middot; Round two &mdash; the capsule pings itself</h2>
-  <p class="secsub">The live-light family without the dot: the capsule&rsquo;s own shell carries the pulse, on the frontpage&rsquo;s exact 1.4s beat (ring every beat, swell-and-step every sixth). Plus the synthesis of your two favorites, and the scoreboard&rsquo;s second visit. No separators; every number holds its width.</p>
+  <!-- ======================= F. THE PULSE, CORRECTED ======================= -->
+  <h2>F &middot; The pulse, corrected</h2>
+  <p class="secsub">The capsule carries the liveness itself &mdash; now with uniform geometry: ripples grow in pixels (never sideways-only), breaths ease in and out, and every digit sits in a fixed-width cell like the frontpage odometer, so nothing ever shifts. All on the 1.4s beat.</p>
 
   <div class="vcard">
-    <div class="vhead"><span class="vname">F1 &middot; The ripple shell</span></div>
-    <p class="vwhy">Every beat, a thin green ring expands off the capsule&rsquo;s own edge and fades &mdash; the dot&rsquo;s ping, inherited by the whole object. No dot anywhere.</p>
+    <div class="vhead"><span class="vname">F1 &middot; The ripple</span></div>
+    <p class="vwhy">A ring expands evenly off the capsule&rsquo;s edge in every direction and fades &mdash; the dot&rsquo;s ping, inherited by the whole shell, geometry fixed.</p>
     <div class="stage"><span class="capsule pulseshell" data-pulse="ripple">
       <span class="st"><b data-k="p">1214</b>&nbsp;players online</span>
       <span class="st"><b data-k="g">143</b>&nbsp;games live</span>
@@ -537,9 +539,9 @@
   </div>
 
   <div class="vcard">
-    <div class="vhead"><span class="vname">F2 &middot; The halo</span></div>
-    <p class="vwhy">A soft green glow swells around the capsule and settles, like breath. The gentlest of the family &mdash; felt more than seen.</p>
-    <div class="stage"><span class="capsule pulseshell" data-pulse="halo">
+    <div class="vhead"><span class="vname">F2 &middot; The double ripple</span></div>
+    <p class="vwhy">Two rings, the second chasing the first like water &mdash; a fuller version of the same ping for when one ring reads too thin.</p>
+    <div class="stage"><span class="capsule pulseshell" data-pulse="double">
       <span class="st"><b data-k="p">1214</b>&nbsp;players online</span>
       <span class="st"><b data-k="g">143</b>&nbsp;games live</span>
       <span class="st"><b data-k="s">87</b>&nbsp;seats open</span>
@@ -548,8 +550,8 @@
 
   <div class="vcard">
     <div class="vhead"><span class="vname">F3 &middot; Ring on the news</span></div>
-    <p class="vwhy">The ripple fires only on the sixth beat &mdash; the moment the numbers actually step. Liveness tied to real change instead of a metronome; the quietest honest option.</p>
-    <div class="stage"><span class="capsule pulseshell" data-pulse="changering">
+    <p class="vwhy">The ripple fires only on the sixth beat, the moment the numbers actually step. Liveness tied to real change instead of a metronome; the quietest honest option.</p>
+    <div class="stage"><span class="capsule pulseshell" data-pulse="newsring">
       <span class="st"><b data-k="p">1214</b>&nbsp;players online</span>
       <span class="st"><b data-k="g">143</b>&nbsp;games live</span>
       <span class="st"><b data-k="s">87</b>&nbsp;seats open</span>
@@ -557,8 +559,38 @@
   </div>
 
   <div class="vcard">
-    <div class="vhead"><span class="vname">F4 &middot; The hairline</span></div>
-    <p class="vwhy">The capsule&rsquo;s ring itself flashes green for a moment each beat &mdash; the object&rsquo;s outline is the indicator. Crisper than the halo, subtler than the ripple.</p>
+    <div class="vhead"><span class="vname">F4 &middot; The breath, glow</span></div>
+    <p class="vwhy">No ring at all: a soft green glow inhales and exhales around the shell, one full breath per beat. Felt more than seen.</p>
+    <div class="stage"><span class="capsule pulseshell" data-pulse="breatheglow">
+      <span class="st"><b data-k="p">1214</b>&nbsp;players online</span>
+      <span class="st"><b data-k="g">143</b>&nbsp;games live</span>
+      <span class="st"><b data-k="s">87</b>&nbsp;seats open</span>
+    </span></div>
+  </div>
+
+  <div class="vcard">
+    <div class="vhead"><span class="vname">F5 &middot; The breath, scale</span></div>
+    <p class="vwhy">The capsule itself swells 1.2% and settles &mdash; an actual inhale, no color at all. The most alive-as-object option; watch whether the text shimmer bothers you.</p>
+    <div class="stage"><span class="capsule pulseshell" data-pulse="breathescale">
+      <span class="st"><b data-k="p">1214</b>&nbsp;players online</span>
+      <span class="st"><b data-k="g">143</b>&nbsp;games live</span>
+      <span class="st"><b data-k="s">87</b>&nbsp;seats open</span>
+    </span></div>
+  </div>
+
+  <div class="vcard">
+    <div class="vhead"><span class="vname">F6 &middot; The cap ring</span></div>
+    <p class="vwhy">A true circular ring &mdash; the dot&rsquo;s exact ping shape &mdash; emanating from where the dot would sit in the left cap, but with no dot present. The ghost of the live-light.</p>
+    <div class="stage"><span class="capsule pulseshell" data-pulse="capring">
+      <span class="st"><b data-k="p">1214</b>&nbsp;players online</span>
+      <span class="st"><b data-k="g">143</b>&nbsp;games live</span>
+      <span class="st"><b data-k="s">87</b>&nbsp;seats open</span>
+    </span></div>
+  </div>
+
+  <div class="vcard">
+    <div class="vhead"><span class="vname">F7 &middot; The hairline</span></div>
+    <p class="vwhy">The capsule&rsquo;s outline warms green for a moment each beat, softened. Crisper than a glow, quieter than a ring.</p>
     <div class="stage"><span class="capsule pulseshell" data-pulse="hairline">
       <span class="st"><b data-k="p">1214</b>&nbsp;players online</span>
       <span class="st"><b data-k="g">143</b>&nbsp;games live</span>
@@ -567,9 +599,9 @@
   </div>
 
   <div class="vcard">
-    <div class="vhead"><span class="vname">F5 &middot; The green cap</span></div>
-    <p class="vwhy">The dot dissolved into the shell: the capsule&rsquo;s left end-cap glows green on the beat, like light behind frosted glass. Keeps the live-light&rsquo;s left-edge anchor without the dot as furniture.</p>
-    <div class="stage"><span class="capsule pulseshell" data-pulse="endcap">
+    <div class="vhead"><span class="vname">F8 &middot; The green cap, breathing</span></div>
+    <p class="vwhy">The dot dissolved into the shell: light behind the frosted left end-cap, breathing in and out rather than blinking. Keeps the live-light&rsquo;s left anchor without the dot as furniture.</p>
+    <div class="stage"><span class="capsule pulseshell" data-pulse="capglow">
       <span class="st"><b data-k="p">1214</b>&nbsp;players online</span>
       <span class="st"><b data-k="g">143</b>&nbsp;games live</span>
       <span class="st"><b data-k="s">87</b>&nbsp;seats open</span>
@@ -577,8 +609,8 @@
   </div>
 
   <div class="vcard">
-    <div class="vhead"><span class="vname">F6 &middot; The underglow</span></div>
-    <p class="vwhy">A pool of green light breathes beneath the capsule &mdash; the object sits over something alive. The most atmospheric; test it against the felt tiles below before trusting it.</p>
+    <div class="vhead"><span class="vname">F9 &middot; The underglow, slowed</span></div>
+    <p class="vwhy">A pool of light breathing beneath the capsule. Atmospheric; judge it against the felt tiles that would sit below it on the real page.</p>
     <div class="stage"><span class="capsule pulseshell" data-pulse="underglow">
       <span class="st"><b data-k="p">1214</b>&nbsp;players online</span>
       <span class="st"><b data-k="g">143</b>&nbsp;games live</span>
@@ -587,8 +619,8 @@
   </div>
 
   <div class="vcard">
-    <div class="vhead"><span class="vname">F7 &middot; The live-light that breathes</span></div>
-    <p class="vwhy">Your two favorites married: D1&rsquo;s live-light cell, E3&rsquo;s walking digits. The dot pings and swells on the frontpage beat; the numbers churn toward their true values and never rest.</p>
+    <div class="vhead"><span class="vname">F10 &middot; The live-light that breathes</span></div>
+    <p class="vwhy">Your two favorites married and width-fixed: D1&rsquo;s live-light cell with the frontpage ping, E3&rsquo;s walking digits in hard-width cells. Nothing shifts, ever.</p>
     <div class="stage"><span class="capsule pulseshell">
       <span class="st stdot"><span class="ldot"></span></span>
       <span class="st"><b class="breathe" data-b="p">1214</b>&nbsp;<span class="warm">players online</span></span>
@@ -598,7 +630,7 @@
   </div>
 
   <div class="vcard">
-    <div class="vhead"><span class="vname">F8 &middot; The scoreboard, flip visit</span></div>
+    <div class="vhead"><span class="vname">F11 &middot; The scoreboard, flip visit</span></div>
     <p class="vwhy">Same pavilion-light board as E1, but the plates turn over from the top like a flap board when a digit changes &mdash; the hand reaching in reads as mechanical rather than hung. Compare the two motions side by side.</p>
     <div class="stage"><div class="sb" data-anim="flip">
       <div class="sbgroup"><div class="sbrow" data-sb="p"></div><div class="sblabel">AT THE TABLES</div></div>
@@ -616,11 +648,18 @@
      line ever grows or shrinks; no thousands separator by design */
   var RANGE = window.counterRange = { p: [1150, 1290, 18], g: [128, 158, 4], s: [74, 99, 6] };
   var fmt = window.counterFmt = function (n) { return String(n); };
-  function renderCounts() {
+  function setNum(el, n) {
+    var s = String(n);
+    if (el.dataset.cur === s) return false;
+    el.dataset.cur = s;
+    el.innerHTML = s.split("").map(function (c) { return '<span class="dcell">' + c + "</span>"; }).join("");
+    return true;
+  }
+  window.setNum = setNum;
+  function renderCounts(first) {
     ["p", "g", "s"].forEach(function (k) {
       document.querySelectorAll('[data-k="' + k + '"]').forEach(function (el) {
-        if (el.textContent === fmt(vals[k])) return;
-        el.textContent = fmt(vals[k]);
+        if (!setNum(el, vals[k]) || first) return;
         el.classList.remove("tick");
         void el.offsetWidth;
         el.classList.add("tick");
@@ -628,6 +667,7 @@
       });
     });
   }
+  renderCounts(true);
   /* the frontpage's Swell ping, same mechanics: one shared 1.4s beat,
      a ring every beat, swell + number step on every sixth beat */
   function fireRing(dot, scale, dur, op) {
@@ -648,25 +688,60 @@
       { transform: "scale(1)" }
     ], { duration: 620 });
   }
-  var PULSES = {
-    ring:  { style: { inset: "-1px", borderRadius: "22px", border: "1.6px solid #2f9e44" },
-             anim: [{ transform: "scale(1)", opacity: .5 }, { transform: "scale(1.09)", opacity: 0 }], dur: 800 },
-    line:  { style: { inset: "0", borderRadius: "20px", boxShadow: "0 0 0 1.2px rgba(47,158,68,.9)" },
-             anim: [{ opacity: 0 }, { opacity: .85, offset: .3 }, { opacity: 0 }], dur: 520 },
-    halo:  { style: { inset: "-6px", borderRadius: "26px", boxShadow: "0 0 16px 4px rgba(47,158,68,.34)" },
-             anim: [{ opacity: 0 }, { opacity: .85, offset: .35 }, { opacity: 0 }], dur: 950 },
-    under: { style: { left: "10%", right: "10%", bottom: "-8px", height: "10px", borderRadius: "50%", background: "rgba(47,158,68,.55)", filter: "blur(6px)" },
-             anim: [{ opacity: 0 }, { opacity: .75, offset: .35 }, { opacity: 0 }], dur: 950 },
-    cap:   { style: { left: "0", top: "0", bottom: "0", width: "30px", borderRadius: "20px 0 0 20px", background: "radial-gradient(circle at 7px 50%, rgba(47,158,68,.6), transparent 72%)" },
-             anim: [{ opacity: 0 }, { opacity: 1, offset: .3 }, { opacity: 0 }], dur: 850 }
-  };
-  function capPulse(shell, kind) {
-    var spec = PULSES[kind];
+  function pulseSpan(shell, styles) {
     var s = document.createElement("span");
     s.className = "pspan";
-    Object.keys(spec.style).forEach(function (p) { s.style[p] = spec.style[p]; });
+    Object.keys(styles).forEach(function (p) { s.style[p] = styles[p]; });
     shell.appendChild(s);
-    s.animate(spec.anim, { duration: spec.dur, easing: "cubic-bezier(0,0,.2,1)" }).onfinish = function () { s.remove(); };
+    return s;
+  }
+  /* uniform ripple: box-shadow SPREAD grows in pixels, so it expands equally in
+     every direction and follows the pill's corners (scale() only went sideways) */
+  function ringSpread(shell, spread, dur, op) {
+    var s = pulseSpan(shell, { inset: "0", borderRadius: "20px" });
+    s.animate([
+      { boxShadow: "0 0 0 0 rgba(47,158,68," + op + ")" },
+      { boxShadow: "0 0 0 " + spread + "px rgba(47,158,68,0)" }
+    ], { duration: dur, easing: "cubic-bezier(0,0,.2,1)" }).onfinish = function () { s.remove(); };
+  }
+  function glowBreath(shell, dur) {
+    var s = pulseSpan(shell, { inset: "0", borderRadius: "20px" });
+    s.animate([
+      { boxShadow: "0 0 0 0 rgba(47,158,68,0)" },
+      { boxShadow: "0 0 12px 3px rgba(47,158,68,.32)", offset: .45 },
+      { boxShadow: "0 0 0 0 rgba(47,158,68,0)" }
+    ], { duration: dur, easing: "ease-in-out" }).onfinish = function () { s.remove(); };
+  }
+  function capCircle(shell) {
+    var s = pulseSpan(shell, { left: "13px", top: "50%", width: "10px", height: "10px", margin: "-5px 0 0 0", borderRadius: "50%", background: "#2f9e44" });
+    s.animate([
+      { transform: "scale(.9)", opacity: .5 },
+      { transform: "scale(3.2)", opacity: 0 }
+    ], { duration: 750, easing: "cubic-bezier(0,0,.2,1)" }).onfinish = function () { s.remove(); };
+  }
+  function edgeFlash(shell, dur, op) {
+    var s = pulseSpan(shell, { inset: "0", borderRadius: "20px", boxShadow: "0 0 0 1.2px rgba(47,158,68," + op + ")" });
+    s.animate([{ opacity: 0 }, { opacity: 1, offset: .3 }, { opacity: 0 }], { duration: dur, easing: "ease-in-out" }).onfinish = function () { s.remove(); };
+  }
+  function capGlow(shell, dur) {
+    var s = pulseSpan(shell, { left: "0", top: "0", bottom: "0", width: "34px", borderRadius: "20px 0 0 20px", background: "radial-gradient(circle at 8px 50%, rgba(47,158,68,.55), transparent 74%)" });
+    s.animate([{ opacity: 0 }, { opacity: 1, offset: .45 }, { opacity: 0 }], { duration: dur, easing: "ease-in-out" }).onfinish = function () { s.remove(); };
+  }
+  function underGlow(shell, dur) {
+    var s = pulseSpan(shell, { left: "8%", right: "8%", bottom: "-9px", height: "12px", borderRadius: "50%", background: "rgba(47,158,68,.5)", filter: "blur(7px)" });
+    s.animate([{ opacity: 0 }, { opacity: .8, offset: .45 }, { opacity: 0 }], { duration: dur, easing: "ease-in-out" }).onfinish = function () { s.remove(); };
+  }
+  function firePulse(shell, change) {
+    var t = shell.dataset.pulse;
+    if (t === "ripple") ringSpread(shell, 13, 750, .45);
+    else if (t === "double") { ringSpread(shell, 13, 750, .45); setTimeout(function () { ringSpread(shell, 17, 820, .28); }, 190); }
+    else if (t === "newsring") { if (change) ringSpread(shell, 16, 900, .5); }
+    else if (t === "breatheglow") glowBreath(shell, 1350);
+    else if (t === "breathescale") shell.animate([{ transform: "scale(1)" }, { transform: "scale(1.012)", offset: .45 }, { transform: "scale(1)" }], { duration: 1350, easing: "ease-in-out" });
+    else if (t === "capring") capCircle(shell);
+    else if (t === "hairline") edgeFlash(shell, 480, .6);
+    else if (t === "capglow") capGlow(shell, 1350);
+    else if (t === "underglow") underGlow(shell, 1350);
   }
   var reduced = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
   if (!reduced) {
@@ -679,9 +754,7 @@
         if (change) snappySwell(dot);
       });
       document.querySelectorAll("[data-pulse]").forEach(function (shell) {
-        var t = shell.dataset.pulse;
-        if (t === "changering") { if (change) capPulse(shell, "ring"); return; }
-        capPulse(shell, t === "ripple" ? "ring" : t === "hairline" ? "line" : t === "underglow" ? "under" : t === "endcap" ? "cap" : "halo");
+        firePulse(shell, change);
       });
       if (!change) return;
       ["p", "g", "s"].forEach(function (k) {
@@ -769,7 +842,7 @@
       if (d !== 0) shown[k] += Math.sign(d) * Math.min(Math.abs(d), 1 + Math.floor(Math.random() * (k === "p" ? 7 : 2)));
       else if (Math.random() < 0.25) shown[k] += Math.random() < 0.5 ? -1 : 1;
       shown[k] = Math.max(BR[k][0], Math.min(BR[k][1], shown[k]));
-      document.querySelectorAll('[data-b="' + k + '"]').forEach(function (el) { el.textContent = fmt(shown[k]); });
+      document.querySelectorAll('[data-b="' + k + '"]').forEach(function (el) { window.setNum(el, shown[k]); });
     });
   }, 300);
 
