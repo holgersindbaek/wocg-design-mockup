@@ -409,7 +409,25 @@
   .heroarea > * { position: relative; z-index: 1; }
   .stats { display: flex; align-items: center; justify-content: center; gap: 9px; margin-top: 12px; flex-wrap: wrap; font-size: 14px; color: var(--muted); }
   body:not(.stats-brief) .statsBrief { display: none; }
-  body.stats-brief .statsFull { display: none; }
+  body.stats-brief .statsFull, body.stats-capsule .statsFull { display: none; }
+  body:not(.stats-capsule) .statsCapsule { display: none; }
+  /* the live-light capsule strip: 32px shell on the button chrome; dot at the
+     eye-approved 13px left inset (4px shell + 9px cell) vs 12px top; LIVE at
+     11px caps nudged 1px against BuloRounded's ascent-heavy centering; digits
+     ride fixed-width odometer reels in the labels' 1.5 line box */
+  .statsCapsule .capsule { display: inline-flex; align-items: center; height: 32px; font-size: 14px; background: var(--surface, #fff); border-radius: 20px; box-shadow: var(--btnshadow); padding: 0 4px; }
+  .statsCapsule .st { padding: 0 11px; gap: 4px; align-self: stretch; }
+  .statsCapsule .st + .st { border-left: 1px solid var(--hairline); }
+  .statsCapsule .stlive { padding: 0 9px; gap: 6px; }
+  .statsCapsule .stlive + .st { border-left: none; }
+  .statsCapsule .greencap { font-size: 11px; font-weight: bold; letter-spacing: .1em; color: #2f9e44; position: relative; top: 1px; }
+  .statsCapsule b { display: inline-flex; position: relative; color: var(--ink); font-weight: bold; }
+  .statsCapsule .dcell { display: block; width: 0.52em; height: 1.5em; overflow: hidden; user-select: none;
+    -webkit-mask-image: linear-gradient(transparent, #000 18%, #000 82%, transparent);
+    mask-image: linear-gradient(transparent, #000 18%, #000 82%, transparent); }
+  .statsCapsule .dreel { display: block; transition: transform .75s cubic-bezier(.22,1.1,.34,1); will-change: transform; }
+  .statsCapsule .dreel span { display: block; height: 1.5em; line-height: 1.5em; text-align: center; }
+  .statsCapsule .srnum { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
   /* airport-board digits: fixed-width cells so the line never shifts, reels roll to the new value */
   .stats .odo { display: inline-flex; }
   .stats .odoCell { display: block; height: 20px; line-height: 20px; overflow: hidden; }
@@ -826,7 +844,7 @@
   body.gated { overflow: hidden; }
 </style>
 </head>
-<body class="evernote play-raph layout-ed43 font-vollkorn shadow-soft edge-softlight tex-grain cat-split stats-brief">
+<body class="evernote play-raph layout-ed43 font-vollkorn shadow-soft edge-softlight tex-grain cat-split stats-capsule">
 
 <aside id="adrail" aria-hidden="true">
   <div class="adslot"><img src="adMedrec1.png" width="300" height="250" alt=""></div>
@@ -887,6 +905,14 @@
       <span class="st"><svg class="sicon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="4" y="5.8" width="8.6" height="12.4" rx="1.6" transform="rotate(-10 8.3 12)" stroke="currentColor" stroke-width="1.6" opacity=".6"/><rect x="10.6" y="4.6" width="9" height="13.4" rx="1.6" transform="rotate(9 15.1 11.3)" fill="currentColor"/></svg><b id="st-games" data-v="143">143</b> games live</span>
       <span class="sep">·</span>
       <span class="st"><svg class="sicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><rect x="6" y="3.8" width="12" height="16.4" rx="2" stroke-width="1.6" stroke-dasharray="3 2.4" stroke-linecap="round"/><path d="M12 9.4v5.2M9.4 12h5.2" stroke-width="1.9" stroke-linecap="round"/></svg><b id="st-seats" data-v="87">87</b> seats open</span>
+    </div>
+    <div class="stats statsCapsule">
+      <span class="capsule">
+        <span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>
+        <span class="st"><b class="creel" id="stc-players" data-v="1214">1214</b> players online</span>
+        <span class="st"><b class="creel" id="stc-games" data-v="143">143</b> tables live</span>
+        <span class="st"><b class="creel" id="stc-seats" data-v="87">87</b> seats open</span>
+      </span>
     </div>
   </div>
 
@@ -1296,10 +1322,11 @@
     ["split", "Popular grid + categories"]
   ];
   var STATSLINES = [
+    ["capsule", "Capsule: live-light strip"],
     ["full", "Three counters (players / games / seats)"],
     ["brief", "One line: players & open tables"]
   ];
-  var curShadow = "soft", curEdge = "softlight", curTexture = "grain", curCatalog = "split", curStats = "brief";
+  var curShadow = "soft", curEdge = "softlight", curTexture = "grain", curCatalog = "split", curStats = "capsule";
   function moveLobby() {
     var lobby = document.getElementById("lobbyDemo");
     var slot = document.getElementById(curCatalog === "merged" || curCatalog === "mergedflat" ? "lobby-slot-bottom" : "lobby-slot-top");
@@ -1575,9 +1602,16 @@
       { id: "st-games", min: 128, max: 158, step: 4 },
       { id: "st-seats", min: 74, max: 102, step: 6 },
       { id: "st-players2", min: 1150, max: 1290, step: 18 },
-      { id: "st-tables", min: 38, max: 58, step: 5 }
+      { id: "st-tables", min: 38, max: 58, step: 5 },
+      { id: "stc-players", min: 1150, max: 1290, step: 18 },
+      { id: "stc-games", min: 128, max: 158, step: 4 },
+      { id: "stc-seats", min: 74, max: 99, step: 6 }
     ];
     function fireRing(dot, scale, dur, op) {
+      /* background tabs pause animations but not the beat clock; sweep any
+         pile-up so returning to the tab never shows stacked rings */
+      var olds = dot.querySelectorAll(".lring");
+      if (olds.length > 2) olds.forEach(function (o) { o.remove(); });
       var r = document.createElement("span");
       r.className = "lring";
       dot.appendChild(r);
@@ -1595,6 +1629,23 @@
         { transform: "scale(1)" }
       ], { duration: 620 });
     }
+    /* capsule digits: fixed-width odometer reels; srnum is what selection and
+       screen readers get, the reels are presentation only */
+    function setReel(el, v) {
+      var s = String(v);
+      var rebuild = !el.dataset.cur || el.dataset.cur.length !== s.length || !el.querySelector(".dreel");
+      el.dataset.cur = s;
+      if (rebuild) {
+        var reel = '<span class="dreel">' + "0123456789".split("").map(function (d) { return "<span>" + d + "</span>"; }).join("") + "</span>";
+        el.innerHTML = '<span class="srnum">' + s + "</span>" +
+          s.split("").map(function () { return '<span class="dcell" aria-hidden="true">' + reel + "</span>"; }).join("");
+      }
+      el.querySelector(".srnum").textContent = s;
+      el.querySelectorAll(".dreel").forEach(function (r, i) {
+        r.style.transform = "translateY(-" + (parseInt(s[i], 10) * 1.5) + "em)";
+      });
+    }
+    document.querySelectorAll(".creel").forEach(function (el) { setReel(el, parseInt(el.dataset.v, 10)); });
     var dots = Array.prototype.slice.call(document.querySelectorAll(".ldot"));
     var beat = 0;
     setInterval(function () {
@@ -1614,6 +1665,7 @@
         v = Math.max(d.min, Math.min(d.max, v + delta));
         el.dataset.v = v;
         if (el.odoCells) setOdo(el, v);
+        else if (el.classList.contains("creel")) setReel(el, v);
         else el.textContent = v.toLocaleString("en-US");
       });
     }, 1400);

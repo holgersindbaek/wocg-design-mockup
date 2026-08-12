@@ -1069,6 +1069,10 @@
   /* the frontpage's Swell ping, same mechanics: one shared 1.4s beat,
      a ring every beat, swell + number step on every sixth beat */
   function fireRing(dot, scale, dur, op, red) {
+    /* background tabs pause animations but not the beat clock; sweep the
+       pile-up so returning to the tab never shows stacked rings */
+    var olds = dot.querySelectorAll(".lring");
+    if (olds.length > 2) olds.forEach(function (o) { o.remove(); });
     var r = document.createElement("span");
     r.className = "lring" + (red ? " red" : "");
     dot.appendChild(r);
@@ -1087,6 +1091,8 @@
     ], { duration: 620 });
   }
   function pulseSpan(shell, styles) {
+    var olds = shell.querySelectorAll(":scope > .pspan");
+    if (olds.length > 3) olds.forEach(function (o) { o.remove(); });
     var s = document.createElement("span");
     s.className = "pspan";
     Object.keys(styles).forEach(function (p) { s.style[p] = styles[p]; });
