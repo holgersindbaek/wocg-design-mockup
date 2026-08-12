@@ -409,8 +409,18 @@
   .heroarea > * { position: relative; z-index: 1; }
   .stats { display: flex; align-items: center; justify-content: center; gap: 9px; margin-top: 12px; flex-wrap: wrap; font-size: 14px; color: var(--muted); }
   body:not(.stats-brief) .statsBrief { display: none; }
-  body.stats-brief .statsFull, body.stats-capsule .statsFull { display: none; }
+  body.stats-brief .statsFull, body.stats-capsule .statsFull, body.stats-sign .statsFull { display: none; }
   body:not(.stats-capsule) .statsCapsule { display: none; }
+  body:not(.stats-sign) .statsSign { display: none; }
+  /* the LIVE sign strip: WOCG's light-green button recipe (the lightblue
+     button's formula in the success hue: bg #C0EB75, lime ink #5C940D) leading
+     bare, separator-free counts - spacing does the dividing */
+  .statsSign { gap: 20px; }
+  .statsSign .signchip { display: inline-flex; align-items: center; gap: 6px; height: 22px; padding: 0 10px; border-radius: 7px; background: #C0EB75; box-shadow: var(--btnshadow); }
+  .statsSign .greencap { font-size: 11px; font-weight: bold; letter-spacing: .1em; color: #5C940D; position: relative; top: 1px; }
+  .statsSign .ldot { background: #5C940D; }
+  .statsSign .lring { background: #5C940D; }
+  .statsSign .bs { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
   /* the live-light capsule strip: 32px shell on the button chrome; dot at the
      eye-approved 13px left inset (4px shell + 9px cell) vs 12px top; LIVE at
      11px caps nudged 1px against BuloRounded's ascent-heavy centering; digits
@@ -420,13 +430,13 @@
   .statsCapsule .st + .st { border-left: 1px solid var(--hairline); }
   .statsCapsule .stlive { padding: 0 9px; gap: 6px; }
   .statsCapsule .greencap { font-size: 11px; font-weight: bold; letter-spacing: .1em; color: #2f9e44; position: relative; top: 1px; }
-  .statsCapsule b { display: inline-flex; position: relative; color: var(--ink); font-weight: bold; }
-  .statsCapsule .dcell { display: block; width: 0.52em; height: 1.5em; overflow: hidden; user-select: none;
+  .statsCapsule b, .statsSign b { display: inline-flex; position: relative; color: var(--ink); font-weight: bold; }
+  .statsCapsule .dcell, .statsSign .dcell { display: block; width: 0.52em; height: 1.5em; overflow: hidden; user-select: none;
     -webkit-mask-image: linear-gradient(transparent, #000 18%, #000 82%, transparent);
     mask-image: linear-gradient(transparent, #000 18%, #000 82%, transparent); }
-  .statsCapsule .dreel { display: block; transition: transform .75s cubic-bezier(.22,1.1,.34,1); will-change: transform; }
-  .statsCapsule .dreel span { display: block; height: 1.5em; line-height: 1.5em; text-align: center; }
-  .statsCapsule .srnum { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .statsCapsule .dreel, .statsSign .dreel { display: block; transition: transform .75s cubic-bezier(.22,1.1,.34,1); will-change: transform; }
+  .statsCapsule .dreel span, .statsSign .dreel span { display: block; height: 1.5em; line-height: 1.5em; text-align: center; }
+  .statsCapsule .srnum, .statsSign .srnum { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
   /* airport-board digits: fixed-width cells so the line never shifts, reels roll to the new value */
   .stats .odo { display: inline-flex; }
   .stats .odoCell { display: block; height: 20px; line-height: 20px; overflow: hidden; }
@@ -913,6 +923,12 @@
         <span class="st"><b class="creel" id="stc-seats" data-v="87">87</b> seats open</span>
       </span>
     </div>
+    <div class="stats statsSign">
+      <span class="signchip"><span class="ldot"></span><span class="greencap">LIVE</span></span>
+      <span class="bs"><b class="creel" id="sts-players" data-v="1214">1214</b> players online</span>
+      <span class="bs"><b class="creel" id="sts-games" data-v="143">143</b> tables live</span>
+      <span class="bs"><b class="creel" id="sts-seats" data-v="87">87</b> seats open</span>
+    </div>
   </div>
 
   <div class="popular" id="popsec">
@@ -1321,7 +1337,8 @@
     ["split", "Popular grid + categories"]
   ];
   var STATSLINES = [
-    ["capsule", "Capsule: live-light strip"],
+    ["capsule", "Capsule: walled live-light strip"],
+    ["sign", "Sign: light-green button + bare counts"],
     ["full", "Three counters (players / games / seats)"],
     ["brief", "One line: players & open tables"]
   ];
@@ -1604,7 +1621,10 @@
       { id: "st-tables", min: 38, max: 58, step: 5 },
       { id: "stc-players", min: 1150, max: 1290, step: 18 },
       { id: "stc-games", min: 128, max: 158, step: 4 },
-      { id: "stc-seats", min: 74, max: 99, step: 6 }
+      { id: "stc-seats", min: 74, max: 99, step: 6 },
+      { id: "sts-players", min: 1150, max: 1290, step: 18 },
+      { id: "sts-games", min: 128, max: 158, step: 4 },
+      { id: "sts-seats", min: 74, max: 99, step: 6 }
     ];
     function fireRing(dot, scale, dur, op) {
       /* background tabs pause animations but not the beat clock; sweep any
