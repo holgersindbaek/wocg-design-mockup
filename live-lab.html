@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Live dot &amp; number lab</title>
+<style>
+  body { margin: 0; padding: 28px 24px 60px; background: #f9f6f2; color: #2b2722;
+    font-family: -apple-system, "Helvetica Neue", Arial, sans-serif; }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  h2 { font-size: 17px; margin: 34px 0 12px; }
+  p.note { font-size: 13px; color: #8a857c; margin: 0 0 18px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 12px; }
+  .card { background: #ffffff; border: 1px solid rgba(9,15,21,.08); border-radius: 10px; padding: 14px 16px; }
+  .card h3 { font-size: 13.5px; margin: 0 0 2px; }
+  .card .src { font-size: 11.5px; color: #999488; margin: 0 0 12px; }
+  .line { display: flex; align-items: center; gap: 8px; font-size: 15px; color: #5c5850; min-height: 24px; }
+  .line b { color: #2b2722; }
+  .sep { opacity: .55; }
+  .big { margin-left: auto; transform: scale(2.6); transform-origin: center right; }
+
+  /* ===== shared dot base ===== */
+  .dot { position: relative; width: 8px; height: 8px; border-radius: 50%; background: #2f9e44; flex-shrink: 0; }
+  .dot::before, .dot::after { content: ""; position: absolute; inset: 0; border-radius: 50%; }
+
+  /* 1 current: box-shadow ping */
+  .d-current { animation: bpulse 2.2s ease-in-out infinite; }
+  @keyframes bpulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(47,158,68,.5); } 55% { box-shadow: 0 0 0 5px rgba(47,158,68,0); } }
+
+  /* 2 radar ripple (the CodePen you linked) */
+  .d-radar::after { border: 2px solid #2f9e44; inset: -2px; animation: radar 1.25s ease-out infinite; }
+  @keyframes radar { 0% { transform: scale(.5); opacity: 1; } 100% { transform: scale(2.6); opacity: 0; } }
+
+  /* 3 tailwind ping */
+  .d-ping::after { background: #2f9e44; animation: ping 1.5s cubic-bezier(0,0,.2,1) infinite; }
+  @keyframes ping { 0% { transform: scale(1); opacity: .55; } 75%, 100% { transform: scale(2.6); opacity: 0; } }
+
+  /* 4 double ripple */
+  .d-double::before, .d-double::after { border: 1.5px solid #2f9e44; inset: -1.5px; animation: radar 1.9s ease-out infinite; }
+  .d-double::after { animation-delay: -.95s; }
+
+  /* 5 breathing glow */
+  .d-glow { animation: glow 2.6s ease-in-out infinite; }
+  @keyframes glow { 0%, 100% { box-shadow: 0 0 2px 0 rgba(47,158,68,.25); } 50% { box-shadow: 0 0 8px 3px rgba(47,158,68,.45); } }
+
+  /* 6 recording blink */
+  .d-blink { animation: blink 1.6s ease-in-out infinite; }
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
+
+  /* 7 heartbeat */
+  .d-heart { animation: heart 1.9s ease-in-out infinite; }
+  @keyframes heart { 0%, 30%, 60%, 100% { transform: scale(1); } 10% { transform: scale(1.35); } 42% { transform: scale(1.22); } }
+
+  /* 8 quiet breathe */
+  .d-soft { animation: soft 3.4s ease-in-out infinite; }
+  @keyframes soft { 0%, 100% { transform: scale(1); opacity: .85; } 50% { transform: scale(1.14); opacity: 1; } }
+
+  /* 9 sonar fill */
+  .d-fill::after { background: rgba(47,158,68,.45); animation: fillwave 1.7s ease-out infinite; }
+  @keyframes fillwave { 0% { transform: scale(.4); opacity: .6; } 100% { transform: scale(2.4); opacity: 0; } }
+
+  /* 10 beacon halo */
+  .d-halo::after { border: 1px solid #2f9e44; inset: -4px; animation: halo 2.2s ease-in-out infinite; }
+  @keyframes halo { 0%, 100% { opacity: 0; } 50% { opacity: .65; } }
+
+  /* ===== number demos ===== */
+  .numwrap { display: inline-flex; font-weight: bold; color: #2b2722; }
+  .cell { display: block; height: 20px; line-height: 20px; overflow: hidden; }
+  .cell.digit { width: .62em; }
+  .reel { display: block; will-change: transform; }
+  .reel span { display: block; height: 20px; line-height: 20px; text-align: center; }
+
+  .n-roll .reel { transition: transform .55s cubic-bezier(.3,.7,.2,1); }
+
+  .n-mask .cell.digit { -webkit-mask-image: linear-gradient(transparent, #000 32%, #000 68%, transparent);
+    mask-image: linear-gradient(transparent, #000 32%, #000 68%, transparent); }
+  .n-mask .reel { transition: transform .75s cubic-bezier(.22,1.1,.34,1); }
+
+  .n-slot .reel { transition: transform .85s cubic-bezier(.16,.9,.24,1); }
+
+  .n-flap .cell.digit { position: relative; perspective: 120px; overflow: visible; }
+  .n-flap .flap { display: block; height: 20px; line-height: 20px; text-align: center; background: inherit; }
+  .n-flap .cell.digit::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 1px;
+    background: rgba(0,0,0,.14); pointer-events: none; }
+
+  .n-tick .swap, .n-fade .swap { position: relative; display: inline-block; text-align: right; height: 20px; line-height: 20px; }
+  .n-tick .swap > span, .n-fade .swap > span { position: absolute; right: 0; top: 0; white-space: nowrap; }
+
+  footer { margin-top: 44px; font-size: 12px; color: #999488; line-height: 1.7; }
+  footer a { color: #7a746a; }
+</style>
+</head>
+<body>
+
+<h1>Live dot &amp; number lab</h1>
+<p class="note">Every sample uses the real stats line. The magnified dot on the right is the same animation at 2.6&times;.</p>
+
+<h2>Pulsing dots</h2>
+<div class="grid" id="dots"></div>
+
+<h2>Airport-style numbers</h2>
+<p class="note">All demos receive the same value changes every ~3 seconds, so you can compare them directly.</p>
+<div class="grid" id="nums"></div>
+
+<footer>
+  Dot references: the <a href="https://codepen.io/vram1980/pen/oNvWdO">CodePen you linked</a> (radar ripple),
+  Tailwind's animate-ping, Discord/Slack presence glows, recording-light blinks.<br>
+  Number references: <a href="https://github.com/hardikpandya/solari-split-flap">solari-split-flap</a> and
+  <a href="https://github.com/baspete/Split-Flap">Split-Flap</a> (Solari boards),
+  <a href="https://github.com/HubSpot/odometer">Odometer.js</a> (smooth roll, car/slot themes),
+  <a href="https://number-flow.barvian.me/">NumberFlow</a> (masked spring roll),
+  stock-ticker swaps (Robinhood style).
+</footer>
+
+<script>
+  var DOTS = [
+    ["d-current", "Current", "What the mockup has today: a soft shadow ring that breathes out."],
+    ["d-radar", "Radar ripple", "The CodePen you linked: a thin ring expands from the dot and fades."],
+    ["d-ping", "Ping", "Tailwind's animate-ping: a solid copy of the dot expands and fades. Punchy."],
+    ["d-double", "Double ripple", "Two staggered rings, so a wave is always mid-flight. Busier, very alive."],
+    ["d-glow", "Breathing glow", "No rings. A soft halo brightens and dims. Calm, ambient."],
+    ["d-blink", "Recording blink", "Opacity dips like a camera recording light. Simple, a bit insistent."],
+    ["d-heart", "Heartbeat", "Two quick beats, then rest. Organic, playful."],
+    ["d-soft", "Quiet breathe", "Barely-there size breathe. The most discreet option."],
+    ["d-fill", "Sonar fill", "A filled translucent wave instead of a ring. Softer than radar."],
+    ["d-halo", "Beacon halo", "A fixed ring at a distance fades in and out. Lighthouse feel."]
+  ];
+  var dotsEl = document.getElementById("dots");
+  DOTS.forEach(function (d) {
+    var card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = '<h3>' + d[1] + '</h3><p class="src">' + d[2] + '</p>' +
+      '<div class="line"><span class="dot ' + d[0] + '"></span><b>1,214</b>&nbsp;players online <span class="sep">·</span> <b>46</b>&nbsp;open tables' +
+      '<span class="dot ' + d[0] + ' big"></span></div>';
+    dotsEl.appendChild(card);
+  });
+
+  // ===== number demos =====
+  var H = 20;
+  function fmt(v) { return v.toLocaleString("en-US"); }
+
+  function makeCells(el, value, digitBuilder) {
+    el.cells = fmt(value).split("").map(function (c) {
+      var cell = document.createElement("span");
+      var isD = c >= "0" && c <= "9";
+      cell.className = "cell" + (isD ? " digit" : "");
+      if (isD) digitBuilder(cell, +c); else cell.textContent = c;
+      el.appendChild(cell);
+      return cell;
+    });
+  }
+  function buildReel(cell, start, doubled) {
+    var reel = document.createElement("span");
+    reel.className = "reel";
+    var count = doubled ? 20 : 10;
+    for (var d = 0; d < count; d++) {
+      var s = document.createElement("span");
+      s.textContent = d % 10;
+      reel.appendChild(s);
+    }
+    reel.style.transform = "translateY(-" + start * H + "px)";
+    reel.pos = start;
+    cell.appendChild(reel);
+    cell.reel = reel;
+  }
+
+  function ReelNum(el, v) {
+    makeCells(el, v, function (cell, d) { buildReel(cell, d, false); });
+    this.set = function (nv) {
+      var str = fmt(nv);
+      el.cells.forEach(function (cell, i) {
+        if (cell.reel) cell.reel.style.transform = "translateY(-" + str[i] * H + "px)";
+      });
+    };
+  }
+
+  function SlotNum(el, v) {
+    makeCells(el, v, function (cell, d) { buildReel(cell, d, true); });
+    this.set = function (nv) {
+      var str = fmt(nv);
+      el.cells.forEach(function (cell, i) {
+        var reel = cell.reel;
+        if (!reel) return;
+        var target = +str[i];
+        if (target === reel.pos % 10) return;
+        var fwd = (target - (reel.pos % 10) + 10) % 10;
+        var dest = reel.pos + fwd;
+        reel.style.transform = "translateY(-" + dest * H + "px)";
+        reel.pos = dest;
+        reel.ontransitionend = function () {
+          if (reel.pos >= 10) {
+            reel.pos -= 10;
+            reel.style.transition = "none";
+            reel.style.transform = "translateY(-" + reel.pos * H + "px)";
+            void reel.offsetHeight;
+            reel.style.transition = "";
+          }
+        };
+      });
+    };
+  }
+
+  function FlapNum(el, v) {
+    makeCells(el, v, function (cell, d) {
+      var flap = document.createElement("span");
+      flap.className = "flap";
+      flap.textContent = d;
+      flap.cur = d;
+      cell.appendChild(flap);
+      cell.flap = flap;
+    });
+    function stepFlap(flap, target) {
+      if (flap.cur === target) return;
+      flap.animate(
+        [{ transform: "perspective(120px) rotateX(0deg)" }, { transform: "perspective(120px) rotateX(-88deg)" }],
+        { duration: 55, easing: "ease-in" }
+      ).onfinish = function () {
+        flap.cur = (flap.cur + 1) % 10;
+        flap.textContent = flap.cur;
+        flap.animate(
+          [{ transform: "perspective(120px) rotateX(88deg)" }, { transform: "perspective(120px) rotateX(0deg)" }],
+          { duration: 65, easing: "ease-out" }
+        ).onfinish = function () { stepFlap(flap, target); };
+      };
+    }
+    this.set = function (nv) {
+      var str = fmt(nv);
+      el.cells.forEach(function (cell, i) {
+        if (cell.flap) stepFlap(cell.flap, +str[i]);
+      });
+    };
+  }
+
+  function StepNum(el, v) {
+    makeCells(el, v, function (cell, d) {
+      var s = document.createElement("span");
+      s.className = "flap";
+      s.textContent = d;
+      cell.appendChild(s);
+      cell.txt = s;
+    });
+    var cur = v, timer = null;
+    function render(val) {
+      var str = fmt(val);
+      el.cells.forEach(function (cell, i) { if (cell.txt) cell.txt.textContent = str[i]; });
+    }
+    this.set = function (nv) {
+      clearInterval(timer);
+      timer = setInterval(function () {
+        if (cur === nv) { clearInterval(timer); return; }
+        cur += cur < nv ? 1 : -1;
+        render(cur);
+      }, 70);
+    };
+  }
+
+  function SwapNum(el, v, blurry) {
+    var swap = document.createElement("span");
+    swap.className = "swap";
+    swap.style.minWidth = (fmt(v).length * 0.62) + "em";
+    var cur = document.createElement("span");
+    cur.textContent = fmt(v);
+    swap.appendChild(cur);
+    el.appendChild(swap);
+    this.set = function (nv) {
+      var old = swap.firstChild;
+      var next = document.createElement("span");
+      next.textContent = fmt(nv);
+      swap.appendChild(next);
+      if (blurry) {
+        old.animate([{ opacity: 1, filter: "blur(0)" }, { opacity: 0, filter: "blur(4px)" }], { duration: 380, fill: "forwards" });
+        next.animate([{ opacity: 0, filter: "blur(4px)" }, { opacity: 1, filter: "blur(0)" }], { duration: 380, fill: "forwards" });
+      } else {
+        old.animate([{ transform: "translateY(0)", opacity: 1 }, { transform: "translateY(-14px)", opacity: 0 }], { duration: 300, easing: "ease-in", fill: "forwards" });
+        next.animate([{ transform: "translateY(14px)", opacity: 0 }, { transform: "translateY(0)", opacity: 1 }], { duration: 300, easing: "ease-out", fill: "forwards" });
+      }
+      setTimeout(function () { if (old.parentNode) old.remove(); }, 420);
+    };
+  }
+
+  var NUMS = [
+    ["n-roll", "Current: smooth roll", "Each digit reel glides to the new value. What the mockup has now.", ReelNum],
+    ["n-mask", "Masked spring roll", "NumberFlow style: digits fade at the edges and land with a soft spring.", ReelNum],
+    ["n-flap", "Split-flap", "Solari board: digits flip through every value with a hinge line. The true airport look.", FlapNum],
+    ["n-slot", "Slot machine", "Reels only roll forward, gliding through intermediate digits and wrapping past 9.", SlotNum],
+    ["n-step", "Counting odometer", "Gas-pump style: the whole number counts through every value, no glide.", StepNum],
+    ["n-tick", "Ticker swap", "Stock-ticker: the old number slides up and out, the new one slides in.", function (el, v) { return new SwapNum(el, v, false); }],
+    ["n-fade", "Blur morph", "The number crossfades through a slight blur. Subtle and modern.", function (el, v) { return new SwapNum(el, v, true); }]
+  ];
+
+  var players = 1214, tables = 46;
+  var instances = [];
+  var numsEl = document.getElementById("nums");
+  NUMS.forEach(function (n) {
+    var card = document.createElement("div");
+    card.className = "card " + n[0];
+    card.innerHTML = '<h3>' + n[1] + '</h3><p class="src">' + n[2] + '</p>';
+    var line = document.createElement("div");
+    line.className = "line";
+    var w1 = document.createElement("b"); w1.className = "numwrap";
+    var w2 = document.createElement("b"); w2.className = "numwrap";
+    var dot = document.createElement("span"); dot.className = "dot d-current";
+    line.appendChild(dot);
+    line.appendChild(w1);
+    line.appendChild(document.createTextNode(" players online "));
+    var sep = document.createElement("span"); sep.className = "sep"; sep.textContent = "·";
+    line.appendChild(sep);
+    line.appendChild(document.createTextNode(" "));
+    line.appendChild(w2);
+    line.appendChild(document.createTextNode(" open tables"));
+    card.appendChild(line);
+    numsEl.appendChild(card);
+    instances.push({ p: new n[3](w1, players), t: new n[3](w2, tables) });
+  });
+
+  function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+  setInterval(function () {
+    players = clamp(players + Math.round((Math.random() * 2 - 1) * 18), 1150, 1290);
+    tables = clamp(tables + Math.round((Math.random() * 2 - 1) * 5), 38, 58);
+    instances.forEach(function (inst) { inst.p.set(players); inst.t.set(tables); });
+  }, 3000);
+</script>
+</body>
+</html>
