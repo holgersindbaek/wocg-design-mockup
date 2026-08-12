@@ -410,6 +410,12 @@
   .stats { display: flex; align-items: center; justify-content: center; gap: 9px; margin-top: 12px; flex-wrap: wrap; font-size: 14px; color: var(--muted); }
   body:not(.stats-brief) .statsBrief { display: none; }
   body.stats-brief .statsFull { display: none; }
+  /* airport-board digits: fixed-width cells so the line never shifts, reels roll to the new value */
+  .stats .odo { display: inline-flex; }
+  .stats .odoCell { display: block; height: 20px; line-height: 20px; overflow: hidden; }
+  .stats .odoCell.num { width: 0.62em; }
+  .stats .odoReel { display: block; transition: transform .55s cubic-bezier(.3,.7,.2,1); will-change: transform; }
+  .stats .odoReel span { display: block; height: 20px; line-height: 20px; text-align: center; }
   .st { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
   .stats .sep { opacity: 0.55; }
   .sicon { width: 15px; height: 15px; color: var(--second); flex-shrink: 0; }
@@ -856,7 +862,9 @@
     <h3 id="herotitle">Play cards in good company.</h3>
     <p id="herosub">Classic card games. Join a table or play solo. Free to play, hard to stop.</p>
     <div class="stats statsBrief">
-      <span class="st"><span class="ldot"></span><b id="st-players2" data-v="1214">1,214</b> players online &amp; <b id="st-tables" data-v="46">46</b> open tables</span>
+      <span class="st"><span class="ldot"></span><b class="odo" id="st-players2" data-v="1214"></b> players online</span>
+      <span class="sep">·</span>
+      <span class="st"><b class="odo" id="st-tables" data-v="46"></b> open tables</span>
     </div>
     <div class="stats statsFull">
       <span class="st"><span class="ldot"></span><b id="st-players" data-v="1214">1,214</b> players online</span>
@@ -1506,6 +1514,43 @@
 
 
 
+  // airport-board odometers for the brief stats line
+  var ODO_H = 20;
+  function buildOdo(el) {
+    var chars = Number(el.dataset.v).toLocaleString("en-US").split("");
+    el.odoCells = chars.map(function (c) {
+      var cell = document.createElement("span");
+      var isDigit = c >= "0" && c <= "9";
+      cell.className = "odoCell" + (isDigit ? " num" : "");
+      if (isDigit) {
+        var reel = document.createElement("span");
+        reel.className = "odoReel";
+        for (var d = 0; d <= 9; d++) {
+          var s = document.createElement("span");
+          s.textContent = d;
+          reel.appendChild(s);
+        }
+        cell.appendChild(reel);
+        cell.odoReel = reel;
+      } else {
+        cell.textContent = c;
+      }
+      el.appendChild(cell);
+      return cell;
+    });
+    setOdo(el, +el.dataset.v);
+  }
+  function setOdo(el, v) {
+    var str = Number(v).toLocaleString("en-US");
+    el.odoCells.forEach(function (cell, i) {
+      if (cell.odoReel) cell.odoReel.style.transform = "translateY(-" + str[i] * ODO_H + "px)";
+    });
+  }
+  ["st-players2", "st-tables"].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el) buildOdo(el);
+  });
+
   // live-feel: stats drift gently like real counters
   (function () {
     if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -1526,9 +1571,13 @@
           if (delta === 0) delta = Math.random() < 0.5 ? -1 : 1;
           v = Math.max(d.min, Math.min(d.max, v + delta));
           el.dataset.v = v;
-          el.textContent = v.toLocaleString("en-US");
-          el.classList.add("tick");
-          setTimeout(function () { el.classList.remove("tick"); }, 60);
+          if (el.odoCells) {
+            setOdo(el, v);
+          } else {
+            el.textContent = v.toLocaleString("en-US");
+            el.classList.add("tick");
+            setTimeout(function () { el.classList.remove("tick"); }, 60);
+          }
           loop();
         }, 3500 + Math.random() * 6500);
       })();
