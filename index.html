@@ -168,32 +168,35 @@
   a:hover { border-bottom-color: var(--accent-deep); }
 
   /* ===== right ad rail — wocg look, full height like Online Solitaire ===== */
-  :root { --adrail-w: 316px; }
+  :root { --adrail-w: 336px; }
   body { padding-right: var(--adrail-w); }
   #adrail {
     position: fixed; top: 0; right: 0; bottom: 0; width: var(--adrail-w); z-index: 15;
-    box-sizing: border-box; padding: 8px 8px 0;
+    box-sizing: border-box; padding: 8px;
     background: rgba(0, 0, 0, .08);
     box-shadow: inset 1px 0 0 rgba(0, 0, 0, .08);
     display: flex; flex-direction: column; align-items: center; gap: 8px;
     overflow: hidden;
   }
   #adrail .adslot {
-    width: 300px; flex-shrink: 0;
+    width: 300px; height: 250px; flex-shrink: 0;
     background: rgba(255, 255, 255, .85);
     box-shadow: 0 1px 3px rgba(0, 0, 0, .1);
-    display: flex; align-items: center; justify-content: center;
-    color: rgba(0, 0, 0, .32);
-    font-family: -apple-system, "Helvetica Neue", Arial, sans-serif;
-    font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
   }
-  #adrail .adslot.medrec { height: 250px; }
-  #adrail .adslot.sidewall { flex-shrink: 1; height: 600px; min-height: 250px; }
+  #adrail .adslot img, #adrail .advideo img { display: block; width: 100%; height: 100%; }
+  #adrail .advideo {
+    width: 300px; height: 170px; flex-shrink: 0; margin-top: auto;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .1);
+  }
   #adrail .adhide {
-    margin-top: auto; padding: 3px 0 5px;
+    width: 100%; flex-shrink: 0;
+    border: none; cursor: pointer; border-radius: 6px;
+    background-color: #A5D8FF; color: #1971C2;
     font-family: -apple-system, "Helvetica Neue", Arial, sans-serif;
-    font-size: 11px; line-height: 16px; color: rgba(0, 0, 0, .45); cursor: pointer;
+    font-size: 14px; font-weight: bold; line-height: 30px; padding: 0;
   }
+  #adrail .adhide:hover { background-color: #9ACFF8; }
+  #adrail .adhide:active { transform: scale(0.98); }
   @media (max-width: 1100px) {
     :root { --adrail-w: 0px; }
     #adrail { display: none; }
@@ -826,9 +829,10 @@
 <body class="evernote play-raph layout-heroed16 anim-none font-vollkorn shadow-soft edge-softlight tex-grain cat-split">
 
 <aside id="adrail" aria-hidden="true">
-  <div class="adslot medrec">Advertisement</div>
-  <div class="adslot sidewall">Advertisement</div>
-  <div class="adhide">Hide ads</div>
+  <div class="adslot"><img src="adMedrec1.png" width="300" height="250" alt=""></div>
+  <div class="adslot"><img src="adMedrec2.png" width="300" height="250" alt=""></div>
+  <div class="advideo"><img src="adVideo.png" width="300" height="170" alt=""></div>
+  <button type="button" class="adhide">Hide ads</button>
 </aside>
 
 <div class="switchzone"></div>
