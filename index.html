@@ -167,10 +167,42 @@
   a { color: var(--accent-deep); text-decoration: none; border-bottom: 1px solid var(--hairline); }
   a:hover { border-bottom-color: var(--accent-deep); }
 
+  /* ===== right ad rail — wocg look, full height like Online Solitaire ===== */
+  :root { --adrail-w: 316px; }
+  body { padding-right: var(--adrail-w); }
+  #adrail {
+    position: fixed; top: 0; right: 0; bottom: 0; width: var(--adrail-w); z-index: 15;
+    box-sizing: border-box; padding: 8px 8px 0;
+    background: rgba(0, 0, 0, .08);
+    box-shadow: inset 1px 0 0 rgba(0, 0, 0, .08);
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    overflow: hidden;
+  }
+  #adrail .adslot {
+    width: 300px; flex-shrink: 0;
+    background: rgba(255, 255, 255, .85);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .1);
+    display: flex; align-items: center; justify-content: center;
+    color: rgba(0, 0, 0, .32);
+    font-family: -apple-system, "Helvetica Neue", Arial, sans-serif;
+    font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+  }
+  #adrail .adslot.medrec { height: 250px; }
+  #adrail .adslot.sidewall { flex-shrink: 1; height: 600px; min-height: 250px; }
+  #adrail .adhide {
+    margin-top: auto; padding: 3px 0 5px;
+    font-family: -apple-system, "Helvetica Neue", Arial, sans-serif;
+    font-size: 11px; line-height: 16px; color: rgba(0, 0, 0, .45); cursor: pointer;
+  }
+  @media (max-width: 1100px) {
+    :root { --adrail-w: 0px; }
+    #adrail { display: none; }
+  }
+
   /* anonymous switchers — never themed; hidden until you hover the top edge */
-  .switchzone { position: fixed; top: 0; left: 0; right: 0; height: 16px; z-index: 21; }
+  .switchzone { position: fixed; top: 0; left: 0; right: var(--adrail-w); height: 16px; z-index: 21; }
   .switchbar {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 22;
+    position: fixed; top: 0; left: 0; right: var(--adrail-w); z-index: 22;
     transform: translateY(-100%);
     transition: transform .06s ease-out;
     padding: 6px 14px;
@@ -450,7 +482,7 @@
   .tag { display:inline-block; font-size: 11px; letter-spacing: .06em; text-transform: uppercase;
          padding: 2px 8px; border-radius: 20px; background: var(--band); color: var(--muted); margin-left: 8px; vertical-align: 2px;}
   .toast {
-    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+    position: fixed; bottom: 24px; left: calc(50% - var(--adrail-w) / 2); transform: translateX(-50%) translateY(80px);
     background: var(--ink); color: var(--canvas); padding: 9px 18px; border-radius: 8px;
     font-size: 13.5px; transition: transform .18s ease; font-family: ui-monospace, Menlo, monospace;
   }
@@ -792,6 +824,12 @@
 </style>
 </head>
 <body class="evernote play-raph layout-heroed16 anim-none font-vollkorn shadow-soft edge-softlight tex-grain cat-split">
+
+<aside id="adrail" aria-hidden="true">
+  <div class="adslot medrec">Advertisement</div>
+  <div class="adslot sidewall">Advertisement</div>
+  <div class="adhide">Hide ads</div>
+</aside>
 
 <div class="switchzone"></div>
 <div class="switchbar">
