@@ -408,6 +408,8 @@
   .heroarea { position: relative; overflow: hidden; min-height: 230px; }
   .heroarea > * { position: relative; z-index: 1; }
   .stats { display: flex; align-items: center; justify-content: center; gap: 9px; margin-top: 12px; flex-wrap: wrap; font-size: 14px; color: var(--muted); }
+  body:not(.stats-brief) .statsBrief { display: none; }
+  body.stats-brief .statsFull { display: none; }
   .st { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
   .stats .sep { opacity: 0.55; }
   .sicon { width: 15px; height: 15px; color: var(--second); flex-shrink: 0; }
@@ -830,6 +832,7 @@
   <div class="swgroup">
     <div class="swhead">Page</div>
     <label class="ctl"><span>Catalog layout</span><select id="sel-catalog"></select></label>
+    <label class="ctl"><span>Live stats</span><select id="sel-stats"></select></label>
     <label class="ctl"><span>Hero title</span><select id="titlesel"></select></label>
     <label class="ctl"><span>Hero subtitle</span><select id="subsel"></select></label>
   </div>
@@ -852,7 +855,10 @@
   <div class="heroarea">
     <h3 id="herotitle">Play cards in good company.</h3>
     <p id="herosub">Classic card games. Join a table or play solo. Free to play, hard to stop.</p>
-    <div class="stats">
+    <div class="stats statsBrief">
+      <span class="st"><span class="ldot"></span><b id="st-players2" data-v="1214">1,214</b> players online &amp; <b id="st-tables" data-v="46">46</b> open tables</span>
+    </div>
+    <div class="stats statsFull">
       <span class="st"><span class="ldot"></span><b id="st-players" data-v="1214">1,214</b> players online</span>
       <span class="sep">·</span>
       <span class="st"><svg class="sicon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="4" y="5.8" width="8.6" height="12.4" rx="1.6" transform="rotate(-10 8.3 12)" stroke="currentColor" stroke-width="1.6" opacity=".6"/><rect x="10.6" y="4.6" width="9" height="13.4" rx="1.6" transform="rotate(9 15.1 11.3)" fill="currentColor"/></svg><b id="st-games" data-v="143">143</b> games live</span>
@@ -1266,14 +1272,18 @@
     ["sampler", "Category sampler + full sections"],
     ["split", "Popular grid + categories"]
   ];
-  var curShadow = "soft", curEdge = "softlight", curTexture = "grain", curCatalog = "split";
+  var STATSLINES = [
+    ["full", "Three counters (players / games / seats)"],
+    ["brief", "One line: players & open tables"]
+  ];
+  var curShadow = "soft", curEdge = "softlight", curTexture = "grain", curCatalog = "split", curStats = "full";
   function moveLobby() {
     var lobby = document.getElementById("lobbyDemo");
     var slot = document.getElementById(curCatalog === "merged" || curCatalog === "mergedflat" ? "lobby-slot-bottom" : "lobby-slot-top");
     if (lobby && slot) slot.parentNode.insertBefore(lobby, slot.nextSibling);
   }
   function applyBody() {
-    document.body.className = curBase + " play-" + curPlay + " layout-" + curLayout + " font-" + curFont + " shadow-" + curShadow + " edge-" + curEdge + " tex-" + curTexture + " cat-" + curCatalog;
+    document.body.className = curBase + " play-" + curPlay + " layout-" + curLayout + " font-" + curFont + " shadow-" + curShadow + " edge-" + curEdge + " tex-" + curTexture + " cat-" + curCatalog + " stats-" + curStats;
     document.getElementById("sel-base").value = curBase;
     document.getElementById("sel-play").value = curPlay;
     document.getElementById("sel-layout").value = curLayout;
@@ -1282,6 +1292,7 @@
     document.getElementById("sel-edge").value = curEdge;
     document.getElementById("sel-texture").value = curTexture;
     document.getElementById("sel-catalog").value = curCatalog;
+    document.getElementById("sel-stats").value = curStats;
     moveLobby();
   }
   function buildSel(id, list, setter) {
@@ -1297,6 +1308,7 @@
   buildSel("sel-edge", EDGES, function (v) { curEdge = v; });
   buildSel("sel-texture", TEXTURES, function (v) { curTexture = v; });
   buildSel("sel-catalog", CATALOGS, function (v) { curCatalog = v; });
+  buildSel("sel-stats", STATSLINES, function (v) { curStats = v; });
 
   function swatch(nm, hx) {
     var d = document.createElement("div");
@@ -1500,7 +1512,9 @@
     var defs = [
       { id: "st-players", min: 1150, max: 1290, step: 7 },
       { id: "st-games", min: 128, max: 158, step: 2 },
-      { id: "st-seats", min: 74, max: 102, step: 3 }
+      { id: "st-seats", min: 74, max: 102, step: 3 },
+      { id: "st-players2", min: 1150, max: 1290, step: 7 },
+      { id: "st-tables", min: 38, max: 58, step: 2 }
     ];
     defs.forEach(function (d) {
       var el = document.getElementById(d.id);
