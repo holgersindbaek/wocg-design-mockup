@@ -64,12 +64,14 @@
   /* every number = the frontpage's odometer: hard-width digit cells (BuloRounded
      has no tabular figures) with rolling reels, masked top and bottom. Changes
      roll like the main page; numbers never flash green. */
-  .vcard b { display: inline-flex; vertical-align: middle; }
+  .vcard b { display: inline-flex; vertical-align: middle; position: relative; }
   .dcell { display: block; width: 0.52em; height: 1.6em; overflow: hidden;
     -webkit-mask-image: linear-gradient(transparent, #000 18%, #000 82%, transparent);
     mask-image: linear-gradient(transparent, #000 18%, #000 82%, transparent); }
   .dreel { display: block; transition: transform .75s cubic-bezier(.22,1.1,.34,1); will-change: transform; }
   .dreel span { display: block; height: 1.6em; line-height: 1.6em; text-align: center; }
+  .dcell { user-select: none; }
+  .srnum { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
   .pulseshell { position: relative; }
   .pulseshell .pspan { position: absolute; pointer-events: none; }
 
@@ -910,6 +912,31 @@
     </span></div>
   </div>
 
+  <div class="vcard">
+    <div class="vhead"><span class="vname">I5 &middot; The single-word hunt</span></div>
+    <p class="vwhy">Can the third cell be one word, so &ldquo;playing &middot; tables &middot; ___&rdquo; scans as three even beats? The candidates, best first: <b>openings</b> (the only unambiguous one &mdash; an opening is by definition free), <b>seats</b> (shortest and warmest, but could read as capacity), <b>free</b> (reads well after the other two, but free <i>what?</i>). If none of these feels right, the parallel set from I3 is the answer.</p>
+    <div class="stage" style="display:grid; gap:12px; justify-items:center;">
+      <span class="capsule pulseshell h32">
+        <span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>
+        <span class="st"><b data-k="p">1214</b> playing</span>
+        <span class="st"><b data-k="g">143</b> tables</span>
+        <span class="st"><b data-k="s">87</b> openings</span>
+      </span>
+      <span class="capsule pulseshell h32">
+        <span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>
+        <span class="st"><b data-k="p">1214</b> playing</span>
+        <span class="st"><b data-k="g">143</b> tables</span>
+        <span class="st"><b data-k="s">87</b> seats</span>
+      </span>
+      <span class="capsule pulseshell h32">
+        <span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>
+        <span class="st"><b data-k="p">1214</b> playing</span>
+        <span class="st"><b data-k="g">143</b> tables</span>
+        <span class="st"><b data-k="s">87</b> free</span>
+      </span>
+    </div>
+  </div>
+
 </div>
 <script>
 (function () {
@@ -926,8 +953,12 @@
     el.dataset.cur = s;
     if (rebuild) {
       var reel = '<span class="dreel">' + "0123456789".split("").map(function (d) { return "<span>" + d + "</span>"; }).join("") + "</span>";
-      el.innerHTML = s.split("").map(function () { return '<span class="dcell">' + reel + "</span>"; }).join("");
+      /* the srnum span is what selection and screen readers get; the reels are
+         presentation only (copying the strip must not yield digit soup) */
+      el.innerHTML = '<span class="srnum">' + s + "</span>" +
+        s.split("").map(function () { return '<span class="dcell" aria-hidden="true">' + reel + "</span>"; }).join("");
     }
+    el.querySelector(".srnum").textContent = s;
     el.querySelectorAll(".dreel").forEach(function (r, i) {
       r.style.transform = "translateY(-" + (parseInt(s[i], 10) * 1.6) + "em)";
     });
