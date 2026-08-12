@@ -1520,8 +1520,9 @@
 
   // airport-board odometers for the brief stats line
   var ODO_H = 20;
+  function fmtOdo(v) { return Number(v).toLocaleString("en-US").replace(/,/g, " "); }
   function buildOdo(el) {
-    var chars = Number(el.dataset.v).toLocaleString("en-US").split("");
+    var chars = fmtOdo(el.dataset.v).split("");
     el.odoCells = chars.map(function (c) {
       var cell = document.createElement("span");
       var isDigit = c >= "0" && c <= "9";
@@ -1545,7 +1546,7 @@
     setOdo(el, +el.dataset.v);
   }
   function setOdo(el, v) {
-    var str = Number(v).toLocaleString("en-US");
+    var str = fmtOdo(v);
     el.odoCells.forEach(function (cell, i) {
       if (cell.odoReel) cell.odoReel.style.transform = "translateY(-" + str[i] * ODO_H + "px)";
     });
