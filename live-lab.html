@@ -86,6 +86,9 @@
   .n-tick .swap, .n-fade .swap { position: relative; display: inline-block; text-align: right; height: 20px; line-height: 20px; }
   .n-tick .swap > span, .n-fade .swap > span { position: absolute; right: 0; top: 0; white-space: nowrap; }
 
+  .ksep.muted { color: #b8b2a6; }
+  .ksep.thin { letter-spacing: 0; }
+
   footer { margin-top: 44px; font-size: 12px; color: #999488; line-height: 1.7; }
   footer a { color: #7a746a; }
 </style>
@@ -97,6 +100,9 @@
 
 <h2>Pulsing dots</h2>
 <div class="grid" id="dots"></div>
+
+<h2>The comma in 1,214</h2>
+<div class="grid" id="seps"></div>
 
 <h2>Airport-style numbers</h2>
 <p class="note">All demos receive the same value changes every ~3 seconds, so you can compare them directly.</p>
@@ -133,6 +139,24 @@
       '<div class="line"><span class="dot ' + d[0] + '"></span><b>1,214</b>&nbsp;players online <span class="sep">·</span> <b>46</b>&nbsp;open tables' +
       '<span class="dot ' + d[0] + ' big"></span></div>';
     dotsEl.appendChild(card);
+  });
+
+  // ===== thousands-separator variants =====
+  var SEPS = [
+    ["1<span class='ksep'>,</span>214", "Comma (current)", "US style. What the line shows today."],
+    ["1<span class='ksep'>.</span>214", "Period", "Danish/German style: 1.214."],
+    ["1<span class='ksep thin'>&#8201;</span>214", "Thin space", "SI style: a narrow gap, no glyph. Quiet and modern."],
+    ["1<span class='ksep'>&rsquo;</span>214", "Apostrophe", "Swiss style: 1’214."],
+    ["1214", "None", "Four digits are still easy to read without a separator."],
+    ["1<span class='ksep muted'>,</span>214", "Muted comma", "The comma stays but fades back, so the digits dominate."]
+  ];
+  var sepsEl = document.getElementById("seps");
+  SEPS.forEach(function (s) {
+    var card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = '<h3>' + s[1] + '</h3><p class="src">' + s[2] + '</p>' +
+      '<div class="line"><span class="dot d-ping"></span><b>' + s[0] + '</b>&nbsp;players online <span class="sep">·</span> <b>46</b>&nbsp;open tables</div>';
+    sepsEl.appendChild(card);
   });
 
   // ===== number demos =====
