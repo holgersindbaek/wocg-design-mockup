@@ -247,20 +247,43 @@ and that beat does something special. The reference card is today's mockup behav
     ], { duration: dur || 750, easing: "cubic-bezier(0,0,.2,1)" }).onfinish = function () { r.remove(); };
   }
 
-  function swell(dot, peak, dur) {
-    dot.animate([
-      { transform: "scale(1)", easing: "cubic-bezier(0,0,.2,1)" },
-      { transform: "scale(" + peak + ")", offset: .26, easing: "cubic-bezier(.45,0,.6,1)" },
-      { transform: "scale(.955)", offset: .56, easing: "ease-out" },
-      { transform: "scale(1)", offset: .74 },
-      { transform: "scale(1)" }
-    ], { duration: dur });
+  function springSwell(dot, frames, dur) {
+    dot.animate(frames.map(function (f) {
+      var k = { transform: "scale(" + f[0] + ")" };
+      if (f[1] !== undefined) k.offset = f[1];
+      if (f[2]) k.easing = f[2];
+      return k;
+    }), { duration: dur });
+  }
+  function changeBeat(dot, frames, dur) {
+    fireRing(dot, 3, 850, .6);
+    springSwell(dot, frames, dur);
   }
   var PINGS = [
     ["Current: constant ping (reference)", "Today's mockup: a 1.5s loop on its own clock; the numbers change whenever they happen to.", "p-current", null],
-    ["Swell", "Normal beats ping like the constant reference, dot perfectly still. Only on the change beat the dot swells with the bigger ring, on the ring's own curve.", "", function (dot) {
-      fireRing(dot, 3, 850, .6);
-      swell(dot, 1.4, 850);
+    ["Spring: gentle", "Up to 1.4, back down to 0.90, settle. The undershoot is finally visible but stays polite.", "", function (dot) {
+      changeBeat(dot, [
+        [1, 0, "cubic-bezier(0,0,.2,1)"], [1.4, .26, "cubic-bezier(.45,0,.6,1)"],
+        [.9, .5, "ease-out"], [1, .68], [1, 1]
+      ], 850);
+    }],
+    ["Spring: clear", "Down to 0.82, one small rebound above rest, then settle. Reads unmistakably as a spring.", "", function (dot) {
+      changeBeat(dot, [
+        [1, 0, "cubic-bezier(0,0,.2,1)"], [1.4, .26, "cubic-bezier(.45,0,.6,1)"],
+        [.82, .48, "ease-in-out"], [1.05, .64, "ease-out"], [1, .8], [1, 1]
+      ], 850);
+    }],
+    ["Spring: bouncy", "Two wobbles before it rests: 0.78, up to 1.08, dip to 0.95, done. The most alive.", "", function (dot) {
+      changeBeat(dot, [
+        [1, 0, "cubic-bezier(0,0,.2,1)"], [1.4, .24, "cubic-bezier(.45,0,.6,1)"],
+        [.78, .44, "ease-in-out"], [1.08, .6, "ease-in-out"], [.95, .74, "ease-out"], [1, .86], [1, 1]
+      ], 900);
+    }],
+    ["Spring: snappy", "The whole gesture in 0.6s: quick up, quick down to 0.85, settle. Tight and energetic.", "", function (dot) {
+      changeBeat(dot, [
+        [1, 0, "cubic-bezier(0,0,.2,1)"], [1.4, .3, "cubic-bezier(.5,0,.5,1)"],
+        [.85, .52, "ease-out"], [1, .66], [1, 1]
+      ], 620);
     }]
   ];
 
