@@ -409,18 +409,29 @@
   .heroarea > * { position: relative; z-index: 1; }
   .stats { display: flex; align-items: center; justify-content: center; gap: 9px; margin-top: 12px; flex-wrap: wrap; font-size: 14px; color: var(--muted); }
   body:not(.stats-brief) .statsBrief { display: none; }
-  body.stats-brief .statsFull, body.stats-capsule .statsFull, body.stats-sign .statsFull { display: none; }
+  body.stats-brief .statsFull, body.stats-capsule .statsFull, body.stats-sign .statsFull, body.stats-signsolid .statsFull, body.stats-signbtn .statsFull { display: none; }
   body:not(.stats-capsule) .statsCapsule { display: none; }
-  body:not(.stats-sign) .statsSign { display: none; }
-  /* the LIVE sign strip: WOCG's light-green button recipe (the lightblue
-     button's formula in the success hue: bg #C0EB75, lime ink #5C940D) leading
-     bare, separator-free counts - spacing does the dividing */
-  .statsSign { gap: 20px; }
-  .statsSign .signchip { display: inline-flex; align-items: center; gap: 6px; height: 22px; padding: 0 10px; border-radius: 7px; background: #C0EB75; box-shadow: var(--btnshadow); }
-  .statsSign .greencap { font-size: 11px; font-weight: bold; letter-spacing: .1em; color: #5C940D; position: relative; top: 1px; }
-  .statsSign .ldot { background: #5C940D; }
-  .statsSign .lring { background: #5C940D; }
+  body:not(.stats-sign):not(.stats-signsolid):not(.stats-signbtn) .statsSign { display: none; }
+  /* the LIVE sign strip leading bare, separator-free counts. Base recipe = the
+     lightblue button's formula on Mantine's GREEN scale (the codebase's own
+     greens are lime): blue-2 #A5D8FF / blue-8 #1971C2 becomes green-2 #B2F2BB /
+     green-8 #2B8A3E, which sits in the live dot's family */
+  .statsSign { gap: 15px; }
+  .statsSign .signchip { display: inline-flex; align-items: center; gap: 6px; height: 22px; padding: 0 10px; border-radius: 7px; background: #B2F2BB; box-shadow: var(--btnshadow); }
+  .statsSign .greencap { font-size: 11px; font-weight: bold; letter-spacing: .1em; color: #2B8A3E; position: relative; top: 1px; }
+  .statsSign .ldot { background: #2B8A3E; }
+  .statsSign .lring { background: #2B8A3E; }
   .statsSign .bs { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+  /* solid sign (L2): full green plate, everything white */
+  body.stats-signsolid .statsSign .signchip { background: #2f9e44; }
+  body.stats-signsolid .statsSign .greencap { color: #fff; }
+  body.stats-signsolid .statsSign .ldot { background: #fff; }
+  body.stats-signsolid .statsSign .lring { background: #fff; }
+  /* white button sign (L4): surface chip, green dot and word */
+  body.stats-signbtn .statsSign .signchip { background: var(--surface); }
+  body.stats-signbtn .statsSign .greencap { color: #2f9e44; }
+  body.stats-signbtn .statsSign .ldot { background: #2f9e44; }
+  body.stats-signbtn .statsSign .lring { background: #2f9e44; }
   /* the live-light capsule strip: 32px shell on the button chrome; dot at the
      eye-approved 13px left inset (4px shell + 9px cell) vs 12px top; LIVE at
      11px caps nudged 1px against BuloRounded's ascent-heavy centering; digits
@@ -1339,6 +1350,8 @@
   var STATSLINES = [
     ["capsule", "Capsule: walled live-light strip"],
     ["sign", "Sign: light-green button + bare counts"],
+    ["signsolid", "Sign: solid green"],
+    ["signbtn", "Sign: white button"],
     ["full", "Three counters (players / games / seats)"],
     ["brief", "One line: players & open tables"]
   ];
