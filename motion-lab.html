@@ -60,37 +60,6 @@
   .p-current::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: #2f9e44;
     animation: ping 1.5s cubic-bezier(0,0,.2,1) infinite; }
   @keyframes ping { 0% { transform: scale(1); opacity: .55; } 75%, 100% { transform: scale(2.6); opacity: 0; } }
-  .p-slow::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: #2f9e44;
-    animation: pingslow 3.4s cubic-bezier(0,0,.2,1) infinite; }
-  @keyframes pingslow { 0% { transform: scale(1); opacity: .55; } 30%, 100% { transform: scale(2.6); opacity: 0; } }
-  .p-soft::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: #2f9e44;
-    animation: pingsoft 2.4s ease-out infinite; }
-  @keyframes pingsoft { 0% { transform: scale(1); opacity: .3; } 60%, 100% { transform: scale(1.9); opacity: 0; } }
-  .p-double::before, .p-double::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: #2f9e44;
-    animation: pingdouble 3.6s cubic-bezier(0,0,.2,1) infinite; }
-  .p-double::after { animation-delay: .28s; }
-  @keyframes pingdouble { 0% { transform: scale(1); opacity: .5; } 22%, 100% { transform: scale(2.4); opacity: 0; } }
-  .glowing { animation: dotglow .9s ease-out; }
-  @keyframes dotglow { 0% { box-shadow: 0 0 0 0 rgba(47,158,68,.0); } 30% { box-shadow: 0 0 7px 2px rgba(47,158,68,.55); } 100% { box-shadow: 0 0 0 0 rgba(47,158,68,0); } }
-  /* beating dots: core (::before) beats, ring (::after) pings in sync */
-  .p-beat, .p-lub, .p-lub2 { background: transparent; }
-  .p-beat::before, .p-lub::before, .p-lub2::before,
-  .p-beat::after, .p-lub::after, .p-lub2::after {
-    content: ""; position: absolute; inset: 0; border-radius: 50%; background: #2f9e44; }
-  .p-beat::before { animation: dotbounce 1.5s cubic-bezier(.3,.7,.3,1) infinite; }
-  .p-beat::after { animation: ping 1.5s cubic-bezier(0,0,.2,1) infinite; }
-  @keyframes dotbounce { 0% { transform: scale(1); } 10% { transform: scale(1.38); }
-    26% { transform: scale(.95); } 38% { transform: scale(1); } 100% { transform: scale(1); } }
-  .p-lub::before, .p-lub2::before { animation: lubdub 1.9s ease-in-out infinite; }
-  @keyframes lubdub { 0% { transform: scale(1); } 7% { transform: scale(1.34); } 14% { transform: scale(1); }
-    21% { transform: scale(1.2); } 28% { transform: scale(1); } 100% { transform: scale(1); } }
-  .p-lub::after { animation: pinglub 1.9s cubic-bezier(0,0,.2,1) infinite; }
-  @keyframes pinglub { 0% { transform: scale(1); opacity: .55; } 45%, 100% { transform: scale(2.6); opacity: 0; } }
-  .p-lub2::after { animation: ringlubdub 1.9s linear infinite; }
-  @keyframes ringlubdub { 0% { transform: scale(1); opacity: .5; } 16% { transform: scale(2.3); opacity: 0; }
-    20% { transform: scale(1); opacity: 0; } 22% { transform: scale(1); opacity: .4; }
-    42% { transform: scale(2.1); opacity: 0; } 100% { transform: scale(2.1); opacity: 0; } }
-
   .numwrap { display: inline-flex; font-weight: bold; color: #2b2722; }
   .cell { display: block; height: 20px; line-height: 20px; overflow: hidden; }
   .cell.digit { width: .52em;
@@ -113,7 +82,8 @@ Section one explores that. Section two refines the ping live counter.</p>
 <div class="grid" id="ambient"></div>
 
 <h2>Ping live-counter variations</h2>
-<p class="note">All lines share the same value changes (every ~4 s), so the dots can be compared honestly.</p>
+<p class="note">All variants pulse constantly at 1.2 s. Every sixth beat (7.2 s) the numbers roll exactly on the ping,
+and that beat does something special. The reference card is today's mockup behavior.</p>
 <div class="grid" id="pings"></div>
 
 <script>
@@ -277,72 +247,75 @@ Section one explores that. Section two refines the ping live counter.</p>
     ], { duration: dur || 750, easing: "cubic-bezier(0,0,.2,1)" }).onfinish = function () { r.remove(); };
   }
 
+  function bounce(dot) {
+    dot.animate([
+      { transform: "scale(1)" }, { transform: "scale(1.4)" },
+      { transform: "scale(.95)" }, { transform: "scale(1)" }
+    ], { duration: 480, easing: "cubic-bezier(.3,.7,.3,1)" });
+  }
   var PINGS = [
-    ["Current: constant ping", "The 1.5s loop now in the mockup. The ring pings, but the dot itself never moves.", "p-current", null],
-    ["Synced ping (recommended)", "One clock: a ring every 2.4s, and every third ping the numbers roll exactly on the beat while the dot bounces and the ring flies farther. Rhythm always, emphasis only when the data moves.", "", null, "synced"],
-    ["Bounce ping", "Same constant cadence, but the dot bounces as it throws each ring, like the ping costs it a push.", "p-beat", null],
-    ["Heartbeat ping", "Lub-dub: the dot beats twice, the stronger beat throws one ring. The most organic connection.", "p-lub", null],
-    ["Heartbeat, double ring", "Lub-dub with a ripple on each beat: a strong ring, then a soft one. Richer, slightly busier.", "p-lub2", null],
-    ["Event ping", "The dot only pings when a number actually changes. Honest like a monitor.", "", function (dot) { fireRing(dot); }],
-    ["Event ping + glow", "On change the dot also glows briefly. A slightly warmer version of the event ping.", "", function (dot) {
-      fireRing(dot);
-      dot.classList.remove("glowing"); void dot.offsetWidth; dot.classList.add("glowing");
+    ["Current: constant ping (reference)", "Today's mockup: a 1.5s loop on its own clock; the numbers change whenever they happen to.", "p-current", null],
+    ["1.2s + bigger ring", "On the change beat the ring flies half again as far and a touch brighter. The subtlest tell.", "", function (dot) {
+      fireRing(dot, 3.7, 950, .65);
     }],
-    ["Burst ping", "Three quick ripples in a row when something changes. A flurry of activity.", "", function (dot) {
-      fireRing(dot); setTimeout(function () { fireRing(dot); }, 190); setTimeout(function () { fireRing(dot); }, 380);
+    ["1.2s + double burst", "On the change beat the ring gets a quick echo right behind it. A little flurry of life.", "", function (dot) {
+      fireRing(dot, 3, 820, .6);
+      setTimeout(function () { fireRing(dot, 2.3, 650, .4); }, 170);
     }],
-    ["Slow ping", "The constant loop, but a ripple only every 3.4s. Same idea, half the noise.", "p-slow", null],
-    ["Soft ping", "Constant, but smaller and fainter (scale 1.9, 30% opacity). The most discreet loop.", "p-soft", null],
-    ["Double ring", "Two rings close together from a static dot, then rest. For comparison with the heartbeats.", "p-double", null]
+    ["1.2s + bounce", "On the change beat the dot itself bounces as it pings, like it pushed the new number out.", "", function (dot) {
+      bounce(dot);
+      fireRing(dot, 2.9, 820, .6);
+    }],
+    ["1.2s + grand beat", "Bounce, big ring, and a soft echo together. The change becomes a tiny event; the rest stays calm.", "", function (dot) {
+      bounce(dot);
+      fireRing(dot, 3.7, 950, .65);
+      setTimeout(function () { fireRing(dot, 2.4, 700, .4); }, 180);
+    }]
   ];
 
   var pingsEl = document.getElementById("pings");
   var players = 1214, tables = 46;
   var rows = [];
+  function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
   PINGS.forEach(function (p) {
     var c = card(pingsEl, p[0], p[1]);
     var line = el("div", "line");
     var dot = el("span", "dot " + p[2]);
     line.appendChild(dot);
     var o1 = new Odo(line, players);
-    line.appendChild(document.createTextNode(" players online "));
+    line.appendChild(document.createTextNode(" players online "));
     line.appendChild(el("span", "sep", "·"));
     line.appendChild(document.createTextNode(" "));
     var o2 = new Odo(line, tables);
-    line.appendChild(document.createTextNode(" open tables"));
+    line.appendChild(document.createTextNode(" open tables"));
     c.appendChild(line);
-    if (p[4] === "synced") {
-      (function (dot, o1, o2) {
+    if (p[3]) {
+      (function (dot, o1, o2, special) {
         var sp = players, st = tables, beat = 0;
         setInterval(function () {
           beat++;
-          var change = beat % 3 === 0;
-          fireRing(dot, change ? 3.1 : 2.6, change ? 900 : 750);
-          if (change) {
-            dot.animate([
-              { transform: "scale(1)" }, { transform: "scale(1.35)" },
-              { transform: "scale(.95)" }, { transform: "scale(1)" }
-            ], { duration: 480, easing: "cubic-bezier(.3,.7,.3,1)" });
+          if (beat % 6 === 0) {
+            special(dot);
             sp = clamp(sp + Math.round((Math.random() * 2 - 1) * 18), 1150, 1290);
             st = clamp(st + Math.round((Math.random() * 2 - 1) * 5), 38, 58);
             o1.set(sp);
             o2.set(st);
+          } else {
+            fireRing(dot, 2.6, 750, .5);
           }
-        }, 2400);
-      })(dot, o1, o2);
+        }, 1200);
+      })(dot, o1, o2, p[3]);
     } else {
-      rows.push({ dot: dot, insts: [o1, o2], hook: p[3] });
+      rows.push({ dot: dot, insts: [o1, o2] });
     }
   });
 
-  function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
   setInterval(function () {
     players = clamp(players + Math.round((Math.random() * 2 - 1) * 18), 1150, 1290);
     tables = clamp(tables + Math.round((Math.random() * 2 - 1) * 5), 38, 58);
     rows.forEach(function (r) {
       r.insts[0].set(players);
       r.insts[1].set(tables);
-      if (r.hook) r.hook(r.dot, r.insts);
     });
   }, 4000);
 </script>
