@@ -23,21 +23,12 @@
 
   /* ===== 2 suit blobs under grain ===== */
   .blobs .suitblob { position: absolute; font-weight: bold; will-change: transform;
+    text-shadow: 0 2px 0 rgba(255,255,255,.55);
     animation: sfloat ease-in-out infinite alternate; }
-  @keyframes sfloat { from { transform: translate(0, 0) rotate(-7deg); }
-    to { transform: translate(var(--dx, 50px), var(--dy, -30px)) rotate(9deg); } }
+  @keyframes sfloat { from { transform: translate(0, 0) rotate(-6deg); }
+    to { transform: translate(var(--dx, 30px), var(--dy, -22px)) rotate(7deg); } }
   .grain { position: absolute; inset: 0; background: url(noise.png); background-size: 256px;
     mix-blend-mode: overlay; opacity: .5; image-rendering: pixelated; pointer-events: none; }
-
-  /* ===== 3 breathing fan ===== */
-  .fanwrap { position: absolute; left: 50%; bottom: -26px; animation: fansway 7s ease-in-out infinite; transform-origin: 0 90px; }
-  @keyframes fansway { 0%, 100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }
-  .fcard { position: absolute; left: -27px; bottom: 0; width: 54px; height: 76px; border-radius: 6px;
-    background: #fff; border: 1px solid rgba(0,0,0,.16); box-shadow: 0 3px 8px rgba(0,0,0,.12);
-    display: flex; align-items: center; justify-content: center; font-size: 21px; font-weight: bold;
-    transform-origin: 50% 130%; animation: fbob 7s ease-in-out infinite; }
-  @keyframes fbob { 0%, 100% { margin-bottom: 0; } 50% { margin-bottom: 5px; } }
-  .fcard.red { color: #c0392b; }
 
   /* ===== 5 felt lamp ===== */
   .felt { background: url(green-felt.jpg) center/cover; }
@@ -61,12 +52,6 @@
   .dealins .cornercard { position: absolute; width: 34px; height: 48px; background: #fff; border-radius: 4px;
     border: 1px solid rgba(0,0,0,.14); display: flex; align-items: center; justify-content: center;
     font-size: 15px; font-weight: bold; }
-
-  /* ===== 8 trick loop ===== */
-  .trick .mini { position: absolute; width: 40px; height: 56px; background: #fff; border-radius: 5px;
-    border: 1px solid rgba(0,0,0,.16); box-shadow: 0 2px 7px rgba(0,0,0,.13);
-    display: flex; align-items: center; justify-content: center; font-size: 14.5px; font-weight: bold; }
-  .trick .mini.red { color: #c0392b; }
 
   /* ===== stats lines & dots ===== */
   .line { display: flex; align-items: center; gap: 8px; font-size: 15px; color: #5c5850; min-height: 24px; }
@@ -165,66 +150,25 @@ Section one explores that. Section two refines the ping live counter.</p>
 
   // 2 — suit blobs under grain
   (function () {
-    var c = card(ambient, "Floating suit blobs", "Soft-focus suits in the deck's own colors drift at different depths: big and blurry far back, small and sharper up front.");
+    var c = card(ambient, "Floating suit blobs", "Suits in the room's warm dusty colors bob like balloons: big soft ones far back, small crisp ones up front. Cozy, not spooky.");
     var d = el("div", "demo blobs");
     var defs = [
-      ["♥", "#c0392b", 104, 9, "6%", "34%", 74, -26, 23],
-      ["♠", "#3a352c", 68, 6, "34%", "8%", -42, 44, 17],
-      ["♦", "#c0392b", 42, 4, "58%", "56%", 54, -34, 15],
-      ["♣", "#3a352c", 84, 7, "72%", "20%", -60, 30, 20],
-      ["♥", "#c0392b", 30, 2.5, "44%", "70%", 38, -22, 12],
-      ["♠", "#3a352c", 24, 2, "20%", "66%", -30, -26, 13]
+      ["♥", "#E2795F", 92, 3.5, "6%", "32%", 34, -20, 11],
+      ["♠", "#7FA06A", 62, 2.5, "33%", "10%", -26, 26, 9],
+      ["♦", "#E8A03E", 44, 1.5, "57%", "54%", 30, -24, 8],
+      ["♣", "#8FA6B8", 76, 3, "72%", "22%", -32, 20, 10],
+      ["♥", "#D98C8C", 32, 1, "44%", "68%", 24, -16, 7],
+      ["♦", "#E8B45F", 26, .8, "19%", "64%", -20, -18, 7.5]
     ];
     defs.forEach(function (b, i) {
       var s = el("span", "suitblob", b[0]);
-      s.style.cssText = "color:" + b[1] + ";font-size:" + b[2] + "px;filter:blur(" + b[3] + "px);opacity:.42;" +
+      s.style.cssText = "color:" + b[1] + ";font-size:" + b[2] + "px;filter:blur(" + b[3] + "px);opacity:.75;" +
         "left:" + b[4] + ";top:" + b[5] + ";--dx:" + b[6] + "px;--dy:" + b[7] + "px;" +
-        "animation-duration:" + b[8] + "s;animation-delay:-" + (i * 3.7) + "s;";
+        "animation-duration:" + b[8] + "s;animation-delay:-" + (i * 2.9) + "s;";
       d.appendChild(s);
     });
     d.appendChild(el("div", "grain"));
     c.appendChild(d);
-  })();
-
-  // 3 — breathing fan
-  (function () {
-    var c = card(ambient, "The breathing fan", "A held hand of cards that sways and breathes like a patient player. Anchors the hero without demanding attention.");
-    var d = el("div", "demo");
-    var wrap = el("div", "fanwrap");
-    var faces = [["A", ""], ["K", "red"], ["Q", ""], ["J", "red"], ["10", ""]];
-    var suits = ["♠", "♥", "♣", "♦", "♠"];
-    faces.forEach(function (f, i) {
-      var fc = el("div", "fcard " + f[1], f[0] + suits[i]);
-      fc.style.transform = "rotate(" + ((i - 2) * 13) + "deg)";
-      fc.style.animationDelay = (i * .18) + "s";
-      wrap.appendChild(fc);
-    });
-    d.appendChild(wrap);
-    c.appendChild(d);
-  })();
-
-  // 4 — riffle ribbon
-  (function () {
-    var c = card(ambient, "The riffle", "Every ten seconds a ribbon of cards arcs across and is gone. A blink of showmanship, then quiet.");
-    var d = el("div", "demo");
-    c.appendChild(d);
-    function run() {
-      for (var i = 0; i < 9; i++) (function (i) {
-        setTimeout(function () {
-          var m = el("div", "", "");
-          m.style.cssText = "position:absolute;width:34px;height:48px;background:#fff;border-radius:4px;" +
-            "border:1px solid rgba(0,0,0,.15);box-shadow:0 2px 6px rgba(0,0,0,.14);left:-40px;top:120px;";
-          d.appendChild(m);
-          m.animate([
-            { transform: "translate(0,0) rotate(-22deg)" },
-            { transform: "translate(" + (d.clientWidth * .55) + "px,-72px) rotate(4deg)" },
-            { transform: "translate(" + (d.clientWidth + 60) + "px,-30px) rotate(26deg)" }
-          ], { duration: 1150, easing: "cubic-bezier(.3,.4,.4,1)" }).onfinish = function () { m.remove(); };
-        }, i * 55);
-      })(i);
-    }
-    run();
-    setInterval(run, 10000);
   })();
 
   // 5 — felt lamp (follows the mouse)
@@ -297,47 +241,6 @@ Section one explores that. Section two refines the ping live counter.</p>
     setInterval(spawn, 5200);
   })();
 
-  // 8 — trick loop
-  (function () {
-    var c = card(ambient, "The endless trick", "Four cards played to the middle, swept to the winner, dealt again. A tiny living table.");
-    var d = el("div", "demo trick");
-    c.appendChild(d);
-    var defs = [
-      ["A♠", "", "50%", "-64px", "8%", "0deg"],
-      ["K♥", "red", "104%", "42%", "31%", "11deg"],
-      ["Q♦", "red", "50%", "115%", "54%", "-8deg"],
-      ["J♣", "", "-52px", "42%", "77%", "17deg"]
-    ];
-    function round() {
-      d.querySelectorAll(".mini").forEach(function (m) { m.remove(); });
-      var cards = [];
-      defs.forEach(function (df, i) {
-        setTimeout(function () {
-          var m = el("div", "mini " + df[1], df[0]);
-          m.style.cssText = "left:" + df[2] + ";top:" + df[3] + ";z-index:" + (i + 1) + ";";
-          d.appendChild(m);
-          cards.push(m);
-          var cx = d.clientWidth / 2 - 20 - m.offsetLeft, cy = d.clientHeight / 2 - 28 - m.offsetTop;
-          m.animate([
-            { transform: "translate(0,0) rotate(0deg)" },
-            { transform: "translate(" + cx + "px," + cy + "px) rotate(" + df[5] + ")" }
-          ], { duration: 520, easing: "cubic-bezier(.25,.9,.3,1)", fill: "forwards" });
-        }, i * 620);
-      });
-      setTimeout(function () {
-        cards.forEach(function (m, i) {
-          m.animate([
-            { opacity: 1, transform: getComputedStyle(m).transform },
-            { opacity: 0, transform: "translate(" + (d.clientWidth - m.offsetLeft) + "px,-90px) rotate(24deg)" }
-          ], { duration: 560, delay: i * 40, easing: "ease-in", fill: "forwards" })
-            .onfinish = function () { m.remove(); };
-        });
-      }, 4000);
-    }
-    round();
-    setInterval(round, 6400);
-  })();
-
   // ---------- section 2: ping variations ----------
   var THIN = " ";
   function fmt(v) { return Number(v).toLocaleString("en-US").replace(/,/g, THIN); }
@@ -376,6 +279,7 @@ Section one explores that. Section two refines the ping live counter.</p>
 
   var PINGS = [
     ["Current: constant ping", "The 1.5s loop now in the mockup. The ring pings, but the dot itself never moves.", "p-current", null],
+    ["Synced ping (recommended)", "One clock: a ring every 2.4s, and every third ping the numbers roll exactly on the beat while the dot bounces and the ring flies farther. Rhythm always, emphasis only when the data moves.", "", null, "synced"],
     ["Bounce ping", "Same constant cadence, but the dot bounces as it throws each ring, like the ping costs it a push.", "p-beat", null],
     ["Heartbeat ping", "Lub-dub: the dot beats twice, the stronger beat throws one ring. The most organic connection.", "p-lub", null],
     ["Heartbeat, double ring", "Lub-dub with a ripple on each beat: a strong ring, then a soft one. Richer, slightly busier.", "p-lub2", null],
@@ -407,7 +311,28 @@ Section one explores that. Section two refines the ping live counter.</p>
     var o2 = new Odo(line, tables);
     line.appendChild(document.createTextNode(" open tables"));
     c.appendChild(line);
-    rows.push({ dot: dot, insts: [o1, o2], hook: p[3] });
+    if (p[4] === "synced") {
+      (function (dot, o1, o2) {
+        var sp = players, st = tables, beat = 0;
+        setInterval(function () {
+          beat++;
+          var change = beat % 3 === 0;
+          fireRing(dot, change ? 3.1 : 2.6, change ? 900 : 750);
+          if (change) {
+            dot.animate([
+              { transform: "scale(1)" }, { transform: "scale(1.35)" },
+              { transform: "scale(.95)" }, { transform: "scale(1)" }
+            ], { duration: 480, easing: "cubic-bezier(.3,.7,.3,1)" });
+            sp = clamp(sp + Math.round((Math.random() * 2 - 1) * 18), 1150, 1290);
+            st = clamp(st + Math.round((Math.random() * 2 - 1) * 5), 38, 58);
+            o1.set(sp);
+            o2.set(st);
+          }
+        }, 2400);
+      })(dot, o1, o2);
+    } else {
+      rows.push({ dot: dot, insts: [o1, o2], hook: p[3] });
+    }
   });
 
   function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
