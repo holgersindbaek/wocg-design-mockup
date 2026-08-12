@@ -55,17 +55,20 @@
   .stats { display: flex; align-items: center; justify-content: center; gap: 9px; flex-wrap: wrap; font-size: 14px; color: var(--muted); }
   .stats .sep { opacity: 0.55; }
   .st { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
-  .stats b { color: var(--ink); font-weight: bold; font-variant-numeric: tabular-nums; transition: color 0.5s ease; }
-  .stats b.tick { color: var(--live); transition: none; }
+  .stats b { color: var(--ink); font-weight: bold; }
   .sicon { width: 15px; height: 15px; color: var(--muted); flex-shrink: 0; }
   /* frontpage Swell ping: JS ring + swell on a shared 1.4s beat (see engine below) */
   .ldot { position: relative; width: 8px; height: 8px; border-radius: 50%; background: var(--live); flex-shrink: 0; }
   .lring { position: absolute; inset: 0; border-radius: 50%; background: var(--live); pointer-events: none; }
-  /* every number in every variant holds its width: the frontpage's odometer trick —
-     each digit sits in a hard-width cell (BuloRounded has no tabular figures) */
-  .vcard b { transition: color 0.5s ease; }
-  .vcard b.tick { color: var(--live); transition: none; }
-  .dcell { display: inline-block; width: 0.52em; text-align: center; }
+  /* every number = the frontpage's odometer: hard-width digit cells (BuloRounded
+     has no tabular figures) with rolling reels, masked top and bottom. Changes
+     roll like the main page; numbers never flash green. */
+  .vcard b { display: inline-flex; vertical-align: middle; }
+  .dcell { display: block; width: 0.52em; height: 1.4em; overflow: hidden;
+    -webkit-mask-image: linear-gradient(transparent, #000 30%, #000 70%, transparent);
+    mask-image: linear-gradient(transparent, #000 30%, #000 70%, transparent); }
+  .dreel { display: block; transition: transform .75s cubic-bezier(.22,1.1,.34,1); will-change: transform; }
+  .dreel span { display: block; height: 1.4em; line-height: 1.4em; text-align: center; }
   .pulseshell { position: relative; }
   .pulseshell .pspan { position: absolute; pointer-events: none; }
 
@@ -210,9 +213,9 @@
     <div class="vhead"><span class="vname">B1 &middot; Three chips</span></div>
     <p class="vwhy">Each counter in its own pill on the ElevenLabs button chrome (Casual Arena and Discord's pattern). Reads as three tappable facts; heavier than a text line.</p>
     <div class="stage"><div class="pillrow">
-      <span class="pill"><span class="ldot"></span><b data-k="p">1214</b>&nbsp;players online</span>
-      <span class="pill"><svg class="sicon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3.6" y="5.4" width="9" height="13" rx="1.6" transform="rotate(-12 8.1 11.9)" stroke="currentColor" stroke-width="1.6" opacity=".5"/><rect x="10.2" y="4.4" width="9.6" height="13.8" rx="1.6" transform="rotate(8 15 11.3)" fill="currentColor"/></svg><b data-k="g">143</b>&nbsp;games live</span>
-      <span class="pill"><svg class="sicon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.5 4.5c0-1.1.9-2 2-2h7c1.1 0 2 .9 2 2V13h-11z"/><rect x="4.6" y="13.6" width="14.8" height="3.4" rx="1.2"/><rect x="2.6" y="9.6" width="2.6" height="7.4" rx="1.2"/><rect x="18.8" y="9.6" width="2.6" height="7.4" rx="1.2"/><path d="M6.6 17.6h2.2v3h-2.2zM15.2 17.6h2.2v3h-2.2z"/></svg><b data-k="s">87</b>&nbsp;seats open</span>
+      <span class="pill"><span class="ldot"></span><b data-k="p">1214</b> players online</span>
+      <span class="pill"><svg class="sicon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3.6" y="5.4" width="9" height="13" rx="1.6" transform="rotate(-12 8.1 11.9)" stroke="currentColor" stroke-width="1.6" opacity=".5"/><rect x="10.2" y="4.4" width="9.6" height="13.8" rx="1.6" transform="rotate(8 15 11.3)" fill="currentColor"/></svg><b data-k="g">143</b> games live</span>
+      <span class="pill"><svg class="sicon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.5 4.5c0-1.1.9-2 2-2h7c1.1 0 2 .9 2 2V13h-11z"/><rect x="4.6" y="13.6" width="14.8" height="3.4" rx="1.2"/><rect x="2.6" y="9.6" width="2.6" height="7.4" rx="1.2"/><rect x="18.8" y="9.6" width="2.6" height="7.4" rx="1.2"/><path d="M6.6 17.6h2.2v3h-2.2zM15.2 17.6h2.2v3h-2.2z"/></svg><b data-k="s">87</b> seats open</span>
     </div></div>
   </div>
 
@@ -220,9 +223,9 @@
     <div class="vhead"><span class="vname">B2 &middot; One capsule, three facts</span></div>
     <p class="vwhy">A single segmented pill with hairline dividers &mdash; one object instead of three, calmer than chips, still a touch more furniture than plain text.</p>
     <div class="stage"><span class="capsule">
-      <span class="st"><span class="ldot"></span><b data-k="p">1214</b>&nbsp;players</span>
-      <span class="st"><b data-k="g">143</b>&nbsp;games live</span>
-      <span class="st"><b data-k="s">87</b>&nbsp;seats open</span>
+      <span class="st"><span class="ldot"></span><b data-k="p">1214</b> players</span>
+      <span class="st"><b data-k="g">143</b> games live</span>
+      <span class="st"><b data-k="s">87</b> seats open</span>
     </span></div>
   </div>
 
@@ -230,9 +233,9 @@
     <div class="vhead"><span class="vname">B3 &middot; Quiet stack</span></div>
     <p class="vwhy">lichess&rsquo;s desktop answer: a small left-aligned column tucked into dead space, not centered in the hero. The most modest possible placement.</p>
     <div class="stage" style="text-align:left; padding-left:34px;"><span class="stackcol">
-      <span class="st"><span class="ldot"></span><b data-k="p">1214</b>&nbsp;players online</span>
-      <span class="st"><b data-k="g">143</b>&nbsp;games in play</span>
-      <span class="st"><b data-k="s">87</b>&nbsp;open seats</span>
+      <span class="st"><span class="ldot"></span><b data-k="p">1214</b> players online</span>
+      <span class="st"><b data-k="g">143</b> games in play</span>
+      <span class="st"><b data-k="s">87</b> open seats</span>
     </span></div>
   </div>
 
@@ -328,9 +331,9 @@
     <p class="vwhy">The dot gets its own narrow first cell &mdash; a little power lamp on the strip. Nothing owns it; it announces that everything after it is happening right now.</p>
     <div class="stage"><span class="capsule">
       <span class="st stdot"><span class="ldot"></span></span>
-      <span class="st"><b data-k="p">1214</b>&nbsp;players online</span>
-      <span class="st"><b data-k="g">143</b>&nbsp;games live</span>
-      <span class="st"><b data-k="s">87</b>&nbsp;seats open</span>
+      <span class="st"><b data-k="p">1214</b> players online</span>
+      <span class="st"><b data-k="g">143</b> games live</span>
+      <span class="st"><b data-k="s">87</b> seats open</span>
     </span></div>
   </div>
 
@@ -338,9 +341,9 @@
     <div class="vhead"><span class="vname">D2 &middot; Dot outside</span></div>
     <p class="vwhy">The dot steps out of the capsule entirely and stands beside it &mdash; the strip is one object, the liveness mark is another. Airiest reading of the three.</p>
     <div class="stage"><span class="outerdot"><span class="ldot"></span><span class="capsule">
-      <span class="st" style="border-left:none;"><b data-k="p">1214</b>&nbsp;players online</span>
-      <span class="st"><b data-k="g">143</b>&nbsp;games live</span>
-      <span class="st"><b data-k="s">87</b>&nbsp;seats open</span>
+      <span class="st" style="border-left:none;"><b data-k="p">1214</b> players online</span>
+      <span class="st"><b data-k="g">143</b> games live</span>
+      <span class="st"><b data-k="s">87</b> seats open</span>
     </span></span></div>
   </div>
 
@@ -348,9 +351,9 @@
     <div class="vhead"><span class="vname">D3 &middot; Corner lamp</span></div>
     <p class="vwhy">The dot sits on the capsule&rsquo;s rim like a status LED on a device &mdash; unmistakably a property of the object, not of a word. The most opinionated of the set.</p>
     <div class="stage"><span class="capwrap"><span class="ldot cornerdot"></span><span class="capsule">
-      <span class="st" style="border-left:none;"><b data-k="p">1214</b>&nbsp;players online</span>
-      <span class="st"><b data-k="g">143</b>&nbsp;games live</span>
-      <span class="st"><b data-k="s">87</b>&nbsp;seats open</span>
+      <span class="st" style="border-left:none;"><b data-k="p">1214</b> players online</span>
+      <span class="st"><b data-k="g">143</b> games live</span>
+      <span class="st"><b data-k="s">87</b> seats open</span>
     </span></span></div>
   </div>
 
@@ -370,9 +373,9 @@
     <p class="vwhy">The spirit line as a fourth segment that only exists when it&rsquo;s true &mdash; &ldquo;never render the boring case.&rdquo; A small fixed vocabulary is enough because it appears rarely: livelier than usual, the evening rush, a big night for Euchre. Most hours, the capsule ends at three facts.</p>
     <div class="stage"><span class="capsule">
       <span class="st stdot"><span class="ldot"></span></span>
-      <span class="st"><b data-k="p">1214</b>&nbsp;players online</span>
-      <span class="st"><b data-k="g">143</b>&nbsp;games live</span>
-      <span class="st"><b data-k="s">87</b>&nbsp;seats open</span>
+      <span class="st"><b data-k="p">1214</b> players online</span>
+      <span class="st"><b data-k="g">143</b> games live</span>
+      <span class="st"><b data-k="s">87</b> seats open</span>
       <span class="st stverdict" id="verdict">livelier than usual for a Tuesday</span>
     </span></div>
   </div>
@@ -454,9 +457,9 @@
     <p class="vwhy">Your capsule, no icons &mdash; but the numbers use lichess&rsquo;s trick: the displayed value walks continuously toward the true value and never quite arrives. Only the last digits churn. The number reads as a room with people in it, not a dashboard. Fixed-width digits so nothing shoves sideways.</p>
     <div class="stage"><span class="capsule">
       <span class="st stdot"><span class="ldot"></span></span>
-      <span class="st"><b class="breathe" data-b="p">1214</b>&nbsp;<span class="warm">players online</span></span>
-      <span class="st"><b class="breathe" data-b="g">143</b>&nbsp;<span class="warm">games live</span></span>
-      <span class="st"><b class="breathe" data-b="s">87</b>&nbsp;<span class="warm">seats open</span></span>
+      <span class="st"><b class="breathe" data-b="p">1214</b> <span class="warm">players online</span></span>
+      <span class="st"><b class="breathe" data-b="g">143</b> <span class="warm">games live</span></span>
+      <span class="st"><b class="breathe" data-b="s">87</b> <span class="warm">seats open</span></span>
     </span></div>
   </div>
 
@@ -464,9 +467,9 @@
     <div class="vhead"><span class="vname">E4 &middot; The felt sliver</span></div>
     <p class="vwhy">The counts set into a strip of the site&rsquo;s own table felt &mdash; the material <i>is</i> the message: these numbers live on the table. Pairs naturally with the felt tiles and the Open-tables cards below it on the page.</p>
     <div class="stage"><span class="feltstrip">
-      <span class="st"><b data-k="p">1214</b>&nbsp;at the tables</span>
-      <span class="st"><b data-k="g">143</b>&nbsp;hands in play</span>
-      <span class="st"><b data-k="s">87</b>&nbsp;seats open</span>
+      <span class="st"><b data-k="p">1214</b> at the tables</span>
+      <span class="st"><b data-k="g">143</b> hands in play</span>
+      <span class="st"><b data-k="s">87</b> seats open</span>
     </span></div>
   </div>
 
@@ -532,9 +535,9 @@
     <div class="vhead"><span class="vname">F1 &middot; The ripple</span></div>
     <p class="vwhy">A ring expands evenly off the capsule&rsquo;s edge in every direction and fades &mdash; the dot&rsquo;s ping, inherited by the whole shell, geometry fixed.</p>
     <div class="stage"><span class="capsule pulseshell" data-pulse="ripple">
-      <span class="st"><b data-k="p">1214</b>&nbsp;players online</span>
-      <span class="st"><b data-k="g">143</b>&nbsp;games live</span>
-      <span class="st"><b data-k="s">87</b>&nbsp;seats open</span>
+      <span class="st"><b data-k="p">1214</b> players online</span>
+      <span class="st"><b data-k="g">143</b> games live</span>
+      <span class="st"><b data-k="s">87</b> seats open</span>
     </span></div>
   </div>
 
@@ -542,9 +545,9 @@
     <div class="vhead"><span class="vname">F2 &middot; The double ripple</span></div>
     <p class="vwhy">Two rings, the second chasing the first like water &mdash; a fuller version of the same ping for when one ring reads too thin.</p>
     <div class="stage"><span class="capsule pulseshell" data-pulse="double">
-      <span class="st"><b data-k="p">1214</b>&nbsp;players online</span>
-      <span class="st"><b data-k="g">143</b>&nbsp;games live</span>
-      <span class="st"><b data-k="s">87</b>&nbsp;seats open</span>
+      <span class="st"><b data-k="p">1214</b> players online</span>
+      <span class="st"><b data-k="g">143</b> games live</span>
+      <span class="st"><b data-k="s">87</b> seats open</span>
     </span></div>
   </div>
 
@@ -552,9 +555,9 @@
     <div class="vhead"><span class="vname">F3 &middot; Ring on the news</span></div>
     <p class="vwhy">The ripple fires only on the sixth beat, the moment the numbers actually step. Liveness tied to real change instead of a metronome; the quietest honest option.</p>
     <div class="stage"><span class="capsule pulseshell" data-pulse="newsring">
-      <span class="st"><b data-k="p">1214</b>&nbsp;players online</span>
-      <span class="st"><b data-k="g">143</b>&nbsp;games live</span>
-      <span class="st"><b data-k="s">87</b>&nbsp;seats open</span>
+      <span class="st"><b data-k="p">1214</b> players online</span>
+      <span class="st"><b data-k="g">143</b> games live</span>
+      <span class="st"><b data-k="s">87</b> seats open</span>
     </span></div>
   </div>
 
@@ -562,9 +565,9 @@
     <div class="vhead"><span class="vname">F4 &middot; The breath, glow</span></div>
     <p class="vwhy">No ring at all: a soft green glow inhales and exhales around the shell, one full breath per beat. Felt more than seen.</p>
     <div class="stage"><span class="capsule pulseshell" data-pulse="breatheglow">
-      <span class="st"><b data-k="p">1214</b>&nbsp;players online</span>
-      <span class="st"><b data-k="g">143</b>&nbsp;games live</span>
-      <span class="st"><b data-k="s">87</b>&nbsp;seats open</span>
+      <span class="st"><b data-k="p">1214</b> players online</span>
+      <span class="st"><b data-k="g">143</b> games live</span>
+      <span class="st"><b data-k="s">87</b> seats open</span>
     </span></div>
   </div>
 
@@ -572,9 +575,9 @@
     <div class="vhead"><span class="vname">F5 &middot; The breath, scale</span></div>
     <p class="vwhy">The capsule itself swells 1.2% and settles &mdash; an actual inhale, no color at all. The most alive-as-object option; watch whether the text shimmer bothers you.</p>
     <div class="stage"><span class="capsule pulseshell" data-pulse="breathescale">
-      <span class="st"><b data-k="p">1214</b>&nbsp;players online</span>
-      <span class="st"><b data-k="g">143</b>&nbsp;games live</span>
-      <span class="st"><b data-k="s">87</b>&nbsp;seats open</span>
+      <span class="st"><b data-k="p">1214</b> players online</span>
+      <span class="st"><b data-k="g">143</b> games live</span>
+      <span class="st"><b data-k="s">87</b> seats open</span>
     </span></div>
   </div>
 
@@ -582,9 +585,9 @@
     <div class="vhead"><span class="vname">F6 &middot; The cap ring</span></div>
     <p class="vwhy">A true circular ring &mdash; the dot&rsquo;s exact ping shape &mdash; emanating from where the dot would sit in the left cap, but with no dot present. The ghost of the live-light.</p>
     <div class="stage"><span class="capsule pulseshell" data-pulse="capring">
-      <span class="st"><b data-k="p">1214</b>&nbsp;players online</span>
-      <span class="st"><b data-k="g">143</b>&nbsp;games live</span>
-      <span class="st"><b data-k="s">87</b>&nbsp;seats open</span>
+      <span class="st"><b data-k="p">1214</b> players online</span>
+      <span class="st"><b data-k="g">143</b> games live</span>
+      <span class="st"><b data-k="s">87</b> seats open</span>
     </span></div>
   </div>
 
@@ -592,9 +595,9 @@
     <div class="vhead"><span class="vname">F7 &middot; The hairline</span></div>
     <p class="vwhy">The capsule&rsquo;s outline warms green for a moment each beat, softened. Crisper than a glow, quieter than a ring.</p>
     <div class="stage"><span class="capsule pulseshell" data-pulse="hairline">
-      <span class="st"><b data-k="p">1214</b>&nbsp;players online</span>
-      <span class="st"><b data-k="g">143</b>&nbsp;games live</span>
-      <span class="st"><b data-k="s">87</b>&nbsp;seats open</span>
+      <span class="st"><b data-k="p">1214</b> players online</span>
+      <span class="st"><b data-k="g">143</b> games live</span>
+      <span class="st"><b data-k="s">87</b> seats open</span>
     </span></div>
   </div>
 
@@ -602,9 +605,9 @@
     <div class="vhead"><span class="vname">F8 &middot; The green cap, breathing</span></div>
     <p class="vwhy">The dot dissolved into the shell: light behind the frosted left end-cap, breathing in and out rather than blinking. Keeps the live-light&rsquo;s left anchor without the dot as furniture.</p>
     <div class="stage"><span class="capsule pulseshell" data-pulse="capglow">
-      <span class="st"><b data-k="p">1214</b>&nbsp;players online</span>
-      <span class="st"><b data-k="g">143</b>&nbsp;games live</span>
-      <span class="st"><b data-k="s">87</b>&nbsp;seats open</span>
+      <span class="st"><b data-k="p">1214</b> players online</span>
+      <span class="st"><b data-k="g">143</b> games live</span>
+      <span class="st"><b data-k="s">87</b> seats open</span>
     </span></div>
   </div>
 
@@ -612,9 +615,9 @@
     <div class="vhead"><span class="vname">F9 &middot; The underglow, slowed</span></div>
     <p class="vwhy">A pool of light breathing beneath the capsule. Atmospheric; judge it against the felt tiles that would sit below it on the real page.</p>
     <div class="stage"><span class="capsule pulseshell" data-pulse="underglow">
-      <span class="st"><b data-k="p">1214</b>&nbsp;players online</span>
-      <span class="st"><b data-k="g">143</b>&nbsp;games live</span>
-      <span class="st"><b data-k="s">87</b>&nbsp;seats open</span>
+      <span class="st"><b data-k="p">1214</b> players online</span>
+      <span class="st"><b data-k="g">143</b> games live</span>
+      <span class="st"><b data-k="s">87</b> seats open</span>
     </span></div>
   </div>
 
@@ -623,9 +626,9 @@
     <p class="vwhy">Your two favorites married and width-fixed: D1&rsquo;s live-light cell with the frontpage ping, E3&rsquo;s walking digits in hard-width cells. Nothing shifts, ever.</p>
     <div class="stage"><span class="capsule pulseshell">
       <span class="st stdot"><span class="ldot"></span></span>
-      <span class="st"><b class="breathe" data-b="p">1214</b>&nbsp;<span class="warm">players online</span></span>
-      <span class="st"><b class="breathe" data-b="g">143</b>&nbsp;<span class="warm">games live</span></span>
-      <span class="st"><b class="breathe" data-b="s">87</b>&nbsp;<span class="warm">seats open</span></span>
+      <span class="st"><b class="breathe" data-b="p">1214</b> <span class="warm">players online</span></span>
+      <span class="st"><b class="breathe" data-b="g">143</b> <span class="warm">games live</span></span>
+      <span class="st"><b class="breathe" data-b="s">87</b> <span class="warm">seats open</span></span>
     </span></div>
   </div>
 
@@ -637,6 +640,122 @@
       <div class="sbgroup"><div class="sbrow" data-sb="g"></div><div class="sblabel">GAMES LIVE</div></div>
       <div class="sbgroup"><div class="sbrow" data-sb="s"></div><div class="sblabel">SEATS OPEN</div></div>
     </div></div>
+  </div>
+
+  <!-- ======================= G. ROUND THREE ======================= -->
+  <style>
+    .capsule.h32 { height: 32px; }
+    .capsule.h32 .st { padding: 0 13px; align-self: stretch; }
+    .capsule.h32 .stdot { padding: 0 6px 0 13px; }
+    .capsule.h24 { height: 24px; font-size: 13px; }
+    .capsule.h24 .st { padding: 0 11px; gap: 5px; align-self: stretch; }
+    .capsule.h24 .stdot { padding: 0 5px 0 11px; }
+    .livecap { font-size: 12.5px; font-weight: bold; letter-spacing: .03em; color: var(--live); }
+    .toplamp { position: absolute; top: -4px; left: 50%; margin-left: -4px; z-index: 1; box-shadow: 0 0 0 2.5px var(--band); }
+  </style>
+  <h2>G &middot; Round three &mdash; softer pulses, the dot question, two heights</h2>
+  <p class="secsub">Gentler ripples, four new breath characters, three new answers to &ldquo;the dot feels like it belongs to players online,&rdquo; and the capsule at 32px and 24px. Numbers everywhere roll like the frontpage odometer and never turn green.</p>
+
+  <div class="vcard">
+    <div class="vhead"><span class="vname">G1 &middot; The soft ripple</span></div>
+    <p class="vwhy">The ripple dialed down: smaller reach, fainter, a touch slower. The ping is still there; it just stops asking for attention.</p>
+    <div class="stage"><span class="capsule pulseshell" data-pulse="ripplesoft">
+      <span class="st"><b data-k="p">1214</b> players online</span>
+      <span class="st"><b data-k="g">143</b> games live</span>
+      <span class="st"><b data-k="s">87</b> seats open</span>
+    </span></div>
+  </div>
+
+  <div class="vcard">
+    <div class="vhead"><span class="vname">G2 &middot; Breath: the outline</span></div>
+    <p class="vwhy">The capsule&rsquo;s own ring warms green and relaxes, one slow breath per beat. No ring leaves the shell; the object itself is alive.</p>
+    <div class="stage"><span class="capsule pulseshell" data-pulse="breathering">
+      <span class="st"><b data-k="p">1214</b> players online</span>
+      <span class="st"><b data-k="g">143</b> games live</span>
+      <span class="st"><b data-k="s">87</b> seats open</span>
+    </span></div>
+  </div>
+
+  <div class="vcard">
+    <div class="vhead"><span class="vname">G3 &middot; Breath: the tint</span></div>
+    <p class="vwhy">The capsule&rsquo;s interior washes faintly green and clears &mdash; light moving through the object rather than around it. The subtlest of the family.</p>
+    <div class="stage"><span class="capsule pulseshell" data-pulse="breathetint">
+      <span class="st"><b data-k="p">1214</b> players online</span>
+      <span class="st"><b data-k="g">143</b> games live</span>
+      <span class="st"><b data-k="s">87</b> seats open</span>
+    </span></div>
+  </div>
+
+  <div class="vcard">
+    <div class="vhead"><span class="vname">G4 &middot; Breath: the lift</span></div>
+    <p class="vwhy">The capsule&rsquo;s shadow deepens and settles, as if it rises a hair off the page with each breath. Liveness as weight, not color.</p>
+    <div class="stage"><span class="capsule pulseshell" data-pulse="breathelift">
+      <span class="st"><b data-k="p">1214</b> players online</span>
+      <span class="st"><b data-k="g">143</b> games live</span>
+      <span class="st"><b data-k="s">87</b> seats open</span>
+    </span></div>
+  </div>
+
+  <div class="vcard">
+    <div class="vhead"><span class="vname">G5 &middot; Breath: the slow swell</span></div>
+    <p class="vwhy">One long glow-breath spanning two beats &mdash; a resting heart rate instead of a working one. For when even once per beat feels busy.</p>
+    <div class="stage"><span class="capsule pulseshell" data-pulse="breatheslow">
+      <span class="st"><b data-k="p">1214</b> players online</span>
+      <span class="st"><b data-k="g">143</b> games live</span>
+      <span class="st"><b data-k="s">87</b> seats open</span>
+    </span></div>
+  </div>
+
+  <div class="vcard">
+    <div class="vhead"><span class="vname">G6 &middot; The lamp cell</span></div>
+    <p class="vwhy">The dot gets a proper compartment: a divider after it, like a lamp housing at the strip&rsquo;s end. The wall says the dot is the object&rsquo;s, not the first fact&rsquo;s.</p>
+    <div class="stage"><span class="capsule pulseshell">
+      <span class="st stdot"><span class="ldot"></span></span>
+      <span class="st" style="border-left:1px solid var(--hairline);"><b data-k="p">1214</b> players online</span>
+      <span class="st"><b data-k="g">143</b> games live</span>
+      <span class="st"><b data-k="s">87</b> seats open</span>
+    </span></div>
+  </div>
+
+  <div class="vcard">
+    <div class="vhead"><span class="vname">G7 &middot; The live caption</span></div>
+    <p class="vwhy">The dot gets a word of its own: &ldquo;live&rdquo; names the whole strip&rsquo;s state, so the dot belongs to it, not to the players. The middle counter says &ldquo;in play&rdquo; to avoid the echo.</p>
+    <div class="stage"><span class="capsule pulseshell">
+      <span class="st"><span class="ldot"></span><span class="livecap">live</span></span>
+      <span class="st"><b data-k="p">1214</b> players online</span>
+      <span class="st"><b data-k="g">143</b> games in play</span>
+      <span class="st"><b data-k="s">87</b> seats open</span>
+    </span></div>
+  </div>
+
+  <div class="vcard">
+    <div class="vhead"><span class="vname">G8 &middot; The topside lamp</span></div>
+    <p class="vwhy">The dot moves onto the capsule&rsquo;s top edge, dead center &mdash; an indicator lamp on the housing. Nobody can read it as belonging to any one fact.</p>
+    <div class="stage"><span class="capsule pulseshell">
+      <span class="ldot toplamp"></span>
+      <span class="st"><b data-k="p">1214</b> players online</span>
+      <span class="st"><b data-k="g">143</b> games live</span>
+      <span class="st"><b data-k="s">87</b> seats open</span>
+    </span></div>
+  </div>
+
+  <div class="vcard">
+    <div class="vhead"><span class="vname">G9 &middot; The capsule at 32px and 24px</span></div>
+    <p class="vwhy">The live-light with breathing digits at two fixed heights. 32px keeps full presence; 24px reads as a quiet status line that could sit right under the hero subtitle.</p>
+    <div class="stage" style="display:grid; gap:14px; justify-items:center;">
+      <span class="capsule pulseshell h32">
+        <span class="st stdot"><span class="ldot"></span></span>
+        <span class="st"><b class="breathe" data-b="p">1214</b> <span class="warm">players online</span></span>
+        <span class="st"><b class="breathe" data-b="g">143</b> <span class="warm">games live</span></span>
+        <span class="st"><b class="breathe" data-b="s">87</b> <span class="warm">seats open</span></span>
+      </span>
+      <span class="capsule pulseshell h24">
+        <span class="st stdot"><span class="ldot"></span></span>
+        <span class="st"><b class="breathe" data-b="p">1214</b> <span class="warm">players online</span></span>
+        <span class="st"><b class="breathe" data-b="g">143</b> <span class="warm">games live</span></span>
+        <span class="st"><b class="breathe" data-b="s">87</b> <span class="warm">seats open</span></span>
+      </span>
+    </div>
   </div>
 
 </div>
@@ -651,23 +770,24 @@
   function setNum(el, n) {
     var s = String(n);
     if (el.dataset.cur === s) return false;
+    var rebuild = !el.dataset.cur || el.dataset.cur.length !== s.length || !el.querySelector(".dreel");
     el.dataset.cur = s;
-    el.innerHTML = s.split("").map(function (c) { return '<span class="dcell">' + c + "</span>"; }).join("");
+    if (rebuild) {
+      var reel = '<span class="dreel">' + "0123456789".split("").map(function (d) { return "<span>" + d + "</span>"; }).join("") + "</span>";
+      el.innerHTML = s.split("").map(function () { return '<span class="dcell">' + reel + "</span>"; }).join("");
+    }
+    el.querySelectorAll(".dreel").forEach(function (r, i) {
+      r.style.transform = "translateY(-" + (parseInt(s[i], 10) * 1.4) + "em)";
+    });
     return true;
   }
   window.setNum = setNum;
-  function renderCounts(first) {
+  function renderCounts() {
     ["p", "g", "s"].forEach(function (k) {
-      document.querySelectorAll('[data-k="' + k + '"]').forEach(function (el) {
-        if (!setNum(el, vals[k]) || first) return;
-        el.classList.remove("tick");
-        void el.offsetWidth;
-        el.classList.add("tick");
-        setTimeout(function () { el.classList.remove("tick"); }, 700);
-      });
+      document.querySelectorAll('[data-k="' + k + '"]').forEach(function (el) { setNum(el, vals[k]); });
     });
   }
-  renderCounts(true);
+  renderCounts();
   /* the frontpage's Swell ping, same mechanics: one shared 1.4s beat,
      a ring every beat, swell + number step on every sixth beat */
   function fireRing(dot, scale, dur, op) {
@@ -731,12 +851,21 @@
     var s = pulseSpan(shell, { left: "8%", right: "8%", bottom: "-9px", height: "12px", borderRadius: "50%", background: "rgba(47,158,68,.5)", filter: "blur(7px)" });
     s.animate([{ opacity: 0 }, { opacity: .8, offset: .45 }, { opacity: 0 }], { duration: dur, easing: "ease-in-out" }).onfinish = function () { s.remove(); };
   }
-  function firePulse(shell, change) {
+  function fadeBreath(shell, styles, dur, peak) {
+    var s = pulseSpan(shell, styles);
+    s.animate([{ opacity: 0 }, { opacity: peak, offset: .45 }, { opacity: 0 }], { duration: dur, easing: "ease-in-out" }).onfinish = function () { s.remove(); };
+  }
+  function firePulse(shell, change, beat) {
     var t = shell.dataset.pulse;
     if (t === "ripple") ringSpread(shell, 13, 750, .45);
+    else if (t === "ripplesoft") ringSpread(shell, 8, 950, .26);
     else if (t === "double") { ringSpread(shell, 13, 750, .45); setTimeout(function () { ringSpread(shell, 17, 820, .28); }, 190); }
     else if (t === "newsring") { if (change) ringSpread(shell, 16, 900, .5); }
     else if (t === "breatheglow") glowBreath(shell, 1350);
+    else if (t === "breatheslow") { if (beat % 2 === 1) glowBreath(shell, 2700); }
+    else if (t === "breathering") fadeBreath(shell, { inset: "0", borderRadius: "20px", boxShadow: "0 0 0 1.3px rgba(47,158,68,.55)" }, 1350, 1);
+    else if (t === "breathetint") fadeBreath(shell, { inset: "0", borderRadius: "20px", background: "rgba(47,158,68,.07)" }, 1350, 1);
+    else if (t === "breathelift") fadeBreath(shell, { inset: "0", borderRadius: "20px", boxShadow: "0 7px 18px -3px rgba(47,158,68,.3)" }, 1350, 1);
     else if (t === "breathescale") shell.animate([{ transform: "scale(1)" }, { transform: "scale(1.012)", offset: .45 }, { transform: "scale(1)" }], { duration: 1350, easing: "ease-in-out" });
     else if (t === "capring") capCircle(shell);
     else if (t === "hairline") edgeFlash(shell, 480, .6);
@@ -754,7 +883,7 @@
         if (change) snappySwell(dot);
       });
       document.querySelectorAll("[data-pulse]").forEach(function (shell) {
-        firePulse(shell, change);
+        firePulse(shell, change, beat);
       });
       if (!change) return;
       ["p", "g", "s"].forEach(function (k) {
