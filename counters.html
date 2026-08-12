@@ -371,16 +371,161 @@
     </span></div>
   </div>
 
+  <!-- ======================= E. DIFFERENT FORMS ENTIRELY ======================= -->
+  <style>
+    .warm { color: #8A7B6A; }
+    /* E1 scoreboard */
+    .sb { display: inline-flex; gap: 22px; background: #24422a; border-radius: 14px; padding: 16px 22px 12px; box-shadow: inset 0 2px 10px rgba(0,0,0,.45), 0 2px 6px rgba(0,0,0,.18); }
+    .sbgroup { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .sbrow { display: flex; gap: 4px; }
+    .sbslot { width: 26px; height: 36px; background: #16301b; border-left: 1px solid rgba(0,0,0,.4); border-top: 1px solid rgba(0,0,0,.5); box-shadow: inset 0 0 5px rgba(0,0,0,.5); border-radius: 3px; overflow: hidden; position: relative; }
+    .sbplate { position: absolute; inset: 2px; background: #f2ecdc; border-radius: 2px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 21px; color: #222; box-shadow: 0 1px 2px rgba(0,0,0,.4); }
+    .sbplate.drop { animation: platedrop .45s cubic-bezier(.2,.9,.3,1.15); }
+    @keyframes platedrop { 0% { transform: translateY(-115%); } 100% { transform: translateY(0); } }
+    @media (prefers-reduced-motion: reduce) { .sbplate.drop { animation: none; } }
+    .sblabel { font-size: 10.5px; font-weight: bold; letter-spacing: .14em; color: rgba(244,239,228,.75); }
+    /* E2 colophon */
+    .colo { text-align: center; line-height: 1.65; }
+    .colo .c1 { font-family: "Vollkorn", serif; font-size: 17px; color: var(--ink); letter-spacing: .02em; }
+    .colo .c2 { font-size: 13.5px; color: #8A7B6A; }
+    .colo .c3 { font-size: 14px; color: #8A7B6A; }
+    .colo .c3 b { color: var(--ink); font-variant-numeric: tabular-nums; }
+    /* E4 felt sliver */
+    .feltstrip { display: inline-flex; align-items: center; gap: 26px; padding: 13px 26px; border-radius: 14px; background: #2c6b34 url("green-felt.jpg"); background-size: 100px; box-shadow: inset 0 0 0 1px rgba(255,255,255,.14), inset 0 2px 14px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.15); font-size: 14px; color: rgba(244,239,228,.82); }
+    .feltstrip b { color: #f7f2e3; font-variant-numeric: tabular-nums; text-shadow: 0 1px 2px rgba(0,0,0,.35); }
+    /* E5 cribbage */
+    .crib { position: relative; display: inline-block; width: 340px; height: 46px; border-radius: 12px; background: linear-gradient(180deg, #cfa76e, #b98d54); box-shadow: inset 0 1px 0 rgba(255,255,255,.5), inset 0 -2px 5px rgba(0,0,0,.22), 0 2px 6px rgba(0,0,0,.15); }
+    .crib .holes { position: absolute; inset: 0; border-radius: 12px; background-image: radial-gradient(circle 2px at 50% 50%, rgba(60,38,15,.55) 55%, transparent 60%); background-size: 12.6px 100%; background-position: 8px 0; }
+    .peg { position: absolute; top: 50%; width: 11px; height: 11px; border-radius: 50%; transform: translate(-50%,-50%); box-shadow: 0 1px 2px rgba(0,0,0,.4), inset 0 1px 1px rgba(255,255,255,.55); transition: left 1s cubic-bezier(.3,1.4,.4,1); }
+    .peg.hop { animation: peghop .5s ease; }
+    @keyframes peghop { 40% { transform: translate(-50%,-95%); } }
+    @media (prefers-reduced-motion: reduce) { .peg { transition: none; } .peg.hop { animation: none; } }
+    .criblegend { display: flex; justify-content: center; gap: 18px; margin-top: 10px; font-size: 13.5px; color: #8A7B6A; }
+    .criblegend b { color: var(--ink); font-variant-numeric: tabular-nums; }
+    .pegdot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; box-shadow: inset 0 1px 1px rgba(255,255,255,.5); }
+    /* E6 seven-seg */
+    .hitplate { display: inline-flex; flex-direction: column; align-items: center; gap: 7px; background: #fdf9f0; border: 2px solid #b08d57; border-radius: 12px; padding: 14px 22px 11px; box-shadow: inset 0 0 0 4px #fff, 0 2px 6px rgba(0,0,0,.12); }
+    .hitdigits { display: flex; gap: 3px; }
+    .hitcap { font-size: 12.5px; color: #8A7B6A; letter-spacing: .05em; }
+    /* E7 gauge */
+    .gaugebox { display: inline-flex; flex-direction: column; align-items: center; gap: 4px; }
+    .gaugecap { font-size: 13.5px; color: #8A7B6A; }
+    .gaugecap b { color: var(--ink); font-variant-numeric: tabular-nums; }
+    /* E8 ledger */
+    .ledger { max-width: 470px; margin: 0 auto; text-align: left; font-size: 14.5px; line-height: 1.75; color: #6b5f52; }
+    .ledger b { color: var(--ink); font-weight: bold; }
+    .ledger a { color: inherit; text-decoration: underline; text-decoration-color: rgba(138,123,106,.5); text-underline-offset: 2px; }
+    .ledgerhead { font-family: "Vollkorn", serif; font-size: 13px; letter-spacing: .12em; color: #8A7B6A; margin-bottom: 6px; }
+  </style>
+
+  <h2>E &middot; Different forms entirely</h2>
+  <p class="secsub">Not arrangements of a counter row &mdash; other objects that can carry the same three facts. Sourced from a hunt through ballparks, newspapers, cribbage boards, gas pumps and the 1998 web.</p>
+
+  <div class="vcard">
+    <div class="vhead"><span class="vname">E1 &middot; The scoreboard</span></div>
+    <p class="vwhy">Hand-hung ballpark plates dropping into recessed slots &mdash; the number arriving is an event, not a digit incrementing. Reads as &ldquo;someone is back there keeping score,&rdquo; which is exactly an occupied card room. Watch a plate drop when a count changes.</p>
+    <div class="stage"><div class="sb">
+      <div class="sbgroup"><div class="sbrow" data-sb="p"></div><div class="sblabel">AT THE TABLES</div></div>
+      <div class="sbgroup"><div class="sbrow" data-sb="g"></div><div class="sblabel">GAMES LIVE</div></div>
+      <div class="sbgroup"><div class="sbrow" data-sb="s"></div><div class="sblabel">SEATS OPEN</div></div>
+    </div></div>
+  </div>
+
+  <div class="vcard">
+    <div class="vhead"><span class="vname">E2 &middot; The colophon</span></div>
+    <p class="vwhy">The newspaper masthead device both NYT Games and Puzzmo chose: date, edition number, human fact &mdash; three quiet lines, no boxes, no icons. &ldquo;Deal No. 408&rdquo; is real (the Daily Deal number). Best possible fit to cream paper and engraved logotypes.</p>
+    <div class="stage"><div class="colo">
+      <div class="c1">Wednesday, August 12</div>
+      <div class="c2">Deal No. 408 &middot; the room has been open since 2013</div>
+      <div class="c3"><b data-k="p">1,214</b> at the tables right now &middot; <b data-k="s">87</b> seats open</div>
+    </div></div>
+  </div>
+
+  <div class="vcard">
+    <div class="vhead"><span class="vname">E3 &middot; The capsule that breathes</span></div>
+    <p class="vwhy">Your capsule, no icons &mdash; but the numbers use lichess&rsquo;s trick: the displayed value walks continuously toward the true value and never quite arrives. Only the last digits churn. The number reads as a room with people in it, not a dashboard. Fixed-width digits so nothing shoves sideways.</p>
+    <div class="stage"><span class="capsule">
+      <span class="st stdot"><span class="ldot"></span></span>
+      <span class="st"><b class="breathe" data-b="p">1,214</b>&nbsp;<span class="warm">players online</span></span>
+      <span class="st"><b class="breathe" data-b="g">143</b>&nbsp;<span class="warm">games live</span></span>
+      <span class="st"><b class="breathe" data-b="s">87</b>&nbsp;<span class="warm">seats open</span></span>
+    </span></div>
+  </div>
+
+  <div class="vcard">
+    <div class="vhead"><span class="vname">E4 &middot; The felt sliver</span></div>
+    <p class="vwhy">The counts set into a strip of the site&rsquo;s own table felt &mdash; the material <i>is</i> the message: these numbers live on the table. Pairs naturally with the felt tiles and the Open-tables cards below it on the page.</p>
+    <div class="stage"><span class="feltstrip">
+      <span class="st"><b data-k="p">1,214</b>&nbsp;at the tables</span>
+      <span class="st"><b data-k="g">143</b>&nbsp;hands in play</span>
+      <span class="st"><b data-k="s">87</b>&nbsp;seats open</span>
+    </span></div>
+  </div>
+
+  <div class="vcard">
+    <div class="vhead"><span class="vname">E5 &middot; The cribbage strip</span></div>
+    <p class="vwhy">Three pegs on a sliver of cribbage board &mdash; the card table&rsquo;s own scorekeeping object, and a wink at the &ldquo;Pegs &amp; pairs&rdquo; category. Pegs creep as the counts move; a peg hops when its number jumps. The legend beneath carries the real figures.</p>
+    <div class="stage">
+      <div class="crib"><div class="holes"></div>
+        <span class="peg" id="peg-p" style="background:#4d64ff;"></span>
+        <span class="peg" id="peg-g" style="background:#e8862f;"></span>
+        <span class="peg" id="peg-s" style="background:#00a82d;"></span>
+      </div>
+      <div class="criblegend">
+        <span><span class="pegdot" style="background:#4d64ff;"></span><b data-k="p">1,214</b> players</span>
+        <span><span class="pegdot" style="background:#e8862f;"></span><b data-k="g">143</b> games</span>
+        <span><span class="pegdot" style="background:#00a82d;"></span><b data-k="s">87</b> seats</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="vcard">
+    <div class="vhead"><span class="vname">E6 &middot; The honest counter</span></div>
+    <p class="vwhy">The 1998 hit counter, re-materialized: seven-segment digits in warm amber on an enamel plate with a brass bezel, zero-padded the way the old counters were. &ldquo;The hit counter couldn&rsquo;t lie. It was a number.&rdquo; Nostalgia your audience actually lived through &mdash; without the basement-computer green.</p>
+    <div class="stage"><span class="hitplate">
+      <span class="hitdigits" id="hitdigits"></span>
+      <span class="hitcap">players at the tables &middot; counting since 2013</span>
+    </span></div>
+  </div>
+
+  <div class="vcard">
+    <div class="vhead"><span class="vname">E7 &middot; The room gauge</span></div>
+    <p class="vwhy">One instrument instead of three numbers: a cream dial whose needle answers the only question a visitor has &mdash; is anybody here? The real figures sit beneath as a quiet caption. Survives slow hours gracefully: the needle just rests at &ldquo;quiet.&rdquo;</p>
+    <div class="stage"><span class="gaugebox">
+      <svg width="190" height="104" viewBox="0 0 190 104" aria-hidden="true">
+        <path d="M15 96 A80 80 0 0 1 175 96" fill="none" stroke="#efe6d4" stroke-width="16" stroke-linecap="round"/>
+        <path d="M15 96 A80 80 0 0 1 175 96" fill="none" stroke="#e0d2b8" stroke-width="1" stroke-dasharray="1 12" stroke-linecap="round"/>
+        <text x="30" y="80" font-size="10" fill="#8A7B6A">quiet</text>
+        <text x="82" y="26" font-size="10" fill="#8A7B6A">lively</text>
+        <text x="132" y="52" font-size="10" fill="#8A7B6A">full house</text>
+        <line id="needle" x1="95" y1="96" x2="95" y2="30" stroke="#c8452c" stroke-width="2.5" stroke-linecap="round" style="transform-origin:95px 96px; transition: transform 1.4s cubic-bezier(.3,1,.4,1);"/>
+        <circle cx="95" cy="96" r="6" fill="#b08d57"/><circle cx="95" cy="96" r="2.4" fill="#8a6c3f"/>
+      </svg>
+      <span class="gaugecap"><b data-k="p">1,214</b> playing &middot; <b data-k="g">143</b> games &middot; <b data-k="s">87</b> seats open</span>
+    </span></div>
+  </div>
+
+  <div class="vcard">
+    <div class="vhead"><span class="vname">E8 &middot; Around the room</span></div>
+    <p class="vwhy">Puzzmo&rsquo;s device: stop displaying stats, start reporting news. Two still sentences (no rotation, no distraction) where names and numbers get one weight step up and the verb is the link to the table. The counters become the last line of the column.</p>
+    <div class="stage"><div class="ledger">
+      <div class="ledgerhead">AROUND THE ROOM</div>
+      <div><b>Marge</b> just <a href="#">shot the moon</a> at a Hearts table.</div>
+      <div>A Euchre game has been running for <b>3 hours</b>.</div>
+      <div style="margin-top:6px;"><b data-k="p">1,214</b> people are at the tables tonight &mdash; <b data-k="s">87</b> chairs are free.</div>
+    </div></div>
+  </div>
+
 </div>
 <script>
 (function () {
   "use strict";
-  var vals = { p: 1214, g: 143, s: 87 };
+  var vals = window.counterVals = { p: 1214, g: 143, s: 87 };
   var fmt = function (n) { return n.toLocaleString("en-US"); };
   function tickAll() {
-    vals.p = Math.max(900, vals.p + Math.round((Math.random() - 0.48) * 14));
-    vals.g = Math.max(90, vals.g + Math.round((Math.random() - 0.48) * 5));
-    vals.s = Math.max(30, vals.s + Math.round((Math.random() - 0.5) * 7));
+    vals.p = Math.min(9999, Math.max(900, vals.p + Math.round((Math.random() - 0.48) * 14)));
+    vals.g = Math.min(999, Math.max(90, vals.g + Math.round((Math.random() - 0.48) * 5)));
+    vals.s = Math.min(99, Math.max(30, vals.s + Math.round((Math.random() - 0.5) * 7)));
     ["p", "g", "s"].forEach(function (k) {
       document.querySelectorAll('[data-k="' + k + '"]').forEach(function (el) {
         if (el.textContent === fmt(vals[k])) return;
@@ -391,6 +536,7 @@
         setTimeout(function () { el.classList.remove("tick"); }, 700);
       });
     });
+    document.dispatchEvent(new CustomEvent("counters:tick"));
   }
   setInterval(tickAll, 4200);
 
@@ -420,6 +566,103 @@
     setTimeout(function () { whisper.innerHTML = lines[wi]; whisper.style.opacity = 0.85; }, 400);
   }, 5200);
   if (whisper) whisper.style.transition = "opacity .4s ease";
+})();
+</script>
+<script>
+(function () {
+  "use strict";
+  var V = window.counterVals;
+  var fmt = function (n) { return n.toLocaleString("en-US"); };
+
+  /* E1 scoreboard: one plate per digit, drop the changed ones */
+  var sbDigits = { p: 4, g: 3, s: 2 };
+  var sbPrev = {};
+  function sbRender(first) {
+    Object.keys(sbDigits).forEach(function (k) {
+      var row = document.querySelector('[data-sb="' + k + '"]');
+      if (!row) return;
+      var str = String(V[k]).padStart(sbDigits[k], "0");
+      if (first) {
+        row.innerHTML = "";
+        str.split("").forEach(function (ch) {
+          var slot = document.createElement("div"); slot.className = "sbslot";
+          var plate = document.createElement("div"); plate.className = "sbplate"; plate.textContent = ch;
+          slot.appendChild(plate); row.appendChild(slot);
+        });
+      } else {
+        var prev = sbPrev[k] || str;
+        row.querySelectorAll(".sbplate").forEach(function (plate, i) {
+          if (str[i] !== prev[i]) {
+            plate.textContent = str[i];
+            plate.classList.remove("drop"); void plate.offsetWidth; plate.classList.add("drop");
+          }
+        });
+      }
+      sbPrev[k] = str;
+    });
+  }
+  sbRender(true);
+
+  /* E3 breathing: displayed value walks toward the true value, never rests */
+  var shown = { p: V.p, g: V.g, s: V.s };
+  setInterval(function () {
+    ["p", "g", "s"].forEach(function (k) {
+      var d = V[k] - shown[k];
+      if (d !== 0) shown[k] += Math.sign(d) * Math.min(Math.abs(d), 1 + Math.floor(Math.random() * (k === "p" ? 7 : 2)));
+      else if (Math.random() < 0.25) shown[k] += Math.random() < 0.5 ? -1 : 1;
+      document.querySelectorAll('[data-b="' + k + '"]').forEach(function (el) { el.textContent = fmt(shown[k]); });
+    });
+  }, 300);
+
+  /* E5 cribbage pegs */
+  var pegMap = { p: [900, 1600], g: [90, 210], s: [30, 150] };
+  function pegRender(hop) {
+    Object.keys(pegMap).forEach(function (k) {
+      var peg = document.getElementById("peg-" + k);
+      if (!peg) return;
+      var f = Math.min(1, Math.max(0, (V[k] - pegMap[k][0]) / (pegMap[k][1] - pegMap[k][0])));
+      peg.style.left = (14 + f * 312) + "px";
+      if (hop) { peg.classList.remove("hop"); void peg.offsetWidth; peg.classList.add("hop"); }
+    });
+  }
+  pegRender(false);
+
+  /* E6 seven-segment: warm amber on enamel */
+  var SEG = { a:[2,0,16,4], b:[16,2,4,14], c:[16,18,4,14], d:[2,30,16,4], e:[0,18,4,14], f:[0,2,4,14], g:[2,15,16,4] };
+  var DMAP = { 0:"abcdef", 1:"bc", 2:"abged", 3:"abgcd", 4:"fgbc", 5:"afgcd", 6:"afgedc", 7:"abc", 8:"abcdefg", 9:"abcfgd" };
+  var hitBox = document.getElementById("hitdigits");
+  function hitRender() {
+    if (!hitBox) return;
+    var str = String(V.p).padStart(7, "0");
+    hitBox.innerHTML = "";
+    str.split("").forEach(function (ch) {
+      var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      svg.setAttribute("width", "17"); svg.setAttribute("height", "29"); svg.setAttribute("viewBox", "0 0 20 34");
+      Object.keys(SEG).forEach(function (s) {
+        var r = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        r.setAttribute("x", SEG[s][0]); r.setAttribute("y", SEG[s][1]);
+        r.setAttribute("width", SEG[s][2]); r.setAttribute("height", SEG[s][3]);
+        r.setAttribute("rx", "1.6");
+        r.setAttribute("fill", DMAP[ch].indexOf(s) > -1 ? "#d97b2f" : "rgba(138,123,106,0.13)");
+        svg.appendChild(r);
+      });
+      hitBox.appendChild(svg);
+    });
+  }
+  hitRender();
+
+  /* E7 gauge needle */
+  var needle = document.getElementById("needle");
+  function gaugeRender() {
+    if (!needle) return;
+    var f = Math.min(1, Math.max(0, (V.p - 900) / 700));
+    needle.style.transform = "rotate(" + (-62 + f * 124) + "deg)";
+  }
+  gaugeRender();
+
+  document.addEventListener("counters:tick", function () {
+    sbRender(false); pegRender(true); hitRender(); gaugeRender();
+  });
 })();
 </script>
 </body>
