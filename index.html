@@ -254,6 +254,39 @@
   .muser img.avatar { width: 22px; height: 22px; border-radius: 50%; margin-right: 6px; display: block; }
   .muser .uname { font-size: 16px; font-weight: bold; color: var(--ink-soft); }
 
+  /* ===== menu-bar experiments ===== */
+  body:not(.menu-current) .menubar { display: none; }
+  .mbcenter, .mbcap { display: none; }
+  body.menu-center .mbcenter { display: flex; }
+  body.menu-crest .mbcap.v-crest { display: block; }
+  body.menu-fthreads .mbcap.v-fthreads { display: block; }
+  body.menu-gthreads .mbcap.v-gthreads { display: block; }
+  .mbcenter { position: relative; height: 56px; align-items: center; padding: 0 18px; flex-shrink: 0; }
+  .mbcenter .mleft { display: flex; gap: 18px; flex: 1; }
+  .mclink { font-size: 16px; font-weight: bold; color: var(--ink-soft); cursor: pointer; }
+  .mclink:hover { text-decoration: underline; }
+  .mtri { width: 11px; height: 11px; vertical-align: -1px; margin-left: 4px; }
+  .mbcenter .mclogo { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
+  .mbcenter .mclogo img { width: 224px; display: block; }
+  .mbcenter .muser { margin-left: auto; flex-shrink: 0; }
+  .mbcap { position: relative; height: 68px; flex-shrink: 0; }
+  .mcapsule { position: absolute; left: 50%; top: 10px; transform: translateX(-50%); width: 660px; height: 48px;
+    display: flex; align-items: center; gap: 16px; padding: 0 14px 0 18px; box-sizing: border-box;
+    background: transparent; border: 1px solid rgba(43,39,34,.16); border-radius: 16px; corner-shape: squircle; }
+  .mcapsule.ever { background: #F4EEE5; border-color: #E7E7E7; }
+  .v-fthreads .mcapsule, .v-gthreads .mcapsule { width: 620px; }
+  .mthread { position: absolute; top: 34px; height: 1px; background: rgba(43,39,34,.14); }
+  .v-fthreads .mthread, .v-gthreads .mthread { background: #E7E7E7; }
+  .mthread.tl { left: 0; }
+  .mthread.tr { right: 0; }
+  .v-crest .mthread { width: calc(50% - 342px); }
+  .v-fthreads .mthread, .v-gthreads .mthread { width: calc(50% - 322px); }
+  .mcapmark { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
+  .mcapmark img { width: 42px; display: block; }
+  .mcaplogo img { width: 36px; height: 36px; display: block; }
+  .mspacer { flex: 1; }
+  .mbcap .muser, .mbcenter .muser { list-style: none; }
+
   .heroarea {
     display: flex; flex-direction: column;
     justify-content: center; align-items: center; text-align: center;
@@ -979,7 +1012,7 @@
   body.gated { overflow: hidden; }
 </style>
 </head>
-<body class="evernote play-raph layout-ed43 font-vollkorn shadow-soft edge-softlight tex-grain cat-split stats-capsule">
+<body class="evernote play-raph layout-ed43 font-vollkorn shadow-soft edge-softlight tex-grain cat-split stats-capsule menu-current">
 
 <aside id="adrail" aria-hidden="true">
   <div class="adslot"><img src="adMedrec1.png" width="300" height="250" alt=""></div>
@@ -1007,6 +1040,7 @@
     <div class="swhead">Page</div>
     <label class="ctl"><span>Catalog layout</span><select id="sel-catalog"></select></label>
     <label class="ctl"><span>Live stats</span><select id="sel-stats"></select></label>
+    <label class="ctl"><span>Menu bar</span><select id="sel-menu"></select></label>
     <label class="ctl"><span>Hero title</span><select id="titlesel"></select></label>
     <label class="ctl"><span>Hero subtitle</span><select id="subsel"></select></label>
   </div>
@@ -1025,6 +1059,58 @@
       <li><img class="avatar" src="AnimalFox.svg" alt="Avatar"><span class="uname">Guest #12</span></li>
     </ul>
   </nav>
+
+  <div class="mbcenter">
+    <div class="mleft"><span class="mclink">Games<img class="mtri" src="arrowDownBig.png" alt=""></span><span class="mclink">Rules</span><span class="mclink">Leaderboards</span></div>
+    <a class="mclogo" href="#"><img src="wocg-logo.png" alt="World of Card Games"></a>
+    <ul class="muser">
+      <li><img class="micon" src="menuActivity.svg" alt="Activity"></li>
+      <li><img class="micon" src="menuFriends.svg" alt="Friends"></li>
+      <li><img class="avatar" src="AnimalFox.svg" alt="Avatar"><span class="uname">Guest #12</span></li>
+    </ul>
+  </div>
+
+  <div class="mbcap v-crest">
+    <span class="mthread tl"></span><span class="mthread tr"></span>
+    <div class="mcapsule">
+      <span class="mclink">Games<img class="mtri" src="arrowDownBig.png" alt=""></span>
+      <span class="mcapmark"><img src="logoIcon.png" alt="World of Card Games"></span>
+      <span class="mspacer"></span>
+      <ul class="muser">
+      <li><img class="micon" src="menuActivity.svg" alt="Activity"></li>
+      <li><img class="micon" src="menuFriends.svg" alt="Friends"></li>
+      <li><img class="avatar" src="AnimalFox.svg" alt="Avatar"><span class="uname">Guest #12</span></li>
+    </ul>
+    </div>
+  </div>
+
+  <div class="mbcap v-fthreads">
+    <span class="mthread tl"></span><span class="mthread tr"></span>
+    <div class="mcapsule ever">
+      <a class="mcaplogo" href="#"><img src="logoIcon.png" alt="World of Card Games"></a>
+      <span class="mclink">Games<img class="mtri" src="arrowDownBig.png" alt=""></span>
+      <span class="mspacer"></span>
+      <ul class="muser">
+      <li><img class="micon" src="menuActivity.svg" alt="Activity"></li>
+      <li><img class="micon" src="menuFriends.svg" alt="Friends"></li>
+      <li><img class="avatar" src="AnimalFox.svg" alt="Avatar"><span class="uname">Guest #12</span></li>
+    </ul>
+    </div>
+  </div>
+
+  <div class="mbcap v-gthreads">
+    <span class="mthread tl"></span><span class="mthread tr"></span>
+    <div class="mcapsule ever">
+      <span class="mclink">Games<img class="mtri" src="arrowDownBig.png" alt=""></span>
+      <span class="mcapmark"><img src="logoIcon.png" alt="World of Card Games"></span>
+      <span class="mspacer"></span>
+      <ul class="muser">
+      <li><img class="micon" src="menuActivity.svg" alt="Activity"></li>
+      <li><img class="micon" src="menuFriends.svg" alt="Friends"></li>
+      <li><img class="avatar" src="AnimalFox.svg" alt="Avatar"><span class="uname">Guest #12</span></li>
+    </ul>
+    </div>
+  </div>
 
   <div class="heroarea">
     <h3 id="herotitle">Play cards in good company.</h3>
@@ -1462,6 +1548,13 @@
     ["sampler", "Category sampler + full sections"],
     ["split", "Popular grid + categories"]
   ];
+  var MENUS = [
+    ["current", "Today's bar"],
+    ["center", "Centered mark"],
+    ["crest", "Squircle crest + threads"],
+    ["fthreads", "Threads card, logo left"],
+    ["gthreads", "Threads card, logo centered"]
+  ];
   var STATSLINES = [
     ["capsule", "Capsule: walled live-light strip"],
     ["sign", "Sign: light-green button + bare counts"],
@@ -1472,7 +1565,7 @@
     ["full", "Three counters (players / games / seats)"],
     ["brief", "One line: players & open tables"]
   ];
-  var curShadow = "soft", curEdge = "softlight", curTexture = "grain", curCatalog = "split", curStats = "capsule";
+  var curShadow = "soft", curEdge = "softlight", curTexture = "grain", curCatalog = "split", curStats = "capsule", curMenu = "current";
   function moveLobby() {
     var lobby = document.getElementById("lobbyDemo");
     var slot = document.getElementById(curCatalog === "merged" || curCatalog === "mergedflat" ? "lobby-slot-bottom" : "lobby-slot-top");
@@ -1480,7 +1573,7 @@
   }
   function applyBody() {
     var scene = curLayout.indexOf("sc") === 0;
-    document.body.className = curBase + " play-" + curPlay + " layout-" + curLayout + (scene ? " scenehero" : "") + " font-" + curFont + " shadow-" + curShadow + " edge-" + curEdge + " tex-" + curTexture + " cat-" + curCatalog + " stats-" + curStats;
+    document.body.className = curBase + " play-" + curPlay + " layout-" + curLayout + (scene ? " scenehero" : "") + " font-" + curFont + " shadow-" + curShadow + " edge-" + curEdge + " tex-" + curTexture + " cat-" + curCatalog + " stats-" + curStats + " menu-" + curMenu;
     var ht = document.getElementById("herotitle"), hs = document.getElementById("herosub");
     if (scene) {
       if (curLayout === "scpyr") {
@@ -1503,6 +1596,7 @@
     document.getElementById("sel-texture").value = curTexture;
     document.getElementById("sel-catalog").value = curCatalog;
     document.getElementById("sel-stats").value = curStats;
+    document.getElementById("sel-menu").value = curMenu;
     moveLobby();
   }
   var sceneTxt = null;
@@ -1558,6 +1652,7 @@
   buildSel("sel-texture", TEXTURES, function (v) { curTexture = v; });
   buildSel("sel-catalog", CATALOGS, function (v) { curCatalog = v; });
   buildSel("sel-stats", STATSLINES, function (v) { curStats = v; });
+  buildSel("sel-menu", MENUS, function (v) { curMenu = v; });
 
   function swatch(nm, hx) {
     var d = document.createElement("div");
