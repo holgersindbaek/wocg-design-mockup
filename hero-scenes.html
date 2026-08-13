@@ -14,10 +14,10 @@
   :root {
     --canvas:#f9f6f2; --band:#f4eee5; --surface:#ffffff;
     --ink:#141414; --muted:#4e4d4c; --hairline:#e7e7e7; --live:#2f9e44;
-    --p1:#f4c360; --p2:#ef9eb2; --p3:#4d64ff; --p4:#00a82d; --p5:#e8862f;
-    --p6:#9a6df0; --p7:#5bb4d0; --p8:#e54e40; --p9:#d1548f; --pfg:#ffffff;
+    /* the frontpage's Raphael tile palette (body.play-raph), verbatim */
+    --p1:#f5b81e; --p2:#e370b5; --p3:#1f87e8; --p4:#43a038; --p5:#ef7f27;
+    --p6:#8a3fd0; --p7:#18a89d; --p8:#e33d3a; --p9:#cf3f92; --pfg:#ffffff;
     --btnshadow: 0 0 1px rgba(0,0,0,0.4), 0 1px 1px rgba(0,0,0,0.04), 0 2px 4px rgba(0,0,0,0.04);
-    --evershadow: 0 8px 24px -8px rgba(0,0,21,0.12), 0 14px 40px -8px rgba(0,0,21,0.04), 0 0 0 1px rgba(0,0,21,0.08);
     --tileshadow: 0 1px 2px rgba(60,45,25,.08), 0 2px 5px rgba(60,45,25,.08), 0 5px 12px rgba(60,45,25,.08);
   }
   * { box-sizing: border-box; }
@@ -29,11 +29,9 @@
   .vwhy { color: var(--muted); font-size: 13px; margin: 0 0 14px; max-width: 760px; }
   .stage { position: relative; background: var(--band); border-radius: 20px; overflow: clip; }
 
-  /* ===== hero text pieces ===== */
   .ht { font-family: "Vollkorn", serif; font-weight: 500; font-size: 42px; line-height: 1.12; margin: 0 0 8px; color: var(--ink); }
   .hs { font-size: 17px; color: var(--muted); margin: 0; }
 
-  /* ===== the walled capsule, verbatim ===== */
   .capsule { display: inline-flex; align-items: center; height: 32px; font-size: 14px; color: var(--muted); background: var(--surface); border-radius: 20px; box-shadow: var(--btnshadow); padding: 0 4px; white-space: nowrap; }
   .st { display: inline-flex; align-items: center; gap: 4px; padding: 0 11px; align-self: stretch; }
   .st + .st { border-left: 1px solid var(--hairline); }
@@ -49,7 +47,6 @@
   .dreel span { display: block; height: 1.5em; line-height: 1.5em; text-align: center; }
   .srnum { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
 
-  /* ===== the game tile, real recipe ===== */
   .tile { position: absolute; border-radius: 20px; corner-shape: squircle; box-shadow: var(--tileshadow); cursor: pointer; transition: transform .18s ease, box-shadow .18s ease; background: var(--surface); }
   .tile:hover { transform: translateY(-6px) rotate(-1deg); box-shadow: 0 2px 4px rgba(60,45,25,.08), 0 6px 12px rgba(60,45,25,.10), 0 14px 26px rgba(60,45,25,.12); z-index: 9 !important; }
   .gi { position: absolute; inset: 0; border-radius: 20px; corner-shape: squircle; overflow: hidden; display: flex; align-items: center; justify-content: center; color: var(--pfg); }
@@ -61,7 +58,6 @@
   .gi.t4 { background: var(--p4); } .gi.t5 { background: var(--p5); } .gi.t6 { background: var(--p6); }
   .gi.t7 { background: var(--p7); } .gi.t8 { background: var(--p8); } .gi.t9 { background: var(--p9); }
   .gi img { max-width: 62%; max-height: 70%; z-index: 1; }
-  .gname { z-index: 1; font-weight: bold; font-size: 21px; text-shadow: 0 1px 2px rgba(0,0,0,.25); letter-spacing: .01em; }
   .gchip { position: absolute; top: 8px; right: 10px; z-index: 2; display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.92); color: #212529; font-size: 12px; font-weight: bold; line-height: 1; padding: 4px 9px; border-radius: 20px; }
   .gchip::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--live); }
 
@@ -69,64 +65,74 @@
   .s1 { height: 604px; padding: 24px; }
   .s1 .bgrid { display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(3, 1fr); gap: 16px; height: 100%; }
   .s1 .tile { position: relative; }
-  .s1 .txtcell { grid-column: 1 / 3; grid-row: 1 / 3; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; text-align: left; padding: 8px 18px 8px 6px; position: relative; }
-  .s1 .txtcell .capsule { margin-top: 30px; position: relative; z-index: 3; }
+  .s1 .txtcell { grid-column: 1 / 3; grid-row: 1 / 3; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; text-align: left; padding: 8px 18px 8px 6px; }
+  .s1 .txtcell .capsule { margin-top: 30px; }
   .s1 .b-a { grid-column: 3 / 5; grid-row: 1 / 3; }
   .s1 .b-b { grid-column: 1; grid-row: 3; }
   .s1 .b-c { grid-column: 2; grid-row: 3; }
   .s1 .b-d { grid-column: 3; grid-row: 3; }
   .s1 .b-e { grid-column: 4; grid-row: 3; }
 
-  /* ============ S2 · THE SCATTER ============ */
+  /* ============ S1b · ONE UP TOP, FIVE BELOW ============ */
+  .s1b { height: 580px; padding: 24px; }
+  .s1b .bgrid { display: grid; grid-template-columns: repeat(5, 1fr); grid-template-rows: 1.7fr 1fr; gap: 16px; height: 100%; }
+  .s1b .tile { position: relative; }
+  .s1b .txtcell { grid-column: 1 / 4; grid-row: 1; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; text-align: left; padding: 8px 24px 8px 6px; }
+  .s1b .txtcell .capsule { margin-top: 30px; }
+  .s1b .b-top { grid-column: 4 / 6; grid-row: 1; }
+  .s1b .b-1 { grid-column: 1; grid-row: 2; }
+  .s1b .b-2 { grid-column: 2; grid-row: 2; }
+  .s1b .b-3 { grid-column: 3; grid-row: 2; }
+  .s1b .b-4 { grid-column: 4; grid-row: 2; }
+  .s1b .b-5 { grid-column: 5; grid-row: 2; }
+
+  /* ============ S2 · SCATTERS ============ */
   .s2 { height: 640px; }
   .s2 .txt { position: absolute; left: 48px; top: 120px; width: 400px; z-index: 2; }
   .s2 .txt .capsule { margin-top: 30px; }
+  .s2c .txt { position: absolute; left: 48px; top: 84px; width: 430px; z-index: 2; }
+  .s2c .txt .capsule { margin-top: 30px; }
+  .s2b { height: 660px; text-align: center; }
+  .s2b .txt { position: absolute; left: 0; right: 0; top: 236px; z-index: 2; }
+  .s2b .txt .capsule { margin-top: 26px; }
 
-  /* ============ S3 · THE HAND ============ */
+  /* ============ S3 · HANDS ============ */
+  .fanwrap { position: absolute; width: 0; height: 0; }
+  .dealscene .fanwrap .tile { left: 0; top: 0; width: var(--tw); height: var(--th);
+    transform: translate(calc(var(--fx) - var(--tw) / 2), calc(var(--fy) - var(--th))) rotate(var(--fr)) scale(var(--fs)); }
+  .dealscene .fanwrap .tile:hover { transform: translate(calc(var(--fx) - var(--tw) / 2), calc(var(--fy) - var(--th) - 10px)) rotate(var(--fr)) scale(var(--fs)); }
+  @keyframes dealin {
+    0% { transform: translate(calc(var(--fx) * .12 - var(--tw) / 2), 190px) rotate(0deg) scale(.9); opacity: 0; }
+    60% { opacity: 1; }
+    100% { transform: translate(calc(var(--fx) - var(--tw) / 2), calc(var(--fy) - var(--th))) rotate(var(--fr)) scale(var(--fs)); opacity: 1; }
+  }
+  .dealscene.dealt .fanwrap .tile { animation: dealin 460ms cubic-bezier(0.05, 0.7, 0.1, 1) both; animation-delay: var(--fd); }
+  @media (prefers-reduced-motion: reduce) { .dealscene.dealt .fanwrap .tile { animation: none; } }
+  .redeal { position: absolute; right: 16px; top: 14px; z-index: 3; font: bold 12.5px 'BuloRounded'; color: var(--muted); background: var(--surface); border: 0; border-radius: 20px; padding: 6px 12px; box-shadow: var(--btnshadow); cursor: pointer; }
+
   .s3 { height: 660px; text-align: center; }
   .s3 .txt { position: absolute; left: 0; right: 0; top: 64px; z-index: 2; }
   .s3 .txt .capsule { margin-top: 26px; }
-  .s3 .fan { position: absolute; left: 50%; bottom: 44px; width: 0; height: 0; }
-  .s3 .tile { left: 0; top: 0; width: 196px; height: 138px;
-    transform: translate(calc(var(--fx) - 98px), calc(var(--fy) - 138px)) rotate(var(--fr)) scale(var(--fs)); }
-  .s3 .tile:hover { transform: translate(calc(var(--fx) - 98px), calc(var(--fy) - 138px - 10px)) rotate(var(--fr)) scale(var(--fs)); }
-  @keyframes dealin {
-    0% { transform: translate(calc(var(--fx) * .12 - 98px), 190px) rotate(0deg) scale(.9); opacity: 0; }
-    60% { opacity: 1; }
-    100% { transform: translate(calc(var(--fx) - 98px), calc(var(--fy) - 138px)) rotate(var(--fr)) scale(var(--fs)); opacity: 1; }
-  }
-  .s3.dealt .tile { animation: dealin 460ms cubic-bezier(0.05, 0.7, 0.1, 1) both; animation-delay: var(--fd); }
-  @media (prefers-reduced-motion: reduce) { .s3.dealt .tile { animation: none; } }
-  .redeal { position: absolute; right: 16px; top: 14px; z-index: 3; font: bold 12.5px 'BuloRounded'; color: var(--muted); background: var(--surface); border: 0; border-radius: 20px; padding: 6px 12px; box-shadow: var(--btnshadow); cursor: pointer; }
+  .s3 .fanwrap { left: 50%; bottom: 44px; --tw: 196px; --th: 138px; }
 
-  /* ============ S4 · RAGGED COLUMNS ============ */
-  .s4 { height: 620px; padding: 40px 48px; }
-  .s4 .txt { position: absolute; left: 48px; top: 150px; width: 350px; }
-  .s4 .txt .capsule { margin-top: 30px; }
-  .s4 .cols { position: absolute; right: 48px; top: 40px; bottom: 40px; display: flex; gap: 16px; }
-  .s4 .col { width: 200px; display: flex; flex-direction: column; gap: 16px; }
-  .s4 .col .cluster { display: flex; flex-direction: column; gap: 16px; }
-  .s4 .col .cluster + .cluster { margin-top: 28px; }
-  .s4 .tile { position: relative; width: 100%; }
+  .s3b { height: 620px; text-align: center; }
+  .s3b .txt { position: absolute; left: 0; right: 0; top: 70px; z-index: 2; }
+  .s3b .txt .capsule { margin-top: 26px; }
+  .s3b .fanwrap { left: 50%; bottom: -74px; --tw: 250px; --th: 174px; }
 
-  /* ============ S5 · THE TABLE ============ */
-  .s5 { height: 680px; }
-  .s5 .felt { position: absolute; left: -12%; right: -12%; bottom: -42%; height: 88%; border-radius: 50% 50% 0 0 / 34% 34% 0 0;
-    background: #2c6b34 url("green-felt.jpg"); background-size: 100px;
-    box-shadow: inset 0 6px 0 rgba(255,255,255,.12), inset 0 14px 34px rgba(0,0,0,.35), 0 -2px 10px rgba(0,0,0,.12); }
-  .s5 .txt { position: absolute; left: 0; right: 0; top: 56px; text-align: center; z-index: 2; }
-  .s5 .txt .capsule { margin-top: 24px; }
-  .s5 .tile { box-shadow: 0 2px 3px rgba(0,0,0,.28), 0 10px 22px rgba(0,0,0,.28); }
-  .s5 .tile:hover { box-shadow: 0 4px 8px rgba(0,0,0,.3), 0 18px 34px rgba(0,0,0,.32); }
+  .s3c { height: 600px; }
+  .s3c .txt { position: absolute; left: 48px; top: 190px; width: 380px; z-index: 2; }
+  .s3c .txt .capsule { margin-top: 30px; }
+  .s3c .fanwrap { left: 72%; bottom: 84px; --tw: 186px; --th: 130px; }
 </style>
 </head>
 <body>
 <div class="page">
   <h1>Hero scenes</h1>
-  <p class="lede">Five ways the title, subtitle, capsule and the popular games become one composition &mdash; no &ldquo;Popular games&rdquo; heading anywhere. Built on measured field research: Poki&rsquo;s secret lattice, Gumroad&rsquo;s zero-rotation scatter, Puzzmo&rsquo;s ragged columns, and real card-fan geometry. Every scene keeps one axis of chaos and three quiet alignments.</p>
+  <p class="lede">Round two: the bento re-choreographed, two more scatters, two more hands &mdash; logo tiles everywhere, like the real frontpage. One axis of chaos per scene, three quiet alignments, and the deal always lands calm.</p>
 
   <div class="vname">S1 &middot; The bento hole</div>
-  <p class="vwhy">The text is not beside the tiles &mdash; it is a cell of the same lattice, so every edge of the prose block is also a tile edge and there is no seam to criticise. The capsule straddles the text cell&rsquo;s boundary as the keystone. Hearts holds the big cell; nothing rotates.</p>
+  <p class="vwhy">The original: text as a 2&times;2 cell of the tile lattice, Hearts holding the twin cell, four tiles below.</p>
   <div class="stage s1"><div class="bgrid">
     <div class="txtcell">
       <h2 class="ht">Play cards in<br>good company.</h2>
@@ -140,12 +146,32 @@
     <div class="tile b-a"><div class="gi t6"><span class="gchip">341 playing</span><img src="hearts_logo.png" alt="Hearts"></div></div>
     <div class="tile b-b"><div class="gi t3"><img src="spades_logo.png" alt="Spades"></div></div>
     <div class="tile b-c"><div class="gi t4"><img src="euchre_logo.png" alt="Euchre"></div></div>
-    <div class="tile b-d"><div class="gi t5"><span class="gname">Canasta</span></div></div>
-    <div class="tile b-e"><div class="gi t2"><span class="gname">Gin Rummy</span></div></div>
+    <div class="tile b-d"><div class="gi t5"><img src="euchre_logo.png" alt="Euchre"></div></div>
+    <div class="tile b-e"><div class="gi t2"><img src="hearts_logo.png" alt="Hearts"></div></div>
+  </div></div>
+
+  <div class="vname">S1b &middot; One up top, five below</div>
+  <p class="vwhy">Your re-choreography: the prose keeps the top-left, one big tile anchors the top-right, and a full row of five carries the bottom &mdash; the shelf compressed into the hero. All logos, one lattice, zero rotation.</p>
+  <div class="stage s1b"><div class="bgrid">
+    <div class="txtcell">
+      <h2 class="ht">Play cards in<br>good company.</h2>
+      <p class="hs">Classic card games. Join a table or play solo. Free to play, hard to stop.</p>
+      <span class="capsule">
+        <span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>
+        <span class="st"><b data-k="p">1214</b> players online</span>
+        <span class="st"><b data-k="s">87</b> seats open</span>
+      </span>
+    </div>
+    <div class="tile b-top"><div class="gi t6"><span class="gchip">341 playing</span><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile b-1"><div class="gi t3"><img src="spades_logo.png" alt="Spades"></div></div>
+    <div class="tile b-2"><div class="gi t4"><img src="euchre_logo.png" alt="Euchre"></div></div>
+    <div class="tile b-3"><div class="gi t1"><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile b-4"><div class="gi t7"><img src="spades_logo.png" alt="Spades"></div></div>
+    <div class="tile b-5"><div class="gi t5"><img src="euchre_logo.png" alt="Euchre"></div></div>
   </div></div>
 
   <div class="vname">S2 &middot; The scatter</div>
-  <p class="vwhy">Gumroad&rsquo;s discipline applied to Yahoo&rsquo;s energy: sizes range five-fold but rotation stays at zero &mdash; one axis of chaos. One tile bleeds off the right edge so the field reads as a fragment of something larger, and exactly one small tile stitches into the text column, in front. The rest is air.</p>
+  <p class="vwhy">The original: sizes range five-fold, rotation stays zero, one tile bleeds the frame, one stitches the text column.</p>
   <div class="stage s2">
     <div class="txt">
       <h2 class="ht">Play cards in<br>good company.</h2>
@@ -159,16 +185,15 @@
     <div class="tile" style="left:472px; top:56px; width:400px; height:280px; z-index:1;"><div class="gi t6"><span class="gchip">341 playing</span><img src="hearts_logo.png" alt="Hearts"></div></div>
     <div class="tile" style="left:904px; top:96px; width:200px; height:140px;"><div class="gi t4"><img src="euchre_logo.png" alt="Euchre"></div></div>
     <div class="tile" style="left:952px; top:268px; width:260px; height:180px;"><div class="gi t3"><img src="spades_logo.png" alt="Spades"></div></div>
-    <div class="tile" style="left:560px; top:376px; width:236px; height:164px;"><div class="gi t5"><span class="gname">Canasta</span></div></div>
-    <div class="tile" style="left:828px; top:478px; width:156px; height:108px;"><div class="gi t2"><span class="gname" style="font-size:15px;">Gin Rummy</span></div></div>
-    <div class="tile" style="left:384px; top:432px; width:148px; height:102px; z-index:3;"><div class="gi t7"><span class="gname" style="font-size:15px;">Rummy</span></div></div>
-    <div class="tile" style="left:1030px; top:492px; width:190px; height:132px;"><div class="gi t1"><span class="gname" style="font-size:17px;">Cribbage</span></div></div>
+    <div class="tile" style="left:560px; top:376px; width:236px; height:164px;"><div class="gi t5"><img src="euchre_logo.png" alt="Euchre"></div></div>
+    <div class="tile" style="left:828px; top:478px; width:156px; height:108px;"><div class="gi t2"><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:384px; top:432px; width:148px; height:102px; z-index:3;"><div class="gi t7"><img src="spades_logo.png" alt="Spades"></div></div>
+    <div class="tile" style="left:1030px; top:492px; width:190px; height:132px;"><div class="gi t1"><img src="hearts_logo.png" alt="Hearts"></div></div>
   </div>
 
-  <div class="vname">S3 &middot; The hand</div>
-  <p class="vwhy">The one device nobody in the category uses: the games dealt as a held hand. A decoupled fan &mdash; rotation and lift like a fan (&plusmn;7&deg; ends, parabola rise), spacing like a grid, so tiles stay legible. Hearts holds the flat centre. Tiles deal in on load (460ms, 80ms stagger, firm departure, calm settle) &mdash; press Deal again to replay.</p>
-  <div class="stage s3" id="fanScene">
-    <button class="redeal" id="redeal">Deal again</button>
+  <div class="vname">S2b &middot; The halo</div>
+  <p class="vwhy">The scatter goes symmetric-ish: text at the centre, tiles orbiting both sides at falling sizes &mdash; close in, far out. Still zero rotation; the single frame-bleed moves to the left edge. The composition holds the room around the words.</p>
+  <div class="stage s2b">
     <div class="txt">
       <h2 class="ht">Play cards in good company.</h2>
       <p class="hs">Classic card games. Join a table or play solo. Free to play, hard to stop.</p>
@@ -179,20 +204,19 @@
         <span class="st"><b data-k="s">87</b> seats open</span>
       </span>
     </div>
-    <div class="fan" id="fan">
-      <div class="tile" style="z-index:1;"><div class="gi t1"><span class="gname" style="font-size:17px;">Cribbage</span></div></div>
-      <div class="tile" style="z-index:2;"><div class="gi t3"><img src="spades_logo.png" alt="Spades"></div></div>
-      <div class="tile" style="z-index:3;"><div class="gi t2"><span class="gname" style="font-size:17px;">Gin Rummy</span></div></div>
-      <div class="tile" style="z-index:4;"><div class="gi t6"><span class="gchip">341 playing</span><img src="hearts_logo.png" alt="Hearts"></div></div>
-      <div class="tile" style="z-index:5;"><div class="gi t4"><img src="euchre_logo.png" alt="Euchre"></div></div>
-      <div class="tile" style="z-index:6;"><div class="gi t5"><span class="gname" style="font-size:17px;">Canasta</span></div></div>
-      <div class="tile" style="z-index:7;"><div class="gi t7"><span class="gname" style="font-size:17px;">Rummy</span></div></div>
-    </div>
+    <div class="tile" style="left:-52px; top:120px; width:280px; height:196px;"><div class="gi t3"><img src="spades_logo.png" alt="Spades"></div></div>
+    <div class="tile" style="left:132px; top:392px; width:196px; height:136px;"><div class="gi t4"><img src="euchre_logo.png" alt="Euchre"></div></div>
+    <div class="tile" style="left:290px; top:64px; width:160px; height:112px;"><div class="gi t1"><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:856px; top:76px; width:236px; height:164px; z-index:1;"><div class="gi t6"><span class="gchip">341 playing</span><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:736px; top:300px; width:150px; height:104px;"><div class="gi t7"><img src="spades_logo.png" alt="Spades"></div></div>
+    <div class="tile" style="left:920px; top:420px; width:208px; height:144px;"><div class="gi t5"><img src="euchre_logo.png" alt="Euchre"></div></div>
+    <div class="tile" style="left:296px; top:520px; width:170px; height:118px;"><div class="gi t2"><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:696px; top:512px; width:150px; height:104px;"><div class="gi t9"><img src="spades_logo.png" alt="Spades"></div></div>
   </div>
 
-  <div class="vname">S4 &middot; Ragged columns</div>
-  <p class="vwhy">Puzzmo&rsquo;s newspaper device crossed with Tumblr&rsquo;s cluster gaps: identical column widths, free tile heights, column tops deliberately staggered, and two gap values &mdash; 16px inside a cluster, 28px between clusters &mdash; so the tiles read as sorted hands. The calmest scene; the left edges are perfect, the tops are ragged, nothing else moves.</p>
-  <div class="stage s4">
+  <div class="vname">S2c &middot; The cascade</div>
+  <p class="vwhy">Scatter with a spine: the tiles descend a diagonal from top-right to bottom-centre at falling sizes &mdash; a dealt run. Curvature is order that doesn&rsquo;t look like a grid; here the order is one clean slope, and the text sits in the open corner it leaves behind.</p>
+  <div class="stage s2c" style="height:640px;">
     <div class="txt">
       <h2 class="ht">Play cards in<br>good company.</h2>
       <p class="hs">Classic card games. Join a table or play solo. Free to play, hard to stop.</p>
@@ -202,38 +226,18 @@
         <span class="st"><b data-k="s">87</b> seats open</span>
       </span>
     </div>
-    <div class="cols">
-      <div class="col" style="margin-top:32px;">
-        <div class="cluster">
-          <div class="tile" style="height:150px;"><div class="gi t6"><img src="hearts_logo.png" alt="Hearts"></div></div>
-          <div class="tile" style="height:110px;"><div class="gi t2"><span class="gname" style="font-size:16px;">Gin Rummy</span></div></div>
-        </div>
-        <div class="cluster">
-          <div class="tile" style="height:130px;"><div class="gi t1"><span class="gname" style="font-size:16px;">Cribbage</span></div></div>
-        </div>
-      </div>
-      <div class="col">
-        <div class="cluster">
-          <div class="tile" style="height:180px;"><div class="gi t3"><img src="spades_logo.png" alt="Spades"></div></div>
-          <div class="tile" style="height:120px;"><div class="gi t5"><span class="gname" style="font-size:16px;">Canasta</span></div></div>
-        </div>
-        <div class="cluster">
-          <div class="tile" style="height:104px;"><div class="gi t7"><span class="gname" style="font-size:16px;">Rummy</span></div></div>
-        </div>
-      </div>
-      <div class="col" style="margin-top:16px;">
-        <div class="cluster">
-          <div class="tile" style="height:136px;"><div class="gi t4"><img src="euchre_logo.png" alt="Euchre"></div></div>
-          <div class="tile" style="height:158px;"><div class="gi t8"><span class="gname" style="font-size:15px;">Crazy Eights</span></div></div>
-        </div>
-      </div>
-    </div>
+    <div class="tile" style="left:764px; top:48px; width:360px; height:250px; z-index:6;"><div class="gi t6"><span class="gchip">341 playing</span><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:620px; top:236px; width:280px; height:194px; z-index:5;"><div class="gi t3"><img src="spades_logo.png" alt="Spades"></div></div>
+    <div class="tile" style="left:494px; top:376px; width:230px; height:160px; z-index:4;"><div class="gi t4"><img src="euchre_logo.png" alt="Euchre"></div></div>
+    <div class="tile" style="left:384px; top:490px; width:190px; height:132px; z-index:3;"><div class="gi t1"><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:290px; top:566px; width:160px; height:111px; z-index:2;"><div class="gi t7"><img src="spades_logo.png" alt="Spades"></div></div>
+    <div class="tile" style="left:948px; top:330px; width:170px; height:118px; z-index:1;"><div class="gi t5"><img src="euchre_logo.png" alt="Euchre"></div></div>
   </div>
 
-  <div class="vname">S5 &middot; The table</div>
-  <p class="vwhy">The Card Room made literal: the type lives on the paper, the games lie on the felt &mdash; dealt with tiny &plusmn;2&deg; settles and heavier shadows, three depth tiers, never more. The capsule sits at the table&rsquo;s rail like a plaque on the wood. The room isn&rsquo;t described; it&rsquo;s shown.</p>
-  <div class="stage s5">
-    <div class="felt"></div>
+  <div class="vname">S3 &middot; The hand</div>
+  <p class="vwhy">The original seven-tile decoupled fan: &plusmn;7&deg; ends, parabola lift, grid spacing, dealt in with the calm stagger.</p>
+  <div class="stage s3 dealscene">
+    <button class="redeal">Deal again</button>
     <div class="txt">
       <h2 class="ht">Play cards in good company.</h2>
       <p class="hs">Classic card games. Join a table or play solo. Free to play, hard to stop.</p>
@@ -244,46 +248,92 @@
         <span class="st"><b data-k="s">87</b> seats open</span>
       </span>
     </div>
-    <div class="tile" style="left:96px; top:322px; width:230px; height:160px; transform:rotate(-2deg);"><div class="gi t1"><span class="gname" style="font-size:17px;">Cribbage</span></div></div>
-    <div class="tile" style="left:352px; top:296px; width:300px; height:208px; transform:rotate(1.4deg); z-index:2;"><div class="gi t6"><span class="gchip">341 playing</span><img src="hearts_logo.png" alt="Hearts"></div></div>
-    <div class="tile" style="left:688px; top:318px; width:230px; height:160px; transform:rotate(-1.2deg);"><div class="gi t3"><img src="spades_logo.png" alt="Spades"></div></div>
-    <div class="tile" style="left:948px; top:346px; width:200px; height:140px; transform:rotate(2deg);"><div class="gi t4"><img src="euchre_logo.png" alt="Euchre"></div></div>
-    <div class="tile" style="left:196px; top:506px; width:200px; height:140px; transform:rotate(1.6deg); z-index:1;"><div class="gi t5"><span class="gname" style="font-size:16px;">Canasta</span></div></div>
-    <div class="tile" style="left:470px; top:532px; width:184px; height:128px; transform:rotate(-1.8deg);"><div class="gi t2"><span class="gname" style="font-size:15px;">Gin Rummy</span></div></div>
-    <div class="tile" style="left:706px; top:512px; width:184px; height:128px; transform:rotate(.8deg);"><div class="gi t7"><span class="gname" style="font-size:15px;">Rummy</span></div></div>
+    <div class="fanwrap" data-step="150" data-rot="7" data-lift="42">
+      <div class="tile" style="z-index:1;"><div class="gi t1"><img src="hearts_logo.png" alt="Hearts"></div></div>
+      <div class="tile" style="z-index:2;"><div class="gi t3"><img src="spades_logo.png" alt="Spades"></div></div>
+      <div class="tile" style="z-index:3;"><div class="gi t2"><img src="hearts_logo.png" alt="Hearts"></div></div>
+      <div class="tile" style="z-index:4;"><div class="gi t6"><span class="gchip">341 playing</span><img src="hearts_logo.png" alt="Hearts"></div></div>
+      <div class="tile" style="z-index:5;"><div class="gi t4"><img src="euchre_logo.png" alt="Euchre"></div></div>
+      <div class="tile" style="z-index:6;"><div class="gi t5"><img src="euchre_logo.png" alt="Euchre"></div></div>
+      <div class="tile" style="z-index:7;"><div class="gi t7"><img src="spades_logo.png" alt="Spades"></div></div>
+    </div>
+  </div>
+
+  <div class="vname">S3b &middot; The held hand</div>
+  <p class="vwhy">First person: five bigger cards rise from below the frame edge, cropped like a hand actually held at the table&rsquo;s rim. The fan you&rsquo;re holding, not the fan on display. Fewer, larger, closer.</p>
+  <div class="stage s3b dealscene">
+    <button class="redeal">Deal again</button>
+    <div class="txt">
+      <h2 class="ht">Play cards in good company.</h2>
+      <p class="hs">Classic card games. Join a table or play solo. Free to play, hard to stop.</p>
+      <span class="capsule">
+        <span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>
+        <span class="st"><b data-k="p">1214</b> players online</span>
+        <span class="st"><b data-k="g">143</b> tables live</span>
+        <span class="st"><b data-k="s">87</b> seats open</span>
+      </span>
+    </div>
+    <div class="fanwrap" data-step="188" data-rot="6" data-lift="34">
+      <div class="tile" style="z-index:1;"><div class="gi t3"><img src="spades_logo.png" alt="Spades"></div></div>
+      <div class="tile" style="z-index:2;"><div class="gi t1"><img src="hearts_logo.png" alt="Hearts"></div></div>
+      <div class="tile" style="z-index:3;"><div class="gi t6"><span class="gchip">341 playing</span><img src="hearts_logo.png" alt="Hearts"></div></div>
+      <div class="tile" style="z-index:4;"><div class="gi t4"><img src="euchre_logo.png" alt="Euchre"></div></div>
+      <div class="tile" style="z-index:5;"><div class="gi t5"><img src="euchre_logo.png" alt="Euchre"></div></div>
+    </div>
+  </div>
+
+  <div class="vname">S3c &middot; The side sweep</div>
+  <p class="vwhy">The hand goes asymmetric: text ranges left, a five-card fan sweeps the right half. The classic editorial split (prose column, image field) but the image field is a dealt hand. The most magazine-like of the hands.</p>
+  <div class="stage s3c dealscene">
+    <button class="redeal">Deal again</button>
+    <div class="txt">
+      <h2 class="ht">Play cards in<br>good company.</h2>
+      <p class="hs">Classic card games. Join a table or play solo. Free to play, hard to stop.</p>
+      <span class="capsule">
+        <span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>
+        <span class="st"><b data-k="p">1214</b> players online</span>
+        <span class="st"><b data-k="s">87</b> seats open</span>
+      </span>
+    </div>
+    <div class="fanwrap" data-step="142" data-rot="7" data-lift="36">
+      <div class="tile" style="z-index:1;"><div class="gi t1"><img src="hearts_logo.png" alt="Hearts"></div></div>
+      <div class="tile" style="z-index:2;"><div class="gi t3"><img src="spades_logo.png" alt="Spades"></div></div>
+      <div class="tile" style="z-index:3;"><div class="gi t6"><span class="gchip">341 playing</span><img src="hearts_logo.png" alt="Hearts"></div></div>
+      <div class="tile" style="z-index:4;"><div class="gi t4"><img src="euchre_logo.png" alt="Euchre"></div></div>
+      <div class="tile" style="z-index:5;"><div class="gi t7"><img src="spades_logo.png" alt="Spades"></div></div>
+    </div>
   </div>
 
 </div>
 <script>
 (function () {
   "use strict";
-  /* fan geometry: decoupled fake fan - rotate/lift like a fan, space like a grid */
-  var FAN = { n: 7, step: 150, rotMax: 7, lift: 42 };
-  function layoutFan() {
-    var tiles = document.querySelectorAll("#fan .tile");
+  /* decoupled fans: rotate/lift like a fan, space like a grid */
+  document.querySelectorAll(".fanwrap").forEach(function (fan) {
+    var tiles = fan.querySelectorAll(".tile");
+    var n = tiles.length;
+    var step = parseFloat(fan.dataset.step) || 150;
+    var rotMax = parseFloat(fan.dataset.rot) || 7;
+    var lift = parseFloat(fan.dataset.lift) || 42;
     tiles.forEach(function (tile, i) {
-      var t = (i / (FAN.n - 1)) * 2 - 1;
-      var x = t * FAN.step * (FAN.n - 1) / 2;
-      var y = FAN.lift * t * t;
-      var rot = t * FAN.rotMax;
-      var scale = 1 - Math.abs(t) * 0.07;
-      tile.style.setProperty("--fx", x + "px");
-      tile.style.setProperty("--fy", y + "px");
-      tile.style.setProperty("--fr", rot.toFixed(2) + "deg");
-      tile.style.setProperty("--fs", scale.toFixed(3));
+      var t = n === 1 ? 0 : (i / (n - 1)) * 2 - 1;
+      tile.style.setProperty("--fx", (t * step * (n - 1) / 2) + "px");
+      tile.style.setProperty("--fy", (lift * t * t) + "px");
+      tile.style.setProperty("--fr", (t * rotMax).toFixed(2) + "deg");
+      tile.style.setProperty("--fs", (1 - Math.abs(t) * 0.07).toFixed(3));
       tile.style.setProperty("--fd", (i * 80) + "ms");
     });
-  }
-  layoutFan();
-  var scene = document.getElementById("fanScene");
-  requestAnimationFrame(function () { scene.classList.add("dealt"); });
-  document.getElementById("redeal").addEventListener("click", function () {
-    scene.classList.remove("dealt");
-    void scene.offsetWidth;
-    scene.classList.add("dealt");
+  });
+  document.querySelectorAll(".dealscene").forEach(function (scene) {
+    requestAnimationFrame(function () { scene.classList.add("dealt"); });
+    var btn = scene.querySelector(".redeal");
+    if (btn) btn.addEventListener("click", function () {
+      scene.classList.remove("dealt");
+      void scene.offsetWidth;
+      scene.classList.add("dealt");
+    });
   });
 
-  /* the shared beat: rings, swells, reels */
   var vals = { p: 1214, g: 143, s: 87 };
   var RANGE = { p: [1150, 1290, 18], g: [128, 158, 4], s: [74, 99, 6] };
   function setReel(el, v) {
