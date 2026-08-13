@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>WOCG — yahoo variations, round two</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vollkorn:wght@400..900&display=swap" rel="stylesheet">
+<style>
+  @font-face { font-family: 'BuloRounded'; src: url("BuloRounded-Regular.woff2") format('woff2'); font-style: normal; font-weight: normal; font-display: swap; }
+  @font-face { font-family: 'BuloRounded'; src: url("BuloRounded-Bold.woff2") format('woff2'); font-style: normal; font-weight: bold; font-display: swap; }
+  :root {
+    --canvas:#f9f6f2; --band:#f4eee5; --surface:#ffffff;
+    --ink:#141414; --muted:#4e4d4c; --hairline:#e7e7e7; --live:#2f9e44;
+    /* the frontpage's Raphael tile palette (body.play-raph), verbatim */
+    --p1:#f5b81e; --p2:#e370b5; --p3:#1f87e8; --p4:#43a038; --p5:#ef7f27;
+    --p6:#8a3fd0; --p7:#18a89d; --p8:#e33d3a; --p9:#cf3f92; --pfg:#ffffff;
+    --btnshadow: 0 0 1px rgba(0,0,0,0.4), 0 1px 1px rgba(0,0,0,0.04), 0 2px 4px rgba(0,0,0,0.04);
+    --tileshadow: 0 1px 2px rgba(60,45,25,.08), 0 2px 5px rgba(60,45,25,.08), 0 5px 12px rgba(60,45,25,.08);
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--canvas); color: var(--ink); font-family: 'BuloRounded', system-ui, sans-serif; font-size: 15px; line-height: 1.5; padding: 40px 20px 90px; }
+  .page { max-width: 1140px; margin: 0 auto; }
+  h1 { font-family: "Vollkorn", serif; font-weight: 500; font-size: 34px; margin: 0 0 6px; }
+  .lede { color: var(--muted); max-width: 770px; margin: 0 0 34px; }
+  .vname { font-weight: bold; font-size: 16px; margin: 44px 0 2px; }
+  .vwhy { color: var(--muted); font-size: 13px; margin: 0 0 14px; max-width: 780px; }
+  .stage { position: relative; background: var(--band); border-radius: 20px; overflow: clip; }
+
+  .ht { font-family: "Vollkorn", serif; font-weight: 500; font-size: 42px; line-height: 1.12; margin: 0 0 8px; color: var(--ink); }
+  .hs { font-size: 17px; color: var(--muted); margin: 0; }
+
+  .capsule { display: inline-flex; align-items: center; height: 32px; font-size: 14px; color: var(--muted); background: var(--surface); border-radius: 20px; box-shadow: var(--btnshadow); padding: 0 4px; white-space: nowrap; }
+  .st { display: inline-flex; align-items: center; gap: 4px; padding: 0 11px; align-self: stretch; }
+  .st + .st { border-left: 1px solid var(--hairline); }
+  .stlive { padding: 0 9px; gap: 6px; }
+  .greencap { font-size: 14px; font-weight: bold; letter-spacing: .06em; color: var(--live); }
+  .ldot { position: relative; width: 8px; height: 8px; border-radius: 50%; background: var(--live); flex-shrink: 0; }
+  .lring { position: absolute; inset: 0; border-radius: 50%; background: var(--live); pointer-events: none; }
+  b[data-k] { display: inline-flex; position: relative; color: var(--ink); font-weight: bold; }
+  .dcell { display: block; width: 0.52em; height: 1.5em; overflow: hidden; user-select: none;
+    -webkit-mask-image: linear-gradient(transparent, #000 18%, #000 82%, transparent);
+    mask-image: linear-gradient(transparent, #000 18%, #000 82%, transparent); }
+  .dreel { display: block; transition: transform .75s cubic-bezier(.22,1.1,.34,1); will-change: transform; }
+  .dreel span { display: block; height: 1.5em; line-height: 1.5em; text-align: center; }
+  .srnum { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+
+  .tile { position: absolute; border-radius: 16px; corner-shape: squircle; box-shadow: var(--tileshadow); cursor: pointer; transition: transform .18s ease, box-shadow .18s ease; background: var(--surface); }
+  .tile:hover { transform: translateY(-6px) rotate(-1deg); box-shadow: 0 2px 4px rgba(60,45,25,.08), 0 6px 12px rgba(60,45,25,.10), 0 14px 26px rgba(60,45,25,.12); z-index: 9 !important; }
+  .gi { position: absolute; inset: 0; border-radius: 16px; corner-shape: squircle; overflow: hidden; display: flex; align-items: center; justify-content: center; color: var(--pfg); }
+  .gi::before { content: ""; position: absolute; inset: 0; pointer-events: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='72' height='72'><g fill='black' fill-opacity='0.08' font-family='Arial' font-size='26'><text x='2' y='26'>♥</text><text x='38' y='26'>♠</text><text x='20' y='62'>♦</text><text x='56' y='62'>♣</text><text x='-16' y='62'>♣</text></g></svg>");
+    background-size: 72px 72px; }
+  .gi::after { content: ""; position: absolute; inset: 0; border-radius: 16px; corner-shape: squircle; box-shadow: inset 0 0 0 1px rgba(0,0,0,.75); mix-blend-mode: soft-light; }
+  .gi.t1 { background: var(--p1); } .gi.t2 { background: var(--p2); } .gi.t3 { background: var(--p3); }
+  .gi.t4 { background: var(--p4); } .gi.t5 { background: var(--p5); } .gi.t6 { background: var(--p6); }
+  .gi.t7 { background: var(--p7); } .gi.t8 { background: var(--p8); } .gi.t9 { background: var(--p9); }
+  .gi img { max-width: 62%; max-height: 70%; z-index: 1; }
+
+  .txt { position: absolute; z-index: 2; }
+  .txt .capsule { margin-top: 26px; }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>Yahoo variations &middot; round two</h1>
+  <p class="lede">Everything learned from your screenshot, applied: text and capsule always sit top-left in the Z1 arrangement, no live tiles in the mix, stages shorter, and the three tricks the screenshot uses against order &mdash; staggered tops everywhere, twin bottom lines with tiles hanging below them, and tiles straddling the seams so no line divides the composition. W1&ndash;W4 grow the scattered family (cascade, shelf, ziggurat, drift) with flush bases and sides like Z4; W5&ndash;W8 and W10 grow the clumped family (citadel, golden clump, counterweight, boulders, islets); W9 rebuilds your screenshot with the real palette.</p>
+
+  <div class="vname">W1 &middot; The cascade, grounded</div>
+  <p class="vwhy">Z2&rsquo;s falling sizes, but the text keeps the top-left and the mosaic lands on a flush base line and a flush right edge. The column lefts stagger (403 vs 456) so no street runs through it.</p>
+  <div class="stage" style="height:580px;">
+    <div class="txt" style="left:48px; top:56px; width:380px;">
+      <h2 class="ht">Play cards in<br>good company</h2>
+      <p class="hs">Classic card games. Join a table or play solo.<br>Free to play, hard to stop.</p>
+      <span class="capsule">
+        <span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>
+        <span class="st"><b data-k="p">1214</b> players online</span>
+        <span class="st"><b data-k="s">87</b> seats open</span>
+      </span>
+    </div>
+    <div class="tile" style="left:549px; top:70px;  width:150px; height:100px;"><div class="gi t2"><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:403px; top:182px; width:296px; height:198px;"><div class="gi t3"><img src="spades_logo.png" alt="Spades"></div></div>
+    <div class="tile" style="left:456px; top:392px; width:243px; height:164px;"><div class="gi t4"><img src="euchre_logo.png" alt="Euchre"></div></div>
+    <div class="tile" style="left:294px; top:456px; width:150px; height:100px;"><div class="gi t1"><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:711px; top:282px; width:405px; height:274px;"><div class="gi t6"><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:966px; top:170px; width:150px; height:100px;"><div class="gi t7"><img src="spades_logo.png" alt="Spades"></div></div>
+  </div>
+
+  <div class="vname">W2 &middot; The long shelf</div>
+  <p class="vwhy">Z6 compressed to its essence: one flush base line the full width, tops ragged at four depths, two smalls floating above the XL. The shortest of the scattered family.</p>
+  <div class="stage" style="height:560px;">
+    <div class="txt" style="left:48px; top:56px; width:380px;">
+      <h2 class="ht">Play cards in<br>good company</h2>
+      <p class="hs">Classic card games. Join a table or play solo.<br>Free to play, hard to stop.</p>
+      <span class="capsule">
+        <span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>
+        <span class="st"><b data-k="p">1214</b> players online</span>
+        <span class="st"><b data-k="s">87</b> seats open</span>
+      </span>
+    </div>
+    <div class="tile" style="left:39px;  top:370px; width:243px; height:162px;"><div class="gi t4"><img src="euchre_logo.png" alt="Euchre"></div></div>
+    <div class="tile" style="left:294px; top:432px; width:150px; height:100px;"><div class="gi t2"><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:456px; top:258px; width:405px; height:274px;"><div class="gi t6"><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:873px; top:370px; width:243px; height:162px;"><div class="gi t3"><img src="spades_logo.png" alt="Spades"></div></div>
+    <div class="tile" style="left:549px; top:146px; width:150px; height:100px;"><div class="gi t1"><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:711px; top:146px; width:150px; height:100px;"><div class="gi t7"><img src="spades_logo.png" alt="Spades"></div></div>
+  </div>
+
+  <div class="vname">W3 &middot; The ziggurat, faced</div>
+  <p class="vwhy">Z4 turned to face the text: the base stays dead flush and the right edge anchors at the frame, with the steps climbing toward the tall corner at bottom-right. Two smalls ride the shoulders at staggered heights.</p>
+  <div class="stage" style="height:580px;">
+    <div class="txt" style="left:48px; top:56px; width:380px;">
+      <h2 class="ht">Play cards in<br>good company</h2>
+      <p class="hs">Classic card games. Join a table or play solo.<br>Free to play, hard to stop.</p>
+      <span class="capsule">
+        <span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>
+        <span class="st"><b data-k="p">1214</b> players online</span>
+        <span class="st"><b data-k="s">87</b> seats open</span>
+      </span>
+    </div>
+    <div class="tile" style="left:135px; top:394px; width:243px; height:162px;"><div class="gi t1"><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:390px; top:350px; width:309px; height:206px;"><div class="gi t4"><img src="euchre_logo.png" alt="Euchre"></div></div>
+    <div class="tile" style="left:549px; top:238px; width:150px; height:100px;"><div class="gi t2"><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:711px; top:282px; width:405px; height:274px;"><div class="gi t6"><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:873px; top:108px; width:243px; height:162px;"><div class="gi t3"><img src="spades_logo.png" alt="Spades"></div></div>
+  </div>
+
+  <div class="vname">W4 &middot; The drift</div>
+  <p class="vwhy">The loosest of the scattered set: a large and a small drift apart on the top level with open air between them, three tiles hang from their shared under-line, and one small trails off the bottom. Right edges pair up; nothing else aligns.</p>
+  <div class="stage" style="height:560px;">
+    <div class="txt" style="left:48px; top:56px; width:380px;">
+      <h2 class="ht">Play cards in<br>good company</h2>
+      <p class="hs">Classic card games. Join a table or play solo.<br>Free to play, hard to stop.</p>
+      <span class="capsule">
+        <span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>
+        <span class="st"><b data-k="p">1214</b> players online</span>
+        <span class="st"><b data-k="s">87</b> seats open</span>
+      </span>
+    </div>
+    <div class="tile" style="left:456px; top:44px;  width:309px; height:206px;"><div class="gi t3"><img src="spades_logo.png" alt="Spades"></div></div>
+    <div class="tile" style="left:927px; top:150px; width:150px; height:100px;"><div class="gi t2"><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:510px; top:262px; width:150px; height:100px;"><div class="gi t1"><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:672px; top:262px; width:150px; height:100px;"><div class="gi t7"><img src="spades_logo.png" alt="Spades"></div></div>
+    <div class="tile" style="left:834px; top:262px; width:243px; height:162px;"><div class="gi t6"><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:897px; top:436px; width:150px; height:100px;"><div class="gi t5"><img src="euchre_logo.png" alt="Euchre"></div></div>
+  </div>
+
+  <div class="vname">W5 &middot; The citadel, offset</div>
+  <p class="vwhy">Z8 rebuilt with the screenshot&rsquo;s tricks: the keep and the large tile share a twin bottom line, two tiles hang from it &mdash; one straddling the street between them &mdash; and every top is staggered. The clump reads as one mass with no dividing line.</p>
+  <div class="stage" style="height:610px;">
+    <div class="txt" style="left:48px; top:44px; width:380px;">
+      <h2 class="ht">Play cards in<br>good company</h2>
+      <p class="hs">Classic card games. Join a table or play solo.<br>Free to play, hard to stop.</p>
+      <span class="capsule">
+        <span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>
+        <span class="st"><b data-k="p">1214</b> players online</span>
+        <span class="st"><b data-k="s">87</b> seats open</span>
+      </span>
+    </div>
+    <div class="tile" style="left:717px; top:26px;  width:243px; height:162px;"><div class="gi t1"><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:972px; top:92px;  width:144px; height:96px;"><div class="gi t2"><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:660px; top:200px; width:405px; height:274px;"><div class="gi t6"><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:339px; top:268px; width:309px; height:206px;"><div class="gi t3"><img src="spades_logo.png" alt="Spades"></div></div>
+    <div class="tile" style="left:516px; top:486px; width:150px; height:100px;"><div class="gi t4"><img src="euchre_logo.png" alt="Euchre"></div></div>
+    <div class="tile" style="left:678px; top:486px; width:150px; height:100px;"><div class="gi t7"><img src="spades_logo.png" alt="Spades"></div></div>
+  </div>
+
+  <div class="vname">W6 &middot; The golden clump</div>
+  <p class="vwhy">Z10&rsquo;s additive trick inside a citadel body: the small-plus-medium pair under the XL spans it to the pixel, a medium overhangs the keep&rsquo;s right shoulder, and the large tile sits low-left so the seam between them stays short.</p>
+  <div class="stage" style="height:650px;">
+    <div class="txt" style="left:48px; top:36px; width:380px;">
+      <h2 class="ht">Play cards in<br>good company</h2>
+      <p class="hs">Classic card games. Join a table or play solo.<br>Free to play, hard to stop.</p>
+      <span class="capsule">
+        <span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>
+        <span class="st"><b data-k="p">1214</b> players online</span>
+        <span class="st"><b data-k="s">87</b> seats open</span>
+      </span>
+    </div>
+    <div class="tile" style="left:696px; top:68px;  width:150px; height:100px;"><div class="gi t2"><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:858px; top:6px;   width:243px; height:162px;"><div class="gi t1"><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:600px; top:180px; width:405px; height:274px;"><div class="gi t6"><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:279px; top:318px; width:309px; height:206px;"><div class="gi t3"><img src="spades_logo.png" alt="Spades"></div></div>
+    <div class="tile" style="left:600px; top:466px; width:150px; height:100px;"><div class="gi t7"><img src="spades_logo.png" alt="Spades"></div></div>
+    <div class="tile" style="left:762px; top:466px; width:243px; height:162px;"><div class="gi t4"><img src="euchre_logo.png" alt="Euchre"></div></div>
+  </div>
+
+  <div class="vname">W7 &middot; The counterweight</div>
+  <p class="vwhy">Two clumps on a steelyard: the heavy one (XL with a medium and small at staggered heights above, two smalls below) rides right of centre; the light one (a large with a small tucked at its side, bottoms flush) sits low on the long arm. Open air does the balancing.</p>
+  <div class="stage" style="height:620px;">
+    <div class="txt" style="left:48px; top:44px; width:380px;">
+      <h2 class="ht">Play cards in<br>good company</h2>
+      <p class="hs">Classic card games. Join a table or play solo.<br>Free to play, hard to stop.</p>
+      <span class="capsule">
+        <span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>
+        <span class="st"><b data-k="p">1214</b> players online</span>
+        <span class="st"><b data-k="s">87</b> seats open</span>
+      </span>
+    </div>
+    <div class="tile" style="left:609px; top:94px;  width:150px; height:100px;"><div class="gi t2"><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:771px; top:32px;  width:243px; height:162px;"><div class="gi t1"><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:711px; top:206px; width:405px; height:274px;"><div class="gi t6"><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:711px; top:492px; width:150px; height:100px;"><div class="gi t7"><img src="spades_logo.png" alt="Spades"></div></div>
+    <div class="tile" style="left:873px; top:492px; width:150px; height:100px;"><div class="gi t5"><img src="euchre_logo.png" alt="Euchre"></div></div>
+    <div class="tile" style="left:168px; top:332px; width:309px; height:206px;"><div class="gi t4"><img src="euchre_logo.png" alt="Euchre"></div></div>
+    <div class="tile" style="left:489px; top:438px; width:150px; height:100px;"><div class="gi t3"><img src="spades_logo.png" alt="Spades"></div></div>
+  </div>
+
+  <div class="vname">W8 &middot; The boulder field</div>
+  <p class="vwhy">Two twin-bottom lines stacked: a large and a medium end together up top, then the XL straddles the street between them while a small hangs at each flank. Clumped like Z8, but no tile shares a top with its neighbour.</p>
+  <div class="stage" style="height:610px;">
+    <div class="txt" style="left:48px; top:56px; width:380px;">
+      <h2 class="ht">Play cards in<br>good company</h2>
+      <p class="hs">Classic card games. Join a table or play solo.<br>Free to play, hard to stop.</p>
+      <span class="capsule">
+        <span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>
+        <span class="st"><b data-k="p">1214</b> players online</span>
+        <span class="st"><b data-k="s">87</b> seats open</span>
+      </span>
+    </div>
+    <div class="tile" style="left:966px; top:26px;  width:150px; height:100px;"><div class="gi t2"><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:456px; top:94px;  width:309px; height:206px;"><div class="gi t3"><img src="spades_logo.png" alt="Spades"></div></div>
+    <div class="tile" style="left:777px; top:138px; width:243px; height:162px;"><div class="gi t1"><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:354px; top:312px; width:150px; height:100px;"><div class="gi t7"><img src="spades_logo.png" alt="Spades"></div></div>
+    <div class="tile" style="left:516px; top:312px; width:405px; height:274px;"><div class="gi t6"><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:933px; top:312px; width:150px; height:100px;"><div class="gi t4"><img src="euchre_logo.png" alt="Euchre"></div></div>
+  </div>
+
+  <div class="vname">W9 &middot; The clearing (your screenshot)</div>
+  <p class="vwhy">Your second screenshot rebuilt on our stage, same hues and logos: the yellow shares its left seam with the purple XL, the pink small steps down toward the text with its right edge on the blue&rsquo;s, blue and purple end on a twin bottom line, and the green straddles their street with the teal hanging beside it. The text takes the clearing top-left.</p>
+  <div class="stage" style="height:660px;">
+    <div class="txt" style="left:48px; top:32px; width:380px;">
+      <h2 class="ht">Play cards in<br>good company</h2>
+      <p class="hs">Classic card games. Join a table or play solo.<br>Free to play, hard to stop.</p>
+      <span class="capsule">
+        <span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>
+        <span class="st"><b data-k="p">1214</b> players online</span>
+        <span class="st"><b data-k="s">87</b> seats open</span>
+      </span>
+    </div>
+    <div class="tile" style="left:711px; top:14px;  width:243px; height:162px;"><div class="gi t1"><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:549px; top:144px; width:150px; height:100px;"><div class="gi t2"><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:711px; top:188px; width:405px; height:274px;"><div class="gi t6"><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:390px; top:256px; width:309px; height:206px;"><div class="gi t3"><img src="spades_logo.png" alt="Spades"></div></div>
+    <div class="tile" style="left:586px; top:474px; width:243px; height:162px;"><div class="gi t4"><img src="euchre_logo.png" alt="Euchre"></div></div>
+    <div class="tile" style="left:841px; top:474px; width:150px; height:100px;"><div class="gi t7"><img src="spades_logo.png" alt="Spades"></div></div>
+  </div>
+
+  <div class="vname">W10 &middot; The archipelago</div>
+  <p class="vwhy">The clump idea taken plural: three islets &mdash; the keep with a small under its wing, a large with a small on its shoulder, one lone medium &mdash; separated by wide water while every internal seam stays 12px. Clumped and scattered at once.</p>
+  <div class="stage" style="height:620px;">
+    <div class="txt" style="left:48px; top:56px; width:380px;">
+      <h2 class="ht">Play cards in<br>good company</h2>
+      <p class="hs">Classic card games. Join a table or play solo.<br>Free to play, hard to stop.</p>
+      <span class="capsule">
+        <span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>
+        <span class="st"><b data-k="p">1214</b> players online</span>
+        <span class="st"><b data-k="s">87</b> seats open</span>
+      </span>
+    </div>
+    <div class="tile" style="left:687px; top:96px;  width:405px; height:274px;"><div class="gi t6"><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:687px; top:382px; width:150px; height:100px;"><div class="gi t2"><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:465px; top:250px; width:150px; height:100px;"><div class="gi t1"><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:306px; top:362px; width:309px; height:206px;"><div class="gi t3"><img src="spades_logo.png" alt="Spades"></div></div>
+    <div class="tile" style="left:873px; top:432px; width:243px; height:162px;"><div class="gi t4"><img src="euchre_logo.png" alt="Euchre"></div></div>
+  </div>
+
+</div>
+<script>
+(function () {
+  "use strict";
+  var vals = { p: 1214, g: 143, s: 87 };
+  var RANGE = { p: [1150, 1290, 18], g: [128, 158, 4], s: [74, 99, 6] };
+  function setReel(el, v) {
+    var s = String(v);
+    if (el.dataset.cur === s) return;
+    var rebuild = !el.dataset.cur || el.dataset.cur.length !== s.length || !el.querySelector(".dreel");
+    el.dataset.cur = s;
+    if (rebuild) {
+      var reel = '<span class="dreel">' + "0123456789".split("").map(function (d) { return "<span>" + d + "</span>"; }).join("") + "</span>";
+      el.innerHTML = '<span class="srnum">' + s + "</span>" +
+        s.split("").map(function () { return '<span class="dcell" aria-hidden="true">' + reel + "</span>"; }).join("");
+    }
+    el.querySelector(".srnum").textContent = s;
+    el.querySelectorAll(".dreel").forEach(function (r, i) {
+      r.style.transform = "translateY(-" + (parseInt(s[i], 10) * 1.5) + "em)";
+    });
+  }
+  function renderAll() {
+    ["p", "g", "s"].forEach(function (k) {
+      document.querySelectorAll('[data-k="' + k + '"]').forEach(function (el) { setReel(el, vals[k]); });
+    });
+  }
+  renderAll();
+  function fireRing(dot) {
+    var olds = dot.querySelectorAll(".lring");
+    if (olds.length > 2) olds.forEach(function (o) { o.remove(); });
+    var r = document.createElement("span");
+    r.className = "lring";
+    dot.appendChild(r);
+    r.animate([
+      { transform: "scale(1)", opacity: .5 },
+      { transform: "scale(2.6)", opacity: 0 }
+    ], { duration: 750, easing: "cubic-bezier(0,0,.2,1)" }).onfinish = function () { r.remove(); };
+  }
+  function snappySwell(dot) {
+    dot.animate([
+      { transform: "scale(1)", easing: "cubic-bezier(0,0,.2,1)" },
+      { transform: "scale(1.32)", offset: .3, easing: "cubic-bezier(.5,0,.5,1)" },
+      { transform: "scale(.88)", offset: .52, easing: "ease-out" },
+      { transform: "scale(1)", offset: .66 },
+      { transform: "scale(1)" }
+    ], { duration: 620 });
+  }
+  if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  var beat = 0;
+  setInterval(function () {
+    beat++;
+    var change = beat % 6 === 0;
+    document.querySelectorAll(".ldot").forEach(function (dot) {
+      fireRing(dot);
+      if (change) snappySwell(dot);
+    });
+    if (!change) return;
+    ["p", "g", "s"].forEach(function (k) {
+      var r = RANGE[k];
+      var d = Math.round((Math.random() * 2 - 1) * r[2]);
+      if (d === 0) d = Math.random() < 0.5 ? -1 : 1;
+      vals[k] = Math.max(r[0], Math.min(r[1], vals[k] + d));
+    });
+    renderAll();
+  }, 1400);
+})();
+</script>
+</body>
+</html>
