@@ -819,6 +819,72 @@
   body.layout-heroed20 .catgrid { gap: 20px; grid-auto-rows: 155px; }
   body.layout-heroed16 .gamesec, body.layout-heroed20 .gamesec { padding-top: 40px; }
 
+  /* ===== scene layouts: hero text + tiles as one composition =====
+     The heroarea collapses to a 0-height layer whose text overlays the tile
+     canvas; .games becomes an absolute canvas (--sch tall), one 12px seam
+     everywhere, chips off, "Popular games" heading off. */
+  body.scenehero .heroarea { display: block; height: 0; min-height: 0; padding: 0; overflow: visible; z-index: 5; }
+  body.scenehero .heroarea h3, body.scenehero .heroarea > p, body.scenehero .heroarea .stats { max-width: 1160px; margin-left: auto; margin-right: auto; padding-left: 48px; padding-right: 24px; text-align: left; justify-content: flex-start; }
+  body.scenehero .heroarea h3 { margin: 0 0 6px; padding-top: var(--stt, 26px); }
+  body.scenehero .heroarea .stats { margin-top: 26px; }
+  body.scenehero #popsec { padding-top: 6px; }
+  body.scenehero #popsec .pophead { display: none; }
+  body.scenehero .games { display: block; position: relative; height: var(--sch, 640px); }
+  body.scenehero .games .gtile { position: absolute; }
+  body.scenehero .games .gchip { display: none; }
+  body.layout-scsplit .heroarea h3, body.layout-scsplit .heroarea > p, body.layout-scsplit .heroarea .stats,
+  body.layout-scpyr .heroarea h3, body.layout-scpyr .heroarea > p, body.layout-scpyr .heroarea .stats { text-align: center; padding-left: 24px; justify-content: center; }
+  body.layout-scstair .heroarea h3, body.layout-scstair .heroarea > p, body.layout-scstair .heroarea .stats { padding-left: 748px; }
+
+  /* Scene · The clearing (W9): waist mosaic right, twin bottoms, street straddled */
+  body.layout-scw9 { --stt: 26px; --sch: 644px; }
+  body.layout-scw9 .pos-c { left: 707px; top: 14px;  width: 243px; height: 162px; }
+  body.layout-scw9 .pos-h { left: 545px; top: 144px; width: 150px; height: 100px; }
+  body.layout-scw9 .pos-a { left: 707px; top: 188px; width: 405px; height: 274px; }
+  body.layout-scw9 .pos-b { left: 386px; top: 256px; width: 309px; height: 206px; }
+  body.layout-scw9 .pos-d { left: 582px; top: 474px; width: 243px; height: 162px; }
+  body.layout-scw9 .pos-f { left: 837px; top: 474px; width: 150px; height: 100px; }
+  body.layout-scw9 .pos-e, body.layout-scw9 .pos-g, body.layout-scw9 .pos-i { display: none; }
+
+  /* Scene · The split waist (Z7): mosaic parts, words centred between the chains */
+  body.layout-scsplit { --stt: 204px; --sch: 648px; }
+  body.layout-scsplit .pos-b { left: 0;     top: 120px; width: 309px; height: 206px; }
+  body.layout-scsplit .pos-c { left: 159px; top: 338px; width: 150px; height: 100px; }
+  body.layout-scsplit .pos-d { left: 0;     top: 450px; width: 243px; height: 162px; }
+  body.layout-scsplit .pos-a { left: 803px; top: 150px; width: 309px; height: 206px; }
+  body.layout-scsplit .pos-f { left: 803px; top: 368px; width: 150px; height: 100px; }
+  body.layout-scsplit .pos-e { left: 869px; top: 480px; width: 243px; height: 162px; }
+  body.layout-scsplit .pos-g, body.layout-scsplit .pos-h, body.layout-scsplit .pos-i { display: none; }
+
+  /* Scene · The rabatment (T1): text fills the left square, one-pitch mosaic fills the right */
+  body.layout-scrab { --stt: 134px; --sch: 458px; }
+  body.layout-scrab .pos-a { left: 614px; top: 86px;  width: 328px; height: 228px; }
+  body.layout-scrab .pos-d { left: 954px; top: 86px;  width: 158px; height: 108px; }
+  body.layout-scrab .pos-b { left: 954px; top: 206px; width: 158px; height: 108px; }
+  body.layout-scrab .pos-h { left: 614px; top: 326px; width: 158px; height: 108px; }
+  body.layout-scrab .pos-f { left: 784px; top: 326px; width: 158px; height: 108px; }
+  body.layout-scrab .pos-e { left: 954px; top: 326px; width: 158px; height: 108px; }
+  body.layout-scrab .pos-c, body.layout-scrab .pos-g, body.layout-scrab .pos-i { display: none; }
+
+  /* Scene · The pyramid (T4): stepped silhouette on one baseline, text crowns it */
+  body.layout-scpyr { --stt: 50px; --sch: 520px; }
+  body.layout-scpyr .pos-c { left: 58px;  top: 402px; width: 134px; height: 94px; }
+  body.layout-scpyr .pos-b { left: 204px; top: 356px; width: 200px; height: 140px; }
+  body.layout-scpyr .pos-a { left: 416px; top: 300px; width: 280px; height: 196px; }
+  body.layout-scpyr .pos-d { left: 708px; top: 356px; width: 200px; height: 140px; }
+  body.layout-scpyr .pos-f { left: 920px; top: 402px; width: 134px; height: 94px; }
+  body.layout-scpyr .pos-e, body.layout-scpyr .pos-g, body.layout-scpyr .pos-h, body.layout-scpyr .pos-i { display: none; }
+
+  /* Scene · The phi stair (T6, mirrored): sizes fall 0.786x per step down the
+     diagonal from the tall top-left corner; the text takes the top right */
+  body.layout-scstair { --stt: 34px; --sch: 610px; }
+  body.layout-scstair .pos-a { left: 12px;  top: 36px;  width: 300px; height: 216px; }
+  body.layout-scstair .pos-b { left: 324px; top: 152px; width: 236px; height: 170px; }
+  body.layout-scstair .pos-d { left: 572px; top: 268px; width: 186px; height: 134px; }
+  body.layout-scstair .pos-c { left: 770px; top: 384px; width: 146px; height: 105px; }
+  body.layout-scstair .pos-e { left: 928px; top: 500px; width: 115px; height: 83px; }
+  body.layout-scstair .pos-f, body.layout-scstair .pos-g, body.layout-scstair .pos-h, body.layout-scstair .pos-i { display: none; }
+
   /* ===== film-grain texture (ElevenLabs recipe): their 256px black+alpha noise tile
      (alpha pre-halved = their opacity .5), overlay blend, 1 grain = 1 device pixel ===== */
   body.tex-grain .gimg { background-image: url("noise.png"); background-size: 256px 256px;
@@ -1313,7 +1379,7 @@
     }
   ];
 
-  var LAYOUTS = [["hero18", "Hero 208/18 (research)"], ["hero12", "Hero 12px gutters"], ["heroed", "Hero editorial 3:2 (18px)"], ["heroed16", "Hero editorial 16px"], ["heroed20", "Hero editorial 20px"], ["ed43", "Editorial 4:3"], ["sq", "Poki squares"], ["mixed", "Mixed"], ["theatre", "Theatre"], ["theatreslim", "Theatre slim"], ["spot3", "Spotlight slim"], ["duo", "2 + 5"], ["trio", "3 + 5"]];
+  var LAYOUTS = [["hero18", "Hero 208/18 (research)"], ["hero12", "Hero 12px gutters"], ["heroed", "Hero editorial 3:2 (18px)"], ["heroed16", "Hero editorial 16px"], ["heroed20", "Hero editorial 20px"], ["ed43", "Editorial 4:3"], ["sq", "Poki squares"], ["mixed", "Mixed"], ["theatre", "Theatre"], ["theatreslim", "Theatre slim"], ["spot3", "Spotlight slim"], ["duo", "2 + 5"], ["trio", "3 + 5"], ["scw9", "Scene · The clearing"], ["scsplit", "Scene · The split waist"], ["scrab", "Scene · The rabatment"], ["scpyr", "Scene · The pyramid"], ["scstair", "Scene · The phi stair"]];
   var curBase = "evernote", curPlay = "raph", curLayout = "ed43";
   
   var FONTS = [
@@ -1392,7 +1458,15 @@
     if (lobby && slot) slot.parentNode.insertBefore(lobby, slot.nextSibling);
   }
   function applyBody() {
-    document.body.className = curBase + " play-" + curPlay + " layout-" + curLayout + " font-" + curFont + " shadow-" + curShadow + " edge-" + curEdge + " tex-" + curTexture + " cat-" + curCatalog + " stats-" + curStats;
+    var scene = curLayout.indexOf("sc") === 0;
+    document.body.className = curBase + " play-" + curPlay + " layout-" + curLayout + (scene ? " scenehero" : "") + " font-" + curFont + " shadow-" + curShadow + " edge-" + curEdge + " tex-" + curTexture + " cat-" + curCatalog + " stats-" + curStats;
+    var ht = document.getElementById("herotitle"), hs = document.getElementById("herosub");
+    if (scene) {
+      ht.innerHTML = "Play cards in<br>good company";
+      hs.innerHTML = "Classic card games. Join a table or play solo.<br>Free to play, hard to stop.";
+    } else if (typeof titlesel !== "undefined" && titlesel && titlesel.options && titlesel.options.length) {
+      applyCopy();
+    }
     document.getElementById("sel-base").value = curBase;
     document.getElementById("sel-play").value = curPlay;
     document.getElementById("sel-layout").value = curLayout;
