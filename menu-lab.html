@@ -64,20 +64,27 @@
   /* 2 centered mark */
   .m-center { position: relative; height: 56px; padding: 0 18px; background: transparent; }
   .m-center .left { display: flex; gap: 18px; flex: 1; }
+  .m-center .left .navlink { font-weight: bold; }
   .m-center .logo { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
   .m-center .logo img { width: 224px; display: block; }
   .m-center .right { flex-shrink: 0; margin-left: auto; }
   .fr-center .hero { padding-top: 26px; }
 
-  /* 3 capsule menu: the whole bar inside one outlined pill */
-  .m-capsule { position: absolute; left: 12px; right: 12px; top: 10px; z-index: 5;
-    display: flex; align-items: center; gap: 16px; height: 48px; padding: 0 10px 0 16px;
-    background: rgba(255,255,255,.82); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(43,39,34,.13); border-radius: 999px;
-    box-shadow: 0 1px 2px rgba(60,45,25,.06), 0 6px 18px rgba(60,45,25,.08); }
+  /* 3 capsule menu: the whole bar inside one outlined squircle, no fill */
+  .m-capsule { position: absolute; left: 50%; top: 12px; transform: translateX(-50%); z-index: 5;
+    display: flex; align-items: center; gap: 16px; height: 48px; padding: 0 14px 0 18px;
+    background: transparent; border: 1px solid rgba(43,39,34,.16);
+    border-radius: 16px; corner-shape: squircle; box-sizing: border-box; }
   .m-capsule .logo img { width: 170px; height: 32px; display: block; }
   .m-capsule .spacer { flex: 1; }
-  .fr-capsule .hero { padding-top: 76px; }
+  .m-capsule.wide { width: 660px; }
+  .m-capsule.hug { gap: 26px; }
+  .m-capsule.hug .spacer { display: none; }
+  .m-capsule.threads { width: 620px; }
+  .thread { position: absolute; top: 36px; height: 1px; background: rgba(43,39,34,.14); z-index: 4; }
+  .thread.tl { left: 0; width: calc(50% - 322px); }
+  .thread.tr { right: 0; width: calc(50% - 322px); }
+  .fr-capsule .hero { padding-top: 78px; }
 </style>
 </head>
 <body>
@@ -117,9 +124,19 @@ The capsule menu is the Wispr Flow idea done properly this time: the entire menu
       html: '<div class="mrow m-center"><div class="left"><span class="navlink dd">Games</span><span class="navlink">Rules</span><span class="navlink">Leaderboards</span></div>' +
         '<a class="logo"><img src="wocg-logo.png" alt=""></a>' +
         '<div class="right">' + ICONS + '</div></div>' + HERO },
-    { t: "3 · The capsule menu", d: "Wispr Flow, done right: the complete menu enclosed by a line — one floating outlined pill holding the logo left, Games ▾ beside it, and the normal cluster on the right.",
+    { t: "3a · Outlined squircle, roomy", d: "The Wispr container: a rounded-corner square outline, no fill, floating at a fixed 660px — logo left, Games ▾ beside it, the normal cluster right.",
       frame: "fr-capsule",
-      html: '<div class="m-capsule"><a class="logo"><img src="wocg-logo.png" alt=""></a>' +
+      html: '<div class="m-capsule wide"><a class="logo"><img src="wocg-logo.png" alt=""></a>' +
+        '<span class="navlink dd">Games</span>' +
+        '<span class="spacer"></span>' + ICONS + '</div>' + HERO },
+    { t: "3b · Outlined squircle, hugging", d: "The same line, but the box shrinks to its contents and centers itself. The menu becomes a small object instead of a region.",
+      frame: "fr-capsule",
+      html: '<div class="m-capsule hug"><a class="logo"><img src="wocg-logo.png" alt=""></a>' +
+        '<span class="navlink dd">Games</span>' + ICONS + '</div>' + HERO },
+    { t: "3c · Outlined with side threads", d: "The Wispr detail: hairlines run from the capsule sides to the page edges, tying the floating box into the layout without giving it a background.",
+      frame: "fr-capsule",
+      html: '<div class="thread tl"></div><div class="thread tr"></div>' +
+        '<div class="m-capsule threads"><a class="logo"><img src="wocg-logo.png" alt=""></a>' +
         '<span class="navlink dd">Games</span>' +
         '<span class="spacer"></span>' + ICONS + '</div>' + HERO }
   ];
