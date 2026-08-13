@@ -1680,9 +1680,39 @@
     if (sceneTxt && sceneTxt.parentNode) sceneTxt.style.transform = "scale(" + (1 / k) + ")";
   }
   window.addEventListener("resize", fitScene);
+  /* Favorites shown as a group on top of every dropdown; the full list stays below */
+  var FAVES = {
+    "sel-base": ["evernote", "wocg"],
+    "sel-play": ["raph"],
+    "sel-layout": ["ed43", "scw9", "scw9b", "scw9c", "scsplit", "scrab", "scpyr", "scstair"],
+    "sel-font": ["vollkorn"],
+    "sel-shadow": ["soft"],
+    "sel-edge": ["softlight"],
+    "sel-texture": ["grain"],
+    "sel-catalog": ["split"],
+    "sel-stats": ["signsolid", "capsule", "signbtn", "signpulse", "signtag", "brief"],
+    "sel-menu": ["current", "crest", "gthreads"]
+  };
   function buildSel(id, list, setter) {
     var el = document.getElementById(id);
-    list.forEach(function (x) { el.add(new Option(x[1], x[0])); });
+    var favKeys = (FAVES[id] || []).filter(function (k) {
+      return list.some(function (x) { return x[0] === k; });
+    });
+    if (favKeys.length) {
+      var ogF = document.createElement("optgroup");
+      ogF.label = "Favorites";
+      favKeys.forEach(function (k) {
+        var it = list.filter(function (x) { return x[0] === k; })[0];
+        ogF.appendChild(new Option(it[1], it[0]));
+      });
+      el.appendChild(ogF);
+      var ogA = document.createElement("optgroup");
+      ogA.label = "All options";
+      list.forEach(function (x) { ogA.appendChild(new Option(x[1], x[0])); });
+      el.appendChild(ogA);
+    } else {
+      list.forEach(function (x) { el.add(new Option(x[1], x[0])); });
+    }
     el.onchange = function () { setter(el.value); applyBody(); };
   }
   buildSel("sel-base", THEMES, function (v) { curBase = v; });
@@ -1879,6 +1909,23 @@
     o.value = i; o.textContent = x[1] + (i > 0 ? " — " + x[0] : "");
     subsel.appendChild(o);
   });
+  /* favorites on top of the copy dropdowns too: current default + the settled picks */
+  (function () {
+    var og = document.createElement("optgroup");
+    og.label = "Favorites";
+    [TITLE_ITEMS[0].t, "Play cards in good company."].forEach(function (txt) {
+      for (var i = 0; i < TITLE_ITEMS.length; i++) {
+        if (TITLE_ITEMS[i].t === txt) { og.appendChild(new Option(txt, i)); break; }
+      }
+    });
+    titlesel.insertBefore(og, titlesel.firstChild);
+    var ogs = document.createElement("optgroup");
+    ogs.label = "Favorites";
+    [0, 8, 18].forEach(function (i) {
+      if (SUBS[i]) ogs.appendChild(new Option(SUBS[i][1] + (i > 0 ? " — " + SUBS[i][0] : ""), i));
+    });
+    subsel.insertBefore(ogs, subsel.firstChild);
+  })();
   function applyCopy() {
     var item = TITLE_ITEMS[+titlesel.value];
     document.getElementById("herotitle").textContent = item.t;
