@@ -257,7 +257,9 @@
   /* ===== menu-bar experiments ===== */
   body:not(.menu-current) .menubar { display: none; }
   .mbcenter, .mbcap { display: none; }
-  body.menu-center .mbcenter { display: flex; }
+  body.menu-center .mbcenter, body.menu-centerband .mbcenter { display: flex; }
+  body.menu-centerband .mbcenter { background: #F4EEE5; border-bottom: 1px solid #E7E7E7; }
+  body.menu-crestleft .mbcap.v-crestleft { display: block; }
   body.menu-crest .mbcap.v-crest { display: block; }
   body.menu-fthreads .mbcap.v-fthreads { display: block; }
   body.menu-gthreads .mbcap.v-gthreads { display: block; }
@@ -274,15 +276,16 @@
     display: flex; align-items: center; gap: 16px; padding: 0 14px 0 18px; box-sizing: border-box;
     background: transparent; border: 1px solid rgba(43,39,34,.16); border-radius: 16px; corner-shape: squircle; }
   .mcapsule.ever { background: #F4EEE5; border-color: #E7E7E7; }
-  .v-fthreads .mcapsule, .v-gthreads .mcapsule { width: 620px; }
+  .v-fthreads .mcapsule, .v-gthreads .mcapsule, .v-crestleft .mcapsule { width: 620px; }
   .mthread { position: absolute; top: 34px; height: 1px; background: rgba(43,39,34,.14); }
   .v-fthreads .mthread, .v-gthreads .mthread { background: #E7E7E7; }
   .mthread.tl { left: 0; }
   .mthread.tr { right: 0; }
   .v-crest .mthread { width: calc(50% - 342px); }
-  .v-fthreads .mthread, .v-gthreads .mthread { width: calc(50% - 322px); }
+  .v-fthreads .mthread, .v-gthreads .mthread, .v-crestleft .mthread { width: calc(50% - 322px); }
   .mcapmark { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
-  .mcapmark img { width: 42px; display: block; }
+  .mcapmark img { width: 52px; display: block; }
+  .mcapsule.tight { padding-left: 10px; gap: 10px; }
   .mcaplogo img { width: 36px; height: 36px; display: block; }
   .mspacer { flex: 1; }
   .mbcap .muser, .mbcenter .muser { list-style: none; }
@@ -1095,9 +1098,23 @@
     </div>
   </div>
 
+  <div class="mbcap v-crestleft">
+    <span class="mthread tl"></span><span class="mthread tr"></span>
+    <div class="mcapsule tight">
+      <a class="mcaplogo" href="#"><img src="logoIcon.png" alt="World of Card Games"></a>
+      <span class="mclink">Games<img class="mtri" src="arrowDownBig.png" alt=""></span>
+      <span class="mspacer"></span>
+      <ul class="muser">
+      <li><img class="micon" src="menuActivity.svg" alt="Activity"></li>
+      <li><img class="micon" src="menuFriends.svg" alt="Friends"></li>
+      <li><img class="avatar" src="AnimalFox.svg" alt="Avatar"><span class="uname">Guest #12</span></li>
+    </ul>
+    </div>
+  </div>
+
   <div class="mbcap v-fthreads">
     <span class="mthread tl"></span><span class="mthread tr"></span>
-    <div class="mcapsule ever">
+    <div class="mcapsule ever tight">
       <a class="mcaplogo" href="#"><img src="logoIcon.png" alt="World of Card Games"></a>
       <span class="mclink">Games<img class="mtri" src="arrowDownBig.png" alt=""></span>
       <span class="mspacer"></span>
@@ -1562,9 +1579,11 @@
   var MENUS = [
     ["current", "Today's bar"],
     ["center", "Centered mark"],
-    ["crest", "Squircle crest + threads"],
+    ["centerband", "Centered mark, Evernote band"],
+    ["crest", "Crest centered (52px) + threads"],
+    ["crestleft", "Outline card, logo left"],
     ["fthreads", "Threads card, logo left"],
-    ["gthreads", "Threads card, logo centered"]
+    ["gthreads", "Threads card, centered (52px)"]
   ];
   var STATSLINES = [
     ["capsule", "Capsule: walled live-light strip"],
