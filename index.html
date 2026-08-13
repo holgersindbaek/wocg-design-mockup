@@ -852,16 +852,17 @@
   body.layout-scw9 .statsSign .bs:has(#sts-games), body.layout-scsplit .statsSign .bs:has(#sts-games),
   body.layout-scrab .statsSign .bs:has(#sts-games), body.layout-scstair .statsSign .bs:has(#sts-games) { display: none; }
 
-  /* Scene · The clearing (W9): bigger tiles wrapping the text - the large and
-     a small slide in below the words, the shelf and keep hold the right */
+  /* Scene · The clearing (W9): yellow dropped, layout spans the full
+     Open-tables width - large and medium wrap in below the words, the keep
+     holds the right with its small shoulder tile and two hangers */
   body.layout-scw9 { --sch: 660px; }
-  body.layout-scw9 .pos-c { left: 492px; top: 0;     width: 280px; height: 187px; }
-  body.layout-scw9 .pos-h { left: 784px; top: 72px;  width: 172px; height: 115px; }
+  body.layout-scw9 .pos-h { left: 940px; top: 72px;  width: 172px; height: 115px; }
   body.layout-scw9 .pos-a { left: 652px; top: 199px; width: 460px; height: 307px; }
-  body.layout-scw9 .pos-b { left: 285px; top: 343px; width: 355px; height: 237px; }
-  body.layout-scw9 .pos-d { left: 101px; top: 465px; width: 172px; height: 115px; }
+  body.layout-scw9 .pos-b { left: 0;     top: 343px; width: 355px; height: 237px; }
+  body.layout-scw9 .pos-e { left: 367px; top: 343px; width: 273px; height: 182px; }
   body.layout-scw9 .pos-f { left: 652px; top: 518px; width: 172px; height: 115px; }
-  body.layout-scw9 .pos-e, body.layout-scw9 .pos-g, body.layout-scw9 .pos-i { display: none; }
+  body.layout-scw9 .pos-d { left: 836px; top: 518px; width: 172px; height: 115px; }
+  body.layout-scw9 .pos-c, body.layout-scw9 .pos-g, body.layout-scw9 .pos-i { display: none; }
 
   /* Scene · The split waist (Z7): slimmer chains so the centred, unscaled
      text always has its clearing */
@@ -895,13 +896,14 @@
   body.layout-scpyr .pos-e, body.layout-scpyr .pos-g, body.layout-scpyr .pos-h, body.layout-scpyr .pos-i { display: none; }
 
   /* Scene · The phi stair (T6): sizes fall 0.786x per step from the tall
-     top-right corner, the chain bending around the text at top-left */
-  body.layout-scstair { --sch: 660px; }
-  body.layout-scstair .pos-a { left: 812px; top: 40px;  width: 300px; height: 216px; }
-  body.layout-scstair .pos-b { left: 564px; top: 156px; width: 236px; height: 170px; }
-  body.layout-scstair .pos-d { left: 366px; top: 346px; width: 186px; height: 134px; }
-  body.layout-scstair .pos-c { left: 208px; top: 455px; width: 146px; height: 105px; }
-  body.layout-scstair .pos-e { left: 81px;  top: 553px; width: 115px; height: 83px; }
+     top-right corner, the chain sweeping the full Open-tables width in one
+     smooth swing under the text */
+  body.layout-scstair { --sch: 670px; }
+  body.layout-scstair .pos-a { left: 787px; top: 64px;  width: 325px; height: 234px; }
+  body.layout-scstair .pos-b { left: 519px; top: 188px; width: 256px; height: 184px; }
+  body.layout-scstair .pos-d { left: 306px; top: 346px; width: 201px; height: 145px; }
+  body.layout-scstair .pos-c { left: 136px; top: 466px; width: 158px; height: 114px; }
+  body.layout-scstair .pos-e { left: 0;     top: 555px; width: 124px; height: 89px; }
   body.layout-scstair .pos-f, body.layout-scstair .pos-g, body.layout-scstair .pos-h, body.layout-scstair .pos-i { display: none; }
 
   /* ===== film-grain texture (ElevenLabs recipe): their 256px black+alpha noise tile
@@ -1481,8 +1483,13 @@
     document.body.className = curBase + " play-" + curPlay + " layout-" + curLayout + (scene ? " scenehero" : "") + " font-" + curFont + " shadow-" + curShadow + " edge-" + curEdge + " tex-" + curTexture + " cat-" + curCatalog + " stats-" + curStats;
     var ht = document.getElementById("herotitle"), hs = document.getElementById("herosub");
     if (scene) {
-      ht.innerHTML = "Play cards in<br>good company";
-      hs.innerHTML = "Classic card games. Join a table or play solo.<br>Free to play, hard to stop.";
+      if (curLayout === "scpyr") {
+        ht.innerHTML = "Play cards in good company";
+        hs.innerHTML = "Classic card games. Join a table or play solo. Free to play, hard to stop.";
+      } else {
+        ht.innerHTML = "Play cards in<br>good company";
+        hs.innerHTML = "Classic card games. Join a table or play solo.<br>Free to play, hard to stop.";
+      }
     } else if (typeof titlesel !== "undefined" && titlesel && titlesel.options && titlesel.options.length) {
       applyCopy();
     }
