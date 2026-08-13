@@ -5,11 +5,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Playing-count lab</title>
 <style>
+  @font-face {
+    font-family: 'BuloRounded';
+    src: url("BuloRounded-Regular.woff2") format('woff2');
+    font-style: normal; font-weight: normal; font-display: swap;
+  }
+  @font-face {
+    font-family: 'BuloRounded';
+    src: url("BuloRounded-Bold.woff2") format('woff2');
+    font-style: normal; font-weight: bold; font-display: swap;
+  }
   :root {
     --p1:#f4c360; --p3:#4d64ff; --p4:#00a82d; --p5:#e8862f; --p6:#9a6df0;
   }
   body { margin: 0; padding: 28px 24px 80px; background: #f9f6f2; color: #2b2722;
-    font-family: -apple-system, "Helvetica Neue", Arial, sans-serif; }
+    font-family: "BuloRounded", "Verdana", "Arial", sans-serif; -webkit-font-smoothing: antialiased; }
   h1 { font-size: 22px; margin: 0 0 4px; }
   p.note { font-size: 13px; color: #8a857c; margin: 0 0 26px; max-width: 720px; }
   .vsec { margin: 0 0 46px; }
@@ -19,18 +29,20 @@
   .pgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; max-width: 700px; }
   .cell { display: flex; flex-direction: column; }
   .cell.hero { grid-column: 1 / 3; grid-row: 1 / 3; }
-  .gt { position: relative; overflow: hidden; border-radius: 18px; cursor: pointer;
+  .gt { position: relative; overflow: hidden; cursor: pointer;
+    border-radius: 20px; corner-shape: squircle;
     display: flex; align-items: center; justify-content: center;
     aspect-ratio: 4 / 3; width: 100%;
     background-image: url("noise.png"); background-size: 256px 256px;
     box-shadow: 0 1px 2px rgba(60,45,25,.08), 0 2px 5px rgba(60,45,25,.08), 0 5px 12px rgba(60,45,25,.08);
     transition: transform .18s ease, box-shadow .18s ease; }
-  .gt:hover { transform: translateY(-4px);
+  @media (min-resolution: 2dppx) { .gt { background-size: 128px 128px; } }
+  .gt:hover { transform: translateY(-6px) rotate(-1deg); z-index: 2;
     box-shadow: 0 2px 4px rgba(60,45,25,.08), 0 6px 12px rgba(60,45,25,.10), 0 14px 26px rgba(60,45,25,.12); }
   .gt::before { content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none;
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='72' height='72'><g fill='black' fill-opacity='0.08' font-family='Arial' font-size='26'><text x='2' y='26'>♥</text><text x='38' y='26'>♠</text><text x='20' y='62'>♦</text><text x='56' y='62'>♣</text><text x='-16' y='62'>♣</text></g></svg>");
     background-size: 72px 72px; }
-  .gt::after { content: ""; position: absolute; inset: 0; border-radius: 18px;
+  .gt::after { content: ""; position: absolute; inset: 0; border-radius: 20px; corner-shape: squircle;
     box-shadow: inset 0 0 0 1px rgba(0,0,0,.75); mix-blend-mode: soft-light; pointer-events: none; z-index: 3; }
   .gt.t1 { background-color: var(--p1); } .gt.t3 { background-color: var(--p3); }
   .gt.t4 { background-color: var(--p4); } .gt.t5 { background-color: var(--p5); }
@@ -38,102 +50,92 @@
   .glogo { max-width: 62%; max-height: 64%; width: auto; height: auto; z-index: 1; }
   .cell.hero .glogo { max-width: 46%; }
 
-  /* ref A: mockup pill */
+  /* shared count text: number bold, word regular, same size */
+  .cnum b { font-weight: bold; }
+  .cnum { font-weight: normal; }
+
+  /* ref A: mockup pill (as-is today, all bold) */
   .chipMock { position: absolute; top: 8px; right: 10px; z-index: 2; display: flex; align-items: center; gap: 5px;
     background: rgba(255,255,255,.92); color: #212529; font-size: 12px; font-weight: bold; line-height: 1;
     padding: 4px 9px; border-radius: 20px; }
   .chipMock::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: #2f9e44; }
 
-  /* ref B: main-site corner tab */
+  /* ref B: main-site corner tab (as-is today, all bold) */
   .tabSite { position: absolute; right: 0; bottom: 0; z-index: 2; background: rgba(0,0,0,.4); color: #fff;
     font-size: 12px; font-weight: bold; line-height: 22px; padding: 0 10px; border-radius: 8px 0 0 0;
     box-shadow: inset 0 0 0 1px rgba(0,0,0,.08); }
 
-  /* v1 ghost number */
-  .ghostN { position: absolute; right: 10px; bottom: 7px; z-index: 2; font-size: 13px; font-weight: bold;
-    color: rgba(255,255,255,.85); text-shadow: 0 1px 2px rgba(0,0,0,.35); }
-  .ghostN small { font-weight: normal; font-size: 10.5px; opacity: .8; margin-left: 3px; }
+  /* ghost family */
+  .ghostBR { position: absolute; right: 11px; bottom: 8px; z-index: 2; font-size: 12.5px;
+    color: rgba(255,255,255,.9); text-shadow: 0 1px 2px rgba(0,0,0,.35); }
+  .ghostDot { position: absolute; left: 11px; bottom: 8px; z-index: 2; display: flex; align-items: center; gap: 6px;
+    font-size: 12.5px; color: rgba(255,255,255,.9); text-shadow: 0 1px 2px rgba(0,0,0,.35); }
+  .ghostDot::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: #2f9e44;
+    box-shadow: 0 0 0 1.5px rgba(255,255,255,.55); }
+  .scrim { position: absolute; right: 8px; bottom: 8px; z-index: 2; font-size: 12px;
+    color: rgba(255,255,255,.95); background: rgba(0,0,0,.35); padding: 3px 8px 4px; border-radius: 7px; }
 
-  /* v2 caption under art */
-  .cap { display: flex; align-items: center; justify-content: space-between; padding: 6px 3px 0; font-size: 11.5px; color: #6f6a61; }
-  .cap b { font-weight: 600; color: #4c473f; font-size: 12px; }
-  .cap .cnt { display: flex; align-items: center; gap: 4px; }
-  .cap .cnt::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: #2f9e44; }
-
-  /* v3 micro-dot, hover reveals pill */
-  .mdot { position: absolute; top: 10px; right: 11px; z-index: 2; width: 8px; height: 8px; border-radius: 50%;
-    background: #2f9e44; box-shadow: 0 0 0 2px rgba(255,255,255,.75); animation: mbreathe 3s ease-in-out infinite;
-    transition: opacity .18s; }
-  @keyframes mbreathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.18); } }
-  .mrev { position: absolute; top: 8px; right: 10px; z-index: 2; display: flex; align-items: center; gap: 5px;
-    background: rgba(255,255,255,.92); color: #212529; font-size: 12px; font-weight: bold; line-height: 1;
-    padding: 4px 9px; border-radius: 20px; opacity: 0; transform: translateX(6px); transition: opacity .18s, transform .18s; }
-  .mrev::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: #2f9e44; }
-  .gt:hover .mdot { opacity: 0; }
-  .gt:hover .mrev { opacity: 1; transform: translateX(0); }
-
-  /* v4 avatar stack */
-  .avs { position: absolute; left: 10px; bottom: 8px; z-index: 2; display: flex; align-items: center; }
-  .avs img { width: 19px; height: 19px; border-radius: 50%; background: #fff; border: 1.5px solid rgba(255,255,255,.9);
-    margin-right: -6px; box-shadow: 0 1px 2px rgba(0,0,0,.2); }
-  .avs span { margin-left: 11px; font-size: 11px; font-weight: bold; color: rgba(255,255,255,.9);
-    text-shadow: 0 1px 2px rgba(0,0,0,.35); }
-
-  /* v5 cream corner tab */
+  /* cream family */
   .tabCream { position: absolute; right: 0; bottom: 0; z-index: 2; display: flex; align-items: center; gap: 5px;
-    background: rgba(249,246,242,.92); color: #2b2722; font-size: 11.5px; font-weight: bold; line-height: 1;
-    padding: 5px 10px 6px; border-radius: 12px 0 0 0; }
+    background: rgba(249,246,242,.92); color: #2b2722; font-size: 12px; line-height: 1;
+    padding: 5px 10px 6px; border-radius: 14px 0 0 0; }
   .tabCream::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: #2f9e44; }
+  .pillCream { position: absolute; right: 9px; bottom: 8px; z-index: 2; display: flex; align-items: center; gap: 5px;
+    background: rgba(249,246,242,.9); color: #2b2722; font-size: 12px; line-height: 1;
+    padding: 4px 9px 5px; border-radius: 20px; box-shadow: 0 1px 3px rgba(43,39,34,.18); }
+  .pillCream::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: #2f9e44; }
 
-  /* v6 underline meter */
-  .meter { position: absolute; left: 0; bottom: 0; height: 4px; z-index: 2; border-radius: 0 3px 0 0;
-    background: rgba(255,255,255,.85); }
-  .mghost { position: absolute; right: 10px; bottom: 9px; z-index: 2; font-size: 11.5px; font-weight: bold;
-    color: rgba(255,255,255,.9); text-shadow: 0 1px 2px rgba(0,0,0,.35); opacity: 0; transition: opacity .18s; }
-  .gt:hover .mghost { opacity: 1; }
-
-  /* v7 seat pips */
-  .pips { position: absolute; left: 11px; bottom: 10px; z-index: 2; display: flex; gap: 4px; align-items: center; }
-  .pips i { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,.35); }
-  .pips i.on { background: rgba(255,255,255,.95); }
-  .pips span { margin-left: 5px; font-size: 11px; font-weight: bold; color: rgba(255,255,255,.9);
-    text-shadow: 0 1px 2px rgba(0,0,0,.3); opacity: 0; transition: opacity .18s; }
-  .gt:hover .pips span { opacity: 1; }
-
-  /* v8 hover sheet */
+  /* hover family */
   .sheet { position: absolute; left: 50%; bottom: 10px; z-index: 2; transform: translate(-50%, 30px);
     display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,.94); color: #212529;
-    font-size: 12px; font-weight: bold; line-height: 1; padding: 5px 11px; border-radius: 20px;
+    font-size: 12px; line-height: 1; padding: 5px 11px 6px; border-radius: 20px;
     opacity: 0; transition: transform .2s cubic-bezier(.2,.8,.3,1), opacity .2s; white-space: nowrap; }
   .sheet::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: #2f9e44; }
   .gt:hover .sheet { transform: translate(-50%, 0); opacity: 1; }
+  .hghost { position: absolute; right: 11px; bottom: 8px; z-index: 2; font-size: 12.5px;
+    color: rgba(255,255,255,.9); text-shadow: 0 1px 2px rgba(0,0,0,.35);
+    opacity: 0; transition: opacity .22s; }
+  .gt:hover .hghost { opacity: 1; }
 
-  /* v9 ping + naked number */
-  .pdot { position: absolute; right: 12px; bottom: 12px; z-index: 2; width: 7px; height: 7px; border-radius: 50%; background: #2f9e44; }
+  /* ping family */
+  .pingRow { position: absolute; right: 11px; bottom: 8px; z-index: 2; display: flex; align-items: center; gap: 7px;
+    font-size: 12.5px; color: rgba(255,255,255,.9); text-shadow: 0 1px 2px rgba(0,0,0,.35); }
+  .pdot { position: relative; width: 7px; height: 7px; border-radius: 50%; background: #2f9e44;
+    box-shadow: 0 0 0 1.5px rgba(255,255,255,.55); flex-shrink: 0; }
   .pdot::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: #2f9e44;
     animation: labping 2.4s cubic-bezier(0,0,.2,1) infinite; }
   @keyframes labping { 0% { transform: scale(1); opacity: .5; } 55%, 100% { transform: scale(2.5); opacity: 0; } }
-  .pnum { position: absolute; right: 26px; bottom: 7px; z-index: 2; font-size: 12px; font-weight: bold;
-    color: rgba(255,255,255,.88); text-shadow: 0 1px 2px rgba(0,0,0,.35); }
 
-  /* v10 ember glow */
+  /* ember family */
   .ember { position: absolute; left: 0; right: 0; bottom: 0; height: 52px; z-index: 1; pointer-events: none;
     background: linear-gradient(to top, rgba(255,220,140,var(--h,.4)), transparent);
     mix-blend-mode: soft-light; animation: emberb 4.5s ease-in-out infinite alternate; }
   @keyframes emberb { from { opacity: .75; } to { opacity: 1; } }
-  .eghost { position: absolute; right: 10px; bottom: 8px; z-index: 2; font-size: 11.5px; font-weight: bold;
-    color: rgba(255,255,255,.9); text-shadow: 0 1px 2px rgba(0,0,0,.35); opacity: 0; transition: opacity .18s; }
-  .gt:hover .eghost { opacity: 1; }
 </style>
 </head>
 <body>
 
 <h1>Playing-count lab</h1>
-<p class="note">The same Popular-games grid, twelve ways to say "341 playing". The first two are what exists today
-(the mockup's white pill and the live site's dark corner tab). The other ten look for the same information with a
-lighter touch. Hover the tiles — several variants only speak when asked.</p>
+<p class="note">The Popular-games grid, rebuilt to match the frontpage exactly (squircle 20px corners, retina grain,
+BuloRounded, the real hover lift). Two reference treatments, then the four kept directions, each with variations.
+In every new variant the number is bold and "playing" is regular at the same size.</p>
 
 <div id="sections"></div>
+
+<section class="vsec" style="max-width:700px;border-top:1px solid #e7dfd2;padding-top:22px;">
+  <h2>What the research says</h2>
+  <p class="desc" style="max-width:700px;">
+  Verified across Steam, Roblox, chess.com, Discord, Twitch, YouTube, lichess, Pogo, CrazyGames, Poki and Board Game Arena:
+  every subtle treatment lives in one of two registers: <b>muted naked text under the art</b> (chess.com renders
+  "215,261 PLAYING" at 50% opacity with no container; Roblox and Discord use gray caption rows; Discord's tiny green dot
+  carries the "live" meaning so the number stays gray) or <b>a small translucent corner tag on the art</b> (the
+  YouTube duration badge and Twitch viewer tag). Steam uses a third trick: naked text where the status-green color alone
+  means live. Notably, <b>no major product hides the count until hover</b> (hover is for previews), so the hover variants
+  here are genuine experiments rather than proven patterns. Most direct card-game competitors (Pogo, CrazyGames, Poki,
+  BGA) show <b>no live counts at all</b>, and both Roblox's tile change and NN/g's social-proof research warn that
+  <b>small numbers backfire</b>.
+  </p>
+</section>
 
 <script>
   var TILES = [
@@ -143,8 +145,8 @@ lighter touch. Hover the tiles — several variants only speak when asked.</p>
     { game: "Euchre", logo: "euchre_logo.png", pal: "t4", n: 212, pct: .7 },
     { game: "Spades", logo: "spades_logo.png", pal: "t5", n: 96, pct: .35 }
   ];
-  var AVA = ["AnimalGopher.svg", "AnimalCat.svg", "AnimalFox.svg", "AnimalChicken.svg", "AnimalBee.svg", "AnimalCow.svg"];
   function fmt(n) { return n.toLocaleString("en-US"); }
+  function ctext(n) { return "<b>" + fmt(n) + "</b>&nbsp;playing"; }
   function el(tag, cls, html) {
     var e = document.createElement(tag);
     if (cls) e.className = cls;
@@ -153,67 +155,42 @@ lighter touch. Hover the tiles — several variants only speak when asked.</p>
   }
 
   var VARIANTS = [
-    { t: "Reference: the mockup today", d: "White pill with a green dot, top-right. Legible but loud: five bright pills compete with the artwork.",
+    { t: "Reference: the mockup today", d: "White pill with a green dot, top-right, all bold. Kept untouched for comparison.",
       deco: function (g, td) { g.appendChild(el("span", "chipMock", fmt(td.n) + " playing")); } },
-    { t: "Reference: the live site today", d: "The production treatment: a dark translucent tab docked in the bottom-right corner. Quieter placement, heavy color.",
+    { t: "Reference: the live site today", d: "Production's dark translucent tab docked bottom-right, all bold. Kept untouched for comparison.",
       deco: function (g, td) { g.appendChild(el("span", "tabSite", fmt(td.n) + " playing")); } },
-    { t: "1 · Ghost number", d: "Just the number, bottom-right, translucent white on the art like a video-platform view count. The word 'playing' shrinks to a whisper.",
-      deco: function (g, td) { g.appendChild(el("span", "ghostN", fmt(td.n) + "<small>playing</small>")); } },
-    { t: "2 · Caption row", d: "The art stays perfectly clean; name and count move to a quiet caption under each tile, like a museum label.",
-      caption: true,
-      deco: function () {} },
-    { t: "3 · Micro-dot, count on hover", d: "Only a small breathing green dot claims the corner. Hovering the tile swaps it for the full pill.",
+
+    { t: "1a · Ghost, bottom-right", d: "Naked translucent text on the art, video-platform style. Bold number, regular word.",
+      deco: function (g, td) { g.appendChild(el("span", "ghostBR cnum", ctext(td.n))); } },
+    { t: "1b · Ghost with live dot", d: "Same ghost text moved bottom-left with a small green dot carrying the 'live' meaning (the Discord trick).",
+      deco: function (g, td) { g.appendChild(el("span", "ghostDot cnum", ctext(td.n))); } },
+    { t: "1c · Ghost on a scrim", d: "The YouTube corner-ghost: same text on a soft dark tag so it stays legible over any artwork.",
+      deco: function (g, td) { g.appendChild(el("span", "scrim cnum", ctext(td.n))); } },
+
+    { t: "2a · Cream corner tab", d: "The live site's docked tab re-tailored: warm cream, ink text, small dot, half the visual weight.",
+      deco: function (g, td) { g.appendChild(el("span", "tabCream cnum", ctext(td.n))); } },
+    { t: "2b · Cream pill, floating", d: "The same cream voice as a small floating pill inset from the corner, echoing the mockup pill but quieter and lower.",
+      deco: function (g, td) { g.appendChild(el("span", "pillCream cnum", ctext(td.n))); } },
+
+    { t: "3a · Silent until asked", d: "Completely clean art; hovering slides a pill up from the bottom edge. (Research note: no major product hover-gates counts.)",
+      deco: function (g, td) { g.appendChild(el("span", "sheet cnum", ctext(td.n))); } },
+    { t: "3b · Silent, ghost reveal", d: "The quietest hover version: nothing at rest, and only the ghost text fades in, no pill at all.",
+      deco: function (g, td) { g.appendChild(el("span", "hghost cnum", ctext(td.n))); } },
+
+    { t: "4a · The house ping", d: "The stats line's pinging dot with the count beside it, bottom-right. One live language across the page.",
       deco: function (g, td) {
-        g.appendChild(el("span", "mdot"));
-        g.appendChild(el("span", "mrev", fmt(td.n) + " playing"));
+        var row = el("span", "pingRow cnum", ctext(td.n));
+        row.appendChild(el("span", "pdot"));
+        g.appendChild(row);
       } },
-    { t: "4 · Who's here", d: "Three tiny avatars overlap in the corner with a ghost '+338'. The count becomes people instead of a statistic.",
-      deco: function (g, td, i) {
-        var a = el("span", "avs");
-        for (var k = 0; k < 3; k++) {
-          var im = el("img"); im.src = AVA[(i + k) % 6]; a.appendChild(im);
-        }
-        a.appendChild(el("span", "", "+" + fmt(td.n - 3)));
-        g.appendChild(a);
-      } },
-    { t: "5 · Cream corner tab", d: "The live site's docked tab re-tailored for the new design: warm cream, ink text, a small dot. Same honesty, half the weight.",
-      deco: function (g, td) { g.appendChild(el("span", "tabCream", fmt(td.n) + " playing")); } },
-    { t: "6 · Occupancy meter", d: "A short white underline along the bottom edge; its length is the crowd. The exact number appears only on hover.",
-      deco: function (g, td) {
-        var m = el("span", "meter");
-        m.style.width = (14 + td.pct * 55) + "%";
-        g.appendChild(m);
-        g.appendChild(el("span", "mghost", fmt(td.n) + " playing"));
-      } },
-    { t: "7 · Seat pips", d: "Four little seats in the corner fill up as the room does — the table metaphor, miniaturized. Hover for the number.",
-      deco: function (g, td) {
-        var p = el("span", "pips");
-        var on = Math.max(1, Math.round(td.pct * 4));
-        for (var k = 0; k < 4; k++) p.appendChild(el("i", k < on ? "on" : ""));
-        p.appendChild(el("span", "", fmt(td.n)));
-        g.appendChild(p);
-      } },
-    { t: "8 · Silent until asked", d: "Completely clean art. Hovering a tile slides a pill up from the bottom edge with the count. Zero noise at rest.",
-      deco: function (g, td) { g.appendChild(el("span", "sheet", fmt(td.n) + " playing")); } },
-    { t: "9 · The house ping", d: "The stats line's own pinging dot, tiny, with a naked number beside it. One live language across the whole page.",
-      deco: function (g, td) {
-        g.appendChild(el("span", "pnum", fmt(td.n)));
-        g.appendChild(el("span", "pdot"));
-      } },
-    { t: "10 · Ember warmth", d: "No numbers at all at rest: busier tiles glow warmer along their bottom edge, like a room with more lamps lit. Hover for the count.",
+    { t: "4b · Ping + ember", d: "The ping row plus the warm bottom glow scaled to the crowd, so busy tiles also feel warmer without any extra text.",
       deco: function (g, td) {
         var e2 = el("span", "ember");
         e2.style.setProperty("--h", (.18 + td.pct * .5).toFixed(2));
         g.appendChild(e2);
-        g.appendChild(el("span", "eghost", fmt(td.n) + " playing"));
-      } },
-    { t: "11 \u00b7 Only when it flatters", d: "The research finding, applied: counts show only where they impress (100+). Quiet rooms get just the live dot, no number to judge them by. Roblox removed counts from its big tiles for exactly this reason and unique-game discovery rose 6.79%.",
-      deco: function (g, td) {
-        if (td.n >= 100) {
-          g.appendChild(el("span", "tabCream", fmt(td.n) + " playing"));
-        } else {
-          g.appendChild(el("span", "mdot"));
-        }
+        var row = el("span", "pingRow cnum", ctext(td.n));
+        row.appendChild(el("span", "pdot"));
+        g.appendChild(row);
       } }
   ];
 
@@ -231,29 +208,11 @@ lighter touch. Hover the tiles — several variants only speak when asked.</p>
       g.appendChild(im);
       v.deco(g, td, i);
       cell.appendChild(g);
-      if (v.caption) {
-        cell.appendChild(el("div", "cap", "<b>" + td.game + "</b><span class='cnt'>" + fmt(td.n) + " playing</span>"));
-      }
       grid.appendChild(cell);
     });
     sec.appendChild(grid);
     root.appendChild(sec);
   });
 </script>
-
-<section class="vsec" style="max-width:700px;border-top:1px solid #e7dfd2;padding-top:22px;">
-  <h2>What the research says</h2>
-  <p class="desc" style="max-width:700px;">
-  Verified across Steam, Roblox, chess.com, Discord, Twitch, YouTube, lichess, Pogo, CrazyGames, Poki and Board Game Arena:
-  every subtle treatment lives in one of two registers: <b>muted naked text under the art</b> (chess.com renders
-  "215,261 PLAYING" at 50% opacity with no container; Roblox and Discord use gray caption rows; Discord's tiny green dot
-  carries the "live" meaning so the number stays gray) or <b>a small translucent corner tag on the art</b> (the
-  YouTube duration badge and Twitch viewer tag). Steam uses a third trick: naked text where the status-green color alone
-  means live. Notably, <b>no major product hides the count until hover</b> (hover is for previews), so variants 3, 6, 8
-  and 10 here are genuine experiments rather than proven patterns. And two guardrails: most direct card-game competitors
-  (Pogo, CrazyGames, Poki, BGA) show <b>no live counts at all</b>, and both Roblox's tile change and NN/g's social-proof
-  research warn that <b>small numbers backfire</b>, which is what variant 11 addresses.
-  </p>
-</section>
 </body>
 </html>
