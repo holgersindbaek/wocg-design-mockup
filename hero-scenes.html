@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>WOCG — hero scenes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vollkorn:wght@400..900&display=swap" rel="stylesheet">
+<style>
+  @font-face { font-family: 'BuloRounded'; src: url("BuloRounded-Regular.woff2") format('woff2'); font-style: normal; font-weight: normal; font-display: swap; }
+  @font-face { font-family: 'BuloRounded'; src: url("BuloRounded-Bold.woff2") format('woff2'); font-style: normal; font-weight: bold; font-display: swap; }
+  :root {
+    --canvas:#f9f6f2; --band:#f4eee5; --surface:#ffffff;
+    --ink:#141414; --muted:#4e4d4c; --hairline:#e7e7e7; --live:#2f9e44;
+    --p1:#f4c360; --p2:#ef9eb2; --p3:#4d64ff; --p4:#00a82d; --p5:#e8862f;
+    --p6:#9a6df0; --p7:#5bb4d0; --p8:#e54e40; --p9:#d1548f; --pfg:#ffffff;
+    --btnshadow: 0 0 1px rgba(0,0,0,0.4), 0 1px 1px rgba(0,0,0,0.04), 0 2px 4px rgba(0,0,0,0.04);
+    --evershadow: 0 8px 24px -8px rgba(0,0,21,0.12), 0 14px 40px -8px rgba(0,0,21,0.04), 0 0 0 1px rgba(0,0,21,0.08);
+    --tileshadow: 0 1px 2px rgba(60,45,25,.08), 0 2px 5px rgba(60,45,25,.08), 0 5px 12px rgba(60,45,25,.08);
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--canvas); color: var(--ink); font-family: 'BuloRounded', system-ui, sans-serif; font-size: 15px; line-height: 1.5; padding: 40px 20px 90px; }
+  .page { max-width: 1140px; margin: 0 auto; }
+  h1 { font-family: "Vollkorn", serif; font-weight: 500; font-size: 34px; margin: 0 0 6px; }
+  .lede { color: var(--muted); max-width: 700px; margin: 0 0 34px; }
+  .vname { font-weight: bold; font-size: 16px; margin: 44px 0 2px; }
+  .vwhy { color: var(--muted); font-size: 13px; margin: 0 0 14px; max-width: 760px; }
+  .stage { position: relative; background: var(--band); border-radius: 20px; overflow: clip; }
+
+  /* ===== hero text pieces ===== */
+  .ht { font-family: "Vollkorn", serif; font-weight: 500; font-size: 42px; line-height: 1.12; margin: 0 0 8px; color: var(--ink); }
+  .hs { font-size: 17px; color: var(--muted); margin: 0; }
+
+  /* ===== the walled capsule, verbatim ===== */
+  .capsule { display: inline-flex; align-items: center; height: 32px; font-size: 14px; color: var(--muted); background: var(--surface); border-radius: 20px; box-shadow: var(--btnshadow); padding: 0 4px; white-space: nowrap; }
+  .st { display: inline-flex; align-items: center; gap: 4px; padding: 0 11px; align-self: stretch; }
+  .st + .st { border-left: 1px solid var(--hairline); }
+  .stlive { padding: 0 9px; gap: 6px; }
+  .greencap { font-size: 14px; font-weight: bold; letter-spacing: .06em; color: var(--live); }
+  .ldot { position: relative; width: 8px; height: 8px; border-radius: 50%; background: var(--live); flex-shrink: 0; }
+  .lring { position: absolute; inset: 0; border-radius: 50%; background: var(--live); pointer-events: none; }
+  b[data-k] { display: inline-flex; position: relative; color: var(--ink); font-weight: bold; }
+  .dcell { display: block; width: 0.52em; height: 1.5em; overflow: hidden; user-select: none;
+    -webkit-mask-image: linear-gradient(transparent, #000 18%, #000 82%, transparent);
+    mask-image: linear-gradient(transparent, #000 18%, #000 82%, transparent); }
+  .dreel { display: block; transition: transform .75s cubic-bezier(.22,1.1,.34,1); will-change: transform; }
+  .dreel span { display: block; height: 1.5em; line-height: 1.5em; text-align: center; }
+  .srnum { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+
+  /* ===== the game tile, real recipe ===== */
+  .tile { position: absolute; border-radius: 20px; corner-shape: squircle; box-shadow: var(--tileshadow); cursor: pointer; transition: transform .18s ease, box-shadow .18s ease; background: var(--surface); }
+  .tile:hover { transform: translateY(-6px) rotate(-1deg); box-shadow: 0 2px 4px rgba(60,45,25,.08), 0 6px 12px rgba(60,45,25,.10), 0 14px 26px rgba(60,45,25,.12); z-index: 9 !important; }
+  .gi { position: absolute; inset: 0; border-radius: 20px; corner-shape: squircle; overflow: hidden; display: flex; align-items: center; justify-content: center; color: var(--pfg); }
+  .gi::before { content: ""; position: absolute; inset: 0; pointer-events: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='72' height='72'><g fill='black' fill-opacity='0.08' font-family='Arial' font-size='26'><text x='2' y='26'>♥</text><text x='38' y='26'>♠</text><text x='20' y='62'>♦</text><text x='56' y='62'>♣</text><text x='-16' y='62'>♣</text></g></svg>");
+    background-size: 72px 72px; }
+  .gi::after { content: ""; position: absolute; inset: 0; border-radius: 20px; corner-shape: squircle; box-shadow: inset 0 0 0 1px rgba(0,0,0,.75); mix-blend-mode: soft-light; }
+  .gi.t1 { background: var(--p1); } .gi.t2 { background: var(--p2); } .gi.t3 { background: var(--p3); }
+  .gi.t4 { background: var(--p4); } .gi.t5 { background: var(--p5); } .gi.t6 { background: var(--p6); }
+  .gi.t7 { background: var(--p7); } .gi.t8 { background: var(--p8); } .gi.t9 { background: var(--p9); }
+  .gi img { max-width: 62%; max-height: 70%; z-index: 1; }
+  .gname { z-index: 1; font-weight: bold; font-size: 21px; text-shadow: 0 1px 2px rgba(0,0,0,.25); letter-spacing: .01em; }
+  .gchip { position: absolute; top: 8px; right: 10px; z-index: 2; display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.92); color: #212529; font-size: 12px; font-weight: bold; line-height: 1; padding: 4px 9px; border-radius: 20px; }
+  .gchip::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--live); }
+
+  /* ============ S1 · THE BENTO HOLE ============ */
+  .s1 { height: 604px; padding: 24px; }
+  .s1 .bgrid { display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(3, 1fr); gap: 16px; height: 100%; }
+  .s1 .tile { position: relative; }
+  .s1 .txtcell { grid-column: 1 / 3; grid-row: 1 / 3; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; text-align: left; padding: 8px 18px 8px 6px; position: relative; }
+  .s1 .txtcell .capsule { margin-top: 30px; position: relative; z-index: 3; }
+  .s1 .b-a { grid-column: 3 / 5; grid-row: 1 / 3; }
+  .s1 .b-b { grid-column: 1; grid-row: 3; }
+  .s1 .b-c { grid-column: 2; grid-row: 3; }
+  .s1 .b-d { grid-column: 3; grid-row: 3; }
+  .s1 .b-e { grid-column: 4; grid-row: 3; }
+
+  /* ============ S2 · THE SCATTER ============ */
+  .s2 { height: 640px; }
+  .s2 .txt { position: absolute; left: 48px; top: 120px; width: 400px; z-index: 2; }
+  .s2 .txt .capsule { margin-top: 30px; }
+
+  /* ============ S3 · THE HAND ============ */
+  .s3 { height: 660px; text-align: center; }
+  .s3 .txt { position: absolute; left: 0; right: 0; top: 64px; z-index: 2; }
+  .s3 .txt .capsule { margin-top: 26px; }
+  .s3 .fan { position: absolute; left: 50%; bottom: 44px; width: 0; height: 0; }
+  .s3 .tile { left: 0; top: 0; width: 196px; height: 138px;
+    transform: translate(calc(var(--fx) - 98px), calc(var(--fy) - 138px)) rotate(var(--fr)) scale(var(--fs)); }
+  .s3 .tile:hover { transform: translate(calc(var(--fx) - 98px), calc(var(--fy) - 138px - 10px)) rotate(var(--fr)) scale(var(--fs)); }
+  @keyframes dealin {
+    0% { transform: translate(calc(var(--fx) * .12 - 98px), 190px) rotate(0deg) scale(.9); opacity: 0; }
+    60% { opacity: 1; }
+    100% { transform: translate(calc(var(--fx) - 98px), calc(var(--fy) - 138px)) rotate(var(--fr)) scale(var(--fs)); opacity: 1; }
+  }
+  .s3.dealt .tile { animation: dealin 460ms cubic-bezier(0.05, 0.7, 0.1, 1) both; animation-delay: var(--fd); }
+  @media (prefers-reduced-motion: reduce) { .s3.dealt .tile { animation: none; } }
+  .redeal { position: absolute; right: 16px; top: 14px; z-index: 3; font: bold 12.5px 'BuloRounded'; color: var(--muted); background: var(--surface); border: 0; border-radius: 20px; padding: 6px 12px; box-shadow: var(--btnshadow); cursor: pointer; }
+
+  /* ============ S4 · RAGGED COLUMNS ============ */
+  .s4 { height: 620px; padding: 40px 48px; }
+  .s4 .txt { position: absolute; left: 48px; top: 150px; width: 350px; }
+  .s4 .txt .capsule { margin-top: 30px; }
+  .s4 .cols { position: absolute; right: 48px; top: 40px; bottom: 40px; display: flex; gap: 16px; }
+  .s4 .col { width: 200px; display: flex; flex-direction: column; gap: 16px; }
+  .s4 .col .cluster { display: flex; flex-direction: column; gap: 16px; }
+  .s4 .col .cluster + .cluster { margin-top: 28px; }
+  .s4 .tile { position: relative; width: 100%; }
+
+  /* ============ S5 · THE TABLE ============ */
+  .s5 { height: 680px; }
+  .s5 .felt { position: absolute; left: -12%; right: -12%; bottom: -42%; height: 88%; border-radius: 50% 50% 0 0 / 34% 34% 0 0;
+    background: #2c6b34 url("green-felt.jpg"); background-size: 100px;
+    box-shadow: inset 0 6px 0 rgba(255,255,255,.12), inset 0 14px 34px rgba(0,0,0,.35), 0 -2px 10px rgba(0,0,0,.12); }
+  .s5 .txt { position: absolute; left: 0; right: 0; top: 56px; text-align: center; z-index: 2; }
+  .s5 .txt .capsule { margin-top: 24px; }
+  .s5 .tile { box-shadow: 0 2px 3px rgba(0,0,0,.28), 0 10px 22px rgba(0,0,0,.28); }
+  .s5 .tile:hover { box-shadow: 0 4px 8px rgba(0,0,0,.3), 0 18px 34px rgba(0,0,0,.32); }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>Hero scenes</h1>
+  <p class="lede">Five ways the title, subtitle, capsule and the popular games become one composition &mdash; no &ldquo;Popular games&rdquo; heading anywhere. Built on measured field research: Poki&rsquo;s secret lattice, Gumroad&rsquo;s zero-rotation scatter, Puzzmo&rsquo;s ragged columns, and real card-fan geometry. Every scene keeps one axis of chaos and three quiet alignments.</p>
+
+  <div class="vname">S1 &middot; The bento hole</div>
+  <p class="vwhy">The text is not beside the tiles &mdash; it is a cell of the same lattice, so every edge of the prose block is also a tile edge and there is no seam to criticise. The capsule straddles the text cell&rsquo;s boundary as the keystone. Hearts holds the big cell; nothing rotates.</p>
+  <div class="stage s1"><div class="bgrid">
+    <div class="txtcell">
+      <h2 class="ht">Play cards in<br>good company.</h2>
+      <p class="hs">Classic card games. Join a table or play solo.<br>Free to play, hard to stop.</p>
+      <span class="capsule">
+        <span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>
+        <span class="st"><b data-k="p">1214</b> players online</span>
+        <span class="st"><b data-k="s">87</b> seats open</span>
+      </span>
+    </div>
+    <div class="tile b-a"><div class="gi t6"><span class="gchip">341 playing</span><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile b-b"><div class="gi t3"><img src="spades_logo.png" alt="Spades"></div></div>
+    <div class="tile b-c"><div class="gi t4"><img src="euchre_logo.png" alt="Euchre"></div></div>
+    <div class="tile b-d"><div class="gi t5"><span class="gname">Canasta</span></div></div>
+    <div class="tile b-e"><div class="gi t2"><span class="gname">Gin Rummy</span></div></div>
+  </div></div>
+
+  <div class="vname">S2 &middot; The scatter</div>
+  <p class="vwhy">Gumroad&rsquo;s discipline applied to Yahoo&rsquo;s energy: sizes range five-fold but rotation stays at zero &mdash; one axis of chaos. One tile bleeds off the right edge so the field reads as a fragment of something larger, and exactly one small tile stitches into the text column, in front. The rest is air.</p>
+  <div class="stage s2">
+    <div class="txt">
+      <h2 class="ht">Play cards in<br>good company.</h2>
+      <p class="hs">Classic card games. Join a table or play solo. Free to play, hard to stop.</p>
+      <span class="capsule">
+        <span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>
+        <span class="st"><b data-k="p">1214</b> players online</span>
+        <span class="st"><b data-k="s">87</b> seats open</span>
+      </span>
+    </div>
+    <div class="tile" style="left:472px; top:56px; width:400px; height:280px; z-index:1;"><div class="gi t6"><span class="gchip">341 playing</span><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:904px; top:96px; width:200px; height:140px;"><div class="gi t4"><img src="euchre_logo.png" alt="Euchre"></div></div>
+    <div class="tile" style="left:952px; top:268px; width:260px; height:180px;"><div class="gi t3"><img src="spades_logo.png" alt="Spades"></div></div>
+    <div class="tile" style="left:560px; top:376px; width:236px; height:164px;"><div class="gi t5"><span class="gname">Canasta</span></div></div>
+    <div class="tile" style="left:828px; top:478px; width:156px; height:108px;"><div class="gi t2"><span class="gname" style="font-size:15px;">Gin Rummy</span></div></div>
+    <div class="tile" style="left:384px; top:432px; width:148px; height:102px; z-index:3;"><div class="gi t7"><span class="gname" style="font-size:15px;">Rummy</span></div></div>
+    <div class="tile" style="left:1030px; top:492px; width:190px; height:132px;"><div class="gi t1"><span class="gname" style="font-size:17px;">Cribbage</span></div></div>
+  </div>
+
+  <div class="vname">S3 &middot; The hand</div>
+  <p class="vwhy">The one device nobody in the category uses: the games dealt as a held hand. A decoupled fan &mdash; rotation and lift like a fan (&plusmn;7&deg; ends, parabola rise), spacing like a grid, so tiles stay legible. Hearts holds the flat centre. Tiles deal in on load (460ms, 80ms stagger, firm departure, calm settle) &mdash; press Deal again to replay.</p>
+  <div class="stage s3" id="fanScene">
+    <button class="redeal" id="redeal">Deal again</button>
+    <div class="txt">
+      <h2 class="ht">Play cards in good company.</h2>
+      <p class="hs">Classic card games. Join a table or play solo. Free to play, hard to stop.</p>
+      <span class="capsule">
+        <span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>
+        <span class="st"><b data-k="p">1214</b> players online</span>
+        <span class="st"><b data-k="g">143</b> tables live</span>
+        <span class="st"><b data-k="s">87</b> seats open</span>
+      </span>
+    </div>
+    <div class="fan" id="fan">
+      <div class="tile" style="z-index:1;"><div class="gi t1"><span class="gname" style="font-size:17px;">Cribbage</span></div></div>
+      <div class="tile" style="z-index:2;"><div class="gi t3"><img src="spades_logo.png" alt="Spades"></div></div>
+      <div class="tile" style="z-index:3;"><div class="gi t2"><span class="gname" style="font-size:17px;">Gin Rummy</span></div></div>
+      <div class="tile" style="z-index:4;"><div class="gi t6"><span class="gchip">341 playing</span><img src="hearts_logo.png" alt="Hearts"></div></div>
+      <div class="tile" style="z-index:5;"><div class="gi t4"><img src="euchre_logo.png" alt="Euchre"></div></div>
+      <div class="tile" style="z-index:6;"><div class="gi t5"><span class="gname" style="font-size:17px;">Canasta</span></div></div>
+      <div class="tile" style="z-index:7;"><div class="gi t7"><span class="gname" style="font-size:17px;">Rummy</span></div></div>
+    </div>
+  </div>
+
+  <div class="vname">S4 &middot; Ragged columns</div>
+  <p class="vwhy">Puzzmo&rsquo;s newspaper device crossed with Tumblr&rsquo;s cluster gaps: identical column widths, free tile heights, column tops deliberately staggered, and two gap values &mdash; 16px inside a cluster, 28px between clusters &mdash; so the tiles read as sorted hands. The calmest scene; the left edges are perfect, the tops are ragged, nothing else moves.</p>
+  <div class="stage s4">
+    <div class="txt">
+      <h2 class="ht">Play cards in<br>good company.</h2>
+      <p class="hs">Classic card games. Join a table or play solo. Free to play, hard to stop.</p>
+      <span class="capsule">
+        <span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>
+        <span class="st"><b data-k="p">1214</b> players online</span>
+        <span class="st"><b data-k="s">87</b> seats open</span>
+      </span>
+    </div>
+    <div class="cols">
+      <div class="col" style="margin-top:32px;">
+        <div class="cluster">
+          <div class="tile" style="height:150px;"><div class="gi t6"><img src="hearts_logo.png" alt="Hearts"></div></div>
+          <div class="tile" style="height:110px;"><div class="gi t2"><span class="gname" style="font-size:16px;">Gin Rummy</span></div></div>
+        </div>
+        <div class="cluster">
+          <div class="tile" style="height:130px;"><div class="gi t1"><span class="gname" style="font-size:16px;">Cribbage</span></div></div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="cluster">
+          <div class="tile" style="height:180px;"><div class="gi t3"><img src="spades_logo.png" alt="Spades"></div></div>
+          <div class="tile" style="height:120px;"><div class="gi t5"><span class="gname" style="font-size:16px;">Canasta</span></div></div>
+        </div>
+        <div class="cluster">
+          <div class="tile" style="height:104px;"><div class="gi t7"><span class="gname" style="font-size:16px;">Rummy</span></div></div>
+        </div>
+      </div>
+      <div class="col" style="margin-top:16px;">
+        <div class="cluster">
+          <div class="tile" style="height:136px;"><div class="gi t4"><img src="euchre_logo.png" alt="Euchre"></div></div>
+          <div class="tile" style="height:158px;"><div class="gi t8"><span class="gname" style="font-size:15px;">Crazy Eights</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="vname">S5 &middot; The table</div>
+  <p class="vwhy">The Card Room made literal: the type lives on the paper, the games lie on the felt &mdash; dealt with tiny &plusmn;2&deg; settles and heavier shadows, three depth tiers, never more. The capsule sits at the table&rsquo;s rail like a plaque on the wood. The room isn&rsquo;t described; it&rsquo;s shown.</p>
+  <div class="stage s5">
+    <div class="felt"></div>
+    <div class="txt">
+      <h2 class="ht">Play cards in good company.</h2>
+      <p class="hs">Classic card games. Join a table or play solo. Free to play, hard to stop.</p>
+      <span class="capsule">
+        <span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>
+        <span class="st"><b data-k="p">1214</b> players online</span>
+        <span class="st"><b data-k="g">143</b> tables live</span>
+        <span class="st"><b data-k="s">87</b> seats open</span>
+      </span>
+    </div>
+    <div class="tile" style="left:96px; top:322px; width:230px; height:160px; transform:rotate(-2deg);"><div class="gi t1"><span class="gname" style="font-size:17px;">Cribbage</span></div></div>
+    <div class="tile" style="left:352px; top:296px; width:300px; height:208px; transform:rotate(1.4deg); z-index:2;"><div class="gi t6"><span class="gchip">341 playing</span><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:688px; top:318px; width:230px; height:160px; transform:rotate(-1.2deg);"><div class="gi t3"><img src="spades_logo.png" alt="Spades"></div></div>
+    <div class="tile" style="left:948px; top:346px; width:200px; height:140px; transform:rotate(2deg);"><div class="gi t4"><img src="euchre_logo.png" alt="Euchre"></div></div>
+    <div class="tile" style="left:196px; top:506px; width:200px; height:140px; transform:rotate(1.6deg); z-index:1;"><div class="gi t5"><span class="gname" style="font-size:16px;">Canasta</span></div></div>
+    <div class="tile" style="left:470px; top:532px; width:184px; height:128px; transform:rotate(-1.8deg);"><div class="gi t2"><span class="gname" style="font-size:15px;">Gin Rummy</span></div></div>
+    <div class="tile" style="left:706px; top:512px; width:184px; height:128px; transform:rotate(.8deg);"><div class="gi t7"><span class="gname" style="font-size:15px;">Rummy</span></div></div>
+  </div>
+
+</div>
+<script>
+(function () {
+  "use strict";
+  /* fan geometry: decoupled fake fan - rotate/lift like a fan, space like a grid */
+  var FAN = { n: 7, step: 150, rotMax: 7, lift: 42 };
+  function layoutFan() {
+    var tiles = document.querySelectorAll("#fan .tile");
+    tiles.forEach(function (tile, i) {
+      var t = (i / (FAN.n - 1)) * 2 - 1;
+      var x = t * FAN.step * (FAN.n - 1) / 2;
+      var y = FAN.lift * t * t;
+      var rot = t * FAN.rotMax;
+      var scale = 1 - Math.abs(t) * 0.07;
+      tile.style.setProperty("--fx", x + "px");
+      tile.style.setProperty("--fy", y + "px");
+      tile.style.setProperty("--fr", rot.toFixed(2) + "deg");
+      tile.style.setProperty("--fs", scale.toFixed(3));
+      tile.style.setProperty("--fd", (i * 80) + "ms");
+    });
+  }
+  layoutFan();
+  var scene = document.getElementById("fanScene");
+  requestAnimationFrame(function () { scene.classList.add("dealt"); });
+  document.getElementById("redeal").addEventListener("click", function () {
+    scene.classList.remove("dealt");
+    void scene.offsetWidth;
+    scene.classList.add("dealt");
+  });
+
+  /* the shared beat: rings, swells, reels */
+  var vals = { p: 1214, g: 143, s: 87 };
+  var RANGE = { p: [1150, 1290, 18], g: [128, 158, 4], s: [74, 99, 6] };
+  function setReel(el, v) {
+    var s = String(v);
+    if (el.dataset.cur === s) return;
+    var rebuild = !el.dataset.cur || el.dataset.cur.length !== s.length || !el.querySelector(".dreel");
+    el.dataset.cur = s;
+    if (rebuild) {
+      var reel = '<span class="dreel">' + "0123456789".split("").map(function (d) { return "<span>" + d + "</span>"; }).join("") + "</span>";
+      el.innerHTML = '<span class="srnum">' + s + "</span>" +
+        s.split("").map(function () { return '<span class="dcell" aria-hidden="true">' + reel + "</span>"; }).join("");
+    }
+    el.querySelector(".srnum").textContent = s;
+    el.querySelectorAll(".dreel").forEach(function (r, i) {
+      r.style.transform = "translateY(-" + (parseInt(s[i], 10) * 1.5) + "em)";
+    });
+  }
+  function renderAll() {
+    ["p", "g", "s"].forEach(function (k) {
+      document.querySelectorAll('[data-k="' + k + '"]').forEach(function (el) { setReel(el, vals[k]); });
+    });
+  }
+  renderAll();
+  function fireRing(dot) {
+    var olds = dot.querySelectorAll(".lring");
+    if (olds.length > 2) olds.forEach(function (o) { o.remove(); });
+    var r = document.createElement("span");
+    r.className = "lring";
+    dot.appendChild(r);
+    r.animate([
+      { transform: "scale(1)", opacity: .5 },
+      { transform: "scale(2.6)", opacity: 0 }
+    ], { duration: 750, easing: "cubic-bezier(0,0,.2,1)" }).onfinish = function () { r.remove(); };
+  }
+  function snappySwell(dot) {
+    dot.animate([
+      { transform: "scale(1)", easing: "cubic-bezier(0,0,.2,1)" },
+      { transform: "scale(1.32)", offset: .3, easing: "cubic-bezier(.5,0,.5,1)" },
+      { transform: "scale(.88)", offset: .52, easing: "ease-out" },
+      { transform: "scale(1)", offset: .66 },
+      { transform: "scale(1)" }
+    ], { duration: 620 });
+  }
+  if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  var beat = 0;
+  setInterval(function () {
+    beat++;
+    var change = beat % 6 === 0;
+    document.querySelectorAll(".ldot").forEach(function (dot) {
+      fireRing(dot);
+      if (change) snappySwell(dot);
+    });
+    if (!change) return;
+    ["p", "g", "s"].forEach(function (k) {
+      var r = RANGE[k];
+      var d = Math.round((Math.random() * 2 - 1) * r[2]);
+      if (d === 0) d = Math.random() < 0.5 ? -1 : 1;
+      vals[k] = Math.max(r[0], Math.min(r[1], vals[k] + d));
+    });
+    renderAll();
+  }, 1400);
+})();
+</script>
+</body>
+</html>
