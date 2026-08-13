@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>WOCG — collage studies</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vollkorn:wght@400..900&display=swap" rel="stylesheet">
+<style>
+  @font-face { font-family: 'BuloRounded'; src: url("BuloRounded-Regular.woff2") format('woff2'); font-style: normal; font-weight: normal; font-display: swap; }
+  @font-face { font-family: 'BuloRounded'; src: url("BuloRounded-Bold.woff2") format('woff2'); font-style: normal; font-weight: bold; font-display: swap; }
+  :root {
+    --canvas:#f9f6f2; --band:#f4eee5; --surface:#ffffff;
+    --ink:#141414; --muted:#4e4d4c; --hairline:#e7e7e7; --live:#2f9e44;
+    /* the frontpage's Raphael tile palette (body.play-raph), verbatim */
+    --p1:#f5b81e; --p2:#e370b5; --p3:#1f87e8; --p4:#43a038; --p5:#ef7f27;
+    --p6:#8a3fd0; --p7:#18a89d; --p8:#e33d3a; --p9:#cf3f92; --pfg:#ffffff;
+    --btnshadow: 0 0 1px rgba(0,0,0,0.4), 0 1px 1px rgba(0,0,0,0.04), 0 2px 4px rgba(0,0,0,0.04);
+    --tileshadow: 0 1px 2px rgba(60,45,25,.08), 0 2px 5px rgba(60,45,25,.08), 0 5px 12px rgba(60,45,25,.08);
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--canvas); color: var(--ink); font-family: 'BuloRounded', system-ui, sans-serif; font-size: 15px; line-height: 1.5; padding: 40px 20px 90px; }
+  .page { max-width: 1140px; margin: 0 auto; }
+  h1 { font-family: "Vollkorn", serif; font-weight: 500; font-size: 34px; margin: 0 0 6px; }
+  .lede { color: var(--muted); max-width: 760px; margin: 0 0 34px; }
+  .vname { font-weight: bold; font-size: 16px; margin: 44px 0 2px; }
+  .vwhy { color: var(--muted); font-size: 13px; margin: 0 0 14px; max-width: 780px; }
+  .stage { position: relative; background: var(--band); border-radius: 20px; overflow: clip; }
+
+  .ht { font-family: "Vollkorn", serif; font-weight: 500; font-size: 42px; line-height: 1.12; margin: 0 0 8px; color: var(--ink); }
+  .hs { font-size: 17px; color: var(--muted); margin: 0; }
+
+  .capsule { display: inline-flex; align-items: center; height: 32px; font-size: 14px; color: var(--muted); background: var(--surface); border-radius: 20px; box-shadow: var(--btnshadow); padding: 0 4px; white-space: nowrap; }
+  .st { display: inline-flex; align-items: center; gap: 4px; padding: 0 11px; align-self: stretch; }
+  .st + .st { border-left: 1px solid var(--hairline); }
+  .stlive { padding: 0 9px; gap: 6px; }
+  .greencap { font-size: 14px; font-weight: bold; letter-spacing: .06em; color: var(--live); }
+  .ldot { position: relative; width: 8px; height: 8px; border-radius: 50%; background: var(--live); flex-shrink: 0; }
+  .lring { position: absolute; inset: 0; border-radius: 50%; background: var(--live); pointer-events: none; }
+  b[data-k] { display: inline-flex; position: relative; color: var(--ink); font-weight: bold; }
+  .dcell { display: block; width: 0.52em; height: 1.5em; overflow: hidden; user-select: none;
+    -webkit-mask-image: linear-gradient(transparent, #000 18%, #000 82%, transparent);
+    mask-image: linear-gradient(transparent, #000 18%, #000 82%, transparent); }
+  .dreel { display: block; transition: transform .75s cubic-bezier(.22,1.1,.34,1); will-change: transform; }
+  .dreel span { display: block; height: 1.5em; line-height: 1.5em; text-align: center; }
+  .srnum { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+
+  .tile { position: absolute; border-radius: 16px; corner-shape: squircle; box-shadow: var(--tileshadow); cursor: pointer; transition: transform .18s ease, box-shadow .18s ease; background: var(--surface); }
+  .tile:hover { transform: translateY(-6px) rotate(-1deg); box-shadow: 0 2px 4px rgba(60,45,25,.08), 0 6px 12px rgba(60,45,25,.10), 0 14px 26px rgba(60,45,25,.12); z-index: 9 !important; }
+  .gi { position: absolute; inset: 0; border-radius: 16px; corner-shape: squircle; overflow: hidden; display: flex; align-items: center; justify-content: center; color: var(--pfg); }
+  .gi::before { content: ""; position: absolute; inset: 0; pointer-events: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='72' height='72'><g fill='black' fill-opacity='0.08' font-family='Arial' font-size='26'><text x='2' y='26'>♥</text><text x='38' y='26'>♠</text><text x='20' y='62'>♦</text><text x='56' y='62'>♣</text><text x='-16' y='62'>♣</text></g></svg>");
+    background-size: 72px 72px; }
+  .gi::after { content: ""; position: absolute; inset: 0; border-radius: 16px; corner-shape: squircle; box-shadow: inset 0 0 0 1px rgba(0,0,0,.75); mix-blend-mode: soft-light; }
+  .gi.t1 { background: var(--p1); } .gi.t2 { background: var(--p2); } .gi.t3 { background: var(--p3); }
+  .gi.t4 { background: var(--p4); } .gi.t5 { background: var(--p5); } .gi.t6 { background: var(--p6); }
+  .gi.t7 { background: var(--p7); } .gi.t8 { background: var(--p8); } .gi.t9 { background: var(--p9); }
+  .gi img { max-width: 62%; max-height: 70%; z-index: 1; }
+  .gchip { position: absolute; top: 8px; right: 10px; z-index: 2; display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.92); color: #212529; font-size: 12px; font-weight: bold; line-height: 1; padding: 4px 9px; border-radius: 20px; }
+  .gchip::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--live); }
+
+  .txt { position: absolute; z-index: 2; }
+  .txt .capsule { margin-top: 28px; }
+  .ctr { left: 0; right: 0; text-align: center; }
+
+  .pwhole { position: absolute; display: flex; align-items: center; justify-content: center; font-size: 24px; color: rgba(60,45,25,.22); }
+
+  .hearth { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+  .hearth .ht { font-size: 34px; }
+  .hearth .hs { font-size: 15px; }
+  .hearth .capsule { margin-top: 16px; }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>Collage studies</h1>
+  <p class="lede">Round three: the tiles pack tight, like one composed image. One 12px gap everywhere &mdash; the tile-setters&rsquo; band (a gap must be at least 3&times; your worst edge wobble, and 2&ndash;8% of the module&rsquo;s short side), below the 16px line where tiles stop reading as separate cards. Five packings, each from a documented tradition: quilt blocks, Hockney&rsquo;s joiners, justified photo galleries, brickwork, and the framer&rsquo;s pinwheel hang.</p>
+
+  <div class="vname">U1 &middot; The twin pinwheels</div>
+  <p class="vwhy">The quilt whirligig and the framer&rsquo;s pinwheel hang: four tiles rotate a quarter turn around a small square void, so the block spins without anything tilting. Two blocks side by side, a suit resting in each eye. Rotational symmetry is the one order the eye reads instantly but almost never sees on the web.</p>
+  <div class="stage" style="height:660px;">
+    <div class="txt ctr" style="top:36px;">
+      <h2 class="ht">Play cards in good company.</h2>
+      <p class="hs">Classic card games. Join a table or play solo. Free to play, hard to stop.</p>
+      <span class="capsule">
+        <span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>
+        <span class="st"><b data-k="p">1214</b> players online</span>
+        <span class="st"><b data-k="g">143</b> tables live</span>
+        <span class="st"><b data-k="s">87</b> seats open</span>
+      </span>
+    </div>
+    <div class="tile" style="left:149px; top:215px; width:235px; height:168px;"><div class="gi t6"><span class="gchip">341 playing</span><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:396px; top:215px; width:168px; height:235px;"><div class="gi t3"><img src="spades_logo.png" alt="Spades"></div></div>
+    <div class="tile" style="left:329px; top:462px; width:235px; height:168px;"><div class="gi t2"><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:149px; top:395px; width:168px; height:235px;"><div class="gi t4"><img src="euchre_logo.png" alt="Euchre"></div></div>
+    <div class="pwhole" style="left:329px; top:395px; width:55px; height:55px;">&hearts;</div>
+    <div class="tile" style="left:576px; top:215px; width:235px; height:168px;"><div class="gi t5"><img src="euchre_logo.png" alt="Euchre"></div></div>
+    <div class="tile" style="left:823px; top:215px; width:168px; height:235px;"><div class="gi t7"><img src="spades_logo.png" alt="Spades"></div></div>
+    <div class="tile" style="left:756px; top:462px; width:235px; height:168px;"><div class="gi t1"><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:576px; top:395px; width:168px; height:235px;"><div class="gi t8"><img src="euchre_logo.png" alt="Euchre"></div></div>
+    <div class="pwhole" style="left:756px; top:395px; width:55px; height:55px;">&spades;</div>
+  </div>
+
+  <div class="vname">U2 &middot; The courthouse steps</div>
+  <p class="vwhy">The quilt block built for wide frames: strips added in opposite pairs around a centre &mdash; and here the centre of the quilt is the text itself. Every seam is 12px, every strip a tile. The words live inside the pattern instead of beside it.</p>
+  <div class="stage" style="height:560px;">
+    <div class="tile" style="left:26px;  top:38px;  width:150px; height:484px;"><div class="gi t4"><img src="euchre_logo.png" alt="Euchre"></div></div>
+    <div class="tile" style="left:188px; top:38px;  width:764px; height:130px;"><div class="gi t6"><span class="gchip">341 playing</span><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:188px; top:180px; width:130px; height:200px;"><div class="gi t2"><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="txt hearth" style="left:330px; top:180px; width:480px; height:200px;">
+      <h2 class="ht">Play cards in<br>good company.</h2>
+      <span class="capsule">
+        <span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>
+        <span class="st"><b data-k="p">1214</b> players online</span>
+        <span class="st"><b data-k="s">87</b> seats open</span>
+      </span>
+    </div>
+    <div class="tile" style="left:822px; top:180px; width:130px; height:200px;"><div class="gi t3"><img src="spades_logo.png" alt="Spades"></div></div>
+    <div class="tile" style="left:188px; top:392px; width:764px; height:130px;"><div class="gi t5"><img src="euchre_logo.png" alt="Euchre"></div></div>
+    <div class="tile" style="left:964px; top:38px;  width:150px; height:484px;"><div class="gi t7"><img src="spades_logo.png" alt="Spades"></div></div>
+  </div>
+
+  <div class="vname">U3 &middot; The joiner</div>
+  <p class="vwhy">Hockney&rsquo;s composite polaroids: a strict 3&times;3 grid where every frame misses its slot by a few pixels and a degree or two. The grid stays reconstructible, so the deviation reads as life, not error. Jitter is deterministic and capped at half the gap; hover a tile and it straightens.</p>
+  <div class="stage" style="height:560px;">
+    <div class="txt" style="left:48px; top:150px; width:344px;">
+      <h2 class="ht">Play cards in<br>good company.</h2>
+      <p class="hs">Classic card games. Join a table or play solo. Free to play, hard to stop.</p>
+      <span class="capsule">
+        <span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>
+        <span class="st"><b data-k="p">1214</b> players online</span>
+      </span>
+    </div>
+    <div class="tile" style="left:432px; top:32px;  width:220px; height:157px; transform:translate(-5px,3px) rotate(-1.4deg);"><div class="gi t3"><img src="spades_logo.png" alt="Spades"></div></div>
+    <div class="tile" style="left:664px; top:32px;  width:220px; height:157px; transform:translate(3px,-4px) rotate(1.1deg);"><div class="gi t5"><img src="euchre_logo.png" alt="Euchre"></div></div>
+    <div class="tile" style="left:896px; top:32px;  width:220px; height:157px; transform:translate(-2px,5px) rotate(-0.8deg);"><div class="gi t2"><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:432px; top:201px; width:220px; height:157px; transform:translate(4px,2px) rotate(1.2deg);"><div class="gi t9"><img src="spades_logo.png" alt="Spades"></div></div>
+    <div class="tile" style="left:664px; top:201px; width:220px; height:157px; transform:translate(-3px,-3px) rotate(-0.5deg);"><div class="gi t6"><span class="gchip">341 playing</span><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:896px; top:201px; width:220px; height:157px; transform:translate(2px,4px) rotate(1.3deg);"><div class="gi t4"><img src="euchre_logo.png" alt="Euchre"></div></div>
+    <div class="tile" style="left:432px; top:370px; width:220px; height:157px; transform:translate(3px,-5px) rotate(-1.7deg);"><div class="gi t1"><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:664px; top:370px; width:220px; height:157px; transform:translate(-3px,2px) rotate(0.9deg);"><div class="gi t8"><img src="spades_logo.png" alt="Spades"></div></div>
+    <div class="tile" style="left:896px; top:370px; width:220px; height:157px; transform:translate(3px,-2px) rotate(-1.2deg);"><div class="gi t7"><img src="euchre_logo.png" alt="Euchre"></div></div>
+  </div>
+
+  <div class="vname">U4 &middot; The contact sheet</div>
+  <p class="vwhy">The justified gallery (Flickr, Google Photos): every row one height, both edges laser-flush, the tile ratio solved so the block fills its box exactly. Two rows of three small, one row of two large &mdash; hierarchy by row, not by scatter. The most photographic of the five.</p>
+  <div class="stage" style="height:560px;">
+    <div class="txt" style="left:48px; top:150px; width:340px;">
+      <h2 class="ht">Play cards in<br>good company.</h2>
+      <p class="hs">Classic card games. Join a table or play solo. Free to play, hard to stop.</p>
+      <span class="capsule">
+        <span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>
+        <span class="st"><b data-k="p">1214</b> players online</span>
+      </span>
+    </div>
+    <div class="tile" style="left:456px; top:24px;  width:212px; height:138px;"><div class="gi t4"><img src="euchre_logo.png" alt="Euchre"></div></div>
+    <div class="tile" style="left:680px; top:24px;  width:212px; height:138px;"><div class="gi t2"><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:904px; top:24px;  width:212px; height:138px;"><div class="gi t3"><img src="spades_logo.png" alt="Spades"></div></div>
+    <div class="tile" style="left:456px; top:174px; width:212px; height:138px;"><div class="gi t7"><img src="spades_logo.png" alt="Spades"></div></div>
+    <div class="tile" style="left:680px; top:174px; width:212px; height:138px;"><div class="gi t1"><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:904px; top:174px; width:212px; height:138px;"><div class="gi t5"><img src="euchre_logo.png" alt="Euchre"></div></div>
+    <div class="tile" style="left:456px; top:324px; width:324px; height:212px;"><div class="gi t6"><span class="gchip">341 playing</span><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:792px; top:324px; width:324px; height:212px;"><div class="gi t9"><img src="spades_logo.png" alt="Spades"></div></div>
+  </div>
+
+  <div class="vname">U5 &middot; The brick wall</div>
+  <p class="vwhy">Running bond, laid like a real wall: the offset row closes with half-width headers at each end, so every edge stays dead flush &mdash; no bleed, no ragged ends. The 12px gap plays the grout. The most nostalgic packing here, and the only one that feels load-bearing.</p>
+  <div class="stage" style="height:620px;">
+    <div class="txt" style="left:48px; top:40px;">
+      <h2 class="ht">Play cards in good company.</h2>
+      <p class="hs">Classic card games. Join a table or play solo. Free to play, hard to stop.</p>
+      <span class="capsule">
+        <span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>
+        <span class="st"><b data-k="p">1214</b> players online</span>
+        <span class="st"><b data-k="s">87</b> seats open</span>
+      </span>
+    </div>
+    <div class="tile" style="left:24px;  top:205px; width:264px; height:188px;"><div class="gi t3"><img src="spades_logo.png" alt="Spades"></div></div>
+    <div class="tile" style="left:300px; top:205px; width:264px; height:188px;"><div class="gi t6"><span class="gchip">341 playing</span><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:576px; top:205px; width:264px; height:188px;"><div class="gi t4"><img src="euchre_logo.png" alt="Euchre"></div></div>
+    <div class="tile" style="left:852px; top:205px; width:264px; height:188px;"><div class="gi t2"><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:24px;  top:405px; width:126px; height:188px;"><div class="gi t5"><img src="euchre_logo.png" alt="Euchre"></div></div>
+    <div class="tile" style="left:162px; top:405px; width:264px; height:188px;"><div class="gi t7"><img src="spades_logo.png" alt="Spades"></div></div>
+    <div class="tile" style="left:438px; top:405px; width:264px; height:188px;"><div class="gi t1"><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:714px; top:405px; width:264px; height:188px;"><div class="gi t8"><img src="euchre_logo.png" alt="Euchre"></div></div>
+    <div class="tile" style="left:990px; top:405px; width:126px; height:188px;"><div class="gi t9"><img src="spades_logo.png" alt="Spades"></div></div>
+  </div>
+
+</div>
+<script>
+(function () {
+  "use strict";
+  var vals = { p: 1214, g: 143, s: 87 };
+  var RANGE = { p: [1150, 1290, 18], g: [128, 158, 4], s: [74, 99, 6] };
+  function setReel(el, v) {
+    var s = String(v);
+    if (el.dataset.cur === s) return;
+    var rebuild = !el.dataset.cur || el.dataset.cur.length !== s.length || !el.querySelector(".dreel");
+    el.dataset.cur = s;
+    if (rebuild) {
+      var reel = '<span class="dreel">' + "0123456789".split("").map(function (d) { return "<span>" + d + "</span>"; }).join("") + "</span>";
+      el.innerHTML = '<span class="srnum">' + s + "</span>" +
+        s.split("").map(function () { return '<span class="dcell" aria-hidden="true">' + reel + "</span>"; }).join("");
+    }
+    el.querySelector(".srnum").textContent = s;
+    el.querySelectorAll(".dreel").forEach(function (r, i) {
+      r.style.transform = "translateY(-" + (parseInt(s[i], 10) * 1.5) + "em)";
+    });
+  }
+  function renderAll() {
+    ["p", "g", "s"].forEach(function (k) {
+      document.querySelectorAll('[data-k="' + k + '"]').forEach(function (el) { setReel(el, vals[k]); });
+    });
+  }
+  renderAll();
+  function fireRing(dot) {
+    var olds = dot.querySelectorAll(".lring");
+    if (olds.length > 2) olds.forEach(function (o) { o.remove(); });
+    var r = document.createElement("span");
+    r.className = "lring";
+    dot.appendChild(r);
+    r.animate([
+      { transform: "scale(1)", opacity: .5 },
+      { transform: "scale(2.6)", opacity: 0 }
+    ], { duration: 750, easing: "cubic-bezier(0,0,.2,1)" }).onfinish = function () { r.remove(); };
+  }
+  function snappySwell(dot) {
+    dot.animate([
+      { transform: "scale(1)", easing: "cubic-bezier(0,0,.2,1)" },
+      { transform: "scale(1.32)", offset: .3, easing: "cubic-bezier(.5,0,.5,1)" },
+      { transform: "scale(.88)", offset: .52, easing: "ease-out" },
+      { transform: "scale(1)", offset: .66 },
+      { transform: "scale(1)" }
+    ], { duration: 620 });
+  }
+  if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  var beat = 0;
+  setInterval(function () {
+    beat++;
+    var change = beat % 6 === 0;
+    document.querySelectorAll(".ldot").forEach(function (dot) {
+      fireRing(dot);
+      if (change) snappySwell(dot);
+    });
+    if (!change) return;
+    ["p", "g", "s"].forEach(function (k) {
+      var r = RANGE[k];
+      var d = Math.round((Math.random() * 2 - 1) * r[2]);
+      if (d === 0) d = Math.random() < 0.5 ? -1 : 1;
+      vals[k] = Math.max(r[0], Math.min(r[1], vals[k] + d));
+    });
+    renderAll();
+  }, 1400);
+})();
+</script>
+</body>
+</html>
