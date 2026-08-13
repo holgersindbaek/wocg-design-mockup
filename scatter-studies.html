@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>WOCG — scatter studies</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vollkorn:wght@400..900&display=swap" rel="stylesheet">
+<style>
+  @font-face { font-family: 'BuloRounded'; src: url("BuloRounded-Regular.woff2") format('woff2'); font-style: normal; font-weight: normal; font-display: swap; }
+  @font-face { font-family: 'BuloRounded'; src: url("BuloRounded-Bold.woff2") format('woff2'); font-style: normal; font-weight: bold; font-display: swap; }
+  :root {
+    --canvas:#f9f6f2; --band:#f4eee5; --surface:#ffffff;
+    --ink:#141414; --muted:#4e4d4c; --hairline:#e7e7e7; --live:#2f9e44;
+    /* the frontpage's Raphael tile palette (body.play-raph), verbatim */
+    --p1:#f5b81e; --p2:#e370b5; --p3:#1f87e8; --p4:#43a038; --p5:#ef7f27;
+    --p6:#8a3fd0; --p7:#18a89d; --p8:#e33d3a; --p9:#cf3f92; --pfg:#ffffff;
+    --btnshadow: 0 0 1px rgba(0,0,0,0.4), 0 1px 1px rgba(0,0,0,0.04), 0 2px 4px rgba(0,0,0,0.04);
+    --tileshadow: 0 1px 2px rgba(60,45,25,.08), 0 2px 5px rgba(60,45,25,.08), 0 5px 12px rgba(60,45,25,.08);
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--canvas); color: var(--ink); font-family: 'BuloRounded', system-ui, sans-serif; font-size: 15px; line-height: 1.5; padding: 40px 20px 90px; }
+  .page { max-width: 1140px; margin: 0 auto; }
+  h1 { font-family: "Vollkorn", serif; font-weight: 500; font-size: 34px; margin: 0 0 6px; }
+  .lede { color: var(--muted); max-width: 740px; margin: 0 0 34px; }
+  .vname { font-weight: bold; font-size: 16px; margin: 44px 0 2px; }
+  .vwhy { color: var(--muted); font-size: 13px; margin: 0 0 14px; max-width: 780px; }
+  .stage { position: relative; background: var(--band); border-radius: 20px; overflow: clip; }
+
+  .ht { font-family: "Vollkorn", serif; font-weight: 500; font-size: 42px; line-height: 1.12; margin: 0 0 8px; color: var(--ink); }
+  .hs { font-size: 17px; color: var(--muted); margin: 0; }
+
+  .capsule { display: inline-flex; align-items: center; height: 32px; font-size: 14px; color: var(--muted); background: var(--surface); border-radius: 20px; box-shadow: var(--btnshadow); padding: 0 4px; white-space: nowrap; }
+  .st { display: inline-flex; align-items: center; gap: 4px; padding: 0 11px; align-self: stretch; }
+  .st + .st { border-left: 1px solid var(--hairline); }
+  .stlive { padding: 0 9px; gap: 6px; }
+  .greencap { font-size: 14px; font-weight: bold; letter-spacing: .06em; color: var(--live); }
+  .ldot { position: relative; width: 8px; height: 8px; border-radius: 50%; background: var(--live); flex-shrink: 0; }
+  .lring { position: absolute; inset: 0; border-radius: 50%; background: var(--live); pointer-events: none; }
+  b[data-k] { display: inline-flex; position: relative; color: var(--ink); font-weight: bold; }
+  .dcell { display: block; width: 0.52em; height: 1.5em; overflow: hidden; user-select: none;
+    -webkit-mask-image: linear-gradient(transparent, #000 18%, #000 82%, transparent);
+    mask-image: linear-gradient(transparent, #000 18%, #000 82%, transparent); }
+  .dreel { display: block; transition: transform .75s cubic-bezier(.22,1.1,.34,1); will-change: transform; }
+  .dreel span { display: block; height: 1.5em; line-height: 1.5em; text-align: center; }
+  .srnum { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+
+  .tile { position: absolute; border-radius: 20px; corner-shape: squircle; box-shadow: var(--tileshadow); cursor: pointer; transition: transform .18s ease, box-shadow .18s ease; background: var(--surface); }
+  .tile:hover { transform: translateY(-6px) rotate(-1deg); box-shadow: 0 2px 4px rgba(60,45,25,.08), 0 6px 12px rgba(60,45,25,.10), 0 14px 26px rgba(60,45,25,.12); z-index: 9 !important; }
+  .gi { position: absolute; inset: 0; border-radius: 20px; corner-shape: squircle; overflow: hidden; display: flex; align-items: center; justify-content: center; color: var(--pfg); }
+  .gi::before { content: ""; position: absolute; inset: 0; pointer-events: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='72' height='72'><g fill='black' fill-opacity='0.08' font-family='Arial' font-size='26'><text x='2' y='26'>♥</text><text x='38' y='26'>♠</text><text x='20' y='62'>♦</text><text x='56' y='62'>♣</text><text x='-16' y='62'>♣</text></g></svg>");
+    background-size: 72px 72px; }
+  .gi::after { content: ""; position: absolute; inset: 0; border-radius: 20px; corner-shape: squircle; box-shadow: inset 0 0 0 1px rgba(0,0,0,.75); mix-blend-mode: soft-light; }
+  .gi.t1 { background: var(--p1); } .gi.t2 { background: var(--p2); } .gi.t3 { background: var(--p3); }
+  .gi.t4 { background: var(--p4); } .gi.t5 { background: var(--p5); } .gi.t6 { background: var(--p6); }
+  .gi.t7 { background: var(--p7); } .gi.t8 { background: var(--p8); } .gi.t9 { background: var(--p9); }
+  .gi img { max-width: 62%; max-height: 70%; z-index: 1; }
+  .gchip { position: absolute; top: 8px; right: 10px; z-index: 2; display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.92); color: #212529; font-size: 12px; font-weight: bold; line-height: 1; padding: 4px 9px; border-radius: 20px; }
+  .gchip::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--live); }
+
+  .txt { position: absolute; z-index: 2; }
+  .txt .capsule { margin-top: 28px; }
+  .ctr { left: 0; right: 0; text-align: center; }
+
+  /* T1 · rabatment: mosaic fills the right implied square, cells on one pitch */
+  .t1mosaic { position: absolute; left: 620px; top: 88px; width: 496px; height: 344px;
+    display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); gap: 16px; }
+  .t1mosaic .tile { position: relative; }
+  .t1mosaic .m-hero { grid-column: 1 / 3; grid-row: 1 / 3; }
+
+  /* T5 · mondrian: full-bleed seams, nested cells share the 16px gap */
+  .t5grid { position: absolute; inset: 16px; display: grid; grid-template-columns: 412px 356px 1fr; grid-template-rows: 276px 1fr; gap: 16px; }
+  .t5grid .cell { position: relative; }
+  .t5grid .tile { position: relative; width: 100%; height: 100%; }
+  .t5stack { display: grid; grid-template-rows: 1fr 1fr; gap: 16px; height: 100%; }
+  .t5pair { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; height: 100%; }
+  .t5counter { position: absolute; right: 0; bottom: 0; width: 132px; height: 90px; }
+  .t5txt { display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding: 0 24px 0 16px; }
+  .t5txt .capsule { margin-top: 28px; }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>Scatter studies</h1>
+  <p class="lede">Ten arrangements of the scatter, each borrowed from a documented composition device &mdash; painting armatures on one side, measured tile-grid practice (Poki: one pitch, one 16px gap, three sizes, zero rotation) on the other. Every tile is fully inside the frame, every gap comes from one scale, and no edge nearly-aligns: it aligns or it clearly does not.</p>
+
+  <div class="vname">T1 &middot; The rabatment</div>
+  <p class="vwhy">The painter&rsquo;s square-within-the-rectangle (Rembrandt, Monet): the frame folds into two implied squares. Text fills the left square, a one-pitch mosaic fills the right square exactly, and the strip between them stays empty as the seam.</p>
+  <div class="stage" style="height:520px;">
+    <div class="txt" style="left:48px; top:140px; width:420px;">
+      <h2 class="ht">Play cards in<br>good company.</h2>
+      <p class="hs">Classic card games. Join a table or play solo. Free to play, hard to stop.</p>
+      <span class="capsule">
+        <span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>
+        <span class="st"><b data-k="p">1214</b> players online</span>
+        <span class="st"><b data-k="s">87</b> seats open</span>
+      </span>
+    </div>
+    <div class="t1mosaic">
+      <div class="tile m-hero"><div class="gi t6"><span class="gchip">341 playing</span><img src="hearts_logo.png" alt="Hearts"></div></div>
+      <div class="tile"><div class="gi t4"><img src="euchre_logo.png" alt="Euchre"></div></div>
+      <div class="tile"><div class="gi t3"><img src="spades_logo.png" alt="Spades"></div></div>
+      <div class="tile"><div class="gi t2"><img src="hearts_logo.png" alt="Hearts"></div></div>
+      <div class="tile"><div class="gi t7"><img src="spades_logo.png" alt="Spades"></div></div>
+      <div class="tile"><div class="gi t5"><img src="euchre_logo.png" alt="Euchre"></div></div>
+    </div>
+  </div>
+
+  <div class="vname">T2 &middot; The Hokusai band</div>
+  <p class="vwhy">Hokusai&rsquo;s own stated rule (mitsuwari, 1814): two bands of sky, one of earth. The tiles form a ragged skyline along the bottom band &mdash; flat base, equal 16px gaps, varied heights &mdash; the upper two-thirds stays open except the text and one small &ldquo;guest&rdquo; tile floating alone, like Fuji behind the wave.</p>
+  <div class="stage" style="height:540px;">
+    <div class="txt" style="left:48px; top:72px; width:460px;">
+      <h2 class="ht">Play cards in<br>good company.</h2>
+      <p class="hs">Classic card games. Join a table or play solo. Free to play, hard to stop.</p>
+      <span class="capsule">
+        <span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>
+        <span class="st"><b data-k="p">1214</b> players online</span>
+        <span class="st"><b data-k="s">87</b> seats open</span>
+      </span>
+    </div>
+    <div class="tile" style="left:952px; top:120px; width:120px; height:84px;"><div class="gi t1"><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:48px;  top:366px; width:196px; height:150px;"><div class="gi t3"><img src="spades_logo.png" alt="Spades"></div></div>
+    <div class="tile" style="left:260px; top:300px; width:196px; height:216px;"><div class="gi t6"><span class="gchip">341 playing</span><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:472px; top:344px; width:196px; height:172px;"><div class="gi t4"><img src="euchre_logo.png" alt="Euchre"></div></div>
+    <div class="tile" style="left:684px; top:384px; width:196px; height:132px;"><div class="gi t2"><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:896px; top:326px; width:196px; height:190px;"><div class="gi t7"><img src="spades_logo.png" alt="Spades"></div></div>
+  </div>
+
+  <div class="vname">T3 &middot; The steelyard</div>
+  <p class="vwhy">The atelier counterweight rule: a large mass near the fulcrum balances a small mass far out on the other arm. The seamed cluster sits just right of centre; one isolated small tile, far left and low, holds the whole frame level. Isolation makes it heavy.</p>
+  <div class="stage" style="height:540px;">
+    <div class="txt" style="left:96px; top:110px; width:400px;">
+      <h2 class="ht">Play cards in<br>good company.</h2>
+      <p class="hs">Classic card games. Join a table or play solo. Free to play, hard to stop.</p>
+      <span class="capsule">
+        <span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>
+        <span class="st"><b data-k="p">1214</b> players online</span>
+        <span class="st"><b data-k="s">87</b> seats open</span>
+      </span>
+    </div>
+    <div class="tile" style="left:620px; top:150px; width:280px; height:196px;"><div class="gi t6"><span class="gchip">341 playing</span><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:916px; top:150px; width:132px; height:90px;"><div class="gi t4"><img src="euchre_logo.png" alt="Euchre"></div></div>
+    <div class="tile" style="left:916px; top:256px; width:132px; height:90px;"><div class="gi t3"><img src="spades_logo.png" alt="Spades"></div></div>
+    <div class="tile" style="left:620px; top:362px; width:132px; height:90px;"><div class="gi t2"><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:768px; top:362px; width:132px; height:90px;"><div class="gi t5"><img src="euchre_logo.png" alt="Euchre"></div></div>
+    <div class="tile" style="left:110px; top:396px; width:132px; height:90px;"><div class="gi t7"><img src="spades_logo.png" alt="Spades"></div></div>
+  </div>
+
+  <div class="vname">T4 &middot; The pyramid</div>
+  <p class="vwhy">Raphael&rsquo;s stable triangle: tallest tile at the apex line, neighbours stepping down symmetrically, every bottom on one baseline, every gap 16px. The tile group&rsquo;s silhouette is the pyramid; the text crowns it.</p>
+  <div class="stage" style="height:580px;">
+    <div class="txt ctr" style="top:56px;">
+      <h2 class="ht">Play cards in good company.</h2>
+      <p class="hs">Classic card games. Join a table or play solo. Free to play, hard to stop.</p>
+      <span class="capsule">
+        <span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>
+        <span class="st"><b data-k="p">1214</b> players online</span>
+        <span class="st"><b data-k="g">143</b> tables live</span>
+        <span class="st"><b data-k="s">87</b> seats open</span>
+      </span>
+    </div>
+    <div class="tile" style="left:64px;  top:458px; width:134px; height:94px;"><div class="gi t1"><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:214px; top:412px; width:200px; height:140px;"><div class="gi t3"><img src="spades_logo.png" alt="Spades"></div></div>
+    <div class="tile" style="left:430px; top:356px; width:280px; height:196px;"><div class="gi t6"><span class="gchip">341 playing</span><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:726px; top:412px; width:200px; height:140px;"><div class="gi t4"><img src="euchre_logo.png" alt="Euchre"></div></div>
+    <div class="tile" style="left:942px; top:458px; width:134px; height:94px;"><div class="gi t7"><img src="spades_logo.png" alt="Spades"></div></div>
+  </div>
+
+  <div class="vname">T5 &middot; The Mondrian</div>
+  <p class="vwhy">De Stijl partition: seams run edge to edge, rectangles are unequal, and balance comes from counterweighting &mdash; one big quiet field (the text), one dominant tile, and a small saturated counter in the far corner. Nothing floats; everything is a cell of the frame.</p>
+  <div class="stage" style="height:520px;">
+    <div class="t5grid">
+      <div class="cell t5txt">
+        <h2 class="ht">Play cards in<br>good company.</h2>
+        <p class="hs">Classic card games. Join a table or play solo. Free to play, hard to stop.</p>
+        <span class="capsule">
+          <span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>
+          <span class="st"><b data-k="p">1214</b> players online</span>
+          <span class="st"><b data-k="s">87</b> seats open</span>
+        </span>
+      </div>
+      <div class="cell"><div class="tile"><div class="gi t6"><span class="gchip">341 playing</span><img src="hearts_logo.png" alt="Hearts"></div></div></div>
+      <div class="cell t5stack">
+        <div class="tile"><div class="gi t3"><img src="spades_logo.png" alt="Spades"></div></div>
+        <div class="tile"><div class="gi t4"><img src="euchre_logo.png" alt="Euchre"></div></div>
+      </div>
+      <div class="cell"></div>
+      <div class="cell t5pair">
+        <div class="tile"><div class="gi t1"><img src="hearts_logo.png" alt="Hearts"></div></div>
+        <div class="tile"><div class="gi t7"><img src="spades_logo.png" alt="Spades"></div></div>
+      </div>
+      <div class="cell"><div class="tile t5counter"><div class="gi t8"><img src="euchre_logo.png" alt="Euchre"></div></div></div>
+    </div>
+  </div>
+
+  <div class="vname">T6 &middot; The phi stair</div>
+  <p class="vwhy">The cascade, rebuilt with no overlap: five tiles step down one diagonal, each 0.786&times; the last (the golden root), side gaps a constant 16px, every tile whole. The slope frees the lower-right corner and the text takes it &mdash; the mirror of the usual reading order, which is what makes it feel composed rather than templated.</p>
+  <div class="stage" style="height:640px;">
+    <div class="txt" style="left:620px; top:380px; width:460px;">
+      <h2 class="ht">Play cards in<br>good company.</h2>
+      <p class="hs">Classic card games. Join a table or play solo. Free to play, hard to stop.</p>
+      <span class="capsule">
+        <span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>
+        <span class="st"><b data-k="p">1214</b> players online</span>
+        <span class="st"><b data-k="s">87</b> seats open</span>
+      </span>
+    </div>
+    <div class="tile" style="left:824px; top:36px;  width:300px; height:216px;"><div class="gi t6"><span class="gchip">341 playing</span><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:572px; top:132px; width:236px; height:170px;"><div class="gi t3"><img src="spades_logo.png" alt="Spades"></div></div>
+    <div class="tile" style="left:370px; top:228px; width:186px; height:134px;"><div class="gi t4"><img src="euchre_logo.png" alt="Euchre"></div></div>
+    <div class="tile" style="left:208px; top:324px; width:146px; height:105px;"><div class="gi t1"><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:77px;  top:420px; width:115px; height:83px;"><div class="gi t7"><img src="spades_logo.png" alt="Spades"></div></div>
+  </div>
+
+  <div class="vname">T7 &middot; The Arnheim ring</div>
+  <p class="vwhy">Arnheim&rsquo;s structural net: a rectangle&rsquo;s hotspots are its centre and the four points midway to each corner. The text holds the centre; four tiles park exactly on the mid-diagonal points; two smalls extend the ring at the horizontal extremes. Radial order without literal symmetry &mdash; the hero tile breaks it, so the eye starts there.</p>
+  <div class="stage" style="height:560px;">
+    <div class="txt ctr" style="top:170px;">
+      <h2 class="ht">Play cards in good company.</h2>
+      <p class="hs">Classic card games. Join a table or play solo. Free to play, hard to stop.</p>
+      <span class="capsule">
+        <span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>
+        <span class="st"><b data-k="p">1214</b> players online</span>
+        <span class="st"><b data-k="s">87</b> seats open</span>
+      </span>
+    </div>
+    <div class="tile" style="left:185px; top:70px;  width:200px; height:140px;"><div class="gi t4"><img src="euchre_logo.png" alt="Euchre"></div></div>
+    <div class="tile" style="left:715px; top:42px;  width:280px; height:196px;"><div class="gi t6"><span class="gchip">341 playing</span><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:185px; top:350px; width:200px; height:140px;"><div class="gi t3"><img src="spades_logo.png" alt="Spades"></div></div>
+    <div class="tile" style="left:755px; top:350px; width:200px; height:140px;"><div class="gi t5"><img src="euchre_logo.png" alt="Euchre"></div></div>
+    <div class="tile" style="left:44px;  top:254px; width:132px; height:90px;"><div class="gi t2"><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:964px; top:254px; width:132px; height:90px;"><div class="gi t7"><img src="spades_logo.png" alt="Spades"></div></div>
+  </div>
+
+  <div class="vname">T8 &middot; The arc</div>
+  <p class="vwhy">Good continuation, Tiepolo&rsquo;s device: one size of tile, equal 16px gaps, centres riding a single shallow curve &mdash; the dealt spread without the rotation. The purest Yahoo-style equality in the set; the curve alone keeps it from being a toolbar.</p>
+  <div class="stage" style="height:560px;">
+    <div class="txt ctr" style="top:60px;">
+      <h2 class="ht">Play cards in good company.</h2>
+      <p class="hs">Classic card games. Join a table or play solo. Free to play, hard to stop.</p>
+      <span class="capsule">
+        <span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>
+        <span class="st"><b data-k="p">1214</b> players online</span>
+        <span class="st"><b data-k="g">143</b> tables live</span>
+        <span class="st"><b data-k="s">87</b> seats open</span>
+      </span>
+    </div>
+    <div class="tile" style="left:38px;  top:322px; width:164px; height:116px;"><div class="gi t1"><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:218px; top:357px; width:164px; height:116px;"><div class="gi t3"><img src="spades_logo.png" alt="Spades"></div></div>
+    <div class="tile" style="left:398px; top:374px; width:164px; height:116px;"><div class="gi t6"><span class="gchip">341 playing</span><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:578px; top:374px; width:164px; height:116px;"><div class="gi t4"><img src="euchre_logo.png" alt="Euchre"></div></div>
+    <div class="tile" style="left:758px; top:357px; width:164px; height:116px;"><div class="gi t2"><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:938px; top:322px; width:164px; height:116px;"><div class="gi t7"><img src="spades_logo.png" alt="Spades"></div></div>
+  </div>
+
+  <div class="vname">T9 &middot; The snapped scatter</div>
+  <p class="vwhy">The original scatter, disciplined by the broken-grid rule: it only looks free. Three exact sizes, every position on the lattice, three shared alignment lines (one top, one left, one right), and gaps drawn from a scale of 16 and 48 &mdash; same or clearly different, never almost.</p>
+  <div class="stage" style="height:600px;">
+    <div class="txt" style="left:48px; top:120px; width:320px;">
+      <h2 class="ht">Play cards in<br>good company.</h2>
+      <p class="hs">Classic card games. Join a table or play solo. Free to play, hard to stop.</p>
+      <span class="capsule">
+        <span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>
+        <span class="st"><b data-k="p">1214</b> players online</span>
+      </span>
+    </div>
+    <div class="tile" style="left:560px; top:72px;  width:326px; height:224px;"><div class="gi t6"><span class="gchip">341 playing</span><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:902px; top:72px;  width:208px; height:144px;"><div class="gi t4"><img src="euchre_logo.png" alt="Euchre"></div></div>
+    <div class="tile" style="left:962px; top:232px; width:148px; height:102px;"><div class="gi t3"><img src="spades_logo.png" alt="Spades"></div></div>
+    <div class="tile" style="left:560px; top:344px; width:208px; height:144px;"><div class="gi t5"><img src="euchre_logo.png" alt="Euchre"></div></div>
+    <div class="tile" style="left:784px; top:344px; width:148px; height:102px;"><div class="gi t2"><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:784px; top:462px; width:148px; height:102px;"><div class="gi t7"><img src="spades_logo.png" alt="Spades"></div></div>
+    <div class="tile" style="left:396px; top:470px; width:148px; height:102px;"><div class="gi t1"><img src="hearts_logo.png" alt="Hearts"></div></div>
+  </div>
+
+  <div class="vname">T10 &middot; The one-corner stair</div>
+  <p class="vwhy">Ma Yuan&rsquo;s one-corner school: all the mass packed into the lower-right corner as one seamed staircase &mdash; every gap 16px, bottoms and rights on shared lines &mdash; while most of the frame stays open. One small guest tile sits deep in the emptiness, the way Southern Song painters placed a lone boat.</p>
+  <div class="stage" style="height:580px;">
+    <div class="txt" style="left:48px; top:84px; width:430px;">
+      <h2 class="ht">Play cards in<br>good company.</h2>
+      <p class="hs">Classic card games. Join a table or play solo. Free to play, hard to stop.</p>
+      <span class="capsule">
+        <span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>
+        <span class="st"><b data-k="p">1214</b> players online</span>
+        <span class="st"><b data-k="s">87</b> seats open</span>
+      </span>
+    </div>
+    <div class="tile" style="left:968px; top:50px;  width:148px; height:102px;"><div class="gi t2"><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:908px; top:168px; width:208px; height:144px;"><div class="gi t5"><img src="euchre_logo.png" alt="Euchre"></div></div>
+    <div class="tile" style="left:790px; top:328px; width:326px; height:224px;"><div class="gi t6"><span class="gchip">341 playing</span><img src="hearts_logo.png" alt="Hearts"></div></div>
+    <div class="tile" style="left:566px; top:408px; width:208px; height:144px;"><div class="gi t4"><img src="euchre_logo.png" alt="Euchre"></div></div>
+    <div class="tile" style="left:402px; top:450px; width:148px; height:102px;"><div class="gi t3"><img src="spades_logo.png" alt="Spades"></div></div>
+    <div class="tile" style="left:150px; top:415px; width:132px; height:90px;"><div class="gi t7"><img src="spades_logo.png" alt="Spades"></div></div>
+  </div>
+
+</div>
+<script>
+(function () {
+  "use strict";
+  var vals = { p: 1214, g: 143, s: 87 };
+  var RANGE = { p: [1150, 1290, 18], g: [128, 158, 4], s: [74, 99, 6] };
+  function setReel(el, v) {
+    var s = String(v);
+    if (el.dataset.cur === s) return;
+    var rebuild = !el.dataset.cur || el.dataset.cur.length !== s.length || !el.querySelector(".dreel");
+    el.dataset.cur = s;
+    if (rebuild) {
+      var reel = '<span class="dreel">' + "0123456789".split("").map(function (d) { return "<span>" + d + "</span>"; }).join("") + "</span>";
+      el.innerHTML = '<span class="srnum">' + s + "</span>" +
+        s.split("").map(function () { return '<span class="dcell" aria-hidden="true">' + reel + "</span>"; }).join("");
+    }
+    el.querySelector(".srnum").textContent = s;
+    el.querySelectorAll(".dreel").forEach(function (r, i) {
+      r.style.transform = "translateY(-" + (parseInt(s[i], 10) * 1.5) + "em)";
+    });
+  }
+  function renderAll() {
+    ["p", "g", "s"].forEach(function (k) {
+      document.querySelectorAll('[data-k="' + k + '"]').forEach(function (el) { setReel(el, vals[k]); });
+    });
+  }
+  renderAll();
+  function fireRing(dot) {
+    var olds = dot.querySelectorAll(".lring");
+    if (olds.length > 2) olds.forEach(function (o) { o.remove(); });
+    var r = document.createElement("span");
+    r.className = "lring";
+    dot.appendChild(r);
+    r.animate([
+      { transform: "scale(1)", opacity: .5 },
+      { transform: "scale(2.6)", opacity: 0 }
+    ], { duration: 750, easing: "cubic-bezier(0,0,.2,1)" }).onfinish = function () { r.remove(); };
+  }
+  function snappySwell(dot) {
+    dot.animate([
+      { transform: "scale(1)", easing: "cubic-bezier(0,0,.2,1)" },
+      { transform: "scale(1.32)", offset: .3, easing: "cubic-bezier(.5,0,.5,1)" },
+      { transform: "scale(.88)", offset: .52, easing: "ease-out" },
+      { transform: "scale(1)", offset: .66 },
+      { transform: "scale(1)" }
+    ], { duration: 620 });
+  }
+  if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  var beat = 0;
+  setInterval(function () {
+    beat++;
+    var change = beat % 6 === 0;
+    document.querySelectorAll(".ldot").forEach(function (dot) {
+      fireRing(dot);
+      if (change) snappySwell(dot);
+    });
+    if (!change) return;
+    ["p", "g", "s"].forEach(function (k) {
+      var r = RANGE[k];
+      var d = Math.round((Math.random() * 2 - 1) * r[2]);
+      if (d === 0) d = Math.random() < 0.5 ? -1 : 1;
+      vals[k] = Math.max(r[0], Math.min(r[1], vals[k] + d));
+    });
+    renderAll();
+  }, 1400);
+})();
+</script>
+</body>
+</html>
