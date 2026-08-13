@@ -823,18 +823,30 @@
      The heroarea collapses to a 0-height layer whose text overlays the tile
      canvas; .games becomes an absolute canvas (--sch tall), one 12px seam
      everywhere, chips off, "Popular games" heading off. */
-  body.scenehero .heroarea { display: block; height: 0; min-height: 0; padding: 0; overflow: visible; z-index: 5; }
-  body.scenehero .heroarea h3, body.scenehero .heroarea > p, body.scenehero .heroarea .stats { max-width: 1160px; margin-left: auto; margin-right: auto; padding-left: 48px; padding-right: 24px; text-align: left; justify-content: flex-start; }
-  body.scenehero .heroarea h3 { margin-top: 0; margin-bottom: 6px; padding-top: var(--stt, 26px); }
-  body.scenehero .heroarea .stats { margin-top: 26px; }
-  body.scenehero #popsec { padding-top: 6px; }
+  body.scenehero .heroarea { display: block; height: 0; min-height: 0; padding: 0; overflow: visible; }
+  body.scenehero #popsec { padding-top: 22px; }
   body.scenehero #popsec .pophead { display: none; }
+  /* the canvas is a fixed 1112-wide design frame; JS scales it (text included,
+     since the hero text moves into .sceneTxt inside the canvas) to fit the
+     content column beside the ad rail */
   body.scenehero .games { display: block; position: relative; height: var(--sch, 640px); }
   body.scenehero .games .gtile { position: absolute; }
   body.scenehero .games .gchip { display: none; }
-  body.layout-scsplit .heroarea h3, body.layout-scsplit .heroarea > p, body.layout-scsplit .heroarea .stats,
-  body.layout-scpyr .heroarea h3, body.layout-scpyr .heroarea > p, body.layout-scpyr .heroarea .stats { text-align: center; padding-left: 24px; justify-content: center; }
-  body.layout-scstair .heroarea h3, body.layout-scstair .heroarea > p, body.layout-scstair .heroarea .stats { padding-left: 748px; }
+  .sceneTxt { position: absolute; z-index: 5; }
+  .sceneTxt h3 { font-size: 40px; font-weight: bold; letter-spacing: -0.01em; line-height: 1.15; margin: 0 0 6px; }
+  .sceneTxt > p { color: var(--muted); font-size: 18px; margin: 0; }
+  .sceneTxt .stats { margin-top: 26px; justify-content: flex-start; }
+  body.layout-scw9 .sceneTxt { left: 24px; top: 26px; }
+  body.layout-scsplit .sceneTxt { left: 0; right: 0; top: 204px; text-align: center; }
+  body.layout-scrab .sceneTxt { left: 24px; top: 134px; }
+  body.layout-scpyr .sceneTxt { left: 0; right: 0; top: 50px; text-align: center; }
+  body.layout-scstair .sceneTxt { left: 724px; top: 34px; }
+  body.layout-scsplit .sceneTxt .stats, body.layout-scpyr .sceneTxt .stats { justify-content: center; }
+  /* scenes whose originals carried no "tables live" cell drop it from the strip */
+  body.layout-scw9 .statsCapsule .st:has(#stc-games), body.layout-scsplit .statsCapsule .st:has(#stc-games),
+  body.layout-scrab .statsCapsule .st:has(#stc-games), body.layout-scstair .statsCapsule .st:has(#stc-games),
+  body.layout-scw9 .statsSign .bs:has(#sts-games), body.layout-scsplit .statsSign .bs:has(#sts-games),
+  body.layout-scrab .statsSign .bs:has(#sts-games), body.layout-scstair .statsSign .bs:has(#sts-games) { display: none; }
 
   /* Scene · The clearing (W9): waist mosaic right, twin bottoms, street straddled */
   body.layout-scw9 { --stt: 26px; --sch: 644px; }
@@ -1467,6 +1479,7 @@
     } else if (typeof titlesel !== "undefined" && titlesel && titlesel.options && titlesel.options.length) {
       applyCopy();
     }
+    setSceneDom(scene);
     document.getElementById("sel-base").value = curBase;
     document.getElementById("sel-play").value = curPlay;
     document.getElementById("sel-layout").value = curLayout;
@@ -1478,6 +1491,40 @@
     document.getElementById("sel-stats").value = curStats;
     moveLobby();
   }
+  var sceneTxt = null;
+  function sceneParts() {
+    return [document.getElementById("herotitle"), document.getElementById("herosub"),
+      document.querySelector(".statsBrief"), document.querySelector(".statsFull"),
+      document.querySelector(".statsCapsule"), document.querySelector(".statsSign")];
+  }
+  function setSceneDom(scene) {
+    var games = document.querySelector(".games");
+    var hero = document.querySelector(".heroarea");
+    if (scene) {
+      if (!sceneTxt) { sceneTxt = document.createElement("div"); sceneTxt.className = "sceneTxt"; }
+      games.appendChild(sceneTxt);
+      sceneParts().forEach(function (p) { if (p) sceneTxt.appendChild(p); });
+      fitScene();
+    } else {
+      sceneParts().forEach(function (p) { if (p) hero.appendChild(p); });
+      if (sceneTxt && sceneTxt.parentNode) sceneTxt.parentNode.removeChild(sceneTxt);
+      games.style.transform = ""; games.style.transformOrigin = "";
+      games.style.width = ""; games.style.marginRight = ""; games.style.marginBottom = "";
+    }
+  }
+  function fitScene() {
+    if (document.body.className.indexOf("scenehero") === -1) return;
+    var games = document.querySelector(".games");
+    var avail = games.parentElement.clientWidth - 48;
+    var k = Math.min(1, avail / 1112);
+    var sch = parseFloat(getComputedStyle(document.body).getPropertyValue("--sch")) || 640;
+    games.style.width = "1112px";
+    games.style.transformOrigin = "top left";
+    games.style.transform = "scale(" + k + ")";
+    games.style.marginRight = (1112 * (k - 1)) + "px";
+    games.style.marginBottom = (sch * (k - 1)) + "px";
+  }
+  window.addEventListener("resize", fitScene);
   function buildSel(id, list, setter) {
     var el = document.getElementById(id);
     list.forEach(function (x) { el.add(new Option(x[1], x[0])); });
