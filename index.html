@@ -883,7 +883,7 @@
   .sceneTxt .stats { margin-top: 26px; justify-content: flex-start; }
   body.layout-scw9b .sceneTxt { left: 24px; top: 26px; }
   body.layout-scsplit .sceneTxt { left: 0; right: 0; top: 204px; text-align: center; transform-origin: top center; }
-  body.layout-scrab .sceneTxt { left: 94px; top: 150px; }
+  body.layout-scrab .sceneTxt { left: 24px; top: 152px; }
   body.layout-scstair .sceneTxt { left: 24px; top: 20px; }
   body.layout-scsplit .sceneTxt .stats { justify-content: center; }
   /* the pyramid keeps its text in the normal hero flow (centred, above all
@@ -918,16 +918,18 @@
   body.layout-scsplit .pos-e { left: 869px; top: 486px; width: 243px; height: 162px; }
   body.layout-scsplit .pos-g, body.layout-scsplit .pos-h, body.layout-scsplit .pos-i { display: none; }
 
-  /* Scene · The rabatment (T1): a 416px mosaic column on the right (the
-     golden minor of the 1112 frame), single-line text centered in the
-     696px clearing it leaves */
-  body.layout-scrab { --sch: 438px; }
+  /* Scene · The rabatment (T1): the mosaic is the wide part — 745px (67%),
+     sized by the two-line title block (319px + 24px margins = 367 clearing);
+     every outer gap 24, every seam 12 */
+  body.layout-scrab { --sch: 513px; }
   body.layout-scrab #popsec { padding-top: 24px; }
-  body.layout-scrab .pos-a { left: 696px; top: 0;     width: 416px; height: 288px; }
-  body.layout-scrab .pos-h { left: 696px; top: 300px; width: 202px; height: 138px; }
-  body.layout-scrab .pos-e { left: 910px; top: 300px; width: 202px; height: 138px; }
-  body.layout-scrab .pos-b, body.layout-scrab .pos-c, body.layout-scrab .pos-d,
-  body.layout-scrab .pos-f, body.layout-scrab .pos-g, body.layout-scrab .pos-i { display: none; }
+  body.layout-scrab .pos-a { left: 367px; top: 0;     width: 492px; height: 338px; }
+  body.layout-scrab .pos-d { left: 871px; top: 0;     width: 241px; height: 163px; }
+  body.layout-scrab .pos-b { left: 871px; top: 175px; width: 241px; height: 163px; }
+  body.layout-scrab .pos-h { left: 367px; top: 350px; width: 240px; height: 163px; }
+  body.layout-scrab .pos-f { left: 619px; top: 350px; width: 241px; height: 163px; }
+  body.layout-scrab .pos-e { left: 872px; top: 350px; width: 240px; height: 163px; }
+  body.layout-scrab .pos-c, body.layout-scrab .pos-g, body.layout-scrab .pos-i { display: none; }
 
   /* Scene · The pyramid (T4): full Open-tables width, text above in normal flow */
   body.layout-scpyr { --sch: 224px; }
@@ -1609,7 +1611,7 @@
         ht.innerHTML = "Play cards in good company";
         hs.innerHTML = "Classic card games. Join a table or play solo. Free to play, hard to stop.";
       } else {
-        ht.innerHTML = "Play cards in<br>good company";
+        ht.innerHTML = "Play cards<br>in good company";
         hs.innerHTML = "Classic card games. Join a table or play solo.<br>Free to play, hard to stop.";
       }
     } else if (typeof titlesel !== "undefined" && titlesel && titlesel.options && titlesel.options.length) {
@@ -1914,6 +1916,7 @@
     subsel.insertBefore(ogs, subsel.firstChild);
   })();
   function applyCopy() {
+    if (curLayout.indexOf("sc") === 0) { applyBody(); return; }
     var item = TITLE_ITEMS[+titlesel.value];
     document.getElementById("herotitle").textContent = item.t;
     var si = +subsel.value;
