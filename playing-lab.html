@@ -233,6 +233,12 @@ In every new variant the number is bold and "playing" is regular at the same siz
   .ccount { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; color: #6a655c; white-space: nowrap; }
   .cdot { width: 7px; height: 7px; border-radius: 50%; background: #2f9e44; flex-shrink: 0; }
   .cstatus { display: flex; align-items: center; gap: 6px; font-size: 14px; color: #6a655c; margin-top: 2px; }
+  .ccount.csign, .ccount.cwhite { height: 22px; padding: 0 9px; border-radius: 7px;
+    box-shadow: 0 0 1px rgba(0,0,0,.4), 0 1px 1px rgba(0,0,0,.04), 0 2px 4px rgba(0,0,0,.04); }
+  .ccount.csign { background: #B2F2BB; color: #2B8A3E; }
+  .ccount.csign .cdot { background: #2B8A3E; }
+  .ccount.cwhite { background: #fff; color: #2b2722; }
+  .crow.mid { align-items: center; }
   .cbtns { display: grid; grid-template-columns: 1fr auto; gap: 8px; margin-top: 4px; }
   .cbtn { min-width: 0; font-family: inherit; font-size: 16px; font-weight: bold; height: 30px; border: none;
     border-radius: 6px; cursor: pointer; white-space: nowrap; padding: 0 4px;
@@ -254,8 +260,12 @@ Any on-art badge fades out on hover because the gameplay video owns the image th
     "Euchre": "Fast trick-taking with trumps, bowers, and a partner."
   };
   var CVARIANTS = [
-    { t: "A \u00b7 Title row, right", d: "What the frontpage uses now: muted count with a static dot on the title baseline (the chess.com register).",
+    { t: "A \u00b7 Title row, right", d: "The muted version: count with a static dot on the title baseline (the chess.com register).",
       meta: function (m, td) { m.row = true; } },
+    { t: "A2 \u00b7 The capsule's green sign", d: "What the frontpage uses now: the stats strip's light-green chip (green-2 fill, green-8 ink) carrying the count in the title row.",
+      meta: function (m, td) { m.row = "csign"; } },
+    { t: "A3 \u00b7 The white button", d: "The sign's white-button sibling: surface chip, green dot, ink text.",
+      meta: function (m, td) { m.row = "cwhite"; } },
     { t: "B \u00b7 Status line above the buttons", d: "The count as its own quiet caption row between subtitle and buttons \u2014 more presence, one more line of tile height.",
       meta: function (m, td) { m.status = true; } },
     { t: "C \u00b7 Inside the Join button", d: "The count justifies the action: Join table \u00b7 341 playing. Strongest causal link, but the button gets long and quiet games advertise their quietness on the primary CTA.",
@@ -283,9 +293,9 @@ Any on-art badge fades out on hover because the gameplay video owns the image th
       if (v.meta) v.meta(m, td);
       var meta = el("div", "cmeta");
       if (m.row) {
-        var row = el("div", "crow");
+        var row = el("div", "crow" + (typeof m.row === "string" ? " mid" : ""));
         row.appendChild(el("h3", "cttl", td.game));
-        var c = el("span", "ccount cnum", ctext(td.n));
+        var c = el("span", "ccount cnum" + (typeof m.row === "string" ? " " + m.row : ""), ctext(td.n));
         c.insertBefore(el("span", "cdot"), c.firstChild);
         row.appendChild(c);
         meta.appendChild(row);
