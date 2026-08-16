@@ -389,10 +389,11 @@
     transition: transform .18s ease, box-shadow .18s ease;
   }
   .gtile:hover {
-    transform: translateY(-6px) rotate(-1deg);
+    transform: translateY(-4px);
     box-shadow: 0 14px 26px rgba(20,20,19,0.20);
     z-index: 2;
   }
+  .gtile:active { transform: translateY(-1px) scale(0.99); }
 
   .gimg {
     position: relative; overflow: hidden;
@@ -447,7 +448,7 @@
   body.edge-none .gimg::after { box-shadow: none; }
 
   .gchip {
-    position: absolute; top: 8px; right: 10px; z-index: 2;
+    position: absolute; top: 8px; right: 10px; z-index: 4;
     display: flex; align-items: center; gap: 5px;
     background: rgba(255,255,255,0.92); color: #212529;
     font-size: 12px; font-weight: bold; line-height: 1;
@@ -530,16 +531,11 @@
   .lring { position: absolute; inset: 0; border-radius: 50%; background: #2f9e44; pointer-events: none; }
   .stats b { color: var(--ink); font-weight: bold; transition: color 0.5s ease; }
   .stats b.tick { color: #2f9e44; transition: none; }
-  .peek {
-    position: absolute; top: 6px; left: 18px; z-index: 0;
-    width: 34px; height: 46px; border-radius: 5px;
-    background: #fff; border: 1px solid rgba(20,20,19,0.18);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 22px; font-weight: bold; text-shadow: none;
-    opacity: 0; transform: translateY(14px) rotate(0deg);
-    transition: transform .2s ease, opacity .2s ease;
-  }
-  .gtile:hover .peek { opacity: 1; transform: translateY(-8px) rotate(-10deg); }
+  /* CrazyGames-style hover preview: a muted gameplay clip fades in over the
+     art once it is actually playing — first frame = resting art, nothing jumps */
+  .gvid { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+    z-index: 2; opacity: 0; transition: opacity .22s ease; pointer-events: none; }
+  .gtile.videoOn .gvid { opacity: 1; }
 
   .bandrow {
     background: var(--band); padding: 16px 24px;
@@ -776,10 +772,27 @@
   /* game-category sections (sketch styling, like Popular games) */
   .gamesec { width: 100%; max-width: 1160px; margin: 0 auto; padding: 14px 24px 0; box-sizing: border-box; }
   .gamesec:last-of-type { padding-bottom: 34px; }
-  .catgrid { display: grid; gap: 8px; grid-auto-rows: 106px; }
+  .catgrid { display: grid; gap: 8px; grid-auto-rows: auto; }
   .catgrid { grid-template-columns: repeat(5, 1fr); }
   .gname { z-index: 1; padding: 0 12px; text-align: center; font-size: 21px; font-weight: 900; letter-spacing: 0.01em;
     text-shadow: 0 2px 0 rgba(0,0,0,0.22), 0 0 12px rgba(0,0,0,0.14); }
+  /* category tiles: art on top, then the SEO title + subtitle and the two
+     default game-starters (Play and Play vs bots, the top tile_action clicks) */
+  .catgrid .gimg { flex: none; height: auto; aspect-ratio: 16 / 10; }
+  .gmeta { display: flex; flex-direction: column; gap: 4px; padding: 10px 12px 12px; }
+  .gtitle { font-size: 16.5px; font-weight: bold; margin: 0; color: var(--ink); }
+  .gsub { font-size: 13px; line-height: 1.35; color: var(--muted); margin: 0; min-height: 35px;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .gbtns { display: flex; gap: 6px; margin-top: 5px; }
+  .gbtn { flex: 1; min-width: 0; font-family: inherit; font-size: 13px; font-weight: bold; height: 30px;
+    border: none; border-radius: 6px; cursor: pointer; box-shadow: var(--btnshadow); white-space: nowrap;
+    padding: 0 4px; transition: background-color 24ms ease-out, transform 80ms ease-out; }
+  .gbtn:active { transform: scale(0.97); }
+  .gbtn.play { background: #66A80F; color: #fff;
+    text-shadow: -1px -1px 0 #4F800B, 1px -1px 0 #4F800B, -1px 1px 0 #4F800B, 1px 1px 0 #4F800B; }
+  .gbtn.play:hover { background: #5D960D; }
+  .gbtn.bots { background: #A5D8FF; color: #1971C2; }
+  .gbtn.bots:hover { background: #9ACFF8; }
 
 
   /* bottom spacing comes solely from #lobbyDemo's 8px flex gap - every header
@@ -821,9 +834,9 @@
   /* the live number is the loudest element on the hero only */
   body.layout-hero18 .pos-a .gchip, body.layout-hero12 .pos-a .gchip, body.layout-heroed .pos-a .gchip, body.layout-sq .pos-a .gchip { font-size: 15px; font-weight: bold; }
   /* the same lattice runs the category grids and sections breathe more */
-  body.layout-hero18 .catgrid, body.layout-heroed .catgrid { gap: 18px; grid-auto-rows: 156px; }
-  body.layout-hero12 .catgrid { gap: 12px; grid-auto-rows: 160px; }
-  body.layout-sq .catgrid { gap: 18px; grid-auto-rows: 208px; }
+  body.layout-hero18 .catgrid, body.layout-heroed .catgrid { gap: 18px; }
+  body.layout-hero12 .catgrid { gap: 12px; }
+  body.layout-sq .catgrid { gap: 18px; }
   body.layout-hero18 .gamesec, body.layout-hero12 .gamesec, body.layout-heroed .gamesec, body.layout-sq .gamesec { padding-top: 40px; }
 
   /* Hero editorial gutter variants */
@@ -853,13 +866,13 @@
   body.layout-ed43 .pos-f, body.layout-ed43 .pos-g,
   body.layout-ed43 .pos-h, body.layout-ed43 .pos-i { display: none; }
   body.layout-ed43 .catgrid { gap: 16px; grid-auto-rows: auto; }
-  body.layout-ed43 .catgrid .gtile { aspect-ratio: 4 / 3; }
+  body.layout-ed43 .catgrid .gimg { aspect-ratio: 4 / 3; }
   body.layout-heroed16 .pos-i, body.layout-heroed20 .pos-i { display: none; }
   body.layout-heroed16 .pos-a .gimg, body.layout-heroed20 .pos-a .gimg { overflow: visible; }
   body.layout-heroed16 .pos-a .glogo, body.layout-heroed20 .pos-a .glogo { max-width: 52%; max-height: 96%; transform: translateY(-18px); filter: drop-shadow(0 10px 10px rgba(0,0,0,0.16)); }
   body.layout-heroed16 .pos-a .gchip, body.layout-heroed20 .pos-a .gchip { font-size: 15px; font-weight: bold; }
-  body.layout-heroed16 .catgrid { gap: 16px; grid-auto-rows: 157px; }
-  body.layout-heroed20 .catgrid { gap: 20px; grid-auto-rows: 155px; }
+  body.layout-heroed16 .catgrid { gap: 16px; }
+  body.layout-heroed20 .catgrid { gap: 20px; }
   body.layout-heroed16 .gamesec, body.layout-heroed20 .gamesec { padding-top: 40px; }
 
   /* ===== scene layouts: hero text + tiles as one composition =====
@@ -972,7 +985,6 @@
   #catnav .catchip:hover { transform: translateY(-1px); }
   #catnav .catcount { color: var(--muted); font-weight: normal; }
   body.cat-merged #sec-tt, body.cat-mergedflat #sec-tt { padding-top: 20px; }
-  body.cat-merged .ttgrid { grid-template-rows: 212px 212px; }
   body.cat-merged .ttgrid .gt-hero { grid-column: 1 / 4; grid-row: 1 / 3; }
   body.cat-merged .ttgrid .gt-med1 { grid-column: 4 / 6; grid-row: 1 / 2; }
   body.cat-merged .ttgrid .gt-med2 { grid-column: 4 / 6; grid-row: 2 / 3; }
@@ -1172,15 +1184,15 @@
   <div class="popular" id="popsec">
     <div class="pophead">Popular games</div>
     <div class="games">
-      <div class="gtile pos-a"><div class="gimg t6"><span class="gchip">341 playing</span><img class="glogo" src="hearts_logo.png" alt="Hearts"><div class="peek" style="color:#c0392b">♥</div></div></div>
-      <div class="gtile pos-b"><div class="gimg t3"><span class="gchip">173 playing</span><img class="glogo" src="spades_logo.png" alt="Spades"><div class="peek" style="color:#2c3e50">♠</div></div></div>
-      <div class="gtile pos-c"><div class="gimg t1"><span class="gchip">64 playing</span><img class="glogo" src="hearts_logo.png" alt="Hearts"><div class="peek" style="color:#c0392b">♥</div></div></div>
-      <div class="gtile pos-d"><div class="gimg t4"><span class="gchip">212 playing</span><img class="glogo" src="euchre_logo.png" alt="Euchre"><div class="peek" style="color:#16655a">♣</div></div></div>
-      <div class="gtile pos-e"><div class="gimg t5"><span class="gchip">96 playing</span><img class="glogo" src="spades_logo.png" alt="Spades"><div class="peek" style="color:#2c3e50">♠</div></div></div>
-      <div class="gtile pos-f"><div class="gimg t7"><span class="gchip">128 playing</span><img class="glogo" src="euchre_logo.png" alt="Euchre"><div class="peek" style="color:#16655a">♣</div></div></div>
-      <div class="gtile pos-g"><div class="gimg t8"><span class="gchip">87 playing</span><img class="glogo" src="hearts_logo.png" alt="Hearts"><div class="peek" style="color:#c0392b">♥</div></div></div>
-      <div class="gtile pos-h"><div class="gimg t2"><span class="gchip">45 playing</span><img class="glogo" src="euchre_logo.png" alt="Euchre"><div class="peek" style="color:#16655a">♣</div></div></div>
-      <div class="gtile pos-i"><div class="gimg t9"><span class="gchip">58 playing</span><img class="glogo" src="spades_logo.png" alt="Spades"><div class="peek" style="color:#2c3e50">♠</div></div></div>
+      <div class="gtile pos-a"><div class="gimg t6"><span class="gchip">341 playing</span><img class="glogo" src="hearts_logo.png" alt="Hearts"></div></div>
+      <div class="gtile pos-b"><div class="gimg t3"><span class="gchip">173 playing</span><img class="glogo" src="spades_logo.png" alt="Spades"></div></div>
+      <div class="gtile pos-c"><div class="gimg t1"><span class="gchip">64 playing</span><img class="glogo" src="hearts_logo.png" alt="Hearts"></div></div>
+      <div class="gtile pos-d"><div class="gimg t4"><span class="gchip">212 playing</span><img class="glogo" src="euchre_logo.png" alt="Euchre"></div></div>
+      <div class="gtile pos-e"><div class="gimg t5"><span class="gchip">96 playing</span><img class="glogo" src="spades_logo.png" alt="Spades"></div></div>
+      <div class="gtile pos-f"><div class="gimg t7"><span class="gchip">128 playing</span><img class="glogo" src="euchre_logo.png" alt="Euchre"></div></div>
+      <div class="gtile pos-g"><div class="gimg t8"><span class="gchip">87 playing</span><img class="glogo" src="hearts_logo.png" alt="Hearts"></div></div>
+      <div class="gtile pos-h"><div class="gimg t2"><span class="gchip">45 playing</span><img class="glogo" src="euchre_logo.png" alt="Euchre"></div></div>
+      <div class="gtile pos-i"><div class="gimg t9"><span class="gchip">58 playing</span><img class="glogo" src="spades_logo.png" alt="Spades"></div></div>
     </div>
   </div>
 
@@ -1284,17 +1296,38 @@
 
   <div class="gamesec" id="sec-tt">
     <div class="pophead">Tricks &amp; trumps</div>
-    <div class="catgrid cols5 ttgrid"><div class="gtile gt-hero"><div class="gimg t6"><span class="gchip">341 playing</span><img class="glogo" src="hearts_logo.png" alt="Hearts"></div></div><div class="gtile gt-med1"><div class="gimg t3"><span class="gchip">173 playing</span><img class="glogo" src="spades_logo.png" alt="Spades"></div></div><div class="gtile gt-med2"><div class="gimg t4"><span class="gchip">212 playing</span><img class="glogo" src="euchre_logo.png" alt="Euchre"></div></div><div class="gtile"><div class="gimg t5"><span class="gchip">58 playing</span><img class="glogo" src="hearts_logo.png" alt="Pinochle"></div></div><div class="gtile"><div class="gimg t7"><span class="gchip">96 playing</span><img class="glogo" src="spades_logo.png" alt="Double Deck Pinochle"></div></div><div class="gtile"><div class="gimg t9"><span class="gchip">44 playing</span><img class="glogo" src="euchre_logo.png" alt="Bridge"></div></div><div class="gtile"><div class="gimg t1"><span class="gchip">51 playing</span><img class="glogo" src="hearts_logo.png" alt="Whist"></div></div><div class="gtile"><div class="gimg t8"><span class="gchip">23 playing</span><img class="glogo" src="spades_logo.png" alt="Sheepshead"></div></div><div class="gtile"><div class="gimg t2"><span class="gchip">17 playing</span><img class="glogo" src="euchre_logo.png" alt="Twenty-Nine"></div></div><div class="gtile"><div class="gimg t3"><span class="gchip">12 playing</span><img class="glogo" src="hearts_logo.png" alt="Sergeant Major"></div></div></div>
+    <div class="catgrid cols5 ttgrid">
+      <div class="gtile gt-hero"><div class="gimg t6"><span class="gchip">341 playing</span><img class="glogo" src="hearts_logo.png" alt="Hearts"></div><div class="gmeta"><h3 class="gtitle">Hearts</h3><p class="gsub">Dodge the queen of spades in the classic trick-taking card game.</p><div class="gbtns"><button type="button" class="gbtn play">Play</button><button type="button" class="gbtn bots">Play vs bots</button></div></div></div>
+      <div class="gtile gt-med1"><div class="gimg t3"><span class="gchip">173 playing</span><img class="glogo" src="spades_logo.png" alt="Spades"></div><div class="gmeta"><h3 class="gtitle">Spades</h3><p class="gsub">Bid your tricks and back your partner in this team game.</p><div class="gbtns"><button type="button" class="gbtn play">Play</button><button type="button" class="gbtn bots">Play vs bots</button></div></div></div>
+      <div class="gtile gt-med2"><div class="gimg t4"><span class="gchip">212 playing</span><img class="glogo" src="euchre_logo.png" alt="Euchre"></div><div class="gmeta"><h3 class="gtitle">Euchre</h3><p class="gsub">Fast trick-taking with trumps, bowers, and a partner.</p><div class="gbtns"><button type="button" class="gbtn play">Play</button><button type="button" class="gbtn bots">Play vs bots</button></div></div></div>
+      <div class="gtile"><div class="gimg t5"><span class="gchip">58 playing</span><img class="glogo" src="hearts_logo.png" alt="Pinochle"></div><div class="gmeta"><h3 class="gtitle">Pinochle</h3><p class="gsub">Meld your marriages, then win the tricks that count.</p><div class="gbtns"><button type="button" class="gbtn play">Play</button><button type="button" class="gbtn bots">Play vs bots</button></div></div></div>
+      <div class="gtile"><div class="gimg t7"><span class="gchip">96 playing</span><img class="glogo" src="spades_logo.png" alt="Double Deck Pinochle"></div><div class="gmeta"><h3 class="gtitle">Double Deck Pinochle</h3><p class="gsub">Bigger melds and bigger bids with two decks and a partner.</p><div class="gbtns"><button type="button" class="gbtn play">Play</button><button type="button" class="gbtn bots">Play vs bots</button></div></div></div>
+      <div class="gtile"><div class="gimg t9"><span class="gchip">44 playing</span><img class="glogo" src="euchre_logo.png" alt="Bridge"></div><div class="gmeta"><h3 class="gtitle">Bridge</h3><p class="gsub">The deepest of the trick-taking card games, bid to played.</p><div class="gbtns"><button type="button" class="gbtn play">Play</button><button type="button" class="gbtn bots">Play vs bots</button></div></div></div>
+      <div class="gtile"><div class="gimg t1"><span class="gchip">51 playing</span><img class="glogo" src="hearts_logo.png" alt="Whist"></div><div class="gmeta"><h3 class="gtitle">Whist</h3><p class="gsub">Plain trick-taking, pure card sense, no bidding.</p><div class="gbtns"><button type="button" class="gbtn play">Play</button><button type="button" class="gbtn bots">Play vs bots</button></div></div></div>
+      <div class="gtile"><div class="gimg t8"><span class="gchip">23 playing</span><img class="glogo" src="spades_logo.png" alt="Sheepshead"></div><div class="gmeta"><h3 class="gtitle">Sheepshead</h3><p class="gsub">Trump-heavy trick-taking, Wisconsin style.</p><div class="gbtns"><button type="button" class="gbtn play">Play</button><button type="button" class="gbtn bots">Play vs bots</button></div></div></div>
+      <div class="gtile"><div class="gimg t2"><span class="gchip">17 playing</span><img class="glogo" src="euchre_logo.png" alt="Twenty-Nine"></div><div class="gmeta"><h3 class="gtitle">Twenty-Nine</h3><p class="gsub">Four-player trick-taking where the jacks rule.</p><div class="gbtns"><button type="button" class="gbtn play">Play</button><button type="button" class="gbtn bots">Play vs bots</button></div></div></div>
+      <div class="gtile"><div class="gimg t3"><span class="gchip">12 playing</span><img class="glogo" src="hearts_logo.png" alt="Sergeant Major"></div><div class="gmeta"><h3 class="gtitle">Sergeant Major</h3><p class="gsub">Three players, one target each: three, five, eight.</p><div class="gbtns"><button type="button" class="gbtn play">Play</button><button type="button" class="gbtn bots">Play vs bots</button></div></div></div>
+    </div>
   </div>
 
   <div class="gamesec" id="sec-rummy">
     <div class="pophead">Sets &amp; runs</div>
-    <div class="catgrid cols4"><div class="gtile gt-wide"><div class="gimg t4"><span class="gchip">128 playing</span><img class="glogo" src="euchre_logo.png" alt="Canasta"></div></div><div class="gtile"><div class="gimg t2"><span class="gchip">87 playing</span><img class="glogo" src="spades_logo.png" alt="Gin Rummy"></div></div><div class="gtile"><div class="gimg t1"><span class="gchip">64 playing</span><img class="glogo" src="hearts_logo.png" alt="Hand & Foot"></div></div><div class="gtile"><div class="gimg t7"><span class="gchip">45 playing</span><img class="glogo" src="spades_logo.png" alt="Rummy"></div></div></div>
+    <div class="catgrid cols4">
+      <div class="gtile gt-wide"><div class="gimg t4"><span class="gchip">128 playing</span><img class="glogo" src="euchre_logo.png" alt="Canasta"></div><div class="gmeta"><h3 class="gtitle">Canasta</h3><p class="gsub">Build canastas of seven in the classic partnership rummy game.</p><div class="gbtns"><button type="button" class="gbtn play">Play</button><button type="button" class="gbtn bots">Play vs bots</button></div></div></div>
+      <div class="gtile"><div class="gimg t2"><span class="gchip">87 playing</span><img class="glogo" src="spades_logo.png" alt="Gin Rummy"></div><div class="gmeta"><h3 class="gtitle">Gin Rummy</h3><p class="gsub">Knock first in the classic two-player rummy game.</p><div class="gbtns"><button type="button" class="gbtn play">Play</button><button type="button" class="gbtn bots">Play vs bots</button></div></div></div>
+      <div class="gtile"><div class="gimg t1"><span class="gchip">64 playing</span><img class="glogo" src="hearts_logo.png" alt="Hand & Foot"></div><div class="gmeta"><h3 class="gtitle">Hand &amp; Foot</h3><p class="gsub">Two hands each in this canasta-style rummy marathon.</p><div class="gbtns"><button type="button" class="gbtn play">Play</button><button type="button" class="gbtn bots">Play vs bots</button></div></div></div>
+      <div class="gtile"><div class="gimg t7"><span class="gchip">45 playing</span><img class="glogo" src="spades_logo.png" alt="Rummy"></div><div class="gmeta"><h3 class="gtitle">Rummy</h3><p class="gsub">Lay down sets and runs in the original rummy game.</p><div class="gbtns"><button type="button" class="gbtn play">Play</button><button type="button" class="gbtn bots">Play vs bots</button></div></div></div>
+    </div>
   </div>
 
   <div class="gamesec" id="sec-classic">
     <div class="pophead">Pegs &amp; pairs</div>
-    <div class="catgrid cols4"><div class="gtile gt-wide"><div class="gimg t5"><span class="gchip">76 playing</span><img class="glogo" src="euchre_logo.png" alt="Cribbage"></div></div><div class="gtile"><div class="gimg t3"><span class="gchip">39 playing</span><img class="glogo" src="hearts_logo.png" alt="Crazy Eights"></div></div><div class="gtile"><div class="gimg t6"><span class="gchip">21 playing</span><img class="glogo" src="spades_logo.png" alt="Go Fish"></div></div><div class="gtile"><div class="gimg t9"><span class="gchip">14 playing</span><img class="glogo" src="euchre_logo.png" alt="Old Maid"></div></div></div>
+    <div class="catgrid cols4">
+      <div class="gtile gt-wide"><div class="gimg t5"><span class="gchip">76 playing</span><img class="glogo" src="euchre_logo.png" alt="Cribbage"></div><div class="gmeta"><h3 class="gtitle">Cribbage</h3><p class="gsub">Peg your way round the board in the classic counting game.</p><div class="gbtns"><button type="button" class="gbtn play">Play</button><button type="button" class="gbtn bots">Play vs bots</button></div></div></div>
+      <div class="gtile"><div class="gimg t3"><span class="gchip">39 playing</span><img class="glogo" src="hearts_logo.png" alt="Crazy Eights"></div><div class="gmeta"><h3 class="gtitle">Crazy Eights</h3><p class="gsub">Match suits and ranks, and save your eights.</p><div class="gbtns"><button type="button" class="gbtn play">Play</button><button type="button" class="gbtn bots">Play vs bots</button></div></div></div>
+      <div class="gtile"><div class="gimg t6"><span class="gchip">21 playing</span><img class="glogo" src="spades_logo.png" alt="Go Fish"></div><div class="gmeta"><h3 class="gtitle">Go Fish</h3><p class="gsub">Ask for cards, collect the books, go fish.</p><div class="gbtns"><button type="button" class="gbtn play">Play</button><button type="button" class="gbtn bots">Play vs bots</button></div></div></div>
+      <div class="gtile"><div class="gimg t9"><span class="gchip">14 playing</span><img class="glogo" src="euchre_logo.png" alt="Old Maid"></div><div class="gmeta"><h3 class="gtitle">Old Maid</h3><p class="gsub">Pair up fast and do not get stuck with the maid.</p><div class="gbtns"><button type="button" class="gbtn play">Play</button><button type="button" class="gbtn bots">Play vs bots</button></div></div></div>
+    </div>
   </div>
 
   <div id="lobby-slot-bottom"></div>
@@ -2082,6 +2115,56 @@
     clearTimeout(t);
     t = setTimeout(function () { toastEl.classList.remove("on"); }, 1200);
   }
+
+  // ===== game tiles: hover gameplay preview + demo click actions =====
+  // The hearts-classic clip from CrazyGames stands in for every game until we
+  // record our own gameplay captures.
+  function flash(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add("on");
+    clearTimeout(t);
+    t = setTimeout(function () { toastEl.classList.remove("on"); }, 1600);
+  }
+  (function () {
+    var canHover = !(window.matchMedia && matchMedia("(hover: none)").matches);
+    document.querySelectorAll(".gtile").forEach(function (tile) {
+      var img = tile.querySelector(".gimg");
+      if (!img) return;
+      var logo = tile.querySelector(".glogo");
+      var game = (logo && logo.alt) || "Hearts";
+      var vid = null;
+      if (canHover) {
+        tile.addEventListener("mouseenter", function () {
+          if (!vid) {
+            vid = document.createElement("video");
+            vid.className = "gvid";
+            vid.src = "hearts_gameplay.mp4";
+            vid.muted = true; vid.loop = true; vid.playsInline = true; vid.autoplay = true;
+            vid.addEventListener("playing", function () { tile.classList.add("videoOn"); });
+            img.appendChild(vid);
+            return;
+          }
+          if (vid.readyState > 0) vid.currentTime = 0;
+          var p = vid.play();
+          if (p && p.catch) p.catch(function () {});
+        });
+        tile.addEventListener("mouseleave", function () {
+          tile.classList.remove("videoOn");
+          if (vid) vid.pause();
+        });
+      }
+      var inCatalog = !!tile.closest(".catgrid");
+      tile.addEventListener("click", function () {
+        flash(inCatalog ? game + " — would open the game page" : game + " — dealing you in…");
+      });
+      tile.querySelectorAll(".gbtn").forEach(function (btn) {
+        btn.addEventListener("click", function (e) {
+          e.stopPropagation();
+          flash(game + (btn.classList.contains("bots") ? " — practice table vs bots" : " — joining a table with people"));
+        });
+      });
+    });
+  })();
 </script>
 <script>
   (function () {
