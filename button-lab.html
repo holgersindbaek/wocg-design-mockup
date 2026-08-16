@@ -220,16 +220,35 @@
   .dbtn.dsplitlook.dgold .dzone img.darr { filter: brightness(0) opacity(.72); }
   .dcap { font-size: 12px; color: #999488; margin: 0 0 4px; }
 
-  /* flush footer bars: the buttons are part of the tile, edge to edge */
+  /* quiet flush footers: the card's own materials, one hairline of ink at
+     13% on top (e7e7e7 vanishes on cream), verb left, up-caret right */
   .flush .meta { padding-bottom: 8px; }
-  .flushbar { display: flex; border-radius: 0 0 20px 20px; corner-shape: squircle; overflow: hidden; }
-  .flushbar button { flex: 1; height: 42px; font-family: inherit; font-size: 16px; font-weight: bold; border: none; cursor: pointer;
-    transition: background-color 80ms ease-out; }
-  .flushbar .fgreen { background: #66A80F; color: #fff; box-shadow: inset 0 1px 0 #4F800B;
-    text-shadow: -1px -1px 0 #4F800B, 1px -1px 0 #4F800B, -1px 1px 0 #4F800B, 1px 1px 0 #4F800B; }
-  .flushbar .fgreen:hover, .flushbar .fgreen:focus-visible { background: #5D960D; }
-  .flushbar .fblue { background: #A5D8FF; color: #1971C2; box-shadow: inset 0 1px 0 #7AB8EC; border-left: 1px solid rgba(0,0,0,.18); }
-  .flushbar .fblue:hover, .flushbar .fblue:focus-visible { background: #9ACFF8; }
+  .fbar { display: flex; align-items: center; justify-content: space-between; width: 100%; height: 32px;
+    padding: 0 12px; box-sizing: border-box; border: none; border-top: 1px solid rgba(20, 20, 19, .13);
+    border-radius: 0 0 20px 20px; corner-shape: squircle; cursor: pointer;
+    font-family: inherit; font-size: 16px; font-weight: bold; text-align: left;
+    transition: background-color 80ms ease-out, color 80ms ease-out; }
+  .fbar img.fcaret { width: 10px; height: auto; transform: rotate(180deg); opacity: .6; }
+  .fbar.f-band { background: #f4eee5; color: #141414; }
+  .fbar.f-band:hover, .fbar.f-band:focus-visible { background: #efe7da; }
+  .fbar.f-white { background: #fff; color: #4e4d4c; justify-content: center; gap: 8px; }
+  .fbar.f-white:hover, .fbar.f-white:focus-visible { color: #4F800B; }
+  .fbar.f-tint { background: rgba(20, 20, 19, .03); color: #141414; }
+  .fbar.f-tint:hover, .fbar.f-tint:focus-visible { background: rgba(20, 20, 19, .06); }
+  .fbar.f-tonal { background: #EEF7E0; color: #3E6509; }
+  .fbar.f-tonal:hover, .fbar.f-tonal:focus-visible { background: #E2F2CC; }
+  .fbar.f-tonal img.fcaret { opacity: .75; }
+  .fbar.f-divided { background: #fff; color: #141414; padding: 0; }
+  .fbar.f-divided .flab { flex: 1; padding: 0 12px; }
+  .fbar.f-divided .fdiv { width: 1px; align-self: stretch; background: rgba(20, 20, 19, .13); }
+  .fbar.f-divided .fzone { aspect-ratio: 1; align-self: stretch; display: flex; align-items: center; justify-content: center; }
+  .fbar.f-divided:hover, .fbar.f-divided:focus-visible { background: #faf7f1; }
+  .fbar.f-link { background: none; color: #1665AD; }
+  .fbar.f-link:hover, .fbar.f-link:focus-visible { color: #114b7f; text-decoration: underline; text-underline-offset: 3px; }
+  .fbar.f-echo { color: #141414; }
+  .fbar.f-ink { background: #141414; color: #f9f6f2; }
+  .fbar.f-ink:hover, .fbar.f-ink:focus-visible { background: #262626; }
+  .fbar.f-ink img.fcaret { filter: brightness(0) invert(1); opacity: .85; }
 
   .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(80px); z-index: 99;
     background: #141414; color: #f9f6f2; padding: 9px 18px; border-radius: 8px; font-size: 14px; transition: transform .18s ease; }
@@ -485,7 +504,7 @@ audience - a bordered, labeled "More ▾" or a scented text link replaces it.</p
         t.meta.appendChild(b);
         return t.card;
       } },
-    { t: "13 · Flush footer bars: the buttons are part of the tile", d: "No gap to the sides: the action bar is the tile's own bottom edge, sharing its corners. First pair of tiles: one full-bleed Join table bar (Play solo lives behind the link). Second pair: the bar splits into Join table and Play solo.",
+    { t: "13 \u00b7 Quiet flush footers: one control, part of the tile", d: "The research recipes: the bar wears the card\u2019s own materials (band cream, white, a 3% ink tint, tonal green, a tile-color echo, plain link, ink) with a 13%-ink hairline on top - e7e7e7 vanishes on cream. Verb left, up-caret right (menus travel up; right chevrons promise navigation), labels in ink because green text fails contrast. All 32 tall; research prefers 40 for this audience. The link tile plays directly; every other bar opens the chooser.",
       cls: "v13", flush: true, build: null },
     { t: "12 · Split button (kept for honest comparison)", d: "The expected loser, built properly so the costs are visible: the chevron segment is 44px and opens the panel, but research says this audience rarely explores it and mis-hits are easy. Judge it against concept 2.",
       cls: "v12", build: function (td) {
@@ -586,8 +605,19 @@ audience - a bordered, labeled "More ▾" or a scented text link replaces it.</p
         });
       });
     } else if (v.flush) {
-      TILES.forEach(function (td, i) {
-        var single = i < 2;
+      var FOOTS = [
+        ["f-band", true],
+        ["f-white", true],
+        ["f-tint", true],
+        ["f-tonal", true],
+        ["f-divided", true],
+        ["f-link", false],
+        ["f-echo", true],
+        ["f-ink", true]
+      ];
+      var ECHO = { t1: ["#FBF1D2", "#7A5A0E"], t2: ["#FAE4F1", "#8F3574"], t4: ["#E2F0E4", "#2C6B32"], t7: ["#DEEFED", "#11655D"] };
+      FOOTS.forEach(function (fv, i) {
+        var td = TILES[i % 4];
         var card = el("div", "ct flush");
         var g = el("div", "gt " + td.pal);
         var im = el("img", "glogo"); im.src = td.logo; im.alt = td.game;
@@ -597,21 +627,31 @@ audience - a bordered, labeled "More ▾" or a scented text link replaces it.</p
         var meta = el("div", "meta");
         meta.appendChild(el("h3", "ttl", td.game));
         meta.appendChild(el("p", "sub", td.sub));
-        meta.appendChild(el("p", "dcap", single ? "One button, full bleed" : "Two buttons, full bleed"));
-        var link = el("button", "morelink", "More ways to play");
-        link.style.marginTop = "0";
-        meta.appendChild(makeDisclosure(link, td.game, single ? { primary: ["Play solo"] } : {}));
         card.appendChild(meta);
-        var bar = el("div", "flushbar");
-        var join = el("button", "fgreen", "Join table");
-        join.addEventListener("click", function (e) { e.stopPropagation(); flash(td.game + " \u2014 joining a table with people"); });
-        bar.appendChild(join);
-        if (!single) {
-          var solo = el("button", "fblue", "Play solo");
-          solo.addEventListener("click", function (e) { e.stopPropagation(); flash(td.game + " \u2014 solo table, bots fill the seats"); });
-          bar.appendChild(solo);
+        var bar = el("button", "fbar " + fv[0]);
+        if (fv[0] === "f-divided") {
+          bar.innerHTML = "<span class='flab'>Play</span><span class='fdiv'></span><span class='fzone'><img class='fcaret' src='arrowDownBigTrim.png' alt=''></span>";
+        } else if (fv[0] === "f-link") {
+          bar.innerHTML = "<span>Play " + td.game + "</span>";
+        } else {
+          bar.innerHTML = "<span>Play</span><img class='fcaret' src='arrowDownBigTrim.png' alt=''>";
         }
-        card.appendChild(bar);
+        if (fv[0] === "f-echo") {
+          var e2 = ECHO[td.pal];
+          bar.style.background = e2[0];
+          bar.style.color = e2[1];
+        }
+        if (fv[1]) {
+          var wrap = makeDisclosure(bar, td.game, {
+            label: "Play",
+            head: "How do you want to play " + td.game + "?",
+            primary: ["Join a table \u00b7 <b>" + td.n + " playing now</b>", "Play solo"]
+          });
+          card.appendChild(wrap);
+        } else {
+          bar.addEventListener("click", function (e) { e.stopPropagation(); flash(td.game + " \u2014 joining a table with people"); });
+          card.appendChild(bar);
+        }
         row.appendChild(card);
       });
     } else {
