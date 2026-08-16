@@ -462,6 +462,7 @@
   body.counter-ghost .gchip { left: 12px; bottom: 10px; line-height: 1; mix-blend-mode: soft-light;
     text-shadow: -1px -1px 0 rgba(0,0,0,.75), 1px -1px 0 rgba(0,0,0,.75),
       -1px 1px 0 rgba(0,0,0,.75), 1px 1px 0 rgba(0,0,0,.75); }
+  .gchip b { display: inline-block; text-align: center; font-variant-numeric: tabular-nums; }
   .gimg:hover .gchip { opacity: 0; }
   .heroarea { position: relative; overflow: hidden; min-height: 230px; }
   .heroarea > * { position: relative; z-index: 1; }
@@ -558,7 +559,8 @@
   body.claude .pal-claude, body.ctrl .pal-ctrl, body.lemon .pal-lemon,
   body.family .pal-family, body.arc .pal-arc, body.sunday .pal-sunday,
   body.superr .pal-superr, body.duo .pal-duo, body.daydream .pal-daydream,
-  body.riley .pal-riley, body.sunnyside .pal-sunnyside, body.wocg .pal-wocg { display: block; }
+  body.riley .pal-riley, body.sunnyside .pal-sunnyside, body.wocg .pal-wocg,
+  body.evernote .pal-evernote, body.elevenlabs .pal-elevenlabs { display: block; }
 
   h2 {
     font-size: 15px; font-weight: bold; text-transform: uppercase;
@@ -2101,6 +2103,18 @@
     }
     document.querySelectorAll(".creel").forEach(function (el) { setReel(el, parseInt(el.dataset.v, 10)); });
     var dots = Array.prototype.slice.call(document.querySelectorAll(".ldot"));
+    /* tile counts change on the same beat as the capsule, but dry: no reels,
+       no animation - and the digit width is pinned so the line never shifts */
+    var tileCounts = Array.prototype.slice.call(document.querySelectorAll(".gchip b")).map(function (b) {
+      var v = parseInt(b.textContent, 10);
+      if (isNaN(v)) return null;
+      var digits = String(v).length;
+      b.style.minWidth = digits + "ch";
+      return { el: b, v: v,
+        lo: Math.max(Math.pow(10, digits - 1), Math.round(v * 0.88)),
+        hi: Math.min(Math.pow(10, digits) - 1, Math.round(v * 1.12)),
+        step: Math.max(1, Math.round(v * 0.04)) };
+    }).filter(Boolean);
     var beat = 0;
     setInterval(function () {
       beat++;
@@ -2146,6 +2160,12 @@
         if (el.odoCells) setOdo(el, v);
         else if (el.classList.contains("creel")) setReel(el, v);
         else el.textContent = v.toLocaleString("en-US");
+      });
+      tileCounts.forEach(function (t) {
+        var delta = Math.round((Math.random() * 2 - 1) * t.step);
+        if (delta === 0) delta = Math.random() < 0.5 ? -1 : 1;
+        t.v = Math.max(t.lo, Math.min(t.hi, t.v + delta));
+        t.el.textContent = t.v;
       });
     }, 1400);
   })();
