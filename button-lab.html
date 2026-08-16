@@ -157,12 +157,21 @@
     transition: background-color 80ms ease-out, transform 80ms ease-out; height: 36px; }
   .dbtn:active { transform: scale(0.98); }
   .dbtn img.darr { width: 13px; height: 13px; display: block; }
-  .dbtn.dgreen { background: #66A80F; color: #fff; box-shadow: inset 0 0 0 1px #4F800B, 0 2px 4px rgba(0,0,0,.06);
+  .dbtn.dgreen { --ring: #4F800B; background: #66A80F; color: #fff; box-shadow: inset 0 0 0 1px #4F800B, 0 2px 4px rgba(0,0,0,.06);
     text-shadow: -1px -1px 0 #4F800B, 1px -1px 0 #4F800B, -1px 1px 0 #4F800B, 1px 1px 0 #4F800B; }
   .dbtn.dgreen:hover, .dbtn.dgreen:focus-visible { background: #5D960D; }
   .dbtn.dgreen img.darr, .dbtn.dfelt img.darr { filter: brightness(0) invert(1); }
-  .dbtn.dblue { background: #A5D8FF; color: #1971C2; box-shadow: inset 0 0 0 1px #7AB8EC, 0 2px 4px rgba(0,0,0,.06); }
+  .dbtn.dblue { --ring: #7AB8EC; background: #A5D8FF; color: #1971C2; box-shadow: inset 0 0 0 1px #7AB8EC, 0 2px 4px rgba(0,0,0,.06); }
   .dbtn.dblue:hover, .dbtn.dblue:focus-visible { background: #9ACFF8; }
+  .dbtn.ddark { --ring: #3A5E08; background: #4F800B; color: #fff; box-shadow: inset 0 0 0 1px #3A5E08, 0 2px 4px rgba(0,0,0,.06);
+    text-shadow: -1px -1px 0 #3A5E08, 1px -1px 0 #3A5E08, -1px 1px 0 #3A5E08, 1px 1px 0 #3A5E08; }
+  .dbtn.ddark:hover, .dbtn.ddark:focus-visible { background: #457009; }
+  .dbtn.dever { --ring: #008a25; background: #00a82d; color: #fff; box-shadow: inset 0 0 0 1px #008a25, 0 2px 4px rgba(0,0,0,.06);
+    text-shadow: -1px -1px 0 #008a25, 1px -1px 0 #008a25, -1px 1px 0 #008a25, 1px 1px 0 #008a25; }
+  .dbtn.dever:hover, .dbtn.dever:focus-visible { background: #009628; }
+  .dbtn.dh32 { height: 32px; }
+  .dbtn.dh40 { height: 40px; }
+  .dbtn.dt18 { font-size: 18px; }
   .dbtn.dtonal { background: #EEF7E0; color: #3E6509; box-shadow: inset 0 0 0 1px #C9E3A4, 0 2px 4px rgba(0,0,0,.04); }
   .dbtn.dtonal:hover, .dbtn.dtonal:focus-visible { background: #E2F2CC; }
   .dbtn.dwhite { background: #fff; color: #212529; box-shadow: inset 0 0 0 1px #CED4DA, 0 2px 4px rgba(0,0,0,.04); }
@@ -175,7 +184,15 @@
   .dbtn.dbig { height: 44px; font-size: 18px; }
   .dbtn.dsplitlook { padding: 0; gap: 0; }
   .dbtn.dsplitlook .dlab { flex: 1; }
-  .dbtn.dsplitlook .dzone { flex: 0 0 40px; align-self: stretch; display: flex; align-items: center; justify-content: center; border-left: 1px solid #4F800B; }
+  /* the arrow zone is a true square: width locks to the button height */
+  .dbtn.dsplitlook .dzone { aspect-ratio: 1; flex: 0 0 auto; align-self: stretch; display: flex; align-items: center; justify-content: center;
+    border-left: 1px solid var(--ring, #4F800B); }
+  /* on the solid greens the arrow wears the four-way darker border, the
+     avatar-filter recipe in the button's own ring color */
+  .dbtn.dsplitlook.dgreen .dzone img.darr, .dbtn.dsplitlook.ddark .dzone img.darr, .dbtn.dsplitlook.dever .dzone img.darr {
+    filter: brightness(0) invert(1) drop-shadow(1px 0 var(--ring)) drop-shadow(-1px 0 var(--ring))
+      drop-shadow(0 1px var(--ring)) drop-shadow(0 -1px var(--ring)); }
+  .dbtn.dsplitlook.dblue .dzone img.darr { filter: none; }
   .dcap { font-size: 12px; color: #999488; margin: 0 0 4px; }
 
   /* flush footer bars: the buttons are part of the tile, edge to edge */
@@ -416,7 +433,7 @@ audience - a bordered, labeled "More ▾" or a scented text link replaces it.</p
         }));
         return t.card;
       } },
-    { t: "9b · The Play dropup, eight coats and sizes", d: "Concept 9's control riffed with the site's real dropup recipe: the arrowDown asset from the codebase (13px, right of the label), never a typed glyph. Coats: site green, the authentic lightblue dropup, green tonal, neutral white, felt; sizes 30 / 36 / 44; and a divided split-look whose whole surface still opens the sheet.",
+    { t: "9b \u00b7 The divided Play control: colors and sizes", d: "The winner of the last round, everywhere: a true-square arrow zone (width locks to height), per-color divider, and on the solid greens the arrow wears the four-way darker border in the ring color, the same recipe as the button text. Top row: green, light blue, dark green, Evernote green at 36. Bottom row: the size matrix, 32 and 40 tall, text 16 and 18.",
       cls: "v9b", dropups: true, build: null },
     { t: "10 · Two doors on the felt", d: "The bottom band of the art splits into two full-bleed doors - felt green to sit with people, blue for bots - over a scrim that guarantees label contrast on any artwork. Zero chrome in the meta; the title opens the game panel for the rare actions.",
       cls: "v10", build: function (td) {
@@ -519,14 +536,14 @@ audience - a bordered, labeled "More ▾" or a scented text link replaces it.</p
     var row = el("div", "row4");
     if (v.dropups) {
       var COATS = [
-        ["Site green \u00b7 36", "dgreen", "arrowDownBlue.png"],
-        ["The site's own dropup \u00b7 lightblue", "dblue", "arrowDownBlue.png"],
-        ["Green tonal", "dtonal", "arrowDownGreen.png"],
-        ["Neutral white", "dwhite", "arrowDown.png"],
-        ["Felt", "dfelt", "arrowDownBlue.png"],
-        ["Compact \u00b7 30", "dblue dsmall", "arrowDownBlue.png"],
-        ["Large \u00b7 44", "dgreen dbig", "arrowDownBlue.png"],
-        ["Divided split-look", "dgreen dsplitlook", "arrowDownBlue.png"]
+        ["Green \u00b7 36", "dgreen dsplitlook", "arrowDownBlue.png"],
+        ["Light blue \u00b7 36", "dblue dsplitlook", "arrowDownBlue.png"],
+        ["Dark green \u00b7 36", "ddark dsplitlook", "arrowDownBlue.png"],
+        ["Evernote green \u00b7 36", "dever dsplitlook", "arrowDownBlue.png"],
+        ["Green \u00b7 32, text 16", "dgreen dsplitlook dh32", "arrowDownBlue.png"],
+        ["Light blue \u00b7 32, text 18", "dblue dsplitlook dh32 dt18", "arrowDownBlue.png"],
+        ["Green \u00b7 40, text 16", "dgreen dsplitlook dh40", "arrowDownBlue.png"],
+        ["Light blue \u00b7 40, text 18", "dblue dsplitlook dh40 dt18", "arrowDownBlue.png"]
       ];
       COATS.forEach(function (coat, i) {
         var td = TILES[i % 4];
