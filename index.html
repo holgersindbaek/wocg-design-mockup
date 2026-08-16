@@ -220,9 +220,9 @@
   }
   #adrail .adhide {
     width: 300px; flex-shrink: 0;
-    border: none; cursor: pointer; border-radius: 6px;
+    border: none; cursor: pointer; border-radius: var(--radius-md, 6px); corner-shape: squircle;
     background-color: #A5D8FF; color: #1971C2;
-    box-shadow: 0 0 1px rgba(0,0,0,0.4), 0 1px 1px rgba(0,0,0,0.04), 0 2px 4px rgba(0,0,0,0.04);
+    box-shadow: inset 0 0 0 1px #7AB8EC, 0 2px 4px rgba(0, 0, 0, .06);
     font-family: "BuloRounded", "Verdana", "Arial", "Helvetica", sans-serif;
     font-size: 16px; font-weight: bold; height: 24px; line-height: 24px; padding: 0;
   }
@@ -256,6 +256,14 @@
     padding: 5px 6px; border-radius: 7px; border: 1px solid #dddddd; background: #ffffff;
     width: 100%;
   }
+  .switchbar .swbtn {
+    font-family: inherit; font-size: 13px; font-weight: 600; color: #555;
+    padding: 5px 6px; border-radius: 7px; border: 1px solid #dddddd; background: #ffffff;
+    width: 100%; cursor: pointer; margin-bottom: 10px;
+  }
+  .switchbar .swbtn:hover { background: #f5f5f5; }
+  /* the scheme reference lives below the page, hidden until toggled on */
+  body:not(.show-palette) .wrap { display: none; }
 
   /* ===== the stage: WOCG-styled frontpage, full above-the-fold ===== */
   .stage {
@@ -268,7 +276,8 @@
     background: var(--surface);
     border-bottom: 1px solid rgb(217 217 217);
     display: flex; align-items: center;
-    padding: 0 24px; gap: 12px;
+    /* the bar's gutters mirror the content column below (1160 max, 24px sides) */
+    padding: 0 max(24px, calc((100% - 1112px) / 2)); gap: 12px;
     font-size: 16px; line-height: 32px;
     transition: background .25s ease;
   }
@@ -281,9 +290,11 @@
   .muser { list-style: none; display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
   .muser li { color: var(--muted); cursor: pointer; display: flex; align-items: center; }
   .muser img.micon { width: 40px; height: 32px; display: block; }
-  .muser img.avatar { width: 22px; height: 22px; border-radius: 50%; margin-right: 6px; display: block;
-    /* the site's avatar outline: a filter border that hugs the SVG shape */
-    filter: drop-shadow(1px 0 #252525) drop-shadow(-1px 0 #252525) drop-shadow(0 1px #252525) drop-shadow(0 -1px #252525); }
+  .muser img.avatar { width: 28px; height: 28px; border-radius: 50%; margin-right: 8px; display: block;
+    /* avatar outline in the "playing" ghost's register: four semi-transparent
+       black copies hug the SVG shape and darken whatever sits behind the edge
+       (.32 per copy, ~.54 where two overlap) instead of drawing solid ink */
+    filter: drop-shadow(1px 0 rgba(0,0,0,.32)) drop-shadow(-1px 0 rgba(0,0,0,.32)) drop-shadow(0 1px rgba(0,0,0,.32)) drop-shadow(0 -1px rgba(0,0,0,.32)); }
   .muser .uname { font-size: 16px; font-weight: bold; color: var(--ink-soft); }
 
   /* ===== menu-bar experiments ===== */
@@ -308,7 +319,8 @@
   body.menu-crest .mbcap.v-crest { display: block; }
   body.menu-fthreads .mbcap.v-fthreads { display: block; }
   body.menu-gthreads .mbcap.v-gthreads { display: block; }
-  .mbcenter { position: relative; height: 56px; align-items: center; padding: 0 24px; flex-shrink: 0;
+  .mbcenter { position: relative; height: 56px; align-items: center; flex-shrink: 0;
+    padding: 0 max(24px, calc((100% - 1112px) / 2));
     border-bottom: 1px solid rgb(217 217 217); }
   .mclogo, .mcaplogo { border-bottom: none; }
   .mbcenter .mleft { display: flex; gap: 18px; flex: 1; }
@@ -590,11 +602,28 @@
   .gtile.videoOn .gvid { opacity: 1; }
   .gtile.videoOn .gchip { opacity: 0; }
 
-  .bandrow {
-    background: var(--band); padding: 16px 24px;
-    font-size: 14px; color: var(--ink-soft);
-    transition: background .25s ease;
-  }
+  /* ===== site footer: the live site's footer content on the Evernote band ===== */
+  .sitefooter { background: #F4EEE5; border-top: 1px solid #E7E7E7; color: var(--ink); }
+  .sitefooter footer { max-width: 1160px; margin: 0 auto; padding: 20px 24px 26px;
+    display: flex; flex-wrap: wrap; justify-content: space-between; gap: 24px; }
+  .sitefooter .footerSection { display: flex; gap: 24px; max-width: 100%; min-width: 0; width: max-content; }
+  .sitefooter .footerGames { gap: 16px; }
+  .sitefooter ul { padding: 0; margin: 0; list-style: none; font-size: 16px; line-height: 28px; }
+  .sitefooter li { white-space: nowrap; }
+  .sitefooter a { color: inherit; border-bottom: none; }
+  .sitefooter a:hover { text-decoration: underline; }
+  .sitefooter .social { display: flex; gap: 12px; margin-top: 4px; width: max-content; }
+  .sitefooter .social > a { width: 24px; height: 24px; display: inline-block; }
+  .sitefooter .social img, .sitefooter .social svg { width: 100%; height: 100%; display: block; }
+  .sitefooter .social svg { fill: currentColor; }
+  .sitefooter .social > a[aria-label="X"] { box-sizing: border-box; padding: 2px; }
+  .sitefooter .social > a[aria-label="X"] svg { width: 20px; height: 20px; }
+  .sitefooter .social > a:hover { opacity: 0.7; text-decoration: none; }
+  .sitefooter .footerRaptive .adthrive-footer-message { display: flex; flex-direction: column;
+    font-size: 16px; line-height: 28px; }
+  .sitefooter .footerRaptive .adthrive-footer-message > span { order: 1; font-weight: bold; }
+  .sitefooter .footerRaptive .adthrive-privacy-preferences { order: 2; }
+  .sitefooter .footerRaptive .raptive-content-terms-footer { order: 3; }
 
   /* ===== below the fold: active palette only ===== */
   .wrap { max-width: 960px; margin: 0 auto; padding: 8px 32px 96px; }
@@ -644,23 +673,25 @@
     font-family: "BuloRounded","Verdana","Arial","Helvetica",sans-serif; color: #212529; }
   #lobbyDemo h3, #lobbyDemo p { margin: 0; }
   #lobbyDemo button { font-family: inherit; }
-  #lobbyDemo .button { border-radius: 6px; text-decoration: none; color: #fff; font-weight: bold; font-size: 20px;
+  /* every button wears the tile buttons' chrome: radius-md squircle plus an
+     inset ring cut from its own fill and one soft drop (the .gbtn recipe) */
+  #lobbyDemo .button { border-radius: var(--radius-md, 6px); corner-shape: squircle; text-decoration: none; color: #fff; font-weight: bold; font-size: 20px;
     height: 32px; line-height: 32px; display: inline-block; text-align: center; padding: 0 8px; box-sizing: border-box;
     cursor: pointer; border: none; transition: background-color 24ms ease-out, box-shadow 24ms ease-out, transform 80ms ease-out; }
   #lobbyDemo .button:active { transform: scale(0.98); }
   #lobbyDemo .button.small { font-size: 16px; height: 24px; line-height: 24px; padding: 0 8px; }
-  #lobbyDemo .button.green { background-color: #66A80F; box-shadow: var(--btnshadow);
+  #lobbyDemo .button.green { background-color: #66A80F; box-shadow: inset 0 0 0 1px #4F800B, 0 2px 4px rgba(0, 0, 0, .06);
     text-shadow: -1px -1px 0 #4F800B, 1px -1px 0 #4F800B, -1px 1px 0 #4F800B, 1px 1px 0 #4F800B; }
   #lobbyDemo .button.green:hover { background-color: #5D960D; }
-  #lobbyDemo .button.blue { background-color: #228BE6; box-shadow: var(--btnshadow);
+  #lobbyDemo .button.blue { background-color: #228BE6; box-shadow: inset 0 0 0 1px #1873C5, 0 2px 4px rgba(0, 0, 0, .06);
     text-shadow: -1px -1px 0 #1873C5, 1px -1px 0 #1873C5, -1px 1px 0 #1873C5, 1px 1px 0 #1873C5; }
   #lobbyDemo .button.blue:hover { background-color: #1969B2; }
-  #lobbyDemo .button.lightblue { background-color: #A5D8FF; box-shadow: var(--btnshadow); color: #1971C2; text-shadow: none; }
+  #lobbyDemo .button.lightblue { background-color: #A5D8FF; box-shadow: inset 0 0 0 1px #7AB8EC, 0 2px 4px rgba(0, 0, 0, .06); color: #1971C2; text-shadow: none; }
   #lobbyDemo .button.lightblue:hover { background-color: #9ACFF8; }
 
   #lobbyDemo .lobbyTopBand { display: flex; flex-wrap: wrap; gap: 16px; width: 100%; }
   #lobbyDemo .lobbyDealCard { width: 100%; flex: 1; box-sizing: border-box; display: flex; flex-direction: column;
-    padding: 16px; background-color: #fff; border-radius: 20px; corner-shape: squircle; box-shadow: var(--evershadow); }
+    padding: 16px; background-color: #fff; border-radius: 20px; corner-shape: squircle; box-shadow: var(--btnshadow); }
   #lobbyDemo .ldHead { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-bottom: 4px; }
   #lobbyDemo .ldTitle { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     font-size: 20px; line-height: 28px; font-weight: bold; color: #212529; }
@@ -669,8 +700,8 @@
   #lobbyDemo .ldChips .button { flex: 1 1 auto; min-width: 0; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
   #lobbyDemo .ldMore { position: relative; flex: 0 0 auto; cursor: pointer; }
   #lobbyDemo .ldMore::after { content: ""; position: absolute; top: 100%; left: 0; width: 100%; height: 8px; }
-  #lobbyDemo .ldMore .dropupButton { display: block; height: 24px; line-height: 24px; border-radius: 6px; padding: 0 8px;
-    font-size: 16px; font-weight: bold; background-color: #A5D8FF; box-shadow: var(--btnshadow); color: #1971C2; }
+  #lobbyDemo .ldMore .dropupButton { display: block; height: 24px; line-height: 24px; border-radius: var(--radius-md, 6px); corner-shape: squircle; padding: 0 8px;
+    font-size: 16px; font-weight: bold; background-color: #A5D8FF; box-shadow: inset 0 0 0 1px #7AB8EC, 0 2px 4px rgba(0, 0, 0, .06); color: #1971C2; }
   #lobbyDemo .ldMore .dropupButton .dropupButtonText { background: url("arrowDownBlue.png") no-repeat right 6px center / 13px 13px; padding: 0 18px 0 8px; }
   #lobbyDemo .ldMore:hover .dropupButton { background-color: #9ACFF8; }
   #lobbyDemo .dropupContent { display: none; position: absolute; z-index: 2; top: calc(100% + 8px); right: 0; min-width: 100%;
@@ -731,7 +762,7 @@
   #lobbyDemo .llRow { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 16px; }
   #lobbyDemo .ltCard, #lobbyDemo .llCard { display: flex; flex-direction: column; background-color: #fff;
     border-radius: 20px; corner-shape: squircle;
-    box-shadow: var(--evershadow); overflow: hidden; cursor: pointer; }
+    box-shadow: var(--btnshadow); overflow: hidden; cursor: pointer; }
   #lobbyDemo .ltCard:hover, #lobbyDemo .llCard:hover { background-color: #F8F7F4; }
   #lobbyDemo .ltCard.isNew { cursor: default; }
 
@@ -752,11 +783,9 @@
   #lobbyDemo .spacer20 { flex-basis: 20%; max-width: 20%; }
   #lobbyDemo .player { position: relative; text-align: center; flex-basis: 40%; max-width: 40%; height: 33.3%; }
   #lobbyDemo .player img { height: calc(100% - 20px); width: auto; margin-top: 1px;
-    filter: drop-shadow(1px 0 #252525) drop-shadow(-1px 0 #252525) drop-shadow(0 1px #252525) drop-shadow(0 -1px #252525);
+    filter: drop-shadow(1px 0 rgba(0,0,0,.32)) drop-shadow(-1px 0 rgba(0,0,0,.32)) drop-shadow(0 1px rgba(0,0,0,.32)) drop-shadow(0 -1px rgba(0,0,0,.32));
     transform-origin: center bottom; transition: transform 80ms ease-in-out, filter 80ms ease-in-out; }
   #lobbyDemo .player.seatAvailable:hover img, #lobbyDemo .player.isEmpty:hover img { transform: scale(1.12); }
-  #lobbyDemo .player.playedTogether img { filter: drop-shadow(1px 0 #252525) drop-shadow(-1px 0 #252525)
-    drop-shadow(0 1px #252525) drop-shadow(0 -1px #252525) drop-shadow(0 0 4px #1665AD); }
   #lobbyDemo .playerNameContainer { background-color: #A5D8FF; color: #1665AD;
     box-shadow: inset 0 0 0 1px #343A40, 0 0 4px 0 rgba(0,0,0,0.24); border-radius: 6px; height: 20px;
     position: absolute; bottom: 0; width: 100%; }
@@ -777,6 +806,8 @@
   #lobbyDemo .ltInvitees { display: flex; }
   #lobbyDemo .ltInvitees .ltInviteeAv:not(:first-child) { margin-left: -8px; }
   #lobbyDemo .ltInviteeAv { position: relative; width: 28px; height: 28px; border-radius: 50%; overflow: hidden; box-shadow: 0 0 0 2px #C0EB75; }
+  #lobbyDemo .ltInviteeAv::after { content: ""; position: absolute; inset: 0; border-radius: 50%;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,.32); pointer-events: none; }
   #lobbyDemo .ltInviteeAv .ltAv { display: block; width: 28px; height: 28px; }
   #lobbyDemo .ltOnDot { position: absolute; right: 0; bottom: 0; width: 8px; height: 8px; border-radius: 50%;
     background-color: #64CD00; box-shadow: 0 0 0 1.5px #C0EB75; }
@@ -791,7 +822,7 @@
 
   /* board card (dev styling, scoped) */
   #lobbyDemo .lobbyBoardCard { width: 100%; flex: 1; box-sizing: border-box; display: flex; flex-direction: column;
-    padding: 16px; background-color: #fff; border-radius: 20px; corner-shape: squircle; box-shadow: var(--evershadow); }
+    padding: 16px; background-color: #fff; border-radius: 20px; corner-shape: squircle; box-shadow: var(--btnshadow); }
   #lobbyDemo .lbHead { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-bottom: 4px; }
   #lobbyDemo .lbTitle { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     font-size: 20px; line-height: 28px; font-weight: bold; color: #212529; }
@@ -817,8 +848,8 @@
   #lobbyDemo .lbFoot { margin: auto 0 0; padding-top: 4px; font-size: 12px; line-height: 20px; color: #868E96; font-variant-numeric: tabular-nums; }
   #lobbyDemo .lbPager { float: right; display: inline-flex; align-items: center; gap: 4px; }
   #lobbyDemo .lbPageBtn { box-sizing: border-box; width: 20px; height: 20px; padding: 0; border: none; border-radius: 4px;
-    background-color: #EEEBE5; background-repeat: no-repeat; background-position: center; background-size: 12px 12px;
-    box-shadow: var(--btnshadow); cursor: pointer; }
+    corner-shape: squircle; background-color: #EEEBE5; background-repeat: no-repeat; background-position: center; background-size: 12px 12px;
+    box-shadow: inset 0 0 0 1px #D8D2C7, 0 2px 4px rgba(0, 0, 0, .06); cursor: pointer; }
   #lobbyDemo .lbPagePrev { background-image: url("sortArrowLeft.png"); }
   #lobbyDemo .lbPageNext { background-image: url("sortArrowRight.png"); }
   #lobbyDemo .lbPageBtn:hover { background-color: #E4E0D9; }
@@ -881,8 +912,7 @@
   body { --radius-md: 6px; }
   @supports (corner-shape: squircle) { body { --radius-md: 12px; } }
   body { --tileshadow: 0 2px 8px 0 rgba(0,0,0,0.24); --panelline: rgba(60,45,25,0.15);
-    --btnshadow: 0 0 1px rgba(0,0,0,0.4), 0 1px 1px rgba(0,0,0,0.04), 0 2px 4px rgba(0,0,0,0.04);
-    --evershadow: 0 8px 24px -8px rgba(0,0,21,0.12), 0 14px 40px -8px rgba(0,0,21,0.04), 0 0 0 1px rgba(0,0,21,0.08); }
+    --btnshadow: 0 0 1px rgba(0,0,0,0.4), 0 1px 1px rgba(0,0,0,0.04), 0 2px 4px rgba(0,0,0,0.04); }
   body.shadow-soft { --tileshadow: 0 1px 2px rgba(60,45,25,.08), 0 2px 5px rgba(60,45,25,.08), 0 5px 12px rgba(60,45,25,.08); }
   body.shadow-softstrong { --tileshadow: 0 1px 2px rgba(60,45,25,.11), 0 3px 7px rgba(60,45,25,.12), 0 7px 16px rgba(60,45,25,.13); }
   body.shadow-material { --tileshadow: 0 1px 3px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.18); }
@@ -1124,6 +1154,7 @@
   <div class="swgroup">
     <div class="swhead">Look</div>
     <label class="ctl"><span>Color scheme</span><select id="sel-base"></select></label>
+    <button type="button" class="swbtn" id="palette-toggle">Show scheme swatches (bottom of page)</button>
     <label class="ctl"><span>★ Heading font</span><select id="sel-font"></select></label>
     <label class="ctl"><span>Texture</span><select id="sel-texture"></select></label>
   </div>
@@ -1417,7 +1448,68 @@
 
   <div id="lobby-slot-bottom"></div>
 
-  <div class="bandrow">World of Card Games · There’s always one more hand.</div>
+  <div class="sitefooter">
+    <div class="footer-basic">
+      <footer>
+        <div class="footerSection footerGames">
+          <ul class="list-inline">
+            <li class="list-inline-item"><strong>Games</strong></li>
+            <li class="list-inline-item"><a href="/hearts">Hearts</a></li>
+            <li class="list-inline-item"><a href="/spades">Spades</a></li>
+            <li class="list-inline-item"><a href="/euchre">Euchre</a></li>
+            <li class="list-inline-item"><a href="/gin-rummy">Gin Rummy</a></li>
+            <li class="list-inline-item"><a href="/cribbage">Cribbage</a></li>
+            <li class="list-inline-item"><a href="/pinochle">Pinochle</a></li>
+            <li class="list-inline-item"><a href="/double-deck-pinochle">DD Pinochle</a></li>
+          </ul>
+          <ul class="list-inline">
+            <li class="list-inline-item footerSpacer">&nbsp;</li>
+            <li class="list-inline-item"><a href="/canasta">Canasta</a></li>
+            <li class="list-inline-item"><a href="/hand-and-foot">Hand &amp; Foot</a></li>
+            <li class="list-inline-item"><a href="/rummy">Rummy</a></li>
+            <li class="list-inline-item"><a href="/crazy-eights">Crazy Eights</a></li>
+            <li class="list-inline-item"><a href="/bridge">Bridge</a></li>
+            <li class="list-inline-item"><a href="/whist">Whist</a></li>
+          </ul>
+          <ul class="list-inline">
+            <li class="list-inline-item footerSpacer">&nbsp;</li>
+            <li class="list-inline-item"><a href="/go-fish">Go Fish</a></li>
+            <li class="list-inline-item"><a href="/old-maid">Old Maid</a></li>
+            <li class="list-inline-item"><a href="/sheepshead">Sheepshead</a></li>
+            <li class="list-inline-item"><a href="/twenty-nine">Twenty-Nine</a></li>
+            <li class="list-inline-item"><a href="/sergeant-major">Sergeant Major</a></li>
+            <li class="list-inline-item"><a href="https://papergames.io/">Board Games</a></li>
+          </ul>
+        </div>
+        <div class="footerSection footerResources">
+          <ul class="list-inline">
+            <li class="list-inline-item"><strong>Resources</strong></li>
+            <li class="list-inline-item"><a href="/about">About</a></li>
+            <li class="list-inline-item"><a href="/leaderboards">Leaderboards</a></li>
+            <li class="list-inline-item"><a href="/rules">Rules &amp; Guides</a></li>
+            <li class="list-inline-item"><a href="https://worldofcardgames.com/blog/">Blog</a></li>
+            <li class="list-inline-item"><a href="/contact">Contact</a></li>
+            <li class="list-inline-item"><a href="/world-of-card-games-privacy-policy">Privacy Policy</a></li>
+            <li class="list-inline-item"><a href="/community-guidelines">Community Guidelines</a></li>
+            <li class="list-inline-item tosSocial"><a href="/world-of-card-games-terms-of-use">ToS</a>
+              <div class="social">
+                <a href="https://x.com/WorldOfCardGamz" aria-label="X"><svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24h-6.657l-5.214-6.817-5.966 6.817H1.68l7.73-8.835L1.254 2.25h6.826l4.713 6.231 5.45-6.231Zm-1.16 17.52h1.833L7.084 4.126H5.117L17.083 19.77Z"></path></svg></a>
+                <a href="https://www.facebook.com/WorldOfCardGames/"><img src="facebook-48.png" alt="Facebook" loading="lazy" width="32" height="32"></a>
+                <a href="https://www.youtube.com/c/Worldofcardgames"><img src="youtube-48.png" alt="YouTube" loading="lazy" width="32" height="32"></a>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div class="footerSection footerRaptive">
+          <div class="adthrive-comscore adthrive-footer-message">
+            <div class="adthrive-privacy-preferences"><a href="#">Update Privacy Preferences</a></div>
+            <div class="raptive-content-terms-footer"><a href="#" class="raptive-content-terms-footer-link">Terms of Content Use</a></div>
+            <span>A Raptive Partner Site</span>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </div>
 </div>
 
 <div class="wrap">
@@ -1734,6 +1826,7 @@
     ["ghost", "Ghost, naked with dark halo"]
   ];
   var curShadow = "soft", curEdge = "softlight", curTexture = "grain", curCatalog = "split", curStats = "capsule", curMenu = "centerlight", curCounter = "ghost", curRail = "suits";
+  var palShown = false;
   function moveLobby() {
     var lobby = document.getElementById("lobbyDemo");
     var slot = document.getElementById(curCatalog === "merged" || curCatalog === "mergedflat" ? "lobby-slot-bottom" : "lobby-slot-top");
@@ -1741,7 +1834,7 @@
   }
   function applyBody() {
     var scene = curLayout.indexOf("sc") === 0;
-    document.body.className = curBase + " play-" + curPlay + " layout-" + curLayout + (scene ? " scenehero" : "") + " font-" + curFont + " shadow-" + curShadow + " edge-" + curEdge + " tex-" + curTexture + " cat-" + curCatalog + " stats-" + curStats + " menu-" + curMenu + " counter-" + curCounter + " rail-" + curRail;
+    document.body.className = curBase + " play-" + curPlay + " layout-" + curLayout + (scene ? " scenehero" : "") + " font-" + curFont + " shadow-" + curShadow + " edge-" + curEdge + " tex-" + curTexture + " cat-" + curCatalog + " stats-" + curStats + " menu-" + curMenu + " counter-" + curCounter + " rail-" + curRail + (palShown ? " show-palette" : "");
     var ht = document.getElementById("herotitle"), hs = document.getElementById("herosub");
     if (scene) {
       if (curLayout === "scpyr") {
@@ -1860,6 +1953,14 @@
   buildSel("sel-menu", MENUS, function (v) { curMenu = v; });
   buildSel("sel-counter", COUNTERS, function (v) { curCounter = v; });
   buildSel("sel-rail", RAILS, function (v) { curRail = v; });
+
+  var palBtn = document.getElementById("palette-toggle");
+  palBtn.onclick = function () {
+    palShown = !palShown;
+    palBtn.textContent = palShown ? "Hide scheme swatches" : "Show scheme swatches (bottom of page)";
+    applyBody();
+    if (palShown) document.querySelector(".wrap").scrollIntoView({ behavior: "smooth" });
+  };
 
   function swatch(nm, hx) {
     var d = document.createElement("div");
