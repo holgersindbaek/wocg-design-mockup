@@ -173,9 +173,20 @@
      40 tall = line-height-xl with font-size-lg 24 */
   .dbtn.dh32 { height: 32px; font-size: 20px; }
   .dbtn.dh40 { height: 40px; font-size: 24px; }
-  .dbtn.dh32 img.darr { width: 16px; height: 16px; }
-  .dbtn.dh40 img.darr { width: 20px; height: 20px; }
-  .dstack { display: flex; flex-direction: column; gap: 8px; }
+  .dbtn.dh32 img.darr { width: 13px; height: 13px; }
+  .dbtn.dh40 img.darr { width: 16px; height: 16px; }
+  .dbtn.dlive { --ring: #2B8A3E; background: #2f9e44; color: #fff; box-shadow: inset 0 0 0 1px #2B8A3E, 0 2px 4px rgba(0,0,0,.06);
+    text-shadow: -1px -1px 0 #2B8A3E, 1px -1px 0 #2B8A3E, -1px 1px 0 #2B8A3E, 1px 1px 0 #2B8A3E; }
+  .dbtn.dlive:hover, .dbtn.dlive:focus-visible { background: #2b9340; }
+  .dbtn.dbluesolid { --ring: #1873C5; background: #228BE6; color: #fff; box-shadow: inset 0 0 0 1px #1873C5, 0 2px 4px rgba(0,0,0,.06);
+    text-shadow: -1px -1px 0 #1873C5, 1px -1px 0 #1873C5, -1px 1px 0 #1873C5, 1px 1px 0 #1873C5; }
+  .dbtn.dbluesolid:hover, .dbtn.dbluesolid:focus-visible { background: #1E7FD4; }
+  .dbtn.dgold { --ring: #e2a62f; background: #f4c360; color: #6B4E00; box-shadow: inset 0 0 0 1px #e2a62f, 0 2px 4px rgba(0,0,0,.06); }
+  .dbtn.dgold:hover, .dbtn.dgold:focus-visible { background: #f0b945; }
+  .dbtn.dfelt2 { --ring: rgba(0,0,0,.55); background: #35654d url("green-felt.jpg"); color: #fff;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,.55), 0 2px 4px rgba(0,0,0,.08);
+    text-shadow: -1px -1px 0 rgba(0,0,0,.4), 1px -1px 0 rgba(0,0,0,.4), -1px 1px 0 rgba(0,0,0,.4), 1px 1px 0 rgba(0,0,0,.4); }
+  .dbtn.dfelt2:hover, .dbtn.dfelt2:focus-visible { filter: brightness(1.08); }
   .dbtn.dtonal { background: #EEF7E0; color: #3E6509; box-shadow: inset 0 0 0 1px #C9E3A4, 0 2px 4px rgba(0,0,0,.04); }
   .dbtn.dtonal:hover, .dbtn.dtonal:focus-visible { background: #E2F2CC; }
   .dbtn.dwhite { background: #fff; color: #212529; box-shadow: inset 0 0 0 1px #CED4DA, 0 2px 4px rgba(0,0,0,.04); }
@@ -194,10 +205,13 @@
   .dbtn.dsplitlook .dzone { aspect-ratio: 1; flex: 0 0 auto; align-self: stretch; display: flex; align-items: center; justify-content: center; }
   /* on the solid greens the arrow wears the four-way darker border, the
      avatar-filter recipe in the button's own ring color */
-  .dbtn.dsplitlook.dgreen .dzone img.darr, .dbtn.dsplitlook.ddark .dzone img.darr, .dbtn.dsplitlook.dever .dzone img.darr {
+  .dbtn.dsplitlook.dgreen .dzone img.darr, .dbtn.dsplitlook.ddark .dzone img.darr, .dbtn.dsplitlook.dever .dzone img.darr,
+  .dbtn.dsplitlook.dlive .dzone img.darr, .dbtn.dsplitlook.dbluesolid .dzone img.darr, .dbtn.dsplitlook.dfelt2 .dzone img.darr {
     filter: brightness(0) invert(1) drop-shadow(1px 0 var(--ring)) drop-shadow(-1px 0 var(--ring))
       drop-shadow(0 1px var(--ring)) drop-shadow(0 -1px var(--ring)); }
+  .dbtn.dsplitlook.dfelt2 .dzone img.darr { filter: brightness(0) invert(1) drop-shadow(1px 0 rgba(0,0,0,.4)) drop-shadow(-1px 0 rgba(0,0,0,.4)) drop-shadow(0 1px rgba(0,0,0,.4)) drop-shadow(0 -1px rgba(0,0,0,.4)); }
   .dbtn.dsplitlook.dblue .dzone img.darr { filter: none; }
+  .dbtn.dsplitlook.dgold .dzone img.darr { filter: brightness(0) opacity(.72); }
   .dcap { font-size: 12px; color: #999488; margin: 0 0 4px; }
 
   /* flush footer bars: the buttons are part of the tile, edge to edge */
@@ -438,7 +452,7 @@ audience - a bordered, labeled "More ▾" or a scented text link replaces it.</p
         }));
         return t.card;
       } },
-    { t: "9b \u00b7 The divided Play control: four colors, 32 and 40 stacked", d: "Each colorway twice per tile: the codebase pairings 32 tall with 20px text (the site standard, line-height-lg + font-size-md) above 40 tall with 24px text (line-height-xl + font-size-lg). The bigger arrowDownBig asset rides both (16px and 20px), the divider is its own element so the arrow zone is exactly square, and the greens ring their arrows.",
+    { t: "9b \u00b7 The divided Play control: eight colorways, two sizes", d: "One control per tile, no captions: each colorway appears as a small tile (32 tall, 20px text, 13px arrow - the site recipe) then a big tile (40 tall, 24px text, 16px arrow). Colorways: green, light blue, dark green, Evernote green, live green, site blue, gold, felt. Arrows center in a true-square zone and wear the ring border wherever the text does.",
       cls: "v9b", dropups: true, build: null },
     { t: "10 · Two doors on the felt", d: "The bottom band of the art splits into two full-bleed doors - felt green to sit with people, blue for bots - over a scrim that guarantees label contrast on any artwork. Zero chrome in the meta; the title opens the game panel for the rare actions.",
       cls: "v10", build: function (td) {
@@ -541,28 +555,29 @@ audience - a bordered, labeled "More ▾" or a scented text link replaces it.</p
     var row = el("div", "row4");
     if (v.dropups) {
       var COLORWAYS = [
-        ["Green", "dgreen"],
-        ["Light blue", "dblue"],
-        ["Dark green", "ddark"],
-        ["Evernote green", "dever"]
+        ["dgreen", "arrowDownBig.png"],
+        ["dblue", "arrowDownBlue.png"],
+        ["ddark", "arrowDownBig.png"],
+        ["dever", "arrowDownBig.png"],
+        ["dlive", "arrowDownBig.png"],
+        ["dbluesolid", "arrowDownBig.png"],
+        ["dgold", "arrowDownBig.png"],
+        ["dfelt2", "arrowDownBig.png"]
       ];
-      COLORWAYS.forEach(function (cw, i) {
-        var td = TILES[i % 4];
-        var t = baseTile(td);
-        t.meta.appendChild(el("p", "dcap", cw[0] + " \u00b7 32/20 above, 40/24 below"));
-        var stack = el("div", "dstack");
-        [["dh32", 16], ["dh40", 20]].forEach(function (size) {
-          var btn = el("button", "dbtn dsplitlook " + cw[1] + " " + size[0]);
-          var arrow = cw[1] === "dblue" ? "arrowDownBlue.png" : "arrowDownBig.png";
-          btn.innerHTML = "<span class='dlab'>Play</span><span class='ddiv'></span><span class='dzone'><img class='darr' src='" + arrow + "' alt=''></span>";
-          stack.appendChild(makeDisclosure(btn, td.game, {
+      var k = 0;
+      COLORWAYS.forEach(function (cw) {
+        ["dh32", "dh40"].forEach(function (size) {
+          var td = TILES[k % 4]; k++;
+          var t = baseTile(td);
+          var btn = el("button", "dbtn dsplitlook " + cw[0] + " " + size);
+          btn.innerHTML = "<span class='dlab'>Play</span><span class='ddiv'></span><span class='dzone'><img class='darr' src='" + cw[1] + "' alt=''></span>";
+          t.meta.appendChild(makeDisclosure(btn, td.game, {
             label: "Play",
             head: "How do you want to play " + td.game + "?",
             primary: ["Join a table \u00b7 <b>" + td.n + " playing now</b>", "Play solo"]
           }));
+          row.appendChild(t.card);
         });
-        t.meta.appendChild(stack);
-        row.appendChild(t.card);
       });
     } else if (v.flush) {
       TILES.forEach(function (td, i) {
