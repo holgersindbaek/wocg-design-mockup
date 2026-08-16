@@ -178,9 +178,9 @@
   #adrail {
     position: fixed; top: 0; right: 0; bottom: 0; width: var(--adrail-w); z-index: 15;
     box-sizing: border-box; padding: 8px;
-    /* backstage black: the design's own ink, flat - no shadow on the
+    /* backstage, not black: a warm mid-dark wash - flat, no shadow on the
        frontpage (that treatment belongs to in-game only) */
-    background: var(--ink, #141414);
+    background: rgba(30, 25, 20, .45);
     display: flex; flex-direction: column; align-items: center; gap: 8px;
     overflow: hidden;
   }
@@ -1374,8 +1374,8 @@
 
   <div id="archive"></div>
 
-  <h2 style="margin-top:64px">Playful tile sets <span class="tag">the Tiles switcher</span></h2>
-  <p class="note">Ten sets, same nine slots. Only these colors change when you switch the Tiles row — the base scheme stays put.</p>
+  <h2 style="margin-top:64px">Current scheme <span class="tag">live from the switcher</span></h2>
+  <p class="note">The active playful tile set and the active layouts. Change them in the switcher and this section follows.</p>
   <div id="playsets"></div>
 
 </div>
@@ -1687,6 +1687,7 @@
     document.getElementById("sel-menu").value = curMenu;
     document.getElementById("sel-counter").value = curCounter;
     moveLobby();
+    if (typeof renderPlayset === "function") renderPlayset();
   }
   var sceneTxt = null;
   function sceneParts() {
@@ -1813,20 +1814,32 @@
     arch.appendChild(box);
   });
 
-  // playful sets reference strip
-  var ps = document.getElementById("playsets");
-  PLAYS.forEach(function (t) {
-    if (!PLAYSETS[t[0]]) return;
+  // current-scheme strip: only the active tile set and the active layouts
+  function nameOf(list, key) {
+    var it = list.filter(function (x) { return x[0] === key; })[0];
+    return it ? it[1] : key;
+  }
+  function renderPlayset() {
+    var ps = document.getElementById("playsets");
+    if (!ps) return;
+    ps.innerHTML = "";
     var lbl = document.createElement("p");
     lbl.className = "note";
     lbl.style.marginTop = "14px";
-    lbl.textContent = t[1];
+    lbl.textContent = "Tile artwork \u2014 " + nameOf(PLAYS, curPlay) + (PLAYSETS[curPlay] ? "" : " (no override; tiles use the base scheme)");
     ps.appendChild(lbl);
-    var g = document.createElement("div");
-    g.className = "grid";
-    PLAYSETS[t[0]].forEach(function (hx, i) { g.appendChild(swatch(SLOTNAMES[i], hx)); });
-    ps.appendChild(g);
-  });
+    if (PLAYSETS[curPlay]) {
+      var g = document.createElement("div");
+      g.className = "grid";
+      PLAYSETS[curPlay].forEach(function (hx, i) { g.appendChild(swatch(SLOTNAMES[i], hx)); });
+      ps.appendChild(g);
+    }
+    var lay = document.createElement("p");
+    lay.className = "note";
+    lay.style.marginTop = "14px";
+    lay.textContent = "Hero layout \u2014 " + nameOf(LAYOUTS, curLayout) + " \u00b7 Catalog \u2014 " + nameOf(CATALOGS, curCatalog) + " \u00b7 Color scheme \u2014 " + nameOf(THEMES, curBase);
+    ps.appendChild(lay);
+  }
 
   applyBody();
 
