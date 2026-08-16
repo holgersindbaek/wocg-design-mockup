@@ -845,7 +845,7 @@
      itself (never neutral grey) plus one soft drop; the site's radius-md
      (6px) as a squircle */
   .gbtn { min-width: 0; font-family: inherit; font-size: 16px; font-weight: bold; height: 30px;
-    border: none; border-radius: 6px; corner-shape: squircle; cursor: pointer; white-space: nowrap;
+    border: none; border-radius: var(--radius-md, 6px); corner-shape: squircle; cursor: pointer; white-space: nowrap;
     padding: 0 4px; transition: background-color 24ms ease-out, transform 80ms ease-out; }
   .gbtn:active { transform: scale(0.97); }
   .gbtn.play { grid-column: 1 / -1; background: #66A80F; color: #fff;
@@ -875,6 +875,9 @@
   #lobbyDemo .lhctrls { display: flex; align-items: center; gap: 8px; }
   #lobbyDemo .lobbycol { width: calc(33.33% - 10.6667px); box-sizing: border-box; display: flex; flex-direction: column; gap: 8px; }
 
+  /* the site's radius token: 6px, doubled to 12 where squircles render */
+  body { --radius-md: 6px; }
+  @supports (corner-shape: squircle) { body { --radius-md: 12px; } }
   body { --tileshadow: 0 2px 8px 0 rgba(0,0,0,0.24); --panelline: rgba(60,45,25,0.15);
     --btnshadow: 0 0 1px rgba(0,0,0,0.4), 0 1px 1px rgba(0,0,0,0.04), 0 2px 4px rgba(0,0,0,0.04);
     --evershadow: 0 8px 24px -8px rgba(0,0,21,0.12), 0 14px 40px -8px rgba(0,0,21,0.04), 0 0 0 1px rgba(0,0,21,0.08); }
