@@ -173,8 +173,14 @@
      40 tall = line-height-xl with font-size-lg 24 */
   .dbtn.dh32 { height: 32px; font-size: 20px; }
   .dbtn.dh40 { height: 40px; font-size: 24px; }
-  .dbtn.dh32 img.darr { width: 13px; height: 13px; }
-  .dbtn.dh40 img.darr { width: 16px; height: 16px; }
+  /* trimmed glyph assets: width set, height follows the glyph's own aspect */
+  .dbtn.dh32 img.darr { width: 13px; height: auto; }
+  .dbtn.dh40 img.darr { width: 16px; height: auto; }
+  /* the light blue arrow runs bigger and wears an outer ring in the arrow
+     blue's own darker cut */
+  .dbtn.dblue.dh32 img.darr { width: 16px; }
+  .dbtn.dsplitlook.dblue .dzone img.darr { filter: drop-shadow(1px 0 #135A9C) drop-shadow(-1px 0 #135A9C)
+    drop-shadow(0 1px #135A9C) drop-shadow(0 -1px #135A9C); }
   .dbtn.dlive { --ring: #2B8A3E; background: #2f9e44; color: #fff; box-shadow: inset 0 0 0 1px #2B8A3E, 0 2px 4px rgba(0,0,0,.06);
     text-shadow: -1px -1px 0 #2B8A3E, 1px -1px 0 #2B8A3E, -1px 1px 0 #2B8A3E, 1px 1px 0 #2B8A3E; }
   .dbtn.dlive:hover, .dbtn.dlive:focus-visible { background: #2b9340; }
@@ -210,7 +216,7 @@
     filter: brightness(0) invert(1) drop-shadow(1px 0 var(--ring)) drop-shadow(-1px 0 var(--ring))
       drop-shadow(0 1px var(--ring)) drop-shadow(0 -1px var(--ring)); }
   .dbtn.dsplitlook.dfelt2 .dzone img.darr { filter: brightness(0) invert(1) drop-shadow(1px 0 rgba(0,0,0,.4)) drop-shadow(-1px 0 rgba(0,0,0,.4)) drop-shadow(0 1px rgba(0,0,0,.4)) drop-shadow(0 -1px rgba(0,0,0,.4)); }
-  .dbtn.dsplitlook.dblue .dzone img.darr { filter: none; }
+
   .dbtn.dsplitlook.dgold .dzone img.darr { filter: brightness(0) opacity(.72); }
   .dcap { font-size: 12px; color: #999488; margin: 0 0 4px; }
 
@@ -452,7 +458,7 @@ audience - a bordered, labeled "More ▾" or a scented text link replaces it.</p
         }));
         return t.card;
       } },
-    { t: "9b \u00b7 The divided Play control: eight colorways, two sizes", d: "One control per tile, no captions: each colorway appears as a small tile (32 tall, 20px text, 13px arrow - the site recipe) then a big tile (40 tall, 24px text, 16px arrow). Colorways: green, light blue, dark green, Evernote green, live green, site blue, gold, felt. Arrows center in a true-square zone and wear the ring border wherever the text does.",
+    { t: "9b \u00b7 The divided Play control: eight colorways at 32", d: "All at the site-standard 32 tall with 20px text. The arrow assets are trimmed to their glyph bounds, so centering in the square zone is true; greens and blues ring their arrows in their own darker cut, gold runs a plain dark arrow, and the light blue wears a bigger 16px arrow with its outer ring.",
       cls: "v9b", dropups: true, build: null },
     { t: "10 · Two doors on the felt", d: "The bottom band of the art splits into two full-bleed doors - felt green to sit with people, blue for bots - over a scrim that guarantees label contrast on any artwork. Zero chrome in the meta; the title opens the game panel for the rare actions.",
       cls: "v10", build: function (td) {
@@ -555,18 +561,18 @@ audience - a bordered, labeled "More ▾" or a scented text link replaces it.</p
     var row = el("div", "row4");
     if (v.dropups) {
       var COLORWAYS = [
-        ["dgreen", "arrowDownBig.png"],
-        ["dblue", "arrowDownBlue.png"],
-        ["ddark", "arrowDownBig.png"],
-        ["dever", "arrowDownBig.png"],
-        ["dlive", "arrowDownBig.png"],
-        ["dbluesolid", "arrowDownBig.png"],
-        ["dgold", "arrowDownBig.png"],
-        ["dfelt2", "arrowDownBig.png"]
+        ["dgreen", "arrowDownBigTrim.png"],
+        ["dblue", "arrowDownBlueTrim.png"],
+        ["ddark", "arrowDownBigTrim.png"],
+        ["dever", "arrowDownBigTrim.png"],
+        ["dlive", "arrowDownBigTrim.png"],
+        ["dbluesolid", "arrowDownBigTrim.png"],
+        ["dgold", "arrowDownBigTrim.png"],
+        ["dfelt2", "arrowDownBigTrim.png"]
       ];
       var k = 0;
       COLORWAYS.forEach(function (cw) {
-        ["dh32", "dh40"].forEach(function (size) {
+        ["dh32"].forEach(function (size) {
           var td = TILES[k % 4]; k++;
           var t = baseTile(td);
           var btn = el("button", "dbtn dsplitlook " + cw[0] + " " + size);
