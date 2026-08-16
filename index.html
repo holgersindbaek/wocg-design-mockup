@@ -505,8 +505,9 @@
   .heroarea > * { position: relative; z-index: 1; }
   .stats { display: flex; align-items: center; justify-content: center; gap: 9px; margin-top: 34px; flex-wrap: wrap; font-size: 16px; color: var(--muted); }
   body:not(.stats-brief) .statsBrief { display: none; }
-  body.stats-brief .statsFull, body.stats-capsule .statsFull, body.stats-sign .statsFull, body.stats-signsolid .statsFull, body.stats-signbtn .statsFull, body.stats-signpulse .statsFull, body.stats-signtag .statsFull { display: none; }
-  body:not(.stats-capsule) .statsCapsule { display: none; }
+  body.stats-brief .statsFull, body.stats-capsule .statsFull, body.stats-capsuleshort .statsFull, body.stats-sign .statsFull, body.stats-signsolid .statsFull, body.stats-signbtn .statsFull, body.stats-signpulse .statsFull, body.stats-signtag .statsFull { display: none; }
+  body:not(.stats-capsule) .statsCapsule:not(.isShort) { display: none; }
+  body:not(.stats-capsuleshort) .statsCapsule.isShort { display: none; }
   body:not(.stats-sign):not(.stats-signsolid):not(.stats-signbtn):not(.stats-signpulse):not(.stats-signtag) .statsSign { display: none; }
   /* the LIVE sign strip leading bare, separator-free counts. Base recipe = the
      lightblue button's formula on Mantine's GREEN scale (the codebase's own
@@ -968,8 +969,8 @@
   body.layout-scpyr .heroarea { display: flex; height: auto; min-height: 0; padding: 52px 24px 0; overflow: visible; }
   body.layout-scpyr #popsec { padding-top: 40px; }
   /* scenes whose originals carried no "tables live" cell drop it from the strip */
-  body.layout-scw9b .statsCapsule .st:has(#stc-games), body.layout-scsplit .statsCapsule .st:has(#stc-games),
-  body.layout-scrab .statsCapsule .st:has(#stc-games), body.layout-scstair .statsCapsule .st:has(#stc-games),
+  body.layout-scw9b .statsCapsule .st:has(#stc-games, #stc2-games), body.layout-scsplit .statsCapsule .st:has(#stc-games, #stc2-games),
+  body.layout-scrab .statsCapsule .st:has(#stc-games, #stc2-games), body.layout-scstair .statsCapsule .st:has(#stc-games, #stc2-games),
   body.layout-scw9b .statsSign .bs:has(#sts-games), body.layout-scsplit .statsSign .bs:has(#sts-games),
   body.layout-scrab .statsSign .bs:has(#sts-games), body.layout-scstair .statsSign .bs:has(#sts-games) { display: none; }
 
@@ -1238,6 +1239,14 @@
         <span class="st"><b class="creel" id="stc-players" data-v="1214">1214</b> players online</span>
         <span class="st"><b class="creel" id="stc-games" data-v="143">143</b> tables live</span>
         <span class="st"><b class="creel" id="stc-seats" data-v="87">87</b> seats open</span>
+      </span>
+    </div>
+    <div class="stats statsCapsule isShort">
+      <span class="capsule">
+        <span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>
+        <span class="st"><b class="creel" id="stc2-players" data-v="1214">1214</b> playing</span>
+        <span class="st"><b class="creel" id="stc2-games" data-v="143">143</b> tables</span>
+        <span class="st"><b class="creel" id="stc2-seats" data-v="87">87</b> seats open</span>
       </span>
     </div>
     <div class="stats statsSign">
@@ -1693,6 +1702,7 @@
   ];
   var STATSLINES = [
     ["capsule", "Capsule: walled live-light strip"],
+    ["capsuleshort", "Capsule: playing \u00b7 tables \u00b7 seats open"],
     ["sign", "Sign: light-green button + bare counts"],
     ["signsolid", "Sign: solid green"],
     ["signbtn", "Sign: white button"],
@@ -1756,7 +1766,8 @@
   function sceneParts() {
     return [document.getElementById("herotitle"), document.getElementById("herosub"),
       document.querySelector(".statsBrief"), document.querySelector(".statsFull"),
-      document.querySelector(".statsCapsule"), document.querySelector(".statsSign")];
+      document.querySelector(".statsCapsule:not(.isShort)"), document.querySelector(".statsCapsule.isShort"),
+      document.querySelector(".statsSign")];
   }
   function setSceneDom(scene) {
     var games = document.querySelector(".games");
@@ -1803,7 +1814,7 @@
     "sel-edge": ["softlight"],
     "sel-texture": ["grain"],
     "sel-catalog": ["split"],
-    "sel-stats": ["signsolid", "capsule", "signbtn", "signpulse", "signtag", "brief"],
+    "sel-stats": ["capsuleshort", "signsolid", "capsule", "signbtn", "signpulse", "signtag", "brief"],
     "sel-menu": ["centerlight", "centerlighteggshell", "centerlightporc", "center", "centerporcelain", "current", "crest", "gthreads"],
     "sel-rail": ["suits", "cards", "band"]
   };
@@ -2128,6 +2139,9 @@
       { id: "st-players2", min: 1150, max: 1290, step: 18 },
       { id: "st-tables", min: 38, max: 58, step: 5 },
       { id: "stc-players", min: 1150, max: 1290, step: 18 },
+      { id: "stc2-players", min: 1150, max: 1290, step: 18 },
+      { id: "stc2-games", min: 128, max: 158, step: 4 },
+      { id: "stc2-seats", min: 74, max: 99, step: 6 },
       { id: "stc-games", min: 128, max: 158, step: 4 },
       { id: "stc-seats", min: 74, max: 99, step: 6 },
       { id: "sts-players", min: 1150, max: 1290, step: 18 },
