@@ -291,10 +291,9 @@
   .muser li { color: var(--muted); cursor: pointer; display: flex; align-items: center; }
   .muser img.micon { width: 40px; height: 32px; display: block; }
   .muser img.avatar { width: 28px; height: 28px; border-radius: 50%; margin-right: 8px; display: block;
-    /* avatar outline in the "playing" ghost's register: four semi-transparent
-       black copies hug the SVG shape and darken whatever sits behind the edge
-       (.32 per copy, ~.54 where two overlap) instead of drawing solid ink */
-    filter: drop-shadow(1px 0 rgba(0,0,0,.32)) drop-shadow(-1px 0 rgba(0,0,0,.32)) drop-shadow(0 1px rgba(0,0,0,.32)) drop-shadow(0 -1px rgba(0,0,0,.32)); }
+    /* the SVG inner-edge filter: a 1px rim eroded from the silhouette itself,
+       inked .64 black - the border lives INSIDE the artwork's edge */
+    filter: url(#avatarInnerEdge); }
   .muser .uname { font-size: 16px; font-weight: bold; color: var(--ink-soft); }
 
   /* ===== menu-bar experiments ===== */
@@ -783,8 +782,7 @@
   #lobbyDemo .spacer20 { flex-basis: 20%; max-width: 20%; }
   #lobbyDemo .player { position: relative; text-align: center; flex-basis: 40%; max-width: 40%; height: 33.3%; }
   #lobbyDemo .player img { height: calc(100% - 20px); width: auto; margin-top: 1px;
-    /* darker than the menu's .32: the felt eats the lighter ring */
-    filter: drop-shadow(1px 0 rgba(0,0,0,.64)) drop-shadow(-1px 0 rgba(0,0,0,.64)) drop-shadow(0 1px rgba(0,0,0,.64)) drop-shadow(0 -1px rgba(0,0,0,.64));
+    filter: url(#avatarInnerEdge);
     transform-origin: center bottom; transition: transform 80ms ease-in-out, filter 80ms ease-in-out; }
   #lobbyDemo .player.seatAvailable:hover img, #lobbyDemo .player.isEmpty:hover img { transform: scale(1.12); }
   #lobbyDemo .playerNameContainer { background-color: #A5D8FF; color: #1665AD;
@@ -1177,6 +1175,21 @@
     <label class="ctl"><span>Hero subtitle</span><select id="subsel"></select></label>
   </div>
 </div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- a true INNER border for irregular silhouettes, which drop-shadow cannot do:
+         erode the alpha by 1px, keep only the rim, ink it .64 black, lay it back
+         over the art - the avatar's own edge pixels darken, nothing paints outside -->
+    <filter id="avatarInnerEdge" x="-2%" y="-2%" width="104%" height="104%" color-interpolation-filters="sRGB">
+      <feMorphology in="SourceAlpha" operator="erode" radius="1" result="eroded"/>
+      <feComposite in="SourceAlpha" in2="eroded" operator="out" result="ring"/>
+      <feFlood flood-color="#000000" flood-opacity="0.64"/>
+      <feComposite in2="ring" operator="in" result="ringInk"/>
+      <feComposite in="ringInk" in2="SourceGraphic" operator="over"/>
+    </filter>
+  </defs>
+</svg>
 
 <div class="stage">
   <nav class="menubar">
