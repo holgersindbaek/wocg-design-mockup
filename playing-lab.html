@@ -214,5 +214,102 @@ In every new variant the number is bold and "playing" is regular at the same siz
     root.appendChild(sec);
   });
 </script>
+
+<style>
+  /* ===== Part 2: category tiles with the text section ===== */
+  .cgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; max-width: 700px; }
+  .ct { background: #fff; border-radius: 20px; corner-shape: squircle; cursor: pointer;
+    box-shadow: 0 0 1px rgba(0,0,0,.4), 0 1px 1px rgba(0,0,0,.04), 0 2px 4px rgba(0,0,0,.04); }
+  .ct .gt { border-radius: 20px 20px 0 0; aspect-ratio: 16 / 10; box-shadow: none; }
+  .ct .gt::after { border-radius: 20px 20px 0 0; }
+  .ct .gt:hover { transform: none; }
+  .ct .gt:hover .artfade { opacity: 0; }
+  .artfade { transition: opacity .22s ease; }
+  .cmeta { padding: 12px; display: flex; flex-direction: column; gap: 4px; }
+  .crow { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+  .cttl { font-size: 18px; font-weight: bold; margin: 0; }
+  .csub { font-size: 16px; line-height: 1.35; color: #6a655c; margin: 0; min-height: 2.7em;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .ccount { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; color: #6a655c; white-space: nowrap; }
+  .cdot { width: 7px; height: 7px; border-radius: 50%; background: #2f9e44; flex-shrink: 0; }
+  .cstatus { display: flex; align-items: center; gap: 6px; font-size: 14px; color: #6a655c; margin-top: 2px; }
+  .cbtns { display: grid; grid-template-columns: 1fr auto; gap: 8px; margin-top: 4px; }
+  .cbtn { min-width: 0; font-family: inherit; font-size: 16px; font-weight: bold; height: 30px; border: none;
+    border-radius: 6px; cursor: pointer; white-space: nowrap; padding: 0 4px;
+    box-shadow: 0 0 1px rgba(0,0,0,.4), 0 1px 1px rgba(0,0,0,.04), 0 2px 4px rgba(0,0,0,.04); }
+  .cbtn.play { grid-column: 1 / -1; background: #66A80F; color: #fff;
+    text-shadow: -1px -1px 0 #4F800B, 1px -1px 0 #4F800B, -1px 1px 0 #4F800B, 1px 1px 0 #4F800B; }
+  .cbtn.bots { background: #A5D8FF; color: #1971C2; }
+  .cbtn.more { width: 34px; background: #fff; color: #8a857c; font-size: 14px; letter-spacing: 1px; }
+  .cbtn .cinbtn { font-weight: normal; opacity: .85; text-shadow: none; font-size: 14px; }
+</style>
+<h1 style="margin-top:54px">Part 2 &middot; Category tiles, with the text section</h1>
+<p class="note">The frontpage's category tiles carry a title, subtitle and the two starters. Five homes for the count.
+Any on-art badge fades out on hover because the gameplay video owns the image there (hover the art to feel it).</p>
+<div id="sections2"></div>
+<script>
+  var SUBS = {
+    "Hearts": "Dodge the queen of spades in the classic trick-taking card game.",
+    "Spades": "Bid your tricks and back your partner in this team game.",
+    "Euchre": "Fast trick-taking with trumps, bowers, and a partner."
+  };
+  var CVARIANTS = [
+    { t: "A \u00b7 Title row, right", d: "What the frontpage uses now: muted count with a static dot on the title baseline (the chess.com register).",
+      meta: function (m, td) { m.row = true; } },
+    { t: "B \u00b7 Status line above the buttons", d: "The count as its own quiet caption row between subtitle and buttons \u2014 more presence, one more line of tile height.",
+      meta: function (m, td) { m.status = true; } },
+    { t: "C \u00b7 Inside the Join button", d: "The count justifies the action: Join table \u00b7 341 playing. Strongest causal link, but the button gets long and quiet games advertise their quietness on the primary CTA.",
+      meta: function (m, td) { m.inbtn = true; } },
+    { t: "D \u00b7 Ghost on the art, bottom-left", d: "Twitch's live slot, naked text with a dot, fading out on hover for the video.",
+      art: function (g, td) { var e = el("span", "ghostDot cnum artfade", ctext(td.n)); e.style.bottom = "8px"; g.appendChild(e); } },
+    { t: "E \u00b7 Cream pill on the art, bottom-left", d: "The badge version of D in the page's cream voice, same hover fade-out.",
+      art: function (g, td) { var e = el("span", "pillCream cnum artfade", ctext(td.n)); e.style.right = "auto"; e.style.left = "9px"; g.appendChild(e); } }
+  ];
+  var root2 = document.getElementById("sections2");
+  CVARIANTS.forEach(function (v) {
+    var sec = el("section", "vsec");
+    sec.appendChild(el("h2", "", v.t));
+    sec.appendChild(el("p", "desc", v.d));
+    var grid = el("div", "cgrid");
+    [TILES[0], TILES[1], TILES[3]].forEach(function (td) {
+      var card = el("div", "ct");
+      var g = el("div", "gt " + td.pal);
+      var im = el("img", "glogo");
+      im.src = td.logo; im.alt = td.game;
+      g.appendChild(im);
+      if (v.art) v.art(g, td);
+      card.appendChild(g);
+      var m = {};
+      if (v.meta) v.meta(m, td);
+      var meta = el("div", "cmeta");
+      if (m.row) {
+        var row = el("div", "crow");
+        row.appendChild(el("h3", "cttl", td.game));
+        var c = el("span", "ccount cnum", ctext(td.n));
+        c.insertBefore(el("span", "cdot"), c.firstChild);
+        row.appendChild(c);
+        meta.appendChild(row);
+      } else {
+        meta.appendChild(el("h3", "cttl", td.game));
+      }
+      meta.appendChild(el("p", "csub", SUBS[td.game]));
+      if (m.status) {
+        var st = el("div", "cstatus cnum", ctext(td.n) + "&nbsp;right now");
+        st.insertBefore(el("span", "cdot"), st.firstChild);
+        meta.appendChild(st);
+      }
+      var btns = el("div", "cbtns");
+      var play = el("button", "cbtn play", m.inbtn ? "Join table <span class=\"cinbtn\">\u00b7 " + fmt(td.n) + " playing</span>" : "Join table");
+      btns.appendChild(play);
+      btns.appendChild(el("button", "cbtn bots", "Play solo"));
+      btns.appendChild(el("button", "cbtn more", "\u00b7\u00b7\u00b7"));
+      meta.appendChild(btns);
+      card.appendChild(meta);
+      grid.appendChild(card);
+    });
+    sec.appendChild(grid);
+    root2.appendChild(sec);
+  });
+</script>
 </body>
 </html>
