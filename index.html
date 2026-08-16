@@ -446,15 +446,20 @@
   body.edge-black40 .gimg::after { box-shadow: inset 0 0 0 1px rgba(0,0,0,.4); }
   body.edge-none .gimg::after { box-shadow: none; }
 
-  /* the live site's corner tab, docked bottom-left: dark translucent,
-     number bold, word regular; it steps aside on hover for the clip */
+  /* the live count on the art, bottom-left, all bold, text aligned 12px
+     from the edge like the meta text below; three toggleable coats
+     (Live counter switcher) - every one steps aside on hover for the clip */
   .gchip {
-    position: absolute; left: 0; bottom: 0; z-index: 4; transition: opacity .22s ease;
-    background: rgba(0, 0, 0, .4); color: #fff;
-    font-size: 14px; font-weight: normal; line-height: 24px;
-    padding: 0 10px; border-radius: 0 8px 0 0;
+    position: absolute; z-index: 4; transition: opacity .22s ease;
+    font-size: 14px; font-weight: bold; color: #fff;
   }
-  .gchip b { font-weight: bold; }
+  body.counter-tab .gchip { left: 0; bottom: 0; background: rgba(0, 0, 0, .4);
+    line-height: 24px; padding: 0 12px; border-radius: 0 8px 0 0; }
+  body.counter-scrim .gchip { left: 12px; bottom: 10px; background: rgba(0, 0, 0, .35);
+    color: rgba(255, 255, 255, .95); line-height: 1; padding: 5px 9px 6px; border-radius: 7px; }
+  body.counter-ghost .gchip { left: 12px; bottom: 10px; line-height: 1;
+    text-shadow: -1px -1px 0 rgba(0,0,0,.4), 1px -1px 0 rgba(0,0,0,.4),
+      -1px 1px 0 rgba(0,0,0,.4), 1px 1px 0 rgba(0,0,0,.4), 0 1px 3px rgba(0,0,0,.35); }
   .gimg:hover .gchip { opacity: 0; }
   .heroarea { position: relative; overflow: hidden; min-height: 230px; }
   .heroarea > * { position: relative; z-index: 1; }
@@ -1072,6 +1077,7 @@
     <label class="ctl"><span>★ Hero layout</span><select id="sel-layout"></select></label>
     <label class="ctl"><span>Tile shadow</span><select id="sel-shadow"></select></label>
     <label class="ctl"><span>Tile edge</span><select id="sel-edge"></select></label>
+    <label class="ctl"><span>Live counter</span><select id="sel-counter"></select></label>
   </div>
   <div class="swgroup">
     <div class="swhead">Page</div>
@@ -1642,7 +1648,12 @@
     ["full", "Three counters (players / games / seats)"],
     ["brief", "One line: players & open tables"]
   ];
-  var curShadow = "soft", curEdge = "softlight", curTexture = "grain", curCatalog = "split", curStats = "capsule", curMenu = "centerband";
+  var COUNTERS = [
+    ["tab", "Site corner tab (docked)"],
+    ["scrim", "Ghost on a scrim"],
+    ["ghost", "Ghost, naked with dark halo"]
+  ];
+  var curShadow = "soft", curEdge = "softlight", curTexture = "grain", curCatalog = "split", curStats = "capsule", curMenu = "centerband", curCounter = "tab";
   function moveLobby() {
     var lobby = document.getElementById("lobbyDemo");
     var slot = document.getElementById(curCatalog === "merged" || curCatalog === "mergedflat" ? "lobby-slot-bottom" : "lobby-slot-top");
@@ -1650,7 +1661,7 @@
   }
   function applyBody() {
     var scene = curLayout.indexOf("sc") === 0;
-    document.body.className = curBase + " play-" + curPlay + " layout-" + curLayout + (scene ? " scenehero" : "") + " font-" + curFont + " shadow-" + curShadow + " edge-" + curEdge + " tex-" + curTexture + " cat-" + curCatalog + " stats-" + curStats + " menu-" + curMenu;
+    document.body.className = curBase + " play-" + curPlay + " layout-" + curLayout + (scene ? " scenehero" : "") + " font-" + curFont + " shadow-" + curShadow + " edge-" + curEdge + " tex-" + curTexture + " cat-" + curCatalog + " stats-" + curStats + " menu-" + curMenu + " counter-" + curCounter;
     var ht = document.getElementById("herotitle"), hs = document.getElementById("herosub");
     if (scene) {
       if (curLayout === "scpyr") {
@@ -1674,6 +1685,7 @@
     document.getElementById("sel-catalog").value = curCatalog;
     document.getElementById("sel-stats").value = curStats;
     document.getElementById("sel-menu").value = curMenu;
+    document.getElementById("sel-counter").value = curCounter;
     moveLobby();
   }
   var sceneTxt = null;
@@ -1762,6 +1774,7 @@
   buildSel("sel-catalog", CATALOGS, function (v) { curCatalog = v; });
   buildSel("sel-stats", STATSLINES, function (v) { curStats = v; });
   buildSel("sel-menu", MENUS, function (v) { curMenu = v; });
+  buildSel("sel-counter", COUNTERS, function (v) { curCounter = v; });
 
   function swatch(nm, hx) {
     var d = document.createElement("div");
