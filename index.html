@@ -939,14 +939,14 @@
   /* Scene · The rabatment (T1): the mosaic is the wide part — 745px (67%),
      sized by the two-line title block (319px + 24px margins = 367 clearing);
      every outer gap 24, every seam 12 */
-  body.layout-scrab { --sch: 513px; }
+  body.layout-scrab { --sch: 517px; }
   body.layout-scrab #popsec { padding-top: 24px; }
-  body.layout-scrab .pos-a { left: 367px; top: 0;     width: 492px; height: 338px; }
-  body.layout-scrab .pos-d { left: 871px; top: 0;     width: 241px; height: 163px; }
-  body.layout-scrab .pos-b { left: 871px; top: 175px; width: 241px; height: 163px; }
-  body.layout-scrab .pos-h { left: 367px; top: 350px; width: 240px; height: 163px; }
-  body.layout-scrab .pos-f { left: 619px; top: 350px; width: 241px; height: 163px; }
-  body.layout-scrab .pos-e { left: 872px; top: 350px; width: 240px; height: 163px; }
+  body.layout-scrab .pos-a { left: 367px; top: 0;     width: 489px; height: 338px; }
+  body.layout-scrab .pos-d { left: 872px; top: 0;     width: 240px; height: 161px; }
+  body.layout-scrab .pos-b { left: 872px; top: 177px; width: 240px; height: 161px; }
+  body.layout-scrab .pos-h { left: 367px; top: 354px; width: 238px; height: 163px; }
+  body.layout-scrab .pos-f { left: 621px; top: 354px; width: 237px; height: 163px; }
+  body.layout-scrab .pos-e { left: 874px; top: 354px; width: 238px; height: 163px; }
   body.layout-scrab .pos-c, body.layout-scrab .pos-g, body.layout-scrab .pos-i { display: none; }
 
   /* Scene · The pyramid (T4): full Open-tables width, text above in normal flow */
@@ -1157,7 +1157,7 @@
   </div>
 
   <div class="heroarea">
-    <h3 id="herotitle">Play cards in good company.</h3>
+    <h3 id="herotitle">Play card games in good company.</h3>
     <p id="herosub">Classic card games. Join a table or play solo. Free to play, hard to stop.</p>
     <div class="stats statsBrief">
       <span class="st"><span class="ldot"></span><b class="odo" id="st-players2" data-v="1214"></b> players online</span>
@@ -1647,10 +1647,10 @@
     var ht = document.getElementById("herotitle"), hs = document.getElementById("herosub");
     if (scene) {
       if (curLayout === "scpyr") {
-        ht.innerHTML = "Play cards in good company";
+        ht.innerHTML = "Play card games in good company";
         hs.innerHTML = "Classic card games. Join a table or play solo. Free to play, hard to stop.";
       } else {
-        ht.innerHTML = "Play cards<br>in good company";
+        ht.innerHTML = "Play card games<br>in good company";
         hs.innerHTML = "Classic card games. Join a table or play solo.<br>Free to play, hard to stop.";
       }
     } else if (typeof titlesel !== "undefined" && titlesel && titlesel.options && titlesel.options.length) {
@@ -1705,7 +1705,9 @@
     games.style.transform = "scale(" + k + ")";
     games.style.marginRight = (1112 * (k - 1)) + "px";
     games.style.marginBottom = (sch * (k - 1)) + "px";
-    if (sceneTxt && sceneTxt.parentNode) sceneTxt.style.transform = "scale(" + (1 / k) + ")";
+    /* counter-scale only against upscaling; when the canvas shrinks the text
+       shrinks with it, so the longer title never collides with the mosaic */
+    if (sceneTxt && sceneTxt.parentNode) sceneTxt.style.transform = "scale(" + Math.min(1 / k, 1) + ")";
   }
   window.addEventListener("resize", fitScene);
   /* Favorites shown as a group on top of every dropdown; the full list stays below */
