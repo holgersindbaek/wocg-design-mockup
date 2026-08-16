@@ -457,9 +457,11 @@
     line-height: 24px; padding: 0 12px; border-radius: 0 8px 0 0; }
   body.counter-scrim .gchip { left: 12px; bottom: 10px; background: rgba(0, 0, 0, .35);
     color: rgba(255, 255, 255, .95); line-height: 1; padding: 5px 9px 6px; border-radius: 7px; }
-  body.counter-ghost .gchip { left: 12px; bottom: 10px; line-height: 1;
-    text-shadow: -1px -1px 0 rgba(0,0,0,.4), 1px -1px 0 rgba(0,0,0,.4),
-      -1px 1px 0 rgba(0,0,0,.4), 1px 1px 0 rgba(0,0,0,.4), 0 1px 3px rgba(0,0,0,.35); }
+  /* the naked ghost borrows the art's inner-edge recipe: the soft-light
+     blend and the .75 black ring, as a four-way text outline */
+  body.counter-ghost .gchip { left: 12px; bottom: 10px; line-height: 1; mix-blend-mode: soft-light;
+    text-shadow: -1px -1px 0 rgba(0,0,0,.75), 1px -1px 0 rgba(0,0,0,.75),
+      -1px 1px 0 rgba(0,0,0,.75), 1px 1px 0 rgba(0,0,0,.75); }
   .gimg:hover .gchip { opacity: 0; }
   .heroarea { position: relative; overflow: hidden; min-height: 230px; }
   .heroarea > * { position: relative; z-index: 1; }
@@ -1653,7 +1655,7 @@
     ["scrim", "Ghost on a scrim"],
     ["ghost", "Ghost, naked with dark halo"]
   ];
-  var curShadow = "soft", curEdge = "softlight", curTexture = "grain", curCatalog = "split", curStats = "capsule", curMenu = "centerband", curCounter = "tab";
+  var curShadow = "soft", curEdge = "softlight", curTexture = "grain", curCatalog = "split", curStats = "capsule", curMenu = "centerband", curCounter = "ghost";
   function moveLobby() {
     var lobby = document.getElementById("lobbyDemo");
     var slot = document.getElementById(curCatalog === "merged" || curCatalog === "mergedflat" ? "lobby-slot-bottom" : "lobby-slot-top");
