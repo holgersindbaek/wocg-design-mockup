@@ -268,10 +268,15 @@
   body:not(.menu-current) .menubar { display: none; }
   .mbcenter, .mbcap { display: none; }
   body.menu-center .mbcenter, body.menu-centerband .mbcenter, body.menu-centerlight .mbcenter,
-  body.menu-centerporcelain .mbcenter, body.menu-centerlightporc .mbcenter { display: flex; }
+  body.menu-centerporcelain .mbcenter, body.menu-centerlightporc .mbcenter,
+  body.menu-centerlighteggshell .mbcenter { display: flex; }
   body.menu-centerlight .mbcenter { background: var(--surface, #fff); border-bottom: none;
     box-shadow: var(--btnshadow); position: relative; z-index: 5; }
   body.menu-centerlightporc .mbcenter { background: color-mix(in srgb, var(--canvas) 50%, white);
+    border-bottom: none; box-shadow: var(--btnshadow); position: relative; z-index: 5; }
+  /* eggshell: spends the whole canvas-to-white gap but keeps a warm cast
+     wider than the canvas's own, so it reads tinted rather than white */
+  body.menu-centerlighteggshell .mbcenter { background: #fffdf6;
     border-bottom: none; box-shadow: var(--btnshadow); position: relative; z-index: 5; }
   /* porcelain: the missing rung between canvas and surface - lighter than
      the page, not yet white - derived from the canvas itself */
@@ -1655,6 +1660,7 @@
     ["centerlight", "Centered mark, light surface (capsule chrome)"],
     ["centerporcelain", "Centered mark, porcelain (lighter than page, not white)"],
     ["centerlightporc", "Capsule chrome, porcelain fill"],
+    ["centerlighteggshell", "Capsule chrome, warm eggshell (#fffdf6)"],
     ["crest", "Crest centered (52px) + threads"],
     ["crestleft", "Outline card, logo left"],
     ["fthreads", "Threads card, logo left"],
@@ -1763,7 +1769,7 @@
     "sel-texture": ["grain"],
     "sel-catalog": ["split"],
     "sel-stats": ["signsolid", "capsule", "signbtn", "signpulse", "signtag", "brief"],
-    "sel-menu": ["centerlight", "centerlightporc", "center", "centerporcelain", "current", "crest", "gthreads"]
+    "sel-menu": ["centerlight", "centerlighteggshell", "centerlightporc", "center", "centerporcelain", "current", "crest", "gthreads"]
   };
   function buildSel(id, list, setter) {
     var el = document.getElementById(id);
