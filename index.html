@@ -178,12 +178,30 @@
   #adrail {
     position: fixed; top: 0; right: 0; bottom: 0; width: var(--adrail-w); z-index: 15;
     box-sizing: border-box; padding: 8px;
-    /* near-black backstage, ruled off like the centered mark */
-    background: rgb(20 20 20);
-    box-shadow: inset 1px 0 0 rgb(217 217 217);
     display: flex; flex-direction: column; align-items: center; gap: 8px;
     overflow: hidden;
   }
+  /* ===== ad-rail treatments (Ad rail switcher) ===== */
+  body.rail-dark #adrail { background: rgb(20 20 20); box-shadow: inset 1px 0 0 rgb(217 217 217); }
+  body.rail-band #adrail { background: var(--band); box-shadow: inset 1px 0 0 rgb(217 217 217); }
+  /* newspaper: the page continues, a classic double rule + the one label
+     AdSense permits separates editorial from advertising */
+  body.rail-rule #adrail { background: var(--canvas);
+    box-shadow: inset 1px 0 0 rgb(217 217 217), inset 4px 0 0 var(--canvas), inset 5px 0 0 rgb(217 217 217); }
+  body.rail-rule #adrail::before { content: "ADVERTISEMENTS"; font-size: 11px; font-weight: bold;
+    letter-spacing: .14em; color: var(--muted); margin: 2px 0 -2px; }
+  /* the table's edge: the game's own felt rims the page */
+  body.rail-felt #adrail { background: #35654d url("green-felt.jpg"); box-shadow: inset 1px 0 0 rgba(0, 0, 0, .4); }
+  /* vignette: no hard line, the canvas falls off into shade */
+  body.rail-fade #adrail { background: linear-gradient(to right, var(--canvas), color-mix(in srgb, var(--canvas) 60%, black)); }
+  /* cards on canvas: the rail disappears, each ad is its own framed card */
+  body.rail-cards #adrail { background: var(--canvas); }
+  body.rail-cards #adrail .adslot, body.rail-cards #adrail .advideo { border-radius: 10px; overflow: hidden;
+    background: var(--surface, #fff); box-shadow: var(--btnshadow); }
+  /* suit-print band: the band wearing the tiles' own wallpaper, very faint */
+  body.rail-suits #adrail { background-color: var(--band); box-shadow: inset 1px 0 0 rgb(217 217 217);
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='72' height='72'><g fill='black' fill-opacity='0.04' font-family='Arial' font-size='26'><text x='2' y='26'>♥</text><text x='38' y='26'>♠</text><text x='20' y='62'>♦</text><text x='56' y='62'>♣</text><text x='-16' y='62'>♣</text></g></svg>");
+    background-size: 72px 72px; }
   #adrail .adslot {
     width: 300px; height: 250px; flex-shrink: 0;
     background: rgba(255, 255, 255, .85);
@@ -1104,6 +1122,7 @@
   <div class="swgroup">
     <div class="swhead">Page</div>
     <label class="ctl"><span>Catalog layout</span><select id="sel-catalog"></select></label>
+    <label class="ctl"><span>Ad rail</span><select id="sel-rail"></select></label>
     <label class="ctl"><span>★ Live stats</span><select id="sel-stats"></select></label>
     <label class="ctl"><span>★ Menu bar</span><select id="sel-menu"></select></label>
     <label class="ctl"><span>Hero title</span><select id="titlesel"></select></label>
@@ -1674,12 +1693,21 @@
     ["full", "Three counters (players / games / seats)"],
     ["brief", "One line: players & open tables"]
   ];
+  var RAILS = [
+    ["dark", "Theater black, ruled"],
+    ["band", "Band + menu rule"],
+    ["rule", "Newspaper: double rule + Advertisements cap"],
+    ["felt", "Felt table edge"],
+    ["fade", "Vignette fade, no line"],
+    ["cards", "Cards on canvas"],
+    ["suits", "Suit-print band"]
+  ];
   var COUNTERS = [
     ["tab", "Site corner tab (docked)"],
     ["scrim", "Ghost on a scrim"],
     ["ghost", "Ghost, naked with dark halo"]
   ];
-  var curShadow = "soft", curEdge = "softlight", curTexture = "grain", curCatalog = "split", curStats = "capsule", curMenu = "centerlight", curCounter = "ghost";
+  var curShadow = "soft", curEdge = "softlight", curTexture = "grain", curCatalog = "split", curStats = "capsule", curMenu = "centerlight", curCounter = "ghost", curRail = "dark";
   function moveLobby() {
     var lobby = document.getElementById("lobbyDemo");
     var slot = document.getElementById(curCatalog === "merged" || curCatalog === "mergedflat" ? "lobby-slot-bottom" : "lobby-slot-top");
@@ -1687,7 +1715,7 @@
   }
   function applyBody() {
     var scene = curLayout.indexOf("sc") === 0;
-    document.body.className = curBase + " play-" + curPlay + " layout-" + curLayout + (scene ? " scenehero" : "") + " font-" + curFont + " shadow-" + curShadow + " edge-" + curEdge + " tex-" + curTexture + " cat-" + curCatalog + " stats-" + curStats + " menu-" + curMenu + " counter-" + curCounter;
+    document.body.className = curBase + " play-" + curPlay + " layout-" + curLayout + (scene ? " scenehero" : "") + " font-" + curFont + " shadow-" + curShadow + " edge-" + curEdge + " tex-" + curTexture + " cat-" + curCatalog + " stats-" + curStats + " menu-" + curMenu + " counter-" + curCounter + " rail-" + curRail;
     var ht = document.getElementById("herotitle"), hs = document.getElementById("herosub");
     if (scene) {
       if (curLayout === "scpyr") {
@@ -1712,6 +1740,7 @@
     document.getElementById("sel-stats").value = curStats;
     document.getElementById("sel-menu").value = curMenu;
     document.getElementById("sel-counter").value = curCounter;
+    document.getElementById("sel-rail").value = curRail;
     moveLobby();
     if (typeof renderPlayset === "function") renderPlayset();
   }
@@ -1802,6 +1831,7 @@
   buildSel("sel-stats", STATSLINES, function (v) { curStats = v; });
   buildSel("sel-menu", MENUS, function (v) { curMenu = v; });
   buildSel("sel-counter", COUNTERS, function (v) { curCounter = v; });
+  buildSel("sel-rail", RAILS, function (v) { curRail = v; });
 
   function swatch(nm, hx) {
     var d = document.createElement("div");
