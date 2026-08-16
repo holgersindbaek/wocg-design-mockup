@@ -151,6 +151,44 @@
   .v12 .splitwrap .main { flex: 1; }
   .v12 .splitwrap .chevseg { flex: 0 0 44px; background: #5D960D; border-left: 1px solid #4F800B; font-size: 13px; }
 
+  /* dropup coats: the site's real recipe - arrow image right of the label */
+  .dbtn { width: 100%; font-family: inherit; font-weight: bold; font-size: 16px; border: none; cursor: pointer;
+    border-radius: var(--radius-md); corner-shape: squircle; display: flex; align-items: center; justify-content: center; gap: 7px;
+    transition: background-color 80ms ease-out, transform 80ms ease-out; height: 36px; }
+  .dbtn:active { transform: scale(0.98); }
+  .dbtn img.darr { width: 13px; height: 13px; display: block; }
+  .dbtn.dgreen { background: #66A80F; color: #fff; box-shadow: inset 0 0 0 1px #4F800B, 0 2px 4px rgba(0,0,0,.06);
+    text-shadow: -1px -1px 0 #4F800B, 1px -1px 0 #4F800B, -1px 1px 0 #4F800B, 1px 1px 0 #4F800B; }
+  .dbtn.dgreen:hover, .dbtn.dgreen:focus-visible { background: #5D960D; }
+  .dbtn.dgreen img.darr, .dbtn.dfelt img.darr { filter: brightness(0) invert(1); }
+  .dbtn.dblue { background: #A5D8FF; color: #1971C2; box-shadow: inset 0 0 0 1px #7AB8EC, 0 2px 4px rgba(0,0,0,.06); }
+  .dbtn.dblue:hover, .dbtn.dblue:focus-visible { background: #9ACFF8; }
+  .dbtn.dtonal { background: #EEF7E0; color: #3E6509; box-shadow: inset 0 0 0 1px #C9E3A4, 0 2px 4px rgba(0,0,0,.04); }
+  .dbtn.dtonal:hover, .dbtn.dtonal:focus-visible { background: #E2F2CC; }
+  .dbtn.dwhite { background: #fff; color: #212529; box-shadow: inset 0 0 0 1px #CED4DA, 0 2px 4px rgba(0,0,0,.04); }
+  .dbtn.dwhite:hover, .dbtn.dwhite:focus-visible { background: #f4eee5; }
+  .dbtn.dfelt { background: #35654d url("green-felt.jpg"); color: #fff;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,.55), 0 2px 4px rgba(0,0,0,.08);
+    text-shadow: -1px -1px 0 rgba(0,0,0,.4), 1px -1px 0 rgba(0,0,0,.4), -1px 1px 0 rgba(0,0,0,.4), 1px 1px 0 rgba(0,0,0,.4); }
+  .dbtn.dfelt:hover, .dbtn.dfelt:focus-visible { filter: brightness(1.08); }
+  .dbtn.dsmall { height: 30px; font-size: 15px; }
+  .dbtn.dbig { height: 44px; font-size: 18px; }
+  .dbtn.dsplitlook { padding: 0; gap: 0; }
+  .dbtn.dsplitlook .dlab { flex: 1; }
+  .dbtn.dsplitlook .dzone { flex: 0 0 40px; align-self: stretch; display: flex; align-items: center; justify-content: center; border-left: 1px solid #4F800B; }
+  .dcap { font-size: 12px; color: #999488; margin: 0 0 4px; }
+
+  /* flush footer bars: the buttons are part of the tile, edge to edge */
+  .flush .meta { padding-bottom: 8px; }
+  .flushbar { display: flex; border-radius: 0 0 20px 20px; corner-shape: squircle; overflow: hidden; }
+  .flushbar button { flex: 1; height: 42px; font-family: inherit; font-size: 16px; font-weight: bold; border: none; cursor: pointer;
+    transition: background-color 80ms ease-out; }
+  .flushbar .fgreen { background: #66A80F; color: #fff; box-shadow: inset 0 1px 0 #4F800B;
+    text-shadow: -1px -1px 0 #4F800B, 1px -1px 0 #4F800B, -1px 1px 0 #4F800B, 1px 1px 0 #4F800B; }
+  .flushbar .fgreen:hover, .flushbar .fgreen:focus-visible { background: #5D960D; }
+  .flushbar .fblue { background: #A5D8FF; color: #1971C2; box-shadow: inset 0 1px 0 #7AB8EC; border-left: 1px solid rgba(0,0,0,.18); }
+  .flushbar .fblue:hover, .flushbar .fblue:focus-visible { background: #9ACFF8; }
+
   .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(80px); z-index: 99;
     background: #141414; color: #f9f6f2; padding: 9px 18px; border-radius: 8px; font-size: 14px; transition: transform .18s ease; }
   .toast.on { transform: translateX(-50%) translateY(0); }
@@ -161,8 +199,9 @@
 <body>
 <h1>Button lab · round three</h1>
 <p class="note">Everything works: panels open (Esc or outside click closes, one at a time), the modal opens, the mode
-toggle switches all four tiles, and every action reports what it would do. Labels on new variants follow the research
-fix for the one-verb rule: the pair differs by opponent (Play online / Play bots), not by verb. The "..." is gone
+toggle switches all four tiles, and every action reports what it would do. Labels use the house vernacular, Join table / Play solo: the critique preferred opponent-contrast
+(Play online / Play bots) under the one-verb rule, but the rule's spirit is one PRIMARY per tile, and Join carries
+the multiplayer meaning with more scent than online does. The "..." is gone
 everywhere: research says the glyph is recognized but carries no scent and invites no exploration from a 45+
 audience - a bordered, labeled "More ▾" or a scented text link replaces it.</p>
 <div id="secs"></div>
@@ -282,12 +321,12 @@ audience - a bordered, labeled "More ▾" or a scented text link replaces it.</p
         t.meta.appendChild(r2);
         return t.card;
       } },
-    { t: "2 · Golden split (the side-by-side ask, weighted)", d: "One row, priority carried by width: Play online at 60%, Play bots at 40%. Below, a scented text link - \"More ways to play\" - which research ranks highest on comprehension for this audience.",
+    { t: "2 · Golden split (the side-by-side ask, weighted)", d: "One row, priority carried by width: Join table at 60%, Play solo at 40%. Below, a scented text link - \"More ways to play\" - which research ranks highest on comprehension for this audience.",
       cls: "v2", build: function (td) {
         var t = baseTile(td);
         var row = el("div", "brow");
-        row.appendChild(actBtn("green w60", "Play online", td.game, "joining a table with people"));
-        row.appendChild(actBtn("blue w40", "Play bots", td.game, "solo table vs bots"));
+        row.appendChild(actBtn("green w60", "Join table", td.game, "joining a table with people"));
+        row.appendChild(actBtn("blue w40", "Play solo", td.game, "solo table vs bots"));
         t.meta.appendChild(row);
         var link = el("button", "morelink", "More ways to play");
         t.meta.appendChild(makeDisclosure(link, td.game));
@@ -297,8 +336,8 @@ audience - a bordered, labeled "More ▾" or a scented text link replaces it.</p
       cls: "v3", build: function (td) {
         var t = baseTile(td);
         var row = el("div", "brow");
-        row.appendChild(actBtn("green", "Play online", td.game, "joining a table with people"));
-        row.appendChild(actBtn("blue", "Play bots", td.game, "solo table vs bots"));
+        row.appendChild(actBtn("green", "Join table", td.game, "joining a table with people"));
+        row.appendChild(actBtn("blue", "Play solo", td.game, "solo table vs bots"));
         var more = el("button", "b moreb", "More <span class='chev'>▾</span>");
         more.style.flex = "0 0 auto";
         row.appendChild(makeDisclosure(more, td.game));
@@ -309,8 +348,8 @@ audience - a bordered, labeled "More ▾" or a scented text link replaces it.</p
       cls: "v4", build: function (td) {
         var t = baseTile(td);
         var row = el("div", "brow");
-        row.appendChild(actBtn("green", "Play online", td.game, "joining a table with people"));
-        row.appendChild(actBtn("tonal", "Play bots", td.game, "solo table vs bots"));
+        row.appendChild(actBtn("green", "Join table", td.game, "joining a table with people"));
+        row.appendChild(actBtn("tonal", "Play solo", td.game, "solo table vs bots"));
         t.meta.appendChild(row);
         var link = el("button", "morelink", "More ways to play");
         t.meta.appendChild(makeDisclosure(link, td.game));
@@ -320,8 +359,8 @@ audience - a bordered, labeled "More ▾" or a scented text link replaces it.</p
       cls: "v5", build: function (td) {
         var t = baseTile(td);
         var row = el("div", "brow");
-        row.appendChild(actBtn("green", "Play online", td.game, "joining a table with people"));
-        row.appendChild(actBtn("gold", "Play bots", td.game, "solo table vs bots"));
+        row.appendChild(actBtn("green", "Join table", td.game, "joining a table with people"));
+        row.appendChild(actBtn("gold", "Play solo", td.game, "solo table vs bots"));
         t.meta.appendChild(row);
         var link = el("button", "morelink", "More ways to play");
         t.meta.appendChild(makeDisclosure(link, td.game));
@@ -334,7 +373,7 @@ audience - a bordered, labeled "More ▾" or a scented text link replaces it.</p
         t.meta.innerHTML = "";
         var tr = el("div", "titlerow");
         tr.appendChild(el("h3", "ttl", td.game));
-        var pill = el("button", "pill", "Play bots");
+        var pill = el("button", "pill", "Play solo");
         pill.addEventListener("click", function (e) { e.stopPropagation(); flash(td.game + " — solo table vs bots"); });
         tr.appendChild(pill);
         t.meta.appendChild(tr);
@@ -350,8 +389,8 @@ audience - a bordered, labeled "More ▾" or a scented text link replaces it.</p
       cls: "v7", build: function (td) {
         var t = baseTile(td, { linkTitle: function (g) { openGamePanel(g); } });
         var row = el("div", "brow");
-        row.appendChild(actBtn("green", "Play online", td.game, "joining a table with people"));
-        row.appendChild(actBtn("blue", "Play bots", td.game, "solo table vs bots"));
+        row.appendChild(actBtn("green", "Join table", td.game, "joining a table with people"));
+        row.appendChild(actBtn("blue", "Play solo", td.game, "solo table vs bots"));
         t.meta.appendChild(row);
         return t.card;
       } },
@@ -359,8 +398,8 @@ audience - a bordered, labeled "More ▾" or a scented text link replaces it.</p
       cls: "v8", build: function (td) {
         var t = baseTile(td);
         var row = el("div", "brow");
-        row.appendChild(actBtn("felt", "Play online", td.game, "joining a table with people"));
-        row.appendChild(actBtn("porc", "Play bots", td.game, "solo table vs bots"));
+        row.appendChild(actBtn("felt", "Join table", td.game, "joining a table with people"));
+        row.appendChild(actBtn("porc", "Play solo", td.game, "solo table vs bots"));
         t.meta.appendChild(row);
         var link = el("button", "morelink", "More ways to play");
         t.meta.appendChild(makeDisclosure(link, td.game));
@@ -373,17 +412,19 @@ audience - a bordered, labeled "More ▾" or a scented text link replaces it.</p
         t.meta.appendChild(makeDisclosure(play, td.game, {
           label: "Play",
           head: "How do you want to play " + td.game + "?",
-          primary: ["Join a table · <b>" + td.n + " playing now</b>", "Play against bots"]
+          primary: ["Join a table · <b>" + td.n + " playing now</b>", "Play solo"]
         }));
         return t.card;
       } },
+    { t: "9b · The Play dropup, eight coats and sizes", d: "Concept 9's control riffed with the site's real dropup recipe: the arrowDown asset from the codebase (13px, right of the label), never a typed glyph. Coats: site green, the authentic lightblue dropup, green tonal, neutral white, felt; sizes 30 / 36 / 44; and a divided split-look whose whole surface still opens the sheet.",
+      cls: "v9b", dropups: true, build: null },
     { t: "10 · Two doors on the felt", d: "The bottom band of the art splits into two full-bleed doors - felt green to sit with people, blue for bots - over a scrim that guarantees label contrast on any artwork. Zero chrome in the meta; the title opens the game panel for the rare actions.",
       cls: "v10", build: function (td) {
         var t = baseTile(td, { linkTitle: function (g) { openGamePanel(g); } });
         var doors = el("div", "doors");
-        var l = el("button", "door left", "Sit at a table");
+        var l = el("button", "door left", "Join table");
         l.addEventListener("click", function (e) { e.stopPropagation(); flash(td.game + " — joining a table with people"); });
-        var r = el("button", "door right", "Play a bot");
+        var r = el("button", "door right", "Play solo");
         r.addEventListener("click", function (e) { e.stopPropagation(); flash(td.game + " — solo table vs bots"); });
         doors.appendChild(l); doors.appendChild(r);
         t.art.appendChild(doors);
@@ -402,6 +443,8 @@ audience - a bordered, labeled "More ▾" or a scented text link replaces it.</p
         t.meta.appendChild(b);
         return t.card;
       } },
+    { t: "13 · Flush footer bars: the buttons are part of the tile", d: "No gap to the sides: the action bar is the tile's own bottom edge, sharing its corners. First pair of tiles: one full-bleed Join table bar (Play solo lives behind the link). Second pair: the bar splits into Join table and Play solo.",
+      cls: "v13", flush: true, build: null },
     { t: "12 · Split button (kept for honest comparison)", d: "The expected loser, built properly so the costs are visible: the chevron segment is 44px and opens the panel, but research says this audience rarely explores it and mis-hits are easy. Judge it against concept 2.",
       cls: "v12", build: function (td) {
         var t = baseTile(td);
@@ -435,7 +478,7 @@ audience - a bordered, labeled "More ▾" or a scented text link replaces it.</p
     var gp = el("div", "gamepanel");
     gp.appendChild(el("h3", "", td.game));
     gp.appendChild(el("p", "gpsub", "<b>" + td.n + "</b> playing right now"));
-    ["Play online — join a table", "Play bots — practice solo"].concat(RARE).forEach(function (label) {
+    ["Join table — play with people", "Play solo — bots fill the seats"].concat(RARE).forEach(function (label) {
       var r = el("button", "gprow", label);
       r.addEventListener("click", function () { modal.hidden = true; flash(td.game + " — " + label); });
       gp.appendChild(r);
@@ -474,7 +517,66 @@ audience - a bordered, labeled "More ▾" or a scented text link replaces it.</p
       sec.appendChild(bar);
     }
     var row = el("div", "row4");
-    TILES.forEach(function (td) { row.appendChild(v.build(td, sec)); });
+    if (v.dropups) {
+      var COATS = [
+        ["Site green \u00b7 36", "dgreen", "arrowDownBlue.png"],
+        ["The site's own dropup \u00b7 lightblue", "dblue", "arrowDownBlue.png"],
+        ["Green tonal", "dtonal", "arrowDownGreen.png"],
+        ["Neutral white", "dwhite", "arrowDown.png"],
+        ["Felt", "dfelt", "arrowDownBlue.png"],
+        ["Compact \u00b7 30", "dblue dsmall", "arrowDownBlue.png"],
+        ["Large \u00b7 44", "dgreen dbig", "arrowDownBlue.png"],
+        ["Divided split-look", "dgreen dsplitlook", "arrowDownBlue.png"]
+      ];
+      COATS.forEach(function (coat, i) {
+        var td = TILES[i % 4];
+        var t = baseTile(td);
+        t.meta.appendChild(el("p", "dcap", coat[0]));
+        var btn = el("button", "dbtn " + coat[1]);
+        if (coat[1].indexOf("dsplitlook") >= 0) {
+          btn.innerHTML = "<span class='dlab'>Play</span><span class='dzone'><img class='darr' src='" + coat[2] + "' alt=''></span>";
+        } else {
+          btn.innerHTML = "<span>Play</span><img class='darr' src='" + coat[2] + "' alt=''>";
+        }
+        t.meta.appendChild(makeDisclosure(btn, td.game, {
+          label: "Play",
+          head: "How do you want to play " + td.game + "?",
+          primary: ["Join a table \u00b7 <b>" + td.n + " playing now</b>", "Play solo"]
+        }));
+        row.appendChild(t.card);
+      });
+    } else if (v.flush) {
+      TILES.forEach(function (td, i) {
+        var single = i < 2;
+        var card = el("div", "ct flush");
+        var g = el("div", "gt " + td.pal);
+        var im = el("img", "glogo"); im.src = td.logo; im.alt = td.game;
+        g.appendChild(im);
+        g.appendChild(el("span", "gcount", "<b>" + td.n + "</b> playing"));
+        card.appendChild(g);
+        var meta = el("div", "meta");
+        meta.appendChild(el("h3", "ttl", td.game));
+        meta.appendChild(el("p", "sub", td.sub));
+        meta.appendChild(el("p", "dcap", single ? "One button, full bleed" : "Two buttons, full bleed"));
+        var link = el("button", "morelink", "More ways to play");
+        link.style.marginTop = "0";
+        meta.appendChild(makeDisclosure(link, td.game, single ? { primary: ["Play solo"] } : {}));
+        card.appendChild(meta);
+        var bar = el("div", "flushbar");
+        var join = el("button", "fgreen", "Join table");
+        join.addEventListener("click", function (e) { e.stopPropagation(); flash(td.game + " \u2014 joining a table with people"); });
+        bar.appendChild(join);
+        if (!single) {
+          var solo = el("button", "fblue", "Play solo");
+          solo.addEventListener("click", function (e) { e.stopPropagation(); flash(td.game + " \u2014 solo table, bots fill the seats"); });
+          bar.appendChild(solo);
+        }
+        card.appendChild(bar);
+        row.appendChild(card);
+      });
+    } else {
+      TILES.forEach(function (td) { row.appendChild(v.build(td, sec)); });
+    }
     sec.appendChild(row);
     root.appendChild(sec);
   });
