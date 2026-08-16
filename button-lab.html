@@ -169,9 +169,13 @@
   .dbtn.dever { --ring: #008a25; background: #00a82d; color: #fff; box-shadow: inset 0 0 0 1px #008a25, 0 2px 4px rgba(0,0,0,.06);
     text-shadow: -1px -1px 0 #008a25, 1px -1px 0 #008a25, -1px 1px 0 #008a25, 1px 1px 0 #008a25; }
   .dbtn.dever:hover, .dbtn.dever:focus-visible { background: #009628; }
-  .dbtn.dh32 { height: 32px; }
-  .dbtn.dh40 { height: 40px; }
-  .dbtn.dt18 { font-size: 18px; }
+  /* the codebase pairings: 32 tall = line-height-lg with font-size-md 20;
+     40 tall = line-height-xl with font-size-lg 24 */
+  .dbtn.dh32 { height: 32px; font-size: 20px; }
+  .dbtn.dh40 { height: 40px; font-size: 24px; }
+  .dbtn.dh32 img.darr { width: 16px; height: 16px; }
+  .dbtn.dh40 img.darr { width: 20px; height: 20px; }
+  .dstack { display: flex; flex-direction: column; gap: 8px; }
   .dbtn.dtonal { background: #EEF7E0; color: #3E6509; box-shadow: inset 0 0 0 1px #C9E3A4, 0 2px 4px rgba(0,0,0,.04); }
   .dbtn.dtonal:hover, .dbtn.dtonal:focus-visible { background: #E2F2CC; }
   .dbtn.dwhite { background: #fff; color: #212529; box-shadow: inset 0 0 0 1px #CED4DA, 0 2px 4px rgba(0,0,0,.04); }
@@ -184,9 +188,10 @@
   .dbtn.dbig { height: 44px; font-size: 18px; }
   .dbtn.dsplitlook { padding: 0; gap: 0; }
   .dbtn.dsplitlook .dlab { flex: 1; }
-  /* the arrow zone is a true square: width locks to the button height */
-  .dbtn.dsplitlook .dzone { aspect-ratio: 1; flex: 0 0 auto; align-self: stretch; display: flex; align-items: center; justify-content: center;
-    border-left: 1px solid var(--ring, #4F800B); }
+  /* the arrow zone is a true square: the divider is its own element, so
+     the zone's box is exactly height x height */
+  .dbtn.dsplitlook .ddiv { width: 1px; flex: none; align-self: stretch; background: var(--ring, #4F800B); }
+  .dbtn.dsplitlook .dzone { aspect-ratio: 1; flex: 0 0 auto; align-self: stretch; display: flex; align-items: center; justify-content: center; }
   /* on the solid greens the arrow wears the four-way darker border, the
      avatar-filter recipe in the button's own ring color */
   .dbtn.dsplitlook.dgreen .dzone img.darr, .dbtn.dsplitlook.ddark .dzone img.darr, .dbtn.dsplitlook.dever .dzone img.darr {
@@ -433,7 +438,7 @@ audience - a bordered, labeled "More ▾" or a scented text link replaces it.</p
         }));
         return t.card;
       } },
-    { t: "9b \u00b7 The divided Play control: colors and sizes", d: "The winner of the last round, everywhere: a true-square arrow zone (width locks to height), per-color divider, and on the solid greens the arrow wears the four-way darker border in the ring color, the same recipe as the button text. Top row: green, light blue, dark green, Evernote green at 36. Bottom row: the size matrix, 32 and 40 tall, text 16 and 18.",
+    { t: "9b \u00b7 The divided Play control: four colors, 32 and 40 stacked", d: "Each colorway twice per tile: the codebase pairings 32 tall with 20px text (the site standard, line-height-lg + font-size-md) above 40 tall with 24px text (line-height-xl + font-size-lg). The bigger arrowDownBig asset rides both (16px and 20px), the divider is its own element so the arrow zone is exactly square, and the greens ring their arrows.",
       cls: "v9b", dropups: true, build: null },
     { t: "10 · Two doors on the felt", d: "The bottom band of the art splits into two full-bleed doors - felt green to sit with people, blue for bots - over a scrim that guarantees label contrast on any artwork. Zero chrome in the meta; the title opens the game panel for the rare actions.",
       cls: "v10", build: function (td) {
@@ -535,31 +540,28 @@ audience - a bordered, labeled "More ▾" or a scented text link replaces it.</p
     }
     var row = el("div", "row4");
     if (v.dropups) {
-      var COATS = [
-        ["Green \u00b7 36", "dgreen dsplitlook", "arrowDownBlue.png"],
-        ["Light blue \u00b7 36", "dblue dsplitlook", "arrowDownBlue.png"],
-        ["Dark green \u00b7 36", "ddark dsplitlook", "arrowDownBlue.png"],
-        ["Evernote green \u00b7 36", "dever dsplitlook", "arrowDownBlue.png"],
-        ["Green \u00b7 32, text 16", "dgreen dsplitlook dh32", "arrowDownBlue.png"],
-        ["Light blue \u00b7 32, text 18", "dblue dsplitlook dh32 dt18", "arrowDownBlue.png"],
-        ["Green \u00b7 40, text 16", "dgreen dsplitlook dh40", "arrowDownBlue.png"],
-        ["Light blue \u00b7 40, text 18", "dblue dsplitlook dh40 dt18", "arrowDownBlue.png"]
+      var COLORWAYS = [
+        ["Green", "dgreen"],
+        ["Light blue", "dblue"],
+        ["Dark green", "ddark"],
+        ["Evernote green", "dever"]
       ];
-      COATS.forEach(function (coat, i) {
+      COLORWAYS.forEach(function (cw, i) {
         var td = TILES[i % 4];
         var t = baseTile(td);
-        t.meta.appendChild(el("p", "dcap", coat[0]));
-        var btn = el("button", "dbtn " + coat[1]);
-        if (coat[1].indexOf("dsplitlook") >= 0) {
-          btn.innerHTML = "<span class='dlab'>Play</span><span class='dzone'><img class='darr' src='" + coat[2] + "' alt=''></span>";
-        } else {
-          btn.innerHTML = "<span>Play</span><img class='darr' src='" + coat[2] + "' alt=''>";
-        }
-        t.meta.appendChild(makeDisclosure(btn, td.game, {
-          label: "Play",
-          head: "How do you want to play " + td.game + "?",
-          primary: ["Join a table \u00b7 <b>" + td.n + " playing now</b>", "Play solo"]
-        }));
+        t.meta.appendChild(el("p", "dcap", cw[0] + " \u00b7 32/20 above, 40/24 below"));
+        var stack = el("div", "dstack");
+        [["dh32", 16], ["dh40", 20]].forEach(function (size) {
+          var btn = el("button", "dbtn dsplitlook " + cw[1] + " " + size[0]);
+          var arrow = cw[1] === "dblue" ? "arrowDownBlue.png" : "arrowDownBig.png";
+          btn.innerHTML = "<span class='dlab'>Play</span><span class='ddiv'></span><span class='dzone'><img class='darr' src='" + arrow + "' alt=''></span>";
+          stack.appendChild(makeDisclosure(btn, td.game, {
+            label: "Play",
+            head: "How do you want to play " + td.game + "?",
+            primary: ["Join a table \u00b7 <b>" + td.n + " playing now</b>", "Play solo"]
+          }));
+        });
+        t.meta.appendChild(stack);
         row.appendChild(t.card);
       });
     } else if (v.flush) {
