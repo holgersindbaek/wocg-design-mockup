@@ -262,6 +262,15 @@
     width: 100%; cursor: pointer; margin-bottom: 10px;
   }
   .switchbar .swbtn:hover { background: #f5f5f5; }
+
+  /* ===== avatar edge coats (Avatar edge switcher): which rim filter the
+     avatars wear; the invitee circles mirror each coat with a mix-blend ring ===== */
+  body.avedge-burn .muser img.avatar, body.avedge-burn #lobbyDemo .player img { filter: url(#avatarEdgeBurn); }
+  body.avedge-softlight .muser img.avatar, body.avedge-softlight #lobbyDemo .player img { filter: url(#avatarEdgeSoftlight); }
+  body.avedge-overlay .muser img.avatar, body.avedge-overlay #lobbyDemo .player img { filter: url(#avatarEdgeOverlay); }
+  body.avedge-burn #lobbyDemo .ltInviteeAv::after { box-shadow: inset 0 0 0 1px rgba(115,115,115,.9); mix-blend-mode: color-burn; }
+  body.avedge-softlight #lobbyDemo .ltInviteeAv::after { box-shadow: inset 0 0 0 1px rgba(0,0,0,.75); mix-blend-mode: soft-light; }
+  body.avedge-overlay #lobbyDemo .ltInviteeAv::after { box-shadow: inset 0 0 0 1px rgba(0,0,0,.64); mix-blend-mode: overlay; }
   /* the scheme reference lives below the page, hidden until toggled on */
   body:not(.show-palette) .wrap { display: none; }
 
@@ -1154,6 +1163,7 @@
     <div class="swhead">Look</div>
     <label class="ctl"><span>Color scheme</span><select id="sel-base"></select></label>
     <button type="button" class="swbtn" id="palette-toggle">Show scheme swatches (bottom of page)</button>
+    <label class="ctl"><span>Avatar edge</span><select id="sel-avedge"></select></label>
     <label class="ctl"><span>★ Heading font</span><select id="sel-font"></select></label>
     <label class="ctl"><span>Texture</span><select id="sel-texture"></select></label>
   </div>
@@ -1187,6 +1197,32 @@
       <feFlood flood-color="#000000" flood-opacity="0.64"/>
       <feComposite in2="ring" operator="in" result="ringInk"/>
       <feComposite in="ringInk" in2="SourceGraphic" operator="over"/>
+    </filter>
+    <!-- blended coats: same eroded rim, but the ink blends with the avatar's own
+         edge pixels instead of covering them. Grey multiply/hard-light are just
+         constant factors (what plain ink already is), so only the base-nonlinear
+         modes earn a slot: burn (tiles' edge-burn ink), soft-light (tiles' default
+         edge recipe), overlay (contrast curve) -->
+    <filter id="avatarEdgeBurn" x="-2%" y="-2%" width="104%" height="104%" color-interpolation-filters="sRGB">
+      <feMorphology in="SourceAlpha" operator="erode" radius="1" result="eroded"/>
+      <feComposite in="SourceAlpha" in2="eroded" operator="out" result="ring"/>
+      <feFlood flood-color="#737373" flood-opacity="0.9"/>
+      <feComposite in2="ring" operator="in" result="ringInk"/>
+      <feBlend in="ringInk" in2="SourceGraphic" mode="color-burn"/>
+    </filter>
+    <filter id="avatarEdgeSoftlight" x="-2%" y="-2%" width="104%" height="104%" color-interpolation-filters="sRGB">
+      <feMorphology in="SourceAlpha" operator="erode" radius="1" result="eroded"/>
+      <feComposite in="SourceAlpha" in2="eroded" operator="out" result="ring"/>
+      <feFlood flood-color="#000000" flood-opacity="0.75"/>
+      <feComposite in2="ring" operator="in" result="ringInk"/>
+      <feBlend in="ringInk" in2="SourceGraphic" mode="soft-light"/>
+    </filter>
+    <filter id="avatarEdgeOverlay" x="-2%" y="-2%" width="104%" height="104%" color-interpolation-filters="sRGB">
+      <feMorphology in="SourceAlpha" operator="erode" radius="1" result="eroded"/>
+      <feComposite in="SourceAlpha" in2="eroded" operator="out" result="ring"/>
+      <feFlood flood-color="#000000" flood-opacity="0.64"/>
+      <feComposite in2="ring" operator="in" result="ringInk"/>
+      <feBlend in="ringInk" in2="SourceGraphic" mode="overlay"/>
     </filter>
   </defs>
 </svg>
@@ -1840,6 +1876,13 @@
     ["ghost", "Ghost, naked with dark halo"]
   ];
   var curShadow = "soft", curEdge = "softlight", curTexture = "grain", curCatalog = "split", curStats = "capsule", curMenu = "centerlight", curCounter = "ghost", curRail = "suits";
+  var AVEDGES = [
+    ["burn", "Color-burn #737373 (deep in-hue darken)"],
+    ["ink", "Ink .64 (flat darken, current)"],
+    ["softlight", "Soft-light black .75 (tiles' default edge)"],
+    ["overlay", "Overlay black .64 (contrast curve)"]
+  ];
+  var curAvedge = "burn";
   var palShown = false;
   function moveLobby() {
     var lobby = document.getElementById("lobbyDemo");
@@ -1848,7 +1891,7 @@
   }
   function applyBody() {
     var scene = curLayout.indexOf("sc") === 0;
-    document.body.className = curBase + " play-" + curPlay + " layout-" + curLayout + (scene ? " scenehero" : "") + " font-" + curFont + " shadow-" + curShadow + " edge-" + curEdge + " tex-" + curTexture + " cat-" + curCatalog + " stats-" + curStats + " menu-" + curMenu + " counter-" + curCounter + " rail-" + curRail + (palShown ? " show-palette" : "");
+    document.body.className = curBase + " play-" + curPlay + " layout-" + curLayout + (scene ? " scenehero" : "") + " font-" + curFont + " shadow-" + curShadow + " edge-" + curEdge + " tex-" + curTexture + " cat-" + curCatalog + " stats-" + curStats + " menu-" + curMenu + " counter-" + curCounter + " rail-" + curRail + " avedge-" + curAvedge + (palShown ? " show-palette" : "");
     var ht = document.getElementById("herotitle"), hs = document.getElementById("herosub");
     if (scene) {
       if (curLayout === "scpyr") {
@@ -1874,6 +1917,7 @@
     document.getElementById("sel-menu").value = curMenu;
     document.getElementById("sel-counter").value = curCounter;
     document.getElementById("sel-rail").value = curRail;
+    document.getElementById("sel-avedge").value = curAvedge;
     moveLobby();
     if (typeof renderPlayset === "function") renderPlayset();
   }
@@ -1967,6 +2011,7 @@
   buildSel("sel-menu", MENUS, function (v) { curMenu = v; });
   buildSel("sel-counter", COUNTERS, function (v) { curCounter = v; });
   buildSel("sel-rail", RAILS, function (v) { curRail = v; });
+  buildSel("sel-avedge", AVEDGES, function (v) { curAvedge = v; });
 
   var palBtn = document.getElementById("palette-toggle");
   palBtn.onclick = function () {
