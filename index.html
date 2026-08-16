@@ -200,8 +200,11 @@
     background: var(--surface, #fff);
     box-shadow: inset 0 0 0 1px rgb(217 217 217), 0 1px 1px rgba(0, 0, 0, .04), 0 2px 4px rgba(0, 0, 0, .04); }
   /* suit-print band: the band wearing the tiles' own wallpaper, very faint */
-  body.rail-suits #adrail { background-color: var(--band); box-shadow: inset 1px 0 0 rgb(217 217 217);
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='72' height='72'><g fill='black' fill-opacity='0.04' font-family='Arial' font-size='26'><text x='2' y='26'>♥</text><text x='38' y='26'>♠</text><text x='20' y='62'>♦</text><text x='56' y='62'>♣</text><text x='-16' y='62'>♣</text></g></svg>");
+  body.rail-suits #adrail { background-color: var(--band);
+    /* the page floats above the rail: a soft cast shadow falls in from the
+       left edge, under the hairline rule */
+    box-shadow: inset 1px 0 0 rgb(217 217 217), inset 12px 0 14px -8px rgba(0, 0, 0, .12);
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='72' height='72'><g fill='black' fill-opacity='0.04'><path transform='translate(1,2) scale(0.3)' d='suitHeart'/><path transform='translate(37,2) scale(0.3)' d='suitSpade'/><path transform='translate(19,38) scale(0.3)' d='suitDiamond'/><path transform='translate(55,38) scale(0.3)' d='suitClub'/><path transform='translate(-17,38) scale(0.3)' d='suitClub'/></g></svg>");
     background-size: 72px 72px; }
   #adrail .adslot {
     width: 300px; height: 250px; flex-shrink: 0;
@@ -450,7 +453,7 @@
   .ghost { display: none; }
   .gimg::before {
     content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='72' height='72'><g fill='black' fill-opacity='0.08' font-family='Arial' font-size='26'><text x='2' y='26'>♥</text><text x='38' y='26'>♠</text><text x='20' y='62'>♦</text><text x='56' y='62'>♣</text><text x='-16' y='62'>♣</text></g></svg>");
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='72' height='72'><g fill='black' fill-opacity='0.08'><path transform='translate(1,2) scale(0.3)' d='suitHeart'/><path transform='translate(37,2) scale(0.3)' d='suitSpade'/><path transform='translate(19,38) scale(0.3)' d='suitDiamond'/><path transform='translate(55,38) scale(0.3)' d='suitClub'/><path transform='translate(-17,38) scale(0.3)' d='suitClub'/></g></svg>");
     background-size: 72px 72px;
   }
 
@@ -969,8 +972,8 @@
   body.layout-scpyr .heroarea { display: flex; height: auto; min-height: 0; padding: 52px 24px 0; overflow: visible; }
   body.layout-scpyr #popsec { padding-top: 40px; }
   /* scenes whose originals carried no "tables live" cell drop it from the strip */
-  body.layout-scw9b .statsCapsule .st:has(#stc-games, #stc2-games), body.layout-scsplit .statsCapsule .st:has(#stc-games, #stc2-games),
-  body.layout-scrab .statsCapsule .st:has(#stc-games, #stc2-games), body.layout-scstair .statsCapsule .st:has(#stc-games, #stc2-games),
+  body.layout-scw9b .statsCapsule .st:has(#stc-games), body.layout-scsplit .statsCapsule .st:has(#stc-games),
+  body.layout-scrab .statsCapsule .st:has(#stc-games), body.layout-scstair .statsCapsule .st:has(#stc-games),
   body.layout-scw9b .statsSign .bs:has(#sts-games), body.layout-scsplit .statsSign .bs:has(#sts-games),
   body.layout-scrab .statsSign .bs:has(#sts-games), body.layout-scstair .statsSign .bs:has(#sts-games) { display: none; }
 
@@ -1246,7 +1249,7 @@
         <span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>
         <span class="st"><b class="creel" id="stc2-players" data-v="1214">1214</b> playing</span>
         <span class="st"><b class="creel" id="stc2-games" data-v="143">143</b> tables</span>
-        <span class="st"><b class="creel" id="stc2-seats" data-v="87">87</b> seats open</span>
+        <span class="st"><b class="creel" id="stc2-seats" data-v="87">87</b> open</span>
       </span>
     </div>
     <div class="stats statsSign">
@@ -1702,7 +1705,7 @@
   ];
   var STATSLINES = [
     ["capsule", "Capsule: walled live-light strip"],
-    ["capsuleshort", "Capsule: playing \u00b7 tables \u00b7 seats open"],
+    ["capsuleshort", "Capsule: playing \u00b7 tables \u00b7 open"],
     ["sign", "Sign: light-green button + bare counts"],
     ["signsolid", "Sign: solid green"],
     ["signbtn", "Sign: white button"],
