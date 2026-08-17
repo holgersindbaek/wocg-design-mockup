@@ -272,10 +272,13 @@
 
   /* avatar shadow coats (Avatar shadow switcher): chained after whichever rim
      coat is active via --avshadow, so edge and shadow switch independently.
-     Default = hover: the "x playing" ghost's four-way .32 ring hugs the
-     bordered silhouette, then a layered all-around ambient floats the avatar
-     over the felt - shadow on every side, not just below */
-  body { --avshadow: drop-shadow(1px 0 rgba(0,0,0,.32)) drop-shadow(-1px 0 rgba(0,0,0,.32)) drop-shadow(0 1px rgba(0,0,0,.32)) drop-shadow(0 -1px rgba(0,0,0,.32)) drop-shadow(0 0 3px rgba(0,0,0,.20)) drop-shadow(0 0 9px rgba(0,0,0,.18)); }
+     Default = ghost ring + the tiles' layered ramp; the ring then fades
+     through a .22 / .14 / .08 series for quieter coats */
+  body { --avshadow: drop-shadow(1px 0 rgba(0,0,0,.32)) drop-shadow(-1px 0 rgba(0,0,0,.32)) drop-shadow(0 1px rgba(0,0,0,.32)) drop-shadow(0 -1px rgba(0,0,0,.32)) drop-shadow(0 1px 1px rgba(0,0,0,.14)) drop-shadow(0 2px 3px rgba(0,0,0,.14)) drop-shadow(0 5px 9px rgba(0,0,0,.18)); }
+  body.avsh-ghostramp22 { --avshadow: drop-shadow(1px 0 rgba(0,0,0,.22)) drop-shadow(-1px 0 rgba(0,0,0,.22)) drop-shadow(0 1px rgba(0,0,0,.22)) drop-shadow(0 -1px rgba(0,0,0,.22)) drop-shadow(0 1px 1px rgba(0,0,0,.14)) drop-shadow(0 2px 3px rgba(0,0,0,.14)) drop-shadow(0 5px 9px rgba(0,0,0,.18)); }
+  body.avsh-ghostramp14 { --avshadow: drop-shadow(1px 0 rgba(0,0,0,.14)) drop-shadow(-1px 0 rgba(0,0,0,.14)) drop-shadow(0 1px rgba(0,0,0,.14)) drop-shadow(0 -1px rgba(0,0,0,.14)) drop-shadow(0 1px 1px rgba(0,0,0,.14)) drop-shadow(0 2px 3px rgba(0,0,0,.14)) drop-shadow(0 5px 9px rgba(0,0,0,.18)); }
+  body.avsh-ghostramp08 { --avshadow: drop-shadow(1px 0 rgba(0,0,0,.08)) drop-shadow(-1px 0 rgba(0,0,0,.08)) drop-shadow(0 1px rgba(0,0,0,.08)) drop-shadow(0 -1px rgba(0,0,0,.08)) drop-shadow(0 1px 1px rgba(0,0,0,.14)) drop-shadow(0 2px 3px rgba(0,0,0,.14)) drop-shadow(0 5px 9px rgba(0,0,0,.18)); }
+  body.avsh-hover { --avshadow: drop-shadow(1px 0 rgba(0,0,0,.32)) drop-shadow(-1px 0 rgba(0,0,0,.32)) drop-shadow(0 1px rgba(0,0,0,.32)) drop-shadow(0 -1px rgba(0,0,0,.32)) drop-shadow(0 0 3px rgba(0,0,0,.20)) drop-shadow(0 0 9px rgba(0,0,0,.18)); }
   body.avsh-ambient { --avshadow: drop-shadow(0 0 2px rgba(0,0,0,.18)) drop-shadow(0 0 6px rgba(0,0,0,.16)) drop-shadow(0 0 12px rgba(0,0,0,.14)); }
   body.avsh-tilesoft { --avshadow: drop-shadow(0 1px 1px rgba(0,0,0,.14)) drop-shadow(0 2px 3px rgba(0,0,0,.14)) drop-shadow(0 5px 9px rgba(0,0,0,.18)); }
   body.avsh-grounded { --avshadow: drop-shadow(0 1px 1px rgba(0,0,0,.26)) drop-shadow(0 3px 4px rgba(0,0,0,.18)) drop-shadow(0 7px 12px rgba(0,0,0,.16)); }
@@ -1961,14 +1964,18 @@
     }));
   var curAvedge = "lum-soft";
   var AVSHADOWS = [
+    ["ghostramp", "Ghost ring .32 + layered ramp"],
+    ["ghostramp22", "Ghost ring .22 + ramp (quieter)"],
+    ["ghostramp14", "Ghost ring .14 + ramp (whisper)"],
+    ["ghostramp08", "Ghost ring .08 + ramp (barely there)"],
     ["hover", "Hover: ghost ring + all-around ambient"],
     ["ambient", "All-around ambient, layered"],
-    ["tilesoft", "Tile-soft: layered ramp (like the tiles)"],
+    ["tilesoft", "Tile-soft: layered ramp, no ring"],
     ["grounded", "Grounded: contact + ramp"],
     ["game", "Game ambient 8px (site today)"],
     ["none", "None"]
   ];
-  var curAvshadow = "hover";
+  var curAvshadow = "ghostramp";
   var palShown = false;
   function moveLobby() {
     var lobby = document.getElementById("lobbyDemo");
