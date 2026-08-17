@@ -425,6 +425,18 @@
   body.cnav-sub-arrow #herosub .cjw { font-weight: bold; color: var(--ink-soft); }
   body.cnav-sub-arrow #herosub .cjw::after { content: " \2193"; font-size: .8em; color: var(--muted); font-weight: normal; }
   body.cnav-sub-arrow #herosub .cjw:hover { color: var(--accent-deep); }
+  /* italic: the three families lean in */
+  body.cnav-sub-italic #herosub .cjw { font-style: italic; color: var(--ink-soft); }
+  body.cnav-sub-italic #herosub .cjw:hover { color: var(--accent-deep); }
+  /* bold words, bold north-east arrow */
+  body.cnav-sub-nearrow #herosub .cjw { font-weight: bold; color: var(--ink-soft); }
+  body.cnav-sub-nearrow #herosub .cjw::after { content: " \2197"; font-weight: bold; }
+  body.cnav-sub-nearrow #herosub .cjw:hover { color: var(--accent-deep); }
+  /* gold signs, louder: bigger plate, deeper gold, dark ink, a real drop */
+  body.cnav-sub-signbold #herosub .cjw { display: inline-block; padding: 0 12px; border-radius: 7px;
+    background: #ffe066; box-shadow: inset 0 0 0 1px #fab005, 0 1px 2px rgba(0,0,0,.10);
+    color: #d9480f; font-size: 18px; line-height: 30px; font-weight: bold; vertical-align: 1px; }
+  body.cnav-sub-signbold #herosub .cjw:hover { background: #ffd43b; }
 
   /* the button row under the hero tiles */
   #catbtnrow { display: none; justify-content: center; align-items: center; gap: 10px; flex-wrap: wrap;
@@ -1294,6 +1306,7 @@
   <div class="swgroup">
     <div class="swhead">Page</div>
     <label class="ctl"><span>Category nav</span><select id="sel-cnav"></select></label>
+    <label class="ctl"><span>Category copy</span><select id="sel-ccopy"></select></label>
     <label class="ctl"><span>Catalog layout</span><select id="sel-catalog"></select></label>
     <label class="ctl"><span>Ad rail</span><select id="sel-rail"></select></label>
     <label class="ctl"><span>Live stats</span><select id="sel-stats"></select></label>
@@ -2065,19 +2078,37 @@
     ["sub-link", "Subtitle: classic link blue"],
     ["sub-dotted", "Subtitle: dotted glossary underline"],
     ["sub-arrow", "Subtitle: bold + down arrow"],
+    ["sub-italic", "Subtitle: italic"],
+    ["sub-nearrow", "Subtitle: bold + \u2197 arrow (both bold)"],
+    ["sub-signbold", "Subtitle: gold signs, louder"],
     ["row-color", "Below tiles: color button row"],
     ["row-white", "Below tiles: white button row"],
     ["row-signs", "Below tiles: gold sign row"]
   ];
   var curCnav = "none";
   /* sub-* coats rewrite the subtitle so the three families live in the copy
-     itself; the words are anchors the coats restyle */
+     itself; the words are anchors the coats restyle. The title already says
+     "Play card games", so none of the copies repeat it. "|" marks the scene
+     line break. */
+  var CCOPIES = [
+    ["tables", "\u2026 or the classics. Join a table or play solo.", "{TT}, {ru} or {cl}.|Join a table or play solo."],
+    ["hard", "\u2026 or the classics. Free to play, hard to stop.", "{TT}, {ru} or {cl}.|Free to play, hard to stop."],
+    ["seat", "\u2026 or the classics. There\u2019s always a seat open.", "{TT}, {ru} or {cl}.|There\u2019s always a seat open."],
+    ["join", "Join a table for trick-taking, rummy \u2026", "Join a table for {tt}, {ru} or {cl}."],
+    ["bare", "\u2026 or the classics. (nothing else)", "{TT}, {ru} or {cl}."]
+  ];
+  var curCcopy = "tables";
   function applyCnavSub() {
     if (curCnav.indexOf("sub-") !== 0) return;
     var scene = curLayout.indexOf("sc") === 0 && curLayout !== "scpyr";
-    document.getElementById("herosub").innerHTML =
-      '<a class="cjw c1" href="#sec-tt">Trick-taking</a>, <a class="cjw c2" href="#sec-rummy">rummy</a> and <a class="cjw c3" href="#sec-classic">classic</a> card games.' +
-      (scene ? "<br>" : " ") + "Join a table or play solo. Free to play, hard to stop.";
+    var tpl = CCOPIES.filter(function (c) { return c[0] === curCcopy; })[0][2];
+    function link(cls, href, txt) { return '<a class="cjw ' + cls + '" href="' + href + '">' + txt + '</a>'; }
+    document.getElementById("herosub").innerHTML = tpl
+      .replace("{TT}", link("c1", "#sec-tt", "Trick-taking"))
+      .replace("{tt}", link("c1", "#sec-tt", "trick-taking"))
+      .replace("{ru}", link("c2", "#sec-rummy", "rummy"))
+      .replace("{cl}", link("c3", "#sec-classic", "the classics"))
+      .replace("|", scene ? "<br>" : " ");
   }
   var palShown = false;
   function moveLobby() {
@@ -2118,6 +2149,7 @@
     document.getElementById("sel-avedge").value = curAvedge;
     document.getElementById("sel-avshadow").value = curAvshadow;
     document.getElementById("sel-cnav").value = curCnav;
+    document.getElementById("sel-ccopy").value = curCcopy;
     moveLobby();
     if (typeof renderPlayset === "function") renderPlayset();
   }
@@ -2217,6 +2249,7 @@
   buildSel("sel-avedge", AVEDGES, function (v) { curAvedge = v; });
   buildSel("sel-avshadow", AVSHADOWS, function (v) { curAvshadow = v; });
   buildSel("sel-cnav", CNAVS, function (v) { curCnav = v; });
+  buildSel("sel-ccopy", CCOPIES, function (v) { curCcopy = v; });
 
   var palBtn = document.getElementById("palette-toggle");
   palBtn.onclick = function () {
