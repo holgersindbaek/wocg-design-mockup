@@ -54,8 +54,7 @@
   .gplay .garr { width: 12px; height: 10px; display: block; transition: transform 150ms cubic-bezier(0, 0, 0.38, 0.9); }
   .gplay .garr path { fill: #fff; stroke: var(--pring); stroke-width: 1; stroke-linejoin: round; }
 
-  /* default trigger open-state: held dark + stronger ring */
-  .gplay[aria-expanded="true"] { background: #5D960D; box-shadow: inset 0 0 0 2px #3F6609, 0 2px 4px rgba(0, 0, 0, .06); }
+  /* decided: no trigger open-state - the panel itself is the only signal */
 
   /* ===== arrow behaviors ===== */
   .a-flip .gplay[aria-expanded="true"] .garr { transform: rotate(180deg); }
@@ -63,8 +62,11 @@
   .a-uprest .gplay[aria-expanded="true"] .garr { transform: rotate(0deg); }
   .a-morph .gplay .garr path { transition: d 200ms ease-out; }
   .a-morph .gplay[aria-expanded="true"] .garr path { d: path("M2.2 1 L6 4.8 L9.8 1 L11 2.2 L7.2 6 L11 9.8 L9.8 11 L6 7.2 L2.2 11 L1 9.8 L4.8 6 L1 2.2 Z"); }
-  .a-slide .gplay .garr { transition: transform 150ms ease-out, opacity 150ms ease-out; }
-  .a-slide .gplay[aria-expanded="true"] .garr { transform: translateY(-8px); opacity: 0; }
+  .a-swap .gpzone { position: relative; }
+  .a-swap .garr { transition: transform 150ms ease-out, opacity 150ms ease-out; }
+  .a-swap .garr.up { position: absolute; opacity: 0; transform: translateY(6px) rotate(180deg); }
+  .a-swap .gplay[aria-expanded="true"] .garr.down { opacity: 0; transform: translateY(-6px); }
+  .a-swap .gplay[aria-expanded="true"] .garr.up { opacity: 1; transform: translateY(0) rotate(180deg); }
   .a-cardflip .gplay .gpzone { perspective: 200px; }
   .a-cardflip .gplay .garr { transition: transform 250ms ease-out; }
   .a-cardflip .gplay[aria-expanded="true"] .garr { transform: rotateX(180deg); }
@@ -93,6 +95,28 @@
     filter: drop-shadow(1px 0 #252525) drop-shadow(-1px 0 #252525) drop-shadow(0 1px #252525) drop-shadow(0 -1px #252525); }
   .gmenu .mseats .mopen { width: 20px; height: 20px; border-radius: 50%; border: 1.5px dashed #8a857c; box-sizing: border-box; margin-left: 10px; }
   .gmenu .mstat { flex: none; font-size: 15px; font-weight: normal; color: #8a857c; }
+  /* the leaderboard's sign chips, borrowed verbatim */
+  .msign { display: inline-block; vertical-align: middle; border-radius: 4px; font-size: 12px; line-height: 16px;
+    font-weight: bold; padding: 0 4px 0 16px; background-repeat: no-repeat; background-position: 4px center;
+    background-size: 10px 10px; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.08);
+    color: #4F800B; background-color: #C0EB75; background-image: url("arrowUpGreenSmall.png"); }
+  .msign.live { background-image: none; padding-left: 18px; position: relative; }
+  .msign.live::before { content: ""; position: absolute; left: 6px; top: 5px; width: 6px; height: 6px; border-radius: 50%; background: #2f9e44; }
+  /* the two primaries as side-by-side option cards */
+  .mcards { display: flex; gap: 6px; padding: 4px 4px 6px; }
+  .mcards button { flex: 1; border: none; border-radius: 10px; corner-shape: squircle; cursor: pointer;
+    font-family: inherit; font-size: 16px; font-weight: bold; padding: 10px 8px; text-align: center; }
+  .mcards .cjoin { background: #66A80F; color: #fff; box-shadow: inset 0 0 0 1px #4F800B;
+    text-shadow: -1px -1px 0 #4F800B, 1px -1px 0 #4F800B, -1px 1px 0 #4F800B, 1px 1px 0 #4F800B; }
+  .mcards .cjoin:hover { background: #5D960D; }
+  .mcards .csolo { background: #A5D8FF; color: #1971C2; box-shadow: inset 0 0 0 1px #7AB8EC; }
+  .mcards .csolo:hover { background: #9ACFF8; }
+  .mcards .csub { display: block; font-size: 13px; font-weight: normal; margin-top: 2px; opacity: .9; text-shadow: none; }
+  /* tinted primary rows */
+  .gmenu button.mtintg { background: #EEF7E0; }
+  .gmenu button.mtintg:hover { background: #E2F2CC; }
+  .gmenu button.mtintb { background: #E7F2FD; margin-top: 4px; }
+  .gmenu button.mtintb:hover { background: #D9EBFB; }
 
   /* ===== open animations (classes on the panel) ===== */
   @keyframes houseRise { 0% { opacity: 0; transform: translateY(12px) scale(0.98); } 32% { opacity: 1; } 100% { opacity: 1; transform: none; } }
@@ -117,6 +141,7 @@
   }
 
   /* ===== trigger open-states ===== */
+  .t-held .gplay[aria-expanded="true"] { background: #5D960D; box-shadow: inset 0 0 0 2px #3F6609, 0 2px 4px rgba(0, 0, 0, .06); }
   .t-latch .gplay[aria-expanded="true"] { transform: scale(0.98); }
   .t-ghost .gplay[aria-expanded="true"] { background: #fff; color: #4F800B; text-shadow: none;
     box-shadow: inset 0 0 0 1px #4F800B, 0 2px 4px rgba(0, 0, 0, .06); }
@@ -337,6 +362,42 @@ floating trigger-width card 6px above. Click everything - Escape and outside cli
       sc.appendChild(q8);
       menu.appendChild(sc);
     }
+    if (kind === "allstats") {
+      add(menu, "<span class='mrow'><span>Join a table</span><span class='msign'>" + td.n + "</span></span>", "joining a table");
+      add(menu, "<span class='mrow'><span>Play solo</span><span class='mstat'>starts instantly</span></span>", "solo table");
+      var qa = el("div", "mquiet");
+      add(qa, "<span class='mrow'><span>Browse open tables</span><span class='msign'>8</span></span>", "browse");
+      add(qa, "<span class='mrow'><span>Play ranked</span><span class='msign'>12</span></span>", "ranked");
+      add(qa, "<span class='mrow'><span>Host a table</span><span class='mstat'>you pick the rules</span></span>", "host");
+      add(qa, "Join by table name", "join by name");
+      add(qa, "Game options", "options");
+      add(qa, "Rules & tutorial", "rules");
+      menu.appendChild(qa);
+    } else if (kind === "signrows") {
+      menu.appendChild(el("div", "mhead", "Start playing"));
+      add(menu, "<span class='mrow'><span>Join a table</span><span class='msign live'>" + td.n + " playing</span></span>", "joining a table");
+      add(menu, "Play solo", "solo table");
+      var qs = el("div", "mquiet");
+      ["Browse open tables", "Host a table…", "Join by table name…"].forEach(function (l) { add(qs, l, l.toLowerCase()); });
+      menu.appendChild(qs);
+    } else if (kind === "cards2") {
+      var mc = el("div", "mcards");
+      var cj = el("button", "cjoin", "Join a table<span class='csub'>" + td.n + " playing</span>");
+      cj.addEventListener("click", function (e) { e.stopPropagation(); closeAll(); flash(td.game + " — joining a table"); });
+      var cs = el("button", "csolo", "Play solo<span class='csub'>starts instantly</span>");
+      cs.addEventListener("click", function (e) { e.stopPropagation(); closeAll(); flash(td.game + " — solo table"); });
+      mc.appendChild(cj); mc.appendChild(cs);
+      menu.appendChild(mc);
+      var qc = el("div", "mquiet");
+      ["Browse open tables", "Play ranked", "Host a table", "Join by table name", "Game options", "Rules & tutorial"].forEach(function (l) { add(qc, l, l.toLowerCase()); });
+      menu.appendChild(qc);
+    } else if (kind === "tinted") {
+      add(menu, "<span class='mrow'><span>Join a table</span><span class='msign'>" + td.n + "</span></span>", "joining a table", "mtintg");
+      add(menu, "Play solo", "solo table", "mtintb");
+      var qt = el("div", "mquiet");
+      ["Browse open tables", "Play ranked", "Host a table", "Join by table name", "Game options", "Rules & tutorial"].forEach(function (l) { add(qt, l, l.toLowerCase()); });
+      menu.appendChild(qt);
+    }
     if (kind !== "pager") {
       var all = menu.querySelectorAll("button");
       all.forEach(function (b, i) { b.classList.add("mrowanim"); b.style.setProperty("--dy", (all.length - i) * 8 + "px"); b.style.animationDelay = (all.length - 1 - i) * 40 + "ms"; });
@@ -372,7 +433,10 @@ floating trigger-width card 6px above. Click everything - Escape and outside cli
     var wrap = el("div", "pwrap");
     var btn = el("button", "gplay");
     btn.setAttribute("aria-expanded", "false");
-    btn.innerHTML = "<span class='gplab'>Play</span><span class='gpdiv'></span><span class='gpzone'>" + ARROW + "</span>";
+    var zone = cfg.swapArrow
+      ? ARROW.replace("garr", "garr down") + ARROW.replace("garr", "garr up")
+      : ARROW;
+    btn.innerHTML = "<span class='gplab'>Play</span><span class='gpdiv'></span><span class='gpzone'>" + zone + "</span>";
     var menu = el("div", "gmenu");
     menu.id = "menu" + (++seq);
     btn.id = "trig" + seq;
@@ -412,21 +476,21 @@ floating trigger-width card 6px above. Click everything - Escape and outside cli
   }
 
   var SECTIONS = [
-    { t: "1 · Arrow behavior", d: "What the little triangle does. The flip is the disclosure convention (Material rotates, 150ms); static is the menu-button convention (APG); the rest are the outliers, built to be judged. The X and slide-away are the research's predicted losers.",
-      caps: ["Static down (APG)", "Flip to up on open — the pick", "Up at rest (Bootstrap dropup)", "Morph to X", "Slide away", "Label swaps to Close (GOV.UK)", "3D card flip", "Hover nudge (mouse only)"],
-      cfgs: [{ tileCls: "" }, { tileCls: "a-flip" }, { tileCls: "a-uprest" }, { tileCls: "a-morph" }, { tileCls: "a-slide" }, { tileCls: "a-flip", openLabel: true }, { tileCls: "a-cardflip" }, { tileCls: "a-flip a-nudge" }] },
-    { t: "2 · Open animation", d: "How the panel arrives. House Rise 220 is the repo's own modal curve and the six-system consensus shape; shadcn and Base UI are the web defaults; Material's 500ms unroll (with bottom-first stagger, built with real Web Animations) and the spring and the card-deal are the expressive outliers; instant is Bootstrap's honest zero.",
-      caps: ["House rise 220 — the pick", "shadcn zoom 150", "Base UI quick 100", "Material unroll 500 + stagger", "Spring overshoot 320", "Instant (Bootstrap zero)", "Card-deal stagger", "Two-speed: quiet group lags 70ms"],
-      cfgs: [{ tileCls: "o-house a-flip" }, { tileCls: "o-shadcn a-flip" }, { tileCls: "o-quick a-flip" }, { tileCls: "a-flip", unroll: true }, { tileCls: "o-spring a-flip" }, { tileCls: "o-instant a-flip" }, { tileCls: "o-deal a-flip" }, { tileCls: "o-twospeed a-flip" }] },
-    { t: "3 · Trigger while open", d: "What the button does while its panel is up. Held-dark with a stronger ring is the convention; the latched press is the predicted loser (a shrunken button reads broken); the spotlight dims the sibling tiles (Apple's recede - the research's dark-horse pick); zone-only previews a true split button.",
-      caps: ["Held dark + stronger ring — the pick", "Latched press (predicted loser)", "Inverse ghost", "Spotlight: siblings dim", "Arrow zone only holds dark", "Glow halo", "Seam bridge: corners square to meet panel", "Held dark + house rise (combo)"],
-      cfgs: [{ tileCls: "o-house a-flip" }, { tileCls: "t-latch o-house a-flip" }, { tileCls: "t-ghost o-house a-flip" }, { tileCls: "o-house a-flip", dimRow: true }, { tileCls: "t-zoneonly o-house a-flip" }, { tileCls: "t-halo o-house a-flip" }, { tileCls: "t-bridge o-house a-flip" }, { tileCls: "o-house a-flip" }] },
-    { t: "4 · Panel contents", d: "What the chooser holds. The research cut (5-7 rows, count as a trailing pill, 44px rows, real group label) is the anatomy pick; the current nine is the baseline with its measured failures; seat-preview and count-arguing rows are the requested outliers; the pager and felt close the range.",
-      caps: ["Current nine (baseline)", "Research cut five — the pick", "All nine, hygiene fixed", "Three groups + ellipsis", "Seat preview rows", "Count-arguing rows", "Two-page: More ways to play…", "Felt table panel"],
-      cfgs: [{ content: "nine", tileCls: "o-house a-flip" }, { content: "cut", tileCls: "o-house a-flip" }, { content: "badge9", tileCls: "o-house a-flip" }, { content: "groups", tileCls: "o-house a-flip" }, { content: "seats", tileCls: "o-house a-flip" }, { content: "stats", tileCls: "o-house a-flip" }, { content: "pager", tileCls: "o-house a-flip" }, { content: "felt", tileCls: "o-house a-flip" }] },
-    { t: "5 · Panel geometry", d: "Where the panel lives. Floating trigger-width with a 6px gap is the pick (Radix's own convention); fused combobox fights the squircle; tile-wide buys line length; the beak points at its owner; the tile-flip and the centered overlay with scrim are the big-gesture outliers; the scroll column is Carbon's answer if nine rows must stay.",
-      caps: ["Floating card, 6px gap — the pick", "Fused combobox, zero gap", "Tile-wide sheet", "Beak: fixed 240, tail at the arrow", "Tile flips to a felt back", "Centered overlay + scrim", "Capped scroll column (nine rows)", "Fused + held dark (combo)"],
-      cfgs: [{ tileCls: "o-house a-flip" }, { tileCls: "g-fused a-flip" }, { tileCls: "g-tilewide o-house a-flip" }, { tileCls: "g-beak o-house a-flip" }, { tileCls: "g-flip", flip: true }, { tileCls: "g-overlay a-flip", scrim: true }, { tileCls: "g-scroll o-house a-flip", content: "scrollnine" }, { tileCls: "g-fused t-halo a-flip" }] }
+    { t: "1 · Arrow behavior", d: "Decided so far: the open animation is Base UI quick 100 and the trigger keeps NO open styling - the panel is the only signal. That raises the arrow's importance. The new fade-swap is the requested variant: the down arrow fades up and away while an up arrow fades in.",
+      caps: ["Static down (APG)", "Flip to up on open", "Fade-swap: down out, up in — new", "Up at rest", "Morph to X", "Label swaps to Close", "3D card flip", "Hover nudge (mouse only)"],
+      cfgs: [{ tileCls: "o-quick" }, { tileCls: "o-quick a-flip" }, { tileCls: "o-quick a-swap", swapArrow: true }, { tileCls: "o-quick a-uprest" }, { tileCls: "o-quick a-morph" }, { tileCls: "o-quick a-flip", openLabel: true }, { tileCls: "o-quick a-cardflip" }, { tileCls: "o-quick a-flip a-nudge" }] },
+    { t: "2 · Open animation — decided: Base UI quick 100", d: "Kept for reference; quick 100 is the chosen default everywhere else on this page.",
+      caps: ["Base UI quick 100 — CHOSEN", "House rise 220", "shadcn zoom 150", "Material unroll 500 + stagger", "Spring overshoot 320", "Instant (Bootstrap zero)", "Card-deal stagger", "Two-speed: quiet lags 70ms"],
+      cfgs: [{ tileCls: "o-quick a-swap", swapArrow: true }, { tileCls: "o-house a-swap", swapArrow: true }, { tileCls: "o-shadcn a-swap", swapArrow: true }, { tileCls: "a-swap", swapArrow: true, unroll: true }, { tileCls: "o-spring a-swap", swapArrow: true }, { tileCls: "o-instant a-swap", swapArrow: true }, { tileCls: "o-deal a-swap", swapArrow: true }, { tileCls: "o-twospeed a-swap", swapArrow: true }] },
+    { t: "3 · Trigger while open — decided: none", d: "The button now keeps its resting look while open; the panel carries the state. The alternatives stay for reference, and the spotlight remains the one candidate worth reconsidering later since it styles the PAGE, not the button.",
+      caps: ["None — CHOSEN", "Held dark + ring (retired)", "Latched press", "Inverse ghost", "Spotlight: siblings dim", "Zone holds dark", "Glow halo", "Seam bridge"],
+      cfgs: [{ tileCls: "o-quick a-swap", swapArrow: true }, { tileCls: "t-held o-quick a-swap", swapArrow: true }, { tileCls: "t-latch o-quick a-swap", swapArrow: true }, { tileCls: "t-ghost o-quick a-swap", swapArrow: true }, { tileCls: "o-quick a-swap", swapArrow: true, dimRow: true }, { tileCls: "t-zoneonly o-quick a-swap", swapArrow: true }, { tileCls: "t-halo o-quick a-swap", swapArrow: true }, { tileCls: "t-bridge o-quick a-swap", swapArrow: true }] },
+    { t: "4 · Panel contents", d: "Now with the requested experiments: count-arguing across ALL the options, counters as the leaderboard's sign chips (the C0EB75 green sign with the little up arrow, and a live-dot variant), the two primaries as side-by-side option cards, and tinted primary rows.",
+      caps: ["Current nine (baseline)", "Research cut five", "All options, count-arguing + signs — new", "Sign chip on the join row — new", "Primaries as two option cards — new", "Primaries as tinted rows — new", "Three groups + ellipsis", "Seat preview rows", "Count-arguing four (original)", "Two-page: More ways…", "Felt table panel", "All nine, hygiene fixed"],
+      cfgs: [{ content: "nine", tileCls: "o-quick a-swap", swapArrow: true }, { content: "cut", tileCls: "o-quick a-swap", swapArrow: true }, { content: "allstats", tileCls: "o-quick a-swap", swapArrow: true }, { content: "signrows", tileCls: "o-quick a-swap", swapArrow: true }, { content: "cards2", tileCls: "o-quick a-swap", swapArrow: true }, { content: "tinted", tileCls: "o-quick a-swap", swapArrow: true }, { content: "groups", tileCls: "o-quick a-swap", swapArrow: true }, { content: "seats", tileCls: "o-quick a-swap", swapArrow: true }, { content: "stats", tileCls: "o-quick a-swap", swapArrow: true }, { content: "pager", tileCls: "o-quick a-swap", swapArrow: true }, { content: "felt", tileCls: "o-quick a-swap", swapArrow: true }, { content: "badge9", tileCls: "o-quick a-swap", swapArrow: true }] },
+    { t: "5 · Panel geometry", d: "Unchanged axis, now riding the chosen quick 100 and bare trigger.",
+      caps: ["Floating card, 6px gap", "Fused combobox, zero gap", "Tile-wide sheet", "Beak: fixed 240, tail at the arrow", "Tile flips to a felt back", "Centered overlay + scrim", "Capped scroll column (nine rows)", "Fused + bare trigger (combo)"],
+      cfgs: [{ tileCls: "o-quick a-swap", swapArrow: true }, { tileCls: "g-fused a-swap", swapArrow: true }, { tileCls: "g-tilewide o-quick a-swap", swapArrow: true }, { tileCls: "g-beak o-quick a-swap", swapArrow: true }, { tileCls: "g-flip", flip: true }, { tileCls: "g-overlay a-swap", swapArrow: true, scrim: true }, { tileCls: "g-scroll o-quick a-swap", swapArrow: true, content: "scrollnine" }, { tileCls: "g-fused a-swap", swapArrow: true }] }
   ];
 
   var root = document.getElementById("secs");
