@@ -314,9 +314,9 @@
   .muser li { color: var(--muted); cursor: pointer; display: flex; align-items: center; }
   .muser img.micon { width: 40px; height: 32px; display: block; }
   .muser img.avatar { width: 28px; height: 28px; border-radius: 50%; margin-right: 8px; display: block;
-    /* the SVG inner-edge filter: a 1px rim eroded from the silhouette itself,
-       inked .64 black - the border lives INSIDE the artwork's edge */
-    filter: url(#avatarInnerEdge); }
+    /* the header avatar pins the full grey-lightness luminosity rim; the
+       Avatar edge switcher drives only the table avatars */
+    filter: url(#avatarEdge-luminosity); }
   .muser .uname { font-size: 16px; font-weight: bold; color: var(--ink-soft); }
 
   /* ===== menu-bar experiments ===== */
@@ -1946,8 +1946,7 @@
         '<feComposite in2="ring" operator="in" result="ringInk"/>' +
         '<feBlend in="ringInk" in2="SourceGraphic" mode="' + mode + '"/>';
       defs.appendChild(f);
-      css += "body.avedge-" + key + " .muser img.avatar { filter: url(#avatarEdge-" + key + "); }\n" +
-        "body.avedge-" + key + " #lobbyDemo .player img { filter: url(#avatarEdge-" + key + ") var(--avshadow); }\n" +
+      css += "body.avedge-" + key + " #lobbyDemo .player img { filter: url(#avatarEdge-" + key + ") var(--avshadow); }\n" +
         "body.avedge-" + key + " #lobbyDemo .ltInviteeAv::after { box-shadow: inset 0 0 0 1px " + rgba(ink, op) + "; mix-blend-mode: " + mode + "; }\n";
     }
     BLENDMODES.forEach(function (m) { coat(m, m, "#737373", "0.9"); });
