@@ -2095,6 +2095,14 @@
      "Play card games", so none of the copies repeat it. "|" marks the scene
      line break. */
   var CCOPIES = [
+    ["grew3", "3 lines: grew up on / real people or solo / free to play", "The games you grew up on.|[tt]Trick-taking[/tt], [ru]Rummy[/ru] &amp; [cl]Classic games[/cl], with real people or solo.|Free to play, hard to stop."],
+    ["grew3play", "3 lines: grew up on / play alone or with others", "The games you grew up on.|Play [tt]Trick-taking[/tt], [ru]Rummy[/ru] &amp; [cl]Classic games[/cl] alone or with others.|Free to play, hard to stop."],
+    ["grew3join", "3 lines: grew up on / join a table or play solo", "The games you grew up on.|Join a table for [tt]Trick-taking[/tt], [ru]Rummy[/ru] &amp; [cl]Classic games[/cl], or play solo.|Free to play, hard to stop."],
+    ["grew3from", "3 lines: grew up on, from X to Y / real people or solo", "The games you grew up on, from [tt]Trick-taking[/tt] to [ru]Rummy[/ru] to [cl]the Classics[/cl].|Play with real people or go solo.|Free to play, hard to stop."],
+    ["grew3tables", "3 lines: grew up on / at real tables or on your own", "The games you grew up on.|[tt]Trick-taking[/tt], [ru]Rummy[/ru] &amp; [cl]Classic games[/cl], at real tables or on your own.|Free to play, hard to stop."],
+    ["grew3sit", "3 lines: grew up on / sit down with real people", "The games you grew up on.|Sit down with real people or play [tt]Trick-taking[/tt], [ru]Rummy[/ru] &amp; [cl]the Classics[/cl] solo.|Free to play, hard to stop."],
+    ["grew3together", "3 lines: grew up on / together or alone", "The games you grew up on.|[tt]Trick-taking[/tt], [ru]Rummy[/ru] &amp; [cl]Classic games[/cl], together or alone.|Free to play, hard to stop."],
+    ["join3", "3 lines: join or solo / the trio / free to play", "Join a table or play solo.|[tt]Trick-taking[/tt], [ru]Rummy[/ru] &amp; [cl]Classic games[/cl].|Free to play, hard to stop."],
     ["amp", "Trick-taking, Rummy & Classic games. Join a table or play solo\u2026", "[tt]Trick-taking[/tt], [ru]Rummy[/ru] &amp; [cl]Classic games[/cl].|Join a table or play solo. Free to play, hard to stop."],
     ["mid", "Join a table or play solo. Trick-taking, Rummy & Classic games\u2026", "Join a table or play solo.|[tt]Trick-taking[/tt], [ru]Rummy[/ru] &amp; [cl]Classic games[/cl]. Free to play, hard to stop."],
     ["chair", "Pull up a chair for Trick-taking, Rummy & Classic games\u2026", "Pull up a chair for [tt]Trick-taking[/tt], [ru]Rummy[/ru] &amp; [cl]Classic games[/cl].|Free to play, hard to stop."],
@@ -2116,7 +2124,7 @@
     ["join", "Join a table for trick-taking, rummy or the classics.", "Join a table for [tt]trick-taking[/tt], [ru]rummy[/ru] or [cl]the classics[/cl]."],
     ["bare", "Trick-taking, rummy or the classics. (nothing else)", "[tt]Trick-taking[/tt], [ru]rummy[/ru] or [cl]the classics[/cl]."]
   ];
-  var curCcopy = "amp";
+  var curCcopy = "grew3";
   function applyCnavSub() {
     if (curCnav.indexOf("sub-") !== 0) return;
     var scene = curLayout.indexOf("sc") === 0 && curLayout !== "scpyr";
@@ -2125,7 +2133,7 @@
       .replace(/\[tt\]([^\[]+)\[\/tt\]/g, '<a class="cjw c1" href="#sec-tt">$1</a>')
       .replace(/\[ru\]([^\[]+)\[\/ru\]/g, '<a class="cjw c2" href="#sec-rummy">$1</a>')
       .replace(/\[cl\]([^\[]+)\[\/cl\]/g, '<a class="cjw c3" href="#sec-classic">$1</a>')
-      .replace("|", scene ? "<br>" : " ");
+      .replace(/\|/g, scene ? "<br>" : " ");
   }
   var palShown = false;
   function moveLobby() {
