@@ -272,11 +272,12 @@
 
   /* avatar shadow coats (Avatar shadow switcher): chained after whichever rim
      coat is active via --avshadow, so edge and shadow switch independently.
-     Default = ghost ring + the tiles' layered ramp; the ring then fades
-     through a .22 / .14 / .08 series for quieter coats */
-  body { --avshadow: drop-shadow(1px 0 rgba(0,0,0,.32)) drop-shadow(-1px 0 rgba(0,0,0,.32)) drop-shadow(0 1px rgba(0,0,0,.32)) drop-shadow(0 -1px rgba(0,0,0,.32)) drop-shadow(0 1px 1px rgba(0,0,0,.14)) drop-shadow(0 2px 3px rgba(0,0,0,.14)) drop-shadow(0 5px 9px rgba(0,0,0,.18)); }
+     Default = a .12 ghost ring + the tiles' layered ramp; the ring keeps a
+     .32 / .22 / .08 series around it - the quiet ring reads evenly across
+     light- and dark-edged avatars */
+  body { --avshadow: drop-shadow(1px 0 rgba(0,0,0,.12)) drop-shadow(-1px 0 rgba(0,0,0,.12)) drop-shadow(0 1px rgba(0,0,0,.12)) drop-shadow(0 -1px rgba(0,0,0,.12)) drop-shadow(0 1px 1px rgba(0,0,0,.14)) drop-shadow(0 2px 3px rgba(0,0,0,.14)) drop-shadow(0 5px 9px rgba(0,0,0,.18)); }
+  body.avsh-ghostramp32 { --avshadow: drop-shadow(1px 0 rgba(0,0,0,.32)) drop-shadow(-1px 0 rgba(0,0,0,.32)) drop-shadow(0 1px rgba(0,0,0,.32)) drop-shadow(0 -1px rgba(0,0,0,.32)) drop-shadow(0 1px 1px rgba(0,0,0,.14)) drop-shadow(0 2px 3px rgba(0,0,0,.14)) drop-shadow(0 5px 9px rgba(0,0,0,.18)); }
   body.avsh-ghostramp22 { --avshadow: drop-shadow(1px 0 rgba(0,0,0,.22)) drop-shadow(-1px 0 rgba(0,0,0,.22)) drop-shadow(0 1px rgba(0,0,0,.22)) drop-shadow(0 -1px rgba(0,0,0,.22)) drop-shadow(0 1px 1px rgba(0,0,0,.14)) drop-shadow(0 2px 3px rgba(0,0,0,.14)) drop-shadow(0 5px 9px rgba(0,0,0,.18)); }
-  body.avsh-ghostramp14 { --avshadow: drop-shadow(1px 0 rgba(0,0,0,.14)) drop-shadow(-1px 0 rgba(0,0,0,.14)) drop-shadow(0 1px rgba(0,0,0,.14)) drop-shadow(0 -1px rgba(0,0,0,.14)) drop-shadow(0 1px 1px rgba(0,0,0,.14)) drop-shadow(0 2px 3px rgba(0,0,0,.14)) drop-shadow(0 5px 9px rgba(0,0,0,.18)); }
   body.avsh-ghostramp08 { --avshadow: drop-shadow(1px 0 rgba(0,0,0,.08)) drop-shadow(-1px 0 rgba(0,0,0,.08)) drop-shadow(0 1px rgba(0,0,0,.08)) drop-shadow(0 -1px rgba(0,0,0,.08)) drop-shadow(0 1px 1px rgba(0,0,0,.14)) drop-shadow(0 2px 3px rgba(0,0,0,.14)) drop-shadow(0 5px 9px rgba(0,0,0,.18)); }
   body.avsh-hover { --avshadow: drop-shadow(1px 0 rgba(0,0,0,.32)) drop-shadow(-1px 0 rgba(0,0,0,.32)) drop-shadow(0 1px rgba(0,0,0,.32)) drop-shadow(0 -1px rgba(0,0,0,.32)) drop-shadow(0 0 3px rgba(0,0,0,.20)) drop-shadow(0 0 9px rgba(0,0,0,.18)); }
   body.avsh-ambient { --avshadow: drop-shadow(0 0 2px rgba(0,0,0,.18)) drop-shadow(0 0 6px rgba(0,0,0,.16)) drop-shadow(0 0 12px rgba(0,0,0,.14)); }
@@ -1964,9 +1965,9 @@
     }));
   var curAvedge = "lum-soft";
   var AVSHADOWS = [
-    ["ghostramp", "Ghost ring .32 + layered ramp"],
-    ["ghostramp22", "Ghost ring .22 + ramp (quieter)"],
-    ["ghostramp14", "Ghost ring .14 + ramp (whisper)"],
+    ["ghostramp", "Ghost ring .12 + layered ramp"],
+    ["ghostramp32", "Ghost ring .32 + ramp (strong)"],
+    ["ghostramp22", "Ghost ring .22 + ramp"],
     ["ghostramp08", "Ghost ring .08 + ramp (barely there)"],
     ["hover", "Hover: ghost ring + all-around ambient"],
     ["ambient", "All-around ambient, layered"],
