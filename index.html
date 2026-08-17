@@ -2091,23 +2091,28 @@
      "Play card games", so none of the copies repeat it. "|" marks the scene
      line break. */
   var CCOPIES = [
-    ["tables", "\u2026 or the classics. Join a table or play solo.", "{TT}, {ru} or {cl}.|Join a table or play solo."],
-    ["hard", "\u2026 or the classics. Free to play, hard to stop.", "{TT}, {ru} or {cl}.|Free to play, hard to stop."],
-    ["seat", "\u2026 or the classics. There\u2019s always a seat open.", "{TT}, {ru} or {cl}.|There\u2019s always a seat open."],
-    ["join", "Join a table for trick-taking, rummy \u2026", "Join a table for {tt}, {ru} or {cl}."],
-    ["bare", "\u2026 or the classics. (nothing else)", "{TT}, {ru} or {cl}."]
+    ["amp", "Trick-taking, Rummy & Classic games. Join a table or play solo\u2026", "[tt]Trick-taking[/tt], [ru]Rummy[/ru] &amp; [cl]Classic games[/cl].|Join a table or play solo. Free to play, hard to stop."],
+    ["mid", "Join a table or play solo. Trick-taking, Rummy & Classic games\u2026", "Join a table or play solo.|[tt]Trick-taking[/tt], [ru]Rummy[/ru] &amp; [cl]Classic games[/cl]. Free to play, hard to stop."],
+    ["chair", "Pull up a chair for Trick-taking, Rummy & Classic games\u2026", "Pull up a chair for [tt]Trick-taking[/tt], [ru]Rummy[/ru] &amp; [cl]Classic games[/cl].|Free to play, hard to stop."],
+    ["fromto", "From Trick-taking to Rummy to the Classics\u2026", "From [tt]Trick-taking[/tt] to [ru]Rummy[/ru] to [cl]the Classics[/cl].|Join a table or play solo."],
+    ["pick", "Take your pick of Trick-taking, Rummy & Classic games\u2026", "Take your pick of [tt]Trick-taking[/tt], [ru]Rummy[/ru] &amp; [cl]Classic games[/cl].|Free to play, hard to stop."],
+    ["tablesset", "The tables are set for Trick-taking, Rummy & Classic games\u2026", "The tables are set for [tt]Trick-taking[/tt], [ru]Rummy[/ru] &amp; [cl]Classic games[/cl].|Join in or play solo."],
+    ["count", "18 games across Trick-taking, Rummy & the Classics\u2026", "18 games across [tt]Trick-taking[/tt], [ru]Rummy[/ru] &amp; [cl]the Classics[/cl].|Join a table or play solo."],
+    ["tables", "Trick-taking, rummy or the classics. Join a table or play solo.", "[tt]Trick-taking[/tt], [ru]rummy[/ru] or [cl]the classics[/cl].|Join a table or play solo."],
+    ["hard", "Trick-taking, rummy or the classics. Free to play, hard to stop.", "[tt]Trick-taking[/tt], [ru]rummy[/ru] or [cl]the classics[/cl].|Free to play, hard to stop."],
+    ["seat", "Trick-taking, rummy or the classics. There\u2019s always a seat open.", "[tt]Trick-taking[/tt], [ru]rummy[/ru] or [cl]the classics[/cl].|There\u2019s always a seat open."],
+    ["join", "Join a table for trick-taking, rummy or the classics.", "Join a table for [tt]trick-taking[/tt], [ru]rummy[/ru] or [cl]the classics[/cl]."],
+    ["bare", "Trick-taking, rummy or the classics. (nothing else)", "[tt]Trick-taking[/tt], [ru]rummy[/ru] or [cl]the classics[/cl]."]
   ];
-  var curCcopy = "tables";
+  var curCcopy = "amp";
   function applyCnavSub() {
     if (curCnav.indexOf("sub-") !== 0) return;
     var scene = curLayout.indexOf("sc") === 0 && curLayout !== "scpyr";
     var tpl = CCOPIES.filter(function (c) { return c[0] === curCcopy; })[0][2];
-    function link(cls, href, txt) { return '<a class="cjw ' + cls + '" href="' + href + '">' + txt + '</a>'; }
     document.getElementById("herosub").innerHTML = tpl
-      .replace("{TT}", link("c1", "#sec-tt", "Trick-taking"))
-      .replace("{tt}", link("c1", "#sec-tt", "trick-taking"))
-      .replace("{ru}", link("c2", "#sec-rummy", "rummy"))
-      .replace("{cl}", link("c3", "#sec-classic", "the classics"))
+      .replace(/\[tt\]([^\[]+)\[\/tt\]/g, '<a class="cjw c1" href="#sec-tt">$1</a>')
+      .replace(/\[ru\]([^\[]+)\[\/ru\]/g, '<a class="cjw c2" href="#sec-rummy">$1</a>')
+      .replace(/\[cl\]([^\[]+)\[\/cl\]/g, '<a class="cjw c3" href="#sec-classic">$1</a>')
       .replace("|", scene ? "<br>" : " ");
   }
   var palShown = false;
