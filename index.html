@@ -383,6 +383,152 @@
   .heroarea > p { color: var(--muted); font-size: 20px; margin: 0; }
   .live { color: var(--second); font-weight: bold; }
 
+  /* ===== category jump experiments (Category nav switcher): how the hero
+     tells a first visit that three families of games live below, and takes
+     them there on click. Default coat = none. ===== */
+  #catjump .cjLine { display: none; margin: 14px 0 0; justify-content: center; align-items: center;
+    flex-wrap: wrap; gap: 8px; }
+  .sceneTxt #catjump .cjLine { justify-content: flex-start; }
+  #catjump a { border-bottom: none; }
+  /* in-copy prose: the categories as plain language under the subtitle */
+  body.cnav-subline #catjump .cj-subline { display: block; }
+  #catjump .cj-subline { font-size: 18px; color: var(--muted); }
+  #catjump .cj-subline a { color: var(--accent-deep); border-bottom: 1px solid var(--hairline); }
+  #catjump .cj-subline a:hover { border-bottom-color: var(--accent-deep); }
+  /* gold signs: the online-solitaire "Playing" tag recipe, one sign per family
+     (#ffec99 fill / #ffd43b inset ring / #e67700 ink) */
+  body.cnav-signs #catjump .cj-signs { display: flex; }
+  .cjSign { display: inline-flex; align-items: center; gap: 6px; padding: 2px 10px; border-radius: 6px;
+    background: #ffec99; box-shadow: inset 0 0 0 1px #ffd43b; color: #e67700;
+    font-size: 14px; line-height: 20px; font-weight: bold; }
+  .cjSign b { opacity: .72; font-size: 12.5px; }
+  .cjSign:hover { background: #ffe783; }
+  /* woven: the signs live inside a sentence, tag-sized */
+  body.cnav-woven #catjump .cj-woven { display: block; }
+  #catjump .cj-woven { font-size: 18px; color: var(--muted); }
+  .cjTag { display: inline-block; padding: 0 8px; border-radius: 6px; margin: 0 1px;
+    background: #ffec99; box-shadow: inset 0 0 0 1px #ffd43b; color: #e67700;
+    font-size: 15px; line-height: 22px; font-weight: bold; vertical-align: 1px; }
+  .cjTag:hover { background: #ffe783; }
+  /* chips: the catalog's white pill chips with counts */
+  body.cnav-chips #catjump .cj-chips { display: flex; gap: 10px; }
+  .cjChip { font-size: 16px; font-weight: bold; color: var(--ink); background: var(--card);
+    border-radius: 999px; padding: 7px 14px; box-shadow: var(--btnshadow);
+    transition: transform .12s ease; }
+  .cjChip:hover { transform: translateY(-1px); }
+  .cjChip .cjCount { color: var(--muted); font-weight: normal; }
+  /* button tiles: the tile palette wearing the site's button chrome */
+  body.cnav-btntiles #catjump .cj-btntiles { display: flex; gap: 10px; }
+  .cjBtn { font-size: 16px; font-weight: bold; color: var(--pfg); height: 34px; line-height: 34px;
+    padding: 0 16px; border-radius: var(--radius-md, 6px); corner-shape: squircle;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,.28), 0 2px 4px rgba(0,0,0,.06);
+    transition: filter 80ms ease-out, transform 80ms ease-out; }
+  .cjBtn:hover { filter: brightness(1.06); }
+  .cjBtn:active { transform: scale(0.97); }
+  .cjBtn.c1 { background: var(--p3); } .cjBtn.c2 { background: var(--p4); } .cjBtn.c3 { background: var(--p1); }
+  /* mini tiles: little siblings of the game tiles - color, squircle, inner
+     ring, soft shadow, a count line with a down arrow */
+  body.cnav-minitiles #catjump .cj-minitiles { display: flex; gap: 12px; }
+  .cjTile { display: flex; flex-direction: column; align-items: flex-start; justify-content: center;
+    min-width: 132px; height: 60px; padding: 0 16px; box-sizing: border-box; position: relative;
+    border-radius: 14px; corner-shape: squircle; color: var(--pfg);
+    box-shadow: var(--tileshadow); transition: transform .15s ease, box-shadow .15s ease; }
+  .cjTile::after { content: ""; position: absolute; inset: 0; border-radius: 14px; corner-shape: squircle;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,.75); mix-blend-mode: soft-light; pointer-events: none; }
+  .cjTile:hover { transform: translateY(-2px); }
+  .cjTile b { font-size: 16px; line-height: 1.25; }
+  .cjTile span { font-size: 13px; opacity: .85; }
+  .cjTile.c1 { background: var(--p3); } .cjTile.c2 { background: var(--p4); } .cjTile.c3 { background: var(--p1); }
+  /* segmented capsule: the LIVE strip's shell repurposed as a jump control */
+  body.cnav-capsule #catjump .cj-capsule { display: flex; }
+  .cjCap { display: inline-flex; align-items: center; height: 32px; font-size: 16px;
+    background: var(--surface, #fff); border-radius: 20px; box-shadow: var(--btnshadow); padding: 0 4px; }
+  .cjCap a { display: inline-flex; align-items: center; gap: 6px; padding: 0 13px; align-self: stretch;
+    color: var(--ink); font-weight: bold; }
+  .cjCap a + a { border-left: 1px solid var(--hairline); }
+  .cjCap a:hover { color: var(--accent-deep); }
+  .cjCap .cjCount { color: var(--muted); font-weight: normal; font-size: 14px; }
+  /* quiet: bold words and a muted down arrow, nothing else */
+  body.cnav-quiet #catjump .cj-quiet { display: flex; gap: 24px; }
+  .cjQuiet { font-size: 17px; font-weight: bold; color: var(--ink-soft); }
+  .cjQuiet::after { content: " \2193"; color: var(--muted); font-weight: normal; }
+  .cjQuiet:hover { color: var(--accent-deep); }
+  /* rulebook contents: a leader-dot index, the way a rulebook lists chapters */
+  body.cnav-rulebook #catjump .cj-rulebook { display: flex; }
+  .cjBook { width: min(380px, 100%); text-align: left; border-top: 1px solid rgba(51,41,31,.12);
+    border-bottom: 1px solid rgba(51,41,31,.12); padding: 10px 2px 12px; }
+  .cjBookKick { font-style: italic; font-size: 15px; color: var(--muted); margin: 0 0 6px; }
+  .cjBook a { display: flex; align-items: baseline; gap: 9px; padding: 3px 4px; border-radius: 8px;
+    font-size: 16px; font-weight: bold; color: var(--ink-soft); }
+  .cjBook a i { flex: 1; border-bottom: 2px dotted rgba(51,41,31,.28); transform: translateY(-4px); }
+  .cjBook a b { font-size: 14px; font-weight: normal; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .cjBook a:hover { background: var(--band); color: var(--accent-deep); }
+  /* the host's question: a serif ask, three plain answers, suits as punctuation */
+  body.cnav-question #catjump .cj-question { display: flex; }
+  .cjQAsk { font-style: italic; font-size: 17px; color: var(--muted); margin: 0 0 7px; }
+  .cjQAns { margin: 0; display: flex; align-items: baseline; }
+  .sceneTxt .cjQAns { justify-content: flex-start; }
+  .heroarea > #catjump .cjQAns { justify-content: center; }
+  .cjQAns a { font-size: 18px; font-weight: bold; color: var(--ink-soft); box-shadow: inset 0 -2px 0 transparent;
+    transition: color 130ms ease-out, box-shadow 130ms ease-out; }
+  .cjQAns a:hover { color: var(--accent-deep); box-shadow: inset 0 -2px 0 var(--accent); }
+  .cjSuit { font-size: 13px; opacity: .5; margin: 0 12px; }
+  /* a hand of three cards: paper minis, the count printed where the rank goes */
+  body.cnav-cardfan #catjump .cj-cardfan { display: flex; gap: 0; align-items: flex-end; padding-top: 8px; }
+  .cjCard { position: relative; width: 86px; height: 112px; margin: 0 -9px; border-radius: 9px; corner-shape: squircle;
+    background: #fffdf9; box-shadow: inset 0 0 0 1px #ece2d4, 0 1px 2px rgba(70,55,40,.10), 0 10px 18px -12px rgba(70,55,40,.5);
+    display: flex; align-items: center; justify-content: center; transform-origin: 50% 120%;
+    transition: transform .16s ease; }
+  .cjCard.r1 { transform: rotate(-9deg); z-index: 1; }
+  .cjCard.r2 { z-index: 3; }
+  .cjCard.r3 { transform: rotate(9deg); z-index: 2; }
+  .cjCard.r1:hover { transform: rotate(-9deg) translateY(-8px); }
+  .cjCard.r2:hover { transform: translateY(-8px); }
+  .cjCard.r3:hover { transform: rotate(9deg) translateY(-8px); }
+  .cjCard b { font-size: 13px; color: var(--ink-soft); text-align: center; padding: 0 10px; line-height: 1.25; }
+  .cjRank { position: absolute; top: 7px; left: 9px; display: flex; flex-direction: column; align-items: center;
+    font-size: 14px; font-weight: bold; line-height: 1.05; }
+  .cjRank em { font-style: normal; font-size: 12px; }
+  .cjRank.sBlack { color: #343a40; }
+  .cjRank.sRed { color: #c92a2a; }
+  /* index divider tabs: the page below is filed in three drawers */
+  body.cnav-tabs #catjump .cj-tabs { display: block; }
+  .cjTabRow { display: flex; justify-content: center; gap: 8px; align-items: flex-end;
+    border-bottom: 1px solid #e5dccf; padding: 0 12px; }
+  .sceneTxt .cjTabRow { justify-content: flex-start; }
+  .cjTab { display: inline-flex; align-items: center; gap: 7px; height: 36px; padding: 0 16px;
+    background: var(--surface, #fff); border-radius: 12px 12px 0 0; corner-shape: squircle;
+    box-shadow: inset 0 3px 0 var(--tc), inset 0 0 0 1px #e5dccf;
+    font-size: 15px; font-weight: bold; color: var(--ink-soft); position: relative; top: 1px; }
+  .cjTab .cjCount { color: var(--muted); font-weight: normal; font-size: 13px; }
+  .cjTab:hover { background: #fdfaf4; color: var(--ink); }
+  /* casino chips: push a chip, get taken to the table */
+  body.cnav-casino #catjump .cj-casino { display: flex; gap: 24px; align-items: flex-start; padding-top: 4px; }
+  .cjCasino { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .cjChipC { width: 56px; height: 56px; border-radius: 50%; position: relative; display: flex;
+    align-items: center; justify-content: center; background: var(--cc); color: var(--pfg);
+    box-shadow: var(--tileshadow); transition: transform .15s ease; }
+  .cjChipC::before { content: ""; position: absolute; inset: 4px; border-radius: 50%;
+    border: 2px dashed rgba(255,255,255,.7); }
+  .cjChipC::after { content: ""; position: absolute; inset: 0; border-radius: 50%;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,.75); mix-blend-mode: soft-light; }
+  .cjChipC b { font-size: 17px; }
+  .cjCasino .cjName { font-size: 14px; font-weight: bold; color: var(--ink-soft); }
+  .cjCasino:hover .cjChipC { transform: translateY(-4px) rotate(8deg); }
+  .cjCasino:hover .cjName { color: var(--accent-deep); }
+  /* hanging ribbons: hand-hung signs over the tables, V-notched tails */
+  body.cnav-ribbons #catjump .cj-ribbons { display: flex; gap: 14px; align-items: flex-start; }
+  .cjRibbon { width: 136px; height: 58px; padding-bottom: 10px; box-sizing: border-box;
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 78%, 0 100%);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
+    background: linear-gradient(180deg, color-mix(in srgb, var(--rc) 86%, white), var(--rc));
+    color: var(--pfg); transition: height .15s ease; }
+  .cjRibbon.isMid { height: 66px; }
+  .cjRibbon:hover { height: 68px; }
+  .cjRibbon.isMid:hover { height: 76px; }
+  .cjRibbon b { font-size: 14px; }
+  .cjRibbon span { font-size: 12px; opacity: .85; }
+
   /* popular games — 1|2|1 then 2|1|2 */
   .popular { flex: 1; width: 100%; max-width: 1160px; margin: 0 auto; padding: 6px 24px 34px; }
   /* section titles: attached to their section (12px below), separated from
@@ -1220,6 +1366,7 @@
   </div>
   <div class="swgroup">
     <div class="swhead">Page</div>
+    <label class="ctl"><span>Category nav</span><select id="sel-cnav"></select></label>
     <label class="ctl"><span>Catalog layout</span><select id="sel-catalog"></select></label>
     <label class="ctl"><span>Ad rail</span><select id="sel-rail"></select></label>
     <label class="ctl"><span>Live stats</span><select id="sel-stats"></select></label>
@@ -1330,6 +1477,78 @@
   <div class="heroarea">
     <h3 id="herotitle">Play card games in good company</h3>
     <p id="herosub">Classic card games. Join a table or play solo. Free to play, hard to stop.</p>
+    <nav id="catjump" aria-label="Game categories">
+      <p class="cjLine cj-subline">Find your corner of the room: <a href="#sec-tt">trick-taking</a>, <a href="#sec-rummy">rummy</a> or <a href="#sec-classic">the classics</a>.</p>
+      <div class="cjLine cj-signs">
+        <a class="cjSign" href="#sec-tt">Trick-taking <b>10</b></a>
+        <a class="cjSign" href="#sec-rummy">Rummy <b>4</b></a>
+        <a class="cjSign" href="#sec-classic">Classics <b>4</b></a>
+      </div>
+      <p class="cjLine cj-woven">Pick a family: <a class="cjTag" href="#sec-tt">trick-taking</a> <a class="cjTag" href="#sec-rummy">rummy</a> <a class="cjTag" href="#sec-classic">classics</a></p>
+      <div class="cjLine cj-chips">
+        <a class="cjChip" href="#sec-tt">Trick-taking <span class="cjCount">&middot; 10</span></a>
+        <a class="cjChip" href="#sec-rummy">Rummy <span class="cjCount">&middot; 4</span></a>
+        <a class="cjChip" href="#sec-classic">Classics <span class="cjCount">&middot; 4</span></a>
+      </div>
+      <div class="cjLine cj-btntiles">
+        <a class="cjBtn c1" href="#sec-tt">Trick-taking</a>
+        <a class="cjBtn c2" href="#sec-rummy">Rummy</a>
+        <a class="cjBtn c3" href="#sec-classic">Classics</a>
+      </div>
+      <div class="cjLine cj-minitiles">
+        <a class="cjTile c1" href="#sec-tt"><b>Trick-taking</b><span>10 games &darr;</span></a>
+        <a class="cjTile c2" href="#sec-rummy"><b>Rummy</b><span>4 games &darr;</span></a>
+        <a class="cjTile c3" href="#sec-classic"><b>Classics</b><span>4 games &darr;</span></a>
+      </div>
+      <div class="cjLine cj-capsule">
+        <span class="cjCap">
+          <a href="#sec-tt">Trick-taking <span class="cjCount">10</span></a>
+          <a href="#sec-rummy">Rummy <span class="cjCount">4</span></a>
+          <a href="#sec-classic">Classics <span class="cjCount">4</span></a>
+        </span>
+      </div>
+      <div class="cjLine cj-quiet">
+        <a class="cjQuiet" href="#sec-tt">Trick-taking</a>
+        <a class="cjQuiet" href="#sec-rummy">Rummy</a>
+        <a class="cjQuiet" href="#sec-classic">Classics</a>
+      </div>
+      <div class="cjLine cj-rulebook">
+        <div class="cjBook">
+          <p class="cjBookKick">What&rsquo;s in the house tonight</p>
+          <a href="#sec-tt"><span>Trick-taking games</span><i></i><b>10</b></a>
+          <a href="#sec-rummy"><span>Rummy games</span><i></i><b>4</b></a>
+          <a href="#sec-classic"><span>Classic games</span><i></i><b>4</b></a>
+        </div>
+      </div>
+      <div class="cjLine cj-question">
+        <div class="cjQ">
+          <p class="cjQAsk">What do you feel like playing?</p>
+          <p class="cjQAns"><a href="#sec-tt">Trick-taking</a><span class="cjSuit">&spades;</span><a href="#sec-rummy">Rummy</a><span class="cjSuit">&hearts;</span><a href="#sec-classic">The classics</a></p>
+        </div>
+      </div>
+      <div class="cjLine cj-cardfan">
+        <a class="cjCard r1" href="#sec-tt"><span class="cjRank sBlack">10<em>&spades;</em></span><b>Trick-taking</b></a>
+        <a class="cjCard r2" href="#sec-rummy"><span class="cjRank sRed">4<em>&diams;</em></span><b>Rummy</b></a>
+        <a class="cjCard r3" href="#sec-classic"><span class="cjRank sRed">4<em>&hearts;</em></span><b>Classics</b></a>
+      </div>
+      <div class="cjLine cj-tabs">
+        <div class="cjTabRow">
+          <a class="cjTab" style="--tc: var(--p3)" href="#sec-tt">Trick-taking <span class="cjCount">10</span></a>
+          <a class="cjTab" style="--tc: var(--p4)" href="#sec-rummy">Rummy <span class="cjCount">4</span></a>
+          <a class="cjTab" style="--tc: var(--p1)" href="#sec-classic">Classics <span class="cjCount">4</span></a>
+        </div>
+      </div>
+      <div class="cjLine cj-casino">
+        <a class="cjCasino" href="#sec-tt"><span class="cjChipC" style="--cc: var(--p3)"><b>10</b></span><span class="cjName">Trick-taking</span></a>
+        <a class="cjCasino" href="#sec-rummy"><span class="cjChipC" style="--cc: var(--p4)"><b>4</b></span><span class="cjName">Rummy</span></a>
+        <a class="cjCasino" href="#sec-classic"><span class="cjChipC" style="--cc: var(--p1)"><b>4</b></span><span class="cjName">Classics</span></a>
+      </div>
+      <div class="cjLine cj-ribbons">
+        <a class="cjRibbon" style="--rc: var(--p3)" href="#sec-tt"><b>Trick-taking</b><span>10 games</span></a>
+        <a class="cjRibbon isMid" style="--rc: var(--p4)" href="#sec-rummy"><b>Rummy</b><span>4 games</span></a>
+        <a class="cjRibbon" style="--rc: var(--p1)" href="#sec-classic"><b>Classics</b><span>4 games</span></a>
+      </div>
+    </nav>
     <div class="stats statsBrief">
       <span class="st"><span class="ldot"></span><b class="odo" id="st-players2" data-v="1214"></b> players online</span>
       <span class="sep">·</span>
@@ -1976,6 +2195,24 @@
     ["none", "None"]
   ];
   var curAvshadow = "ghostramp";
+  var CNAVS = [
+    ["none", "None (default)"],
+    ["signs", "Gold signs (solitaire Playing tag)"],
+    ["woven", "Gold tags woven into a sentence"],
+    ["subline", "Prose line under the subtitle"],
+    ["chips", "White chips with counts"],
+    ["btntiles", "Color button tiles"],
+    ["minitiles", "Mini game tiles with counts"],
+    ["capsule", "Segmented capsule"],
+    ["quiet", "Quiet bold words + arrows"],
+    ["rulebook", "Rulebook contents (leader dots)"],
+    ["question", "The host's question"],
+    ["cardfan", "A hand of three cards"],
+    ["tabs", "Index divider tabs"],
+    ["casino", "Casino chips"],
+    ["ribbons", "Hanging ribbons"]
+  ];
+  var curCnav = "none";
   var palShown = false;
   function moveLobby() {
     var lobby = document.getElementById("lobbyDemo");
@@ -1984,7 +2221,7 @@
   }
   function applyBody() {
     var scene = curLayout.indexOf("sc") === 0;
-    document.body.className = curBase + " play-" + curPlay + " layout-" + curLayout + (scene ? " scenehero" : "") + " font-" + curFont + " shadow-" + curShadow + " edge-" + curEdge + " tex-" + curTexture + " cat-" + curCatalog + " stats-" + curStats + " menu-" + curMenu + " counter-" + curCounter + " rail-" + curRail + " playbtn-" + curPlayBtn + " avedge-" + curAvedge + " avsh-" + curAvshadow + (palShown ? " show-palette" : "");
+    document.body.className = curBase + " play-" + curPlay + " layout-" + curLayout + (scene ? " scenehero" : "") + " font-" + curFont + " shadow-" + curShadow + " edge-" + curEdge + " tex-" + curTexture + " cat-" + curCatalog + " stats-" + curStats + " menu-" + curMenu + " counter-" + curCounter + " rail-" + curRail + " playbtn-" + curPlayBtn + " avedge-" + curAvedge + " avsh-" + curAvshadow + " cnav-" + curCnav + (palShown ? " show-palette" : "");
     var ht = document.getElementById("herotitle"), hs = document.getElementById("herosub");
     if (scene) {
       if (curLayout === "scpyr") {
@@ -2013,12 +2250,14 @@
     document.getElementById("sel-playbtn").value = curPlayBtn;
     document.getElementById("sel-avedge").value = curAvedge;
     document.getElementById("sel-avshadow").value = curAvshadow;
+    document.getElementById("sel-cnav").value = curCnav;
     moveLobby();
     if (typeof renderPlayset === "function") renderPlayset();
   }
   var sceneTxt = null;
   function sceneParts() {
     return [document.getElementById("herotitle"), document.getElementById("herosub"),
+      document.getElementById("catjump"),
       document.querySelector(".statsBrief"), document.querySelector(".statsFull"),
       document.querySelector(".statsCapsule:not(.isShort)"), document.querySelector(".statsCapsule.isShort"),
       document.querySelector(".statsSign")];
@@ -2071,7 +2310,8 @@
     "sel-stats": ["capsuleshort", "signsolid", "capsule", "signbtn", "signpulse", "signtag", "brief"],
     "sel-menu": ["centerlight", "centerlighteggshell", "centerlightporc", "center", "centerporcelain", "current", "crest", "gthreads"],
     "sel-rail": ["suits", "cards", "band"],
-    "sel-avedge": ["luminosity", "lum-deep", "lum-dark", "lum-light", "lum-soft", "none", "ink", "color-burn"]
+    "sel-avedge": ["luminosity", "lum-deep", "lum-dark", "lum-light", "lum-soft", "none", "ink", "color-burn"],
+    "sel-cnav": ["none", "signs", "woven", "cardfan", "minitiles", "btntiles"]
   };
   function buildSel(id, list, setter) {
     var el = document.getElementById(id);
@@ -2110,6 +2350,7 @@
   buildSel("sel-playbtn", PLAYBTNS, function (v) { curPlayBtn = v; });
   buildSel("sel-avedge", AVEDGES, function (v) { curAvedge = v; });
   buildSel("sel-avshadow", AVSHADOWS, function (v) { curAvshadow = v; });
+  buildSel("sel-cnav", CNAVS, function (v) { curCnav = v; });
 
   var palBtn = document.getElementById("palette-toggle");
   palBtn.onclick = function () {
