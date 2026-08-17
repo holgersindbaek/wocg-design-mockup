@@ -272,9 +272,12 @@
 
   /* avatar shadow coats (Avatar shadow switcher): chained after whichever rim
      coat is active via --avshadow, so edge and shadow switch independently.
-     Default = the tiles' soft layered ramp, neutral ink so it grounds on the
-     felt without going muddy; the shadow is cast from the bordered silhouette */
-  body { --avshadow: drop-shadow(0 1px 1px rgba(0,0,0,.14)) drop-shadow(0 2px 3px rgba(0,0,0,.14)) drop-shadow(0 5px 9px rgba(0,0,0,.18)); }
+     Default = hover: the "x playing" ghost's four-way .32 ring hugs the
+     bordered silhouette, then a layered all-around ambient floats the avatar
+     over the felt - shadow on every side, not just below */
+  body { --avshadow: drop-shadow(1px 0 rgba(0,0,0,.32)) drop-shadow(-1px 0 rgba(0,0,0,.32)) drop-shadow(0 1px rgba(0,0,0,.32)) drop-shadow(0 -1px rgba(0,0,0,.32)) drop-shadow(0 0 3px rgba(0,0,0,.20)) drop-shadow(0 0 9px rgba(0,0,0,.18)); }
+  body.avsh-ambient { --avshadow: drop-shadow(0 0 2px rgba(0,0,0,.18)) drop-shadow(0 0 6px rgba(0,0,0,.16)) drop-shadow(0 0 12px rgba(0,0,0,.14)); }
+  body.avsh-tilesoft { --avshadow: drop-shadow(0 1px 1px rgba(0,0,0,.14)) drop-shadow(0 2px 3px rgba(0,0,0,.14)) drop-shadow(0 5px 9px rgba(0,0,0,.18)); }
   body.avsh-grounded { --avshadow: drop-shadow(0 1px 1px rgba(0,0,0,.26)) drop-shadow(0 3px 4px rgba(0,0,0,.18)) drop-shadow(0 7px 12px rgba(0,0,0,.16)); }
   body.avsh-game { --avshadow: drop-shadow(0 0 8px rgba(0,0,0,.24)); }
   body.avsh-none { --avshadow: drop-shadow(0 0 0 rgba(0,0,0,0)); }
@@ -501,14 +504,14 @@
   body.shadow-flat .gtile:hover { box-shadow: 0 8px 18px rgba(0,0,0,.12); }
 
   /* ===== inner-edge experiments (tiles) ===== */
-  body.edge-black25 .gimg::after { box-shadow: inset 0 0 0 1px rgba(0,0,0,.25); }
-  body.edge-bevel .gimg::after { box-shadow: inset 0 1px 0 rgba(255,255,255,.30), inset 0 0 0 1px rgba(0,0,0,.22); }
-  body.edge-overlay .gimg::after { box-shadow: inset 0 0 0 1px rgba(255,255,255,.65); mix-blend-mode: overlay; }
-  body.edge-softlight .gimg::after { box-shadow: inset 0 0 0 1px rgba(0,0,0,.75); mix-blend-mode: soft-light; }
-  body.edge-lightring .gimg::after { box-shadow: inset 0 0 0 1px rgba(255,255,255,.35); }
-  body.edge-burn .gimg::after { box-shadow: inset 0 0 0 1px rgba(115,115,115,.9); mix-blend-mode: color-burn; }
-  body.edge-black40 .gimg::after { box-shadow: inset 0 0 0 1px rgba(0,0,0,.4); }
-  body.edge-none .gimg::after { box-shadow: none; }
+  body.edge-black25 .gimg::after, body.edge-black25 #lobbyDemo .tableListing .header::after { box-shadow: inset 0 0 0 1px rgba(0,0,0,.25); }
+  body.edge-bevel .gimg::after, body.edge-bevel #lobbyDemo .tableListing .header::after { box-shadow: inset 0 1px 0 rgba(255,255,255,.30), inset 0 0 0 1px rgba(0,0,0,.22); }
+  body.edge-overlay .gimg::after, body.edge-overlay #lobbyDemo .tableListing .header::after { box-shadow: inset 0 0 0 1px rgba(255,255,255,.65); mix-blend-mode: overlay; }
+  body.edge-softlight .gimg::after, body.edge-softlight #lobbyDemo .tableListing .header::after { box-shadow: inset 0 0 0 1px rgba(0,0,0,.75); mix-blend-mode: soft-light; }
+  body.edge-lightring .gimg::after, body.edge-lightring #lobbyDemo .tableListing .header::after { box-shadow: inset 0 0 0 1px rgba(255,255,255,.35); }
+  body.edge-burn .gimg::after, body.edge-burn #lobbyDemo .tableListing .header::after { box-shadow: inset 0 0 0 1px rgba(115,115,115,.9); mix-blend-mode: color-burn; }
+  body.edge-black40 .gimg::after, body.edge-black40 #lobbyDemo .tableListing .header::after { box-shadow: inset 0 0 0 1px rgba(0,0,0,.4); }
+  body.edge-none .gimg::after, body.edge-none #lobbyDemo .tableListing .header::after { box-shadow: none; }
 
   /* the live count on the art, bottom-left, all bold, text aligned 12px
      from the edge like the meta text below; three toggleable coats
@@ -792,7 +795,13 @@
     background: radial-gradient(circle at 50% bottom, rgba(255,255,255,0.16) 100%, rgba(255,255,255,0.08) 100%),
       radial-gradient(circle at 50% bottom, rgba(255,255,255,0.32) 0%, rgba(255,255,255,0) 64%),
       radial-gradient(circle at 50% calc(100% - 64px), rgba(255,255,255,0.32) 0%, rgba(255,255,255,0) 36%);
-    box-shadow: inset 0 0 0 1px #343A40; border-radius: 20px 20px 0 0; }
+    border-radius: 20px 20px 0 0; }
+  /* the felt's inner ring, pulled out of the faded glow layer above so it
+     actually reads: the same overlay as the game-tile art ring (.gimg::after),
+     same squircle radius, and it follows the Tile edge switcher */
+  #lobbyDemo .tableListing .header::after { content: ""; position: absolute; inset: 0; z-index: 1;
+    border-radius: 20px 20px 0 0; corner-shape: squircle; pointer-events: none;
+    box-shadow: inset 0 0 0 1px rgba(52,58,64,0.4); }
   #lobbyDemo .playersContainer { position: absolute; top: 8px; left: 12px; right: 12px; bottom: 12px; display: flex; flex-wrap: wrap; }
   #lobbyDemo .spacer30 { flex-basis: 30%; max-width: 30%; }
   #lobbyDemo .spacer20 { flex-basis: 20%; max-width: 20%; }
@@ -1950,14 +1959,16 @@
     .concat(LUMVARIANTS.map(function (v) {
       return [v[0], "luminosity " + v[0].slice(4) + " — " + v[3]];
     }));
-  var curAvedge = "luminosity";
+  var curAvedge = "lum-soft";
   var AVSHADOWS = [
+    ["hover", "Hover: ghost ring + all-around ambient"],
+    ["ambient", "All-around ambient, layered"],
     ["tilesoft", "Tile-soft: layered ramp (like the tiles)"],
     ["grounded", "Grounded: contact + ramp"],
     ["game", "Game ambient 8px (site today)"],
     ["none", "None"]
   ];
-  var curAvshadow = "tilesoft";
+  var curAvshadow = "hover";
   var palShown = false;
   function moveLobby() {
     var lobby = document.getElementById("lobbyDemo");
