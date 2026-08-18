@@ -841,6 +841,20 @@
     text-shadow: -1px -1px 0 rgba(0,0,0,.32), 1px -1px 0 rgba(0,0,0,.32),
       -1px 1px 0 rgba(0,0,0,.32), 1px 1px 0 rgba(0,0,0,.32); }
   .gchip b { display: inline-block; text-align: center; font-variant-numeric: tabular-nums; }
+  /* ghost-dot: the naked number with a still green dot as the live signal -
+     no word, no ping. The chip's font collapses to zero so the "playing"
+     text node vanishes; the number comes back at 14. The underlay clone
+     gets the same inline dot box so its blended outline stays aligned. */
+  body.counter-ghostdot .gchip { left: 12px; bottom: 10px; line-height: 1; font-size: 0; }
+  body.counter-ghostdot .gchip b { font-size: 14px; }
+  body.counter-ghostdot .gchip::before, body.counter-ghostdot .gchip .gunder::before {
+    content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+    margin-right: 6px; vertical-align: 2px; background: #2f9e44;
+    box-shadow: 0 0 0 1px rgba(0,0,0,.18); }
+  body.counter-ghostdot .gchip .gunder { mix-blend-mode: soft-light;
+    text-shadow: -1px -1px 0 rgba(0,0,0,.32), 1px -1px 0 rgba(0,0,0,.32),
+      -1px 1px 0 rgba(0,0,0,.32), 1px 1px 0 rgba(0,0,0,.32); }
+  body.counter-ghostdot .gchip .gunder::before { background: transparent; box-shadow: none; }
   .gimg:hover .gchip { opacity: 0; }
   .heroarea { position: relative; overflow: hidden; min-height: 230px; }
   .heroarea > * { position: relative; z-index: 1; }
@@ -1364,11 +1378,6 @@
   body[class*="cnav-sub-"] .sceneTxt #herosub { font-size: 16px; max-width: 416px; }
   body.layout-scsplit .sceneTxt #herosub { max-width: none; }
   .sceneTxt .stats { margin-top: 28px; justify-content: flex-start; }
-  /* optical alignment: the pill's rounded low-contrast edge reads as an
-     indent beside the crisp text rail, so the content (the LIVE dot) sits
-     on the rail and the chrome hangs left - hanging punctuation for pills */
-  body.layout-scrab .sceneTxt .statsCapsule .capsule { margin-left: -13px; }
-  body.stats-capsulesm.layout-scrab .sceneTxt .statsCapsule .capsule { margin-left: -12px; }
   body.layout-scw9b .sceneTxt { left: 24px; top: 26px; }
   body.layout-scsplit .sceneTxt { left: 0; right: 0; top: 204px; text-align: center; transform-origin: top center; }
   /* optical center: fitScene sets the top inline (45% of the free height,
@@ -2245,7 +2254,8 @@
   var COUNTERS = [
     ["tab", "Site corner tab (docked)"],
     ["scrim", "Ghost on a scrim"],
-    ["ghost", "Ghost, naked with dark halo"]
+    ["ghost", "Ghost, naked with dark halo"],
+    ["ghostdot", "Ghost: still dot + naked number"]
   ];
   var curShadow = "soft", curEdge = "softlight", curTexture = "grain", curCatalog = "split", curStats = "capsule2", curMenu = "centerlight", curCounter = "ghost", curRail = "suits", curPlayBtn = "green";
   /* every CSS blend mode as an avatar-rim coat: one filter per mode is stamped
