@@ -168,8 +168,48 @@
     content: ""; position: absolute; left: 0; bottom: -.1em; height: 3px; pointer-events: none;
     background: radial-gradient(circle, var(--dot) 1.05px, transparent 1.4px) left center / 6px 3px repeat-x; }
   .v-pick .sub .cjw::after, .v-pickital .sub .cjw::after { right: 0; --dot: #868E96; }
-  .v-pick .sub .cjw::before, .v-pickital .sub .cjw::before { width: 0; --dot: var(--ink-soft); z-index: 1; transition: width .35s ease-out; }
+  .v-pick .sub .cjw::before, .v-pickital .sub .cjw::before { width: 0; --dot: var(--ink-soft); z-index: 1; transition: width .18s ease-out; }
   .v-pick .sub .cjw:hover::before, .v-pickital .sub .cjw:hover::before { width: 100%; }
+
+  /* category wave: the colored dots sweep fast, and the word takes the
+     color the moment the wave reaches the end (delayed color transition) */
+  .v-pickcatwave .sub .cjw { text-decoration: none; position: relative; transition: color .12s ease; }
+  .v-pickcatwave .sub .cjw::after, .v-pickcatwave .sub .cjw::before {
+    content: ""; position: absolute; left: 0; bottom: -.1em; height: 3px; pointer-events: none;
+    background: radial-gradient(circle, var(--dot) 1.05px, transparent 1.4px) left center / 6px 3px repeat-x; }
+  .v-pickcatwave .sub .cjw::after { right: 0; --dot: #868E96; }
+  .v-pickcatwave .sub .cjw::before { width: 0; z-index: 1; transition: width .18s ease-out; }
+  .v-pickcatwave .sub .cjw:hover::before { width: 100%; }
+  .v-pickcatwave .sub .cjw.c1::before { --dot: color-mix(in oklab, var(--p3) 75%, var(--ink) 25%); }
+  .v-pickcatwave .sub .cjw.c2::before { --dot: color-mix(in oklab, var(--p4) 75%, var(--ink) 25%); }
+  .v-pickcatwave .sub .cjw.c3::before { --dot: color-mix(in oklab, var(--p1) 75%, var(--ink) 25%); }
+  .v-pickcatwave .sub .cjw.c1:hover { color: color-mix(in oklab, var(--p3) 55%, var(--ink) 45%); transition: color .12s ease .18s; }
+  .v-pickcatwave .sub .cjw.c2:hover { color: color-mix(in oklab, var(--p4) 55%, var(--ink) 45%); transition: color .12s ease .18s; }
+  .v-pickcatwave .sub .cjw.c3:hover { color: color-mix(in oklab, var(--p1) 55%, var(--ink) 45%); transition: color .12s ease .18s; }
+
+  /* category fill: no wave, the whole line and the word color at once */
+  .v-pickcatfill .sub .cjw { text-decoration: none; position: relative; }
+  .v-pickcatfill .sub .cjw::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: -.1em; height: 3px; pointer-events: none;
+    --dot: #868E96;
+    background: radial-gradient(circle, var(--dot) 1.05px, transparent 1.4px) left center / 6px 3px repeat-x; }
+  .v-pickcatfill .sub .cjw.c1:hover { color: color-mix(in oklab, var(--p3) 55%, var(--ink) 45%); }
+  .v-pickcatfill .sub .cjw.c2:hover { color: color-mix(in oklab, var(--p4) 55%, var(--ink) 45%); }
+  .v-pickcatfill .sub .cjw.c3:hover { color: color-mix(in oklab, var(--p1) 55%, var(--ink) 45%); }
+  .v-pickcatfill .sub .cjw.c1:hover::after { --dot: color-mix(in oklab, var(--p3) 75%, var(--ink) 25%); }
+  .v-pickcatfill .sub .cjw.c2:hover::after { --dot: color-mix(in oklab, var(--p4) 75%, var(--ink) 25%); }
+  .v-pickcatfill .sub .cjw.c3:hover::after { --dot: color-mix(in oklab, var(--p1) 75%, var(--ink) 25%); }
+
+  /* thick wavy underline in the category colors, plain and bold words */
+  .v-pickwavy .sub .cjw, .v-pickwavybold .sub .cjw { color: var(--ink-soft);
+    text-decoration: underline wavy; text-decoration-thickness: 2.5px; text-underline-offset: 5px; }
+  .v-pickwavybold .sub .cjw { font-weight: bold; }
+  .v-pickwavy .sub .cjw.c1, .v-pickwavybold .sub .cjw.c1 { text-decoration-color: var(--p3); }
+  .v-pickwavy .sub .cjw.c2, .v-pickwavybold .sub .cjw.c2 { text-decoration-color: var(--p4); }
+  .v-pickwavy .sub .cjw.c3, .v-pickwavybold .sub .cjw.c3 { text-decoration-color: var(--p1); }
+  .v-pickwavy .sub .cjw.c1:hover, .v-pickwavybold .sub .cjw.c1:hover { color: color-mix(in oklab, var(--p3) 55%, var(--ink) 45%); }
+  .v-pickwavy .sub .cjw.c2:hover, .v-pickwavybold .sub .cjw.c2:hover { color: color-mix(in oklab, var(--p4) 55%, var(--ink) 45%); }
+  .v-pickwavy .sub .cjw.c3:hover, .v-pickwavybold .sub .cjw.c3:hover { color: color-mix(in oklab, var(--p1) 55%, var(--ink) 45%); }
 
   /* ===== card-native ===== */
   .v-piprule .sub .cjw { font-weight: bold; color: var(--ink-soft); position: relative; }
@@ -663,6 +703,30 @@
 
   <section class="block dotx v-pickital">
     <p class="tag">Same, italic not bold</p>
+    <h3 class="title">Play card games<br>in good company</h3>
+    <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
+  </section>
+
+  <section class="block dotx v-pickcatwave">
+    <p class="tag">Hover: category-color wave, then the word takes the color</p>
+    <h3 class="title">Play card games<br>in good company</h3>
+    <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
+  </section>
+
+  <section class="block dotx v-pickcatfill">
+    <p class="tag">Hover: the whole line and the word color at once</p>
+    <h3 class="title">Play card games<br>in good company</h3>
+    <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
+  </section>
+
+  <section class="block v-pickwavy">
+    <p class="tag">Thicker wavy underline in category colors, not bold</p>
+    <h3 class="title">Play card games<br>in good company</h3>
+    <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
+  </section>
+
+  <section class="block v-pickwavybold">
+    <p class="tag">Thicker wavy underline in category colors, bold</p>
     <h3 class="title">Play card games<br>in good company</h3>
     <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
   </section>
