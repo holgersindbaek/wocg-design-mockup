@@ -956,12 +956,14 @@
 
   /* ===== site footer: the live site's footer content on the Evernote band ===== */
   .sitefooter { background: #F4EEE5; border-top: 1px solid #E7E7E7; color: var(--ink); }
-  /* footer variants: the hand-drawn squiggle replaces the line divider */
+  /* footer variants: a regular wavy line (a seamless sine tile, like the
+     wavy underline writ large) replaces the line divider */
   body.foot-wavyline .sitefooter, body.foot-wavybare .sitefooter { border-top: none; position: relative; }
   body.foot-wavyline .sitefooter::before, body.foot-wavybare .sitefooter::before { content: "";
-    position: absolute; left: 0; right: 0; top: -5px; height: 10px; pointer-events: none;
-    -webkit-mask: var(--squiggle) center / 100% 100% no-repeat;
-    mask: var(--squiggle) center / 100% 100% no-repeat;
+    --wavyline: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 8'%3E%3Cpath d='M0 4C2.5 1 7.5 1 10 4C12.5 7 17.5 7 20 4' fill='none' stroke='white' stroke-width='2'/%3E%3C/svg%3E");
+    position: absolute; left: 0; right: 0; top: -4px; height: 8px; pointer-events: none;
+    -webkit-mask: var(--wavyline) left center / 20px 8px repeat-x;
+    mask: var(--wavyline) left center / 20px 8px repeat-x;
     background-color: #D9D2C4; }
   body.foot-wavybare .sitefooter { background: transparent; }
   .sitefooter footer { max-width: 1160px; margin: 0 auto; padding: 20px 24px 26px;
@@ -2446,8 +2448,8 @@
   var curCcopy = "ampwith";
   var FOOTERS = [
     ["line", "Line divider + cream band (site today)"],
-    ["wavyline", "Squiggle divider + cream band"],
-    ["wavybare", "Squiggle divider, no band"]
+    ["wavyline", "Wavy divider + cream band"],
+    ["wavybare", "Wavy divider, no band"]
   ];
   var curFooter = "line";
   function applyCnavSub() {
