@@ -43,6 +43,11 @@
   body.font-ppedit    #herotitle, body.font-ppedit    .pophead, body.font-ppedit    .wrap h2 { font-family: "PP Editorial New", serif; font-weight: 400; }
   body.font-ppeditold #herotitle, body.font-ppeditold .pophead, body.font-ppeditold .wrap h2 { font-family: "PP Editorial Old", serif; font-weight: 400; }
   body.font-vollkorn  #herotitle, body.font-vollkorn  .pophead, body.font-vollkorn  .wrap h2 { font-family: "Vollkorn", serif; font-weight: 500; }
+  /* the Fauna exact recipe: theartof.app/fauna sets Vollkorn Regular 400 and
+     narrows the display line to 90% with a transform, not a condensed face */
+  body.font-fauna     #herotitle, body.font-fauna     .pophead, body.font-fauna     .wrap h2 { font-family: "Vollkorn", serif; font-weight: 400; }
+  body.font-fauna #herotitle { transform: scaleX(0.9); }
+  body.font-fauna .sceneTxt #herotitle { transform-origin: left center; }
   body.font-poynter   #herotitle, body.font-poynter   .pophead, body.font-poynter   .wrap h2 { font-family: "Poynter Old Style Display", serif; font-weight: 600; }
   body.font-frauncesoa #herotitle, body.font-frauncesoa .pophead, body.font-frauncesoa .wrap h2 { font-family: "Fraunces", serif; font-weight: 480; font-optical-sizing: auto; }
   body.font-poynterbold #herotitle, body.font-poynterbold .pophead, body.font-poynterbold .wrap h2 { font-family: "Poynter Old Style Display", serif; font-weight: 700; }
@@ -1137,14 +1142,15 @@
   body.scenehero .heroarea { display: block; height: 0; min-height: 0; padding: 0; overflow: visible; }
   body.scenehero #popsec { padding-top: 22px; }
   body.scenehero #popsec .pophead { display: none; }
-  /* the canvas is a fixed 1112-wide design frame; JS scales it (text included,
-     since the hero text moves into .sceneTxt inside the canvas) to fit the
-     content column beside the ad rail */
+  /* two scaling modes: the scrab scene is FLUID (fitScene sizes a --mw x --mh
+     mosaic box and the tiles ride fractions of it, so tile boxes scale while
+     every font keeps its real ladder size); the archived scenes still scale
+     a fixed 1112-wide frame with a transform, text included */
   body.scenehero .games { display: block; position: relative; height: var(--sch, 640px); }
   body.scenehero .games .gtile { position: absolute; }
   body.scenehero .pos-d .glogo { max-width: 64%; max-height: 72%; }
-  /* the text layer counter-scales (1/k) against the canvas scale, so the
-     title, subtitle and capsule keep their real size while tiles resize */
+  /* in the transform-scaled scenes the text layer counter-scales (1/k)
+     against upscaling; in the fluid scrab scene it simply never scales */
   .sceneTxt { position: absolute; z-index: 5; transform-origin: top left; }
   .sceneTxt h3 { font-size: 40px; font-weight: bold; letter-spacing: -0.01em; line-height: 1.15; margin: 0 0 6px; }
   .sceneTxt > p { color: var(--muted); font-size: 20px; margin: 0; }
@@ -1158,7 +1164,8 @@
   .sceneTxt .stats { margin-top: 26px; justify-content: flex-start; }
   body.layout-scw9b .sceneTxt { left: 24px; top: 26px; }
   body.layout-scsplit .sceneTxt { left: 0; right: 0; top: 204px; text-align: center; transform-origin: top center; }
-  /* optical center: the block floats a touch above the canvas midline */
+  /* optical center: fitScene sets the top inline (45% of the free height,
+     a touch above the midline); 138px is the pre-JS ideal-width fallback */
   body.layout-scrab .sceneTxt { left: 0; top: 138px; }
   body.layout-scstair .sceneTxt { left: 24px; top: 20px; }
   body.layout-scsplit .sceneTxt .stats { justify-content: center; }
@@ -1194,17 +1201,22 @@
   body.layout-scsplit .pos-e { left: 869px; top: 486px; width: 243px; height: 162px; }
   body.layout-scsplit .pos-g, body.layout-scsplit .pos-h, body.layout-scsplit .pos-i { display: none; }
 
-  /* Scene · The rabatment (T1), golden-sectioned: the mosaic takes 687px
-     (61.8%) and the text clearing 425px (38.2%) of the 1112 canvas — the
-     earlier 745/367 (67%) split squeezed the title; 16px seams throughout */
+  /* Scene · The rabatment (T1), golden-sectioned: text clearing 425px
+     (38.2%) and mosaic 687px (61.8%) at the ideal 1112, 16px seams. Fluid:
+     the tiles sit at fractions of the --mw x --mh mosaic box (fractions of
+     the ideal 687x517), --clx is the clearing width and --moy centers the
+     mosaic when the text column is the taller of the two. Above the ideal
+     the split stays golden; below it the clearing holds so the type never
+     scales, and the mosaic absorbs the narrowing. */
   body.layout-scrab { --sch: 517px; }
+  body.layout-scrab .games { --clx: 425px; --mw: 687px; --mh: 517px; --moy: 0px; }
   body.layout-scrab #popsec { padding-top: 24px; }
-  body.layout-scrab .pos-a { left: 425px; top: 0;     width: 447px; height: 338px; }
-  body.layout-scrab .pos-d { left: 888px; top: 0;     width: 224px; height: 161px; }
-  body.layout-scrab .pos-b { left: 888px; top: 177px; width: 224px; height: 161px; }
-  body.layout-scrab .pos-h { left: 425px; top: 354px; width: 215px; height: 163px; }
-  body.layout-scrab .pos-f { left: 656px; top: 354px; width: 216px; height: 163px; }
-  body.layout-scrab .pos-e { left: 888px; top: 354px; width: 224px; height: 163px; }
+  body.layout-scrab .pos-a { left: var(--clx); top: var(--moy); width: calc(var(--mw) * 0.65066); height: calc(var(--mh) * 0.65377); }
+  body.layout-scrab .pos-d { left: calc(var(--clx) + var(--mw) * 0.67394); top: var(--moy); width: calc(var(--mw) * 0.32606); height: calc(var(--mh) * 0.31141); }
+  body.layout-scrab .pos-b { left: calc(var(--clx) + var(--mw) * 0.67394); top: calc(var(--moy) + var(--mh) * 0.34236); width: calc(var(--mw) * 0.32606); height: calc(var(--mh) * 0.31141); }
+  body.layout-scrab .pos-h { left: var(--clx); top: calc(var(--moy) + var(--mh) * 0.68472); width: calc(var(--mw) * 0.31295); height: calc(var(--mh) * 0.31528); }
+  body.layout-scrab .pos-f { left: calc(var(--clx) + var(--mw) * 0.33624); top: calc(var(--moy) + var(--mh) * 0.68472); width: calc(var(--mw) * 0.31441); height: calc(var(--mh) * 0.31528); }
+  body.layout-scrab .pos-e { left: calc(var(--clx) + var(--mw) * 0.67394); top: calc(var(--moy) + var(--mh) * 0.68472); width: calc(var(--mw) * 0.32606); height: calc(var(--mh) * 0.31528); }
   body.layout-scrab .pos-c, body.layout-scrab .pos-g, body.layout-scrab .pos-i { display: none; }
 
   /* Scene · The pyramid (T4): full Open-tables width, text above in normal flow */
@@ -1923,6 +1935,7 @@
     ["ppedit", "PP Editorial New + BuloRounded"],
     ["ppeditold", "PP Editorial Old + BuloRounded (Where Cards Fall)"],
     ["vollkorn", "Vollkorn + BuloRounded (Art of Fauna)"],
+    ["fauna", "Vollkorn 400 squeezed 90% (Fauna exact)"],
     ["poynter", "Poynter Old Style Semibold + BuloRounded (COPAG)"],
     ["poynterbold", "Poynter Old Style Bold + BuloRounded (COPAG)"],
     ["frauncesoa", "Fraunces 480 display + BuloRounded (Ordinary Abundance)"],
@@ -2248,14 +2261,43 @@
     } else {
       games.style.transform = ""; games.style.transformOrigin = "";
       games.style.width = ""; games.style.marginRight = ""; games.style.marginBottom = "";
+      games.style.height = "";
+      SCRAB_VARS.forEach(function (p) { games.style.removeProperty(p); });
+      if (sceneTxt) sceneTxt.style.top = "";
     }
   }
+  var SCRAB_VARS = ["--clx", "--mw", "--mh", "--moy"];
   function fitScene() {
     if (document.body.className.indexOf("scenehero") === -1) return;
     var games = document.querySelector(".games");
     var avail = games.parentElement.clientWidth - 48;
+    if (document.body.classList.contains("layout-scrab")) {
+      /* fluid mode: no transforms, so the type never scales. The clearing
+         keeps its golden 38.2% above the ideal 1112 and holds 425px below
+         it; when the mosaic would drop under 400px the clearing yields down
+         to its 376px floor (the title's own 361px line plus a seam) and the
+         text wraps instead of shrinking. */
+      games.style.transform = ""; games.style.transformOrigin = "";
+      games.style.width = ""; games.style.marginRight = ""; games.style.marginBottom = "";
+      if (sceneTxt) sceneTxt.style.transform = "";
+      var clearing = Math.max(425, avail * 0.382);
+      if (avail - clearing < 400) clearing = Math.max(376, avail - 400);
+      var mw = Math.max(avail - clearing, 260);
+      var mh = mw * 517 / 687;
+      games.style.setProperty("--clx", clearing + "px");
+      games.style.setProperty("--mw", mw + "px");
+      games.style.setProperty("--mh", mh + "px");
+      var textH = (sceneTxt && sceneTxt.parentNode) ? sceneTxt.offsetHeight : 0;
+      var ch = Math.max(mh, textH + 24);
+      games.style.setProperty("--moy", ((ch - mh) / 2) + "px");
+      games.style.height = ch + "px";
+      if (sceneTxt && sceneTxt.parentNode) sceneTxt.style.top = Math.round((ch - textH) * 0.45) + "px";
+      return;
+    }
     var k = avail / 1112;
     var sch = parseFloat(getComputedStyle(document.body).getPropertyValue("--sch")) || 640;
+    games.style.height = "";
+    SCRAB_VARS.forEach(function (p) { games.style.removeProperty(p); });
     games.style.width = "1112px";
     games.style.transformOrigin = "top left";
     games.style.transform = "scale(" + k + ")";
@@ -2263,7 +2305,7 @@
     games.style.marginBottom = (sch * (k - 1)) + "px";
     /* counter-scale only against upscaling; when the canvas shrinks the text
        shrinks with it, so the longer title never collides with the mosaic */
-    if (sceneTxt && sceneTxt.parentNode) sceneTxt.style.transform = "scale(" + Math.min(1 / k, 1) + ")";
+    if (sceneTxt && sceneTxt.parentNode) { sceneTxt.style.transform = "scale(" + Math.min(1 / k, 1) + ")"; sceneTxt.style.top = ""; }
   }
   window.addEventListener("resize", fitScene);
   /* the below-tiles row lines up with the mosaic itself: measure the tiles'
