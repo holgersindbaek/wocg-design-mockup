@@ -359,10 +359,16 @@
      the page, not yet white - derived from the canvas itself */
   body.menu-centerporcelain .mbcenter { background: color-mix(in srgb, var(--canvas) 50%, white); }
   body.menu-centerband .mbcenter { background: #F4EEE5; border-bottom: 1px solid #E7E7E7; }
-  /* the footer's band and wavy divider, mirrored at the top of the page */
+  /* the footer's band and wavy divider, mirrored at the top of the page:
+     the band color is cut along the wave (::before) and the sand stroke
+     traces the same curve (::after) */
   body.menu-centerwave .mbcenter { background: #F4EEE5; border-bottom: none; position: relative; z-index: 5; }
+  body.menu-centerwave .mbcenter::before { content: ""; position: absolute; left: 0; right: 0;
+    bottom: -8px; height: 8px; pointer-events: none; background: #F4EEE5;
+    -webkit-mask: var(--wavecutdown) left center / 20px 8px repeat-x;
+            mask: var(--wavecutdown) left center / 20px 8px repeat-x; }
   body.menu-centerwave .mbcenter::after { content: ""; position: absolute; left: 0; right: 0;
-    bottom: -4px; height: 8px; pointer-events: none;
+    bottom: -8px; height: 8px; pointer-events: none;
     -webkit-mask: var(--wavedivider) left center / 20px 8px repeat-x;
             mask: var(--wavedivider) left center / 20px 8px repeat-x;
     background-color: #D9D2C4; }
@@ -423,8 +429,12 @@
     /* Slate.com's nav underline: a closed filled outline, so the stroke has
        real marker thick-thin variation instead of an even pen line */
     --brushstroke: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120.349 7.836' preserveAspectRatio='none'%3E%3Cpath fill='white' d='M.02 5.79c.13-1.199.645-2.63 1.944-2.95a24.63 24.63 0 0 1 3.873-.34q4.377-.338 8.757-.647 9.063-.64 18.136-1.139C40.604.292 48.478.002 56.364 0q5.48-.001 10.959.008 8.967.015 17.933.055 9.205.045 18.41.143c4.195.051 8.398.078 12.59.273 1.506.07 3.462.041 3.975 1.856a3.776 3.776 0 0 1-.695 3.312c-.828.818-2.524.435-3.57.4q-4.258-.142-8.515-.278-17.636-.562-35.276-.994C66.298 4.64 60.419 4.508 54.54 4.5c-6.019-.007-12.043.41-18.051.723-5.985.311-11.968.647-17.947 1.045-5.589.372-11.171.78-16.72 1.544C.49 7.996-.12 7.073.018 5.79z'/%3E%3C/svg%3E");
-    /* the divider wave shared by the footer and the centerwave menu */
-    --wavedivider: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 8'%3E%3Cpath d='M0 4C2.5 1 7.5 1 10 4C12.5 7 17.5 7 20 4' fill='none' stroke='white' stroke-width='2'/%3E%3C/svg%3E"); }
+    /* the divider wave shared by the footer and the centerwave menu: the
+       stroke, plus filled cut tiles so the band color itself ends along the
+       wave (above the curve for the menu, below it for the footer) */
+    --wavedivider: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 8'%3E%3Cpath d='M0 4C2.5 1 7.5 1 10 4C12.5 7 17.5 7 20 4' fill='none' stroke='white' stroke-width='2'/%3E%3C/svg%3E");
+    --wavecutdown: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 8'%3E%3Cpath d='M0 4C2.5 1 7.5 1 10 4C12.5 7 17.5 7 20 4L20 0L0 0Z' fill='white'/%3E%3C/svg%3E");
+    --wavecutup: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 8'%3E%3Cpath d='M0 4C2.5 1 7.5 1 10 4C12.5 7 17.5 7 20 4L20 8L0 8Z' fill='white'/%3E%3C/svg%3E"); }
   #herosub .cjw { border-bottom: none; color: inherit; white-space: nowrap; }
   /* gold signs: the online-solitaire "Playing" tag, inline in the sentence */
   body.cnav-sub-sign #herosub .cjw { display: inline-block; padding: 0 9px; border-radius: 6px;
@@ -982,8 +992,13 @@
   /* footer variants: a regular wavy line (a seamless sine tile, like the
      wavy underline writ large) replaces the line divider */
   body.foot-wavyline .sitefooter, body.foot-wavybare .sitefooter { border-top: none; position: relative; }
-  body.foot-wavyline .sitefooter::before, body.foot-wavybare .sitefooter::before { content: "";
-    position: absolute; left: 0; right: 0; top: -4px; height: 8px; pointer-events: none;
+  body.foot-wavyline .sitefooter::before { content: "";
+    position: absolute; left: 0; right: 0; top: -8px; height: 8px; pointer-events: none;
+    background: #F4EEE5;
+    -webkit-mask: var(--wavecutup) left center / 20px 8px repeat-x;
+    mask: var(--wavecutup) left center / 20px 8px repeat-x; }
+  body.foot-wavyline .sitefooter::after, body.foot-wavybare .sitefooter::after { content: "";
+    position: absolute; left: 0; right: 0; top: -8px; height: 8px; pointer-events: none;
     -webkit-mask: var(--wavedivider) left center / 20px 8px repeat-x;
     mask: var(--wavedivider) left center / 20px 8px repeat-x;
     background-color: #D9D2C4; }
@@ -2256,7 +2271,7 @@
     ["current", "Today's bar"],
     ["center", "Centered mark"],
     ["centerband", "Centered mark, Evernote band"],
-    ["centerwave", "Centered mark, band + the footer's wavy divider"],
+    ["centerwave", "Centered mark, band + the footer's wavy divider (default)"],
     ["centerlight", "Centered mark, light surface (capsule chrome)"],
     ["centerporcelain", "Centered mark, porcelain (lighter than page, not white)"],
     ["centerlightporc", "Capsule chrome, porcelain fill"],
@@ -2305,7 +2320,7 @@
     ["ghostdot", "Ghost: still dot + naked number"],
     ["ghostnum", "Ghost: naked number only (big tile keeps its word)"]
   ];
-  var curShadow = "soft", curEdge = "softlight", curTexture = "grain", curCatalog = "split", curStats = "capsule2", curMenu = "centerlight", curCounter = "ghostdot", curRail = "suits", curPlayBtn = "green";
+  var curShadow = "soft", curEdge = "softlight", curTexture = "grain", curCatalog = "split", curStats = "capsule2", curMenu = "centerwave", curCounter = "ghostdot", curRail = "suits", curPlayBtn = "green";
   /* every CSS blend mode as an avatar-rim coat: one filter per mode is stamped
      into the SVG defs (same eroded rim, #737373 @ .9 ink, only feBlend's mode
      changes) plus a matching mix-blend ring for the invitee circles */
