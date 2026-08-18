@@ -492,6 +492,86 @@
      words (loaded from unpkg on first use; words stay bold if offline) */
   body.cnav-sub-rough #herosub .cjw { font-weight: bold; color: var(--ink-soft); }
   body.cnav-sub-rough #herosub .cjw:hover { color: var(--accent-deep); }
+  /* suit-pip rule: the dotted underline with each dot recut as the
+     category's suit pip (spade/diamond/club). Masks tile at natural size;
+     stretching would destroy the geometric pips */
+  body.cnav-sub-piprule #herosub .cjw { font-weight: bold; color: var(--ink-soft); position: relative; }
+  body.cnav-sub-piprule #herosub .cjw::after { content: ""; position: absolute; left: 0; right: 0;
+    bottom: -.34em; height: 6px; pointer-events: none;
+    -webkit-mask: var(--pip) left center / 11px 6px repeat-x;
+            mask: var(--pip) left center / 11px 6px repeat-x; }
+  body.cnav-sub-piprule #herosub .cjw.c1::after {
+    background-color: color-mix(in oklab, var(--p3) 55%, var(--ink) 45%);
+    --pip: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 11 6'%3E%3Cpath d='M3 0C3 1.9 6 2.6 6 4.3a1.6 1.6 0 0 1-2.7 1.1L3.7 6H2.3l.4-.6A1.6 1.6 0 0 1 0 4.3C0 2.6 3 1.9 3 0z' fill='%23000'/%3E%3C/svg%3E"); }
+  body.cnav-sub-piprule #herosub .cjw.c2::after {
+    background-color: color-mix(in oklab, var(--p4) 55%, var(--ink) 45%);
+    --pip: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 11 6'%3E%3Cpath d='M3 0 5.4 3 3 6 .6 3Z' fill='%23000'/%3E%3C/svg%3E"); }
+  body.cnav-sub-piprule #herosub .cjw.c3::after {
+    background-color: color-mix(in oklab, var(--p1) 55%, var(--ink) 45%);
+    --pip: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 11 6'%3E%3Cpath d='M3 0a1.35 1.35 0 0 1 1.15 2.05A1.35 1.35 0 1 1 4.8 4.6a1.35 1.35 0 0 1-1.4-.3L3.75 6h-1.5l.35-1.7a1.35 1.35 0 0 1-1.4.3A1.35 1.35 0 1 1 1.85 2.05 1.35 1.35 0 0 1 3 0z' fill='%23000'/%3E%3C/svg%3E"); }
+  body.cnav-sub-piprule #herosub .cjw:hover { color: var(--accent-deep); }
+  body.cnav-sub-piprule #herosub .cjw:hover::after { filter: brightness(.88); }
+  /* card-face double rule: the thick+thin printed rule from a classic card
+     face frame, as stacked background gradients */
+  body.cnav-sub-doublerule #herosub .cjw { font-weight: bold; color: var(--ink-soft);
+    padding-bottom: 6px;
+    background-image: linear-gradient(var(--rule), var(--rule)),
+                      linear-gradient(color-mix(in oklab, var(--rule) 45%, transparent),
+                                      color-mix(in oklab, var(--rule) 45%, transparent));
+    background-size: 100% 2px, 100% 1px;
+    background-position: 0 calc(100% - 5px), 0 100%;
+    background-repeat: no-repeat;
+    -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+  body.cnav-sub-doublerule #herosub .cjw.c1 { --rule: color-mix(in oklab, var(--p3) 55%, var(--ink) 45%); }
+  body.cnav-sub-doublerule #herosub .cjw.c2 { --rule: color-mix(in oklab, var(--p4) 55%, var(--ink) 45%); }
+  body.cnav-sub-doublerule #herosub .cjw.c3 { --rule: color-mix(in oklab, var(--p1) 55%, var(--ink) 45%); }
+  body.cnav-sub-doublerule #herosub .cjw:hover { color: var(--accent-deep); }
+  /* corner-index pip: a small suit pip hung off the end of the word at
+     index height, like the A-spade in a card's top-left corner. Unicode
+     suit glyphs are avoided on purpose (emoji presentation on iOS/Windows) */
+  body.cnav-sub-cornerindex #herosub .cjw { position: relative; font-weight: bold;
+    color: var(--ink-soft);
+    padding-right: .55em; padding-bottom: 3px;
+    background: linear-gradient(var(--rule), var(--rule))
+                0 100% / calc(100% - .55em) 1px no-repeat; }
+  body.cnav-sub-cornerindex #herosub .cjw::after { content: ""; position: absolute;
+    right: 0; top: .04em; width: .44em; height: .44em;
+    background-color: var(--rule);
+    -webkit-mask: var(--pip) center / contain no-repeat;
+            mask: var(--pip) center / contain no-repeat;
+    transition: transform 120ms ease-out; }
+  body.cnav-sub-cornerindex #herosub .cjw.c1 { --rule: color-mix(in oklab, var(--p3) 55%, var(--ink) 45%);
+    --pip: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M5 0C5 3 10 4.2 10 7a2.6 2.6 0 0 1-4.4 1.8L6.2 10H3.8l.6-1.2A2.6 2.6 0 0 1 0 7c0-2.8 5-4 5-7z'/%3E%3C/svg%3E"); }
+  body.cnav-sub-cornerindex #herosub .cjw.c2 { --rule: color-mix(in oklab, var(--p4) 55%, var(--ink) 45%);
+    --pip: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M5 0 9 5 5 10 1 5z'/%3E%3C/svg%3E"); }
+  body.cnav-sub-cornerindex #herosub .cjw.c3 { --rule: color-mix(in oklab, var(--p1) 55%, var(--ink) 45%);
+    --pip: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M5 0a2.2 2.2 0 0 1 1.9 3.4A2.2 2.2 0 1 1 8 7.6a2.2 2.2 0 0 1-2.3-.5l.6 2.9H3.7l.6-2.9a2.2 2.2 0 0 1-2.3.5A2.2 2.2 0 1 1 3.1 3.4 2.2 2.2 0 0 1 5 0z'/%3E%3C/svg%3E"); }
+  body.cnav-sub-cornerindex #herosub .cjw:hover { color: var(--accent-deep); }
+  body.cnav-sub-cornerindex #herosub .cjw:hover::after { transform: translateY(-1px); }
+  /* resting card edge: the word sits on the top edge of a card lying on the
+     cream table - white stock, hairline ring, contact shadow, and a colored
+     sliver of the card's back along the top. Needs the cream background */
+  body.cnav-sub-cardedge #herosub .cjw { font-weight: bold; color: var(--ink-soft); position: relative; }
+  body.cnav-sub-cardedge #herosub .cjw::after { content: ""; position: absolute; left: -3px; right: -3px;
+    bottom: -.40em; height: 7px; border-radius: 2px 2px 3px 3px; background: #fff; pointer-events: none;
+    box-shadow: inset 0 2.5px 0 var(--edge),
+                inset 0 0 0 1px rgba(0,0,0,.13),
+                0 1px 2px rgba(60,45,25,.25);
+    transition: transform 120ms ease-out; }
+  body.cnav-sub-cardedge #herosub .cjw.c1::after { --edge: color-mix(in oklab, var(--p3) 55%, var(--ink) 45%); }
+  body.cnav-sub-cardedge #herosub .cjw.c2::after { --edge: color-mix(in oklab, var(--p4) 55%, var(--ink) 45%); }
+  body.cnav-sub-cardedge #herosub .cjw.c3::after { --edge: color-mix(in oklab, var(--p1) 55%, var(--ink) 45%); }
+  body.cnav-sub-cardedge #herosub .cjw:hover::after { transform: translateY(-1px); }
+  body.cnav-sub-cardedge #herosub .cjw:hover { color: var(--accent-deep); }
+  /* two-ink convention: the page keeps its ink black; the accents take the
+     deck's second ink, a warm brick card-red. Category color stays on the
+     tiles; one shared second ink is the whole idea */
+  body.cnav-sub-twoink #herosub .cjw { --card-red: #a8232b;
+    font-weight: bold; color: var(--card-red);
+    text-decoration: underline; text-decoration-thickness: 1px;
+    text-underline-offset: .2em; text-decoration-skip-ink: auto;
+    text-decoration-color: color-mix(in oklab, var(--card-red) 40%, transparent); }
+  body.cnav-sub-twoink #herosub .cjw:hover { text-decoration-color: var(--card-red); }
 
   /* the button row under the hero tiles: sits right below the mosaic and
      spans the same width, one equal third per family */
@@ -2176,6 +2256,11 @@
     ["sub-brush", "Subtitle: marker brush stroke, tile colors (Slate)"],
     ["sub-wavy", "Subtitle: wavy underline"],
     ["sub-rough", "Subtitle: sketched draw-on (Rough Notation)"],
+    ["sub-piprule", "Subtitle: suit-pip rule"],
+    ["sub-doublerule", "Subtitle: card-face double rule"],
+    ["sub-cornerindex", "Subtitle: corner-index pip"],
+    ["sub-cardedge", "Subtitle: resting card edge"],
+    ["sub-twoink", "Subtitle: two-ink card red"],
     ["row-white", "Below tiles: white buttons, count badges"],
     ["row-whitesm", "Below tiles: small white buttons"],
     ["row-white2", "Below tiles: white, count as second line"],
@@ -2456,7 +2541,7 @@
     "sel-menu": ["centerlight", "centerlighteggshell", "centerlightporc", "center", "centerporcelain", "current", "crest", "gthreads"],
     "sel-rail": ["suits", "cards", "band"],
     "sel-avedge": ["luminosity", "lum-deep", "lum-dark", "lum-light", "lum-soft", "none", "ink", "color-burn"],
-    "sel-cnav": ["sub-dotted", "none", "sub-colorbold", "sub-colorline", "sub-scribble", "sub-scribblegold", "sub-brush", "sub-rough", "sub-sign", "row-whitesm"]
+    "sel-cnav": ["sub-dotted", "none", "sub-piprule", "sub-doublerule", "sub-cornerindex", "sub-cardedge", "sub-twoink", "sub-colorbold", "sub-colorline", "sub-scribble", "sub-scribblegold", "sub-brush", "sub-rough", "sub-sign", "row-whitesm"]
   };
   function buildSel(id, list, setter) {
     var el = document.getElementById(id);
