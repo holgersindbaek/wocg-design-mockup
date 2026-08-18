@@ -71,7 +71,7 @@
   .a-swap .gplay[aria-expanded="true"] .garr.up { opacity: 1; transform: translateY(0) rotate(180deg); }
 
   /* ===== the panel: quick 100, floating card, bare trigger ===== */
-  .gmenu { position: absolute; left: 0; right: 0; bottom: calc(100% + 6px); z-index: 30; display: none;
+  .gmenu { position: absolute; left: 0; right: 0; bottom: calc(100% + 8px); z-index: 30; display: none;
     background: #fff; border-radius: 12px; corner-shape: squircle; padding: 6px;
     box-shadow: 0 0 0 1px rgba(0,0,0,.08), 0 8px 24px rgba(20,20,19,.18);
     transform-origin: 85% 100%; }
@@ -124,6 +124,20 @@
   .gmenu .mcols { display: grid; grid-template-columns: 1fr 1fr; }
   .gmenu .mcols button { font-weight: normal; color: #4e4d4c; font-size: 15px; padding: 10px 8px; }
 
+  /* batch three: compact densities, quiet signs, the join dot */
+  .d-compact .gmenu button { padding: 8px 10px; line-height: 1.2; }
+  .d-compact .gmenu .msub { margin-top: 1px; }
+  .d-tight .gmenu button { padding: 6px 10px; line-height: 1.2; }
+  .qsign { display: inline-block; vertical-align: middle; border-radius: 4px; font-size: 12px; line-height: 16px;
+    font-weight: bold; padding: 0 6px; font-variant-numeric: tabular-nums; }
+  .qsign.grey { color: #868E96; background: #EEEBE5; }
+  .qsign.gold { color: #8a6410; background: #FAEFD4; }
+  .qsign.blue { color: #1971C2; background: #E7F2FD; }
+  .qsign.sky { color: #22697c; background: #E2F1F5; }
+  .qsign.naked { background: none; padding: 0; color: #8a857c; font-size: 15px; font-weight: normal; }
+  .jdot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #2f9e44; margin-left: 7px; vertical-align: middle; position: relative; top: -1px; }
+  .emph .gmenu button.mp { font-size: 17px; }
+  .emph .gmenu .mquiet button { font-size: 15px; }
   .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(80px); z-index: 99;
     background: #141414; color: #f9f6f2; padding: 9px 18px; border-radius: 8px; font-size: 14px; transition: transform .18s ease; }
   .toast.on { transform: translateX(-50%) translateY(0); }
@@ -287,8 +301,47 @@ options visible, counters as the leaderboard's signs, and the two primaries trea
     }
   };
 
+  var QUIET3 = ["Browse tables", "Play ranked", "Host table", "Join private table", "Options", "Rules"];
+  function quiet3(td, opts) {
+    opts = opts || {};
+    var q = el("div", "mquiet" + (opts.cols ? " mcols" : ""));
+    QUIET3.forEach(function (l) {
+      var html = l;
+      if (l === "Browse tables" && opts.browseSign !== false) {
+        html = "<span class='mrow'><span>" + l + "</span><span class='qsign " + (opts.sign || "grey") + "'>8</span></span>";
+      }
+      if (opts.shortest) html = html.replace("Browse tables", "Browse").replace("Play ranked", "Ranked").replace("Host table", "Host").replace("Join private table", "Private");
+      addRow(q, td, html, l.toLowerCase());
+    });
+    return q;
+  }
+  function pair3(menu, td, opts) {
+    opts = opts || {};
+    var joinHtml = opts.joinCount
+      ? "<span class='mrow'><span>Join table<span class='jdot'></span></span><span class='qsign naked'>" + td.n + "</span></span>"
+      : (opts.joinSign
+        ? "<span class='mrow'><span>Join table</span><span class='qsign grey'>8 tables</span></span>"
+        : "Join table<span class='jdot'></span>");
+    addRow(menu, td, joinHtml, "joining a table", opts.tint === false ? (opts.emph ? "mp" : "") : "mtintg" + (opts.emph ? " mp" : ""));
+    var soloHtml = opts.soloChip
+      ? "<span class='mrow'><span>Play solo</span><span class='qsign blue'>Instant</span></span>"
+      : "<span class='mrow'><span>Play solo</span><span class='mstat'>Instant</span></span>";
+    addRow(menu, td, soloHtml, "solo table", opts.tint === false ? (opts.emph ? "mp" : "") : "mtintb" + (opts.emph ? " mp" : ""));
+  }
+  CONTENT.syn = function (menu, td) { pair3(menu, td, {}); menu.appendChild(quiet3(td, {})); };
+  CONTENT.synGold = function (menu, td) { pair3(menu, td, {}); menu.appendChild(quiet3(td, { sign: "gold" })); };
+  CONTENT.synBlue = function (menu, td) { pair3(menu, td, {}); menu.appendChild(quiet3(td, { sign: "blue" })); };
+  CONTENT.synSky = function (menu, td) { pair3(menu, td, {}); menu.appendChild(quiet3(td, { sign: "sky" })); };
+  CONTENT.synNaked = function (menu, td) { pair3(menu, td, {}); menu.appendChild(quiet3(td, { sign: "naked" })); };
+  CONTENT.synJoinCount = function (menu, td) { pair3(menu, td, { joinCount: true }); menu.appendChild(quiet3(td, { browseSign: false })); };
+  CONTENT.synEmph = function (menu, td) { pair3(menu, td, { tint: false, emph: true }); menu.appendChild(quiet3(td, {})); };
+  CONTENT.synJoinSign = function (menu, td) { pair3(menu, td, { joinSign: true }); menu.appendChild(quiet3(td, { browseSign: false })); };
+  CONTENT.synShortest = function (menu, td) { pair3(menu, td, {}); menu.appendChild(quiet3(td, { shortest: true })); };
+  CONTENT.synCols = function (menu, td) { pair3(menu, td, {}); menu.appendChild(quiet3(td, { cols: true, browseSign: false })); };
+  CONTENT.synSoloChip = function (menu, td) { pair3(menu, td, { soloChip: true }); menu.appendChild(quiet3(td, {})); };
+
   function buildTile(td, cfg) {
-    var card = el("div", "ct");
+    var card = el("div", "ct " + (cfg.tileCls || ""));
     var g = el("div", "gt " + td.pal);
     g.innerHTML = "<img class='glogo' src='" + td.logo + "' alt=''><span class='gcount'><b>" + td.n + "</b> playing</span>";
     card.appendChild(g);
@@ -331,6 +384,25 @@ options visible, counters as the leaderboard's signs, and the two primaries trea
       cfgs: [{ content: "signsAll" }, { content: "liveAll" }, { content: "mutedAll" }, { content: "cardsAll" }, { content: "cardsSigns" }, { content: "tintedAll" }, { content: "feltPair" }, { content: "bigTwoLine" }, { content: "zeroState" }, { content: "twoColQuiet" }, { content: "groupsSigns" }, { content: "signsEverywhere" }] }
   ];
   SECTIONS[1].cfgs.forEach(function (c) { c.cls = "a-swap"; c.swapArrow = true; });
+  SECTIONS.push({
+    t: "3 · The synthesis batch",
+    d: "Everything decided so far, composed: centroid Z-spin arrow, 8px gap (the item-gap token), compact rows against the too-big line height, the site's own short labels (Browse tables, Host table, Join private table), the count moved to Browse tables only, Join table carrying the live dot, Play solo saying Instant, and the pair emphasized as light-green and light-blue tinted rows. Tiles vary one thing each: density, sign color, where the count lives, and the emphasis style.",
+    caps: ["The synthesis (grey sign, compact)", "Tighter rows still", "Sign in gold", "Sign in blue", "Sign in Evernote sky", "Naked number, no chip", "Count on Join instead, dot + number", "No tint: type does the emphasis", "Count as sign on the Join row", "Shortest labels stress test", "Quiet six in two columns", "Solo Instant as a blue chip"],
+    cfgs: [
+      { content: "syn", cls: "a-centroid", tileCls: "d-compact" },
+      { content: "syn", cls: "a-centroid", tileCls: "d-tight" },
+      { content: "synGold", cls: "a-centroid", tileCls: "d-compact" },
+      { content: "synBlue", cls: "a-centroid", tileCls: "d-compact" },
+      { content: "synSky", cls: "a-centroid", tileCls: "d-compact" },
+      { content: "synNaked", cls: "a-centroid", tileCls: "d-compact" },
+      { content: "synJoinCount", cls: "a-centroid", tileCls: "d-compact" },
+      { content: "synEmph", cls: "a-centroid", tileCls: "d-compact emph" },
+      { content: "synJoinSign", cls: "a-centroid", tileCls: "d-compact" },
+      { content: "synShortest", cls: "a-centroid", tileCls: "d-compact" },
+      { content: "synCols", cls: "a-centroid", tileCls: "d-compact" },
+      { content: "synSoloChip", cls: "a-centroid", tileCls: "d-compact" }
+    ]
+  });
 
   var root = document.getElementById("secs");
   SECTIONS.forEach(function (sec) {
