@@ -242,6 +242,19 @@
   .v-pickwavegrey .sub .cjw.c1:hover::after, .v-pickwavegreybold .sub .cjw.c1:hover::after { background-color: var(--p3); }
   .v-pickwavegrey .sub .cjw.c2:hover::after, .v-pickwavegreybold .sub .cjw.c2:hover::after { background-color: var(--p4); }
   .v-pickwavegrey .sub .cjw.c3:hover::after, .v-pickwavegreybold .sub .cjw.c3:hover::after { background-color: var(--p1); }
+  /* the same wave already wearing its category color at rest, plain and
+     bold words; hover just darkens the word and slides the wave */
+  .v-pickwavecolor .sub .cjw, .v-pickwavecolorbold .sub .cjw { color: var(--ink-soft); position: relative; }
+  .v-pickwavecolorbold .sub .cjw { font-weight: bold; }
+  .v-pickwavecolor .sub .cjw::after, .v-pickwavecolorbold .sub .cjw::after { content: ""; position: absolute; left: 0; right: 0;
+    bottom: -.26em; height: 7px; z-index: -1; pointer-events: none;
+    -webkit-mask: var(--wavetrough) left center / 7px 7px repeat-x;
+            mask: var(--wavetrough) left center / 7px 7px repeat-x; }
+  .v-pickwavecolor .sub .cjw.c1::after, .v-pickwavecolorbold .sub .cjw.c1::after { background-color: var(--p3); }
+  .v-pickwavecolor .sub .cjw.c2::after, .v-pickwavecolorbold .sub .cjw.c2::after { background-color: var(--p4); }
+  .v-pickwavecolor .sub .cjw.c3::after, .v-pickwavecolorbold .sub .cjw.c3::after { background-color: var(--p1); }
+  .v-pickwavecolor .sub .cjw:hover, .v-pickwavecolorbold .sub .cjw:hover { color: var(--ink); }
+  .v-pickwavecolor .sub .cjw.waving::after, .v-pickwavecolorbold .sub .cjw.waving::after { animation: wavemarch .4s linear infinite; }
   /* the same wave carrying all three category colors at once, a touch
      bolder stroke, same size, lifted behind the text like its siblings */
   .v-pickwavymulti .sub .cjw { color: var(--ink-soft); position: relative; }
@@ -815,13 +828,25 @@
     <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
   </section>
 
+  <section class="block v-pickwavecolorbold">
+    <p class="tag">Same wave, colored from the start, bold words</p>
+    <h3 class="title">Play card games<br>in good company</h3>
+    <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
+  </section>
+
+  <section class="block v-pickwavecolor">
+    <p class="tag">Same wave, colored from the start, not bold</p>
+    <h3 class="title">Play card games<br>in good company</h3>
+    <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
+  </section>
+
 </div>
 
 <script>
   /* the sand-wave march starts on hover and, on mouse-out, finishes its
      current cycle so the wave lands back on its starting trough */
   (function () {
-    document.querySelectorAll(".v-pickwavegrey .sub .cjw, .v-pickwavegreybold .sub .cjw").forEach(function (el) {
+    document.querySelectorAll(".v-pickwavegrey .sub .cjw, .v-pickwavegreybold .sub .cjw, .v-pickwavecolor .sub .cjw, .v-pickwavecolorbold .sub .cjw").forEach(function (el) {
       el.addEventListener("mouseenter", function () { el.classList.add("waving"); delete el.dataset.stop; });
       el.addEventListener("mouseleave", function () { el.dataset.stop = "1"; });
       el.addEventListener("animationiteration", function (e) {
