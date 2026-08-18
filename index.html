@@ -46,6 +46,11 @@
   /* the Fauna exact recipe: theartof.app/fauna sets Vollkorn Regular 400 and
      narrows the display line to 90% with a transform, not a condensed face */
   body.font-fauna     #herotitle, body.font-fauna     .pophead, body.font-fauna     .wrap h2 { font-family: "Vollkorn", serif; font-weight: 400; }
+  /* Apple's New York serif (the FAUNA logo face, Medium). Served from a local
+     copy of the system file that stays out of git - Apple's license bars
+     redistribution; ui-serif catches Safari natively when the file is absent */
+  @font-face { font-family: "NewYorkLocal"; src: url("NewYork.ttf"); font-weight: 100 1000; font-display: swap; }
+  body.font-newyork   #herotitle, body.font-newyork   .pophead, body.font-newyork   .wrap h2 { font-family: "NewYorkLocal", ui-serif, serif; font-weight: 500; }
   body.font-fauna #herotitle { transform: scaleX(0.9); }
   body.font-fauna .sceneTxt #herotitle { transform-origin: left center; }
   body.font-poynter   #herotitle, body.font-poynter   .pophead, body.font-poynter   .wrap h2 { font-family: "Poynter Old Style Display", serif; font-weight: 600; }
@@ -786,9 +791,11 @@
   .heroarea > * { position: relative; z-index: 1; }
   .stats { display: flex; align-items: center; justify-content: center; gap: 9px; margin-top: 34px; flex-wrap: wrap; font-size: 16px; color: var(--muted); }
   body:not(.stats-brief) .statsBrief { display: none; }
-  body.stats-brief .statsFull, body.stats-capsule .statsFull, body.stats-capsulesm .statsFull, body.stats-capsuleshort .statsFull, body.stats-sign .statsFull, body.stats-signsolid .statsFull, body.stats-signbtn .statsFull, body.stats-signpulse .statsFull, body.stats-signtag .statsFull { display: none; }
+  body.stats-brief .statsFull, body.stats-capsule .statsFull, body.stats-capsulesm .statsFull, body.stats-capsule2 .statsFull, body.stats-capsuleshort .statsFull, body.stats-sign .statsFull, body.stats-signsolid .statsFull, body.stats-signbtn .statsFull, body.stats-signpulse .statsFull, body.stats-signtag .statsFull { display: none; }
   body:not(.stats-capsule):not(.stats-capsulesm) .statsCapsule:not(.isShort) { display: none; }
-  body:not(.stats-capsuleshort) .statsCapsule.isShort { display: none; }
+  body:not(.stats-capsuleshort):not(.stats-capsule2) .statsCapsule.isShort { display: none; }
+  /* capsule2: the big capsule with only the playing and tables cells */
+  body.stats-capsule2 .statsCapsule.isShort .st:has(#stc2-seats) { display: none; }
   body:not(.stats-sign):not(.stats-signsolid):not(.stats-signbtn):not(.stats-signpulse):not(.stats-signtag) .statsSign { display: none; }
   /* the LIVE sign strip leading bare, separator-free counts. Base recipe = the
      lightblue button's formula on Mantine's GREEN scale (the codebase's own
@@ -2076,6 +2083,7 @@
     ["ppeditold", "PP Editorial Old + BuloRounded (Where Cards Fall)"],
     ["vollkorn", "Vollkorn + BuloRounded (Art of Fauna)"],
     ["fauna", "Vollkorn 400 squeezed 90% (Fauna exact)"],
+    ["newyork", "New York + BuloRounded (Apple serif, the FAUNA logo face)"],
     ["poynter", "Poynter Old Style Semibold + BuloRounded (COPAG)"],
     ["poynterbold", "Poynter Old Style Bold + BuloRounded (COPAG)"],
     ["frauncesoa", "Fraunces 480 display + BuloRounded (Ordinary Abundance)"],
@@ -2143,6 +2151,7 @@
   ];
   var STATSLINES = [
     ["capsule", "Capsule: walled live-light strip"],
+    ["capsule2", "Capsule: playing \u00b7 tables only"],
     ["capsulesm", "Capsule: small (24px tall, 14px text)"],
     ["capsuleshort", "Capsule: playing \u00b7 tables \u00b7 open"],
     ["sign", "Sign: light-green button + bare counts"],
@@ -2177,7 +2186,7 @@
     ["scrim", "Ghost on a scrim"],
     ["ghost", "Ghost, naked with dark halo"]
   ];
-  var curShadow = "soft", curEdge = "softlight", curTexture = "grain", curCatalog = "split", curStats = "capsule", curMenu = "centerlight", curCounter = "ghost", curRail = "suits", curPlayBtn = "green";
+  var curShadow = "soft", curEdge = "softlight", curTexture = "grain", curCatalog = "split", curStats = "capsule2", curMenu = "centerlight", curCounter = "ghost", curRail = "suits", curPlayBtn = "green";
   /* every CSS blend mode as an avatar-rim coat: one filter per mode is stamped
      into the SVG defs (same eroded rim, #737373 @ .9 ink, only feBlend's mode
      changes) plus a matching mix-blend ring for the invitee circles */
@@ -2574,8 +2583,27 @@
     } else {
       list.forEach(function (x) { el.add(new Option(x[1], x[0])); });
     }
-    el.onchange = function () { setter(el.value); applyBody(); };
+    el.onchange = function () {
+      var old = el._prev;
+      el._prev = el.value;
+      if (old !== undefined && old !== el.value) lastFlip = { el: el, setter: setter, a: old, b: el.value };
+      setter(el.value); applyBody();
+    };
   }
+  /* Cmd+Z flips the last-changed switcher between its two latest options,
+     for quick A/B judging */
+  var lastFlip = null;
+  document.addEventListener("keydown", function (e) {
+    if (!(e.metaKey || e.ctrlKey) || (e.key !== "z" && e.key !== "Z")) return;
+    var t = e.target;
+    if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA")) return;
+    if (!lastFlip) return;
+    e.preventDefault();
+    var to = lastFlip.el.value === lastFlip.b ? lastFlip.a : lastFlip.b;
+    lastFlip.setter(to);
+    lastFlip.el._prev = to;
+    applyBody();
+  });
   buildSel("sel-base", THEMES, function (v) { curBase = v; });
   buildSel("sel-play", PLAYS, function (v) { curPlay = v; });
   buildSel("sel-layout", LAYOUTS, function (v) { curLayout = v; });
@@ -2667,6 +2695,9 @@
   }
 
   applyBody();
+  /* baseline for the Cmd+Z flipper: without this, a select's first change
+     has no recorded previous value and cannot flip */
+  Array.prototype.forEach.call(document.querySelectorAll(".ctl select"), function (s) { s._prev = s.value; });
 
 
 
