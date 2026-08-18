@@ -406,13 +406,15 @@
   /* ===== category jump experiments (Category nav switcher): the subtitle
      itself names the three families (sub-* coats restyle the words), or a
      button row sits under the hero tiles (row-* coats). Default = sub-dotted. ===== */
-  #herosub .cjw { border-bottom: none; color: inherit; white-space: nowrap;
-    /* Basecamp's hand-drawn underline: one stroke that doubles back three
-       times, stretched to any word width by preserveAspectRatio="none" */
+  /* Basecamp's hand-drawn underline: one stroke that doubles back three
+     times, stretched to any word width by preserveAspectRatio="none".
+     On body so the footer divider can borrow it too */
+  body {
     --squiggle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 202 12' preserveAspectRatio='none'%3E%3Cpath d='m14.8 3.3c60.8 2.6 121.6 1.9 182.3-2.3l-177.7 10 181.6-4.8c-66.7 2.4-133.3-.3-200 2.1' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
     /* Slate.com's nav underline: a closed filled outline, so the stroke has
        real marker thick-thin variation instead of an even pen line */
     --brushstroke: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120.349 7.836' preserveAspectRatio='none'%3E%3Cpath fill='white' d='M.02 5.79c.13-1.199.645-2.63 1.944-2.95a24.63 24.63 0 0 1 3.873-.34q4.377-.338 8.757-.647 9.063-.64 18.136-1.139C40.604.292 48.478.002 56.364 0q5.48-.001 10.959.008 8.967.015 17.933.055 9.205.045 18.41.143c4.195.051 8.398.078 12.59.273 1.506.07 3.462.041 3.975 1.856a3.776 3.776 0 0 1-.695 3.312c-.828.818-2.524.435-3.57.4q-4.258-.142-8.515-.278-17.636-.562-35.276-.994C66.298 4.64 60.419 4.508 54.54 4.5c-6.019-.007-12.043.41-18.051.723-5.985.311-11.968.647-17.947 1.045-5.589.372-11.171.78-16.72 1.544C.49 7.996-.12 7.073.018 5.79z'/%3E%3C/svg%3E"); }
+  #herosub .cjw { border-bottom: none; color: inherit; white-space: nowrap; }
   /* gold signs: the online-solitaire "Playing" tag, inline in the sentence */
   body.cnav-sub-sign #herosub .cjw { display: inline-block; padding: 0 9px; border-radius: 6px;
     background: #ffec99; box-shadow: inset 0 0 0 1px #ffd43b; color: #e67700;
@@ -954,6 +956,14 @@
 
   /* ===== site footer: the live site's footer content on the Evernote band ===== */
   .sitefooter { background: #F4EEE5; border-top: 1px solid #E7E7E7; color: var(--ink); }
+  /* footer variants: the hand-drawn squiggle replaces the line divider */
+  body.foot-wavyline .sitefooter, body.foot-wavybare .sitefooter { border-top: none; position: relative; }
+  body.foot-wavyline .sitefooter::before, body.foot-wavybare .sitefooter::before { content: "";
+    position: absolute; left: 0; right: 0; top: -5px; height: 10px; pointer-events: none;
+    -webkit-mask: var(--squiggle) center / 100% 100% no-repeat;
+    mask: var(--squiggle) center / 100% 100% no-repeat;
+    background-color: #D9D2C4; }
+  body.foot-wavybare .sitefooter { background: transparent; }
   .sitefooter footer { max-width: 1160px; margin: 0 auto; padding: 20px 24px 26px;
     display: flex; flex-wrap: wrap; justify-content: space-between; gap: 24px; }
   .sitefooter .footerSection { display: flex; gap: 24px; max-width: 100%; min-width: 0; width: max-content; }
@@ -1566,6 +1576,7 @@
     <div class="swhead">Page</div>
     <label class="ctl"><span>Category nav</span><select id="sel-cnav"></select></label>
     <label class="ctl"><span>Category copy</span><select id="sel-ccopy"></select></label>
+    <label class="ctl"><span>Footer</span><select id="sel-footer"></select></label>
     <label class="ctl"><span>Catalog layout</span><select id="sel-catalog"></select></label>
     <label class="ctl"><span>Ad rail</span><select id="sel-rail"></select></label>
     <label class="ctl"><span>Live stats</span><select id="sel-stats"></select></label>
@@ -2433,6 +2444,12 @@
     ["bare", "Trick-taking, rummy or the classics. (nothing else)", "[tt]Trick-taking[/tt], [ru]rummy[/ru] or [cl]the classics[/cl]."]
   ];
   var curCcopy = "ampwith";
+  var FOOTERS = [
+    ["line", "Line divider + cream band (site today)"],
+    ["wavyline", "Squiggle divider + cream band"],
+    ["wavybare", "Squiggle divider, no band"]
+  ];
+  var curFooter = "line";
   function applyCnavSub() {
     if (curCnav.indexOf("sub-") !== 0) return;
     var scene = curLayout.indexOf("sc") === 0 && curLayout !== "scpyr";
@@ -2477,7 +2494,7 @@
   }
   function applyBody() {
     var scene = curLayout.indexOf("sc") === 0;
-    document.body.className = curBase + " play-" + curPlay + " layout-" + curLayout + (scene ? " scenehero" : "") + " font-" + curFont + " shadow-" + curShadow + " edge-" + curEdge + " tex-" + curTexture + " cat-" + curCatalog + " stats-" + curStats + " menu-" + curMenu + " counter-" + curCounter + " rail-" + curRail + " playbtn-" + curPlayBtn + " avedge-" + curAvedge + " avsh-" + curAvshadow + " cnav-" + curCnav + (palShown ? " show-palette" : "");
+    document.body.className = curBase + " play-" + curPlay + " layout-" + curLayout + (scene ? " scenehero" : "") + " font-" + curFont + " shadow-" + curShadow + " edge-" + curEdge + " tex-" + curTexture + " cat-" + curCatalog + " stats-" + curStats + " menu-" + curMenu + " counter-" + curCounter + " rail-" + curRail + " playbtn-" + curPlayBtn + " avedge-" + curAvedge + " avsh-" + curAvshadow + " cnav-" + curCnav + " foot-" + curFooter + (palShown ? " show-palette" : "");
     var ht = document.getElementById("herotitle"), hs = document.getElementById("herosub");
     if (scene) {
       if (curLayout === "scpyr") {
@@ -2511,6 +2528,7 @@
     document.getElementById("sel-avshadow").value = curAvshadow;
     document.getElementById("sel-cnav").value = curCnav;
     document.getElementById("sel-ccopy").value = curCcopy;
+    document.getElementById("sel-footer").value = curFooter;
     moveLobby();
     if (typeof renderPlayset === "function") renderPlayset();
   }
@@ -2704,6 +2722,7 @@
   buildSel("sel-avshadow", AVSHADOWS, function (v) { curAvshadow = v; });
   buildSel("sel-cnav", CNAVS, function (v) { curCnav = v; });
   buildSel("sel-ccopy", CCOPIES, function (v) { curCcopy = v; });
+  buildSel("sel-footer", FOOTERS, function (v) { curFooter = v; });
 
   var palBtn = document.getElementById("palette-toggle");
   palBtn.onclick = function () {
