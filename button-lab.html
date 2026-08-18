@@ -138,6 +138,28 @@
   .jdot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #2f9e44; margin-left: 7px; vertical-align: middle; position: relative; top: -1px; }
   .emph .gmenu button.mp { font-size: 17px; }
   .emph .gmenu .mquiet button { font-size: 15px; }
+  /* batch four: token spacing + real light buttons */
+  .tok .gmenu { padding: 12px; }
+  .tok .gmenu .pbtn { display: flex; align-items: center; justify-content: space-between; width: 100%; height: 32px;
+    border: none; border-radius: var(--radius-md); corner-shape: squircle; cursor: pointer;
+    font-family: inherit; font-size: 16px; font-weight: bold; padding: 0 10px;
+    transition: background-color 80ms ease-out; }
+  .tok .gmenu .pbtn + .pbtn { margin-top: 8px; }
+  .pbtn.lg { background: #E9FAC8; color: #3E6509; box-shadow: inset 0 0 0 1px #C6E8A0; }
+  .pbtn.lg:hover, .pbtn.lg:focus-visible { background: #DFF5B5; }
+  .pbtn.lg2 { background: #B2F2BB; color: #2B8A3E; box-shadow: inset 0 0 0 1px #8FD9A0; }
+  .pbtn.lg2:hover, .pbtn.lg2:focus-visible { background: #A5EDB0; }
+  .pbtn.lb { background: #A5D8FF; color: #1971C2; box-shadow: inset 0 0 0 1px #7AB8EC; }
+  .pbtn.lb:hover, .pbtn.lb:focus-visible { background: #9ACFF8; }
+  .phint { font-size: 14px; font-weight: normal; opacity: .9; font-variant-numeric: tabular-nums; }
+  .tok .mdivider { height: 1px; background: rgb(217 217 217); margin: 8px -12px; }
+  .tok .gmenu .qrow { display: block; width: calc(100% + 24px); margin: 0 -12px; padding: 5px 12px; border-radius: 0;
+    text-align: left; font-family: inherit; border: none; background: none; cursor: pointer;
+    font-size: 16px; font-weight: normal; color: #4e4d4c; line-height: 1.15; }
+  .tok .gmenu .qrow:hover, .tok .gmenu .qrow:focus-visible { background: #f4eee5; }
+  .tok .gmenu .qrow.small { font-size: 15px; }
+  .tok .gmenu .qcols { display: grid; grid-template-columns: 1fr 1fr; margin: 0 -12px; width: calc(100% + 24px); }
+  .tok .gmenu .qcols .qrow { margin: 0; width: 100%; }
   .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(80px); z-index: 99;
     background: #141414; color: #f9f6f2; padding: 9px 18px; border-radius: 8px; font-size: 14px; transition: transform .18s ease; }
   .toast.on { transform: translateX(-50%) translateY(0); }
@@ -340,6 +362,46 @@ options visible, counters as the leaderboard's signs, and the two primaries trea
   CONTENT.synCols = function (menu, td) { pair3(menu, td, {}); menu.appendChild(quiet3(td, { cols: true, browseSign: false })); };
   CONTENT.synSoloChip = function (menu, td) { pair3(menu, td, { soloChip: true }); menu.appendChild(quiet3(td, {})); };
 
+  function tokQuiet(td, opts) {
+    opts = opts || {};
+    var frag = document.createDocumentFragment();
+    var wrap = opts.cols ? el("div", "qcols") : frag;
+    QUIET3.forEach(function (l) {
+      var b = el("button", "qrow" + (opts.small ? " small" : ""), l);
+      b.addEventListener("click", function (e) { e.stopPropagation(); closeAll(); flash(td.game + " — " + l.toLowerCase()); });
+      wrap.appendChild(b);
+    });
+    if (opts.cols) frag.appendChild(wrap);
+    return frag;
+  }
+  function tokPair(menu, td, opts) {
+    opts = opts || {};
+    var joinHint = opts.hint === "sign" ? "<span class='phint'><span class='qsign grey'>" + opts.tables + "</span></span>"
+      : opts.hint === "text" ? "<span class='phint'>" + opts.tables + " tables</span>"
+      : opts.hint === "dot" ? "<span class='phint'>" + opts.tables + "<span class='jdot'></span></span>"
+      : "<span class='phint'>" + opts.tables + "</span>";
+    var j = el("button", "pbtn " + (opts.green || "lg"), "<span>Join table</span>" + joinHint);
+    j.addEventListener("click", function (e) { e.stopPropagation(); closeAll(); flash(td.game + " — joining a table"); });
+    menu.appendChild(j);
+    var so = el("button", "pbtn lb", "<span>Play solo</span><span class='phint'>Instant</span>");
+    so.addEventListener("click", function (e) { e.stopPropagation(); closeAll(); flash(td.game + " — solo table"); });
+    menu.appendChild(so);
+    menu.appendChild(el("div", "mdivider"));
+  }
+  CONTENT.tokA = function (menu, td) { tokPair(menu, td, { tables: 8 }); menu.appendChild(tokQuiet(td)); };
+  CONTENT.tokB = function (menu, td) { tokPair(menu, td, { tables: 8, green: "lg2" }); menu.appendChild(tokQuiet(td)); };
+  CONTENT.tokC = function (menu, td) { tokPair(menu, td, { tables: 8, hint: "sign" }); menu.appendChild(tokQuiet(td)); };
+  CONTENT.tokD = function (menu, td) { tokPair(menu, td, { tables: 8, hint: "text" }); menu.appendChild(tokQuiet(td)); };
+  CONTENT.tokE = function (menu, td) { tokPair(menu, td, { tables: 8, hint: "dot" }); menu.appendChild(tokQuiet(td)); };
+  CONTENT.tokF = function (menu, td) { tokPair(menu, td, { tables: 8 }); menu.appendChild(tokQuiet(td, { small: true })); };
+  CONTENT.tokG = function (menu, td) { tokPair(menu, td, { tables: 8 }); menu.appendChild(tokQuiet(td, { cols: true })); };
+  CONTENT.tokH = function (menu, td) {
+    tokPair(menu, td, { tables: 8 });
+    menu.removeChild(menu.querySelector(".mdivider"));
+    var sp = el("div", ""); sp.style.height = "8px"; menu.appendChild(sp);
+    menu.appendChild(tokQuiet(td));
+  };
+
   function buildTile(td, cfg) {
     var card = el("div", "ct " + (cfg.tileCls || ""));
     var g = el("div", "gt " + td.pal);
@@ -401,6 +463,21 @@ options visible, counters as the leaderboard's signs, and the two primaries trea
       { content: "synShortest", cls: "a-centroid", tileCls: "d-compact" },
       { content: "synCols", cls: "a-centroid", tileCls: "d-compact" },
       { content: "synSoloChip", cls: "a-centroid", tileCls: "d-compact" }
+    ]
+  });
+  SECTIONS.push({
+    t: "4 · Batch four: real light buttons, token spacing",
+    d: "The corrections: the pair is now ACTUAL buttons (32 tall, ringed, the site lightblue plus a light-green sibling), the table count lives on Join table, quiet rows tighten to 5px padding and 1.15 line-height, and the panel runs the design tokens - 12px container padding, 8px between sibling buttons, a full-bleed d9d9d9 divider like the menu rule, quiet-row text on the same 12px rule as everything else. Variants: lime vs Mantine light green, the count as naked number / grey sign / '8 tables' / number+dot, smaller quiet type, two columns, and no divider.",
+    caps: ["Lime pair, naked count on Join", "Mantine light green instead", "Count as a grey sign on Join", "Count as '8 tables'", "Count plus live dot", "Quiet rows at 15px", "Quiet six in two columns", "No divider, gap only"],
+    cfgs: [
+      { content: "tokA", cls: "a-centroid", tileCls: "tok" },
+      { content: "tokB", cls: "a-centroid", tileCls: "tok" },
+      { content: "tokC", cls: "a-centroid", tileCls: "tok" },
+      { content: "tokD", cls: "a-centroid", tileCls: "tok" },
+      { content: "tokE", cls: "a-centroid", tileCls: "tok" },
+      { content: "tokF", cls: "a-centroid", tileCls: "tok" },
+      { content: "tokG", cls: "a-centroid", tileCls: "tok" },
+      { content: "tokH", cls: "a-centroid", tileCls: "tok" }
     ]
   });
 
