@@ -202,17 +202,32 @@
   .v-pickcatfill .sub .cjw.c2:hover::after { --dot: color-mix(in oklab, var(--p4) 75%, var(--ink) 25%); }
   .v-pickcatfill .sub .cjw.c3:hover::after { --dot: color-mix(in oklab, var(--p1) 75%, var(--ink) 25%); }
 
-  /* wavy underline in the category colors, plain and bold words; the plain
-     one runs the exact 1.5px wave from "Wavy underline" */
+  /* wavy underline in the category colors: the exact 1.5px "Wavy underline"
+     wave, lifted so the words overlay and clip it where they collide */
   .v-pickwavy .sub .cjw, .v-pickwavybold .sub .cjw { color: var(--ink-soft);
-    text-decoration: underline wavy; text-decoration-thickness: 2.5px; text-underline-offset: 5px; }
-  .v-pickwavy .sub .cjw { text-decoration-thickness: 1.5px; }
+    text-decoration: underline wavy; text-decoration-thickness: 1.5px; text-underline-offset: 3px;
+    text-decoration-skip-ink: auto; }
   .v-pickwavybold .sub .cjw { font-weight: bold; }
+  /* the bolder-stroke wave at the same size: a masked tile painted behind
+     the text (z-index -1), so letters overlay and clip it */
+  .v-pickwavybolder .sub .cjw, .v-pickwavemove .sub .cjw { color: var(--ink-soft); position: relative; }
+  .v-pickwavybolder .sub .cjw::after, .v-pickwavemove .sub .cjw::after { content: ""; position: absolute;
+    left: 0; right: 0; bottom: -.12em; height: 5px; z-index: -1; pointer-events: none;
+    -webkit-mask: var(--wavysmall) left center / 7px 5px repeat-x;
+            mask: var(--wavysmall) left center / 7px 5px repeat-x; }
+  .v-pickwavybolder .sub .cjw.c1::after, .v-pickwavemove .sub .cjw.c1::after { background-color: var(--p3); }
+  .v-pickwavybolder .sub .cjw.c2::after, .v-pickwavemove .sub .cjw.c2::after { background-color: var(--p4); }
+  .v-pickwavybolder .sub .cjw.c3::after, .v-pickwavemove .sub .cjw.c3::after { background-color: var(--p1); }
+  .v-pickwavybolder .sub .cjw:hover, .v-pickwavemove .sub .cjw:hover { color: var(--ink); }
+  /* hover: the wave slides right, Web Designer Depot's marching nav wave;
+     the shift equals one tile so the loop is seamless */
+  .v-pickwavemove .sub .cjw:hover::after { animation: wavemarch .4s linear infinite; }
+  @keyframes wavemarch { to { -webkit-mask-position: 7px center; mask-position: 7px center; } }
   /* the same wave carrying all three category colors at once, a touch
-     bolder stroke, same size */
+     bolder stroke, same size, lifted behind the text like its siblings */
   .v-pickwavymulti .sub .cjw { color: var(--ink-soft); position: relative; }
   .v-pickwavymulti .sub .cjw::after { content: ""; position: absolute; left: 0; right: 0;
-    bottom: -.24em; height: 5px; pointer-events: none;
+    bottom: -.12em; height: 5px; z-index: -1; pointer-events: none;
     background: linear-gradient(90deg, var(--p3), var(--p4), var(--p1));
     -webkit-mask: var(--wavysmall) left center / 7px 5px repeat-x;
             mask: var(--wavysmall) left center / 7px 5px repeat-x; }
@@ -752,7 +767,19 @@
   </section>
 
   <section class="block v-pickwavybold">
-    <p class="tag">Thicker wavy underline in category colors, bold</p>
+    <p class="tag">Same wave, bold words</p>
+    <h3 class="title">Play card games<br>in good company</h3>
+    <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
+  </section>
+
+  <section class="block v-pickwavybolder">
+    <p class="tag">Same wave and colors, bolder stroke, not bigger</p>
+    <h3 class="title">Play card games<br>in good company</h3>
+    <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
+  </section>
+
+  <section class="block v-pickwavemove">
+    <p class="tag">Hover: the wave slides right (Web Designer Depot)</p>
     <h3 class="title">Play card games<br>in good company</h3>
     <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
   </section>
