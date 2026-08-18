@@ -18,6 +18,16 @@
     src: url("BuloRounded-Bold.woff2") format('woff2');
     font-style: normal; font-weight: bold; font-display: swap;
   }
+  @font-face {
+    font-family: 'BuloRounded';
+    src: url("BuloRounded-Italic.otf") format('opentype');
+    font-style: italic; font-weight: normal; font-display: swap;
+  }
+  @font-face {
+    font-family: 'BuloRounded';
+    src: url("BuloRounded-BoldItalic.otf") format('opentype');
+    font-style: italic; font-weight: bold; font-display: swap;
+  }
 
   /* evernote scheme + vollkorn title, lifted from index.html defaults */
   :root {
@@ -99,14 +109,14 @@
   .v-dothovertile .sub .cjw.c3:hover { text-decoration-color: color-mix(in oklab, var(--p1) 75%, var(--ink) 25%); }
 
   .v-dotmarch .sub .cjw { text-decoration: none; position: relative; }
-  .v-dotmarch .sub .cjw::after { content: ""; position: absolute; left: 0; right: 0; bottom: -.32em; height: 3px;
+  .v-dotmarch .sub .cjw::after { content: ""; position: absolute; left: 0; right: 0; bottom: -.1em; height: 3px;
     background: radial-gradient(circle, rgba(51,41,31,.45) 1.05px, transparent 1.4px) left center / 6px 3px repeat-x; }
   .v-dotmarch .sub .cjw:hover { color: var(--ink); }
   .v-dotmarch .sub .cjw:hover::after { animation: dotmarch .45s linear infinite; }
   @keyframes dotmarch { to { background-position: 6px 50%; } }
 
   .v-dotpips .sub .cjw { text-decoration: none; position: relative; }
-  .v-dotpips .sub .cjw::after { content: ""; position: absolute; left: 0; right: 0; bottom: -.42em; height: 6px;
+  .v-dotpips .sub .cjw::after { content: ""; position: absolute; left: 0; right: 0; bottom: -.2em; height: 6px;
     background: radial-gradient(circle, rgba(51,41,31,.45) 1.05px, transparent 1.4px) left center / 6px 6px repeat-x; }
   .v-dotpips .sub .cjw:hover { color: var(--ink); }
   .v-dotpips .sub .cjw:hover::after { background: var(--pipink);
@@ -139,7 +149,7 @@
   .v-dotwaveink .sub .cjw, .v-dotwavetile .sub .cjw { text-decoration: none; position: relative; }
   .v-dotwaveink .sub .cjw::after, .v-dotwavetile .sub .cjw::after,
   .v-dotwaveink .sub .cjw::before, .v-dotwavetile .sub .cjw::before {
-    content: ""; position: absolute; left: 0; bottom: -.32em; height: 3px; pointer-events: none;
+    content: ""; position: absolute; left: 0; bottom: -.1em; height: 3px; pointer-events: none;
     background: radial-gradient(circle, var(--dot) 1.05px, transparent 1.4px) left center / 6px 3px repeat-x; }
   .v-dotwaveink .sub .cjw::after, .v-dotwavetile .sub .cjw::after { right: 0; --dot: rgba(51,41,31,.45); }
   .v-dotwaveink .sub .cjw::before, .v-dotwavetile .sub .cjw::before { width: 0; transition: width .35s ease-out; }
@@ -148,6 +158,18 @@
   .v-dotwavetile .sub .cjw.c1::before { --dot: color-mix(in oklab, var(--p3) 75%, var(--ink) 25%); }
   .v-dotwavetile .sub .cjw.c2::before { --dot: color-mix(in oklab, var(--p4) 75%, var(--ink) 25%); }
   .v-dotwavetile .sub .cjw.c3::before { --dot: color-mix(in oklab, var(--p1) 75%, var(--ink) 25%); }
+
+  /* the pick: dots rest in the site's third text grey and the hover wave
+     washes them in the words' own ink */
+  .v-pick .sub .cjw, .v-pickital .sub .cjw { text-decoration: none; position: relative; }
+  .v-pickital .sub .cjw { font-weight: normal; font-style: italic; }
+  .v-pick .sub .cjw::after, .v-pickital .sub .cjw::after,
+  .v-pick .sub .cjw::before, .v-pickital .sub .cjw::before {
+    content: ""; position: absolute; left: 0; bottom: -.1em; height: 3px; pointer-events: none;
+    background: radial-gradient(circle, var(--dot) 1.05px, transparent 1.4px) left center / 6px 3px repeat-x; }
+  .v-pick .sub .cjw::after, .v-pickital .sub .cjw::after { right: 0; --dot: #868E96; }
+  .v-pick .sub .cjw::before, .v-pickital .sub .cjw::before { width: 0; --dot: var(--ink-soft); transition: width .35s ease-out; }
+  .v-pick .sub .cjw:hover::before, .v-pickital .sub .cjw:hover::before { width: 100%; }
 
   /* ===== card-native ===== */
   .v-piprule .sub .cjw { font-weight: bold; color: var(--ink-soft); position: relative; }
@@ -250,6 +272,35 @@
   .v-brush .sub .cjw.c2:hover { color: color-mix(in oklab, var(--p4) 55%, var(--ink) 45%); }
   .v-brush .sub .cjw.c3:hover { color: color-mix(in oklab, var(--p1) 55%, var(--ink) 45%); }
 
+  /* italic-instead-of-bold twins of the favorites, on the real italic cut */
+  .v-scribbleital .sub .cjw, .v-brushital .sub .cjw { font-style: italic; color: var(--ink-soft); position: relative; }
+  .v-scribbleital .sub .cjw::after { content: ""; position: absolute; left: 1px; right: 1px;
+    bottom: -.24em; height: .34em; pointer-events: none;
+    -webkit-mask: var(--squiggle) center / 100% 100% no-repeat;
+    mask: var(--squiggle) center / 100% 100% no-repeat; }
+  .v-brushital .sub .cjw::after { content: ""; position: absolute; left: 0; right: 0;
+    bottom: -.34em; height: .32em; pointer-events: none;
+    -webkit-mask: var(--brushstroke) center / 100% 100% no-repeat;
+    mask: var(--brushstroke) center / 100% 100% no-repeat; }
+  .v-scribbleital .sub .cjw.c1::after, .v-brushital .sub .cjw.c1::after { background-color: var(--p3); }
+  .v-scribbleital .sub .cjw.c2::after, .v-brushital .sub .cjw.c2::after { background-color: var(--p4); }
+  .v-scribbleital .sub .cjw.c3::after, .v-brushital .sub .cjw.c3::after { background-color: var(--p1); }
+  .v-scribbleital .sub .cjw.c1:hover, .v-brushital .sub .cjw.c1:hover { color: color-mix(in oklab, var(--p3) 55%, var(--ink) 45%); }
+  .v-scribbleital .sub .cjw.c2:hover, .v-brushital .sub .cjw.c2:hover { color: color-mix(in oklab, var(--p4) 55%, var(--ink) 45%); }
+  .v-scribbleital .sub .cjw.c3:hover, .v-brushital .sub .cjw.c3:hover { color: color-mix(in oklab, var(--p1) 55%, var(--ink) 45%); }
+  .v-wavyital .sub .cjw { font-style: italic; color: var(--ink-soft);
+    text-decoration: underline wavy; text-decoration-thickness: 1.5px; text-underline-offset: 5px;
+    text-decoration-color: var(--accent); }
+  .v-wavyital .sub .cjw:hover { color: var(--accent-deep); }
+  .v-colorlineital .sub .cjw { font-style: italic; color: var(--ink-soft);
+    text-decoration: underline; text-decoration-thickness: 3px; text-underline-offset: 4px; }
+  .v-colorlineital .sub .cjw.c1 { text-decoration-color: var(--p3); }
+  .v-colorlineital .sub .cjw.c2 { text-decoration-color: var(--p4); }
+  .v-colorlineital .sub .cjw.c3 { text-decoration-color: var(--p1); }
+  .v-colorlineital .sub .cjw.c1:hover { color: var(--p3); }
+  .v-colorlineital .sub .cjw.c2:hover { color: var(--p4); }
+  .v-colorlineital .sub .cjw.c3:hover { color: var(--p1); }
+
   .v-rough .sub .cjw { font-weight: bold; color: var(--ink-soft); }
   .v-rough .sub .cjw:hover { color: var(--accent-deep); }
 
@@ -288,8 +339,7 @@
   .v-italic .sub .cjw { font-style: italic; color: var(--ink-soft); }
   .v-italic .sub .cjw:hover { color: var(--accent-deep); }
 
-  /* italic + dotted: BuloRounded ships no italic cut, so the slant is
-     browser-synthesized */
+  /* italic + dotted, on the real Bulo Rounded italic cuts loaded above */
   .v-italdotted .sub .cjw { font-style: italic; color: var(--ink-soft);
     text-decoration: underline dotted; text-decoration-thickness: 2px; text-underline-offset: 4px;
     text-decoration-color: rgba(51,41,31,.45); }
@@ -473,6 +523,12 @@
     <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
   </section>
 
+  <section class="block v-scribbleital">
+    <p class="tag">Hand-drawn squiggle, tile colors, italic not bold</p>
+    <h3 class="title">Play card games<br>in good company</h3>
+    <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
+  </section>
+
   <section class="block v-scribblegold">
     <p class="tag">Hand-drawn squiggle, gold</p>
     <h3 class="title">Play card games<br>in good company</h3>
@@ -481,6 +537,12 @@
 
   <section class="block v-brush">
     <p class="tag">Marker brush stroke</p>
+    <h3 class="title">Play card games<br>in good company</h3>
+    <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
+  </section>
+
+  <section class="block v-brushital">
+    <p class="tag">Marker brush stroke, italic not bold</p>
     <h3 class="title">Play card games<br>in good company</h3>
     <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
   </section>
@@ -497,10 +559,22 @@
     <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
   </section>
 
+  <section class="block v-wavyital">
+    <p class="tag">Wavy underline, italic not bold</p>
+    <h3 class="title">Play card games<br>in good company</h3>
+    <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
+  </section>
+
   <p class="ghead">Type and color</p>
 
   <section class="block v-colorline">
     <p class="tag">Underline in tile colors</p>
+    <h3 class="title">Play card games<br>in good company</h3>
+    <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
+  </section>
+
+  <section class="block v-colorlineital">
+    <p class="tag">Underline in tile colors, italic not bold</p>
     <h3 class="title">Play card games<br>in good company</h3>
     <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
   </section>
@@ -536,13 +610,13 @@
   </section>
 
   <section class="block v-italdotted">
-    <p class="tag">Italic + dotted underline (faux italic, no italic cut of BuloRounded)</p>
+    <p class="tag">Italic + dotted underline (real italic cut)</p>
     <h3 class="title">Play card games<br>in good company</h3>
     <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
   </section>
 
   <section class="block v-bolditaldotted">
-    <p class="tag">Bold italic + dotted underline (faux italic)</p>
+    <p class="tag">Bold italic + dotted underline (real italic cut)</p>
     <h3 class="title">Play card games<br>in good company</h3>
     <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
   </section>
@@ -575,6 +649,20 @@
 
   <section class="block v-highlight">
     <p class="tag">Marker highlight</p>
+    <h3 class="title">Play card games<br>in good company</h3>
+    <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
+  </section>
+
+  <p class="ghead">The pick: third-grey dots, ink wave on hover (hover the words)</p>
+
+  <section class="block dotx v-pick">
+    <p class="tag">Dots in the third text grey; hover washes them in the words' own ink</p>
+    <h3 class="title">Play card games<br>in good company</h3>
+    <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
+  </section>
+
+  <section class="block dotx v-pickital">
+    <p class="tag">Same, italic not bold</p>
     <h3 class="title">Play card games<br>in good company</h3>
     <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
   </section>

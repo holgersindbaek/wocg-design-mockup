@@ -19,6 +19,16 @@
     src: url("BuloRounded-Bold.woff2") format('woff2');
     font-style: normal; font-weight: bold; font-display: swap;
   }
+  @font-face {
+    font-family: 'BuloRounded';
+    src: url("BuloRounded-Italic.otf") format('opentype');
+    font-style: italic; font-weight: normal; font-display: swap;
+  }
+  @font-face {
+    font-family: 'BuloRounded';
+    src: url("BuloRounded-BoldItalic.otf") format('opentype');
+    font-style: italic; font-weight: bold; font-display: swap;
+  }
 
   /* ===== local premium trials ===== */
   @font-face { font-family: "Recoleta"; src: url("Recoleta-Regular.otf") format("opentype"); font-display: swap; }
@@ -443,8 +453,7 @@
     text-decoration: underline dotted; text-decoration-thickness: 2px; text-underline-offset: 4px;
     text-decoration-color: rgba(51,41,31,.45); }
   body.cnav-sub-dotted #herosub .cjw:hover { text-decoration-style: solid; color: var(--accent-deep); }
-  /* italic + dotted: BuloRounded ships no italic cut, so the slant is
-     browser-synthesized */
+  /* italic + dotted, on the real Bulo Rounded italic cuts loaded above */
   body.cnav-sub-italdotted #herosub .cjw { font-style: italic; color: var(--ink-soft);
     text-decoration: underline dotted; text-decoration-thickness: 2px; text-underline-offset: 4px;
     text-decoration-color: rgba(51,41,31,.45); }
@@ -578,6 +587,41 @@
   body.cnav-sub-cardedge #herosub .cjw.c3::after { --edge: color-mix(in oklab, var(--p1) 55%, var(--ink) 45%); }
   body.cnav-sub-cardedge #herosub .cjw:hover::after { transform: translateY(-1px); }
   body.cnav-sub-cardedge #herosub .cjw:hover { color: var(--accent-deep); }
+  /* italic-instead-of-bold twins of the favorite coats, on the real italic cut */
+  body.cnav-sub-scribbleital #herosub .cjw { font-style: italic; color: var(--ink-soft); position: relative; }
+  body.cnav-sub-scribbleital #herosub .cjw::after { content: ""; position: absolute; left: 1px; right: 1px;
+    bottom: -.24em; height: .34em; pointer-events: none;
+    -webkit-mask: var(--squiggle) center / 100% 100% no-repeat;
+    mask: var(--squiggle) center / 100% 100% no-repeat; }
+  body.cnav-sub-scribbleital #herosub .cjw.c1::after { background-color: var(--p3); }
+  body.cnav-sub-scribbleital #herosub .cjw.c2::after { background-color: var(--p4); }
+  body.cnav-sub-scribbleital #herosub .cjw.c3::after { background-color: var(--p1); }
+  body.cnav-sub-scribbleital #herosub .cjw.c1:hover { color: color-mix(in oklab, var(--p3) 55%, var(--ink) 45%); }
+  body.cnav-sub-scribbleital #herosub .cjw.c2:hover { color: color-mix(in oklab, var(--p4) 55%, var(--ink) 45%); }
+  body.cnav-sub-scribbleital #herosub .cjw.c3:hover { color: color-mix(in oklab, var(--p1) 55%, var(--ink) 45%); }
+  body.cnav-sub-brushital #herosub .cjw { font-style: italic; color: var(--ink-soft); position: relative; }
+  body.cnav-sub-brushital #herosub .cjw::after { content: ""; position: absolute; left: 0; right: 0;
+    bottom: -.34em; height: .32em; pointer-events: none;
+    -webkit-mask: var(--brushstroke) center / 100% 100% no-repeat;
+    mask: var(--brushstroke) center / 100% 100% no-repeat; }
+  body.cnav-sub-brushital #herosub .cjw.c1::after { background-color: var(--p3); }
+  body.cnav-sub-brushital #herosub .cjw.c2::after { background-color: var(--p4); }
+  body.cnav-sub-brushital #herosub .cjw.c3::after { background-color: var(--p1); }
+  body.cnav-sub-brushital #herosub .cjw.c1:hover { color: color-mix(in oklab, var(--p3) 55%, var(--ink) 45%); }
+  body.cnav-sub-brushital #herosub .cjw.c2:hover { color: color-mix(in oklab, var(--p4) 55%, var(--ink) 45%); }
+  body.cnav-sub-brushital #herosub .cjw.c3:hover { color: color-mix(in oklab, var(--p1) 55%, var(--ink) 45%); }
+  body.cnav-sub-wavyital #herosub .cjw { font-style: italic; color: var(--ink-soft);
+    text-decoration: underline wavy; text-decoration-thickness: 1.5px; text-underline-offset: 5px;
+    text-decoration-color: var(--accent); }
+  body.cnav-sub-wavyital #herosub .cjw:hover { color: var(--accent-deep); }
+  body.cnav-sub-colorlineital #herosub .cjw { font-style: italic; color: var(--ink-soft);
+    text-decoration: underline; text-decoration-thickness: 3px; text-underline-offset: 4px; }
+  body.cnav-sub-colorlineital #herosub .cjw.c1 { text-decoration-color: var(--p3); }
+  body.cnav-sub-colorlineital #herosub .cjw.c2 { text-decoration-color: var(--p4); }
+  body.cnav-sub-colorlineital #herosub .cjw.c3 { text-decoration-color: var(--p1); }
+  body.cnav-sub-colorlineital #herosub .cjw.c1:hover { color: var(--p3); }
+  body.cnav-sub-colorlineital #herosub .cjw.c2:hover { color: var(--p4); }
+  body.cnav-sub-colorlineital #herosub .cjw.c3:hover { color: var(--p1); }
   /* two-ink convention: the page keeps its ink black; the accents take the
      deck's second ink, a warm brick card-red. Category color stays on the
      tiles; one shared second ink is the whole idea */
@@ -2282,6 +2326,10 @@
     ["sub-dotted", "Subtitle: dotted glossary underline (default)"],
     ["sub-italdotted", "Subtitle: italic + dotted underline"],
     ["sub-bolditaldotted", "Subtitle: bold italic + dotted underline"],
+    ["sub-scribbleital", "Subtitle: hand-drawn squiggle, italic not bold"],
+    ["sub-brushital", "Subtitle: marker brush, italic not bold"],
+    ["sub-wavyital", "Subtitle: wavy underline, italic not bold"],
+    ["sub-colorlineital", "Subtitle: color underline, italic not bold"],
     ["sub-arrow", "Subtitle: bold + down arrow"],
     ["sub-italic", "Subtitle: italic"],
     ["sub-nearrow", "Subtitle: bold + \u2197 arrow (both bold)"],
@@ -2577,7 +2625,7 @@
     "sel-menu": ["centerlight", "centerlighteggshell", "centerlightporc", "center", "centerporcelain", "current", "crest", "gthreads"],
     "sel-rail": ["suits", "cards", "band"],
     "sel-avedge": ["luminosity", "lum-deep", "lum-dark", "lum-light", "lum-soft", "none", "ink", "color-burn"],
-    "sel-cnav": ["sub-plain", "sub-dotted", "sub-italdotted", "sub-bolditaldotted", "sub-scribble", "sub-brush", "sub-wavy", "sub-colorline"]
+    "sel-cnav": ["sub-plain", "sub-dotted", "sub-italdotted", "sub-bolditaldotted", "sub-scribble", "sub-scribbleital", "sub-brush", "sub-brushital", "sub-wavy", "sub-wavyital", "sub-colorline", "sub-colorlineital"]
   };
   function buildSel(id, list, setter) {
     var el = document.getElementById(id);
