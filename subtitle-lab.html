@@ -86,6 +86,13 @@
   .v-dotred .sub .cjw { text-decoration-color: color-mix(in oklab, #a8232b 60%, transparent); }
   .v-dotred .sub .cjw:hover { text-decoration-color: #a8232b; color: var(--ink); }
 
+  /* the real site's tokens: menu-bar border #CED4DA, third text grey #868E96 */
+  .v-dotmenuborder .sub .cjw { text-decoration-color: #CED4DA; }
+  .v-dotmenuborder .sub .cjw:hover { text-decoration-color: #ADB5BD; color: var(--ink); }
+
+  .v-dotmuted .sub .cjw { text-decoration-color: #868E96; }
+  .v-dotmuted .sub .cjw:hover { text-decoration-color: #495057; color: var(--ink); }
+
   .v-dothovertile .sub .cjw { transition: text-decoration-color .25s ease; }
   .v-dothovertile .sub .cjw.c1:hover { text-decoration-color: color-mix(in oklab, var(--p3) 75%, var(--ink) 25%); }
   .v-dothovertile .sub .cjw.c2:hover { text-decoration-color: color-mix(in oklab, var(--p4) 75%, var(--ink) 25%); }
@@ -126,6 +133,21 @@
   .v-dotsweep .sub .cjw:hover::after { width: 100%; }
 
   .v-dotwave .sub .cjw:hover { text-decoration-style: wavy; text-decoration-thickness: 1.5px; }
+
+  /* wave wash: an overlay dot strip on the same 6px grid grows from the
+     left, so the stronger color takes the dots one after another */
+  .v-dotwaveink .sub .cjw, .v-dotwavetile .sub .cjw { text-decoration: none; position: relative; }
+  .v-dotwaveink .sub .cjw::after, .v-dotwavetile .sub .cjw::after,
+  .v-dotwaveink .sub .cjw::before, .v-dotwavetile .sub .cjw::before {
+    content: ""; position: absolute; left: 0; bottom: -.32em; height: 3px; pointer-events: none;
+    background: radial-gradient(circle, var(--dot) 1.05px, transparent 1.4px) left center / 6px 3px repeat-x; }
+  .v-dotwaveink .sub .cjw::after, .v-dotwavetile .sub .cjw::after { right: 0; --dot: rgba(51,41,31,.45); }
+  .v-dotwaveink .sub .cjw::before, .v-dotwavetile .sub .cjw::before { width: 0; transition: width .35s ease-out; }
+  .v-dotwaveink .sub .cjw:hover::before, .v-dotwavetile .sub .cjw:hover::before { width: 100%; }
+  .v-dotwaveink .sub .cjw::before { --dot: rgba(20,20,20,.92); }
+  .v-dotwavetile .sub .cjw.c1::before { --dot: color-mix(in oklab, var(--p3) 75%, var(--ink) 25%); }
+  .v-dotwavetile .sub .cjw.c2::before { --dot: color-mix(in oklab, var(--p4) 75%, var(--ink) 25%); }
+  .v-dotwavetile .sub .cjw.c3::before { --dot: color-mix(in oklab, var(--p1) 75%, var(--ink) 25%); }
 
   /* ===== card-native ===== */
   .v-piprule .sub .cjw { font-weight: bold; color: var(--ink-soft); position: relative; }
@@ -351,6 +373,18 @@
     <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
   </section>
 
+  <section class="block dotx v-dotmenuborder">
+    <p class="tag">Dots in the menu-bar border grey (#CED4DA)</p>
+    <h3 class="title">Play card games<br>in good company</h3>
+    <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
+  </section>
+
+  <section class="block dotx v-dotmuted">
+    <p class="tag">Dots in the site's third text grey (#868E96)</p>
+    <h3 class="title">Play card games<br>in good company</h3>
+    <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
+  </section>
+
   <section class="block dotx v-dothovertile">
     <p class="tag">Hover: dots warm to the tile color</p>
     <h3 class="title">Play card games<br>in good company</h3>
@@ -383,6 +417,18 @@
 
   <section class="block dotx v-dotwave">
     <p class="tag">Hover: dots go wavy</p>
+    <h3 class="title">Play card games<br>in good company</h3>
+    <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
+  </section>
+
+  <section class="block dotx v-dotwaveink">
+    <p class="tag">Hover: stronger ink washes over the dots in a wave</p>
+    <h3 class="title">Play card games<br>in good company</h3>
+    <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
+  </section>
+
+  <section class="block dotx v-dotwavetile">
+    <p class="tag">Hover: the tile color washes over the dots in a wave</p>
     <h3 class="title">Play card games<br>in good company</h3>
     <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
   </section>
