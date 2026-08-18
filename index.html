@@ -154,7 +154,7 @@
   }
   body.evernote {
     --canvas:#f9f6f2; --band:#f4eee5; --surface:#ffffff; --card:#ffffff;
-    --ink:#141414; --ink-soft:#262626; --muted:#4e4d4c; --hairline:#e7e7e7;
+    --ink:#141414; --ink-soft:#262626; --muted:#4e4d4c; --hairline:#e7e7e7; --edge:#c3c0bc;
     --accent:#00a82d; --accent-deep:#008a25; --accent-ink:#ffffff; --second:#4d64ff;
     --p1:#f4c360; --p2:#ef9eb2; --p3:#4d64ff; --p4:#00a82d; --p5:#e8862f; --p6:#9a6df0; --p7:#5bb4d0; --p8:#e54e40; --p9:#d1548f; --pfg:#ffffff;
   }
@@ -855,6 +855,14 @@
   /* the big hero tile keeps its word: "341 playing" there teaches what
      the naked dot-numbers on every other tile mean */
   body.counter-ghostdot .games .pos-a .gchip { font-size: 14px; }
+  /* ghost-num: the naked number alone, no dot, no word - except the big
+     hero tile, which keeps "x playing" as the legend */
+  body.counter-ghostnum .gchip { left: 12px; bottom: 10px; line-height: 1; font-size: 0; }
+  body.counter-ghostnum .gchip b { font-size: 14px; }
+  body.counter-ghostnum .gchip .gunder { mix-blend-mode: soft-light;
+    text-shadow: -1px -1px 0 rgba(0,0,0,.32), 1px -1px 0 rgba(0,0,0,.32),
+      -1px 1px 0 rgba(0,0,0,.32), 1px 1px 0 rgba(0,0,0,.32); }
+  body.counter-ghostnum .games .pos-a .gchip { font-size: 14px; }
   body.counter-ghostdot .gchip::before, body.counter-ghostdot .gchip .gunder::before {
     content: ""; flex: none; width: 6px; height: 6px; border-radius: 50%;
     margin-right: 4px; background: #fff; }
@@ -917,8 +925,8 @@
   .statsCapsule .capsule { display: inline-flex; align-items: center; height: 32px; font-size: 16px; background: var(--surface, #fff); border-radius: 20px;
     box-shadow: var(--ringshadow); padding: 0 4px; }
   .statsCapsule .st { padding: 0 11px; gap: 4px; align-self: stretch; }
-  /* the internal walls share the ring's warm --panelline */
-  .statsCapsule .st + .st { border-left: 1px solid var(--panelline); }
+  /* the internal walls share the ring's --edge */
+  .statsCapsule .st + .st { border-left: 1px solid var(--edge, var(--panelline)); }
   .statsCapsule .stlive { padding: 0 9px; gap: 6px; }
   .statsCapsule .greencap { font-size: 14px; font-weight: bold; letter-spacing: .06em; color: #2f9e44; }
   /* small capsule: 24px tall, 14px text, the LIVE cap one ladder step down */
@@ -1308,10 +1316,8 @@
     --btnshadow: 0 0 1px rgba(0,0,0,0.4), 0 1px 1px rgba(0,0,0,0.04), 0 2px 4px rgba(0,0,0,0.04);
     /* the ringed variant for white shapes floating on cream, where the
        blurred hairline alone melts: capsule + top-menu centered mark. Ring
-       and inner dividers share --panelline: warm brown at .15 alpha, so
-       one color string adapts to white inside and cream outside instead
-       of an opaque hex reading faint on the darker ground */
-    --ringshadow: 0 0 0 1px var(--panelline), var(--btnshadow); }
+       and inner dividers share the scheme's --edge, a true color */
+    --ringshadow: 0 0 0 1px var(--edge, var(--panelline)), var(--btnshadow); }
   body.shadow-soft { --tileshadow: 0 1px 2px rgba(60,45,25,.08), 0 2px 5px rgba(60,45,25,.08), 0 5px 12px rgba(60,45,25,.08); }
   body.shadow-softstrong { --tileshadow: 0 1px 2px rgba(60,45,25,.11), 0 3px 7px rgba(60,45,25,.12), 0 7px 16px rgba(60,45,25,.13); }
   body.shadow-material { --tileshadow: 0 1px 3px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.18); }
@@ -2281,7 +2287,8 @@
     ["tab", "Site corner tab (docked)"],
     ["scrim", "Ghost on a scrim"],
     ["ghost", "Ghost, naked with dark halo"],
-    ["ghostdot", "Ghost: still dot + naked number"]
+    ["ghostdot", "Ghost: still dot + naked number"],
+    ["ghostnum", "Ghost: naked number only (big tile keeps its word)"]
   ];
   var curShadow = "soft", curEdge = "softlight", curTexture = "grain", curCatalog = "split", curStats = "capsule2", curMenu = "centerlight", curCounter = "ghostdot", curRail = "suits", curPlayBtn = "green";
   /* every CSS blend mode as an avatar-rim coat: one filter per mode is stamped
