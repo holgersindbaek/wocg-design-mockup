@@ -438,7 +438,9 @@
        wave (above the curve for the menu, below it for the footer) */
     --wavedivider: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 8'%3E%3Cpath d='M0 4C2.5 1 7.5 1 10 4C12.5 7 17.5 7 20 4' fill='none' stroke='white' stroke-width='2'/%3E%3C/svg%3E");
     --wavecutdown: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 8'%3E%3Cpath d='M0 4C2.5 1 7.5 1 10 4C12.5 7 17.5 7 20 4L20 0L0 0Z' fill='white'/%3E%3C/svg%3E");
-    --wavecutup: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 8'%3E%3Cpath d='M0 4C2.5 1 7.5 1 10 4C12.5 7 17.5 7 20 4L20 8L0 8Z' fill='white'/%3E%3C/svg%3E"); }
+    --wavecutup: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 8'%3E%3Cpath d='M0 4C2.5 1 7.5 1 10 4C12.5 7 17.5 7 20 4L20 8L0 8Z' fill='white'/%3E%3C/svg%3E");
+    /* the fine subtitle wave, phase-shifted to start at its lowest point */
+    --wavetrough: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 7 7'%3E%3Cpath d='M0 5C1.4 5 2.1 2 3.5 2C4.9 2 5.6 5 7 5' fill='none' stroke='white' stroke-width='1.5'/%3E%3C/svg%3E"); }
   #herosub .cjw { border-bottom: none; color: inherit; white-space: nowrap; }
   /* gold signs: the online-solitaire "Playing" tag, inline in the sentence */
   body.cnav-sub-sign #herosub .cjw { display: inline-block; padding: 0 9px; border-radius: 6px;
@@ -550,6 +552,23 @@
   body.cnav-sub-wavycat #herosub .cjw.c1:hover { color: color-mix(in oklab, var(--p3) 55%, var(--ink) 45%); }
   body.cnav-sub-wavycat #herosub .cjw.c2:hover { color: color-mix(in oklab, var(--p4) 55%, var(--ink) 45%); }
   body.cnav-sub-wavycat #herosub .cjw.c3:hover { color: color-mix(in oklab, var(--p1) 55%, var(--ink) 45%); }
+  /* the chosen resting wave: footer-sand stroke starting at its lowest
+     point, gentle on descenders. Hover fades in the category color and the
+     wave slides right; the march runs on a .waving class (not :hover) so
+     the script can let the cycle finish on mouse-out */
+  body.cnav-sub-wavesand #herosub .cjw, body.cnav-sub-wavesandbold #herosub .cjw { color: var(--ink-soft); position: relative; }
+  body.cnav-sub-wavesandbold #herosub .cjw { font-weight: bold; }
+  body.cnav-sub-wavesand #herosub .cjw::after, body.cnav-sub-wavesandbold #herosub .cjw::after { content: "";
+    position: absolute; left: 0; right: 0; bottom: -.26em; height: 7px; z-index: -1; pointer-events: none;
+    background-color: #D9D2C4; transition: background-color .18s ease;
+    -webkit-mask: var(--wavetrough) left center / 7px 7px repeat-x;
+            mask: var(--wavetrough) left center / 7px 7px repeat-x; }
+  body.cnav-sub-wavesand #herosub .cjw:hover, body.cnav-sub-wavesandbold #herosub .cjw:hover { color: var(--ink); }
+  body.cnav-sub-wavesand #herosub .cjw.waving::after, body.cnav-sub-wavesandbold #herosub .cjw.waving::after { animation: wavemarch .4s linear infinite; }
+  body.cnav-sub-wavesand #herosub .cjw.c1:hover::after, body.cnav-sub-wavesandbold #herosub .cjw.c1:hover::after { background-color: var(--p3); }
+  body.cnav-sub-wavesand #herosub .cjw.c2:hover::after, body.cnav-sub-wavesandbold #herosub .cjw.c2:hover::after { background-color: var(--p4); }
+  body.cnav-sub-wavesand #herosub .cjw.c3:hover::after, body.cnav-sub-wavesandbold #herosub .cjw.c3:hover::after { background-color: var(--p1); }
+  @keyframes wavemarch { to { -webkit-mask-position: 7px center; mask-position: 7px center; } }
   body.cnav-sub-wavy #herosub .cjw:hover, body.cnav-sub-wavythick #herosub .cjw:hover { color: var(--accent-deep); }
   /* Rough Notation: the library draws sketchy SVG underlines next to the
      words (loaded from unpkg on first use; words stay bold if offline) */
@@ -2427,7 +2446,7 @@
     ["sub-colorbold", "Subtitle: bold in tile colors"],
     ["sub-bold", "Subtitle: just bold"],
     ["sub-link", "Subtitle: classic link blue"],
-    ["sub-dotted", "Subtitle: dotted glossary underline (default)"],
+    ["sub-dotted", "Subtitle: dotted glossary underline"],
     ["sub-italdotted", "Subtitle: italic + dotted underline"],
     ["sub-bolditaldotted", "Subtitle: bold italic + dotted underline"],
     ["sub-scribbleital", "Subtitle: hand-drawn squiggle, italic not bold"],
@@ -2444,6 +2463,8 @@
     ["sub-wavy", "Subtitle: wavy underline"],
     ["sub-wavythick", "Subtitle: wavy underline, a bit thicker"],
     ["sub-wavycat", "Subtitle: wavy underline in category colors, not bold"],
+    ["sub-wavesand", "Subtitle: resting sand wave, colors + slides on hover (default)"],
+    ["sub-wavesandbold", "Subtitle: resting sand wave, bold words"],
     ["sub-rough", "Subtitle: sketched draw-on (Rough Notation)"],
     ["sub-piprule", "Subtitle: suit-pip rule"],
     ["sub-doublerule", "Subtitle: card-face double rule"],
@@ -2456,7 +2477,7 @@
     ["row-color", "Below tiles: color buttons"],
     ["row-signs", "Below tiles: gold signs"]
   ];
-  var curCnav = "sub-dotted";
+  var curCnav = "sub-wavesand";
   /* sub-* coats rewrite the subtitle so the three families live in the copy
      itself; the words are anchors the coats restyle. The title already says
      "Play card games", so none of the copies repeat it. "|" marks the scene
@@ -2535,6 +2556,15 @@
       .replace(/\[ru\]([^\[]+)\[\/ru\]/g, '<a class="cjw c2" href="#sec-rummy">$1</a>')
       .replace(/\[cl\]([^\[]+)\[\/cl\]/g, '<a class="cjw c3" href="#sec-classic">$1</a>')
       .replace(/\|/g, scene ? "<br>" : " ");
+    /* the sand-wave coats march on hover and finish their cycle on
+       mouse-out, landing the wave back on its starting trough */
+    document.querySelectorAll("#herosub .cjw").forEach(function (el) {
+      el.addEventListener("mouseenter", function () { el.classList.add("waving"); delete el.dataset.stop; });
+      el.addEventListener("mouseleave", function () { el.dataset.stop = "1"; });
+      el.addEventListener("animationiteration", function (e) {
+        if (e.animationName === "wavemarch" && el.dataset.stop) { el.classList.remove("waving"); delete el.dataset.stop; }
+      });
+    });
   }
   /* Rough Notation coat: lazy-load the library, then draw a sketchy
      underline per category word in its tile color. applyCnavSub rewrites
@@ -2738,7 +2768,7 @@
     "sel-menu": ["centerlight", "centerwave", "centerlighteggshell", "centerlightporc", "center", "centerporcelain", "current", "crest", "gthreads"],
     "sel-rail": ["suits", "cards", "band"],
     "sel-avedge": ["luminosity", "lum-deep", "lum-dark", "lum-light", "lum-soft", "none", "ink", "color-burn"],
-    "sel-cnav": ["sub-plain", "sub-dotted", "sub-italdotted", "sub-bolditaldotted", "sub-scribble", "sub-scribbleital", "sub-brush", "sub-brushital", "sub-wavy", "sub-wavyital", "sub-wavythick", "sub-wavycat", "sub-colorline", "sub-colorlineital"]
+    "sel-cnav": ["sub-wavesand", "sub-wavesandbold", "sub-plain", "sub-dotted", "sub-italdotted", "sub-bolditaldotted", "sub-scribble", "sub-scribbleital", "sub-brush", "sub-brushital", "sub-wavy", "sub-wavyital", "sub-wavythick", "sub-wavycat", "sub-colorline", "sub-colorlineital"]
   };
   function buildSel(id, list, setter) {
     var el = document.getElementById(id);

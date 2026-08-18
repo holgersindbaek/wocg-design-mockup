@@ -226,20 +226,22 @@
      the shift equals one tile so the loop is seamless */
   .v-pickwavemove .sub .cjw:hover::after { animation: wavemarch .4s linear infinite; }
   @keyframes wavemarch { to { -webkit-mask-position: 7px center; mask-position: 7px center; } }
-  /* resting grey wave (the site's third text grey) starting at its lowest
+  /* resting sand wave (the footer divider's color) starting at its lowest
      point, sitting a touch lower so it clips the font less; hover gives it
-     the category color and slides it right */
-  .v-pickwavegrey .sub .cjw { color: var(--ink-soft); position: relative; }
-  .v-pickwavegrey .sub .cjw::after { content: ""; position: absolute; left: 0; right: 0;
+     the category color and slides it right. The march runs on a .waving
+     class (not :hover) so the script can let the cycle finish on mouse-out */
+  .v-pickwavegrey .sub .cjw, .v-pickwavegreybold .sub .cjw { color: var(--ink-soft); position: relative; }
+  .v-pickwavegreybold .sub .cjw { font-weight: bold; }
+  .v-pickwavegrey .sub .cjw::after, .v-pickwavegreybold .sub .cjw::after { content: ""; position: absolute; left: 0; right: 0;
     bottom: -.26em; height: 7px; z-index: -1; pointer-events: none;
-    background-color: #868E96; transition: background-color .18s ease;
+    background-color: #D9D2C4; transition: background-color .18s ease;
     -webkit-mask: var(--wavetrough) left center / 7px 7px repeat-x;
             mask: var(--wavetrough) left center / 7px 7px repeat-x; }
-  .v-pickwavegrey .sub .cjw:hover { color: var(--ink); }
-  .v-pickwavegrey .sub .cjw:hover::after { animation: wavemarch .4s linear infinite; }
-  .v-pickwavegrey .sub .cjw.c1:hover::after { background-color: var(--p3); }
-  .v-pickwavegrey .sub .cjw.c2:hover::after { background-color: var(--p4); }
-  .v-pickwavegrey .sub .cjw.c3:hover::after { background-color: var(--p1); }
+  .v-pickwavegrey .sub .cjw:hover, .v-pickwavegreybold .sub .cjw:hover { color: var(--ink); }
+  .v-pickwavegrey .sub .cjw.waving::after, .v-pickwavegreybold .sub .cjw.waving::after { animation: wavemarch .4s linear infinite; }
+  .v-pickwavegrey .sub .cjw.c1:hover::after, .v-pickwavegreybold .sub .cjw.c1:hover::after { background-color: var(--p3); }
+  .v-pickwavegrey .sub .cjw.c2:hover::after, .v-pickwavegreybold .sub .cjw.c2:hover::after { background-color: var(--p4); }
+  .v-pickwavegrey .sub .cjw.c3:hover::after, .v-pickwavegreybold .sub .cjw.c3:hover::after { background-color: var(--p1); }
   /* the same wave carrying all three category colors at once, a touch
      bolder stroke, same size, lifted behind the text like its siblings */
   .v-pickwavymulti .sub .cjw { color: var(--ink-soft); position: relative; }
@@ -802,7 +804,13 @@
   </section>
 
   <section class="block v-pickwavegrey">
-    <p class="tag">Grey wave from its lowest point; hover colors it and slides it right</p>
+    <p class="tag">Sand wave (the footer's color) from its lowest point; hover colors it and slides it right</p>
+    <h3 class="title">Play card games<br>in good company</h3>
+    <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
+  </section>
+
+  <section class="block v-pickwavegreybold">
+    <p class="tag">Same sand wave, bold words</p>
     <h3 class="title">Play card games<br>in good company</h3>
     <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
   </section>
@@ -810,6 +818,18 @@
 </div>
 
 <script>
+  /* the sand-wave march starts on hover and, on mouse-out, finishes its
+     current cycle so the wave lands back on its starting trough */
+  (function () {
+    document.querySelectorAll(".v-pickwavegrey .sub .cjw, .v-pickwavegreybold .sub .cjw").forEach(function (el) {
+      el.addEventListener("mouseenter", function () { el.classList.add("waving"); delete el.dataset.stop; });
+      el.addEventListener("mouseleave", function () { el.dataset.stop = "1"; });
+      el.addEventListener("animationiteration", function (e) {
+        if (e.animationName === "wavemarch" && el.dataset.stop) { el.classList.remove("waving"); delete el.dataset.stop; }
+      });
+    });
+  })();
+
   /* the Rough Notation block sketches its underlines once fonts are ready */
   (function () {
     var s = document.createElement("script");
