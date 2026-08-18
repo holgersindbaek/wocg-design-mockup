@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Subtitle treatments — WoCG 3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vollkorn:wght@400..900&display=swap" rel="stylesheet">
+<style>
+  @font-face {
+    font-family: 'BuloRounded';
+    src: url("BuloRounded-Regular.woff2") format('woff2');
+    font-style: normal; font-weight: normal; font-display: swap;
+  }
+  @font-face {
+    font-family: 'BuloRounded';
+    src: url("BuloRounded-Bold.woff2") format('woff2');
+    font-style: normal; font-weight: bold; font-display: swap;
+  }
+
+  /* evernote scheme + vollkorn title, lifted from index.html defaults */
+  :root {
+    --canvas:#f9f6f2; --band:#f4eee5; --surface:#ffffff; --card:#ffffff;
+    --ink:#141414; --ink-soft:#262626; --muted:#4e4d4c; --hairline:#e7e7e7;
+    --accent:#00a82d; --accent-deep:#008a25; --accent-ink:#ffffff; --second:#4d64ff;
+    --p1:#f4c360; --p3:#4d64ff; --p4:#00a82d;
+  }
+  body {
+    font-family: "BuloRounded", "Verdana", "Arial", "Helvetica", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    background: var(--canvas);
+    color: var(--ink);
+    margin: 0; padding: 40px 48px 80px;
+  }
+  .pagehead { max-width: 1520px; margin: 0 auto 10px; }
+  .pagehead h1 { font-size: 17px; margin: 0 0 4px; }
+  .pagehead p { color: var(--muted); font-size: 13px; margin: 0; }
+  .grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(480px, 1fr));
+    gap: 0 48px; max-width: 1520px; margin: 0 auto;
+  }
+  .ghead {
+    grid-column: 1 / -1; color: var(--muted); font-size: 13px; font-weight: bold;
+    border-bottom: 1px solid var(--hairline); padding: 34px 0 8px; margin: 0;
+  }
+  .block { padding: 26px 0 34px; }
+  .tag { font-size: 12px; color: var(--muted); margin: 0 0 16px; }
+  .tag b { color: var(--ink-soft); }
+  .title {
+    font-family: "Vollkorn", serif; font-weight: 500;
+    font-size: 40px; letter-spacing: -0.01em; line-height: 1.15; margin: 0 0 6px;
+  }
+  .sub { color: var(--muted); font-size: 16px; max-width: 416px; margin: 0; }
+
+  /* the three category words, same anchors as the mockup subtitle */
+  .sub .cjw { border-bottom: none; color: inherit; white-space: nowrap; cursor: pointer;
+    --squiggle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 202 12' preserveAspectRatio='none'%3E%3Cpath d='m14.8 3.3c60.8 2.6 121.6 1.9 182.3-2.3l-177.7 10 181.6-4.8c-66.7 2.4-133.3-.3-200 2.1' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    --brushstroke: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120.349 7.836' preserveAspectRatio='none'%3E%3Cpath fill='white' d='M.02 5.79c.13-1.199.645-2.63 1.944-2.95a24.63 24.63 0 0 1 3.873-.34q4.377-.338 8.757-.647 9.063-.64 18.136-1.139C40.604.292 48.478.002 56.364 0q5.48-.001 10.959.008 8.967.015 17.933.055 9.205.045 18.41.143c4.195.051 8.398.078 12.59.273 1.506.07 3.462.041 3.975 1.856a3.776 3.776 0 0 1-.695 3.312c-.828.818-2.524.435-3.57.4q-4.258-.142-8.515-.278-17.636-.562-35.276-.994C66.298 4.64 60.419 4.508 54.54 4.5c-6.019-.007-12.043.41-18.051.723-5.985.311-11.968.647-17.947 1.045-5.589.372-11.171.78-16.72 1.544C.49 7.996-.12 7.073.018 5.79z'/%3E%3C/svg%3E"); }
+
+  /* ===== current default ===== */
+  .v-dotted .sub .cjw { font-weight: bold; color: var(--ink-soft);
+    text-decoration: underline dotted; text-decoration-thickness: 2px; text-underline-offset: 4px;
+    text-decoration-color: rgba(51,41,31,.45); }
+  .v-dotted .sub .cjw:hover { text-decoration-style: solid; color: var(--accent-deep); }
+
+  /* ===== card-native ===== */
+  .v-piprule .sub .cjw { font-weight: bold; color: var(--ink-soft); position: relative; }
+  .v-piprule .sub .cjw::after { content: ""; position: absolute; left: 0; right: 0;
+    bottom: -.34em; height: 6px; pointer-events: none;
+    -webkit-mask: var(--pip) left center / 11px 6px repeat-x;
+            mask: var(--pip) left center / 11px 6px repeat-x; }
+  .v-piprule .sub .cjw.c1::after {
+    background-color: color-mix(in oklab, var(--p3) 55%, var(--ink) 45%);
+    --pip: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 11 6'%3E%3Cpath d='M3 0C3 1.9 6 2.6 6 4.3a1.6 1.6 0 0 1-2.7 1.1L3.7 6H2.3l.4-.6A1.6 1.6 0 0 1 0 4.3C0 2.6 3 1.9 3 0z' fill='%23000'/%3E%3C/svg%3E"); }
+  .v-piprule .sub .cjw.c2::after {
+    background-color: color-mix(in oklab, var(--p4) 55%, var(--ink) 45%);
+    --pip: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 11 6'%3E%3Cpath d='M3 0 5.4 3 3 6 .6 3Z' fill='%23000'/%3E%3C/svg%3E"); }
+  .v-piprule .sub .cjw.c3::after {
+    background-color: color-mix(in oklab, var(--p1) 55%, var(--ink) 45%);
+    --pip: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 11 6'%3E%3Cpath d='M3 0a1.35 1.35 0 0 1 1.15 2.05A1.35 1.35 0 1 1 4.8 4.6a1.35 1.35 0 0 1-1.4-.3L3.75 6h-1.5l.35-1.7a1.35 1.35 0 0 1-1.4.3A1.35 1.35 0 1 1 1.85 2.05 1.35 1.35 0 0 1 3 0z' fill='%23000'/%3E%3C/svg%3E"); }
+  .v-piprule .sub .cjw:hover { color: var(--accent-deep); }
+  .v-piprule .sub .cjw:hover::after { filter: brightness(.88); }
+
+  .v-doublerule .sub .cjw { font-weight: bold; color: var(--ink-soft);
+    padding-bottom: 6px;
+    background-image: linear-gradient(var(--rule), var(--rule)),
+                      linear-gradient(color-mix(in oklab, var(--rule) 45%, transparent),
+                                      color-mix(in oklab, var(--rule) 45%, transparent));
+    background-size: 100% 2px, 100% 1px;
+    background-position: 0 calc(100% - 5px), 0 100%;
+    background-repeat: no-repeat;
+    -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+  .v-doublerule .sub .cjw.c1 { --rule: color-mix(in oklab, var(--p3) 55%, var(--ink) 45%); }
+  .v-doublerule .sub .cjw.c2 { --rule: color-mix(in oklab, var(--p4) 55%, var(--ink) 45%); }
+  .v-doublerule .sub .cjw.c3 { --rule: color-mix(in oklab, var(--p1) 55%, var(--ink) 45%); }
+  .v-doublerule .sub .cjw:hover { color: var(--accent-deep); }
+
+  .v-cornerindex .sub .cjw { position: relative; font-weight: bold;
+    color: var(--ink-soft);
+    padding-right: .55em; padding-bottom: 3px;
+    background: linear-gradient(var(--rule), var(--rule))
+                0 100% / calc(100% - .55em) 1px no-repeat; }
+  .v-cornerindex .sub .cjw::after { content: ""; position: absolute;
+    right: 0; top: .04em; width: .44em; height: .44em;
+    background-color: var(--rule);
+    -webkit-mask: var(--pip) center / contain no-repeat;
+            mask: var(--pip) center / contain no-repeat;
+    transition: transform 120ms ease-out; }
+  .v-cornerindex .sub .cjw.c1 { --rule: color-mix(in oklab, var(--p3) 55%, var(--ink) 45%);
+    --pip: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M5 0C5 3 10 4.2 10 7a2.6 2.6 0 0 1-4.4 1.8L6.2 10H3.8l.6-1.2A2.6 2.6 0 0 1 0 7c0-2.8 5-4 5-7z'/%3E%3C/svg%3E"); }
+  .v-cornerindex .sub .cjw.c2 { --rule: color-mix(in oklab, var(--p4) 55%, var(--ink) 45%);
+    --pip: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M5 0 9 5 5 10 1 5z'/%3E%3C/svg%3E"); }
+  .v-cornerindex .sub .cjw.c3 { --rule: color-mix(in oklab, var(--p1) 55%, var(--ink) 45%);
+    --pip: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M5 0a2.2 2.2 0 0 1 1.9 3.4A2.2 2.2 0 1 1 8 7.6a2.2 2.2 0 0 1-2.3-.5l.6 2.9H3.7l.6-2.9a2.2 2.2 0 0 1-2.3.5A2.2 2.2 0 1 1 3.1 3.4 2.2 2.2 0 0 1 5 0z'/%3E%3C/svg%3E"); }
+  .v-cornerindex .sub .cjw:hover { color: var(--accent-deep); }
+  .v-cornerindex .sub .cjw:hover::after { transform: translateY(-1px); }
+
+  .v-cardedge .sub .cjw { font-weight: bold; color: var(--ink-soft); position: relative; }
+  .v-cardedge .sub .cjw::after { content: ""; position: absolute; left: -3px; right: -3px;
+    bottom: -.40em; height: 7px; border-radius: 2px 2px 3px 3px; background: #fff; pointer-events: none;
+    box-shadow: inset 0 2.5px 0 var(--edge),
+                inset 0 0 0 1px rgba(0,0,0,.13),
+                0 1px 2px rgba(60,45,25,.25);
+    transition: transform 120ms ease-out; }
+  .v-cardedge .sub .cjw.c1::after { --edge: color-mix(in oklab, var(--p3) 55%, var(--ink) 45%); }
+  .v-cardedge .sub .cjw.c2::after { --edge: color-mix(in oklab, var(--p4) 55%, var(--ink) 45%); }
+  .v-cardedge .sub .cjw.c3::after { --edge: color-mix(in oklab, var(--p1) 55%, var(--ink) 45%); }
+  .v-cardedge .sub .cjw:hover::after { transform: translateY(-1px); }
+  .v-cardedge .sub .cjw:hover { color: var(--accent-deep); }
+
+  .v-twoink .sub .cjw { --card-red: #a8232b;
+    font-weight: bold; color: var(--card-red);
+    text-decoration: underline; text-decoration-thickness: 1px;
+    text-underline-offset: .2em; text-decoration-skip-ink: auto;
+    text-decoration-color: color-mix(in oklab, var(--card-red) 40%, transparent); }
+  .v-twoink .sub .cjw:hover { text-decoration-color: var(--card-red); }
+
+  /* ===== hand-drawn ink ===== */
+  .v-scribble .sub .cjw,
+  .v-scribblegold .sub .cjw { font-weight: bold; color: var(--ink-soft); position: relative; }
+  .v-scribble .sub .cjw::after,
+  .v-scribblegold .sub .cjw::after { content: ""; position: absolute; left: 1px; right: 1px;
+    bottom: -.24em; height: .34em; pointer-events: none;
+    -webkit-mask: var(--squiggle) center / 100% 100% no-repeat;
+    mask: var(--squiggle) center / 100% 100% no-repeat; }
+  .v-scribble .sub .cjw.c1::after { background-color: var(--p3); }
+  .v-scribble .sub .cjw.c2::after { background-color: var(--p4); }
+  .v-scribble .sub .cjw.c3::after { background-color: var(--p1); }
+  .v-scribble .sub .cjw.c1:hover { color: color-mix(in oklab, var(--p3) 55%, var(--ink) 45%); }
+  .v-scribble .sub .cjw.c2:hover { color: color-mix(in oklab, var(--p4) 55%, var(--ink) 45%); }
+  .v-scribble .sub .cjw.c3:hover { color: color-mix(in oklab, var(--p1) 55%, var(--ink) 45%); }
+  .v-scribblegold .sub .cjw::after { background-color: #ffd43b; }
+  .v-scribblegold .sub .cjw:hover::after { background-color: #fab005; }
+
+  .v-brush .sub .cjw { font-weight: bold; color: var(--ink-soft); position: relative; }
+  .v-brush .sub .cjw::after { content: ""; position: absolute; left: 0; right: 0;
+    bottom: -.34em; height: .32em; pointer-events: none;
+    -webkit-mask: var(--brushstroke) center / 100% 100% no-repeat;
+    mask: var(--brushstroke) center / 100% 100% no-repeat; }
+  .v-brush .sub .cjw.c1::after { background-color: var(--p3); }
+  .v-brush .sub .cjw.c2::after { background-color: var(--p4); }
+  .v-brush .sub .cjw.c3::after { background-color: var(--p1); }
+  .v-brush .sub .cjw.c1:hover { color: color-mix(in oklab, var(--p3) 55%, var(--ink) 45%); }
+  .v-brush .sub .cjw.c2:hover { color: color-mix(in oklab, var(--p4) 55%, var(--ink) 45%); }
+  .v-brush .sub .cjw.c3:hover { color: color-mix(in oklab, var(--p1) 55%, var(--ink) 45%); }
+
+  .v-rough .sub .cjw { font-weight: bold; color: var(--ink-soft); }
+  .v-rough .sub .cjw:hover { color: var(--accent-deep); }
+
+  .v-wavy .sub .cjw { font-weight: bold; color: var(--ink-soft);
+    text-decoration: underline wavy; text-decoration-thickness: 1.5px; text-underline-offset: 5px;
+    text-decoration-color: var(--accent); }
+  .v-wavy .sub .cjw:hover { color: var(--accent-deep); }
+
+  /* ===== type and color ===== */
+  .v-colorline .sub .cjw { font-weight: bold; color: var(--ink-soft);
+    text-decoration: underline; text-decoration-thickness: 3px; text-underline-offset: 4px; }
+  .v-colorline .sub .cjw.c1 { text-decoration-color: var(--p3); }
+  .v-colorline .sub .cjw.c2 { text-decoration-color: var(--p4); }
+  .v-colorline .sub .cjw.c3 { text-decoration-color: var(--p1); }
+  .v-colorline .sub .cjw.c1:hover { color: var(--p3); }
+  .v-colorline .sub .cjw.c2:hover { color: var(--p4); }
+  .v-colorline .sub .cjw.c3:hover { color: var(--p1); }
+
+  .v-colorbold .sub .cjw { font-weight: bold; }
+  .v-colorbold .sub .cjw.c1 { color: color-mix(in oklab, var(--p3) 55%, var(--ink) 45%); }
+  .v-colorbold .sub .cjw.c2 { color: color-mix(in oklab, var(--p4) 55%, var(--ink) 45%); }
+  .v-colorbold .sub .cjw.c3 { color: color-mix(in oklab, var(--p1) 55%, var(--ink) 45%); }
+  .v-colorbold .sub .cjw:hover { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
+
+  .v-underline .sub .cjw { font-weight: bold; color: var(--ink-soft);
+    text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px;
+    text-decoration-color: var(--accent); }
+  .v-underline .sub .cjw:hover { color: var(--accent-deep); }
+
+  .v-bold .sub .cjw { font-weight: bold; color: var(--ink-soft); }
+  .v-bold .sub .cjw:hover { color: var(--accent-deep); }
+
+  .v-link .sub .cjw { color: #1665AD; }
+  .v-link .sub .cjw:hover { text-decoration: underline; }
+
+  .v-italic .sub .cjw { font-style: italic; color: var(--ink-soft); }
+  .v-italic .sub .cjw:hover { color: var(--accent-deep); }
+
+  .v-arrow .sub .cjw { font-weight: bold; color: var(--ink-soft); }
+  .v-arrow .sub .cjw::after { content: " \2193"; font-size: .8em; color: var(--muted); font-weight: normal; }
+  .v-arrow .sub .cjw:hover { color: var(--accent-deep); }
+
+  .v-nearrow .sub .cjw { font-weight: bold; color: var(--ink-soft); }
+  .v-nearrow .sub .cjw::after { content: " \2197"; font-weight: bold; }
+  .v-nearrow .sub .cjw:hover { color: var(--accent-deep); }
+
+  /* ===== signs and highlights ===== */
+  .v-sign .sub .cjw { display: inline-block; padding: 0 9px; border-radius: 6px;
+    background: #ffec99; box-shadow: inset 0 0 0 1px #ffd43b; color: #e67700;
+    font-size: 17px; line-height: 26px; font-weight: bold; vertical-align: 1px; }
+  .v-sign .sub .cjw:hover { background: #ffe783; }
+
+  .v-signbold .sub .cjw { display: inline-block; padding: 0 12px; border-radius: 7px;
+    background: #ffe066; box-shadow: inset 0 0 0 1px #fab005, 0 1px 2px rgba(0,0,0,.10);
+    color: #d9480f; font-size: 18px; line-height: 30px; font-weight: bold; vertical-align: 1px; }
+  .v-signbold .sub .cjw:hover { background: #ffd43b; }
+
+  .v-highlight .sub .cjw { background: rgba(255,224,102,.5); padding: 1px 5px;
+    border-radius: 5px; color: var(--ink-soft); }
+  .v-highlight .sub .cjw:hover { background: rgba(255,212,59,.68); }
+</style>
+</head>
+<body>
+
+<div class="pagehead">
+  <h1>Subtitle treatments</h1>
+  <p>Every Category nav subtitle coat from the mockup, on the current default title and copy. Hover the words to see the hover states.</p>
+</div>
+
+<div class="grid">
+
+  <p class="ghead">Baseline</p>
+
+  <section class="block v-plain">
+    <p class="tag">No treatment</p>
+    <h3 class="title">Play card games<br>in good company</h3>
+    <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
+  </section>
+
+  <section class="block v-dotted">
+    <p class="tag"><b>Dotted glossary underline</b> (current default)</p>
+    <h3 class="title">Play card games<br>in good company</h3>
+    <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
+  </section>
+
+  <p class="ghead">Card-native</p>
+
+  <section class="block v-piprule">
+    <p class="tag">Suit-pip rule</p>
+    <h3 class="title">Play card games<br>in good company</h3>
+    <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
+  </section>
+
+  <section class="block v-doublerule">
+    <p class="tag">Card-face double rule</p>
+    <h3 class="title">Play card games<br>in good company</h3>
+    <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
+  </section>
+
+  <section class="block v-cornerindex">
+    <p class="tag">Corner-index pip</p>
+    <h3 class="title">Play card games<br>in good company</h3>
+    <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
+  </section>
+
+  <section class="block v-cardedge">
+    <p class="tag">Resting card edge</p>
+    <h3 class="title">Play card games<br>in good company</h3>
+    <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
+  </section>
+
+  <section class="block v-twoink">
+    <p class="tag">Two-ink card red</p>
+    <h3 class="title">Play card games<br>in good company</h3>
+    <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
+  </section>
+
+  <p class="ghead">Hand-drawn ink</p>
+
+  <section class="block v-scribble">
+    <p class="tag">Hand-drawn squiggle, tile colors</p>
+    <h3 class="title">Play card games<br>in good company</h3>
+    <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
+  </section>
+
+  <section class="block v-scribblegold">
+    <p class="tag">Hand-drawn squiggle, gold</p>
+    <h3 class="title">Play card games<br>in good company</h3>
+    <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
+  </section>
+
+  <section class="block v-brush">
+    <p class="tag">Marker brush stroke</p>
+    <h3 class="title">Play card games<br>in good company</h3>
+    <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
+  </section>
+
+  <section class="block v-rough">
+    <p class="tag">Sketched draw-on (Rough Notation)</p>
+    <h3 class="title">Play card games<br>in good company</h3>
+    <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
+  </section>
+
+  <section class="block v-wavy">
+    <p class="tag">Wavy underline</p>
+    <h3 class="title">Play card games<br>in good company</h3>
+    <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
+  </section>
+
+  <p class="ghead">Type and color</p>
+
+  <section class="block v-colorline">
+    <p class="tag">Underline in tile colors</p>
+    <h3 class="title">Play card games<br>in good company</h3>
+    <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
+  </section>
+
+  <section class="block v-colorbold">
+    <p class="tag">Bold in tile colors</p>
+    <h3 class="title">Play card games<br>in good company</h3>
+    <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
+  </section>
+
+  <section class="block v-underline">
+    <p class="tag">Bold, accent underline</p>
+    <h3 class="title">Play card games<br>in good company</h3>
+    <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
+  </section>
+
+  <section class="block v-bold">
+    <p class="tag">Just bold</p>
+    <h3 class="title">Play card games<br>in good company</h3>
+    <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
+  </section>
+
+  <section class="block v-link">
+    <p class="tag">Classic link blue</p>
+    <h3 class="title">Play card games<br>in good company</h3>
+    <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
+  </section>
+
+  <section class="block v-italic">
+    <p class="tag">Italic</p>
+    <h3 class="title">Play card games<br>in good company</h3>
+    <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
+  </section>
+
+  <section class="block v-arrow">
+    <p class="tag">Bold + down arrow</p>
+    <h3 class="title">Play card games<br>in good company</h3>
+    <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
+  </section>
+
+  <section class="block v-nearrow">
+    <p class="tag">Bold + &#8599; arrow, both bold</p>
+    <h3 class="title">Play card games<br>in good company</h3>
+    <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
+  </section>
+
+  <p class="ghead">Signs and highlights</p>
+
+  <section class="block v-sign">
+    <p class="tag">Gold signs</p>
+    <h3 class="title">Play card games<br>in good company</h3>
+    <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
+  </section>
+
+  <section class="block v-signbold">
+    <p class="tag">Gold signs, louder</p>
+    <h3 class="title">Play card games<br>in good company</h3>
+    <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
+  </section>
+
+  <section class="block v-highlight">
+    <p class="tag">Marker highlight</p>
+    <h3 class="title">Play card games<br>in good company</h3>
+    <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
+  </section>
+
+</div>
+
+<script>
+  /* the Rough Notation block sketches its underlines once fonts are ready */
+  (function () {
+    var s = document.createElement("script");
+    s.src = "https://unpkg.com/rough-notation/lib/rough-notation.iife.js";
+    s.onload = function () {
+      var ready = (document.fonts && document.fonts.ready) ? document.fonts.ready : Promise.resolve();
+      ready.then(function () {
+        var cs = getComputedStyle(document.documentElement);
+        var inks = { c1: "--p3", c2: "--p4", c3: "--p1" };
+        Object.keys(inks).forEach(function (k, i) {
+          var el = document.querySelector(".v-rough .sub .cjw." + k);
+          if (!el) return;
+          var a = RoughNotation.annotate(el, { type: "underline", color: cs.getPropertyValue(inks[k]).trim(),
+            strokeWidth: 2, padding: 2, iterations: 2, animationDuration: 500 });
+          setTimeout(function () { a.show(); }, 300 + 220 * i);
+        });
+      });
+    };
+    s.onerror = function () {};
+    document.head.appendChild(s);
+  })();
+</script>
+
+</body>
+</html>
