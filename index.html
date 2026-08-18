@@ -2283,6 +2283,30 @@
     var contentLeft = p.left + parseFloat(getComputedStyle(row.parentElement).paddingLeft);
     row.style.marginLeft = (l - contentLeft) + "px";
     row.style.width = (r - l) + "px";
+    /* when the mosaic's bottom row has one tile per button, each button takes
+       that tile's exact width and position; otherwise equal thirds */
+    var rects = [];
+    document.querySelectorAll("#popsec .games .gtile").forEach(function (t) {
+      var b = t.getBoundingClientRect();
+      if (b.width) rects.push(b);
+    });
+    var maxBottom = rects.reduce(function (m, b) { return Math.max(m, b.bottom); }, 0);
+    var bottomRow = rects.filter(function (b) { return maxBottom - b.bottom < 8; })
+      .sort(function (a, b) { return a.left - b.left; });
+    var btns = row.querySelectorAll("a");
+    if (bottomRow.length === btns.length && btns.length > 1) {
+      row.style.gap = "0px";
+      row.style.marginLeft = (bottomRow[0].left - contentLeft) + "px";
+      row.style.width = (bottomRow[bottomRow.length - 1].right - bottomRow[0].left) + "px";
+      btns.forEach(function (a, i) {
+        a.style.flex = "none";
+        a.style.width = bottomRow[i].width + "px";
+        a.style.marginLeft = i === 0 ? "0px" : (bottomRow[i].left - bottomRow[i - 1].right) + "px";
+      });
+    } else {
+      row.style.gap = "";
+      btns.forEach(function (a) { a.style.flex = ""; a.style.width = ""; a.style.marginLeft = ""; });
+    }
   }
   window.addEventListener("resize", fitCatRow);
   /* Favorites shown as a group on top of every dropdown; the full list stays below */
@@ -2299,7 +2323,7 @@
     "sel-menu": ["centerlight", "centerlighteggshell", "centerlightporc", "center", "centerporcelain", "current", "crest", "gthreads"],
     "sel-rail": ["suits", "cards", "band"],
     "sel-avedge": ["luminosity", "lum-deep", "lum-dark", "lum-light", "lum-soft", "none", "ink", "color-burn"],
-    "sel-cnav": ["none", "sub-sign", "sub-underline", "sub-highlight", "row-color"]
+    "sel-cnav": ["none", "row-whitesm"]
   };
   function buildSel(id, list, setter) {
     var el = document.getElementById(id);
