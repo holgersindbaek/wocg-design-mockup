@@ -64,6 +64,69 @@
     text-decoration-color: rgba(51,41,31,.45); }
   .v-dotted .sub .cjw:hover { text-decoration-style: solid; color: var(--accent-deep); }
 
+  /* ===== dotted underline experiments: rest colors and hovers =====
+     the default dotted color is rgba(51,41,31,.45), a warm dark brown at
+     45%; its default hover (solid line + green accent) is what these
+     experiments replace. no green anywhere below */
+  .dotx .sub .cjw { font-weight: bold; color: var(--ink-soft);
+    text-decoration: underline dotted; text-decoration-thickness: 2px; text-underline-offset: 4px;
+    text-decoration-color: rgba(51,41,31,.45); }
+
+  .v-dotink .sub .cjw { text-decoration-color: rgba(20,20,20,.8); }
+  .v-dotink .sub .cjw:hover { color: var(--ink); }
+
+  .v-dotsoft .sub .cjw { text-decoration-color: rgba(51,41,31,.28); }
+  .v-dotsoft .sub .cjw:hover { color: var(--ink); }
+
+  .v-dottile .sub .cjw.c1 { text-decoration-color: color-mix(in oklab, var(--p3) 75%, var(--ink) 25%); }
+  .v-dottile .sub .cjw.c2 { text-decoration-color: color-mix(in oklab, var(--p4) 75%, var(--ink) 25%); }
+  .v-dottile .sub .cjw.c3 { text-decoration-color: color-mix(in oklab, var(--p1) 75%, var(--ink) 25%); }
+  .v-dottile .sub .cjw:hover { color: var(--ink); }
+
+  .v-dotred .sub .cjw { text-decoration-color: color-mix(in oklab, #a8232b 60%, transparent); }
+  .v-dotred .sub .cjw:hover { text-decoration-color: #a8232b; color: var(--ink); }
+
+  .v-dothovertile .sub .cjw { transition: text-decoration-color .25s ease; }
+  .v-dothovertile .sub .cjw.c1:hover { text-decoration-color: color-mix(in oklab, var(--p3) 75%, var(--ink) 25%); }
+  .v-dothovertile .sub .cjw.c2:hover { text-decoration-color: color-mix(in oklab, var(--p4) 75%, var(--ink) 25%); }
+  .v-dothovertile .sub .cjw.c3:hover { text-decoration-color: color-mix(in oklab, var(--p1) 75%, var(--ink) 25%); }
+
+  .v-dotmarch .sub .cjw { text-decoration: none; position: relative; }
+  .v-dotmarch .sub .cjw::after { content: ""; position: absolute; left: 0; right: 0; bottom: -.32em; height: 3px;
+    background: radial-gradient(circle, rgba(51,41,31,.45) 1.05px, transparent 1.4px) left center / 6px 3px repeat-x; }
+  .v-dotmarch .sub .cjw:hover { color: var(--ink); }
+  .v-dotmarch .sub .cjw:hover::after { animation: dotmarch .45s linear infinite; }
+  @keyframes dotmarch { to { background-position: 6px 50%; } }
+
+  .v-dotpips .sub .cjw { text-decoration: none; position: relative; }
+  .v-dotpips .sub .cjw::after { content: ""; position: absolute; left: 0; right: 0; bottom: -.42em; height: 6px;
+    background: radial-gradient(circle, rgba(51,41,31,.45) 1.05px, transparent 1.4px) left center / 6px 6px repeat-x; }
+  .v-dotpips .sub .cjw:hover { color: var(--ink); }
+  .v-dotpips .sub .cjw:hover::after { background: var(--pipink);
+    -webkit-mask: var(--pip) left center / 11px 6px repeat-x;
+            mask: var(--pip) left center / 11px 6px repeat-x; }
+  .v-dotpips .sub .cjw.c1 { --pipink: color-mix(in oklab, var(--p3) 55%, var(--ink) 45%);
+    --pip: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 11 6'%3E%3Cpath d='M3 0C3 1.9 6 2.6 6 4.3a1.6 1.6 0 0 1-2.7 1.1L3.7 6H2.3l.4-.6A1.6 1.6 0 0 1 0 4.3C0 2.6 3 1.9 3 0z' fill='%23000'/%3E%3C/svg%3E"); }
+  .v-dotpips .sub .cjw.c2 { --pipink: color-mix(in oklab, var(--p4) 55%, var(--ink) 45%);
+    --pip: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 11 6'%3E%3Cpath d='M3 0 5.4 3 3 6 .6 3Z' fill='%23000'/%3E%3C/svg%3E"); }
+  .v-dotpips .sub .cjw.c3 { --pipink: color-mix(in oklab, var(--p1) 55%, var(--ink) 45%);
+    --pip: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 11 6'%3E%3Cpath d='M3 0a1.35 1.35 0 0 1 1.15 2.05A1.35 1.35 0 1 1 4.8 4.6a1.35 1.35 0 0 1-1.4-.3L3.75 6h-1.5l.35-1.7a1.35 1.35 0 0 1-1.4.3A1.35 1.35 0 1 1 1.85 2.05 1.35 1.35 0 0 1 3 0z' fill='%23000'/%3E%3C/svg%3E"); }
+
+  .v-dothop .sub .cjw { display: inline-block; }
+  .v-dothop .sub .cjw:hover { animation: cjwhop .4s ease-out; }
+  @keyframes cjwhop { 30% { transform: translateY(-3px); } 55% { transform: translateY(1px); }
+    75% { transform: translateY(-1px); } 100% { transform: translateY(0); } }
+
+  .v-dotsweep .sub .cjw { position: relative; }
+  .v-dotsweep .sub .cjw::after { content: ""; position: absolute; left: 0; bottom: -.34em; height: 2px; width: 0;
+    background: var(--sweep); border-radius: 1px; transition: width .28s ease; }
+  .v-dotsweep .sub .cjw.c1 { --sweep: color-mix(in oklab, var(--p3) 75%, var(--ink) 25%); }
+  .v-dotsweep .sub .cjw.c2 { --sweep: color-mix(in oklab, var(--p4) 75%, var(--ink) 25%); }
+  .v-dotsweep .sub .cjw.c3 { --sweep: color-mix(in oklab, var(--p1) 75%, var(--ink) 25%); }
+  .v-dotsweep .sub .cjw:hover::after { width: 100%; }
+
+  .v-dotwave .sub .cjw:hover { text-decoration-style: wavy; text-decoration-thickness: 1.5px; }
+
   /* ===== card-native ===== */
   .v-piprule .sub .cjw { font-weight: bold; color: var(--ink-soft); position: relative; }
   .v-piprule .sub .cjw::after { content: ""; position: absolute; left: 0; right: 0;
@@ -203,6 +266,18 @@
   .v-italic .sub .cjw { font-style: italic; color: var(--ink-soft); }
   .v-italic .sub .cjw:hover { color: var(--accent-deep); }
 
+  /* italic + dotted: BuloRounded ships no italic cut, so the slant is
+     browser-synthesized */
+  .v-italdotted .sub .cjw { font-style: italic; color: var(--ink-soft);
+    text-decoration: underline dotted; text-decoration-thickness: 2px; text-underline-offset: 4px;
+    text-decoration-color: rgba(51,41,31,.45); }
+  .v-italdotted .sub .cjw:hover { text-decoration-style: solid; color: var(--accent-deep); }
+
+  .v-bolditaldotted .sub .cjw { font-style: italic; font-weight: bold; color: var(--ink-soft);
+    text-decoration: underline dotted; text-decoration-thickness: 2px; text-underline-offset: 4px;
+    text-decoration-color: rgba(51,41,31,.45); }
+  .v-bolditaldotted .sub .cjw:hover { text-decoration-style: solid; color: var(--accent-deep); }
+
   .v-arrow .sub .cjw { font-weight: bold; color: var(--ink-soft); }
   .v-arrow .sub .cjw::after { content: " \2193"; font-size: .8em; color: var(--muted); font-weight: normal; }
   .v-arrow .sub .cjw:hover { color: var(--accent-deep); }
@@ -246,6 +321,68 @@
 
   <section class="block v-dotted">
     <p class="tag"><b>Dotted glossary underline</b> (current default)</p>
+    <h3 class="title">Play card games<br>in good company</h3>
+    <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
+  </section>
+
+  <p class="ghead">Dotted underline: color and hover experiments (hover the words)</p>
+
+  <section class="block dotx v-dotink">
+    <p class="tag">Dots in full ink</p>
+    <h3 class="title">Play card games<br>in good company</h3>
+    <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
+  </section>
+
+  <section class="block dotx v-dotsoft">
+    <p class="tag">Dots softer</p>
+    <h3 class="title">Play card games<br>in good company</h3>
+    <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
+  </section>
+
+  <section class="block dotx v-dottile">
+    <p class="tag">Dots in tile colors</p>
+    <h3 class="title">Play card games<br>in good company</h3>
+    <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
+  </section>
+
+  <section class="block dotx v-dotred">
+    <p class="tag">Dots in card red</p>
+    <h3 class="title">Play card games<br>in good company</h3>
+    <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
+  </section>
+
+  <section class="block dotx v-dothovertile">
+    <p class="tag">Hover: dots warm to the tile color</p>
+    <h3 class="title">Play card games<br>in good company</h3>
+    <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
+  </section>
+
+  <section class="block dotx v-dotmarch">
+    <p class="tag">Hover: dots march along</p>
+    <h3 class="title">Play card games<br>in good company</h3>
+    <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
+  </section>
+
+  <section class="block dotx v-dotpips">
+    <p class="tag">Hover: dots become suit pips</p>
+    <h3 class="title">Play card games<br>in good company</h3>
+    <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
+  </section>
+
+  <section class="block dotx v-dothop">
+    <p class="tag">Hover: the word gives a little hop</p>
+    <h3 class="title">Play card games<br>in good company</h3>
+    <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
+  </section>
+
+  <section class="block dotx v-dotsweep">
+    <p class="tag">Hover: a colored line sweeps across</p>
+    <h3 class="title">Play card games<br>in good company</h3>
+    <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
+  </section>
+
+  <section class="block dotx v-dotwave">
+    <p class="tag">Hover: dots go wavy</p>
     <h3 class="title">Play card games<br>in good company</h3>
     <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
   </section>
@@ -348,6 +485,18 @@
 
   <section class="block v-italic">
     <p class="tag">Italic</p>
+    <h3 class="title">Play card games<br>in good company</h3>
+    <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
+  </section>
+
+  <section class="block v-italdotted">
+    <p class="tag">Italic + dotted underline (faux italic, no italic cut of BuloRounded)</p>
+    <h3 class="title">Play card games<br>in good company</h3>
+    <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
+  </section>
+
+  <section class="block v-bolditaldotted">
+    <p class="tag">Bold italic + dotted underline (faux italic)</p>
     <h3 class="title">Play card games<br>in good company</h3>
     <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
   </section>
