@@ -66,7 +66,10 @@
   /* the three category words, same anchors as the mockup subtitle */
   .sub .cjw { border-bottom: none; color: inherit; white-space: nowrap; cursor: pointer;
     --squiggle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 202 12' preserveAspectRatio='none'%3E%3Cpath d='m14.8 3.3c60.8 2.6 121.6 1.9 182.3-2.3l-177.7 10 181.6-4.8c-66.7 2.4-133.3-.3-200 2.1' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-    --brushstroke: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120.349 7.836' preserveAspectRatio='none'%3E%3Cpath fill='white' d='M.02 5.79c.13-1.199.645-2.63 1.944-2.95a24.63 24.63 0 0 1 3.873-.34q4.377-.338 8.757-.647 9.063-.64 18.136-1.139C40.604.292 48.478.002 56.364 0q5.48-.001 10.959.008 8.967.015 17.933.055 9.205.045 18.41.143c4.195.051 8.398.078 12.59.273 1.506.07 3.462.041 3.975 1.856a3.776 3.776 0 0 1-.695 3.312c-.828.818-2.524.435-3.57.4q-4.258-.142-8.515-.278-17.636-.562-35.276-.994C66.298 4.64 60.419 4.508 54.54 4.5c-6.019-.007-12.043.41-18.051.723-5.985.311-11.968.647-17.947 1.045-5.589.372-11.171.78-16.72 1.544C.49 7.996-.12 7.073.018 5.79z'/%3E%3C/svg%3E"); }
+    --brushstroke: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120.349 7.836' preserveAspectRatio='none'%3E%3Cpath fill='white' d='M.02 5.79c.13-1.199.645-2.63 1.944-2.95a24.63 24.63 0 0 1 3.873-.34q4.377-.338 8.757-.647 9.063-.64 18.136-1.139C40.604.292 48.478.002 56.364 0q5.48-.001 10.959.008 8.967.015 17.933.055 9.205.045 18.41.143c4.195.051 8.398.078 12.59.273 1.506.07 3.462.041 3.975 1.856a3.776 3.776 0 0 1-.695 3.312c-.828.818-2.524.435-3.57.4q-4.258-.142-8.515-.278-17.636-.562-35.276-.994C66.298 4.64 60.419 4.508 54.54 4.5c-6.019-.007-12.043.41-18.051.723-5.985.311-11.968.647-17.947 1.045-5.589.372-11.171.78-16.72 1.544C.49 7.996-.12 7.073.018 5.79z'/%3E%3C/svg%3E");
+    /* the example sites' link wave (Transistor/WDD's 20x4 sine tile) */
+    --wavetile: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 4'%3E%3Cpath d='M0 3.5c5 0 5-3 10-3s5 3 10 3c5 0 5-3 10-3s5 3 10 3' fill='none' stroke='white'/%3E%3C/svg%3E");
+    --wavetilethick: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 6'%3E%3Cpath d='M0 4.9c5 0 5-3.8 10-3.8s5 3.8 10 3.8c5 0 5-3.8 10-3.8s5 3.8 10 3.8' fill='none' stroke='white' stroke-width='1.8'/%3E%3C/svg%3E"); }
 
   /* ===== current default ===== */
   .v-dotted .sub .cjw { font-weight: bold; color: var(--ink-soft);
@@ -328,9 +331,12 @@
   .v-scribbleital .sub .cjw.c1:hover, .v-brushital .sub .cjw.c1:hover { color: color-mix(in oklab, var(--p3) 55%, var(--ink) 45%); }
   .v-scribbleital .sub .cjw.c2:hover, .v-brushital .sub .cjw.c2:hover { color: color-mix(in oklab, var(--p4) 55%, var(--ink) 45%); }
   .v-scribbleital .sub .cjw.c3:hover, .v-brushital .sub .cjw.c3:hover { color: color-mix(in oklab, var(--p1) 55%, var(--ink) 45%); }
-  .v-wavyital .sub .cjw { font-style: italic; color: var(--ink-soft);
-    text-decoration: underline wavy; text-decoration-thickness: 1.5px; text-underline-offset: 5px;
-    text-decoration-color: var(--accent); }
+  .v-wavyital .sub .cjw { font-style: italic; color: var(--ink-soft); position: relative; }
+  .v-wavyital .sub .cjw::after { content: ""; position: absolute;
+    left: 0; right: 0; bottom: -.34em; height: 4px; pointer-events: none;
+    background-color: var(--accent);
+    -webkit-mask: var(--wavetile) left center / 20px 4px repeat-x;
+            mask: var(--wavetile) left center / 20px 4px repeat-x; }
   .v-wavyital .sub .cjw:hover { color: var(--accent-deep); }
   .v-colorlineital .sub .cjw { font-style: italic; color: var(--ink-soft);
     text-decoration: underline; text-decoration-thickness: 3px; text-underline-offset: 4px; }
@@ -344,10 +350,18 @@
   .v-rough .sub .cjw { font-weight: bold; color: var(--ink-soft); }
   .v-rough .sub .cjw:hover { color: var(--accent-deep); }
 
-  .v-wavy .sub .cjw { font-weight: bold; color: var(--ink-soft);
-    text-decoration: underline wavy; text-decoration-thickness: 1.5px; text-underline-offset: 5px;
-    text-decoration-color: var(--accent); }
-  .v-wavy .sub .cjw:hover { color: var(--accent-deep); }
+  /* the wavy underline now runs on the example sites' own tile, not the
+     browser's wavy decoration, so it matches the footer wave's family */
+  .v-wavy .sub .cjw, .v-wavythick .sub .cjw { font-weight: bold; color: var(--ink-soft); position: relative; }
+  .v-wavy .sub .cjw::after, .v-wavythick .sub .cjw::after { content: ""; position: absolute;
+    left: 0; right: 0; bottom: -.34em; height: 4px; pointer-events: none;
+    background-color: var(--accent);
+    -webkit-mask: var(--wavetile) left center / 20px 4px repeat-x;
+            mask: var(--wavetile) left center / 20px 4px repeat-x; }
+  .v-wavythick .sub .cjw::after { bottom: -.42em; height: 6px;
+    -webkit-mask: var(--wavetilethick) left center / 20px 6px repeat-x;
+            mask: var(--wavetilethick) left center / 20px 6px repeat-x; }
+  .v-wavy .sub .cjw:hover, .v-wavythick .sub .cjw:hover { color: var(--accent-deep); }
 
   /* ===== type and color ===== */
   .v-colorline .sub .cjw { font-weight: bold; color: var(--ink-soft);
@@ -601,6 +615,12 @@
 
   <section class="block v-wavyital">
     <p class="tag">Wavy underline, italic not bold</p>
+    <h3 class="title">Play card games<br>in good company</h3>
+    <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
+  </section>
+
+  <section class="block v-wavythick">
+    <p class="tag">Wavy underline, a bit thicker</p>
     <h3 class="title">Play card games<br>in good company</h3>
     <p class="sub"><a class="cjw c1">Take tricks</a>, <a class="cjw c2">build melds</a> &amp; <a class="cjw c3">play classics</a> with<br>real people or solo. Free to play, hard to stop.</p>
   </section>
