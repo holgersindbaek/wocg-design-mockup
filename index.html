@@ -843,20 +843,22 @@
     text-shadow: -1px -1px 0 rgba(0,0,0,.32), 1px -1px 0 rgba(0,0,0,.32),
       -1px 1px 0 rgba(0,0,0,.32), 1px 1px 0 rgba(0,0,0,.32); }
   .gchip b { display: inline-block; text-align: center; font-variant-numeric: tabular-nums; }
-  /* ghost-dot: the naked number with a still green dot as the live signal -
+  /* ghost-dot: the naked number with a still white dot as the live signal -
      no word, no ping. The chip's font collapses to zero so the "playing"
-     text node vanishes; the number comes back at 14. The underlay clone
-     gets the same inline dot box so its blended outline stays aligned. */
-  body.counter-ghostdot .gchip { left: 12px; bottom: 10px; line-height: 1; font-size: 0; }
+     text node vanishes; the number comes back at 14. Flex centers the dot
+     on the digits; the underlay clone runs the same flex so its blended
+     outline stays aligned, and its dot box carries the ghost border as a
+     soft-light ring just outside the white fill (matching the text
+     outline's composited .54). */
+  body.counter-ghostdot .gchip { left: 12px; bottom: 10px; line-height: 1; font-size: 0; display: inline-flex; align-items: center; }
   body.counter-ghostdot .gchip b { font-size: 14px; }
   body.counter-ghostdot .gchip::before, body.counter-ghostdot .gchip .gunder::before {
-    content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%;
-    margin-right: 6px; vertical-align: 2px; background: #2f9e44;
-    box-shadow: 0 0 0 1px rgba(0,0,0,.18); }
-  body.counter-ghostdot .gchip .gunder { mix-blend-mode: soft-light;
+    content: ""; flex: none; width: 6px; height: 6px; border-radius: 50%;
+    margin-right: 6px; background: #fff; }
+  body.counter-ghostdot .gchip .gunder { mix-blend-mode: soft-light; display: flex; align-items: center;
     text-shadow: -1px -1px 0 rgba(0,0,0,.32), 1px -1px 0 rgba(0,0,0,.32),
       -1px 1px 0 rgba(0,0,0,.32), 1px 1px 0 rgba(0,0,0,.32); }
-  body.counter-ghostdot .gchip .gunder::before { background: transparent; box-shadow: none; }
+  body.counter-ghostdot .gchip .gunder::before { background: transparent; box-shadow: 0 0 0 1px rgba(0,0,0,.54); }
   .gimg:hover .gchip { opacity: 0; }
   .heroarea { position: relative; overflow: hidden; min-height: 230px; }
   .heroarea > * { position: relative; z-index: 1; }
