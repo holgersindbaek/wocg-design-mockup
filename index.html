@@ -702,6 +702,10 @@
   }
   .gtile:hover { z-index: 2; }
   .gtile:active:not(:has(button:active)) { transform: scale(0.99); }
+  /* catalog tiles are not clickable themselves - the Play control is the
+     only action, so no pointer cursor and no pressed shrink on the tile */
+  .catgrid .gtile { cursor: default; }
+  .catgrid .gtile:active:not(:has(button:active)) { transform: none; }
 
   .gimg {
     position: relative; overflow: hidden;
@@ -3050,9 +3054,9 @@
         });
       }
       var inCatalog = !!tile.closest(".catgrid");
-      tile.addEventListener("click", function () {
-        flash(inCatalog ? game + " — would open the game page" : game + " — dealing you in…");
-      });
+      if (!inCatalog) {
+        tile.addEventListener("click", function () { flash(game + " — dealing you in…"); });
+      }
       var play = tile.querySelector(".gplay");
       if (play) {
         var menu = document.createElement("div");
