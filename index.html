@@ -346,13 +346,13 @@
   body.menu-centerporcelain .mbcenter, body.menu-centerlightporc .mbcenter,
   body.menu-centerlighteggshell .mbcenter { display: flex; }
   body.menu-centerlight .mbcenter { background: var(--surface, #fff); border-bottom: none;
-    box-shadow: var(--btnshadow); position: relative; z-index: 5; }
+    box-shadow: var(--ringshadow); position: relative; z-index: 5; }
   body.menu-centerlightporc .mbcenter { background: color-mix(in srgb, var(--canvas) 50%, white);
-    border-bottom: none; box-shadow: var(--btnshadow); position: relative; z-index: 5; }
+    border-bottom: none; box-shadow: var(--ringshadow); position: relative; z-index: 5; }
   /* eggshell: spends the whole canvas-to-white gap but keeps a warm cast
      wider than the canvas's own, so it reads tinted rather than white */
   body.menu-centerlighteggshell .mbcenter { background: #fffdf6;
-    border-bottom: none; box-shadow: var(--btnshadow); position: relative; z-index: 5; }
+    border-bottom: none; box-shadow: var(--ringshadow); position: relative; z-index: 5; }
   /* porcelain: the missing rung between canvas and surface - lighter than
      the page, not yet white - derived from the canvas itself */
   body.menu-centerporcelain .mbcenter { background: color-mix(in srgb, var(--canvas) 50%, white); }
@@ -909,11 +909,8 @@
      eye-approved 13px left inset (4px shell + 9px cell) vs 12px top; LIVE at
      11px caps nudged 1px against BuloRounded's ascent-heavy centering; digits
      ride fixed-width odometer reels in the labels' 1.5 line box */
-  /* the capsule wears the btnshadow family plus a true 1px ring: on cream
-     the blurred hairline alone melts, so the ring holds the edge (the same
-     spread-ring variant ElevenLabs ships on its cards) */
   .statsCapsule .capsule { display: inline-flex; align-items: center; height: 32px; font-size: 16px; background: var(--surface, #fff); border-radius: 20px;
-    box-shadow: 0 0 0 1px rgba(0,0,0,.08), var(--btnshadow); padding: 0 4px; }
+    box-shadow: var(--ringshadow); padding: 0 4px; }
   .statsCapsule .st { padding: 0 11px; gap: 4px; align-self: stretch; }
   .statsCapsule .st + .st { border-left: 1px solid var(--hairline); }
   .statsCapsule .stlive { padding: 0 9px; gap: 6px; }
@@ -1302,7 +1299,10 @@
   body { --radius-md: 6px; }
   @supports (corner-shape: squircle) { body { --radius-md: 12px; } }
   body { --tileshadow: 0 2px 8px 0 rgba(0,0,0,0.24); --panelline: rgba(60,45,25,0.15);
-    --btnshadow: 0 0 1px rgba(0,0,0,0.4), 0 1px 1px rgba(0,0,0,0.04), 0 2px 4px rgba(0,0,0,0.04); }
+    --btnshadow: 0 0 1px rgba(0,0,0,0.4), 0 1px 1px rgba(0,0,0,0.04), 0 2px 4px rgba(0,0,0,0.04);
+    /* the ringed variant for white shapes floating on cream, where the
+       blurred hairline alone melts: capsule + top-menu centered mark */
+    --ringshadow: 0 0 0 1px rgba(0,0,0,0.08), var(--btnshadow); }
   body.shadow-soft { --tileshadow: 0 1px 2px rgba(60,45,25,.08), 0 2px 5px rgba(60,45,25,.08), 0 5px 12px rgba(60,45,25,.08); }
   body.shadow-softstrong { --tileshadow: 0 1px 2px rgba(60,45,25,.11), 0 3px 7px rgba(60,45,25,.12), 0 7px 16px rgba(60,45,25,.13); }
   body.shadow-material { --tileshadow: 0 1px 3px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.18); }
