@@ -2127,7 +2127,11 @@
     ["vkid", "Verbs: \u2026 or play like a kid again", "The games you grew up on.|[tt]Take tricks[/tt], [ru]build melds[/ru] or [cl]play like a kid again[/cl], with real people or solo.|Free to play, hard to stop."],
     ["vheart", "Verbs: \u2026 or play the ones you know by heart", "The games you grew up on.|[tt]Take tricks[/tt], [ru]build melds[/ru] or [cl]play the ones you know by heart[/cl], with real people or solo.|Free to play, hard to stop."],
     ["verbsgofish", "Trio as verbs: take tricks / build melds / go fish", "The games you grew up on.|[tt]Take tricks[/tt], [ru]build melds[/ru] or [cl]go fish[/cl], with real people or solo.|Free to play, hard to stop."],
-    ["verbsplay", "Trio as verbs: take tricks / build melds / play the classics", "The games you grew up on.|[tt]Take tricks[/tt], [ru]build melds[/ru] or [cl]play the classics[/cl],|with real people or solo. Free to play, hard to stop."],
+    ["verbsplay", "Chosen: grew up on / take tricks, build melds, classics", "The games you grew up on. [tt]Take tricks[/tt],|[ru]build melds[/ru] or [cl]play the classics[/cl], with|real people or solo. Free to play, hard to stop."],
+    ["grewmerge", "Merged: or play the games you grew up on", "[tt]Take tricks[/tt], [ru]build melds[/ru]|or [cl]play the games you grew up on[/cl],|with real people or solo. Free to play, hard to stop."],
+    ["noopener", "Short: no opener at all", "[tt]Take tricks[/tt], [ru]build melds[/ru] or [cl]play the classics[/cl],|with real people or solo.|Free to play, hard to stop."],
+    ["favsopen", "Opener swap: all your old favorites", "All your old favorites. [tt]Take tricks[/tt],|[ru]build melds[/ru] or [cl]play the classics[/cl], with|real people or solo. Free to play, hard to stop."],
+    ["tableready", "Opener swap: the table\u2019s ready", "The table\u2019s ready. [tt]Take tricks[/tt],|[ru]build melds[/ru] or [cl]play the classics[/cl], with|real people or solo. Free to play, hard to stop."],
     ["verbsmatch", "Trio as verbs: take tricks / build melds / match your cards", "The games you grew up on.|[tt]Take tricks[/tt], [ru]build melds[/ru] or [cl]match your cards[/cl], with real people or solo.|Free to play, hard to stop."],
     ["verbsrevisit", "Trio as verbs: take tricks / build melds / revisit the classics", "The games you grew up on.|[tt]Take tricks[/tt], [ru]build melds[/ru] or [cl]revisit the classics[/cl], with real people or solo.|Free to play, hard to stop."],
     ["verbs", "Trio as verbs: take tricks / build melds / keep it classic", "The games you grew up on.|[tt]Take tricks[/tt], [ru]build melds[/ru] or [cl]keep it classic[/cl], with real people or solo.|Free to play, hard to stop."],
@@ -2198,6 +2202,7 @@
     }
     applyCnavSub();
     setSceneDom(scene);
+    fitCatRow();
     document.getElementById("sel-base").value = curBase;
     document.getElementById("sel-play").value = curPlay;
     document.getElementById("sel-layout").value = curLayout;
@@ -2260,6 +2265,26 @@
     if (sceneTxt && sceneTxt.parentNode) sceneTxt.style.transform = "scale(" + Math.min(1 / k, 1) + ")";
   }
   window.addEventListener("resize", fitScene);
+  /* the below-tiles row lines up with the mosaic itself: measure the tiles'
+     visual bounding box (post-scale) and pin the row to those edges */
+  function fitCatRow() {
+    var row = document.getElementById("catbtnrow");
+    if (!row) return;
+    if (row.offsetParent === null) { row.style.marginLeft = ""; row.style.width = ""; return; }
+    var l = Infinity, r = -Infinity;
+    document.querySelectorAll("#popsec .games .gtile").forEach(function (t) {
+      var b = t.getBoundingClientRect();
+      if (!b.width) return;
+      if (b.left < l) l = b.left;
+      if (b.right > r) r = b.right;
+    });
+    if (l === Infinity) { row.style.marginLeft = ""; row.style.width = ""; return; }
+    var p = row.parentElement.getBoundingClientRect();
+    var contentLeft = p.left + parseFloat(getComputedStyle(row.parentElement).paddingLeft);
+    row.style.marginLeft = (l - contentLeft) + "px";
+    row.style.width = (r - l) + "px";
+  }
+  window.addEventListener("resize", fitCatRow);
   /* Favorites shown as a group on top of every dropdown; the full list stays below */
   var FAVES = {
     "sel-base": ["evernote", "wocg"],
