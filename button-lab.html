@@ -219,6 +219,40 @@
   .b5c .card + .card { margin-top: 8px; }
   .b5c .card .m5 { font-size: 14px; font-weight: normal; color: #8a857c; }
   .b5c .cardgap { height: 8px; }
+  /* batch six: the two-up surface in colors. Quiet rows drop to 14px on
+     5px padding so the option block tightens; Join private table shortens
+     to the site's own "Private table" (the Arkadium shell already says it) */
+  .b6 .gmenu .r5 { font-size: 14px; padding: 5px 12px; line-height: 18px; }
+  .b6 .mrule { margin: 6px -12px; }
+  .b6 .duo { margin-bottom: 6px; }
+  .duo.c-lb button { background: #A5D8FF; box-shadow: inset 0 0 0 1px #7AB8EC; }
+  .duo.c-lb button:hover, .duo.c-lb button:focus-visible { background: #9ACFF8; }
+  .duo.c-lb .dl { color: #125289; }
+  .duo.c-lb .dm { color: #1971C2; }
+  .duo.c-db button { background: #1971C2; box-shadow: inset 0 0 0 1px #125289; }
+  .duo.c-db button:hover, .duo.c-db button:focus-visible { background: #1668B2; }
+  .duo.c-db .dl { color: #fff; text-shadow: -1px -1px 0 #125289, 1px -1px 0 #125289, -1px 1px 0 #125289, 1px 1px 0 #125289; }
+  .duo.c-db .dm { color: rgba(255,255,255,.85); }
+  .duo.c-lg button { background: #B2F2BB; box-shadow: inset 0 0 0 1px #8FD9A0; }
+  .duo.c-lg button:hover, .duo.c-lg button:focus-visible { background: #A5EDB0; }
+  .duo.c-lg .dl { color: #2B8A3E; }
+  .duo.c-lg .dm { color: #37A24C; }
+  .duo.c-dg button { background: #66A80F; box-shadow: inset 0 0 0 1px #4F800B; }
+  .duo.c-dg button:hover, .duo.c-dg button:focus-visible { background: #5D960D; }
+  .duo.c-dg .dl { color: #fff; text-shadow: -1px -1px 0 #4F800B, 1px -1px 0 #4F800B, -1px 1px 0 #4F800B, 1px 1px 0 #4F800B; }
+  .duo.c-dg .dm { color: rgba(255,255,255,.88); }
+  .duo.c-cream button { background: #F4EEE5; box-shadow: inset 0 0 0 1px #E2D9C8; }
+  .duo.c-cream button:hover, .duo.c-cream button:focus-visible { background: #EDE5D6; }
+  .duo.c-cream .dm { color: #8a857c; }
+  .duo.c-mix button:first-child { background: #66A80F; box-shadow: inset 0 0 0 1px #4F800B; }
+  .duo.c-mix button:first-child:hover { background: #5D960D; }
+  .duo.c-mix button:first-child .dl { color: #fff; text-shadow: -1px -1px 0 #4F800B, 1px -1px 0 #4F800B, -1px 1px 0 #4F800B, 1px 1px 0 #4F800B; }
+  .duo.c-mix button:first-child .dm { color: rgba(255,255,255,.88); }
+  .duo.c-mix button:last-child { background: #A5D8FF; box-shadow: inset 0 0 0 1px #7AB8EC; }
+  .duo.c-mix button:last-child:hover { background: #9ACFF8; }
+  .duo.c-mix button:last-child .dl { color: #125289; }
+  .duo.c-mix button:last-child .dm { color: #1971C2; }
+
   .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(80px); z-index: 99;
     background: #141414; color: #f9f6f2; padding: 9px 18px; border-radius: 8px; font-size: 14px; transition: transform .18s ease; }
   .toast.on { transform: translateX(-50%) translateY(0); }
@@ -622,6 +656,48 @@ options visible, counters as the leaderboard's signs, and the two primaries trea
       { content: "b5F", cls: "a-centroid", tileCls: "b5" },
       { content: "b5G", cls: "a-centroid", tileCls: "b5" },
       { content: "b5H", cls: "a-centroid", tileCls: "b5 b5c" }
+    ]
+  });
+
+  /* batch six: full option set of the live tile (quick-match + Play bots up
+     top; Browse, ranked, Host, Private, Options, Rules below; Hearts alone
+     adds Ranked (TR), carried by one tile as the length stress test) */
+  var QUIET6 = ["Browse tables", "Play ranked", "Host table", "Private table", "Options", "Rules"];
+  function b6content(colorCls, withTR) {
+    return function (menu, td) {
+      var d = el("div", "duo" + (colorCls ? " " + colorCls : ""));
+      [["Join table", "8 open"], ["Play solo", "Instant"]].forEach(function (p) {
+        var b = el("button", "", "<span class='dl'>" + p[0] + "</span><span class='dm'>" + p[1] + "</span>");
+        b.addEventListener("click", function (e) { e.stopPropagation(); closeAll(); flash(td.game + " — " + p[0].toLowerCase()); });
+        d.appendChild(b);
+      });
+      menu.appendChild(d);
+      menu.appendChild(el("div", "mrule"));
+      var list = withTR ? QUIET6.slice(0, 2).concat(["Ranked (TR)"]).concat(QUIET6.slice(2)) : QUIET6;
+      b5quiet(menu, td, "", list);
+    };
+  }
+  CONTENT.b6nw = b6content("");
+  CONTENT.b6lb = b6content("c-lb");
+  CONTENT.b6db = b6content("c-db");
+  CONTENT.b6lg = b6content("c-lg");
+  CONTENT.b6dg = b6content("c-dg");
+  CONTENT.b6cream = b6content("c-cream");
+  CONTENT.b6tr = b6content("c-cream", true);
+  CONTENT.b6mix = b6content("c-mix");
+  SECTIONS.push({
+    t: "6 · Batch six: the two-up surface in colors",
+    d: "Two-up tiles, one surface, taken through the palette: the site lightblue, a solid dark blue, a light green, the primary dark green, and the band's darker cream. Quiet rows drop to 14px on 5px padding so the six options read as one tight block, and Join private table shortens to the site's own Private table (the Arkadium shell already uses that exact label). The option set matches the live tile: quick-match and Play bots as the pair, then Browse tables, Play ranked, Host table, Private table, Options, Rules. One cream tile carries Hearts' extra Ranked (TR) row as the seven-row stress test, and the mix tile pairs the site's own primary green with its lightblue.",
+    caps: ["Near-white (the original)", "Light blue", "Dark blue", "Light green", "Dark green", "Darker cream", "Cream + Hearts' TR row", "Dark green + light blue mix"],
+    cfgs: [
+      { content: "b6nw", cls: "a-centroid", tileCls: "b5 b6" },
+      { content: "b6lb", cls: "a-centroid", tileCls: "b5 b6" },
+      { content: "b6db", cls: "a-centroid", tileCls: "b5 b6" },
+      { content: "b6lg", cls: "a-centroid", tileCls: "b5 b6" },
+      { content: "b6dg", cls: "a-centroid", tileCls: "b5 b6" },
+      { content: "b6cream", cls: "a-centroid", tileCls: "b5 b6" },
+      { content: "b6tr", cls: "a-centroid", tileCls: "b5 b6" },
+      { content: "b6mix", cls: "a-centroid", tileCls: "b5 b6" }
     ]
   });
 
