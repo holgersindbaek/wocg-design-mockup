@@ -54,6 +54,7 @@
   body.font-ppedit    #herotitle, body.font-ppedit    .pophead, body.font-ppedit    .wrap h2 { font-family: "PP Editorial New", serif; font-weight: 400; }
   body.font-ppeditold #herotitle, body.font-ppeditold .pophead, body.font-ppeditold .wrap h2 { font-family: "PP Editorial Old", serif; font-weight: 400; }
   body.font-vollkorn  #herotitle, body.font-vollkorn  .pophead, body.font-vollkorn  .wrap h2 { font-family: "Vollkorn", serif; font-weight: 500; }
+  body.font-vollkornsb #herotitle, body.font-vollkornsb .pophead, body.font-vollkornsb .wrap h2 { font-family: "Vollkorn", serif; font-weight: 600; }
   /* the Fauna exact recipe: theartof.app/fauna sets Vollkorn Regular 400 and
      narrows the display line to 90% with a transform, not a condensed face */
   body.font-fauna     #herotitle, body.font-fauna     .pophead, body.font-fauna     .wrap h2 { font-family: "Vollkorn", serif; font-weight: 400; }
@@ -1161,7 +1162,9 @@
   #lobbyDemo .llRow { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 16px; }
   #lobbyDemo .ltCard, #lobbyDemo .llCard { display: flex; flex-direction: column; background-color: #fff;
     border-radius: 20px; corner-shape: squircle;
-    box-shadow: var(--btnshadow); overflow: hidden; cursor: pointer; }
+    /* inset ring like the game tiles: the felt header covers it up top, so
+       the line only wraps the white lower half */
+    box-shadow: inset 0 0 0 1px var(--edge, var(--panelline)), var(--liftshadow); overflow: hidden; cursor: pointer; }
   #lobbyDemo .ltCard:hover, #lobbyDemo .llCard:hover { background-color: #F8F7F4; }
   #lobbyDemo .ltCard.isNew { cursor: default; }
 
@@ -2215,6 +2218,7 @@
     ["ppedit", "PP Editorial New + BuloRounded"],
     ["ppeditold", "PP Editorial Old + BuloRounded (Where Cards Fall)"],
     ["vollkorn", "Vollkorn + BuloRounded (Art of Fauna)"],
+    ["vollkornsb", "Vollkorn 600 + BuloRounded (a bit bolder)"],
     ["fauna", "Vollkorn 400 squeezed 90% (Fauna exact)"],
     ["newyork", "New York + BuloRounded (Apple serif, the FAUNA logo face)"],
     ["poynter", "Poynter Old Style Semibold + BuloRounded (COPAG)"],
