@@ -782,8 +782,8 @@
   .heroarea > * { position: relative; z-index: 1; }
   .stats { display: flex; align-items: center; justify-content: center; gap: 9px; margin-top: 34px; flex-wrap: wrap; font-size: 16px; color: var(--muted); }
   body:not(.stats-brief) .statsBrief { display: none; }
-  body.stats-brief .statsFull, body.stats-capsule .statsFull, body.stats-capsuleshort .statsFull, body.stats-sign .statsFull, body.stats-signsolid .statsFull, body.stats-signbtn .statsFull, body.stats-signpulse .statsFull, body.stats-signtag .statsFull { display: none; }
-  body:not(.stats-capsule) .statsCapsule:not(.isShort) { display: none; }
+  body.stats-brief .statsFull, body.stats-capsule .statsFull, body.stats-capsulesm .statsFull, body.stats-capsuleshort .statsFull, body.stats-sign .statsFull, body.stats-signsolid .statsFull, body.stats-signbtn .statsFull, body.stats-signpulse .statsFull, body.stats-signtag .statsFull { display: none; }
+  body:not(.stats-capsule):not(.stats-capsulesm) .statsCapsule:not(.isShort) { display: none; }
   body:not(.stats-capsuleshort) .statsCapsule.isShort { display: none; }
   body:not(.stats-sign):not(.stats-signsolid):not(.stats-signbtn):not(.stats-signpulse):not(.stats-signtag) .statsSign { display: none; }
   /* the LIVE sign strip leading bare, separator-free counts. Base recipe = the
@@ -832,6 +832,12 @@
   .statsCapsule .st + .st { border-left: 1px solid var(--hairline); }
   .statsCapsule .stlive { padding: 0 9px; gap: 6px; }
   .statsCapsule .greencap { font-size: 14px; font-weight: bold; letter-spacing: .06em; color: #2f9e44; }
+  /* small capsule: 24px tall, 14px text, the LIVE cap one ladder step down */
+  body.stats-capsulesm .statsCapsule .capsule { height: 24px; font-size: 14px; }
+  body.stats-capsulesm .statsCapsule .greencap { font-size: 12px; }
+  body.stats-capsulesm .statsCapsule .st { padding: 0 9px; }
+  body.stats-capsulesm .statsCapsule .stlive { padding: 0 8px; }
+  body.stats-capsulesm .statsCapsule .ldot { width: 7px; height: 7px; }
   .statsCapsule b, .statsSign b { display: inline-flex; position: relative; color: var(--ink); font-weight: bold; }
   .statsCapsule .dcell, .statsSign .dcell { display: block; width: 0.52em; height: 1.5em; overflow: hidden; user-select: none;
     -webkit-mask-image: linear-gradient(transparent, #000 18%, #000 82%, transparent);
@@ -2133,6 +2139,7 @@
   ];
   var STATSLINES = [
     ["capsule", "Capsule: walled live-light strip"],
+    ["capsulesm", "Capsule: small (24px tall, 14px text)"],
     ["capsuleshort", "Capsule: playing \u00b7 tables \u00b7 open"],
     ["sign", "Sign: light-green button + bare counts"],
     ["signsolid", "Sign: solid green"],
