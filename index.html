@@ -389,7 +389,7 @@
   /* hero rhythm: title + subtitle grouped as one voice (10px), then honest
      air (26px) before the live strip - spacing hierarchy = meaning hierarchy.
      Type ladder: 40 serif / 16 muted / 14 strip */
-  .heroarea h3 { font-size: 40px; font-weight: bold; letter-spacing: -0.01em; line-height: 1.15; margin: 0 0 6px; }
+  .heroarea h3 { font-size: 40px; font-weight: bold; letter-spacing: -0.01em; line-height: 1.15; margin: 0 0 4px; }
   .heroarea > p { color: var(--muted); font-size: 20px; margin: 0; }
   .live { color: var(--second); font-weight: bold; }
 
@@ -1310,7 +1310,7 @@
   /* in the transform-scaled scenes the text layer counter-scales (1/k)
      against upscaling; in the fluid scrab scene it simply never scales */
   .sceneTxt { position: absolute; z-index: 5; transform-origin: top left; }
-  .sceneTxt h3 { font-size: 40px; font-weight: bold; letter-spacing: -0.01em; line-height: 1.15; margin: 0 0 6px; }
+  .sceneTxt h3 { font-size: 40px; font-weight: bold; letter-spacing: -0.01em; line-height: 1.15; margin: 0 0 4px; }
   .sceneTxt > p { color: var(--muted); font-size: 20px; margin: 0; }
   /* long category copies wrap inside the scene's text clearing instead of
      running into the tile mosaic */
@@ -1319,7 +1319,7 @@
      shape always holds inside the clearing */
   body[class*="cnav-sub-"] .sceneTxt #herosub { font-size: 16px; max-width: 416px; }
   body.layout-scsplit .sceneTxt #herosub { max-width: none; }
-  .sceneTxt .stats { margin-top: 26px; justify-content: flex-start; }
+  .sceneTxt .stats { margin-top: 28px; justify-content: flex-start; }
   body.layout-scw9b .sceneTxt { left: 24px; top: 26px; }
   body.layout-scsplit .sceneTxt { left: 0; right: 0; top: 204px; text-align: center; transform-origin: top center; }
   /* optical center: fitScene sets the top inline (45% of the free height,
@@ -1360,21 +1360,22 @@
   body.layout-scsplit .pos-g, body.layout-scsplit .pos-h, body.layout-scsplit .pos-i { display: none; }
 
   /* Scene · The rabatment (T1), golden-sectioned: text clearing 425px
-     (38.2%) and mosaic 687px (61.8%) at the ideal 1112, 16px seams. Fluid:
-     the tiles sit at fractions of the --mw x --mh mosaic box (fractions of
-     the ideal 687x517), --clx is the clearing width and --moy centers the
-     mosaic when the text column is the taller of the two. Above the ideal
-     the split stays golden; below it the clearing holds so the type never
-     scales, and the mosaic absorbs the narrowing. */
+     (38.2%) and mosaic 687px (61.8%) at the ideal 1112. Fluid with FIXED
+     16px seams: the cells scale (fractions of the gutterless 655x485 inner
+     box, --miw x --mih) while every gutter stays a true 16px at all sizes.
+     --clx is the clearing width, --moy centers the mosaic when the text
+     column is the taller of the two. Above the ideal the split stays
+     golden; below it the clearing holds so the type never scales. */
   body.layout-scrab { --sch: 517px; }
-  body.layout-scrab .games { --clx: 425px; --mw: 687px; --mh: 517px; --moy: 0px; }
+  body.layout-scrab .games { --clx: 425px; --mw: 687px; --mh: 517px; --moy: 0px;
+    --miw: calc(var(--mw) - 32px); --mih: calc(var(--mh) - 32px); }
   body.layout-scrab #popsec { padding-top: 24px; }
-  body.layout-scrab .pos-a { left: var(--clx); top: var(--moy); width: calc(var(--mw) * 0.65066); height: calc(var(--mh) * 0.65377); }
-  body.layout-scrab .pos-d { left: calc(var(--clx) + var(--mw) * 0.67394); top: var(--moy); width: calc(var(--mw) * 0.32606); height: calc(var(--mh) * 0.31141); }
-  body.layout-scrab .pos-b { left: calc(var(--clx) + var(--mw) * 0.67394); top: calc(var(--moy) + var(--mh) * 0.34236); width: calc(var(--mw) * 0.32606); height: calc(var(--mh) * 0.31141); }
-  body.layout-scrab .pos-h { left: var(--clx); top: calc(var(--moy) + var(--mh) * 0.68472); width: calc(var(--mw) * 0.31295); height: calc(var(--mh) * 0.31528); }
-  body.layout-scrab .pos-f { left: calc(var(--clx) + var(--mw) * 0.33624); top: calc(var(--moy) + var(--mh) * 0.68472); width: calc(var(--mw) * 0.31441); height: calc(var(--mh) * 0.31528); }
-  body.layout-scrab .pos-e { left: calc(var(--clx) + var(--mw) * 0.67394); top: calc(var(--moy) + var(--mh) * 0.68472); width: calc(var(--mw) * 0.32606); height: calc(var(--mh) * 0.31528); }
+  body.layout-scrab .pos-a { left: var(--clx); top: var(--moy); width: calc(var(--miw) * 0.658015 + 16px); height: calc(var(--mih) * 0.663918 + 16px); }
+  body.layout-scrab .pos-d { left: calc(var(--clx) + var(--miw) * 0.658015 + 32px); top: var(--moy); width: calc(var(--miw) * 0.341985); height: calc(var(--mih) * 0.331959); }
+  body.layout-scrab .pos-b { left: calc(var(--clx) + var(--miw) * 0.658015 + 32px); top: calc(var(--moy) + var(--mih) * 0.331959 + 16px); width: calc(var(--miw) * 0.341985); height: calc(var(--mih) * 0.331959); }
+  body.layout-scrab .pos-h { left: var(--clx); top: calc(var(--moy) + var(--mih) * 0.663918 + 32px); width: calc(var(--miw) * 0.328244); height: calc(var(--mih) * 0.336082); }
+  body.layout-scrab .pos-f { left: calc(var(--clx) + var(--miw) * 0.328244 + 16px); top: calc(var(--moy) + var(--mih) * 0.663918 + 32px); width: calc(var(--miw) * 0.329771); height: calc(var(--mih) * 0.336082); }
+  body.layout-scrab .pos-e { left: calc(var(--clx) + var(--miw) * 0.658015 + 32px); top: calc(var(--moy) + var(--mih) * 0.663918 + 32px); width: calc(var(--miw) * 0.341985); height: calc(var(--mih) * 0.336082); }
   body.layout-scrab .pos-c, body.layout-scrab .pos-g, body.layout-scrab .pos-i { display: none; }
 
   /* Scene · The pyramid (T4): full Open-tables width, text above in normal flow */
@@ -2492,7 +2493,8 @@
       var clearing = Math.max(425, avail * 0.382);
       if (avail - clearing < 400) clearing = Math.max(376, avail - 400);
       var mw = Math.max(avail - clearing, 260);
-      var mh = mw * 517 / 687;
+      /* seams stay a fixed 16px: only the 655x485 inner cell box scales */
+      var mh = 32 + (mw - 32) * 485 / 655;
       games.style.setProperty("--clx", clearing + "px");
       games.style.setProperty("--mw", mw + "px");
       games.style.setProperty("--mh", mh + "px");
