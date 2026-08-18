@@ -443,6 +443,16 @@
     text-decoration: underline dotted; text-decoration-thickness: 2px; text-underline-offset: 4px;
     text-decoration-color: rgba(51,41,31,.45); }
   body.cnav-sub-dotted #herosub .cjw:hover { text-decoration-style: solid; color: var(--accent-deep); }
+  /* italic + dotted: BuloRounded ships no italic cut, so the slant is
+     browser-synthesized */
+  body.cnav-sub-italdotted #herosub .cjw { font-style: italic; color: var(--ink-soft);
+    text-decoration: underline dotted; text-decoration-thickness: 2px; text-underline-offset: 4px;
+    text-decoration-color: rgba(51,41,31,.45); }
+  body.cnav-sub-italdotted #herosub .cjw:hover { text-decoration-style: solid; color: var(--accent-deep); }
+  body.cnav-sub-bolditaldotted #herosub .cjw { font-style: italic; font-weight: bold; color: var(--ink-soft);
+    text-decoration: underline dotted; text-decoration-thickness: 2px; text-underline-offset: 4px;
+    text-decoration-color: rgba(51,41,31,.45); }
+  body.cnav-sub-bolditaldotted #herosub .cjw:hover { text-decoration-style: solid; color: var(--accent-deep); }
   /* bold with a small down arrow */
   body.cnav-sub-arrow #herosub .cjw { font-weight: bold; color: var(--ink-soft); }
   body.cnav-sub-arrow #herosub .cjw::after { content: " \2193"; font-size: .8em; color: var(--muted); font-weight: normal; }
@@ -707,10 +717,11 @@
   }
   .gtile:hover { z-index: 2; }
   .gtile:active:not(:has(button:active)) { transform: scale(0.99); }
-  /* catalog tiles are not clickable themselves - the Play control is the
-     only action, so no pointer cursor and no pressed shrink on the tile */
+  /* catalog tiles: the text zone is inert (no pointer, no pressed shrink),
+     but the art is the join-a-table shortcut and keeps the pointer */
   .catgrid .gtile { cursor: default; }
   .catgrid .gtile:active:not(:has(button:active)) { transform: none; }
+  .catgrid .gtile .gimg { cursor: pointer; }
 
   .gimg {
     position: relative; overflow: hidden;
@@ -2259,6 +2270,7 @@
   var curAvshadow = "ghostramp";
   var CNAVS = [
     ["none", "None: old subtitle, no categories"],
+    ["sub-plain", "Subtitle: plain, no treatment"],
     ["sub-sign", "Subtitle: gold signs (Playing tag)"],
     ["sub-highlight", "Subtitle: marker highlight"],
     ["sub-underline", "Subtitle: bold, accent underline"],
@@ -2267,6 +2279,8 @@
     ["sub-bold", "Subtitle: just bold"],
     ["sub-link", "Subtitle: classic link blue"],
     ["sub-dotted", "Subtitle: dotted glossary underline (default)"],
+    ["sub-italdotted", "Subtitle: italic + dotted underline"],
+    ["sub-bolditaldotted", "Subtitle: bold italic + dotted underline"],
     ["sub-arrow", "Subtitle: bold + down arrow"],
     ["sub-italic", "Subtitle: italic"],
     ["sub-nearrow", "Subtitle: bold + \u2197 arrow (both bold)"],
@@ -2561,7 +2575,7 @@
     "sel-menu": ["centerlight", "centerlighteggshell", "centerlightporc", "center", "centerporcelain", "current", "crest", "gthreads"],
     "sel-rail": ["suits", "cards", "band"],
     "sel-avedge": ["luminosity", "lum-deep", "lum-dark", "lum-light", "lum-soft", "none", "ink", "color-burn"],
-    "sel-cnav": ["sub-dotted", "none", "sub-piprule", "sub-doublerule", "sub-cornerindex", "sub-cardedge", "sub-twoink", "sub-colorbold", "sub-colorline", "sub-scribble", "sub-scribblegold", "sub-brush", "sub-rough", "sub-sign", "row-whitesm"]
+    "sel-cnav": ["sub-plain", "sub-dotted", "sub-italdotted", "sub-bolditaldotted", "sub-scribble", "sub-brush", "sub-wavy", "sub-colorline"]
   };
   function buildSel(id, list, setter) {
     var el = document.getElementById(id);
@@ -3085,7 +3099,11 @@
         });
       }
       var inCatalog = !!tile.closest(".catgrid");
-      if (!inCatalog) {
+      if (inCatalog) {
+        /* the art is the shortcut to the default action: join a table with
+           people. The text zone stays inert; the Play control has the rest. */
+        img.addEventListener("click", function () { flash(game + " — joining a table with people"); });
+      } else {
         tile.addEventListener("click", function () { flash(game + " — dealing you in…"); });
       }
       var play = tile.querySelector(".gplay");
