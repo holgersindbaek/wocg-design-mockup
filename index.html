@@ -390,8 +390,14 @@
 
   /* ===== category jump experiments (Category nav switcher): the subtitle
      itself names the three families (sub-* coats restyle the words), or a
-     button row sits under the hero tiles (row-* coats). Default = none. ===== */
-  #herosub .cjw { border-bottom: none; color: inherit; white-space: nowrap; }
+     button row sits under the hero tiles (row-* coats). Default = sub-dotted. ===== */
+  #herosub .cjw { border-bottom: none; color: inherit; white-space: nowrap;
+    /* Basecamp's hand-drawn underline: one stroke that doubles back three
+       times, stretched to any word width by preserveAspectRatio="none" */
+    --squiggle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 202 12' preserveAspectRatio='none'%3E%3Cpath d='m14.8 3.3c60.8 2.6 121.6 1.9 182.3-2.3l-177.7 10 181.6-4.8c-66.7 2.4-133.3-.3-200 2.1' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    /* Slate.com's nav underline: a closed filled outline, so the stroke has
+       real marker thick-thin variation instead of an even pen line */
+    --brushstroke: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120.349 7.836' preserveAspectRatio='none'%3E%3Cpath fill='white' d='M.02 5.79c.13-1.199.645-2.63 1.944-2.95a24.63 24.63 0 0 1 3.873-.34q4.377-.338 8.757-.647 9.063-.64 18.136-1.139C40.604.292 48.478.002 56.364 0q5.48-.001 10.959.008 8.967.015 17.933.055 9.205.045 18.41.143c4.195.051 8.398.078 12.59.273 1.506.07 3.462.041 3.975 1.856a3.776 3.776 0 0 1-.695 3.312c-.828.818-2.524.435-3.57.4q-4.258-.142-8.515-.278-17.636-.562-35.276-.994C66.298 4.64 60.419 4.508 54.54 4.5c-6.019-.007-12.043.41-18.051.723-5.985.311-11.968.647-17.947 1.045-5.589.372-11.171.78-16.72 1.544C.49 7.996-.12 7.073.018 5.79z'/%3E%3C/svg%3E"); }
   /* gold signs: the online-solitaire "Playing" tag, inline in the sentence */
   body.cnav-sub-sign #herosub .cjw { display: inline-block; padding: 0 9px; border-radius: 6px;
     background: #ffec99; box-shadow: inset 0 0 0 1px #ffd43b; color: #e67700;
@@ -415,6 +421,12 @@
   body.cnav-sub-colorline #herosub .cjw.c1:hover { color: var(--p3); }
   body.cnav-sub-colorline #herosub .cjw.c2:hover { color: var(--p4); }
   body.cnav-sub-colorline #herosub .cjw.c3:hover { color: var(--p1); }
+  /* bold and colored: the words wear their tile colors, deepened for text */
+  body.cnav-sub-colorbold #herosub .cjw { font-weight: bold; }
+  body.cnav-sub-colorbold #herosub .cjw.c1 { color: color-mix(in oklab, var(--p3) 55%, var(--ink) 45%); }
+  body.cnav-sub-colorbold #herosub .cjw.c2 { color: color-mix(in oklab, var(--p4) 55%, var(--ink) 45%); }
+  body.cnav-sub-colorbold #herosub .cjw.c3 { color: color-mix(in oklab, var(--p1) 55%, var(--ink) 45%); }
+  body.cnav-sub-colorbold #herosub .cjw:hover { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
   /* just bold ink */
   body.cnav-sub-bold #herosub .cjw { font-weight: bold; color: var(--ink-soft); }
   body.cnav-sub-bold #herosub .cjw:hover { color: var(--accent-deep); }
@@ -442,6 +454,44 @@
     background: #ffe066; box-shadow: inset 0 0 0 1px #fab005, 0 1px 2px rgba(0,0,0,.10);
     color: #d9480f; font-size: 18px; line-height: 30px; font-weight: bold; vertical-align: 1px; }
   body.cnav-sub-signbold #herosub .cjw:hover { background: #ffd43b; }
+  /* hand-drawn squiggle: the Basecamp stroke as an alpha mask on ::after,
+     so the ink can be any CSS color and follows the theme */
+  body.cnav-sub-scribble #herosub .cjw,
+  body.cnav-sub-scribblegold #herosub .cjw { font-weight: bold; color: var(--ink-soft); position: relative; }
+  body.cnav-sub-scribble #herosub .cjw::after,
+  body.cnav-sub-scribblegold #herosub .cjw::after { content: ""; position: absolute; left: 1px; right: 1px;
+    bottom: -.24em; height: .34em; pointer-events: none;
+    -webkit-mask: var(--squiggle) center / 100% 100% no-repeat;
+    mask: var(--squiggle) center / 100% 100% no-repeat; }
+  body.cnav-sub-scribble #herosub .cjw.c1::after { background-color: var(--p3); }
+  body.cnav-sub-scribble #herosub .cjw.c2::after { background-color: var(--p4); }
+  body.cnav-sub-scribble #herosub .cjw.c3::after { background-color: var(--p1); }
+  body.cnav-sub-scribble #herosub .cjw.c1:hover { color: color-mix(in oklab, var(--p3) 55%, var(--ink) 45%); }
+  body.cnav-sub-scribble #herosub .cjw.c2:hover { color: color-mix(in oklab, var(--p4) 55%, var(--ink) 45%); }
+  body.cnav-sub-scribble #herosub .cjw.c3:hover { color: color-mix(in oklab, var(--p1) 55%, var(--ink) 45%); }
+  body.cnav-sub-scribblegold #herosub .cjw::after { background-color: #ffd43b; }
+  body.cnav-sub-scribblegold #herosub .cjw:hover::after { background-color: #fab005; }
+  /* marker brush: Slate's filled stroke as a mask, tile-colored */
+  body.cnav-sub-brush #herosub .cjw { font-weight: bold; color: var(--ink-soft); position: relative; }
+  body.cnav-sub-brush #herosub .cjw::after { content: ""; position: absolute; left: 0; right: 0;
+    bottom: -.34em; height: .32em; pointer-events: none;
+    -webkit-mask: var(--brushstroke) center / 100% 100% no-repeat;
+    mask: var(--brushstroke) center / 100% 100% no-repeat; }
+  body.cnav-sub-brush #herosub .cjw.c1::after { background-color: var(--p3); }
+  body.cnav-sub-brush #herosub .cjw.c2::after { background-color: var(--p4); }
+  body.cnav-sub-brush #herosub .cjw.c3::after { background-color: var(--p1); }
+  body.cnav-sub-brush #herosub .cjw.c1:hover { color: color-mix(in oklab, var(--p3) 55%, var(--ink) 45%); }
+  body.cnav-sub-brush #herosub .cjw.c2:hover { color: color-mix(in oklab, var(--p4) 55%, var(--ink) 45%); }
+  body.cnav-sub-brush #herosub .cjw.c3:hover { color: color-mix(in oklab, var(--p1) 55%, var(--ink) 45%); }
+  /* native wavy underline for comparison */
+  body.cnav-sub-wavy #herosub .cjw { font-weight: bold; color: var(--ink-soft);
+    text-decoration: underline wavy; text-decoration-thickness: 1.5px; text-underline-offset: 5px;
+    text-decoration-color: var(--accent); }
+  body.cnav-sub-wavy #herosub .cjw:hover { color: var(--accent-deep); }
+  /* Rough Notation: the library draws sketchy SVG underlines next to the
+     words (loaded from unpkg on first use; words stay bold if offline) */
+  body.cnav-sub-rough #herosub .cjw { font-weight: bold; color: var(--ink-soft); }
+  body.cnav-sub-rough #herosub .cjw:hover { color: var(--accent-deep); }
 
   /* the button row under the hero tiles: sits right below the mosaic and
      spans the same width, one equal third per family */
@@ -2108,25 +2158,31 @@
   ];
   var curAvshadow = "ghostramp";
   var CNAVS = [
-    ["none", "None (default)"],
+    ["none", "None: old subtitle, no categories"],
     ["sub-sign", "Subtitle: gold signs (Playing tag)"],
     ["sub-highlight", "Subtitle: marker highlight"],
     ["sub-underline", "Subtitle: bold, accent underline"],
     ["sub-colorline", "Subtitle: underline in tile colors"],
+    ["sub-colorbold", "Subtitle: bold in tile colors"],
     ["sub-bold", "Subtitle: just bold"],
     ["sub-link", "Subtitle: classic link blue"],
-    ["sub-dotted", "Subtitle: dotted glossary underline"],
+    ["sub-dotted", "Subtitle: dotted glossary underline (default)"],
     ["sub-arrow", "Subtitle: bold + down arrow"],
     ["sub-italic", "Subtitle: italic"],
     ["sub-nearrow", "Subtitle: bold + \u2197 arrow (both bold)"],
     ["sub-signbold", "Subtitle: gold signs, louder"],
+    ["sub-scribble", "Subtitle: hand-drawn squiggle, tile colors"],
+    ["sub-scribblegold", "Subtitle: hand-drawn squiggle, gold (Basecamp)"],
+    ["sub-brush", "Subtitle: marker brush stroke, tile colors (Slate)"],
+    ["sub-wavy", "Subtitle: wavy underline"],
+    ["sub-rough", "Subtitle: sketched draw-on (Rough Notation)"],
     ["row-white", "Below tiles: white buttons, count badges"],
     ["row-whitesm", "Below tiles: small white buttons"],
     ["row-white2", "Below tiles: white, count as second line"],
     ["row-color", "Below tiles: color buttons"],
     ["row-signs", "Below tiles: gold signs"]
   ];
-  var curCnav = "row-white";
+  var curCnav = "sub-dotted";
   /* sub-* coats rewrite the subtitle so the three families live in the copy
      itself; the words are anchors the coats restyle. The title already says
      "Play card games", so none of the copies repeat it. "|" marks the scene
@@ -2193,6 +2249,32 @@
       .replace(/\[cl\]([^\[]+)\[\/cl\]/g, '<a class="cjw c3" href="#sec-classic">$1</a>')
       .replace(/\|/g, scene ? "<br>" : " ");
   }
+  /* Rough Notation coat: lazy-load the library, then draw a sketchy
+     underline per category word in its tile color. applyCnavSub rewrites
+     #herosub's HTML on every applyBody, which also clears old sketch SVGs. */
+  var roughLib = 0; /* 0 idle, 1 loading, 2 ready, -1 failed */
+  function annotateRough() {
+    var cs = getComputedStyle(document.body);
+    var inks = { c1: "--p3", c2: "--p4", c3: "--p1" };
+    Object.keys(inks).forEach(function (k, i) {
+      var el = document.querySelector("#herosub .cjw." + k);
+      if (!el) return;
+      var a = RoughNotation.annotate(el, { type: "underline", color: cs.getPropertyValue(inks[k]).trim(),
+        strokeWidth: 2, padding: 2, iterations: 2, animationDuration: 500 });
+      setTimeout(function () { a.show(); }, 80 + 220 * i);
+    });
+  }
+  function applyRoughSub() {
+    if (curCnav !== "sub-rough") return;
+    if (roughLib === 2) { annotateRough(); return; }
+    if (roughLib !== 0) return;
+    roughLib = 1;
+    var s = document.createElement("script");
+    s.src = "https://unpkg.com/rough-notation/lib/rough-notation.iife.js";
+    s.onload = function () { roughLib = 2; if (curCnav === "sub-rough") annotateRough(); };
+    s.onerror = function () { roughLib = -1; };
+    document.head.appendChild(s);
+  }
   var palShown = false;
   function moveLobby() {
     var lobby = document.getElementById("lobbyDemo");
@@ -2215,6 +2297,7 @@
       applyCopy();
     }
     applyCnavSub();
+    applyRoughSub();
     setSceneDom(scene);
     fitCatRow();
     document.getElementById("sel-base").value = curBase;
@@ -2366,7 +2449,7 @@
     "sel-menu": ["centerlight", "centerlighteggshell", "centerlightporc", "center", "centerporcelain", "current", "crest", "gthreads"],
     "sel-rail": ["suits", "cards", "band"],
     "sel-avedge": ["luminosity", "lum-deep", "lum-dark", "lum-light", "lum-soft", "none", "ink", "color-burn"],
-    "sel-cnav": ["none", "row-whitesm", "sub-colorline", "sub-sign", "sub-dotted", "sub-nearrow", "sub-arrow"]
+    "sel-cnav": ["sub-dotted", "none", "sub-colorbold", "sub-colorline", "sub-scribble", "sub-scribblegold", "sub-brush", "sub-rough", "sub-sign", "row-whitesm"]
   };
   function buildSel(id, list, setter) {
     var el = document.getElementById(id);
