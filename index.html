@@ -398,11 +398,12 @@
   .mnav li.dd::after { content: " ▾"; font-size: 12px; color: var(--muted); }
   .muser { list-style: none; display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
   .muser li { color: var(--muted); cursor: pointer; display: flex; align-items: center; position: relative; }
+  .muser li:nth-child(2) { margin-left: 6px; }
   .muser img.micon { width: 40px; height: 32px; display: block; }
   .muser img.avatar { width: 28px; height: 28px; margin-right: 5px; display: block;
-    /* site avatars bake their own rounded-square frame, so the header shows
-       the natural shape with the lobby's inner-edge ring instead of a crop */
-    filter: url(#avatarInnerEdge) var(--avshadow); }
+    /* site avatars bake their own rounded-square frame, so no crop; the header
+       keeps its pinned grey-lightness luminosity rim and no shadow */
+    filter: url(#avatarEdge-luminosity); }
   .muser .uname { font-size: 16px; font-weight: bold; color: var(--ink-soft); }
 
   /* ===== menu-bar experiments ===== */
@@ -1453,7 +1454,11 @@
      divider, ink-only hover, and the click-data row order */
   .gmenu { position: absolute; left: 12px; right: 12px; bottom: 52px; z-index: 20; display: none;
     background: var(--surface, #fff); border-radius: 12px; corner-shape: squircle; padding: 12px 12px 8px;
-    box-shadow: 0 0 0 1px var(--edge, rgba(20,20,19,0.08)), 0 8px 24px rgba(20,20,19,0.18);
+    /* the rail's chrome on a floating card: the scheme's --edge draws the
+       line, the warm 2/5/12 layers sharpen toward it, one deeper layer
+       keeps the float */
+    box-shadow: 0 0 0 1px var(--edge, #d2cfca), 0 1px 2px rgba(60,45,25,.08), 0 2px 5px rgba(60,45,25,.08),
+      0 5px 12px rgba(60,45,25,.09), 0 12px 28px rgba(60,45,25,.16);
     transform-origin: 85% 100%; }
   .gmenu.isOpen { display: block; animation: gmenuIn 100ms ease-out; }
   @keyframes gmenuIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: none; } }
