@@ -399,10 +399,10 @@
   .muser { list-style: none; display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
   .muser li { color: var(--muted); cursor: pointer; display: flex; align-items: center; position: relative; }
   .muser img.micon { width: 40px; height: 32px; display: block; }
-  .muser img.avatar { width: 28px; height: 28px; border-radius: 50%; margin-right: 8px; display: block;
-    /* the header avatar pins the full grey-lightness luminosity rim; the
-       Avatar edge switcher drives only the table avatars */
-    filter: url(#avatarEdge-luminosity); }
+  .muser img.avatar { width: 28px; height: 28px; margin-right: 5px; display: block;
+    /* site avatars bake their own rounded-square frame, so the header shows
+       the natural shape with the lobby's inner-edge ring instead of a crop */
+    filter: url(#avatarInnerEdge) var(--avshadow); }
   .muser .uname { font-size: 16px; font-weight: bold; color: var(--ink-soft); }
 
   /* ===== menu-bar experiments ===== */
@@ -1063,9 +1063,11 @@
   /* Viewer: PiLady10's signed-in preview. Friends-online rides the friends icon
      as a badge, and card room keeps one color per game, so her reordered mosaic
      recolors per position. */
-  .muser .fbadge { position: absolute; top: -6px; right: -8px; min-width: 17px; height: 17px; padding: 0 4px;
-    border-radius: 9px; background: #2B8A3E; color: #fff; font-size: 11px; font-weight: bold;
-    line-height: 17px; text-align: center; box-shadow: 0 0 0 2px var(--surface, #fff); }
+  .muser .fbadge { position: absolute; bottom: 1px; left: 33px; transform: translateX(-50%);
+    display: flex; align-items: center; justify-content: center; min-width: 13px; height: 13px;
+    padding: 0 3px; border-radius: 6.5px; background: #4c6ef5; color: #fff; font-size: 9px;
+    font-weight: bold; line-height: 1; z-index: 2;
+    box-shadow: inset 0 0 0 1px #3B5BDB, 0 0 0 1px var(--surface, #fff); }
   body.viewer-pilady.play-cardroom .games .pos-a .gimg { background: #222dd9; }
   body.viewer-pilady.play-cardroom .games .pos-b .gimg { background: #962142; }
   body.viewer-pilady.play-cardroom .games .pos-c .gimg { background: #4a6dec; }
