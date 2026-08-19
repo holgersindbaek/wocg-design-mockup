@@ -254,33 +254,37 @@
   .duo.c-mix button:last-child .dl { color: #125289; }
   .duo.c-mix button:last-child .dm { color: #1971C2; }
 
-  /* batch seven: the lightblue two-up refined. The quiet six move into two
-     real columns (16px ink, text aligned to the panel padding), the mid rule
-     gives way to plain air, and the hover stops painting the whole row: the
-     ink darkens and a small marker - dot, bar, wave, nudge, pill - carries
-     the highlight instead. */
+  /* batch seven after the feedback round: the full-width lightblue pair is
+     the default up top, the quiet six fill the exact width of the buttons in
+     two columns (content-aware tracks so Browse tables never wraps), the air
+     tightens under the pair, between rows, and at the panel bottom, and the
+     resting ink is the mockup's own muted #4e4d4c (the stone grey came from
+     batch five's research imports, not our palette). Hover still leaves the
+     row background alone: ink darkens, a marker carries the highlight. */
   .b7 .duo { margin-bottom: 0; }
+  .b7 .gmenu { padding-bottom: 8px; }
   .b7 .fwbtn { display: flex; align-items: center; justify-content: space-between; width: 100%; height: 34px;
     padding: 0 12px; border: none; cursor: pointer; border-radius: var(--radius-md); corner-shape: squircle;
     font-family: inherit; font-size: 16px; font-weight: bold; color: #125289;
     background: #A5D8FF; box-shadow: inset 0 0 0 1px #7AB8EC; transition: background-color 80ms ease-out; }
   .b7 .fwbtn + .fwbtn { margin-top: 6px; }
   .b7 .fwbtn:hover, .b7 .fwbtn:focus-visible { background: #9ACFF8; }
-  .b7 .fwbtn .m5 { font-size: 14px; font-weight: normal; color: #1971C2; }
-  .b7 .qgrid { display: grid; grid-template-columns: max-content max-content; justify-content: space-between;
-    column-gap: 8px; margin: 10px -6px 0; }
+  .b7 .fwbtn .m5 { font-size: 14px; font-weight: normal; color: #125289; opacity: .85; }
+  .b7 .qgrid { display: grid; grid-template-columns: minmax(max-content, 1fr) minmax(max-content, 1fr);
+    column-gap: 8px; margin: 6px 0 0; }
   .b7 .mrule + .qgrid { margin-top: 0; }
-  .b7 .qgrid .r5 { display: block; width: auto; margin: 0; padding: 5px 6px; border-radius: 6px;
-    font-size: 16px; line-height: 20px; white-space: nowrap; transition: color 90ms ease-out; }
+  .b7 .qgrid .r5 { display: block; width: auto; margin: 0; padding: 4px 0; border-radius: 6px;
+    font-size: 16px; line-height: 20px; white-space: nowrap; color: #4e4d4c; transition: color 90ms ease-out; }
   .b7 .qgrid .r5:hover, .b7 .qgrid .r5:focus-visible { background: none; color: #141414; }
   .b7 .qw { position: relative; }
+  .b7.hv-wash .qgrid .r5 { padding: 4px 8px; margin: 0 -8px; }
   .b7.hv-wash .qgrid .r5:hover, .b7.hv-wash .qgrid .r5:focus-visible { background: #f4eee5; }
-  .b7.hv-dot .qgrid .r5 { position: relative; }
-  .b7.hv-dot .qgrid .r5::before { content: ""; position: absolute; left: -1px; top: 50%; width: 5px; height: 5px;
+  .b7.hv-dot .qgrid .r5 { position: relative; padding-left: 12px; }
+  .b7.hv-dot .qgrid .r5::before { content: ""; position: absolute; left: 2px; top: 50%; width: 5px; height: 5px;
     margin-top: -2.5px; border-radius: 50%; background: #66A80F; opacity: 0; transform: scale(.4);
     transition: opacity 110ms ease-out, transform 110ms ease-out; }
   .b7.hv-dot .qgrid .r5:hover::before, .b7.hv-dot .qgrid .r5:focus-visible::before { opacity: 1; transform: none; }
-  .b7.hv-bar .qgrid .r5 { position: relative; }
+  .b7.hv-bar .qgrid .r5 { position: relative; padding-left: 8px; }
   .b7.hv-bar .qgrid .r5::before { content: ""; position: absolute; left: 0; top: 50%; width: 3px; height: 14px;
     margin-top: -7px; border-radius: 2px; background: #66A80F; transform: scaleY(0);
     transition: transform 110ms ease-out; }
@@ -745,20 +749,14 @@ options visible, counters as the leaderboard's signs, and the two primaries trea
     ]
   });
 
-  /* batch seven: two real columns for the quiet six (16px ink, hovers that
-     leave the row background alone), the mid rule made optional, and the
-     lightblue pair both as half tiles and as stacked full-width rows */
+  /* batch seven: the full-width lightblue pair as the default, the quiet six
+     in two columns the exact width of the buttons, hovers that leave the row
+     background alone, the half-width pair and the old rule kept as compares */
   function b7content(opts) {
     opts = opts || {};
     return function (menu, td) {
       var pair = [["Join table", "8 open"], ["Play solo", "Instant"]];
-      if (opts.fullwidth) {
-        pair.forEach(function (p) {
-          var b = el("button", "fwbtn", "<span>" + p[0] + "</span><span class='m5'>" + p[1] + "</span>");
-          b.addEventListener("click", function (e) { e.stopPropagation(); closeAll(); flash(td.game + " — " + p[0].toLowerCase()); });
-          menu.appendChild(b);
-        });
-      } else {
+      if (opts.duo) {
         var d = el("div", "duo c-lb");
         pair.forEach(function (p) {
           var b = el("button", "", "<span class='dl'>" + p[0] + "</span><span class='dm'>" + p[1] + "</span>");
@@ -766,6 +764,12 @@ options visible, counters as the leaderboard's signs, and the two primaries trea
           d.appendChild(b);
         });
         menu.appendChild(d);
+      } else {
+        pair.forEach(function (p) {
+          var b = el("button", "fwbtn", "<span>" + p[0] + "</span><span class='m5'>" + p[1] + "</span>");
+          b.addEventListener("click", function (e) { e.stopPropagation(); closeAll(); flash(td.game + " — " + p[0].toLowerCase()); });
+          menu.appendChild(b);
+        });
       }
       if (opts.rule) menu.appendChild(el("div", "mrule"));
       var g = el("div", "qgrid");
@@ -778,21 +782,21 @@ options visible, counters as the leaderboard's signs, and the two primaries trea
     };
   }
   CONTENT.b7 = b7content();
-  CONTENT.b7fw = b7content({ fullwidth: true });
+  CONTENT.b7duo = b7content({ duo: true });
   CONTENT.b7rule = b7content({ rule: true });
   SECTIONS.push({
     t: "7 · Batch seven: columns, full width, quieter hovers",
-    d: "The lightblue two-up carries every tile. The quiet six move into two real columns - 16px ink on tight rows, the text aligned to the panel padding - and the mid rule is dropped for plain air (the last tile keeps it for comparison). The hover experiments stop painting the whole row: the ink darkens alone, a dot steps in at the left, a 3px bar rises, the frontpage's sand wave marches under the word, the label nudges right, or a small pill hugs just the words. The second tile stretches the lightblue pair to full-width stacked rows with the meta on the right.",
-    caps: ["Two columns, ink-only hover", "Full-width lightblue pair", "Hover: a dot steps in", "Hover: the 3px bar", "Hover: the sand wave marches", "Hover: the label nudges right", "Hover: a pill hugs the words", "The rule kept + wash hover (compare)"],
+    d: "The full-width lightblue pair is now the default up top. The quiet six fill the exact width of the buttons in two columns (content-aware tracks keep every label on one line), the air tightens - 6px under the pair, 8px between rows, 8px at the panel bottom - and the resting ink is the mockup's own muted grey with pure ink on hover. The row order follows the two-week click data: Browse 33.6%, Ranked 4.2%, Host 2.7%, Private 0.9%, Options 0.6%, Rules 0.4%, read left-to-right. Hover experiments stay row-wash-free: a dot steps in, a 3px bar rises, the sand wave marches, the label nudges, a pill hugs the words. The last two tiles keep the old rule + wash and the half-width pair for comparison.",
+    caps: ["The default: full width, ink hover", "Hover: a dot steps in", "Hover: the 3px bar", "Hover: the sand wave marches", "Hover: the label nudges right", "Hover: a pill hugs the words", "The rule kept + wash hover (compare)", "The half-width pair (compare)"],
     cfgs: [
       { content: "b7", cls: "a-centroid", tileCls: "b5 b7 hv-ink" },
-      { content: "b7fw", cls: "a-centroid", tileCls: "b5 b7 hv-ink" },
       { content: "b7", cls: "a-centroid", tileCls: "b5 b7 hv-dot" },
       { content: "b7", cls: "a-centroid", tileCls: "b5 b7 hv-bar" },
       { content: "b7", cls: "a-centroid", tileCls: "b5 b7 hv-wave" },
       { content: "b7", cls: "a-centroid", tileCls: "b5 b7 hv-nudge" },
       { content: "b7", cls: "a-centroid", tileCls: "b5 b7 hv-pill" },
-      { content: "b7rule", cls: "a-centroid", tileCls: "b5 b7 hv-wash" }
+      { content: "b7rule", cls: "a-centroid", tileCls: "b5 b7 hv-wash" },
+      { content: "b7duo", cls: "a-centroid", tileCls: "b5 b7 hv-ink" }
     ]
   });
 
