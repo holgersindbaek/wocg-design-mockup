@@ -397,7 +397,7 @@
   .mnav li:hover { text-decoration: underline; }
   .mnav li.dd::after { content: " ▾"; font-size: 12px; color: var(--muted); }
   .muser { list-style: none; display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
-  .muser li { color: var(--muted); cursor: pointer; display: flex; align-items: center; }
+  .muser li { color: var(--muted); cursor: pointer; display: flex; align-items: center; position: relative; }
   .muser img.micon { width: 40px; height: 32px; display: block; }
   .muser img.avatar { width: 28px; height: 28px; border-radius: 50%; margin-right: 8px; display: block;
     /* the header avatar pins the full grey-lightness luminosity rim; the
@@ -1060,10 +1060,12 @@
   .statsCapsule .st { padding: 0 11px; gap: 4px; align-self: stretch; }
   /* the internal walls share the ring's --edge */
   .statsCapsule .st + .st { border-left: 1px solid var(--edge, var(--panelline)); }
-  /* Viewer: PiLady10's signed-in preview. The friends stat only exists for her,
-     and card room keeps one color per game, so her reordered mosaic recolors per position. */
-  .stats .st.stFriends { display: none; }
-  body.viewer-pilady .stats .st.stFriends { display: inline-flex; }
+  /* Viewer: PiLady10's signed-in preview. Friends-online rides the friends icon
+     as a badge, and card room keeps one color per game, so her reordered mosaic
+     recolors per position. */
+  .muser .fbadge { position: absolute; top: -6px; right: -8px; min-width: 17px; height: 17px; padding: 0 4px;
+    border-radius: 9px; background: #2B8A3E; color: #fff; font-size: 11px; font-weight: bold;
+    line-height: 17px; text-align: center; box-shadow: 0 0 0 2px var(--surface, #fff); }
   body.viewer-pilady.play-cardroom .games .pos-a .gimg { background: #222dd9; }
   body.viewer-pilady.play-cardroom .games .pos-b .gimg { background: #962142; }
   body.viewer-pilady.play-cardroom .games .pos-c .gimg { background: #4a6dec; }
@@ -1734,6 +1736,7 @@
   <div class="swgroup">
     <div class="swhead">Look</div>
     <label class="ctl"><span>Viewer</span><select id="sel-viewer"></select></label>
+    <label class="ctl"><span>Signed-in copy</span><select id="sel-pcopy"></select></label>
     <label class="ctl"><span>Color scheme</span><select id="sel-base"></select></label>
     <button type="button" class="swbtn" id="palette-toggle">Show scheme swatches (bottom of page)</button>
     <label class="ctl"><span>Avatar edge</span><select id="sel-avedge"></select></label>
@@ -1883,7 +1886,6 @@
         <span class="st"><b class="creel" id="stc-players" data-v="1214">1214</b> players online</span>
         <span class="st"><b class="creel" id="stc-games" data-v="143">143</b> tables live</span>
         <span class="st"><b class="creel" id="stc-seats" data-v="87">87</b> seats open</span>
-        <span class="st stFriends"><b class="creel" id="stc-friends" data-v="23">23</b> friends</span>
       </span>
     </div>
     <div class="stats statsCapsule isShort">
@@ -1892,7 +1894,6 @@
         <span class="st"><b class="creel" id="stc2-players" data-v="1214">1214</b> playing</span>
         <span class="st"><b class="creel" id="stc2-games" data-v="143">143</b> tables</span>
         <span class="st"><b class="creel" id="stc2-seats" data-v="87">87</b> open</span>
-        <span class="st stFriends"><b class="creel" id="stc2-friends" data-v="23">23</b> friends</span>
       </span>
     </div>
     <div class="stats statsSign">
@@ -2652,6 +2653,38 @@
     ["pilady", "PiLady10 (signed in)"]
   ];
   var curViewer = "anon";
+  /* signed-in hero copy: her games already fill the mosaic, so the text leads
+     with what changed since her last visit (board rank, challenge, friends) */
+  var PCOPIES = [
+    ["rankchal", "Rank + challenge: #23 in Spades, up 3 / challenge still open",
+      "{greet}, PiLady10",
+      "You're [tt]#23 in Spades[/tt] today, up 3 spots.|The [cl]daily challenge[/cl] is still open."],
+    ["elochal", "Elo + challenge: rating up 12 to 1,581 / a win keeps it climbing",
+      "{greet}, PiLady10",
+      "Your [tt]Spades rating[/tt] is up 12 to 1,581.|A [cl]daily challenge[/cl] win keeps it climbing."],
+    ["chalaward", "Challenge first: day 4 is ready / 8 wins from bronze",
+      "{greet}, PiLady10",
+      "Day 4 of the [cl]August challenge[/cl] is ready.|You're 8 wins from the bronze award."],
+    ["friendseat", "Friends + seat: 23 friends online / ranked Spades seat open",
+      "{greet}, PiLady10",
+      "[ru]23 friends[/ru] are online right now.|A ranked [tt]Spades[/tt] seat just opened."],
+    ["boardfriend", "Board + friend: #23 today / hootnholler's table is a seat short",
+      "{greet}, PiLady10",
+      "You're [tt]#23 on today's Spades board[/tt].|hootnholler's table has [ru]one seat open[/ru]."],
+    ["welcomeback", "Old: Welcome back / jump back into her trio",
+      "Welcome back, PiLady10",
+      "Jump back into [tt]Spades[/tt], [ru]Hearts[/ru] &amp; [cl]Euchre[/cl] with|friends old and new. Your seat is waiting."]
+  ];
+  var curPcopy = "rankchal";
+  function piladyCopy() {
+    var it = PCOPIES.filter(function (c) { return c[0] === curPcopy; })[0];
+    var h = new Date().getHours();
+    var greet = h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening";
+    return { title: it[2].replace("{greet}", greet), sub: it[3] };
+  }
+  function piladyPlain() {
+    return piladyCopy().sub.replace(/\[\/?[a-z]+\]/g, "").replace(/&amp;/g, "&");
+  }
   var FOOTERS = [
     ["wavyline", "Wavy divider + cream band (default)"],
     ["line", "Line divider + cream band (site today)"],
@@ -2662,7 +2695,7 @@
     if (curCnav.indexOf("sub-") !== 0) return;
     var scene = curLayout.indexOf("sc") === 0 && curLayout !== "scpyr";
     var tpl = curViewer === "pilady"
-      ? "Jump back into [tt]Spades[/tt], [ru]Hearts[/ru] &amp; [cl]Euchre[/cl] with|friends old and new. Your seat is waiting."
+      ? piladyCopy().sub
       : CCOPIES.filter(function (c) { return c[0] === curCcopy; })[0][2];
     document.getElementById("herosub").innerHTML = tpl
       .replace(/\[tt\]([^\[]+)\[\/tt\]/g, '<a class="cjw c1" href="#sec-tt">$1</a>')
@@ -2779,6 +2812,13 @@
     }
     document.querySelectorAll(".muser .avatar").forEach(function (img) { pvAttr(img, "src", "WomanSuperGirl2.svg"); });
     document.querySelectorAll(".muser .uname").forEach(function (el) { pvText(el, "PiLady10"); });
+    document.querySelectorAll('.muser .micon[alt="Friends"]').forEach(function (icon) {
+      var b = document.createElement("b");
+      b.className = "fbadge";
+      b.textContent = "23";
+      pvUndo.push(function () { b.remove(); });
+      icon.parentNode.appendChild(b);
+    });
     pvText(document.querySelector("#popsec .pophead"), "Your games");
     "abcdefghi".split("").forEach(function (pos, i) {
       var tile = document.querySelector(".games .gtile.pos-" + pos);
@@ -2848,11 +2888,11 @@
     var ht = document.getElementById("herotitle"), hs = document.getElementById("herosub");
     if (scene) {
       if (curLayout === "scpyr") {
-        ht.innerHTML = curViewer === "pilady" ? "Welcome back, PiLady10" : "Play card games in good company";
-        hs.innerHTML = curViewer === "pilady" ? "Spades, Hearts &amp; Euchre with friends old and new. Your seat is waiting." : "Classic card games. Join a table or play solo. Free to play, hard to stop.";
+        ht.innerHTML = curViewer === "pilady" ? piladyCopy().title : "Play card games in good company";
+        hs.innerHTML = curViewer === "pilady" ? piladyPlain().replace("|", " ") : "Classic card games. Join a table or play solo. Free to play, hard to stop.";
       } else {
-        ht.innerHTML = curViewer === "pilady" ? "Welcome back,<br>PiLady10" : "Play card games<br>in good company";
-        hs.innerHTML = curViewer === "pilady" ? "Jump back into Spades, Hearts &amp; Euchre with<br>friends old and new. Your seat is waiting." : "Classic card games. Join a table or play solo.<br>Free to play, hard to stop.";
+        ht.innerHTML = curViewer === "pilady" ? piladyCopy().title.replace(", ", ",<br>") : "Play card games<br>in good company";
+        hs.innerHTML = curViewer === "pilady" ? piladyPlain().replace("|", "<br>") : "Classic card games. Join a table or play solo.<br>Free to play, hard to stop.";
       }
     } else if (typeof titlesel !== "undefined" && titlesel && titlesel.options && titlesel.options.length) {
       applyCopy();
@@ -2881,6 +2921,7 @@
     document.getElementById("sel-ccopy").value = curCcopy;
     document.getElementById("sel-footer").value = curFooter;
     document.getElementById("sel-viewer").value = curViewer;
+    document.getElementById("sel-pcopy").value = curPcopy;
     moveLobby();
     if (typeof renderPlayset === "function") renderPlayset();
   }
@@ -3076,6 +3117,7 @@
   buildSel("sel-ccopy", CCOPIES, function (v) { curCcopy = v; });
   buildSel("sel-footer", FOOTERS, function (v) { curFooter = v; });
   buildSel("sel-viewer", VIEWERS, function (v) { curViewer = v; });
+  buildSel("sel-pcopy", PCOPIES, function (v) { curPcopy = v; });
 
   var palBtn = document.getElementById("palette-toggle");
   palBtn.onclick = function () {
@@ -3303,10 +3345,10 @@
   function applyCopy() {
     if (curLayout.indexOf("sc") === 0) { applyBody(); return; }
     var item = TITLE_ITEMS[+titlesel.value];
-    document.getElementById("herotitle").textContent = curViewer === "pilady" ? "Welcome back, PiLady10" : item.t;
+    document.getElementById("herotitle").textContent = curViewer === "pilady" ? piladyCopy().title : item.t;
     var si = +subsel.value;
     document.getElementById("herosub").textContent = curViewer === "pilady"
-      ? "Jump back into Spades, Hearts & Euchre with friends old and new. Your seat is waiting."
+      ? piladyPlain().replace("|", " ")
       : (si === 0 ? (item.sub || DEFAULT_SUB) : SUBS[si][0]);
     applyCnavSub();
   }
@@ -3380,8 +3422,6 @@
       { id: "stc2-players", min: 1150, max: 1290, step: 18 },
       { id: "stc2-games", min: 128, max: 158, step: 4 },
       { id: "stc2-seats", min: 74, max: 99, step: 6 },
-      { id: "stc2-friends", min: 19, max: 27, step: 2 },
-      { id: "stc-friends", min: 19, max: 27, step: 2 },
       { id: "stc-games", min: 128, max: 158, step: 4 },
       { id: "stc-seats", min: 74, max: 99, step: 6 },
       { id: "sts-players", min: 1150, max: 1290, step: 18 },
