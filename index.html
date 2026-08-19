@@ -2680,6 +2680,36 @@
   /* signed-in hero copy: her games already fill the mosaic, so the text leads
      with what changed since her last visit (board rank, challenge, friends) */
   var PCOPIES = [
+    ["evetable", "Holger: Evening PiLady10. Your table is set.",
+      "{greets} PiLady10.|Your table is set.",
+      "You're [tt]no. 23 in Spades[/tt] on today's board.|[cl]Daily challenge[/cl] is ready. Eight wins to bronze."],
+    ["eveseat", "Short greet: Evening PiLady10. Your seat's saved.",
+      "{greets} PiLady10.|Your seat's saved.",
+      "You're [tt]no. 23 in Spades[/tt] on today's board.|[cl]Daily challenge[/cl] is ready. Eight wins to bronze."],
+    ["evecards", "Short greet: Evening PiLady10. The cards are out.",
+      "{greets} PiLady10.|The cards are out.",
+      "You're [tt]no. 23 in Spades[/tt] on today's board.|[cl]Daily challenge[/cl] is ready. Eight wins to bronze."],
+    ["eveshuffle", "Short greet: Evening PiLady10. Shuffle up.",
+      "{greets} PiLady10.|Shuffle up.",
+      "You're [tt]no. 23 in Spades[/tt] on today's board.|[cl]Daily challenge[/cl] is ready. Eight wins to bronze."],
+    ["evedeal", "Short greet: Evening PiLady10. The deal's waiting.",
+      "{greets} PiLady10.|The deal's waiting.",
+      "You're [tt]no. 23 in Spades[/tt] on today's board.|[cl]Daily challenge[/cl] is ready. Eight wins to bronze."],
+    ["evelen3", "Name-length test, 3 chars: Evening HeQ.",
+      "{greets} HeQ.|Your table is set.",
+      "You're [tt]no. 23 in Spades[/tt] on today's board.|[cl]Daily challenge[/cl] is ready. Eight wins to bronze."],
+    ["evelen11", "Name-length test, 11 chars: Evening hootnholler.",
+      "{greets} hootnholler.|Your table is set.",
+      "You're [tt]no. 23 in Spades[/tt] on today's board.|[cl]Daily challenge[/cl] is ready. Eight wins to bronze."],
+    ["evelen14", "Name-length test, 14 chars: Evening Without Stress.",
+      "{greets} Without Stress.|Your table is set.",
+      "You're [tt]no. 23 in Spades[/tt] on today's board.|[cl]Daily challenge[/cl] is ready. Eight wins to bronze."],
+    ["tablefirst", "Order flip, survives any name: Your table is set, PiLady10.",
+      "Your table is set,|PiLady10.",
+      "You're [tt]no. 23 in Spades[/tt] on today's board.|[cl]Daily challenge[/cl] is ready. Eight wins to bronze."],
+    ["tablefirst14", "Order flip with the 14-char name: Your table is set, Without Stress.",
+      "Your table is set,|Without Stress.",
+      "You're [tt]no. 23 in Spades[/tt] on today's board.|[cl]Daily challenge[/cl] is ready. Eight wins to bronze."],
     ["handdealt", "Name first: PiLady10, your hand is dealt",
       "PiLady10, your|hand is dealt.",
       "Up 3 spots to [tt]no. 23 in Spades[/tt] today.|Someone's been practicing."],
@@ -2864,12 +2894,14 @@
       "Welcome back, PiLady10",
       "Jump back into [tt]Spades[/tt], [ru]Hearts[/ru] &amp; [cl]Euchre[/cl] with|friends old and new. Your seat is waiting."]
   ];
-  var curPcopy = "fullboarddaily";
+  var curPcopy = "evetable";
   function piladyCopy() {
     var it = PCOPIES.filter(function (c) { return c[0] === curPcopy; })[0];
     var h = new Date().getHours();
-    var greet = h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening";
-    return { title: it[2].replace("{greet}", greet), sub: it[3].replace("{greet}", greet) };
+    var greets = h < 12 ? "Morning" : h < 17 ? "Afternoon" : "Evening";
+    var greet = "Good " + greets.toLowerCase();
+    return { title: it[2].replace("{greets}", greets).replace("{greet}", greet),
+      sub: it[3].replace("{greets}", greets).replace("{greet}", greet) };
   }
   function piladyTitleHTML() {
     var t = piladyCopy().title;
