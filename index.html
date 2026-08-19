@@ -1060,6 +1060,19 @@
   .statsCapsule .st { padding: 0 11px; gap: 4px; align-self: stretch; }
   /* the internal walls share the ring's --edge */
   .statsCapsule .st + .st { border-left: 1px solid var(--edge, var(--panelline)); }
+  /* Viewer: PiLady10's signed-in preview. The friends stat only exists for her,
+     and card room keeps one color per game, so her reordered mosaic recolors per position. */
+  .stats .st.stFriends { display: none; }
+  body.viewer-pilady .stats .st.stFriends { display: inline-flex; }
+  body.viewer-pilady.play-cardroom .games .pos-a .gimg { background: #222dd9; }
+  body.viewer-pilady.play-cardroom .games .pos-b .gimg { background: #962142; }
+  body.viewer-pilady.play-cardroom .games .pos-c .gimg { background: #4a6dec; }
+  body.viewer-pilady.play-cardroom .games .pos-d .gimg { background: #3caca8; }
+  body.viewer-pilady.play-cardroom .games .pos-e .gimg { background: #a495f2; }
+  body.viewer-pilady.play-cardroom .games .pos-f .gimg { background: #d939c0; }
+  body.viewer-pilady.play-cardroom .games .pos-g .gimg { background: #a1c513; }
+  body.viewer-pilady.play-cardroom .games .pos-h .gimg { background: #20ddaa; }
+  body.viewer-pilady.play-cardroom .games .pos-i .gimg { background: #3596cb; }
   .statsCapsule .stlive { padding: 0 9px; gap: 6px; }
   .statsCapsule .greencap { font-size: 14px; font-weight: bold; letter-spacing: .06em; color: #2f9e44; }
   /* small capsule: 24px tall, 14px text, the LIVE cap one ladder step down */
@@ -1720,6 +1733,7 @@
 <div class="switchbar">
   <div class="swgroup">
     <div class="swhead">Look</div>
+    <label class="ctl"><span>Viewer</span><select id="sel-viewer"></select></label>
     <label class="ctl"><span>Color scheme</span><select id="sel-base"></select></label>
     <button type="button" class="swbtn" id="palette-toggle">Show scheme swatches (bottom of page)</button>
     <label class="ctl"><span>Avatar edge</span><select id="sel-avedge"></select></label>
@@ -1869,6 +1883,7 @@
         <span class="st"><b class="creel" id="stc-players" data-v="1214">1214</b> players online</span>
         <span class="st"><b class="creel" id="stc-games" data-v="143">143</b> tables live</span>
         <span class="st"><b class="creel" id="stc-seats" data-v="87">87</b> seats open</span>
+        <span class="st stFriends"><b class="creel" id="stc-friends" data-v="23">23</b> friends</span>
       </span>
     </div>
     <div class="stats statsCapsule isShort">
@@ -1877,6 +1892,7 @@
         <span class="st"><b class="creel" id="stc2-players" data-v="1214">1214</b> playing</span>
         <span class="st"><b class="creel" id="stc2-games" data-v="143">143</b> tables</span>
         <span class="st"><b class="creel" id="stc2-seats" data-v="87">87</b> open</span>
+        <span class="st stFriends"><b class="creel" id="stc2-friends" data-v="23">23</b> friends</span>
       </span>
     </div>
     <div class="stats statsSign">
@@ -2631,6 +2647,11 @@
     ["bare", "Trick-taking, rummy or the classics. (nothing else)", "[tt]Trick-taking[/tt], [ru]rummy[/ru] or [cl]the classics[/cl]."]
   ];
   var curCcopy = "ampwith";
+  var VIEWERS = [
+    ["anon", "Signed out (guest)"],
+    ["pilady", "PiLady10 (signed in)"]
+  ];
+  var curViewer = "anon";
   var FOOTERS = [
     ["wavyline", "Wavy divider + cream band (default)"],
     ["line", "Line divider + cream band (site today)"],
@@ -2640,7 +2661,9 @@
   function applyCnavSub() {
     if (curCnav.indexOf("sub-") !== 0) return;
     var scene = curLayout.indexOf("sc") === 0 && curLayout !== "scpyr";
-    var tpl = CCOPIES.filter(function (c) { return c[0] === curCcopy; })[0][2];
+    var tpl = curViewer === "pilady"
+      ? "Jump back into [tt]Spades[/tt], [ru]Hearts[/ru] &amp; [cl]Euchre[/cl] with|friends old and new. Your seat is waiting."
+      : CCOPIES.filter(function (c) { return c[0] === curCcopy; })[0][2];
     document.getElementById("herosub").innerHTML = tpl
       .replace(/\[tt\]([^\[]+)\[\/tt\]/g, '<a class="cjw c1" href="#sec-tt">$1</a>')
       .replace(/\[ru\]([^\[]+)\[\/ru\]/g, '<a class="cjw c2" href="#sec-rummy">$1</a>')
@@ -2688,23 +2711,155 @@
     var slot = document.getElementById(curCatalog === "merged" || curCatalog === "mergedflat" ? "lobby-slot-bottom" : "lobby-slot-top");
     if (lobby && slot) slot.parentNode.insertBefore(lobby, slot.nextSibling);
   }
+  /* ===== Viewer: the guest page vs PiLady10's signed-in page. PiLady10 is a
+     real profile (joined June 2015, 16,446 Spades games at elo 1581, then
+     Hearts and Euchre, 475 liked players, site supporter, Supergirl #2
+     avatar). Every pilady mutation records its own undo, so flipping back
+     restores the guest page exactly. */
+  var viewerShown = "anon", pvUndo = [];
+  function pvAttr(el, attr, val) {
+    if (!el) return;
+    var old = el.getAttribute(attr);
+    pvUndo.push(function () { el.setAttribute(attr, old); });
+    el.setAttribute(attr, val);
+  }
+  function pvText(el, txt) {
+    if (!el) return;
+    var old = el.textContent;
+    pvUndo.push(function () { el.textContent = old; });
+    el.textContent = txt;
+  }
+  function pvHTML(el, html) {
+    if (!el) return;
+    var old = el.innerHTML;
+    pvUndo.push(function () { el.innerHTML = old; });
+    el.innerHTML = html;
+  }
+  function pvClass(el, cls, on) {
+    if (!el || el.classList.contains(cls) === on) return;
+    pvUndo.push(function () { el.classList.toggle(cls, !on); });
+    el.classList.toggle(cls, on);
+  }
+  function pvMove(el, before) {
+    if (!el || !before || el === before) return;
+    var parent = el.parentNode, next = el.nextSibling;
+    pvUndo.push(function () { parent.insertBefore(el, next); });
+    parent.insertBefore(el, before);
+  }
+  function pvChip(chip, n) {
+    if (!chip) return;
+    chip.querySelectorAll("b").forEach(function (b) { pvText(b, String(n)); });
+  }
+  /* her mosaic: her games in her play order; counts match the catalog tiles */
+  var PILADY_TILES = [
+    ["spades", "Spades", 173], ["hearts", "Hearts", 341], ["euchre", "Euchre", 212],
+    ["hearts", "Sergeant Major", 12], ["spades", "Whist", 51], ["euchre", "Twenty-Nine", 17],
+    ["hearts", "Gin Rummy", 87], ["euchre", "Hand & Foot", 64], ["spades", "Pinochle", 58]
+  ];
+  /* the Spades daily board around her real 1,581 elo; her friends fill it out */
+  var PILADY_ROWS = '<div class="lbRow lbHeaderRow"><span class="lbRank">Rank</span><span class="lbName">Player</span><span class="lbRating">Elo</span></div>' +
+    '<div class="lbRow"><span class="lbRank">#21</span><span class="lbName">SpadeQueen</span><span class="lbRating">1,619</span></div>' +
+    '<div class="lbRow isAlt"><span class="lbRank">#22 <span class="lbUp">1</span></span><span class="lbName">an_ill_over</span><span class="lbRating">1,608</span></div>' +
+    '<div class="lbRow"><span class="lbRank"><b>#23</b> <span class="lbUp">3</span></span><span class="lbName"><b>PiLady10</b> <span class="lbHeart">&hearts;</span></span><span class="lbRating"><b>1,581</b> <span class="lbUp">12</span></span></div>' +
+    '<div class="lbRow isAlt"><span class="lbRank">#24</span><span class="lbName">four20</span><span class="lbRating">1,577</span></div>' +
+    '<div class="lbRow"><span class="lbRank">#25 <span class="lbDown">2</span></span><span class="lbName">luv78\'s&amp;45\'s</span><span class="lbRating">1,570</span></div>' +
+    '<div class="lbRow isAlt"><span class="lbRank">#26</span><span class="lbName">mollyb</span><span class="lbRating">1,563</span></div>' +
+    '<div class="lbRow"><span class="lbRank">#27</span><span class="lbName">El_Che</span><span class="lbRating">1,555</span></div>' +
+    '<div class="lbRow isAlt"><span class="lbRank">#28 <span class="lbUp">2</span></span><span class="lbName">cardShark52</span><span class="lbRating">1,548</span></div>' +
+    '<div class="lbRow"><span class="lbRank">#29</span><span class="lbName">hootnholler</span><span class="lbRating">1,540</span></div>' +
+    '<div class="lbRow isAlt"><span class="lbRank">#30</span><span class="lbName">north4th</span><span class="lbRating">1,533</span></div>';
+  function applyViewer() {
+    if (curViewer === viewerShown) return;
+    viewerShown = curViewer;
+    if (curViewer !== "pilady") {
+      pvUndo.reverse().forEach(function (fn) { fn(); });
+      pvUndo = [];
+      if (window.rescanTileCounts) window.rescanTileCounts();
+      return;
+    }
+    document.querySelectorAll(".muser .avatar").forEach(function (img) { pvAttr(img, "src", "WomanSuperGirl2.svg"); });
+    document.querySelectorAll(".muser .uname").forEach(function (el) { pvText(el, "PiLady10"); });
+    pvText(document.querySelector("#popsec .pophead"), "Your games");
+    "abcdefghi".split("").forEach(function (pos, i) {
+      var tile = document.querySelector(".games .gtile.pos-" + pos);
+      if (!tile) return;
+      pvAttr(tile.querySelector(".glogo"), "src", PILADY_TILES[i][0] + "_logo.png");
+      pvAttr(tile.querySelector(".glogo"), "alt", PILADY_TILES[i][1]);
+      pvChip(tile.querySelector(".gchip"), PILADY_TILES[i][2]);
+    });
+    /* open tables: her game up front, her real friends at the seats */
+    var grid = document.querySelector("#lobbyTablesPanel .ltGrid");
+    if (grid) {
+      var sp = grid.querySelector(".tableListing.spades");
+      if (sp) {
+        pvMove(sp.closest(".ltCard"), grid.firstElementChild);
+        pvText(sp.querySelector(".playernumber1 .playerName"), "Joy_");
+        pvText(sp.querySelector(".playernumber0 .playerName"), "hootnholler");
+      }
+      var eu = grid.querySelector(".tableListing.euchre");
+      if (eu) {
+        pvText(eu.querySelector(".playernumber1 .playerName"), "El_Che");
+        pvText(eu.querySelector(".content .tableNumber span"), "El_Che\u2019s table \u00b7 Euchre");
+      }
+      var nc = grid.querySelector(".ltCard.isNew");
+      if (nc) {
+        pvText(nc.querySelector(".ltNewSub"), "Invite hootnholler, El_Che");
+        var avs = nc.querySelectorAll(".ltAv");
+        if (avs[0]) pvAttr(avs[0], "alt", "hootnholler");
+        if (avs[1]) pvAttr(avs[1], "alt", "El_Che");
+      }
+    }
+    /* live tables: names she knows on the tables she follows */
+    var live = document.getElementById("lobbyLiveTables");
+    if (live) {
+      var fr = live.querySelector(".llCard.isFriend");
+      if (fr) {
+        pvText(fr.querySelector(".playernumber1 .playerName"), "nomore35");
+        pvText(fr.querySelector(".playernumber0 .playerName"), "jen11099");
+        pvText(fr.querySelector(".llGame"), "jen11099\u2019s table \u00b7 Canasta");
+      }
+      var lsp = live.querySelector(".tableListing.spades");
+      if (lsp) {
+        pvClass(lsp.closest(".llCard"), "isFriend", true);
+        pvText(lsp.querySelector(".playernumber1 .playerName"), "Gaz001");
+        var wrap = lsp.querySelector(".playernumber1 .playerNameContainer");
+        if (wrap) {
+          var badge = document.createElement("span");
+          badge.className = "playerBadge isLiked";
+          pvUndo.push(function () { badge.remove(); });
+          wrap.appendChild(badge);
+        }
+      }
+    }
+    /* leaderboard and challenge switch their active chip to Spades */
+    [document.getElementById("lobbyBoardCard"), document.getElementById("lobbyDealCard")].forEach(function (card) {
+      if (!card) return;
+      var chips = card.querySelectorAll(".ldChips .button.small");
+      if (chips.length < 2) return;
+      pvClass(chips[0], "blue", false); pvClass(chips[0], "lightblue", true);
+      pvClass(chips[1], "lightblue", false); pvClass(chips[1], "blue", true);
+    });
+    pvHTML(document.querySelector("#lobbyBoardCard .lbRows"), PILADY_ROWS);
+    if (window.rescanTileCounts) window.rescanTileCounts();
+  }
   function applyBody() {
     var scene = curLayout.indexOf("sc") === 0;
-    document.body.className = curBase + " play-" + curPlay + " layout-" + curLayout + (scene ? " scenehero" : "") + " font-" + curFont + " shadow-" + curShadow + " edge-" + curEdge + " tex-" + curTexture + " cat-" + curCatalog + " stats-" + curStats + " menu-" + curMenu + " counter-" + curCounter + " rail-" + curRail + " playbtn-" + curPlayBtn + " avedge-" + curAvedge + " avsh-" + curAvshadow + " cnav-" + curCnav + " foot-" + curFooter + (palShown ? " show-palette" : "");
+    document.body.className = curBase + " play-" + curPlay + " layout-" + curLayout + (scene ? " scenehero" : "") + " font-" + curFont + " shadow-" + curShadow + " edge-" + curEdge + " tex-" + curTexture + " cat-" + curCatalog + " stats-" + curStats + " menu-" + curMenu + " counter-" + curCounter + " rail-" + curRail + " playbtn-" + curPlayBtn + " avedge-" + curAvedge + " avsh-" + curAvshadow + " cnav-" + curCnav + " foot-" + curFooter + " viewer-" + curViewer + (palShown ? " show-palette" : "");
     var ht = document.getElementById("herotitle"), hs = document.getElementById("herosub");
     if (scene) {
       if (curLayout === "scpyr") {
-        ht.innerHTML = "Play card games in good company";
-        hs.innerHTML = "Classic card games. Join a table or play solo. Free to play, hard to stop.";
+        ht.innerHTML = curViewer === "pilady" ? "Welcome back, PiLady10" : "Play card games in good company";
+        hs.innerHTML = curViewer === "pilady" ? "Spades, Hearts &amp; Euchre with friends old and new. Your seat is waiting." : "Classic card games. Join a table or play solo. Free to play, hard to stop.";
       } else {
-        ht.innerHTML = "Play card games<br>in good company";
-        hs.innerHTML = "Classic card games. Join a table or play solo.<br>Free to play, hard to stop.";
+        ht.innerHTML = curViewer === "pilady" ? "Welcome back,<br>PiLady10" : "Play card games<br>in good company";
+        hs.innerHTML = curViewer === "pilady" ? "Jump back into Spades, Hearts &amp; Euchre with<br>friends old and new. Your seat is waiting." : "Classic card games. Join a table or play solo.<br>Free to play, hard to stop.";
       }
     } else if (typeof titlesel !== "undefined" && titlesel && titlesel.options && titlesel.options.length) {
       applyCopy();
     }
     applyCnavSub();
     applyRoughSub();
+    applyViewer();
     setSceneDom(scene);
     fitCatRow();
     document.getElementById("sel-base").value = curBase;
@@ -2725,6 +2880,7 @@
     document.getElementById("sel-cnav").value = curCnav;
     document.getElementById("sel-ccopy").value = curCcopy;
     document.getElementById("sel-footer").value = curFooter;
+    document.getElementById("sel-viewer").value = curViewer;
     moveLobby();
     if (typeof renderPlayset === "function") renderPlayset();
   }
@@ -2919,6 +3075,7 @@
   buildSel("sel-cnav", CNAVS, function (v) { curCnav = v; });
   buildSel("sel-ccopy", CCOPIES, function (v) { curCcopy = v; });
   buildSel("sel-footer", FOOTERS, function (v) { curFooter = v; });
+  buildSel("sel-viewer", VIEWERS, function (v) { curViewer = v; });
 
   var palBtn = document.getElementById("palette-toggle");
   palBtn.onclick = function () {
@@ -3146,9 +3303,11 @@
   function applyCopy() {
     if (curLayout.indexOf("sc") === 0) { applyBody(); return; }
     var item = TITLE_ITEMS[+titlesel.value];
-    document.getElementById("herotitle").textContent = item.t;
+    document.getElementById("herotitle").textContent = curViewer === "pilady" ? "Welcome back, PiLady10" : item.t;
     var si = +subsel.value;
-    document.getElementById("herosub").textContent = si === 0 ? (item.sub || DEFAULT_SUB) : SUBS[si][0];
+    document.getElementById("herosub").textContent = curViewer === "pilady"
+      ? "Jump back into Spades, Hearts & Euchre with friends old and new. Your seat is waiting."
+      : (si === 0 ? (item.sub || DEFAULT_SUB) : SUBS[si][0]);
     applyCnavSub();
   }
   titlesel.onchange = applyCopy;
@@ -3221,6 +3380,8 @@
       { id: "stc2-players", min: 1150, max: 1290, step: 18 },
       { id: "stc2-games", min: 128, max: 158, step: 4 },
       { id: "stc2-seats", min: 74, max: 99, step: 6 },
+      { id: "stc2-friends", min: 19, max: 27, step: 2 },
+      { id: "stc-friends", min: 19, max: 27, step: 2 },
       { id: "stc-games", min: 128, max: 158, step: 4 },
       { id: "stc-seats", min: 74, max: 99, step: 6 },
       { id: "sts-players", min: 1150, max: 1290, step: 18 },
@@ -3269,18 +3430,23 @@
     var dots = Array.prototype.slice.call(document.querySelectorAll(".ldot"));
     /* tile counts change on the same beat as the capsule, but dry: no reels,
        no animation - and the digit width is pinned so the line never shifts */
-    var tileCounts = Array.prototype.slice.call(document.querySelectorAll(".gchip")).map(function (chip) {
-      var bs = Array.prototype.slice.call(chip.querySelectorAll("b"));
-      if (!bs.length) return null;
-      var v = parseInt(bs[0].textContent, 10);
-      if (isNaN(v)) return null;
-      var digits = String(v).length;
-      bs.forEach(function (b) { b.style.minWidth = digits + "ch"; });
-      return { els: bs, v: v,
-        lo: Math.max(Math.pow(10, digits - 1), Math.round(v * 0.88)),
-        hi: Math.min(Math.pow(10, digits) - 1, Math.round(v * 1.12)),
-        step: Math.max(1, Math.round(v * 0.04)) };
-    }).filter(Boolean);
+    var tileCounts = [];
+    /* re-runnable so the viewer toggle's count swaps re-seed the tick ranges */
+    window.rescanTileCounts = function () {
+      tileCounts = Array.prototype.slice.call(document.querySelectorAll(".gchip")).map(function (chip) {
+        var bs = Array.prototype.slice.call(chip.querySelectorAll("b"));
+        if (!bs.length) return null;
+        var v = parseInt(bs[0].textContent, 10);
+        if (isNaN(v)) return null;
+        var digits = String(v).length;
+        bs.forEach(function (b) { b.style.minWidth = digits + "ch"; });
+        return { els: bs, v: v,
+          lo: Math.max(Math.pow(10, digits - 1), Math.round(v * 0.88)),
+          hi: Math.min(Math.pow(10, digits) - 1, Math.round(v * 1.12)),
+          step: Math.max(1, Math.round(v * 0.04)) };
+      }).filter(Boolean);
+    };
+    window.rescanTileCounts();
     var beat = 0;
     setInterval(function () {
       beat++;
