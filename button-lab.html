@@ -8,7 +8,8 @@
   @font-face { font-family: 'BuloRounded'; src: url("BuloRounded-Regular.woff2") format('woff2'); font-weight: normal; font-display: swap; }
   @font-face { font-family: 'BuloRounded'; src: url("BuloRounded-Bold.woff2") format('woff2'); font-weight: bold; font-display: swap; }
   body { margin: 0; padding: 28px 24px 80px; background: #f9f6f2; color: #141414;
-    font-family: "BuloRounded", "Verdana", "Arial", sans-serif; -webkit-font-smoothing: antialiased; --radius-md: 6px; }
+    font-family: "BuloRounded", "Verdana", "Arial", sans-serif; -webkit-font-smoothing: antialiased; --radius-md: 6px;
+    --wavetrough: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 7 7'%3E%3Cpath d='M0 5C1.4 5 2.1 2 3.5 2C4.9 2 5.6 5 7 5' fill='none' stroke='white' stroke-width='1.5'/%3E%3C/svg%3E"); }
   @supports (corner-shape: squircle) { body { --radius-md: 12px; } }
   h1 { font-size: 22px; margin: 0 0 4px; }
   p.note { font-size: 13px; color: #8a857c; margin: 0 0 26px; max-width: 820px; }
@@ -252,6 +253,49 @@
   .duo.c-mix button:last-child:hover { background: #9ACFF8; }
   .duo.c-mix button:last-child .dl { color: #125289; }
   .duo.c-mix button:last-child .dm { color: #1971C2; }
+
+  /* batch seven: the lightblue two-up refined. The quiet six move into two
+     real columns (16px ink, text aligned to the panel padding), the mid rule
+     gives way to plain air, and the hover stops painting the whole row: the
+     ink darkens and a small marker - dot, bar, wave, nudge, pill - carries
+     the highlight instead. */
+  .b7 .duo { margin-bottom: 0; }
+  .b7 .fwbtn { display: flex; align-items: center; justify-content: space-between; width: 100%; height: 34px;
+    padding: 0 12px; border: none; cursor: pointer; border-radius: var(--radius-md); corner-shape: squircle;
+    font-family: inherit; font-size: 16px; font-weight: bold; color: #125289;
+    background: #A5D8FF; box-shadow: inset 0 0 0 1px #7AB8EC; transition: background-color 80ms ease-out; }
+  .b7 .fwbtn + .fwbtn { margin-top: 6px; }
+  .b7 .fwbtn:hover, .b7 .fwbtn:focus-visible { background: #9ACFF8; }
+  .b7 .fwbtn .m5 { font-size: 14px; font-weight: normal; color: #1971C2; }
+  .b7 .qgrid { display: grid; grid-template-columns: max-content max-content; justify-content: space-between;
+    column-gap: 8px; margin: 10px -6px 0; }
+  .b7 .mrule + .qgrid { margin-top: 0; }
+  .b7 .qgrid .r5 { display: block; width: auto; margin: 0; padding: 5px 6px; border-radius: 6px;
+    font-size: 16px; line-height: 20px; white-space: nowrap; transition: color 90ms ease-out; }
+  .b7 .qgrid .r5:hover, .b7 .qgrid .r5:focus-visible { background: none; color: #141414; }
+  .b7 .qw { position: relative; }
+  .b7.hv-wash .qgrid .r5:hover, .b7.hv-wash .qgrid .r5:focus-visible { background: #f4eee5; }
+  .b7.hv-dot .qgrid .r5 { position: relative; }
+  .b7.hv-dot .qgrid .r5::before { content: ""; position: absolute; left: -1px; top: 50%; width: 5px; height: 5px;
+    margin-top: -2.5px; border-radius: 50%; background: #66A80F; opacity: 0; transform: scale(.4);
+    transition: opacity 110ms ease-out, transform 110ms ease-out; }
+  .b7.hv-dot .qgrid .r5:hover::before, .b7.hv-dot .qgrid .r5:focus-visible::before { opacity: 1; transform: none; }
+  .b7.hv-bar .qgrid .r5 { position: relative; }
+  .b7.hv-bar .qgrid .r5::before { content: ""; position: absolute; left: 0; top: 50%; width: 3px; height: 14px;
+    margin-top: -7px; border-radius: 2px; background: #66A80F; transform: scaleY(0);
+    transition: transform 110ms ease-out; }
+  .b7.hv-bar .qgrid .r5:hover::before, .b7.hv-bar .qgrid .r5:focus-visible::before { transform: none; }
+  .b7.hv-wave .qw::after { content: ""; position: absolute; left: 0; right: 0; bottom: -4px; height: 7px;
+    background: #D9D2C4; opacity: 0; transition: opacity 110ms ease-out; pointer-events: none;
+    -webkit-mask: var(--wavetrough) left center / 7px 7px repeat-x;
+            mask: var(--wavetrough) left center / 7px 7px repeat-x; }
+  .b7.hv-wave .qgrid .r5:hover .qw::after, .b7.hv-wave .qgrid .r5:focus-visible .qw::after {
+    opacity: 1; animation: wavemarch .4s linear infinite; }
+  @keyframes wavemarch { to { -webkit-mask-position: 7px center; mask-position: 7px center; } }
+  .b7.hv-nudge .qw { display: inline-block; transition: transform 110ms ease-out; }
+  .b7.hv-nudge .qgrid .r5:hover .qw, .b7.hv-nudge .qgrid .r5:focus-visible .qw { transform: translateX(3px); }
+  .b7.hv-pill .qw { padding: 2px 7px; margin: 0 -7px; border-radius: 5px; transition: background-color 110ms ease-out; }
+  .b7.hv-pill .qgrid .r5:hover .qw, .b7.hv-pill .qgrid .r5:focus-visible .qw { background: #F4EEE5; }
 
   .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(80px); z-index: 99;
     background: #141414; color: #f9f6f2; padding: 9px 18px; border-radius: 8px; font-size: 14px; transition: transform .18s ease; }
@@ -698,6 +742,57 @@ options visible, counters as the leaderboard's signs, and the two primaries trea
       { content: "b6cream", cls: "a-centroid", tileCls: "b5 b6" },
       { content: "b6tr", cls: "a-centroid", tileCls: "b5 b6" },
       { content: "b6mix", cls: "a-centroid", tileCls: "b5 b6" }
+    ]
+  });
+
+  /* batch seven: two real columns for the quiet six (16px ink, hovers that
+     leave the row background alone), the mid rule made optional, and the
+     lightblue pair both as half tiles and as stacked full-width rows */
+  function b7content(opts) {
+    opts = opts || {};
+    return function (menu, td) {
+      var pair = [["Join table", "8 open"], ["Play solo", "Instant"]];
+      if (opts.fullwidth) {
+        pair.forEach(function (p) {
+          var b = el("button", "fwbtn", "<span>" + p[0] + "</span><span class='m5'>" + p[1] + "</span>");
+          b.addEventListener("click", function (e) { e.stopPropagation(); closeAll(); flash(td.game + " — " + p[0].toLowerCase()); });
+          menu.appendChild(b);
+        });
+      } else {
+        var d = el("div", "duo c-lb");
+        pair.forEach(function (p) {
+          var b = el("button", "", "<span class='dl'>" + p[0] + "</span><span class='dm'>" + p[1] + "</span>");
+          b.addEventListener("click", function (e) { e.stopPropagation(); closeAll(); flash(td.game + " — " + p[0].toLowerCase()); });
+          d.appendChild(b);
+        });
+        menu.appendChild(d);
+      }
+      if (opts.rule) menu.appendChild(el("div", "mrule"));
+      var g = el("div", "qgrid");
+      QUIET6.forEach(function (l) {
+        var b = el("button", "r5", "<span class='qw'>" + l + "</span>");
+        b.addEventListener("click", function (e) { e.stopPropagation(); closeAll(); flash(td.game + " — " + l.toLowerCase()); });
+        g.appendChild(b);
+      });
+      menu.appendChild(g);
+    };
+  }
+  CONTENT.b7 = b7content();
+  CONTENT.b7fw = b7content({ fullwidth: true });
+  CONTENT.b7rule = b7content({ rule: true });
+  SECTIONS.push({
+    t: "7 · Batch seven: columns, full width, quieter hovers",
+    d: "The lightblue two-up carries every tile. The quiet six move into two real columns - 16px ink on tight rows, the text aligned to the panel padding - and the mid rule is dropped for plain air (the last tile keeps it for comparison). The hover experiments stop painting the whole row: the ink darkens alone, a dot steps in at the left, a 3px bar rises, the frontpage's sand wave marches under the word, the label nudges right, or a small pill hugs just the words. The second tile stretches the lightblue pair to full-width stacked rows with the meta on the right.",
+    caps: ["Two columns, ink-only hover", "Full-width lightblue pair", "Hover: a dot steps in", "Hover: the 3px bar", "Hover: the sand wave marches", "Hover: the label nudges right", "Hover: a pill hugs the words", "The rule kept + wash hover (compare)"],
+    cfgs: [
+      { content: "b7", cls: "a-centroid", tileCls: "b5 b7 hv-ink" },
+      { content: "b7fw", cls: "a-centroid", tileCls: "b5 b7 hv-ink" },
+      { content: "b7", cls: "a-centroid", tileCls: "b5 b7 hv-dot" },
+      { content: "b7", cls: "a-centroid", tileCls: "b5 b7 hv-bar" },
+      { content: "b7", cls: "a-centroid", tileCls: "b5 b7 hv-wave" },
+      { content: "b7", cls: "a-centroid", tileCls: "b5 b7 hv-nudge" },
+      { content: "b7", cls: "a-centroid", tileCls: "b5 b7 hv-pill" },
+      { content: "b7rule", cls: "a-centroid", tileCls: "b5 b7 hv-wash" }
     ]
   });
 
