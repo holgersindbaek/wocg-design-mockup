@@ -751,7 +751,10 @@ options visible, counters as the leaderboard's signs, and the two primaries trea
 
   /* batch seven: the full-width lightblue pair as the default, the quiet six
      in two columns the exact width of the buttons, hovers that leave the row
-     background alone, the half-width pair and the old rule kept as compares */
+     background alone, the half-width pair and the old rule kept as compares.
+     Browse tables shortens to See tables (a Tables-only tile shows the
+     noun-only alternative). */
+  var QUIET7 = ["See tables", "Play ranked", "Host table", "Private table", "Options", "Rules"];
   function b7content(opts) {
     opts = opts || {};
     return function (menu, td) {
@@ -773,7 +776,7 @@ options visible, counters as the leaderboard's signs, and the two primaries trea
       }
       if (opts.rule) menu.appendChild(el("div", "mrule"));
       var g = el("div", "qgrid");
-      QUIET6.forEach(function (l) {
+      (opts.labels || QUIET7).forEach(function (l) {
         var b = el("button", "r5", "<span class='qw'>" + l + "</span>");
         b.addEventListener("click", function (e) { e.stopPropagation(); closeAll(); flash(td.game + " — " + l.toLowerCase()); });
         g.appendChild(b);
@@ -784,10 +787,11 @@ options visible, counters as the leaderboard's signs, and the two primaries trea
   CONTENT.b7 = b7content();
   CONTENT.b7duo = b7content({ duo: true });
   CONTENT.b7rule = b7content({ rule: true });
+  CONTENT.b7tables = b7content({ labels: ["Tables", "Play ranked", "Host table", "Private table", "Options", "Rules"] });
   SECTIONS.push({
     t: "7 · Batch seven: columns, full width, quieter hovers",
-    d: "The full-width lightblue pair is now the default up top. The quiet six fill the exact width of the buttons in two columns (content-aware tracks keep every label on one line), the air tightens - 6px under the pair, 8px between rows, 8px at the panel bottom - and the resting ink is the mockup's own muted grey with pure ink on hover. The row order follows the two-week click data: Browse 33.6%, Ranked 4.2%, Host 2.7%, Private 0.9%, Options 0.6%, Rules 0.4%, read left-to-right. Hover experiments stay row-wash-free: a dot steps in, a 3px bar rises, the sand wave marches, the label nudges, a pill hugs the words. The last two tiles keep the old rule + wash and the half-width pair for comparison.",
-    caps: ["The default: full width, ink hover", "Hover: a dot steps in", "Hover: the 3px bar", "Hover: the sand wave marches", "Hover: the label nudges right", "Hover: a pill hugs the words", "The rule kept + wash hover (compare)", "The half-width pair (compare)"],
+    d: "The full-width lightblue pair is now the default up top. The quiet six fill the exact width of the buttons in two columns (content-aware tracks keep every label on one line), the air tightens - 6px under the pair, 8px between rows, 8px at the panel bottom - and the resting ink is the mockup's own muted grey with pure ink on hover. Browse tables shortens to See tables, keeping a verb like its row-mates; the last tile tries the noun-only Tables. The row order follows the two-week click data: See tables (was Browse) 33.6%, Ranked 4.2%, Host 2.7%, Private 0.9%, Options 0.6%, Rules 0.4%, read left-to-right. Hover experiments stay row-wash-free: a dot steps in, a 3px bar rises, the sand wave marches, the label nudges, a pill hugs the words. Two tiles keep the old rule + wash and the half-width pair for comparison.",
+    caps: ["The default: full width, ink hover", "Hover: a dot steps in", "Hover: the 3px bar", "Hover: the sand wave marches", "Hover: the label nudges right", "Hover: a pill hugs the words", "The rule kept + wash hover (compare)", "The half-width pair (compare)", "Noun-only: just Tables"],
     cfgs: [
       { content: "b7", cls: "a-centroid", tileCls: "b5 b7 hv-ink" },
       { content: "b7", cls: "a-centroid", tileCls: "b5 b7 hv-dot" },
@@ -796,7 +800,8 @@ options visible, counters as the leaderboard's signs, and the two primaries trea
       { content: "b7", cls: "a-centroid", tileCls: "b5 b7 hv-nudge" },
       { content: "b7", cls: "a-centroid", tileCls: "b5 b7 hv-pill" },
       { content: "b7rule", cls: "a-centroid", tileCls: "b5 b7 hv-wash" },
-      { content: "b7duo", cls: "a-centroid", tileCls: "b5 b7 hv-ink" }
+      { content: "b7duo", cls: "a-centroid", tileCls: "b5 b7 hv-ink" },
+      { content: "b7tables", cls: "a-centroid", tileCls: "b5 b7 hv-ink" }
     ]
   });
 
