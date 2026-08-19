@@ -2683,6 +2683,12 @@
     ["onesent", "Holger: one sentence, adaptive greeting / your table is ready",
       "{onegreet:PiLady10}|your table is ready.",
       "You're [tt]no. 23 in Spades[/tt] on today's board.|[cl]Daily challenge[/cl] is ready. Eight wins to bronze."],
+    ["onedot", "Punctuation test: period after the name, two sentences",
+      "{onegreetdot:PiLady10}|Your table is ready.",
+      "You're [tt]no. 23 in Spades[/tt] on today's board.|[cl]Daily challenge[/cl] is ready. Eight wins to bronze."],
+    ["onebare", "Punctuation test: no marks at all, two headline lines",
+      "{onegreetbare:PiLady10}|Your table is ready",
+      "You're [tt]no. 23 in Spades[/tt] on today's board.|[cl]Daily challenge[/cl] is ready. Eight wins to bronze."],
     ["oneseat", "One sentence: your seat is saved",
       "{onegreet:PiLady10}|your seat is saved.",
       "You're [tt]no. 23 in Spades[/tt] on today's board.|[cl]Daily challenge[/cl] is ready. Eight wins to bronze."],
@@ -2997,14 +3003,16 @@
     /* one-sentence opener: "Good evening <name>," if it fits the 22-char line,
        else "Evening <name>,», else the generic "Good evening," with no name */
     function adaptGreet(nm) {
-      var full = greet + " " + nm + ",";
-      if (full.length <= 20) return full;
-      var brief = greets + " " + nm + ",";
-      if (brief.length <= 22) return brief;
-      return greet + ",";
+      var full = greet + " " + nm;
+      if (full.length <= 19) return full;
+      var brief = greets + " " + nm;
+      if (brief.length <= 21) return brief;
+      return greet;
     }
     function fill(t) {
-      return t.replace(/\{onegreet:([^}]+)\}/g, function (m, nm) { return adaptGreet(nm); })
+      return t.replace(/\{onegreet:([^}]+)\}/g, function (m, nm) { return adaptGreet(nm) + ","; })
+        .replace(/\{onegreetdot:([^}]+)\}/g, function (m, nm) { return adaptGreet(nm) + "."; })
+        .replace(/\{onegreetbare:([^}]+)\}/g, function (m, nm) { return adaptGreet(nm); })
         .replace("{greets}", greets).replace("{greet}", greet).replace("{paytime}", paytime);
     }
     return { title: fill(it[2]), sub: fill(it[3]) };
