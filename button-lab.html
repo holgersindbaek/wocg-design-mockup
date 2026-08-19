@@ -805,6 +805,25 @@ options visible, counters as the leaderboard's signs, and the two primaries trea
     ]
   });
 
+  /* batch eight: the wording round. Every tile runs the decided default
+     (full-width pair, button-width columns, ink hover); only the words
+     change, one coherent set per tile. */
+  var B8SETS = [
+    { key: "b8open", cap: "The single swap: Open tables", labels: ["Open tables", "Play ranked", "Host table", "Private table", "Options", "Rules"] },
+    { key: "b8nouns", cap: "Short nouns", labels: ["Open tables", "Ranked", "New table", "Private", "Options", "Rules"] },
+    { key: "b8verbs", cap: "All verbs", labels: ["See tables", "Play ranked", "Host a table", "Join private", "Options", "Rules"] },
+    { key: "b8friendly", cap: "Friendly and longer", labels: ["Find a table", "Play ranked", "Start a table", "Join private", "Settings", "How to play"] },
+    { key: "b8live", cap: "The live site's words", labels: ["Browse tables", "Ranked game", "Create table", "Private table", "Options", "Rules"] },
+    { key: "b8learn", cap: "Open tables + How to play", labels: ["Open tables", "Play ranked", "Host table", "Private table", "Options", "How to play"] }
+  ];
+  B8SETS.forEach(function (s) { CONTENT[s.key] = b7content({ labels: s.labels }); });
+  SECTIONS.push({
+    t: "8 · Batch eight: the wording round",
+    d: "Same panel, different words. Every tile runs the decided default and only the labels change. The single swap answers the length complaint: Open tables says what the row shows and echoes the 8-open sign on the Join button. Around it: a short-noun set, an all-verb set, a friendlier longer set with Settings and How to play, the live site's own words as the reference point, and the Open tables set with How to play in the learn slot. The frequency order from the click data holds in every set.",
+    caps: B8SETS.map(function (s) { return s.cap; }),
+    cfgs: B8SETS.map(function (s) { return { content: s.key, cls: "a-centroid", tileCls: "b5 b7 hv-ink" }; })
+  });
+
   var root = document.getElementById("secs");
   SECTIONS.forEach(function (sec) {
     var box = el("section", "vsec");
