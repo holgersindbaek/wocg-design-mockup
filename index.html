@@ -398,11 +398,12 @@
   .mnav li.dd::after { content: " ▾"; font-size: 12px; color: var(--muted); }
   .muser { list-style: none; display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
   .muser li { color: var(--muted); cursor: pointer; display: flex; align-items: center; position: relative; }
+  .muser li:nth-child(3) { margin-left: 6px; }
   .muser img.micon { width: 40px; height: 32px; display: block; }
   .muser img.avatar { width: 28px; height: 28px; margin-right: 5px; display: block;
-    /* site avatars bake their own rounded-square frame, so the header shows
-       the natural shape with the lobby's inner-edge ring instead of a crop */
-    filter: url(#avatarInnerEdge) var(--avshadow); }
+    /* site avatars bake their own rounded-square frame, so no crop; the header
+       keeps its pinned grey-lightness luminosity rim and no shadow */
+    filter: url(#avatarEdge-luminosity); }
   .muser .uname { font-size: 16px; font-weight: bold; color: var(--ink-soft); }
 
   /* ===== menu-bar experiments ===== */
@@ -2679,7 +2680,22 @@
   /* signed-in hero copy: her games already fill the mosaic, so the text leads
      with what changed since her last visit (board rank, challenge, friends) */
   var PCOPIES = [
-    ["fullup", "Holger: up 3 spots to no. 23 / today's challenge is ready, eight to bronze",
+    ["greettable", "Fixed 2-line title: Good evening. Your table is set. / name in the text",
+      "{greet}.|Your table is set.",
+      "PiLady10, you're [tt]no. 23 in Spades[/tt] on today's board.|[cl]Daily challenge[/cl] is ready. Eight wins to bronze."],
+    ["tableset", "Fixed 1-line title: Your table is set. / greeting and name in the text",
+      "Your table is set.",
+      "{greet}, PiLady10.|You're [tt]no. 23 in Spades[/tt] on today's board.|[cl]Daily challenge[/cl] is ready. Eight wins to bronze."],
+    ["cardswait", "Fixed 1-line title: The cards are waiting.",
+      "The cards are waiting.",
+      "{greet}, PiLady10.|You're [tt]no. 23 in Spades[/tt] on today's board.|[cl]Daily challenge[/cl] is ready. Eight wins to bronze."],
+    ["seatsaved", "Fixed 1-line title: Your seat is saved.",
+      "Your seat is saved.",
+      "{greet}, PiLady10.|You're [tt]no. 23 in Spades[/tt] on today's board.|[cl]Daily challenge[/cl] is ready. Eight wins to bronze."],
+    ["greetdot", "Title is only the greeting; the name starts the text",
+      "{greet}.",
+      "PiLady10, you're [tt]no. 23 in Spades[/tt] on today's board.|[cl]Daily challenge[/cl] is ready. Eight wins to bronze."],
+    ["fullup", "Old: up 3 spots to no. 23 / today's challenge is ready, eight to bronze",
       "{greet}, PiLady10",
       "You're up 3 spots to [tt]no. 23 in Spades[/tt].|[cl]Today's challenge[/cl] is ready. Eight wins to bronze."],
     ["fulldrum", "Four short beats: no. 23. Up 3 spots. Ready. Eight to bronze",
@@ -2791,12 +2807,12 @@
       "Welcome back, PiLady10",
       "Jump back into [tt]Spades[/tt], [ru]Hearts[/ru] &amp; [cl]Euchre[/cl] with|friends old and new. Your seat is waiting."]
   ];
-  var curPcopy = "fullboarddaily";
+  var curPcopy = "greettable";
   function piladyCopy() {
     var it = PCOPIES.filter(function (c) { return c[0] === curPcopy; })[0];
     var h = new Date().getHours();
     var greet = h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening";
-    return { title: it[2].replace("{greet}", greet), sub: it[3] };
+    return { title: it[2].replace("{greet}", greet), sub: it[3].replace("{greet}", greet) };
   }
   function piladyPlain() {
     return piladyCopy().sub.replace(/\[\/?[a-z]+\]/g, "").replace(/&amp;/g, "&");
@@ -3004,10 +3020,10 @@
     var ht = document.getElementById("herotitle"), hs = document.getElementById("herosub");
     if (scene) {
       if (curLayout === "scpyr") {
-        ht.innerHTML = curViewer === "pilady" ? piladyCopy().title : "Play card games in good company";
+        ht.innerHTML = curViewer === "pilady" ? piladyCopy().title.replace("|", " ") : "Play card games in good company";
         hs.innerHTML = curViewer === "pilady" ? piladyPlain().replace("|", " ") : "Classic card games. Join a table or play solo. Free to play, hard to stop.";
       } else {
-        ht.innerHTML = curViewer === "pilady" ? piladyCopy().title.replace(", ", ",<br>") : "Play card games<br>in good company";
+        ht.innerHTML = curViewer === "pilady" ? piladyCopy().title.replace(", ", ",<br>").replace("|", "<br>") : "Play card games<br>in good company";
         hs.innerHTML = curViewer === "pilady" ? piladyPlain().replace("|", "<br>") : "Classic card games. Join a table or play solo.<br>Free to play, hard to stop.";
       }
     } else if (typeof titlesel !== "undefined" && titlesel && titlesel.options && titlesel.options.length) {
@@ -3461,7 +3477,7 @@
   function applyCopy() {
     if (curLayout.indexOf("sc") === 0) { applyBody(); return; }
     var item = TITLE_ITEMS[+titlesel.value];
-    document.getElementById("herotitle").textContent = curViewer === "pilady" ? piladyCopy().title : item.t;
+    document.getElementById("herotitle").textContent = curViewer === "pilady" ? piladyCopy().title.replace("|", " ") : item.t;
     var si = +subsel.value;
     document.getElementById("herosub").textContent = curViewer === "pilady"
       ? piladyPlain().replace("|", " ")
