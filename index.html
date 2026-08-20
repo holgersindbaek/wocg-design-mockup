@@ -568,7 +568,7 @@
   .mclogo, .mcaplogo { border-bottom: none; }
   .mbcenter .mleft { display: flex; gap: 18px; flex: 1; }
   .mclink { font-size: 16px; font-weight: bold; color: var(--ink-soft); cursor: pointer; }
-  .mclink:hover { text-decoration: underline; }
+  .mclink:not(.mgames):hover { text-decoration: underline; }
   .mtri { width: 8px; height: 7px; vertical-align: 1px; margin-left: 5px;
     content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 7'%3E%3Cpath d='M1.2 1h5.6L4 6z' fill='%23262626' stroke='%23262626' stroke-width='2' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E"); }
   .mbcenter .mclogo { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
@@ -577,7 +577,7 @@
   /* live-parity menu hovers: links underline like the site (MenuBar.scss), and
      Games, the icons, and the avatar grow the site's own dropdowns
      (menu_bar.dust) rebuilt in this design's card chrome. */
-  .mbcenter .mclink:hover { text-decoration: underline; text-underline-offset: 3px; }
+  .mbcenter .mclink:not(.mgames):hover { text-decoration: underline; text-underline-offset: 3px; }
   .mbcenter .mgames { position: relative; }
   .mpanel { display: none; position: absolute; top: calc(100% + 16px); left: 0; z-index: 80; text-align: left;
     background: var(--surface, #fff); border-radius: 20px; corner-shape: squircle; padding: 12px;
@@ -593,7 +593,7 @@
   /* the bell and friends panels center on their icons; the account panel
      right-aligns with the username's end */
   .mbcenter .muser .mpanel.mndrop { left: 50%; right: auto; transform: translateX(-50%); }
-  .mghead { font-size: 16px; font-weight: bold; color: var(--muted); line-height: 32px; margin: 0 0 8px; position: relative; z-index: 1; }
+  .mghead { font-size: 16px; font-weight: bold; color: var(--ink); line-height: 32px; margin: 0 0 8px; position: relative; z-index: 1; }
   .mgdrop { padding-top: 0 !important; padding-bottom: 6px !important; }
   .mgdrop::after { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 32px;
     background: var(--canvas, #f9f6f2); border-bottom: 1px solid var(--edge, #d2cfca);
@@ -604,8 +604,18 @@
     width: 1px; background: var(--hairline, #e7e7e7); }
   .mgdrop .mgcol:nth-child(n+3)::after { content: ""; position: absolute; left: 0; top: 0; height: 32px;
     width: 1px; background: var(--edge, #d2cfca); }
-  .mgcol a { font-size: 16px; line-height: 24px; padding: 2px 0; font-weight: normal; color: var(--ink-soft); text-decoration: none; border-bottom: none; }
-  .mgcol a:hover { text-decoration: underline; }
+  .mgcol a { font-size: 16px; line-height: 24px; padding: 2px 0; font-weight: normal; color: var(--ink-soft);
+    text-decoration: none; border-bottom: none; align-self: flex-start; position: relative; }
+  .mgcol a::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 7px;
+    opacity: 0; pointer-events: none;
+    -webkit-mask: var(--wavetrough) left center / 7px 7px repeat-x;
+            mask: var(--wavetrough) left center / 7px 7px repeat-x; }
+  .mgcol a:hover { text-decoration: none; color: var(--ink); }
+  .mgcol a:hover::after { opacity: 1; }
+  .mgdrop .mgcol:nth-child(-n+2) a::after { background: var(--p3); }
+  .mgdrop .mgcol:nth-child(3) a::after { background: var(--p4); }
+  .mgdrop .mgcol:nth-child(4) a::after { background: var(--p1); }
+  .mgdrop .mgcol:nth-child(5) a::after { background: var(--p9); }
   .mpanel:has(.mphead) { padding-top: 0; padding-bottom: 14px; }
   .mphead { font-size: 16px; font-weight: bold; color: var(--ink); margin: 0 -12px 4px; padding: 0 12px;
     line-height: 32px; background: var(--canvas, #f9f6f2); border-bottom: 1px solid var(--edge, #d2cfca);
