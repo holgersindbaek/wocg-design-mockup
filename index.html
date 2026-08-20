@@ -1611,36 +1611,54 @@
   body.playbtn-felt .gplay:hover, body.playbtn-felt .gplay:focus-visible { filter: brightness(1.08); }
   body.playbtn-felt .gplay .gzarr { filter: brightness(0) invert(1) drop-shadow(1px 0 rgba(0,0,0,.4)) drop-shadow(-1px 0 rgba(0,0,0,.4))
     drop-shadow(0 1px rgba(0,0,0,.4)) drop-shadow(0 -1px rgba(0,0,0,.4)); }
-  /* the decided panel from the button lab: floating trigger-width card,
-     full-width lightblue pair with the meta on the right, the quiet six in
-     two columns the exact width of the buttons (content-aware tracks), no
-     divider, ink-only hover, and the click-data row order */
-  .gmenu { position: absolute; left: 12px; right: 12px; bottom: 52px; z-index: 20; display: none;
-    background: var(--surface, #fff); border-radius: 12px; corner-shape: squircle; padding: 12px 12px 8px;
-    box-shadow: 0 0 0 1px var(--edge, rgba(20,20,19,0.08)), 0 8px 24px rgba(20,20,19,0.18);
-    transform-origin: 85% 100%; }
-  .gmenu.isOpen { display: block; animation: gmenuIn 100ms ease-out; }
-  @keyframes gmenuIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: none; } }
-  .gmenu .gmBtn { display: flex; align-items: center; justify-content: space-between; width: 100%; height: 34px;
-    padding: 0 12px; border: none; cursor: pointer; border-radius: var(--radius-md); corner-shape: squircle;
-    font-family: inherit; font-size: 16px; font-weight: bold; color: #125289;
-    background: #A5D8FF; box-shadow: inset 0 0 0 1px #7AB8EC; transition: background-color 80ms ease-out; }
-  .gmenu .gmBtn + .gmBtn { margin-top: 6px; }
-  .gmenu .gmBtn:hover, .gmenu .gmBtn:focus-visible { background: #9ACFF8; }
-  .gmenu .gmBtn .gmMeta { font-size: 14px; font-weight: normal; color: #125289; opacity: .85; }
-  .gmenu .gmGrid { display: grid; grid-template-columns: minmax(max-content, 1fr) minmax(max-content, 1fr);
-    column-gap: 8px; margin-top: 6px; }
-  .gmenu .gmGrid button { display: block; width: 100%; margin: 0; padding: 4px 0; border: none; background: none;
-    border-radius: 6px; cursor: pointer; font-family: inherit; text-align: left;
-    font-size: 16px; line-height: 20px; white-space: nowrap; font-weight: bold; color: var(--ink); }
-  .gmenu .gmGrid button:hover, .gmenu .gmGrid button:focus-visible {
-    text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; }
+  /* the crowned receipt from the button lab: the panel docks flush on the
+     Play button and feeds out of it, critically damped - a cushioned rise,
+     no overshoot, and a plain accelerating pull back in. One matrix: the
+     pair as green top cells over the page-cream six, hairline walls, the
+     top region's frame in the pair's own ring. The only shadow is the soft
+     upward lift; the 1px outline is the paper's frame. */
+  .gmenu { position: absolute; left: 12px; right: 12px; bottom: 43px; z-index: 20; display: none;
+    padding: 1px; overflow: hidden; transform-origin: 50% 100%; --paper-h: 137px;
+    background: linear-gradient(#4F800B 0 50px, #D8D2C7 50px);
+    border-radius: var(--radius-md) var(--radius-md) 0 0; corner-shape: squircle;
+    box-shadow: 0 -3px 8px rgba(60,45,25,.07); }
+  .gmenu.isOpen { display: block; animation: gmenuFeed 420ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+  @keyframes gmenuFeed { from { max-height: 0; } to { max-height: var(--paper-h); } }
+  .gmenu.isClosing { display: block; animation: gmenuBack 240ms cubic-bezier(0.5, 0, 0.8, 0.4) both; }
+  @keyframes gmenuBack { from { max-height: var(--paper-h); } to { max-height: 0; } }
+  .gmenu .gmGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: #D8D2C7; }
+  .gmenu .gmGrid button { display: flex; align-items: center; justify-content: center; height: 28px; margin: 0;
+    padding: 0 8px; border: none; border-radius: 0; cursor: pointer; font-family: inherit;
+    font-size: 14px; font-weight: bold; line-height: 1; white-space: nowrap;
+    color: var(--ink-soft, #262626); background: var(--canvas, #F9F6F2);
+    transition: background-color 80ms ease-out; }
+  .gmenu .gmGrid button:hover, .gmenu .gmGrid button:focus-visible { background: var(--band, #F4EEE5); }
+  .gmenu .gmGrid button:active { box-shadow: inset 0 1px 2px rgba(60,45,25,.06); }
+  .gmenu .gmGrid .gmTop { height: 48px; flex-direction: column; gap: 1px; background: #66A80F; color: #fff;
+    box-shadow: 0 0 0 1px #4F800B;
+    text-shadow: -1px -1px 0 #4F800B, 1px -1px 0 #4F800B, -1px 1px 0 #4F800B, 1px 1px 0 #4F800B; }
+  .gmenu .gmGrid .gmTop:hover, .gmenu .gmGrid .gmTop:focus-visible { background: #5D960D; }
+  .gmenu .gmGrid .gmTop:active { box-shadow: 0 0 0 1px #4F800B; }
+  .gmenu .gmGrid .gmTop:first-child { border-top-left-radius: calc(var(--radius-md) - 1px); corner-shape: squircle; }
+  .gmenu .gmGrid .gmTop:nth-child(2) { border-top-right-radius: calc(var(--radius-md) - 1px); corner-shape: squircle; }
+  .gmenu .gmGrid .gmTop .dl { font-size: 18px; font-weight: bold; line-height: 20px; }
+  .gmenu .gmGrid .gmTop .dm { font-size: 12px; font-weight: bold; line-height: 15px; }
+  /* the printer mouth: the Play button squares its top corners while open
+     and waits for the paper before rounding back; no squash while open */
+  .gbtns .gplay { position: relative; z-index: 21;
+    transition: background-color 24ms ease-out, transform 80ms ease-out, filter 80ms ease-out,
+      border-radius 120ms ease-out 230ms; }
+  .gbtns .gplay[aria-expanded="true"] { border-top-left-radius: 0; border-top-right-radius: 0;
+    transition: background-color 24ms ease-out, transform 80ms ease-out, filter 80ms ease-out,
+      border-radius 120ms ease-out 0ms; }
+  .gbtns .gplay[aria-expanded="true"]:active { transform: none; }
   /* the tile's own triangle turns from its glyph centroid while the panel
      is open (the lab's chosen arrow move) */
   .gplay .gzarr { transition: transform 150ms cubic-bezier(0, 0, 0.38, 0.9); transform-origin: 50% 36%; }
   .gplay[aria-expanded="true"] .gzarr { transform: rotate(180deg); }
   @media (prefers-reduced-motion: reduce) {
-    .gmenu.isOpen { animation: none; }
+    .gmenu.isOpen { animation: none; max-height: var(--paper-h); }
+    .gmenu.isClosing { display: none; animation: none; }
     .gplay .gzarr { transition: none; }
   }
 
@@ -4174,15 +4192,18 @@
         menu.addEventListener("click", function (e) { e.stopPropagation(); });
         var chipB = tile.querySelector(".gchip b");
         var tablesOpen = chipB ? Math.max(1, Math.round(parseInt(chipB.textContent, 10) / 8)) : 2;
+        var grid = document.createElement("div");
+        grid.className = "gmGrid";
         [["Join table", tablesOpen + " open", " \u2014 joining a table with people"],
          ["Play solo", "Instant", " \u2014 solo table, bots fill the seats"]].forEach(function (rowDef) {
           var item = document.createElement("button");
           item.type = "button";
-          item.className = "gmBtn";
+          item.className = "gmTop";
           var lab = document.createElement("span");
+          lab.className = "dl";
           lab.textContent = rowDef[0];
           var meta = document.createElement("span");
-          meta.className = "gmMeta";
+          meta.className = "dm";
           meta.textContent = rowDef[1];
           item.appendChild(lab);
           item.appendChild(meta);
@@ -4191,10 +4212,8 @@
             closeMenus();
             flash(game + rowDef[2]);
           });
-          menu.appendChild(item);
+          grid.appendChild(item);
         });
-        var grid = document.createElement("div");
-        grid.className = "gmGrid";
         ["Open tables", "Play ranked", "Host table", "Join private", "Options", "Rules"].forEach(function (label) {
           var item = document.createElement("button");
           item.type = "button";
@@ -4215,14 +4234,28 @@
           var wasOpen = menu.classList.contains("isOpen");
           closeMenus();
           if (!wasOpen) {
+            menu.classList.remove("isClosing");
             menu.classList.add("isOpen");
+            /* the paper's true height drives the feed; measured so any tile
+               width or future row count stays exact */
+            menu.style.setProperty("--paper-h", (grid.offsetHeight + 2) + "px");
             play.setAttribute("aria-expanded", "true");
           }
         });
       }
     });
+    var reduceMotion = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
     function closeMenus() {
-      document.querySelectorAll(".gmenu.isOpen").forEach(function (m) { m.classList.remove("isOpen"); });
+      document.querySelectorAll(".gmenu.isOpen").forEach(function (m) {
+        m.classList.remove("isOpen");
+        if (!reduceMotion) {
+          m.classList.add("isClosing");
+          m.addEventListener("animationend", function done() {
+            m.classList.remove("isClosing");
+            m.removeEventListener("animationend", done);
+          });
+        }
+      });
       document.querySelectorAll(".gplay[aria-expanded='true']").forEach(function (b) { b.setAttribute("aria-expanded", "false"); });
     }
     document.addEventListener("click", closeMenus);
