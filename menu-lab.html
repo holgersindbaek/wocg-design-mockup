@@ -3,229 +3,156 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Menu-bar lab</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Vollkorn:wght@400..900&display=swap" rel="stylesheet">
+<title>Menu panel lab</title>
 <style>
-  @font-face {
-    font-family: 'BuloRounded';
-    src: url("BuloRounded-Regular.woff2") format('woff2');
-    font-style: normal; font-weight: normal; font-display: swap;
-  }
-  @font-face {
-    font-family: 'BuloRounded';
-    src: url("BuloRounded-Bold.woff2") format('woff2');
-    font-style: normal; font-weight: bold; font-display: swap;
-  }
-  :root { --btnshadow: 0 0 1px rgba(0,0,0,0.4), 0 1px 1px rgba(0,0,0,0.04), 0 2px 4px rgba(0,0,0,0.04); }
-  body { margin: 0; padding: 28px 24px 80px; background: #efe9de; color: #2b2722;
-    font-family: "BuloRounded", "Verdana", "Arial", sans-serif; -webkit-font-smoothing: antialiased; }
+  @font-face { font-family: 'BuloRounded'; src: url("BuloRounded-Regular.woff2") format('woff2'); font-weight: normal; font-display: swap; }
+  @font-face { font-family: 'BuloRounded'; src: url("BuloRounded-Bold.woff2") format('woff2'); font-weight: bold; font-display: swap; }
+  body { margin: 0; padding: 28px 24px 80px; background: #f9f6f2; color: #141414;
+    font-family: "BuloRounded", "Verdana", "Arial", sans-serif; -webkit-font-smoothing: antialiased;
+    --canvas: #f9f6f2; --band: #f4eee5; --surface: #fff; --ink: #141414; --ink-soft: #262626;
+    --muted: #4e4d4c; --hairline: #e7e7e7; --edge: #d2cfca; --p1: #f4c360; --p3: #4d64ff; --p4: #00a82d;
+    --liftshadow: 0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09); }
   h1 { font-size: 22px; margin: 0 0 4px; }
-  p.note { font-size: 13px; color: #8a857c; margin: 0 0 26px; max-width: 720px; }
-  .vsec { margin: 0 0 40px; }
-  .vsec h2 { font-size: 15.5px; margin: 0 0 3px; }
-  .vsec .desc { font-size: 12.5px; color: #999488; margin: 0 0 12px; max-width: 660px; }
+  p.note { font-size: 13px; color: #8a857c; margin: 0 0 26px; max-width: 860px; }
+  .mvar { margin: 0 0 64px; }
+  .mvar .tag { font-size: 12px; color: #999488; margin: 0 0 10px; }
 
-  /* framed page slice with the real hero */
-  .frame { width: 900px; height: 305px; background: #f9f6f2; border-radius: 12px; overflow: hidden;
-    box-shadow: 0 2px 6px rgba(60,45,25,.10), 0 10px 24px rgba(60,45,25,.08); position: relative; }
-  .hero { text-align: center; padding: 40px 20px 0; }
-  .hero h3 { font-family: "Vollkorn", serif; font-weight: 500; font-size: 40px; letter-spacing: -0.01em;
-    line-height: 1.15; margin: 0 0 6px; color: #141414; }
-  .hero p { font-size: 18px; color: #4e4d4c; margin: 0; }
-  .stats { display: flex; align-items: center; justify-content: center; margin-top: 30px; font-size: 14px; color: #4e4d4c; }
-  .capsule { display: inline-flex; align-items: center; height: 32px; font-size: 14px; background: #ffffff;
-    border-radius: 20px; box-shadow: var(--btnshadow); padding: 0 4px; }
-  .capsule .st { display: inline-flex; align-items: center; padding: 0 11px; gap: 4px; align-self: stretch; }
-  .capsule .st + .st { border-left: 1px solid #e7e7e7; }
-  .capsule .stlive { padding: 0 9px; gap: 6px; }
-  .capsule .greencap { font-size: 14px; font-weight: bold; letter-spacing: .06em; color: #2f9e44; }
-  .capsule b { color: #141414; font-weight: bold; }
-  .ldot { width: 8px; height: 8px; border-radius: 50%; background: #2f9e44; display: inline-block; }
+  /* the menu bar, as on the mockup */
+  .bar { position: relative; height: 56px; display: flex; align-items: center; gap: 18px;
+    padding: 0 24px; background: #F4EEE5; max-width: 1112px; }
+  .bar::after { content: ""; position: absolute; left: 0; right: 0; bottom: -8px; height: 8px;
+    background-color: #D9D2C4; pointer-events: none;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 8'%3E%3Cpath d='M0 4C2.5 1 7.5 1 10 4C12.5 7 17.5 7 20 4' fill='none' stroke='white' stroke-width='2'/%3E%3C/svg%3E") left center / 20px 8px repeat-x;
+            mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 8'%3E%3Cpath d='M0 4C2.5 1 7.5 1 10 4C12.5 7 17.5 7 20 4' fill='none' stroke='white' stroke-width='2'/%3E%3C/svg%3E") left center / 20px 8px repeat-x; }
+  .mclink { font-size: 16px; font-weight: bold; color: var(--ink-soft); cursor: pointer; }
+  .mtri { width: 11px; height: 11px; vertical-align: -1px; margin-left: 4px; }
+  .bar .muser { margin-left: auto; display: flex; gap: 12px; align-items: center; font-size: 16px;
+    font-weight: bold; color: var(--ink-soft); }
 
-  /* shared atoms */
-  .mrow { display: flex; align-items: center; }
-  .navlink { color: #262626; cursor: pointer; font-size: 16px; }
-  .navlink:hover { text-decoration: underline; }
-  .navlink.dd::after { content: ""; display: inline-block; width: 11px; height: 11px;
-    margin-left: 4px; vertical-align: -1px; background: url("arrowDownBig.png") center / contain no-repeat; }
-  .icons { display: flex; align-items: center; gap: 0; flex-shrink: 0; }
-  .icons .avawrap { margin-left: 5px; }
-  .icons img.mi { width: 40px; height: 32px; display: block; cursor: pointer; }
-  .icons .avawrap { display: flex; align-items: center; cursor: pointer; }
-  .icons img.av { width: 28px; height: 28px; margin-right: 6px; display: block;
-    filter: drop-shadow(1px 0 #252525) drop-shadow(-1px 0 #252525) drop-shadow(0 1px #252525) drop-shadow(0 -1px #252525); }
-  .icons .un { font-size: 16px; font-weight: bold; color: #262626; }
+  /* the panel, hanging open under Games */
+  .wrap { position: relative; max-width: 1112px; }
+  .panel { position: absolute; top: 16px; left: 24px; text-align: left;
+    background: var(--surface); border-radius: 20px; corner-shape: squircle; padding: 12px;
+    box-shadow: 0 0 0 1px var(--edge), var(--liftshadow); display: flex; gap: 16px; }
+  .panel::after { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 32px;
+    background: var(--canvas); border-bottom: 1px solid var(--edge);
+    border-radius: 20px 20px 0 0; corner-shape: squircle; pointer-events: none; }
+  .panel { padding-top: 0; padding-bottom: 6px; }
+  .col { display: flex; flex-direction: column; white-space: nowrap; position: relative; z-index: 1; }
+  .colhead { font-size: 16px; font-weight: bold; color: var(--muted); line-height: 32px; margin: 0 0 8px; }
+  .col a { font-size: 16px; line-height: 24px; padding: 2px 0; font-weight: normal; color: var(--ink-soft);
+    text-decoration: none; }
+  .col a:hover { text-decoration: underline; }
+  .spacer { height: 340px; }
 
-  /* 1 current */
-  .m-current { height: 32px; background: #ffffff; border-bottom: 1px solid #e7e7e7; padding: 0 16px; gap: 12px;
-    font-size: 16px; line-height: 32px; }
-  .m-current .logo img { width: 170px; height: 32px; display: block; }
-  .m-current ul { display: flex; list-style: none; gap: 14px; flex: 1; margin: 0; padding: 0; }
+  /* ===== variant coats ===== */
+  /* 2 · vertical rules between the category groups (not between the two
+     trick-taking columns, which read as one group) */
+  .v-colrules .col.grp { border-left: 1px solid var(--hairline); padding-left: 16px; margin-left: -16px; }
+  .v-colrules .col.grp { margin-left: 0; }
+  .v-colrules .panel { gap: 16px; }
 
-  /* 2 centered mark */
-  .m-center { position: relative; height: 56px; padding: 0 18px; background: transparent; }
-  .m-center .left { display: flex; gap: 18px; flex: 1; }
-  .m-center .left .navlink { font-weight: bold; }
-  .m-center .logo { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
-  .m-center .logo img { width: 224px; display: block; }
-  .m-center .right { flex-shrink: 0; margin-left: auto; }
-  .fr-center .hero { padding-top: 26px; }
+  /* 3 · a hairline under every row, full column width */
+  .v-rowlines .col a { border-bottom: 1px solid var(--hairline); padding: 3px 0; }
+  .v-rowlines .col a:last-child { border-bottom: none; }
 
-  /* 3 capsule menu: the whole bar inside one outlined squircle, no fill */
-  .m-capsule { position: absolute; left: 50%; top: 12px; transform: translateX(-50%); z-index: 5;
-    display: flex; align-items: center; gap: 16px; height: 48px; padding: 0 14px 0 18px;
-    background: transparent; border: 1px solid rgba(43,39,34,.16);
-    border-radius: 16px; corner-shape: squircle; box-sizing: border-box; }
-  .m-capsule .logo img { width: 170px; height: 32px; display: block; }
-  .m-capsule .spacer { flex: 1; }
-  .m-capsule.wide { width: 660px; }
-  .m-capsule.tight { padding-left: 10px; gap: 10px; }
-  .m-capsule.hug { gap: 26px; }
-  .m-capsule.hug .spacer { display: none; }
-  .m-capsule.threads { width: 620px; }
-  .thread { position: absolute; top: 36px; height: 1px; background: rgba(43,39,34,.14); z-index: 4; }
-  .thread.tl { left: 0; width: calc(50% - 322px); }
-  .thread.tr { right: 0; width: calc(50% - 322px); }
-  .thread.w660 { width: calc(50% - 342px); }
-  .fr-capsule .hero { padding-top: 78px; }
-  /* crest variants: big centered logo breaking the outline */
-  .m-capsule.crest { width: 660px; }
-  .m-capsule.crest .lpad { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
-  .m-capsule.crest .lpad img { width: 42px; display: block; }
-  .m-capsule .logo img.cards { width: 36px; height: 36px; }
-  .gbold { font-weight: bold; }
-  .tri { width: 11px; height: 11px; display: inline-block; vertical-align: -1px; margin-left: 4px; }
-  .m-capsule.ever { background: #F4EEE5; border-color: #E7E7E7; }
-  .frame.fr-ever { background: #FAF6F3; }
-  .fr-crest .hero { padding-top: 84px; }
-  .m-capsule.crest.threads { width: 620px; }
-  .fr-ever .thread { background: #E7E7E7; }
-  .m-capsule .bigmark { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
-    background: linear-gradient(90deg, rgba(249,246,242,0), #f9f6f2 26%, #f9f6f2 74%, rgba(249,246,242,0));
-    padding: 5px 28px; }
-  .m-capsule .bigmark img { width: 66px; display: block; }
-  .m-capsule.crest .lpad img.lg { width: 52px; }
-  .fr-big .hero { padding-top: 94px; }
-  /* centered mark on the Evernote band */
-  .m-center.everbar { background: #F4EEE5; border-bottom: 1px solid #E7E7E7; }
+  /* 4 · zebra rows */
+  .v-zebra .col a { padding: 3px 8px; margin: 0 -8px; border-radius: 6px; }
+  .v-zebra .col a:nth-child(odd) { background: #F8F5F0; }
+
+  /* 5 · every category its own card on a canvas panel */
+  .v-cards .panel { background: var(--canvas); padding: 12px; gap: 12px; }
+  .v-cards .panel::after { display: none; }
+  .v-cards .col { background: var(--surface); border-radius: 12px; corner-shape: squircle; padding: 0 12px 8px;
+    box-shadow: inset 0 0 0 1px var(--edge); }
+  .v-cards .colhead { border-bottom: 1px solid var(--edge); margin: 0 -12px 8px; padding: 0 12px;
+    background: var(--canvas); border-radius: 12px 12px 0 0; corner-shape: squircle; }
+
+  /* 6 · headers wear their category's tile color as a pip */
+  .v-pips .colhead::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+    margin-right: 7px; vertical-align: 1px; background: var(--muted); }
+  .v-pips .colhead.ghost::before { display: none; }
+  .v-pips .col.c-tt .colhead::before { background: var(--p3); }
+  .v-pips .col.c-ru .colhead::before { background: var(--p4); }
+  .v-pips .col.c-cl .colhead::before { background: var(--p1); }
+  .v-pips .col.c-more .colhead::before { background: #d1548f; }
+
+  /* 7 · no band: colored underlined headers carry the structure */
+  .v-nobands .panel { padding-top: 12px; }
+  .v-nobands .panel::after { display: none; }
+  .v-nobands .colhead { line-height: 24px; margin: 0 0 8px; padding-bottom: 6px; color: var(--ink);
+    border-bottom: 2px solid var(--edge); }
+  .v-nobands .col.c-tt .colhead { border-color: var(--p3); }
+  .v-nobands .col.c-ru .colhead { border-color: var(--p4); }
+  .v-nobands .col.c-cl .colhead { border-color: var(--p1); }
+
+  /* 8 · sitemap rows: category left, games flowing right */
+  .v-rows .panel { flex-direction: column; gap: 0; padding: 12px 16px; }
+  .v-rows .panel::after { display: none; }
+  .v-rows .row { display: flex; align-items: baseline; gap: 16px; padding: 8px 0; }
+  .v-rows .row + .row { border-top: 1px solid var(--hairline); }
+  .v-rows .rowhead { flex: none; width: 120px; font-size: 16px; font-weight: bold; color: var(--muted); }
+  .v-rows .row a { font-size: 16px; line-height: 24px; color: var(--ink-soft); text-decoration: none; white-space: nowrap; }
+  .v-rows .row a:hover { text-decoration: underline; }
+  .v-rows .row .games { display: flex; flex-wrap: wrap; gap: 2px 18px; }
 </style>
 </head>
 <body>
+<h1>Menu panel lab</h1>
+<p class="note">The top menu with the games panel hanging open, taken through organization coats: the current
+default, vertical rules between groups, row hairlines, zebra rows, category cards, tile-color pips, colored
+header underlines without the band, and the sitemap-row layout. The icon-centered and username-aligned
+right panels live in the mockup itself.</p>
 
-<h1>Menu-bar lab</h1>
-<p class="note">Three candidates on the real hero: Vollkorn headline, the live stats capsule, and today's account cluster.
-The capsule menu is the Wispr Flow idea done properly this time: the entire menu, enclosed by a line.</p>
-
-<div id="sections"></div>
+<div id="vars"></div>
 
 <script>
-  function el(tag, cls, html) {
-    var e = document.createElement(tag);
-    if (cls) e.className = cls;
-    if (html !== undefined) e.innerHTML = html;
-    return e;
-  }
-  var HERO = '<div class="hero"><h3>Play cards in good company.</h3>' +
-    '<p>Classic card games. Join a table or play solo. Free to play, hard to stop.</p>' +
-    '<div class="stats"><span class="capsule">' +
-    '<span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>' +
-    '<span class="st"><b>1214</b> players online</span>' +
-    '<span class="st"><b>143</b> tables live</span>' +
-    '<span class="st"><b>87</b> seats open</span>' +
-    '</span></div></div>';
-  var ICONS = '<div class="icons"><img class="mi" src="menuActivity.svg" alt="Activity">' +
-    '<img class="mi" src="menuFriends.svg" alt="Friends">' +
-    '<span class="avawrap"><img class="av" src="AnimalFox.svg" alt=""><span class="un">Guest #12</span></span></div>';
-
-  var V = [
-    { t: "1 · Today's bar (default)", d: "The current 32px white strip with the hairline below. The reference everything else is judged against.",
-      html: '<div class="mrow m-current"><a class="logo"><img src="wocg-logo.png" alt=""></a>' +
-        '<ul><li class="navlink">Hearts</li><li class="navlink">Spades</li><li class="navlink">Euchre</li><li class="navlink">Gin Rummy</li><li class="navlink dd">All games</li></ul>' +
-        ICONS + '</div>' + HERO },
-    { t: "2 · Centered mark", d: "The logo big and centered on the page's own cream, no background, no line. Games ▾, Rules and Leaderboards left; today's cluster right.",
-      frame: "fr-center",
-      html: '<div class="mrow m-center"><div class="left"><span class="navlink dd">Games</span><span class="navlink">Rules</span><span class="navlink">Leaderboards</span></div>' +
-        '<a class="logo"><img src="wocg-logo.png" alt=""></a>' +
-        '<div class="right">' + ICONS + '</div></div>' + HERO },
-    { t: "2b · Centered mark, Evernote band", d: "The same centered mark, but the bar wears Evernote's section clothes: their bg-secondary fill (#F4EEE5) with the stroke-cards hairline (#E7E7E7) below.",
-      frame: "fr-center fr-ever",
-      html: '<div class="mrow m-center everbar"><div class="left"><span class="navlink dd">Games</span><span class="navlink">Rules</span><span class="navlink">Leaderboards</span></div>' +
-        '<a class="logo"><img src="wocg-logo.png" alt=""></a>' +
-        '<div class="right">' + ICONS + '</div></div>' + HERO },
-    { t: "3a · Outlined squircle, roomy", d: "The Wispr container: a rounded-corner square outline, no fill, floating at a fixed 660px — logo left, Games ▾ beside it, the normal cluster right.",
-      frame: "fr-capsule",
-      html: '<div class="m-capsule wide"><a class="logo"><img src="wocg-logo.png" alt=""></a>' +
-        '<span class="navlink dd">Games</span>' +
-        '<span class="spacer"></span>' + ICONS + '</div>' + HERO },
-    { t: "3b · Outlined squircle, hugging", d: "The same line, but the box shrinks to its contents and centers itself. The menu becomes a small object instead of a region.",
-      frame: "fr-capsule",
-      html: '<div class="m-capsule hug"><a class="logo"><img src="wocg-logo.png" alt=""></a>' +
-        '<span class="navlink dd">Games</span>' + ICONS + '</div>' + HERO },
-    { t: "3c · Outlined with side threads", d: "The Wispr detail: hairlines run from the capsule sides to the page edges. Just the logo and a bold Games on the left.",
-      frame: "fr-capsule",
-      html: '<div class="thread tl"></div><div class="thread tr"></div>' +
-        '<div class="m-capsule threads"><a class="logo"><img src="wocg-logo.png" alt=""></a>' +
-        '<span class="navlink gbold">Games<img class="tri" src="arrowDownBig.png" alt=""></span>' +
-        '<span class="spacer"></span>' + ICONS + '</div>' + HERO },
-    { t: "3d · Squircle with centered crest", d: "The roomy outline with the logo centered and larger, fitting inside the line. Games sits left, bold, with the site's real menu triangle tight beside it.",
-      frame: "fr-crest",
-      html: '<div class="thread tl w660"></div><div class="thread tr w660"></div>' +
-        '<div class="m-capsule crest"><span class="navlink gbold">Games<img class="tri" src="arrowDownBig.png" alt=""></span>' +
-        '<span class="lpad"><img src="logoIcon.png" alt=""></span>' +
-        '<span class="spacer"></span>' + ICONS + '</div>' + HERO },
-    { t: "3e · The crest on Evernote card", d: "The centered logo on Evernote's card recipe: page #FAF6F3, container fill #F4EEE5, stroke #E7E7E7.",
-      frame: "fr-crest fr-ever",
-      html: '<div class="m-capsule crest ever"><span class="navlink gbold">Games<img class="tri" src="arrowDownBig.png" alt=""></span>' +
-        '<span class="lpad"><img src="logoIcon.png" alt=""></span>' +
-        '<span class="spacer"></span>' + ICONS + '</div>' + HERO },
-    { t: "3f · Threads on Evernote card", d: "The Evernote thread card, logo left and tucked toward the edge with Games right beside it.",
-      frame: "fr-capsule fr-ever",
-      html: '<div class="thread tl"></div><div class="thread tr"></div>' +
-        '<div class="m-capsule threads ever tight"><a class="logo"><img class="cards" src="logoIcon.png" alt=""></a>' +
-        '<span class="navlink gbold">Games<img class="tri" src="arrowDownBig.png" alt=""></span>' +
-        '<span class="spacer"></span>' + ICONS + '</div>' + HERO },
-    { t: "3g · Threads, centered logo", d: "The same corrected threads card, but with the larger logo centered: Games bold on the left, the cluster right, the wordmark holding the middle.",
-      frame: "fr-crest fr-ever",
-      html: '<div class="thread tl"></div><div class="thread tr"></div>' +
-        '<div class="m-capsule crest threads ever"><span class="navlink gbold">Games<img class="tri" src="arrowDownBig.png" alt=""></span>' +
-        '<span class="lpad"><img src="logoIcon.png" alt=""></span>' +
-        '<span class="spacer"></span>' + ICONS + '</div>' + HERO },
-    { t: "3d+ · Crest, mark a little bigger", d: "3d with the cards mark at 52px: it quietly crosses the outline by a couple of pixels instead of sitting inside it.",
-      frame: "fr-crest",
-      html: '<div class="thread tl w660"></div><div class="thread tr w660"></div>' +
-        '<div class="m-capsule crest"><span class="navlink gbold">Games<img class="tri" src="arrowDownBig.png" alt=""></span>' +
-        '<span class="lpad"><img class="lg" src="logoIcon.png" alt=""></span>' +
-        '<span class="spacer"></span>' + ICONS + '</div>' + HERO },
-    { t: "3dL · Outline card, logo left", d: "3d turned left-handed: the cards mark sits tight against the capsule edge with Games beside it, plain outline and threads, no fill.",
-      frame: "fr-capsule",
-      html: '<div class="thread tl"></div><div class="thread tr"></div>' +
-        '<div class="m-capsule threads tight"><a class="logo"><img class="cards" src="logoIcon.png" alt=""></a>' +
-        '<span class="navlink gbold">Games<img class="tri" src="arrowDownBig.png" alt=""></span>' +
-        '<span class="spacer"></span>' + ICONS + '</div>' + HERO },
-    { t: "3g+ · Threads, mark a little bigger", d: "3g with the same 52px mark on the Evernote card, just barely proud of the line.",
-      frame: "fr-crest fr-ever",
-      html: '<div class="thread tl"></div><div class="thread tr"></div>' +
-        '<div class="m-capsule crest threads ever"><span class="navlink gbold">Games<img class="tri" src="arrowDownBig.png" alt=""></span>' +
-        '<span class="lpad"><img class="lg" src="logoIcon.png" alt=""></span>' +
-        '<span class="spacer"></span>' + ICONS + '</div>' + HERO },
-    { t: "3h · Big mark, breaking the line", d: "The answer to making the centered mark bigger: let the cards badge grow past the outline. The outline now fades out as it approaches the badge instead of stopping dead.",
-      frame: "fr-big",
-      html: '<div class="thread tl w660"></div><div class="thread tr w660"></div>' +
-        '<div class="m-capsule crest"><span class="navlink gbold">Games<img class="tri" src="arrowDownBig.png" alt=""></span>' +
-        '<span class="bigmark"><img src="logoIcon.png" alt=""></span>' +
-        '<span class="spacer"></span>' + ICONS + '</div>' + HERO }
+  var GROUPS = [
+    { key: "c-tt", head: "Trick-taking", games: ["Hearts", "Spades", "Euchre", "Pinochle", "Double Deck Pinochle", "Bridge", "Whist", "Sheepshead", "Twenty-Nine", "Sergeant Major"], split: 5 },
+    { key: "c-ru", head: "Rummy", games: ["Canasta", "Gin Rummy", "Hand & Foot", "Rummy"] },
+    { key: "c-cl", head: "Classics", games: ["Cribbage", "Crazy Eights", "Go Fish", "Old Maid"] },
+    { key: "c-more", head: "Solitaire & more", games: ["Solitaire", "FreeCell", "Spider Solitaire", "2048 Game"] }
   ];
-
-  var root = document.getElementById("sections");
-  V.forEach(function (v) {
-    var sec = el("section", "vsec");
-    sec.appendChild(el("h2", "", v.t));
-    sec.appendChild(el("p", "desc", v.d));
-    var fr = el("div", "frame " + (v.frame || ""));
-    fr.innerHTML = v.html;
-    sec.appendChild(fr);
+  var VARIANTS = [
+    ["v-base", "1 · The current default: canvas band, no lines"],
+    ["v-colrules", "2 · Vertical rules between the category groups"],
+    ["v-rowlines", "3 · A hairline under every row"],
+    ["v-zebra", "4 · Zebra rows"],
+    ["v-cards", "5 · Every category its own card"],
+    ["v-pips", "6 · Tile-color pips on the headers"],
+    ["v-nobands", "7 · No band: colored header underlines"],
+    ["v-rows", "8 · Sitemap rows: category left, games right"]
+  ];
+  var root = document.getElementById("vars");
+  VARIANTS.forEach(function (v) {
+    var sec = document.createElement("section");
+    sec.className = "mvar " + v[0];
+    var bar = "<div class='bar'><span class='mclink'>Games<img class='mtri' src='arrowDownBig.png' alt=''></span>" +
+      "<span class='mclink'>Rules</span><span class='mclink'>Leaderboards</span>" +
+      "<span class='muser'>&#128276; &#128101; Guest #12</span></div>";
+    var panel;
+    if (v[0] === "v-rows") {
+      panel = "<div class='panel'>" + GROUPS.map(function (g) {
+        return "<div class='row'><span class='rowhead'>" + g.head + "</span><span class='games'>" +
+          g.games.map(function (n) { return "<a href='#'>" + n + "</a>"; }).join("") + "</span></div>";
+      }).join("") + "</div>";
+    } else {
+      panel = "<div class='panel'>" + GROUPS.map(function (g, gi) {
+        var cols = [];
+        if (g.split) {
+          cols.push(g.games.slice(0, g.split));
+          cols.push(g.games.slice(g.split));
+        } else { cols.push(g.games); }
+        return cols.map(function (list, ci) {
+          var head = ci === 0 ? g.head : "&nbsp;";
+          var ghost = ci === 0 ? "" : " ghost";
+          var grp = (ci === 0 && gi > 0) ? " grp" : "";
+          return "<div class='col " + g.key + grp + "'><div class='colhead" + ghost + "'>" + head + "</div>" +
+            list.map(function (n) { return "<a href='#'>" + n + "</a>"; }).join("") + "</div>";
+        }).join("");
+      }).join("") + "</div>";
+    }
+    sec.innerHTML = "<p class='tag'>" + v[1] + "</p>" + bar + "<div class='wrap'>" + panel + "</div><div class='spacer'></div>";
     root.appendChild(sec);
   });
 </script>
