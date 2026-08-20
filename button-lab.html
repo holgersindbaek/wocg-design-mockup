@@ -469,10 +469,17 @@
      slot, leading edge first. The button's top corners square off into a
      printer mouth while the panel is open. The whole dropup is the matrix,
      page-cream paper, no white card around it. */
-  .b14 .gmenu { bottom: calc(100% - 1px); padding: 1px; background: #D8D2C7; overflow: hidden;
+  .b14 .gmenu { bottom: calc(100% - 1px); padding: 1px; overflow: hidden;
+    background: linear-gradient(#7AB8EC 0 50px, #D8D2C7 50px);
     z-index: 1; border-radius: var(--radius-md) var(--radius-md) 0 0; corner-shape: squircle;
     box-shadow: 0 -3px 8px rgba(60,45,25,.07); transform-origin: 50% 100%; --paper-h: 137px; }
   .b14.rows13 .gmenu { --paper-h: 170px; }
+  .b14.rc-cream .gmenu { background: #D8D2C7; }
+  .b14.rc-edge2 .gmenu, .b14.rc-edge3 .gmenu { background: linear-gradient(#B3AC9F 0 50px, #D8D2C7 50px); }
+  .b14.top-lg .gmenu { background: linear-gradient(#74B816 0 50px, #D8D2C7 50px); }
+  .b14.top-lbg .gmenu { background: linear-gradient(#AACA7C 0 50px, #D8D2C7 50px); }
+  .b14.top-green .gmenu { background: linear-gradient(#4F800B 0 50px, #D8D2C7 50px); }
+  .b14.top-dark .gmenu { background: linear-gradient(#1873C5 0 50px, #D8D2C7 50px); }
   .b14 .gmenu.isClosing { display: block; animation: receiptBack 260ms both; }
   @keyframes receiptBack {
     0% { max-height: var(--paper-h); transform: translateY(0); animation-timing-function: cubic-bezier(0.333, 0.667, 0.667, 1); }
@@ -519,6 +526,22 @@
   .b14.rc-edge2 .qgrid .mtop13 .dm { color: rgba(255,255,255,.9); text-shadow: none; }
   .b13.rows13 .qgrid .mtop13 { grid-column: 1 / -1; height: 40px; flex-direction: row;
     justify-content: space-between; padding: 0 12px; gap: 8px; }
+  .b14.rc-edge3 .qgrid .mtop13 { background: #D8D2C7; color: #141414; text-shadow: none;
+    box-shadow: 0 0 0 1px #B3AC9F; }
+  .b14.rc-edge3 .qgrid .mtop13:hover, .b14.rc-edge3 .qgrid .mtop13:focus-visible { background: #CFC9BD; }
+  .b14.rc-edge3 .qgrid .mtop13 .dm { color: #6f6a5e; }
+  /* rows with the mobile app's sign: the meta becomes the frontpage's orange
+     badge (GameSelectors.scss mobile play::before, tokens verbatim) */
+  .b14.rows13sign .qgrid .mtop13 { justify-content: center; position: relative; }
+  .b14.rows13sign .qgrid .mtop13 .dm { position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+    height: 14px; line-height: 15px; padding: 0 6px; border-radius: 7px; background: #F08C00;
+    border: 1px solid #E67700; color: #FFE066; font-size: 10px; font-weight: bold; text-transform: uppercase;
+    text-shadow: -1px -1px 0 #E67700, 1px -1px 0 #E67700, -1px 1px 0 #E67700, 1px 1px 0 #E67700; }
+  /* the light brother of the dark green, derived by the same OKLCH move that
+     takes #228BE6 to #A5D8FF: fill #D1E7A9, ring #AACA7C, ink #4F8D05 */
+  .b13.top-lbg .qgrid .mtop13 { background: #D1E7A9; color: #4F8D05; box-shadow: 0 0 0 1px #AACA7C; }
+  .b13.top-lbg .qgrid .mtop13:hover, .b13.top-lbg .qgrid .mtop13:focus-visible { background: #C7DE9E; }
+  .b13.top-lbg .qgrid .mtop13 .dm { color: #4F8D05; opacity: .85; }
 
   /* batch fifteen: five researched motions for the receipt, each a different
      physics story. All overshoots live in transforms from the slot origin. */
@@ -559,6 +582,24 @@
     62% { max-height: var(--paper-h); transform: scale(1.015, 0.94); animation-timing-function: cubic-bezier(0.37, 0, 0.63, 1); }
     82% { max-height: var(--paper-h); transform: scale(0.997, 1.01); animation-timing-function: cubic-bezier(0.37, 0, 0.63, 1); }
     100% { max-height: var(--paper-h); transform: scale(1, 1); }
+  }
+  .b14.fx-stretch2 .gmenu.isOpen { max-height: var(--paper-h); animation: receiptStretch2 340ms both; }
+  @keyframes receiptStretch2 {
+    0% { transform: scaleY(0); animation-timing-function: cubic-bezier(0.16, 0.7, 0.3, 1); }
+    58% { transform: scaleY(1.04); animation-timing-function: cubic-bezier(0.37, 0, 0.63, 1); }
+    80% { transform: scaleY(0.988); animation-timing-function: cubic-bezier(0.37, 0, 0.63, 1); }
+    100% { transform: scaleY(1); }
+  }
+  .b14.fx-spring2 .gmenu { bottom: calc(100% - 13px); --paper-h: 149px; }
+  .b14.fx-spring2 .qgrid { padding-bottom: 12px; }
+  .b14.fx-spring2 .gmenu.isOpen { animation: receiptSpring2 540ms both; will-change: transform; }
+  @keyframes receiptSpring2 {
+    0% { max-height: 0; transform: translateY(0); animation-timing-function: cubic-bezier(0.32, 0, 0.72, 0.6); }
+    52% { max-height: var(--paper-h); transform: translateY(0); animation-timing-function: cubic-bezier(0.12, 0.8, 0.32, 1); }
+    66% { max-height: var(--paper-h); transform: translateY(-7px); animation-timing-function: cubic-bezier(0.37, 0, 0.63, 1); }
+    79% { max-height: var(--paper-h); transform: translateY(2px); animation-timing-function: cubic-bezier(0.37, 0, 0.63, 1); }
+    90% { max-height: var(--paper-h); transform: translateY(-0.7px); animation-timing-function: cubic-bezier(0.37, 0, 0.63, 1); }
+    100% { max-height: var(--paper-h); transform: translateY(0); }
   }
   .b14.fx-thunk .gplay[aria-expanded="true"] { animation: printerKick 320ms linear both; }
   @keyframes printerKick {
@@ -1267,9 +1308,12 @@ options visible, counters as the leaderboard's signs, and the two primaries trea
       "All-cream, pager-cream top",
       "All-cream, border-color top",
       "Border-color top, darker walls, white label",
+      "Border-color top, darker walls, dark label",
       "Top pair as full-width rows (all cream)",
+      "Rows, centered, meta as the mobile sign",
       "Receipt, lightblue top pair",
       "Receipt, light-green top pair",
+      "Receipt, light-brother green top (derived)",
       "Receipt, dark-green top pair",
       "Receipt, dark-blue top pair"
     ],
@@ -1279,9 +1323,12 @@ options visible, counters as the leaderboard's signs, and the two primaries trea
       { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 rc-cream rc-pager" },
       { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 rc-cream rc-edge" },
       { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 rc-edge2" },
+      { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 rc-edge3" },
       { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 rc-cream rows13" },
+      { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 rc-cream rows13 rows13sign" },
       { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14" },
       { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 top-lg" },
+      { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 top-lbg" },
       { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 top-green" },
       { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 top-dark" }
     ]
@@ -1294,7 +1341,9 @@ options visible, counters as the leaderboard's signs, and the two primaries trea
     caps: [
       "The repaired default: damped spring from the slot",
       "True spring: linear() sampled physics on the sheet",
+      "Whole-container spring, slack paper in the slot",
       "Elastic paper: squash and stretch",
+      "Elastic paper, faster and width-true",
       "Wobble: the paper sways around the slot",
       "Machine print: fast feed, rows pop in order",
       "Hard thunk: impact squash and printer recoil"
@@ -1302,7 +1351,9 @@ options visible, counters as the leaderboard's signs, and the two primaries trea
     cfgs: [
       { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 rc-cream" },
       { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 rc-cream fx-spring" },
+      { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 rc-cream fx-spring2" },
       { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 rc-cream fx-stretch" },
+      { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 rc-cream fx-stretch2" },
       { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 rc-cream fx-wobble" },
       { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 rc-cream fx-print" },
       { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 rc-cream fx-thunk" }
