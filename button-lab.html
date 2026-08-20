@@ -458,6 +458,26 @@
   .b13.top-green .qgrid .mtop13:hover, .b13.top-green .qgrid .mtop13:focus-visible { background: #5D960D; }
   .b13.top-green .qgrid .mtop13 .dm { color: rgba(255,255,255,.88); text-shadow: none; }
 
+  /* batch fourteen: the receipt. The panel docks flush against the Play
+     button and feeds out of it: the menu is bottom-anchored, so animating
+     max-height under overflow:hidden pushes the paper upward out of the
+     slot, leading edge first. The button's top corners square off into a
+     printer mouth while the panel is open. The whole dropup is the matrix,
+     page-cream paper, no white card around it. */
+  .b14 .gmenu { bottom: calc(100% - 1px); padding: 0; background: transparent; overflow: hidden;
+    z-index: 1; border-radius: var(--radius-md) var(--radius-md) 0 0; corner-shape: squircle;
+    box-shadow: 0 0 0 1px #D8D2C7, 0 -3px 8px rgba(60,45,25,.07); }
+  .b14 .gmenu.isOpen { animation: receiptFeed 300ms cubic-bezier(0.25, 0.9, 0.3, 1) both; }
+  @keyframes receiptFeed { from { max-height: 0; } to { max-height: 170px; } }
+  .b14 .gplay { position: relative; z-index: 2;
+    transition: background-color 150ms ease-out, transform 80ms ease-out, border-radius 140ms ease-out; }
+  .b14 .gplay[aria-expanded="true"] { border-top-left-radius: 0; border-top-right-radius: 0; }
+  .b14 .qgrid { border-radius: 0; box-shadow: none; margin-top: 0; }
+  /* all-cream paper: the pair cells become part of the receipt */
+  .b14.rc-cream .qgrid .mtop13 { background: #F9F6F2; color: #141414; text-shadow: none; }
+  .b14.rc-cream .qgrid .mtop13:hover, .b14.rc-cream .qgrid .mtop13:focus-visible { background: #F4EEE5; }
+  .b14.rc-cream .qgrid .mtop13 .dm { color: #8a8578; }
+
   .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(80px); z-index: 99;
     background: #141414; color: #f9f6f2; padding: 9px 18px; border-radius: 8px; font-size: 14px; transition: transform .18s ease; }
   .toast.on { transform: translateX(-50%) translateY(0); }
@@ -1136,6 +1156,22 @@ options visible, counters as the leaderboard's signs, and the two primaries trea
       { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13" },
       { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 top-dark" },
       { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 top-green" }
+    ]
+  });
+
+  /* batch fourteen: the receipt feed */
+  SECTIONS.push({
+    t: "14 \u00b7 Batch fourteen: the receipt",
+    d: "The dropup becomes a receipt. The panel docks flush against the Play button, the button's top corners square off into a printer mouth while it is open, and the paper feeds upward out of the slot, leading edge first (bottom-anchored max-height under overflow:hidden, so the motion is real feeding, not a fade). The whole dropup is the batch-thirteen matrix with no white card around it, on page-cream paper. Three papers: all cream (the uniform receipt), the lightblue top pair, and the dark-blue top pair.",
+    caps: [
+      "All-cream receipt (the ask)",
+      "Receipt, lightblue top pair",
+      "Receipt, dark-blue top pair"
+    ],
+    cfgs: [
+      { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 rc-cream" },
+      { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14" },
+      { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 top-dark" }
     ]
   });
 
