@@ -472,8 +472,15 @@
   .b14 .gmenu { bottom: calc(100% - 1px); padding: 1px; background: #D8D2C7; overflow: hidden;
     z-index: 1; border-radius: var(--radius-md) var(--radius-md) 0 0; corner-shape: squircle;
     box-shadow: 0 -3px 8px rgba(60,45,25,.07); }
-  .b14 .gmenu.isOpen { animation: receiptFeed 300ms cubic-bezier(0.25, 0.9, 0.3, 1) both; }
-  @keyframes receiptFeed { from { max-height: 0; } to { max-height: 170px; } }
+  .b14 .gmenu.isClosing { display: block; animation: receiptBack 240ms cubic-bezier(0.4, 0, 0.7, 0.2) both; }
+  @keyframes receiptBack { from { max-height: 170px; } to { max-height: 0; } }
+  .b14 .gmenu.isOpen { animation: receiptFeed 420ms cubic-bezier(0.25, 0.9, 0.3, 1) both; }
+  @keyframes receiptFeed {
+    0% { max-height: 0; transform: translateY(0); }
+    62% { max-height: 170px; transform: translateY(0); }
+    78% { transform: translateY(-5px); }
+    100% { max-height: 170px; transform: translateY(0); }
+  }
   .b14 .gplay { position: relative; z-index: 2;
     transition: background-color 150ms ease-out, transform 80ms ease-out, border-radius 140ms ease-out; }
   .b14 .gplay[aria-expanded="true"] { border-top-left-radius: 0; border-top-right-radius: 0; }
@@ -484,6 +491,15 @@
   .b14.rc-cream .qgrid .mtop13 { background: #F9F6F2; color: #141414; text-shadow: none; box-shadow: none; }
   .b14.rc-cream .qgrid .mtop13:hover, .b14.rc-cream .qgrid .mtop13:focus-visible { background: #F4EEE5; }
   .b14.rc-cream .qgrid .mtop13 .dm { color: #8a8578; }
+  .b14.rc-band .qgrid .mtop13 { background: #F4EEE5; color: #141414; text-shadow: none; box-shadow: none; }
+  .b14.rc-band .qgrid .mtop13:hover, .b14.rc-band .qgrid .mtop13:focus-visible { background: #EFE7DA; }
+  .b14.rc-band .qgrid .mtop13 .dm { color: #8a8578; }
+  .b14.rc-pager .qgrid .mtop13 { background: #EEEBE5; color: #141414; text-shadow: none; box-shadow: none; }
+  .b14.rc-pager .qgrid .mtop13:hover, .b14.rc-pager .qgrid .mtop13:focus-visible { background: #E4E0D9; }
+  .b14.rc-pager .qgrid .mtop13 .dm { color: #8a8578; }
+  .b14.rc-edge .qgrid .mtop13 { background: #D8D2C7; color: #141414; text-shadow: none; box-shadow: none; }
+  .b14.rc-edge .qgrid .mtop13:hover, .b14.rc-edge .qgrid .mtop13:focus-visible { background: #CFC9BD; }
+  .b14.rc-edge .qgrid .mtop13 .dm { color: #6f6a5e; }
 
   .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(80px); z-index: 99;
     background: #141414; color: #f9f6f2; padding: 9px 18px; border-radius: 8px; font-size: 14px; transition: transform .18s ease; }
@@ -517,6 +533,14 @@ options visible, counters as the leaderboard's signs, and the two primaries trea
       p.classList.remove("isOpen");
       var t = document.getElementById(p.dataset.trigger);
       if (t) t.setAttribute("aria-expanded", "false");
+      /* b14 receipts feed the paper back into the slot before hiding */
+      if (p.closest(".b14")) {
+        p.classList.add("isClosing");
+        p.addEventListener("animationend", function done() {
+          p.classList.remove("isClosing");
+          p.removeEventListener("animationend", done);
+        });
+      }
     });
   }
   document.addEventListener("click", closeAll);
@@ -1172,12 +1196,18 @@ options visible, counters as the leaderboard's signs, and the two primaries trea
     d: "The dropup becomes a receipt. The panel docks flush against the Play button, the button's top corners square off into a printer mouth while it is open, and the paper feeds upward out of the slot, leading edge first (bottom-anchored max-height under overflow:hidden, so the motion is real feeding, not a fade). The whole dropup is the batch-thirteen matrix with no white card around it, on page-cream paper. Three papers: all cream (the uniform receipt), the lightblue top pair, and the dark-blue top pair.",
     caps: [
       "All-cream receipt (the ask)",
+      "All-cream, band-cream top",
+      "All-cream, pager-cream top",
+      "All-cream, border-color top",
       "Receipt, lightblue top pair",
       "Receipt, light-green top pair",
       "Receipt, dark-blue top pair"
     ],
     cfgs: [
       { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 rc-cream" },
+      { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 rc-cream rc-band" },
+      { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 rc-cream rc-pager" },
+      { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 rc-cream rc-edge" },
       { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14" },
       { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 top-lg" },
       { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 top-dark" }
