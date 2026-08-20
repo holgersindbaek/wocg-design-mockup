@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Account panel hover lab</title>
+<style>
+  @font-face { font-family: 'BuloRounded'; src: url("BuloRounded-Regular.woff2") format('woff2'); font-weight: normal; font-display: swap; }
+  @font-face { font-family: 'BuloRounded'; src: url("BuloRounded-Bold.woff2") format('woff2'); font-weight: bold; font-display: swap; }
+  body { margin: 0; padding: 28px 24px 80px; background: #f9f6f2; color: #141414;
+    font-family: "BuloRounded", "Verdana", "Arial", sans-serif; -webkit-font-smoothing: antialiased;
+    --canvas: #f9f6f2; --band: #f4eee5; --surface: #fff; --ink: #141414; --ink-soft: #262626;
+    --muted: #4e4d4c; --hairline: #e7e7e7; --edge: #d2cfca; --edge-deep: #b8b5b1; --accent: #00a82d;
+    --liftshadow: 0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09);
+    --wavetrough: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 7 7'%3E%3Cpath d='M0 5C1.4 5 2.1 2 3.5 2C4.9 2 5.6 5 7 5' fill='none' stroke='white' stroke-width='1.5'/%3E%3C/svg%3E"); }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  p.note { font-size: 13px; color: #8a857c; margin: 0 0 26px; max-width: 860px; }
+  .grid { display: grid; grid-template-columns: repeat(4, 220px); gap: 40px 32px; }
+  .vbox .tag { font-size: 12px; color: #999488; margin: 0 0 10px; min-height: 28px; }
+
+  .panel { width: 200px; background: var(--surface); border-radius: 20px; corner-shape: squircle;
+    padding: 0 12px 8px; box-shadow: 0 0 0 1px var(--edge), var(--liftshadow); text-align: left; }
+  .phead { font-size: 16px; font-weight: bold; color: var(--ink); margin: 0 -12px 7px; padding: 0 12px;
+    line-height: 32px; background: var(--canvas); border-bottom: 1px solid var(--edge);
+    border-radius: 20px 20px 0 0; corner-shape: squircle; }
+  .item { font-size: 16px; line-height: 24px; color: var(--ink-soft); cursor: pointer;
+    white-space: nowrap; padding: 2px 0; position: relative; }
+  .item .w { position: relative; }
+  /* every block shows its middle row in the hover state via .hov */
+
+  /* 1 · ink only */
+  .v-ink .item.hov { color: var(--ink); }
+
+  /* 2 · the wave in edge-deep */
+  .v-wave .item.hov { color: var(--ink); }
+  .v-wave .item.hov .w::after { content: ""; position: absolute; left: 0; right: 0; bottom: -3px; height: 7px;
+    background: var(--edge-deep); pointer-events: none;
+    -webkit-mask: var(--wavetrough) left center / 7px 7px repeat-x;
+            mask: var(--wavetrough) left center / 7px 7px repeat-x; }
+
+  /* 3 · plain hairline underline */
+  .v-line .item.hov { color: var(--ink); }
+  .v-line .item.hov .w { box-shadow: 0 2px 0 -1px var(--edge-deep); }
+
+  /* 4 · the label nudges right */
+  .v-nudge .item .w { display: inline-block; transition: transform .11s ease-out; }
+  .v-nudge .item.hov { color: var(--ink); }
+  .v-nudge .item.hov .w { transform: translateX(3px); }
+
+  /* 5 · a pill hugs the words */
+  .v-pill .item .w { padding: 2px 7px; margin: 0 -7px; border-radius: 5px; }
+  .v-pill .item.hov .w { background: var(--band); }
+  .v-pill .item.hov { color: var(--ink); }
+
+  /* 6 · the whole row washes in the band */
+  .v-wash .item { padding: 2px 12px; margin: 0 -12px; }
+  .v-wash .item.hov { background: var(--band); color: var(--ink); }
+
+  /* 7 · a 2px bar stands at the left edge */
+  .v-bar .item { padding-left: 0; }
+  .v-bar .item.hov { color: var(--ink); }
+  .v-bar .item.hov::before { content: ""; position: absolute; left: -12px; top: 5px; bottom: 5px; width: 2px;
+    border-radius: 1px; background: var(--edge-deep); }
+
+  /* 8 · a dot steps in before the word */
+  .v-dot .item { padding-left: 12px; margin-left: -12px; }
+  .v-dot .item.hov { color: var(--ink); }
+  .v-dot .item.hov::before { content: ""; position: absolute; left: 0; top: 50%; margin-top: -2.5px;
+    width: 5px; height: 5px; border-radius: 50%; background: var(--edge-deep); }
+
+  /* 9 · a quiet chevron appears at the row's end */
+  .v-chev .item.hov { color: var(--ink); }
+  .v-chev .item.hov::after { content: "\203A"; position: absolute; right: 0; top: 2px;
+    font-size: 16px; line-height: 24px; color: var(--edge-deep); }
+
+  /* 10 · the ink warms to the site green */
+  .v-green .item.hov { color: var(--accent); }
+</style>
+</head>
+<body>
+<h1>Account panel hover lab</h1>
+<p class="note">The account panel with its middle row held in the hover state, once per treatment. The question:
+how do the rows say "you can click me" without making a fuss? The wave is here for comparison; the rest are the
+quieter candidates, all leaning on colors the scheme already owns.</p>
+
+<div class="grid" id="grid"></div>
+
+<script>
+  var VARIANTS = [
+    ["v-ink", "1 · Ink only: the word darkens"],
+    ["v-wave", "2 · The subtitle's wave in edge-deep"],
+    ["v-line", "3 · A plain hairline underline in edge-deep"],
+    ["v-nudge", "4 · The label nudges 3px right"],
+    ["v-pill", "5 · A band-colored pill hugs the words"],
+    ["v-wash", "6 · The whole row washes in the band"],
+    ["v-bar", "7 · A 2px bar stands at the left edge"],
+    ["v-dot", "8 · A dot steps in before the word"],
+    ["v-chev", "9 · A quiet chevron at the row's end"],
+    ["v-green", "10 · The ink warms to the site green"]
+  ];
+  var root = document.getElementById("grid");
+  VARIANTS.forEach(function (v) {
+    var box = document.createElement("div");
+    box.className = "vbox " + v[0];
+    box.innerHTML = "<p class='tag'>" + v[1] + "</p>" +
+      "<div class='panel'><div class='phead'>Account</div>" +
+      "<div class='item'><span class='w'>Settings</span></div>" +
+      "<div class='item hov'><span class='w'>Log in or sign up</span></div>" +
+      "<div class='item'><span class='w'>Give feedback</span></div>" +
+      "</div>";
+    root.appendChild(box);
+  });
+</script>
+</body>
+</html>
