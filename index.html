@@ -327,68 +327,80 @@
   #adrail .adtoggle:active { transform: scale(0.98); }
   #adrail .adslot, #adrail .advideo { display: none; }
   #adrail.adsOn .adslot, #adrail.adsOn .advideo { display: block; }
-  #adrail.adsOn .railcard { display: none; }
-  #adrail .railcard {
-    width: 300px; flex-shrink: 0; box-sizing: border-box; text-align: left;
-    background: var(--surface, #fff); border-radius: 12px; corner-shape: squircle; padding: 12px;
-    box-shadow: 0 0 0 1px var(--edge, #d2cfca), var(--liftshadow);
-    font-size: 15px; color: var(--ink);
-  }
-  #adrail .rchead { display: flex; align-items: baseline; justify-content: space-between; }
-  #adrail .rctitle { font-size: 18px; font-weight: bold; line-height: 22px; }
-  #adrail .rcmeta { font-size: 13px; color: var(--muted); }
-  #adrail .lbtable { width: 100%; border-collapse: collapse; margin-top: 4px; }
-  #adrail .lbtable th { font-size: 12.5px; font-weight: normal; color: var(--muted); text-align: left; padding: 2px 0 4px; }
-  #adrail .lbtable td { padding: 4px 0; border-top: 1px solid var(--hairline, #e7e7e7); }
-  #adrail .lbtable th.lbwins, #adrail .lbtable td.lbwins { text-align: right; }
-  #adrail .lbtable td.lbrank { width: 20px; color: var(--muted); font-variant-numeric: tabular-nums; }
-  #adrail .lbtable td.lbwins { font-weight: bold; font-variant-numeric: tabular-nums; }
-  #adrail .lbtable td.lbplayer { display: flex; align-items: center; gap: 7px; }
-  #adrail .lbplayer img { width: 20px; height: 20px; }
-  #adrail .lbname { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; }
+  #adrail.adsOn .railsec { display: none; }
+  #adrail .adtoggle { width: calc(100% - 16px); }
+  /* the OS rail layout, ink on the light rail instead of white on felt:
+     flat full-width sections, a 40px title row with a small green Show
+     button, and the table/box itself as the framed translucent surface
+     with internal grid lines */
+  #adrail .railsec { width: 100%; box-sizing: border-box; padding: 0 8px; text-align: left;
+    font-size: 14px; color: var(--ink); }
+  #adrail .rshead { height: 40px; display: flex; align-items: center; justify-content: space-between; }
+  #adrail .rstitle { font-size: 20px; font-weight: bold; }
+  #adrail .rsshow { height: 24px; padding: 0 10px 1px; border: none; cursor: pointer;
+    border-radius: var(--radius-md, 6px); corner-shape: squircle; font-family: inherit;
+    font-size: 14px; font-weight: bold; background: #66A80F; color: #fff;
+    box-shadow: inset 0 0 0 1px #4F800B;
+    text-shadow: -1px -1px 0 #4F800B, 1px -1px 0 #4F800B, -1px 1px 0 #4F800B, 1px 1px 0 #4F800B; }
+  #adrail .rsshow:hover { background: #5D960D; }
+  #adrail .rsshow:active { transform: scale(0.98); }
+  #adrail .lbtable { width: 100%; border-collapse: separate; border-spacing: 0;
+    background: rgba(0, 0, 0, .05); border-radius: 6px; overflow: hidden;
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .10); }
+  #adrail .lbtable th, #adrail .lbtable td { text-align: center; font-size: 14px;
+    border-left: 1px solid rgba(0, 0, 0, .08); }
+  #adrail .lbtable th:first-child, #adrail .lbtable td:first-child { border-left: none; }
+  #adrail .lbtable th { font-weight: normal; line-height: 24px; color: var(--ink-soft, #262626); }
+  #adrail .lbtable tbody td { font-weight: bold; line-height: 32px; border-top: 1px solid rgba(0, 0, 0, .08);
+    font-variant-numeric: tabular-nums; }
+  #adrail .lbtable .lbrank { width: 28px; }
+  #adrail .lbtable .lbwins { width: 52px; }
+  #adrail .lbwho { display: inline-flex; align-items: center; gap: 6px; vertical-align: middle; }
+  #adrail .lbwho img { width: 20px; height: 20px; }
+  #adrail .lbname { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px; }
   #adrail .lbtable tbody tr { cursor: pointer; }
   #adrail .lbtable tbody tr:hover .lbname { text-decoration: underline; }
-  #adrail .rcfoot { margin: 8px 0 0; padding-top: 8px; border-top: 1px solid var(--hairline, #e7e7e7);
-    font-size: 13px; color: var(--muted); }
-  /* the medal strip: three equal segments toward 10, 20, and 31 wins;
-     track = medal light, ring = medal normal, fill = medal dark (OS ramp) */
-  #adrail .medals { display: flex; align-items: flex-end; height: 24px; margin: 12px 11px 14px 0; }
-  #adrail .mseg { position: relative; flex: 1; height: 6px; }
-  #adrail .mseg.bronze { background: #FFC178; box-shadow: inset 0 0 0 1px #FF932A; border-radius: 3px 0 0 3px; }
+  #adrail .lbtable tr.lbfoot td { font-weight: normal; font-size: 13px; line-height: 18px;
+    padding: 7px 8px; color: var(--muted); cursor: default; }
+  /* the challenge box: the wins label over the 4px medal bars (10/20/31 in
+     the OS ramp), then the bordered month calendar - today underlined, won
+     days replaced by the check, the future in normal weight */
+  #adrail .dcbox { border-radius: 6px; background: rgba(0, 0, 0, .05); overflow: hidden;
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .10); }
+  #adrail .dcaward { position: relative; height: 40px; padding: 0 8px; }
+  #adrail .dctier { margin: 0; font-size: 14px; font-weight: bold; line-height: 32px; color: var(--ink-soft, #262626); }
+  #adrail .dcbars { position: absolute; left: 8px; right: 25px; bottom: 7px; display: flex; height: 4px; }
+  #adrail .mseg { position: relative; flex: 1; height: 4px; }
+  #adrail .mseg.bronze { background: #FFC178; box-shadow: inset 0 0 0 1px #FF932A; border-radius: 2px 0 0 2px; }
   #adrail .mseg.silver { background: #DEE2E6; box-shadow: inset 0 0 0 1px #AEB5BD; }
-  #adrail .mseg.gold { background: #FFEC99; box-shadow: inset 0 0 0 1px #FDC41B; border-radius: 0 3px 3px 0; }
+  #adrail .mseg.gold { background: #FFEC99; box-shadow: inset 0 0 0 1px #FDC41B; border-radius: 0 2px 2px 0; }
   #adrail .mfill { position: absolute; left: 0; top: 0; bottom: 0; }
-  #adrail .mseg.bronze .mfill { background: #F76706; border-radius: 3px 0 0 3px; }
+  #adrail .mseg.bronze .mfill { background: #F76706; border-radius: 2px 0 0 2px; }
   #adrail .mseg.silver .mfill { background: #868E96; }
   #adrail .mseg.gold .mfill { background: #E67700; }
-  #adrail .mbadge { position: absolute; right: -11px; bottom: -7px; width: 22px; height: 21px; z-index: 1;
+  #adrail .mbadge { position: absolute; right: -11px; bottom: -9px; width: 22px; height: 21px; z-index: 1;
     filter: drop-shadow(0 0 1px rgba(0, 0, 0, .25)); }
   #adrail .mbadge img { display: block; width: 100%; height: 100%; }
   #adrail .mbadge span { position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-54%);
     text-align: center; font-size: 10px; font-weight: bold; color: #fff;
     text-shadow: -1px 0 rgba(0,0,0,.35), 1px 0 rgba(0,0,0,.35), 0 -1px rgba(0,0,0,.35), 0 1px rgba(0,0,0,.35); }
-  /* the month calendar: won days wear the success green + a check, today
-     wears the gold, the future waits its turn */
-  #adrail .dcweek { display: grid; grid-template-columns: repeat(7, 1fr); margin-top: 2px; }
-  #adrail .dcweek span { font-size: 11px; font-weight: bold; color: var(--muted); text-align: center; line-height: 20px; }
-  #adrail .dcgrid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; }
-  #adrail .dcgrid > span { height: 26px; }
-  #adrail .dcday { height: 26px; border: none; background: none; cursor: pointer; border-radius: 6px;
-    corner-shape: squircle; font-family: inherit; font-size: 12.5px; font-weight: bold; color: var(--ink);
-    padding: 0; font-variant-numeric: tabular-nums; }
-  #adrail .dcday:hover { background: var(--band, #f4eee5); }
-  #adrail .dcday.won { background: #D9F5A2 url("dealDayCheck.svg") center / 14px 14px no-repeat;
-    box-shadow: inset 0 0 0 1px #94D82C; color: transparent; }
-  #adrail .dcday.today { background: #FFEC99; box-shadow: inset 0 0 0 1px #FFD43B; color: #E67700; }
-  #adrail .dcday.future { color: var(--muted); opacity: .45; font-weight: normal; cursor: default; }
+  #adrail .dcweek { display: grid; grid-template-columns: repeat(7, 1fr); border-top: 1px solid rgba(0, 0, 0, .08); }
+  #adrail .dcweek span { font-size: 13px; line-height: 24px; text-align: center; color: var(--ink-soft, #262626);
+    border-left: 1px solid rgba(0, 0, 0, .08); }
+  #adrail .dcweek span:first-child { border-left: none; }
+  #adrail .dcgrid { display: grid; grid-template-columns: repeat(7, 1fr); }
+  #adrail .dcgrid > span, #adrail .dcday { height: 32px; border-top: 1px solid rgba(0, 0, 0, .08);
+    border-left: 1px solid rgba(0, 0, 0, .08); }
+  #adrail .dcgrid > span:nth-child(7n+1), #adrail .dcday:nth-child(7n+1) { border-left: none; }
+  #adrail .dcday { background: none; border-right: none; border-bottom: none; cursor: pointer; border-radius: 0;
+    font-family: inherit; font-size: 14px; font-weight: bold; color: var(--ink); padding: 0;
+    font-variant-numeric: tabular-nums; }
+  #adrail .dcday:hover { background-color: rgba(0, 0, 0, .04); }
+  #adrail .dcday.won { background-image: url("dealDayCheck.svg"); background-position: center;
+    background-size: 16px 16px; background-repeat: no-repeat; color: transparent; }
+  #adrail .dcday.today { text-decoration: underline; }
+  #adrail .dcday.future { font-weight: normal; color: var(--muted); opacity: .55; cursor: default; }
   #adrail .dcday.future:hover { background: none; }
-  #adrail .dcplay { display: block; width: 100%; height: 30px; margin-top: 12px; border: none; cursor: pointer;
-    border-radius: var(--radius-md); corner-shape: squircle; font-family: inherit; font-size: 15px; font-weight: bold;
-    background: #66A80F; color: #fff; box-shadow: inset 0 0 0 1px #4F800B, 0 2px 4px rgba(0, 0, 0, .06);
-    text-shadow: -1px -1px 0 #4F800B, 1px -1px 0 #4F800B, -1px 1px 0 #4F800B, 1px 1px 0 #4F800B;
-    transition: background-color 150ms ease-out, transform 80ms ease-out; }
-  #adrail .dcplay:hover { background: #5D960D; }
-  #adrail .dcplay:active { transform: scale(0.98); }
   @media (max-width: 1100px) {
     :root { --adrail-w: 0px; }
     #adrail { display: none; }
@@ -1828,30 +1840,34 @@
 
 <aside id="adrail">
   <button type="button" class="adtoggle" id="adtoggle">Show ads</button>
-  <section class="railcard" id="railBoard">
-    <div class="rchead"><span class="rctitle">Daily leaderboard</span><span class="rcmeta">Aug 20</span></div>
+  <section class="railsec" id="railChallenge">
+    <div class="rshead"><span class="rstitle">August challenge</span><button type="button" class="rsshow" data-what="Daily challenge">Show</button></div>
+    <div class="dcbox">
+      <div class="dcaward">
+        <p class="dctier">12 wins</p>
+        <div class="dcbars">
+          <div class="mseg bronze"><div class="mfill" style="width:100%"></div><span class="mbadge"><img src="dailyChallengeBronzeSmall.svg" alt=""><span>10</span></span></div>
+          <div class="mseg silver"><div class="mfill" style="width:20%"></div><span class="mbadge"><img src="dailyChallengeSilverSmall.svg" alt=""><span>20</span></span></div>
+          <div class="mseg gold"><div class="mfill" style="width:0%"></div><span class="mbadge"><img src="dailyChallengeGoldSmall.svg" alt=""><span>31</span></span></div>
+        </div>
+      </div>
+      <div class="dcweek"><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span><span>Su</span></div>
+      <div class="dcgrid" id="dcgrid"></div>
+    </div>
+  </section>
+  <section class="railsec" id="railBoard">
+    <div class="rshead"><span class="rstitle">Daily leaderboard</span><button type="button" class="rsshow" data-what="Daily leaderboard">Show</button></div>
     <table class="lbtable">
-      <thead><tr><th>#</th><th>Player</th><th class="lbwins">Wins</th></tr></thead>
+      <thead><tr><th class="lbrank">#</th><th>Player</th><th class="lbwins">Wins</th></tr></thead>
       <tbody>
-        <tr><td class="lbrank">1</td><td class="lbplayer"><img src="AnimalCat.svg" alt=""><span class="lbname">PiLady10</span></td><td class="lbwins">14</td></tr>
-        <tr><td class="lbrank">2</td><td class="lbplayer"><img src="AnimalFox.svg" alt=""><span class="lbname">Marlene</span></td><td class="lbwins">12</td></tr>
-        <tr><td class="lbrank">3</td><td class="lbplayer"><img src="AnimalBee.svg" alt=""><span class="lbname">granny_ace</span></td><td class="lbwins">11</td></tr>
-        <tr><td class="lbrank">4</td><td class="lbplayer"><img src="AnimalGopher.svg" alt=""><span class="lbname">Bakersfield</span></td><td class="lbwins">9</td></tr>
-        <tr><td class="lbrank">5</td><td class="lbplayer"><img src="AlienBlue.svg" alt=""><span class="lbname">J.T.</span></td><td class="lbwins">8</td></tr>
+        <tr><td class="lbrank">1</td><td><span class="lbwho"><img src="AnimalCat.svg" alt=""><span class="lbname">PiLady10</span></span></td><td class="lbwins">14</td></tr>
+        <tr><td class="lbrank">2</td><td><span class="lbwho"><img src="AnimalFox.svg" alt=""><span class="lbname">Marlene</span></span></td><td class="lbwins">12</td></tr>
+        <tr><td class="lbrank">3</td><td><span class="lbwho"><img src="AnimalBee.svg" alt=""><span class="lbname">granny_ace</span></span></td><td class="lbwins">11</td></tr>
+        <tr><td class="lbrank">4</td><td><span class="lbwho"><img src="AnimalGopher.svg" alt=""><span class="lbname">Bakersfield</span></span></td><td class="lbwins">9</td></tr>
+        <tr><td class="lbrank">5</td><td><span class="lbwho"><img src="AlienBlue.svg" alt=""><span class="lbname">J.T.</span></span></td><td class="lbwins">8</td></tr>
+        <tr class="lbfoot"><td colspan="3">Win a game to join today's board.</td></tr>
       </tbody>
     </table>
-    <p class="rcfoot">Win a game to join today's board.</p>
-  </section>
-  <section class="railcard" id="railChallenge">
-    <div class="rchead"><span class="rctitle">August challenge</span><span class="rcmeta">12 wins</span></div>
-    <div class="medals">
-      <div class="mseg bronze"><div class="mfill" style="width:100%"></div><span class="mbadge"><img src="dailyChallengeBronzeSmall.svg" alt=""><span>10</span></span></div>
-      <div class="mseg silver"><div class="mfill" style="width:20%"></div><span class="mbadge"><img src="dailyChallengeSilverSmall.svg" alt=""><span>20</span></span></div>
-      <div class="mseg gold"><div class="mfill" style="width:0%"></div><span class="mbadge"><img src="dailyChallengeGoldSmall.svg" alt=""><span>31</span></span></div>
-    </div>
-    <div class="dcweek"><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span><span>Su</span></div>
-    <div class="dcgrid" id="dcgrid"></div>
-    <button type="button" class="dcplay" id="dcplay">Play today's challenge</button>
   </section>
   <div class="adslot"><img src="adMedrec1.png" width="300" height="250" alt=""></div>
   <div class="adslot"><img src="adMedrec2.png" width="300" height="250" alt=""></div>
@@ -4117,8 +4133,15 @@
       toggle.textContent = on ? "Hide ads" : "Show ads";
     });
     document.querySelectorAll("#railBoard .lbtable tbody tr").forEach(function (row) {
+      var name = row.querySelector(".lbname");
+      if (!name) return;
       row.addEventListener("click", function () {
-        flash(row.querySelector(".lbname").textContent + " — profile");
+        flash(name.textContent + " — profile");
+      });
+    });
+    document.querySelectorAll("#adrail .rsshow").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        flash(btn.dataset.what + " — opening the full view…");
       });
     });
     /* August 2026 starts on a Saturday; today is the 20th; the checked days
@@ -4140,9 +4163,6 @@
       }
       grid.appendChild(cell);
     })(d);
-    document.getElementById("dcplay").addEventListener("click", function () {
-      flash("Today's challenge — dealing you in…");
-    });
   })();
 </script>
 <script>
