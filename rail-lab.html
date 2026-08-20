@@ -47,8 +47,9 @@
   .railv .adtoggle { width: calc(100% - 16px); flex-shrink: 0; padding: 0 0 1px; }
   .railv .rgamebtn { display: inline-flex; align-items: center; gap: 6px; padding: 0 10px 1px; }
   .railv .caret { display: block; width: 8px; height: 7px; fill: currentColor; }
-  /* no tweened turn: the caret is a valley closed, a peak open, nothing between */
-  .railv .rstats.open .statsbtn .caret { transform: rotate(180deg); }
+  .railv .statsbtn .caret, .railv .statshead .caret { transition: transform 150ms cubic-bezier(0, 0, 0.38, 0.9);
+    transform-origin: 50% 38%; }
+  .railv .rstats.open .caret { transform: rotate(180deg); }
 
   /* ===== the combined top dropdown ("Spades stats") ===== */
   .railv .rstats { position: relative; width: calc(100% - 16px); flex-shrink: 0; }
@@ -69,6 +70,20 @@
   .railv .hidelink { border: none; background: none; cursor: pointer; padding: 0; margin: 0;
     font-family: inherit; font-size: 12px; font-weight: normal; line-height: 20px; color: var(--muted-soft, #9b9897); }
   .railv .hidelink:hover { text-decoration: underline; }
+
+  /* ===== batch three: the titles live inside the panels; the top control tries quieter voices ===== */
+  .railv .statshead { display: flex; align-items: center; gap: 8px; width: 100%; height: 40px;
+    border: none; background: none; cursor: pointer; padding: 0; font-family: inherit;
+    font-size: 20px; font-weight: bold; color: var(--ink, #141414); text-align: left; }
+  .railv .statshead:hover .shlabel { text-decoration: underline; }
+  .railv .statshead .caret { width: 10px; height: 9px; }
+  .railv .phead { height: 32px; line-height: 32px; padding: 0 8px; font-size: 14px; font-weight: bold;
+    color: var(--ink-soft, #262626); border-bottom: 1px solid rgba(0, 0, 0, .08); }
+  .railv .phead.band { background: var(--band, #F4EEE5); }
+  .railv .lbtable th.lbcap { font-size: 14px; border-left: none; border-bottom: 1px solid rgba(0, 0, 0, .08); }
+  .railv .lbtable th.lbcap.band { background: var(--band, #F4EEE5); }
+  .railv .phead.caps, .railv .lbtable th.lbcap.caps { font-size: 11px; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--muted-soft, #9b9897); height: 28px; line-height: 28px; }
 
   /* ===== per-section game dropdowns (today's layout) ===== */
   .railv .rgame { position: relative; }
@@ -183,6 +198,15 @@ top dropdown &mdash; &ldquo;Spades stats&rdquo; &mdash; that picks the game for 
   <div class="rowR" id="batch2"></div>
 </div>
 
+<div class="vsec">
+  <h2>Three &mdash; titles inside the panels, quieter top voices (paper ghost)</h2>
+  <p class="desc">The 20px section titles move into the cards as small headers, so the rail's only loose piece
+  is the top control. And &ldquo;Spades stats&rdquo; goes: the batch tries the bare game name, &ldquo;Today in
+  Spades&rdquo;, and &ldquo;Spades today&rdquo; &mdash; as a small button, and as the rail's own headline with no
+  button chrome at all.</p>
+  <div class="rowR" id="batch3"></div>
+</div>
+
 <div class="toast" id="toast">&middot;</div>
 <script>
   var toastEl = document.getElementById("toast"), toastT;
@@ -195,8 +219,8 @@ top dropdown &mdash; &ldquo;Spades stats&rdquo; &mdash; that picks the game for 
   var WON = { 1: 1, 2: 1, 3: 1, 5: 1, 7: 1, 8: 1, 10: 1, 11: 1, 14: 1, 16: 1, 18: 1, 19: 1 };
   var TODAY = 20, DAYS = 31, LEAD = 5;
 
-  var CHALLENGE_HTML =
-    '<div class="dcbox">' +
+  function challengeHTML(head) { return (
+    '<div class="dcbox">' + (head || '') +
       '<div class="dcaward">' +
         '<p class="dctier">12 wins</p>' +
         '<div class="dcbars">' +
@@ -207,11 +231,11 @@ top dropdown &mdash; &ldquo;Spades stats&rdquo; &mdash; that picks the game for 
       '</div>' +
       '<div class="dcweek"><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span><span>Su</span></div>' +
       '<div class="dcgrid"></div>' +
-    '</div>';
+    '</div>'); }
 
-  var BOARD_HTML =
+  function boardHTML(head) { return (
     '<table class="lbtable">' +
-      '<thead><tr><th>Rank</th><th>Player</th><th>Elo</th></tr></thead>' +
+      '<thead>' + (head || '') + '<tr><th>Rank</th><th>Player</th><th>Elo</th></tr></thead>' +
       '<tbody>' +
         '<tr><td>#44 <span class="lbDown">1</span></td><td class="lbname">cardShark52</td><td>1,493</td></tr>' +
         '<tr><td>#45</td><td class="lbname">PragueJoe</td><td>1,487</td></tr>' +
@@ -220,7 +244,7 @@ top dropdown &mdash; &ldquo;Spades stats&rdquo; &mdash; that picks the game for 
         '<tr><td>#48 <span class="lbDown">2</span></td><td class="lbname">GinTonic</td><td>1,470</td></tr>' +
       '</tbody>' +
     '</table>' +
-    '<p class="rcnext">Next refresh in 6h 12m</p>';
+    '<p class="rcnext">Next refresh in 6h 12m</p>'); }
 
   var ADS_HTML =
     '<div class="adslot"><img src="adMedrec1.png" width="300" height="250" alt=""></div>' +
@@ -256,12 +280,15 @@ top dropdown &mdash; &ldquo;Spades stats&rdquo; &mdash; that picks the game for 
   document.addEventListener("click", closeAll);
   document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeAll(); });
 
-  /* cfg: { cls, cap, mode: "split" | "comb", hide: "menu" | "link", caret, game } */
+  /* cfg: { cls, cap, mode: "split" | "comb", hide: "menu" | "link", caret, game,
+     label: template with {g} (default "{g} stats"), top: "btn" | "text",
+     panelHead: undefined | "row" | "band" | "caps" — titles inside the panels } */
   function buildRail(host, cfg) {
     var wrap = el("div", "rv");
     wrap.appendChild(el("p", "dcap", cfg.cap));
     var rail = el("aside", "railv " + cfg.cls);
     var game = cfg.game || "Spades";
+    var labelTpl = cfg.label || "{g} stats";
 
     if (cfg.mode === "comb") {
       var items = GAMES.map(function (g) {
@@ -269,19 +296,27 @@ top dropdown &mdash; &ldquo;Spades stats&rdquo; &mdash; that picks the game for 
           '<span>' + g + '</span><span class="chk">&#10003;</span></button>';
       }).join("");
       if (cfg.hide === "menu") items += '<div class="msep"></div><button type="button" data-hide="1"><span>Hide stats &middot; show ads</span></button>';
+      var caret = cfg.caret === false ? '' : CARET;
+      var topHtml = cfg.top === "text"
+        ? '<button type="button" class="statshead" aria-haspopup="true"><span class="statslabel shlabel">' +
+            labelTpl.replace("{g}", game) + '</span>' + caret + '</button>'
+        : '<button type="button" class="statsbtn" aria-haspopup="true"><span class="statslabel">' +
+            labelTpl.replace("{g}", game) + '</span>' + caret + '</button>';
+      var mod = cfg.panelHead === "band" ? " band" : cfg.panelHead === "caps" ? " caps" : "";
+      var sections = cfg.panelHead
+        ? '<section class="railsec">' + challengeHTML('<div class="phead' + mod + '">August challenge</div>') + '</section>' +
+          '<section class="railsec">' + boardHTML('<tr><th colspan="3" class="lbcap' + mod + '">Daily leaderboard</th></tr>') + '</section>'
+        : '<section class="railsec"><div class="rshead"><span class="rstitle">August challenge</span></div>' + challengeHTML() + '</section>' +
+          '<section class="railsec"><div class="rshead"><span class="rstitle">Daily leaderboard</span></div>' + boardHTML() + '</section>';
       rail.innerHTML =
-        '<div class="rstats"><button type="button" class="statsbtn" aria-haspopup="true">' +
-          '<span class="statslabel">' + game + ' stats</span>' + (cfg.caret === false ? '' : CARET) + '</button>' +
-          '<div class="statsmenu">' + items + '</div></div>' +
-        '<section class="railsec"><div class="rshead"><span class="rstitle">August challenge</span></div>' + CHALLENGE_HTML + '</section>' +
-        '<section class="railsec"><div class="rshead"><span class="rstitle">Daily leaderboard</span></div>' + BOARD_HTML + '</section>' +
-        ADS_HTML +
+        '<div class="rstats">' + topHtml + '<div class="statsmenu">' + items + '</div></div>' +
+        sections + ADS_HTML +
         (cfg.hide === "link" ? '<button type="button" class="hidelink">Hide challenge &amp; leaderboard</button>' : '');
     } else {
       rail.innerHTML =
         '<button type="button" class="adtoggle">Hide challenge &amp; leaderboard</button>' +
-        '<section class="railsec"><div class="rshead"><span class="rstitle">August challenge</span>' + gameDrop("Hearts") + '</div>' + CHALLENGE_HTML + '</section>' +
-        '<section class="railsec"><div class="rshead"><span class="rstitle">Daily leaderboard</span>' + gameDrop("Hearts") + '</div>' + BOARD_HTML + '</section>' +
+        '<section class="railsec"><div class="rshead"><span class="rstitle">August challenge</span>' + gameDrop("Hearts") + '</div>' + challengeHTML() + '</section>' +
+        '<section class="railsec"><div class="rshead"><span class="rstitle">Daily leaderboard</span>' + gameDrop("Hearts") + '</div>' + boardHTML() + '</section>' +
         ADS_HTML;
     }
 
@@ -319,7 +354,7 @@ top dropdown &mdash; &ldquo;Spades stats&rdquo; &mdash; that picks the game for 
 
     var rstats = rail.querySelector(".rstats");
     if (rstats) {
-      var sbtn = rstats.querySelector(".statsbtn");
+      var sbtn = rstats.querySelector(".statsbtn, .statshead");
       var slabel = rstats.querySelector(".statslabel");
       sbtn.addEventListener("click", function (e) {
         e.stopPropagation();
@@ -333,7 +368,7 @@ top dropdown &mdash; &ldquo;Spades stats&rdquo; &mdash; that picks the game for 
           rstats.classList.remove("open");
           rstats.querySelectorAll("button[data-game]").forEach(function (o) { o.classList.remove("on"); });
           item.classList.add("on");
-          slabel.textContent = item.dataset.game + " stats";
+          slabel.textContent = labelTpl.replace("{g}", item.dataset.game);
           flash("The rail now shows " + item.dataset.game);
         });
       });
@@ -372,9 +407,24 @@ top dropdown &mdash; &ldquo;Spades stats&rdquo; &mdash; that picks the game for 
     { cls: "v-paper", mode: "comb", hide: "link", cap: "Paper ghost + hide link — the quietest rail" },
     { cls: "v-camel", mode: "comb", hide: "menu", cap: "Camel — the warmer family on the combined layout" }
   ];
-  var b1 = document.getElementById("batch1"), b2 = document.getElementById("batch2");
+  var BATCH3 = [
+    { cls: "v-paper", mode: "comb", hide: "link", label: "{g}", panelHead: "row",
+      cap: "Just the game — “Spades ▾”; the titles become 14px rows inside each panel" },
+    { cls: "v-paper", mode: "comb", hide: "link", label: "Today in {g}", panelHead: "row",
+      cap: "“Today in Spades ▾” — names why the two cards are one set" },
+    { cls: "v-paper", mode: "comb", hide: "link", label: "{g} today", panelHead: "band",
+      cap: "“Spades today ▾”; the panel titles ride a band-tinted cap strip" },
+    { cls: "v-paper", mode: "comb", hide: "link", top: "text", label: "Today in {g}", panelHead: "row",
+      cap: "No button at all — the rail's own 20px headline is the dropdown" },
+    { cls: "v-paper", mode: "comb", hide: "link", top: "text", label: "{g}", panelHead: "band",
+      cap: "The bare game name as the headline dropdown, band cap strips below" },
+    { cls: "v-paper", mode: "comb", hide: "link", label: "{g}", panelHead: "caps",
+      cap: "Micro-labels — 11px letterspaced captions inside the panels" }
+  ];
+  var b1 = document.getElementById("batch1"), b2 = document.getElementById("batch2"), b3 = document.getElementById("batch3");
   BATCH1.forEach(function (cfg) { buildRail(b1, cfg); });
   BATCH2.forEach(function (cfg) { buildRail(b2, cfg); });
+  BATCH3.forEach(function (cfg) { buildRail(b3, cfg); });
 </script>
 </body>
 </html>
