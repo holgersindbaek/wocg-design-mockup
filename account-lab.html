@@ -26,62 +26,61 @@
   .item { font-size: 16px; line-height: 24px; color: var(--ink-soft); cursor: pointer;
     white-space: nowrap; padding: 2px 0; position: relative; }
   .item .w { position: relative; }
-  /* every block shows its middle row in the hover state via .hov */
 
   /* 1 · ink only */
-  .v-ink .item.hov { color: var(--ink); }
+  .v-ink .item:hover { color: var(--ink); }
 
   /* 2 · the wave in edge-deep */
-  .v-wave .item.hov { color: var(--ink); }
-  .v-wave .item.hov .w::after { content: ""; position: absolute; left: 0; right: 0; bottom: -3px; height: 7px;
+  .v-wave .item:hover { color: var(--ink); }
+  .v-wave .item:hover .w::after { content: ""; position: absolute; left: 0; right: 0; bottom: -3px; height: 7px;
     background: var(--edge-deep); pointer-events: none;
     -webkit-mask: var(--wavetrough) left center / 7px 7px repeat-x;
             mask: var(--wavetrough) left center / 7px 7px repeat-x; }
 
   /* 3 · plain hairline underline */
-  .v-line .item.hov { color: var(--ink); }
-  .v-line .item.hov .w { box-shadow: 0 2px 0 -1px var(--edge-deep); }
+  .v-line .item:hover { color: var(--ink); }
+  .v-line .item:hover .w { box-shadow: 0 2px 0 -1px var(--edge-deep); }
 
   /* 4 · the label nudges right */
   .v-nudge .item .w { display: inline-block; transition: transform .11s ease-out; }
-  .v-nudge .item.hov { color: var(--ink); }
-  .v-nudge .item.hov .w { transform: translateX(3px); }
+  .v-nudge .item:hover { color: var(--ink); }
+  .v-nudge .item:hover .w { transform: translateX(3px); }
 
   /* 5 · a pill hugs the words */
   .v-pill .item .w { padding: 2px 7px; margin: 0 -7px; border-radius: 5px; }
-  .v-pill .item.hov .w { background: var(--band); }
-  .v-pill .item.hov { color: var(--ink); }
+  .v-pill .item:hover .w { background: var(--band); }
+  .v-pill .item:hover { color: var(--ink); }
 
   /* 6 · the whole row washes in the band */
   .v-wash .item { padding: 2px 12px; margin: 0 -12px; }
-  .v-wash .item.hov { background: var(--band); color: var(--ink); }
+  .v-wash .item:hover { background: var(--band); color: var(--ink); }
 
   /* 7 · a 2px bar stands at the left edge */
   .v-bar .item { padding-left: 0; }
-  .v-bar .item.hov { color: var(--ink); }
-  .v-bar .item.hov::before { content: ""; position: absolute; left: -12px; top: 5px; bottom: 5px; width: 2px;
+  .v-bar .item:hover { color: var(--ink); }
+  .v-bar .item:hover::before { content: ""; position: absolute; left: -12px; top: 5px; bottom: 5px; width: 2px;
     border-radius: 1px; background: var(--edge-deep); }
 
   /* 8 · a dot steps in before the word */
   .v-dot .item { padding-left: 12px; margin-left: -12px; }
-  .v-dot .item.hov { color: var(--ink); }
-  .v-dot .item.hov::before { content: ""; position: absolute; left: 0; top: 50%; margin-top: -2.5px;
+  .v-dot .item:hover { color: var(--ink); }
+  .v-dot .item:hover::before { content: ""; position: absolute; left: 0; top: 50%; margin-top: -2.5px;
     width: 5px; height: 5px; border-radius: 50%; background: var(--edge-deep); }
 
   /* 9 · a quiet chevron appears at the row's end */
-  .v-chev .item.hov { color: var(--ink); }
-  .v-chev .item.hov::after { content: "\203A"; position: absolute; right: 0; top: 2px;
+  .v-chev .item:hover { color: var(--ink); }
+  .v-chev .item:hover::after { content: "\203A"; position: absolute; right: 0; top: 2px;
     font-size: 16px; line-height: 24px; color: var(--edge-deep); }
 
   /* 10 · the ink warms to the site green */
-  .v-green .item.hov { color: var(--accent); }
+  .v-green .item:hover { color: var(--accent); }
 </style>
 </head>
 <body>
 <h1>Account panel hover lab</h1>
-<p class="note">The account panel with its middle row held in the hover state, once per treatment. The question:
-how do the rows say "you can click me" without making a fuss? The wave is here for comparison; the rest are the
-quieter candidates, all leaning on colors the scheme already owns.</p>
+<p class="note">The account panel once per treatment; hover the rows to see each one. The question: how do the
+rows say "you can click me" without making a fuss? The wave is here for comparison; the rest are the quieter
+candidates, all leaning on colors the scheme already owns.</p>
 
 <div class="grid" id="grid"></div>
 
@@ -105,7 +104,7 @@ quieter candidates, all leaning on colors the scheme already owns.</p>
     box.innerHTML = "<p class='tag'>" + v[1] + "</p>" +
       "<div class='panel'><div class='phead'>Account</div>" +
       "<div class='item'><span class='w'>Settings</span></div>" +
-      "<div class='item hov'><span class='w'>Log in or sign up</span></div>" +
+      "<div class='item'><span class='w'>Log in or sign up</span></div>" +
       "<div class='item'><span class='w'>Give feedback</span></div>" +
       "</div>";
     root.appendChild(box);
