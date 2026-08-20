@@ -342,7 +342,7 @@
   #adrail .rgame { position: relative; }
   #adrail .rgamebtn { height: 24px; border: none; cursor: pointer; border-radius: var(--radius-md, 6px);
     corner-shape: squircle; font-family: inherit; font-size: 14px; font-weight: bold;
-    background: #A5D8FF url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 7'%3E%3Cpath d='M1.2 1h5.6L4 6z' fill='%231971C2' stroke='%231971C2' stroke-width='1.6' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E") right 10px center / 8px 7px no-repeat;
+    background: #A5D8FF url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 7'%3E%3Cpath d='M1.2 1h5.6L4 6z' fill='white' stroke='%231971C2' stroke-width='1.6' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E") right 10px center / 8px 7px no-repeat;
     color: #1971C2; box-shadow: inset 0 0 0 1px #7AB8EC; padding: 0 24px 1px 10px; line-height: 22px; }
   #adrail .rgamebtn:hover { background-color: #9ACFF8; }
   #adrail .rgamebtn:active { transform: scale(0.98); }
@@ -582,23 +582,34 @@
   .mpanel::before { content: ""; position: absolute; left: -8px; right: -8px; top: -16px; height: 16px; }
   .mbcenter .mgames:hover .mgdrop { display: flex; gap: 24px; }
   .mbcenter .muser li:hover .mpanel { display: block; }
+  /* right items run the bar's full height so their panels drop from the
+     same level as the games panel */
+  .mbcenter .muser li { height: 56px; }
+  .mbcenter .muser .mpanel { top: 100%; }
   .mbcenter .muser .mpanel { left: auto; right: -6px; }
-  .mghead { font-size: 12px; font-weight: bold; color: var(--muted); margin-bottom: 6px; }
-  .mgcol { display: flex; flex-direction: column; white-space: nowrap; }
-  .mgcol a { font-size: 14px; line-height: 26px; font-weight: normal; color: var(--ink-soft); text-decoration: none; border-bottom: none; }
+  .mghead { font-size: 13px; font-weight: bold; color: var(--muted); line-height: 40px; margin: 0; position: relative; z-index: 1; }
+  .mgdrop { padding-top: 0 !important; }
+  .mgdrop::after { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 40px;
+    background: var(--band, #f4eee5); border-bottom: 1px solid var(--hairline, #e7e7e7);
+    border-radius: 10px 10px 0 0; corner-shape: squircle; pointer-events: none; }
+  .mgcol { display: flex; flex-direction: column; white-space: nowrap; position: relative; z-index: 1; padding-bottom: 4px; }
+  .mgcol a { font-size: 16px; line-height: 32px; font-weight: normal; color: var(--ink-soft); text-decoration: none; border-bottom: none; }
   .mgcol a:hover { text-decoration: underline; }
-  .mphead { font-size: 14px; font-weight: bold; color: var(--ink); margin-bottom: 6px;
+  .mpanel:has(.mphead) { padding-top: 0; }
+  .mphead { font-size: 14px; font-weight: bold; color: var(--ink); margin: 0 -16px 8px; padding: 0 16px;
+    line-height: 40px; background: var(--band, #f4eee5); border-bottom: 1px solid var(--hairline, #e7e7e7);
+    border-radius: 10px 10px 0 0; corner-shape: squircle;
     display: flex; align-items: baseline; gap: 8px; white-space: nowrap; }
   .mpcount { font-size: 12px; font-weight: normal; color: var(--muted); }
   .mpempty { font-size: 13px; line-height: 19px; color: var(--muted); width: 210px; }
-  .mprow { display: flex; align-items: center; gap: 8px; font-size: 14px; line-height: 20px;
+  .mprow { display: flex; align-items: center; gap: 8px; font-size: 16px; line-height: 22px;
     color: var(--ink-soft); padding: 4px 0; white-space: nowrap; cursor: pointer; }
   .mprow:hover { text-decoration: underline; }
   .mpav { width: 22px; height: 22px; flex: none; }
   .mpage { margin-left: auto; font-size: 12px; color: var(--muted); padding-left: 14px; }
   .mpdot { width: 8px; height: 8px; border-radius: 50%; background: #64CD00;
     box-shadow: 0 0 0 1.5px #C0EB75; margin-left: 12px; }
-  .mudrop .mitem { font-size: 14px; line-height: 28px; color: var(--ink-soft); cursor: pointer;
+  .mudrop .mitem { font-size: 16px; line-height: 32px; color: var(--ink-soft); cursor: pointer;
     white-space: nowrap; padding: 0 2px; }
   .mudrop .mitem:hover { text-decoration: underline; }
   .mpanel .vPil { display: none; }
@@ -1379,9 +1390,9 @@
   #lobbyDemo .ldChips .button { flex: 1 1 auto; min-width: 0; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
   #lobbyDemo .ldMore { position: relative; flex: 0 0 auto; cursor: pointer; }
   #lobbyDemo .ldMore::after { content: ""; position: absolute; top: 100%; left: 0; width: 100%; height: 8px; }
-  #lobbyDemo .ldMore .dropupButton { display: block; height: 24px; line-height: 22px; border-radius: var(--radius-md, 6px); corner-shape: squircle; padding: 0 10px 1px;
+  #lobbyDemo .ldMore .dropupButton { display: flex; align-items: center; height: 24px; border-radius: var(--radius-md, 6px); corner-shape: squircle; padding: 0 10px;
     font-size: 14px; font-weight: bold; background-color: #A5D8FF; box-shadow: inset 0 0 0 1px #7AB8EC, 0 2px 4px rgba(0, 0, 0, .06); color: #1971C2; }
-  #lobbyDemo .ldMore .dropupButton .dropupButtonText { background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 7'%3E%3Cpath d='M1.2 1h5.6L4 6z' fill='%231971C2' stroke='%231971C2' stroke-width='1.6' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right center / 8px 7px; padding: 0 14px 0 0; }
+  #lobbyDemo .ldMore .dropupButton .dropupButtonText { background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 7'%3E%3Cpath d='M1.2 1h5.6L4 6z' fill='white' stroke='%231971C2' stroke-width='1.6' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right center / 8px 7px; padding: 0 14px 0 0; }
   #lobbyDemo .ldMore:hover .dropupButton { background-color: #9ACFF8; }
   #lobbyDemo .dropupContent { display: none; position: absolute; z-index: 2; top: calc(100% + 8px); right: 0; min-width: 100%;
     background-color: #fff; border: 1px solid #63B4F2; border-radius: 6px; box-sizing: border-box; overflow: hidden;
@@ -1900,7 +1911,7 @@
 <body class="evernote play-raph layout-scrab scenehero font-vollkorn shadow-soft edge-softlight tex-grain cat-split stats-capsule menu-centerband">
 
 <aside id="adrail">
-  <button type="button" class="adtoggle" id="adtoggle">Show ads</button>
+  <button type="button" class="adtoggle" id="adtoggle">Hide challenge &amp; leaderboard</button>
   <section class="railsec" id="railChallenge">
     <div class="rshead"><span class="rstitle">August challenge</span><div class="rgame"><button type="button" class="rgamebtn">Hearts</button><div class="rgamemenu"><button type="button">Hearts</button><button type="button">Spades</button><button type="button">Euchre</button><button type="button">Canasta</button><button type="button">Gin Rummy</button><button type="button">Cribbage</button></div></div></div>
     <div class="dcbox">
@@ -2006,7 +2017,8 @@
   <div class="mbcenter">
     <div class="mleft"><span class="mclink mgames">Games<img class="mtri" src="arrowDownBig.png" alt="">
       <div class="mpanel mgdrop">
-        <div class="mgcol"><div class="mghead">Trick-taking</div><a href="#">Hearts</a><a href="#">Spades</a><a href="#">Euchre</a><a href="#">Pinochle</a><a href="#">Double Deck Pinochle</a><a href="#">Bridge</a><a href="#">Whist</a><a href="#">Sheepshead</a><a href="#">Twenty-Nine</a><a href="#">Sergeant Major</a></div>
+        <div class="mgcol"><div class="mghead">Trick-taking</div><a href="#">Hearts</a><a href="#">Spades</a><a href="#">Euchre</a><a href="#">Pinochle</a><a href="#">Double Deck Pinochle</a></div>
+        <div class="mgcol"><div class="mghead">&nbsp;</div><a href="#">Bridge</a><a href="#">Whist</a><a href="#">Sheepshead</a><a href="#">Twenty-Nine</a><a href="#">Sergeant Major</a></div>
         <div class="mgcol"><div class="mghead">Rummy</div><a href="#">Canasta</a><a href="#">Gin Rummy</a><a href="#">Hand &amp; Foot</a><a href="#">Rummy</a></div>
         <div class="mgcol"><div class="mghead">Classics</div><a href="#">Cribbage</a><a href="#">Crazy Eights</a><a href="#">Go Fish</a><a href="#">Old Maid</a></div>
         <div class="mgcol"><div class="mghead">More games</div><a href="#">Solitaire</a><a href="#">FreeCell</a><a href="#">Spider Solitaire</a><a href="#">2048 Game</a></div>
@@ -4221,7 +4233,7 @@
     var toggle = document.getElementById("adtoggle");
     toggle.addEventListener("click", function () {
       var on = rail.classList.toggle("adsOn");
-      toggle.textContent = on ? "Show challenge & board" : "Show ads";
+      toggle.textContent = on ? "Show challenge & leaderboard" : "Hide challenge & leaderboard";
     });
     document.querySelectorAll("#railBoard .lbtable tbody tr").forEach(function (row) {
       var name = row.querySelector(".lbname");
