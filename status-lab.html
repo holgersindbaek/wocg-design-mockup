@@ -126,6 +126,72 @@
   .postline b { color: var(--ink); }
   .postline .up { color: #4F800B; font-weight: bold; }
   .postline .down { color: #B52626; font-weight: bold; }
+
+  /* ===== batch two: date-shaped objects ===== */
+  .vsec2 h2 { font-size: 15.5px; margin: 40px 0 3px; }
+  .vsec2 .desc { font-size: 12.5px; color: #999488; margin: 0 0 14px; max-width: 840px; }
+
+  /* D1 · month leaf (AUG band) — the leaf recipe, month on the cap */
+  .leaf.mo { width: 30px; height: 34px; }
+  .leaf.mo .lband { height: 11px; font-size: 7px; letter-spacing: .08em; }
+  .leaf.mo .lday { height: 22px; font-size: 16px; }
+  .leaf.mo .stamp { top: 16px; width: 15px; height: 15px; }
+
+  /* D2 · spiral desk pad — binder rings over the page */
+  .spad { position: relative; margin-top: 4px; cursor: pointer; }
+  .spad .srings { position: absolute; top: -4px; left: 0; right: 0; display: flex; justify-content: center; gap: 8px; z-index: 2; }
+  .spad .srings i { width: 6px; height: 8px; border: 1.5px solid #B9B3A9; border-radius: 3px; background: var(--canvas); box-sizing: border-box; }
+  .spad .spage { width: 32px; height: 30px; background: #fff; border-radius: 3px 3px var(--radius-md) var(--radius-md); corner-shape: squircle;
+    box-shadow: inset 0 0 0 1px var(--edge), var(--liftshadow); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .spad .sday { font-family: "Vollkorn", serif; font-weight: 700; font-size: 15px; color: var(--ink); line-height: 1; }
+  .spad .swk { font-size: 7px; font-weight: bold; letter-spacing: .08em; color: var(--muted); margin-top: 2px; }
+  .spad.done .sday, .spad.done .swk { opacity: .4; }
+  .spad .stamp { display: none; position: absolute; left: 50%; top: 50%; width: 15px; height: 15px;
+    transform: translate(-50%, -42%) rotate(-8deg); background-color: #66A80F;
+    -webkit-mask: url("dealDayCheck.svg") center / contain no-repeat; mask: url("dealDayCheck.svg") center / contain no-repeat; }
+  .spad.done .stamp { display: block; }
+
+  /* D3 · split-flap tile — a flip-clock day */
+  .flap { position: relative; width: 26px; height: 30px; margin-top: 12px; cursor: pointer;
+    background: linear-gradient(#ffffff 0 50%, #FBF8F4 50% 100%); border-radius: var(--radius-md); corner-shape: squircle;
+    box-shadow: inset 0 0 0 1px var(--edge), var(--liftshadow);
+    display: flex; align-items: center; justify-content: center; }
+  .flap::after { content: ""; position: absolute; left: 1px; right: 1px; top: 50%; height: 1px; background: var(--edge); }
+  .flap .fday { font-family: "Vollkorn", serif; font-weight: 700; font-size: 15px; color: var(--ink); position: relative; z-index: 1; }
+  .flap .chk { width: 14px; height: 14px; position: relative; z-index: 1; }
+
+  /* D4 · the week strip — this week as a tiny matrix */
+  .wstrip { display: inline-flex; flex-direction: column; margin-top: 12px; background: #fff;
+    border-radius: var(--radius-md); corner-shape: squircle; overflow: hidden;
+    box-shadow: inset 0 0 0 1px var(--edge), var(--liftshadow); }
+  .wstrip .whead { display: grid; grid-template-columns: repeat(7, 17px); background: var(--band); border-bottom: 1px solid #E7E7E7; }
+  .wstrip .whead span { font-size: 7px; font-weight: bold; letter-spacing: .04em; color: var(--muted); text-align: center; line-height: 10px; }
+  .wstrip .wdays { display: grid; grid-template-columns: repeat(7, 17px); }
+  .wstrip .wd { height: 20px; display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: bold; color: var(--muted); font-variant-numeric: tabular-nums; border-left: 1px solid rgba(0,0,0,.06); }
+  .wstrip .wd:first-child { border-left: none; }
+  .wstrip .wd .chk { width: 9px; height: 9px; }
+  .wstrip .wd.today { color: var(--ink); box-shadow: inset 0 -2px 0 #66A80F; }
+  .wstrip .wd.fut { opacity: .4; font-weight: normal; }
+
+  /* D5 · the rubber date stamp */
+  .dstamp { display: inline-block; margin-top: 14px; padding: 2px 7px 1px; border: 1.5px solid var(--muted); border-radius: 4px;
+    transform: rotate(-3deg); font-size: 10px; font-weight: bold; letter-spacing: .1em; color: var(--muted);
+    opacity: .65; cursor: pointer; font-variant-numeric: tabular-nums; }
+  .dstamp.done { border-color: #2B8A3E; color: #2B8A3E; background: rgba(178, 242, 187, .25); opacity: 1; }
+
+  /* D6 · the punch-card month */
+  .pcard { display: inline-flex; align-items: center; gap: 7px; margin-top: 12px; padding: 6px 8px; background: #fff;
+    border-radius: var(--radius-md); corner-shape: squircle; box-shadow: inset 0 0 0 1px var(--edge), var(--liftshadow); cursor: pointer; }
+  .pcard .pcap { font-size: 8px; font-weight: bold; letter-spacing: .08em; color: var(--muted); writing-mode: vertical-rl; transform: rotate(180deg); }
+  .pcard .pgrid { display: grid; grid-template-columns: repeat(7, 5px); gap: 2px; }
+  .pcard .pd { width: 5px; height: 5px; border-radius: 50%; }
+  .pcard .pd.won { background: #66A80F; }
+  .pcard .pd.miss { background: #D8D2C7; }
+  .pcard .pd.today { background: #fff; box-shadow: inset 0 0 0 1.5px #2B8A3E; }
+  .pcard .pd.today.won { background: #66A80F; box-shadow: none; }
+  .pcard .pd.fut { background: #EDE9E1; }
+  .pcard .pd.blank { background: none; }
 </style>
 </head>
 <body>
@@ -137,6 +203,14 @@ on days you played ranked</b> &mdash; quiet days fall back to the rating, unrank
 signed-out visitor sees no unit at all (except the calendar leaf, which shows a bare date).</p>
 <div class="grid" id="grid"></div>
 
+<div class="vsec2">
+  <h2>Two &mdash; date-shaped objects (the leaf family)</h2>
+  <p class="desc">The tear-off leaf's idea, explored: the challenge indicator as a piece of calendar. Every card keeps
+  the rank tag beside it so the comparison isolates the date object. Objects that carry personal memory (the week
+  strip, the punch card) disappear for signed-out visitors; bare-date objects stay, unstamped.</p>
+  <div class="grid" id="grid2"></div>
+</div>
+
 <script>
   var CAPSULE_STOCK =
     '<span class="capsule"><span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>' +
@@ -144,6 +218,12 @@ signed-out visitor sees no unit at all (except the calendar leaf, which shows a 
 
   function chipFor(bd) {
     return bd === "up" ? ' <span class="lbUp">3</span>' : bd === "down" ? ' <span class="lbDown">2</span>' : '';
+  }
+
+  function ranktagHTML(st) {
+    if (st.viewer !== "in" || st.bd === "none") return "";
+    if (st.bd === "rest") return '<span class="ranktag"><span class="gcap">SPADES</span>1,581</span>';
+    return '<span class="ranktag">&#8470; 23' + chipFor(st.bd) + '</span>';
   }
 
   var CONCEPTS = [
@@ -176,12 +256,7 @@ signed-out visitor sees no unit at all (except the calendar leaf, which shows a 
       render: function (st) {
         var leaf = '<span class="leaf' + (st.viewer === "in" && st.ch === "done" ? " done" : "") + '">' +
           '<span class="lband">WE</span><span class="lday">20</span><span class="chk stamp"></span></span>';
-        var tag = "";
-        if (st.viewer === "in") {
-          if (st.bd === "rest") tag = '<span class="ranktag"><span class="gcap">SPADES</span>1,581</span>';
-          else if (st.bd !== "none") tag = '<span class="ranktag">&#8470; 23' + chipFor(st.bd) + '</span>';
-        }
-        return CAPSULE_STOCK + '<span class="leafrow">' + leaf + tag + '</span>';
+        return CAPSULE_STOCK + '<span class="leafrow">' + leaf + ranktagHTML(st) + '</span>';
       } },
     { id: "coin",
       cap: "<b>4 · The month medal coin</b> — the face holds today (date &rarr; check), the rim fills with the month's medal metal (the real 10/20/31 math), the corner badge holds the rank.",
@@ -219,12 +294,80 @@ signed-out visitor sees no unit at all (except the calendar leaf, which shows a 
       } }
   ];
 
+  /* the mockup's August: won days, today the 20th (a Wednesday in the artifact's fiction) */
+  var MWON = { 1: 1, 2: 1, 3: 1, 5: 1, 7: 1, 8: 1, 10: 1, 11: 1, 14: 1, 16: 1, 18: 1, 19: 1 };
+  var MTODAY = 20, MDAYS = 31, MLEAD = 5;
+
+  function weekStripHTML(st) {
+    var head = ["M", "T", "W", "T", "F", "S", "S"].map(function (d) { return "<span>" + d + "</span>"; }).join("");
+    var cells = "";
+    for (var d = 17; d <= 23; d++) {
+      var won = MWON[d] || (d === MTODAY && st.ch === "done");
+      var cls = d === MTODAY ? " today" : d > MTODAY ? " fut" : "";
+      cells += '<span class="wd' + cls + '">' + (won ? '<span class="chk"></span>' : d) + '</span>';
+    }
+    return '<span class="wstrip"><span class="whead">' + head + '</span><span class="wdays">' + cells + '</span></span>';
+  }
+
+  function punchCardHTML(st) {
+    var dots = "";
+    for (var b = 0; b < MLEAD; b++) dots += '<span class="pd blank"></span>';
+    for (var d = 1; d <= MDAYS; d++) {
+      var won = MWON[d] || (d === MTODAY && st.ch === "done");
+      var cls = d === MTODAY ? (won ? "today won" : "today") : d > MTODAY ? "fut" : won ? "won" : "miss";
+      dots += '<span class="pd ' + cls + '"></span>';
+    }
+    return '<span class="pcard"><span class="pcap">AUG</span><span class="pgrid">' + dots + '</span></span>';
+  }
+
+  var CONCEPTS2 = [
+    { id: "monthleaf",
+      cap: "<b>D1 · The month leaf</b> — the leaf with the month on its cap instead of the weekday: the calendar-icon read (AUG over 20). Same stamp when done.",
+      render: function (st) {
+        var leaf = '<span class="leaf mo' + (st.viewer === "in" && st.ch === "done" ? " done" : "") + '">' +
+          '<span class="lband">AUG</span><span class="lday">20</span><span class="chk stamp"></span></span>';
+        return CAPSULE_STOCK + '<span class="leafrow">' + leaf + ranktagHTML(st) + '</span>';
+      } },
+    { id: "spiral",
+      cap: "<b>D2 · The spiral pad</b> — a desk flip-pad page under two binder rings, day over weekday. Finishing the deal stamps the page.",
+      render: function (st) {
+        var pad = '<span class="spad' + (st.viewer === "in" && st.ch === "done" ? " done" : "") + '">' +
+          '<span class="srings"><i></i><i></i></span>' +
+          '<span class="spage"><span class="sday">20</span><span class="swk">WED</span></span><span class="stamp"></span></span>';
+        return CAPSULE_STOCK + '<span class="leafrow" style="margin-top:16px">' + pad + ranktagHTML(st) + '</span>';
+      } },
+    { id: "flap",
+      cap: "<b>D3 · The split-flap day</b> — a flip-clock tile with the crease across its middle; the day flips to a check when the deal is done (the flip would animate in the real build).",
+      render: function (st) {
+        var face = st.viewer === "in" && st.ch === "done" ? '<span class="chk"></span>' : '<span class="fday">20</span>';
+        return CAPSULE_STOCK + '<span class="leafrow"><span class="flap">' + face + '</span>' + ranktagHTML(st) + '</span>';
+      } },
+    { id: "weekstrip",
+      cap: "<b>D4 · The week strip</b> — this week as a seven-day sliver of the rail calendar: checks on won days, today underlined in green, the future faint. Carries memory, so it hides for guests.",
+      render: function (st) {
+        if (st.viewer === "out") return CAPSULE_STOCK;
+        return CAPSULE_STOCK + '<span class="leafrow">' + weekStripHTML(st) + ranktagHTML(st) + '</span>';
+      } },
+    { id: "datestamp",
+      cap: "<b>D5 · The rubber stamp</b> — the date as a library due-date stamp, slightly rotated. Un-inked grey until the deal is done, then pressed in green.",
+      render: function (st) {
+        var done = st.viewer === "in" && st.ch === "done";
+        var stamp = '<span class="dstamp' + (done ? " done" : "") + '">AUG 20' + (done ? ' &#10003;' : '') + '</span>';
+        return CAPSULE_STOCK + '<span class="leafrow">' + stamp + ranktagHTML(st) + '</span>';
+      } },
+    { id: "punchcard",
+      cap: "<b>D6 · The punch-card month</b> — the whole rail calendar compressed to a postage stamp: one dot per day, green when won, today ringed. The month's memory at a glance; hides for guests.",
+      render: function (st) {
+        if (st.viewer === "out") return CAPSULE_STOCK;
+        return CAPSULE_STOCK + '<span class="leafrow">' + punchCardHTML(st) + ranktagHTML(st) + '</span>';
+      } }
+  ];
+
   var VIEWERS = [["in", "Signed in"], ["out", "Signed out"]];
   var CHALLENGE = [["open", "Open"], ["done", "Done"]];
   var BOARD = [["none", "Unranked"], ["rest", "Quiet day"], ["up", "On board ▲3"], ["down", "On board ▼2"]];
 
-  var grid = document.getElementById("grid");
-  CONCEPTS.forEach(function (c) {
+  function buildCard(host, c) {
     var st = { viewer: "in", ch: "done", bd: "up" };
     var card = document.createElement("div");
     card.className = "cv";
@@ -254,8 +397,11 @@ signed-out visitor sees no unit at all (except the calendar leaf, which shows a 
       ctrl.appendChild(g);
     });
     paint();
-    grid.appendChild(card);
-  });
+    host.appendChild(card);
+  }
+  var grid = document.getElementById("grid"), grid2 = document.getElementById("grid2");
+  CONCEPTS.forEach(function (c) { buildCard(grid, c); });
+  CONCEPTS2.forEach(function (c) { buildCard(grid2, c); });
 </script>
 </body>
 </html>
