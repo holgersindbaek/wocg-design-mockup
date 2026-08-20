@@ -1625,9 +1625,12 @@
   /* the 90ms head-delay lets the button's press recover before the paper
      feeds: the squash reads as the pump */
   .gmenu.isOpen { display: block; animation: gmenuFeed 420ms cubic-bezier(0.22, 1, 0.36, 1) 90ms both; }
-  @keyframes gmenuFeed { from { max-height: 0; } to { max-height: var(--paper-h); } }
+  /* visibility rides the keyframes so the paper is truly invisible during
+     the 90ms pump delay - otherwise its green frame sliver pokes through
+     the button's still-rounded corner notches at the very start */
+  @keyframes gmenuFeed { from { max-height: 0; visibility: hidden; } to { max-height: var(--paper-h); visibility: visible; } }
   .gmenu.isClosing { display: block; animation: gmenuBack 240ms cubic-bezier(0.5, 0, 0.8, 0.4) both; }
-  @keyframes gmenuBack { from { max-height: var(--paper-h); } to { max-height: 0; } }
+  @keyframes gmenuBack { from { max-height: var(--paper-h); visibility: visible; } to { max-height: 0; visibility: hidden; } }
   .gmenu .gmGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: #D8D2C7; }
   .gmenu .gmGrid button { display: flex; align-items: center; justify-content: center; height: 28px; margin: 0;
     padding: 0 8px; border: none; border-radius: 0; cursor: pointer; font-family: inherit;
@@ -1652,7 +1655,7 @@
       border-radius 120ms ease-out 230ms; }
   .gbtns .gplay[aria-expanded="true"] { border-top-left-radius: 0; border-top-right-radius: 0;
     transition: background-color 24ms ease-out, transform 80ms ease-out, filter 80ms ease-out,
-      border-radius 120ms ease-out 0ms; }
+      border-radius 90ms ease-out 0ms; }
   .gbtns .gplay[aria-expanded="true"]:active { transform: none; }
   /* the tile's own triangle turns from its glyph centroid while the panel
      is open (the lab's chosen arrow move) */
