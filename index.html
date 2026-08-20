@@ -310,7 +310,12 @@
     width: 300px; height: 170px; flex-shrink: 0; margin-top: auto;
     box-shadow: 0 1px 3px rgba(0, 0, 0, .1);
   }
-  #adrail .adhide {
+  /* ===== the rail's own content: today's board + the month challenge.
+     The Online Solitaire rail grammar translated to wocg: the toggle sits
+     on top, the boards are the default, the ads live behind the button.
+     Cards wear the design's one chrome (edge line + lift shadow); medal
+     colors run OS's exact ramp, which the medal SVGs already carry. ===== */
+  #adrail .adtoggle {
     width: 300px; flex-shrink: 0;
     border: none; cursor: pointer; border-radius: var(--radius-md, 6px); corner-shape: squircle;
     background-color: #A5D8FF; color: #1971C2;
@@ -318,15 +323,82 @@
     font-family: "BuloRounded", "Verdana", "Arial", "Helvetica", sans-serif;
     font-size: 16px; font-weight: bold; height: 24px; line-height: 24px; padding: 0;
   }
-  #adrail .adhide:hover { background-color: #9ACFF8; }
-  #adrail .adhide:active { transform: scale(0.98); }
+  #adrail .adtoggle:hover { background-color: #9ACFF8; }
+  #adrail .adtoggle:active { transform: scale(0.98); }
+  #adrail .adslot, #adrail .advideo { display: none; }
+  #adrail.adsOn .adslot, #adrail.adsOn .advideo { display: block; }
+  #adrail.adsOn .railcard { display: none; }
+  #adrail .railcard {
+    width: 300px; flex-shrink: 0; box-sizing: border-box; text-align: left;
+    background: var(--surface, #fff); border-radius: 12px; corner-shape: squircle; padding: 12px;
+    box-shadow: 0 0 0 1px var(--edge, #d2cfca), var(--liftshadow);
+    font-size: 15px; color: var(--ink);
+  }
+  #adrail .rchead { display: flex; align-items: baseline; justify-content: space-between; }
+  #adrail .rctitle { font-size: 18px; font-weight: bold; line-height: 22px; }
+  #adrail .rcmeta { font-size: 13px; color: var(--muted); }
+  #adrail .lbtable { width: 100%; border-collapse: collapse; margin-top: 4px; }
+  #adrail .lbtable th { font-size: 12.5px; font-weight: normal; color: var(--muted); text-align: left; padding: 2px 0 4px; }
+  #adrail .lbtable td { padding: 4px 0; border-top: 1px solid var(--hairline, #e7e7e7); }
+  #adrail .lbtable th.lbwins, #adrail .lbtable td.lbwins { text-align: right; }
+  #adrail .lbtable td.lbrank { width: 20px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  #adrail .lbtable td.lbwins { font-weight: bold; font-variant-numeric: tabular-nums; }
+  #adrail .lbtable td.lbplayer { display: flex; align-items: center; gap: 7px; }
+  #adrail .lbplayer img { width: 20px; height: 20px; }
+  #adrail .lbname { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; }
+  #adrail .lbtable tbody tr { cursor: pointer; }
+  #adrail .lbtable tbody tr:hover .lbname { text-decoration: underline; }
+  #adrail .rcfoot { margin: 8px 0 0; padding-top: 8px; border-top: 1px solid var(--hairline, #e7e7e7);
+    font-size: 13px; color: var(--muted); }
+  /* the medal strip: three equal segments toward 10, 20, and 31 wins;
+     track = medal light, ring = medal normal, fill = medal dark (OS ramp) */
+  #adrail .medals { display: flex; align-items: flex-end; height: 24px; margin: 12px 11px 14px 0; }
+  #adrail .mseg { position: relative; flex: 1; height: 6px; }
+  #adrail .mseg.bronze { background: #FFC178; box-shadow: inset 0 0 0 1px #FF932A; border-radius: 3px 0 0 3px; }
+  #adrail .mseg.silver { background: #DEE2E6; box-shadow: inset 0 0 0 1px #AEB5BD; }
+  #adrail .mseg.gold { background: #FFEC99; box-shadow: inset 0 0 0 1px #FDC41B; border-radius: 0 3px 3px 0; }
+  #adrail .mfill { position: absolute; left: 0; top: 0; bottom: 0; }
+  #adrail .mseg.bronze .mfill { background: #F76706; border-radius: 3px 0 0 3px; }
+  #adrail .mseg.silver .mfill { background: #868E96; }
+  #adrail .mseg.gold .mfill { background: #E67700; }
+  #adrail .mbadge { position: absolute; right: -11px; bottom: -7px; width: 22px; height: 21px; z-index: 1;
+    filter: drop-shadow(0 0 1px rgba(0, 0, 0, .25)); }
+  #adrail .mbadge img { display: block; width: 100%; height: 100%; }
+  #adrail .mbadge span { position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-54%);
+    text-align: center; font-size: 10px; font-weight: bold; color: #fff;
+    text-shadow: -1px 0 rgba(0,0,0,.35), 1px 0 rgba(0,0,0,.35), 0 -1px rgba(0,0,0,.35), 0 1px rgba(0,0,0,.35); }
+  /* the month calendar: won days wear the success green + a check, today
+     wears the gold, the future waits its turn */
+  #adrail .dcweek { display: grid; grid-template-columns: repeat(7, 1fr); margin-top: 2px; }
+  #adrail .dcweek span { font-size: 11px; font-weight: bold; color: var(--muted); text-align: center; line-height: 20px; }
+  #adrail .dcgrid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; }
+  #adrail .dcgrid > span { height: 26px; }
+  #adrail .dcday { height: 26px; border: none; background: none; cursor: pointer; border-radius: 6px;
+    corner-shape: squircle; font-family: inherit; font-size: 12.5px; font-weight: bold; color: var(--ink);
+    padding: 0; font-variant-numeric: tabular-nums; }
+  #adrail .dcday:hover { background: var(--band, #f4eee5); }
+  #adrail .dcday.won { background: #D9F5A2 url("dealDayCheck.svg") center / 14px 14px no-repeat;
+    box-shadow: inset 0 0 0 1px #94D82C; color: transparent; }
+  #adrail .dcday.today { background: #FFEC99; box-shadow: inset 0 0 0 1px #FFD43B; color: #E67700; }
+  #adrail .dcday.future { color: var(--muted); opacity: .45; font-weight: normal; cursor: default; }
+  #adrail .dcday.future:hover { background: none; }
+  #adrail .dcplay { display: block; width: 100%; height: 30px; margin-top: 12px; border: none; cursor: pointer;
+    border-radius: var(--radius-md); corner-shape: squircle; font-family: inherit; font-size: 15px; font-weight: bold;
+    background: #66A80F; color: #fff; box-shadow: inset 0 0 0 1px #4F800B, 0 2px 4px rgba(0, 0, 0, .06);
+    text-shadow: -1px -1px 0 #4F800B, 1px -1px 0 #4F800B, -1px 1px 0 #4F800B, 1px 1px 0 #4F800B;
+    transition: background-color 150ms ease-out, transform 80ms ease-out; }
+  #adrail .dcplay:hover { background: #5D960D; }
+  #adrail .dcplay:active { transform: scale(0.98); }
   @media (max-width: 1100px) {
     :root { --adrail-w: 0px; }
     #adrail { display: none; }
   }
 
   /* anonymous switchers — never themed; hidden until you hover the ad rail */
-  .switchzone { position: fixed; top: 0; right: 0; bottom: 0; width: 336px; z-index: 21; }
+  /* the switcher's hover zone shrinks to the rail's right padding strip so
+     the rail's own cards stay clickable; the screen's right edge still
+     slides the switchbar out */
+  .switchzone { position: fixed; top: 0; right: 0; bottom: 0; width: 14px; z-index: 21; }
   .switchbar {
     position: fixed; top: 0; right: 0; bottom: 0; width: var(--adrail-w, 328px); z-index: 22;
     box-sizing: border-box; overflow-y: auto;
@@ -1754,11 +1826,36 @@
 </head>
 <body class="evernote play-raph layout-scrab scenehero font-vollkorn shadow-soft edge-softlight tex-grain cat-split stats-capsule menu-centerband">
 
-<aside id="adrail" aria-hidden="true">
+<aside id="adrail">
+  <button type="button" class="adtoggle" id="adtoggle">Show ads</button>
+  <section class="railcard" id="railBoard">
+    <div class="rchead"><span class="rctitle">Daily leaderboard</span><span class="rcmeta">Aug 20</span></div>
+    <table class="lbtable">
+      <thead><tr><th>#</th><th>Player</th><th class="lbwins">Wins</th></tr></thead>
+      <tbody>
+        <tr><td class="lbrank">1</td><td class="lbplayer"><img src="AnimalCat.svg" alt=""><span class="lbname">PiLady10</span></td><td class="lbwins">14</td></tr>
+        <tr><td class="lbrank">2</td><td class="lbplayer"><img src="AnimalFox.svg" alt=""><span class="lbname">Marlene</span></td><td class="lbwins">12</td></tr>
+        <tr><td class="lbrank">3</td><td class="lbplayer"><img src="AnimalBee.svg" alt=""><span class="lbname">granny_ace</span></td><td class="lbwins">11</td></tr>
+        <tr><td class="lbrank">4</td><td class="lbplayer"><img src="AnimalGopher.svg" alt=""><span class="lbname">Bakersfield</span></td><td class="lbwins">9</td></tr>
+        <tr><td class="lbrank">5</td><td class="lbplayer"><img src="AlienBlue.svg" alt=""><span class="lbname">J.T.</span></td><td class="lbwins">8</td></tr>
+      </tbody>
+    </table>
+    <p class="rcfoot">Win a game to join today's board.</p>
+  </section>
+  <section class="railcard" id="railChallenge">
+    <div class="rchead"><span class="rctitle">August challenge</span><span class="rcmeta">12 wins</span></div>
+    <div class="medals">
+      <div class="mseg bronze"><div class="mfill" style="width:100%"></div><span class="mbadge"><img src="dailyChallengeBronzeSmall.svg" alt=""><span>10</span></span></div>
+      <div class="mseg silver"><div class="mfill" style="width:20%"></div><span class="mbadge"><img src="dailyChallengeSilverSmall.svg" alt=""><span>20</span></span></div>
+      <div class="mseg gold"><div class="mfill" style="width:0%"></div><span class="mbadge"><img src="dailyChallengeGoldSmall.svg" alt=""><span>31</span></span></div>
+    </div>
+    <div class="dcweek"><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span><span>Su</span></div>
+    <div class="dcgrid" id="dcgrid"></div>
+    <button type="button" class="dcplay" id="dcplay">Play today's challenge</button>
+  </section>
   <div class="adslot"><img src="adMedrec1.png" width="300" height="250" alt=""></div>
   <div class="adslot"><img src="adMedrec2.png" width="300" height="250" alt=""></div>
   <div class="advideo"><img src="adVideo.png" width="300" height="170" alt=""></div>
-  <button type="button" class="adhide">Hide ads</button>
 </aside>
 
 <div class="switchzone"></div>
@@ -4007,6 +4104,45 @@
     }
     document.addEventListener("click", closeMenus);
     document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeMenus(); });
+  })();
+
+  // ===== the ad rail: today's board and the month challenge by default,
+  // the ads behind the top toggle =====
+  (function () {
+    var rail = document.getElementById("adrail");
+    if (!rail) return;
+    var toggle = document.getElementById("adtoggle");
+    toggle.addEventListener("click", function () {
+      var on = rail.classList.toggle("adsOn");
+      toggle.textContent = on ? "Hide ads" : "Show ads";
+    });
+    document.querySelectorAll("#railBoard .lbtable tbody tr").forEach(function (row) {
+      row.addEventListener("click", function () {
+        flash(row.querySelector(".lbname").textContent + " — profile");
+      });
+    });
+    /* August 2026 starts on a Saturday; today is the 20th; the checked days
+       are the challenges already won (12, matching the card's wins count) */
+    var WON = { 1: 1, 2: 1, 3: 1, 5: 1, 7: 1, 8: 1, 10: 1, 11: 1, 14: 1, 16: 1, 18: 1, 19: 1 };
+    var TODAY = 20, DAYS = 31, LEAD = 5;
+    var grid = document.getElementById("dcgrid");
+    for (var b = 0; b < LEAD; b++) grid.appendChild(document.createElement("span"));
+    for (var d = 1; d <= DAYS; d++) (function (d) {
+      var cell = document.createElement("button");
+      cell.type = "button";
+      cell.className = "dcday" + (WON[d] ? " won" : "") + (d === TODAY ? " today" : "") + (d > TODAY ? " future" : "");
+      cell.textContent = d;
+      if (d > TODAY) { cell.disabled = true; }
+      else {
+        cell.addEventListener("click", function () {
+          flash(WON[d] ? "August " + d + " — already won" : "August " + d + " challenge — dealing you in…");
+        });
+      }
+      grid.appendChild(cell);
+    })(d);
+    document.getElementById("dcplay").addEventListener("click", function () {
+      flash("Today's challenge — dealing you in…");
+    });
   })();
 </script>
 <script>
