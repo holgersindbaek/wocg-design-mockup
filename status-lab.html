@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Status lab · the challenge &amp; board indicators</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vollkorn:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  @font-face { font-family: 'BuloRounded'; src: url("BuloRounded-Regular.woff2") format('woff2'); font-weight: normal; font-display: swap; }
+  @font-face { font-family: 'BuloRounded'; src: url("BuloRounded-Bold.woff2") format('woff2'); font-weight: bold; font-display: swap; }
+  body { margin: 0; padding: 28px 24px 80px; background: #f9f6f2; color: #141414;
+    font-family: "BuloRounded", "Verdana", "Arial", sans-serif; -webkit-font-smoothing: antialiased;
+    --radius-md: 6px; --edge: #D2CFCA; --muted: #4E4D4C; --ink: #141414; --band: #F4EEE5; --canvas: #F9F6F2;
+    --liftshadow: 0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09); }
+  @supports (corner-shape: squircle) { body { --radius-md: 12px; } }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  p.note { font-size: 13px; color: #8a857c; margin: 0 0 26px; max-width: 860px; }
+  .grid { display: grid; grid-template-columns: repeat(2, minmax(480px, 600px)); gap: 24px; }
+  .cv { background: #fff; border-radius: 12px; corner-shape: squircle; box-shadow: 0 0 0 1px rgba(0,0,0,.06), var(--liftshadow); overflow: hidden; }
+  .cv .dcap { font-size: 12.5px; color: #6f6b62; margin: 0; padding: 12px 16px 10px; border-bottom: 1px solid #eeeae3; }
+  .cv .dcap b { color: #141414; font-size: 13px; }
+  .stage { background: var(--canvas); padding: 30px 56px 30px 26px; min-height: 120px;
+    display: flex; flex-direction: column; align-items: flex-start; justify-content: center; }
+  .ctrl { display: flex; flex-wrap: wrap; gap: 10px 18px; padding: 10px 16px 12px; border-top: 1px solid #eeeae3; }
+  .cgroup { display: flex; align-items: center; gap: 4px; }
+  .cgroup .cglab { font-size: 11px; color: #999488; margin-right: 2px; }
+  .cgroup button { border: 1px solid #ddd; background: #fff; color: #555; font-family: inherit;
+    font-size: 11.5px; font-weight: 600; padding: 2px 8px; border-radius: 6px; cursor: pointer; }
+  .cgroup button.on { background: #A5D8FF; border-color: #7AB8EC; color: #1971C2; }
+  .cgroup.dim { opacity: .35; pointer-events: none; }
+
+  /* ===== the live capsule, verbatim from index.html (capsule2 cells) ===== */
+  .capsule { display: inline-flex; align-items: center; height: 32px; font-size: 16px; background: #fff; border-radius: 20px;
+    box-shadow: inset 0 0 0 1px var(--edge), var(--liftshadow); padding: 0 4px; }
+  .capsule .st { display: inline-flex; align-items: center; padding: 0 11px; gap: 4px; align-self: stretch; }
+  .capsule .st + .st { border-left: 1px solid var(--edge); }
+  .capsule .stlive { padding: 0 9px; gap: 6px; }
+  .capsule .greencap { font-size: 14px; font-weight: bold; letter-spacing: .06em; color: #2f9e44; }
+  .capsule .ldot { width: 8px; height: 8px; border-radius: 50%; background: #2f9e44; flex-shrink: 0; }
+  .capsule b { color: var(--ink); font-weight: bold; font-variant-numeric: tabular-nums; }
+  .caprow { position: relative; display: inline-flex; }
+
+  /* shared pieces */
+  .chk { display: inline-block; background-color: #66A80F;
+    -webkit-mask: url("dealDayCheck.svg") center / contain no-repeat; mask: url("dealDayCheck.svg") center / contain no-repeat; }
+  .ring { display: inline-block; border-radius: 50%; border: 1.5px solid var(--edge); box-sizing: border-box; }
+  .lbUp, .lbDown { display: inline-block; vertical-align: middle; border-radius: 4px;
+    font-size: 12px; line-height: 16px; font-weight: bold; padding: 0 4px 0 16px; background-repeat: no-repeat;
+    background-position: 4px center; background-size: 10px 10px; box-shadow: inset 0 0 0 1px rgba(0,0,0,.08); }
+  .lbUp { color: #4F800B; background-color: #C0EB75; background-image: url("arrowUpGreenSmall.png"); }
+  .lbDown { color: #B52626; background-color: #FFDBD9; background-image: url("arrowDownRedSmall.png"); }
+
+  /* ===== 1 · the Today Pill (capsulesm twin) ===== */
+  .todaypill { display: inline-flex; align-items: center; height: 24px; font-size: 14px; background: #fff; border-radius: 20px;
+    box-shadow: inset 0 0 0 1px var(--edge), var(--liftshadow); padding: 0 4px; margin-top: 10px; }
+  .todaypill .tc { display: inline-flex; align-items: center; padding: 0 9px; gap: 5px; align-self: stretch; cursor: pointer; }
+  .todaypill .tc + .tc { border-left: 1px solid var(--edge); }
+  .todaypill .tc:hover { background: rgba(0,0,0,.04); }
+  .todaypill .tcap { font-size: 12px; font-weight: bold; letter-spacing: .06em; color: var(--muted); cursor: default; }
+  .todaypill .tcap:hover { background: none; }
+  .todaypill .chk { width: 12px; height: 12px; }
+  .todaypill .ring { width: 10px; height: 10px; }
+  .todaypill b { font-variant-numeric: tabular-nums; }
+  .todaypill .mut { color: var(--muted); }
+
+  /* ===== 2 · satellite seals on the capsule rim ===== */
+  .seal { position: absolute; top: 50%; transform: translateY(-50%); width: 22px; height: 22px; border-radius: 50%;
+    background: var(--canvas); display: flex; align-items: center; justify-content: center; cursor: pointer;
+    box-shadow: inset 0 0 0 1px #D8D2C7, 0 0 0 1px #fff, var(--liftshadow); z-index: 2; }
+  .seal.s1 { right: -11px; }
+  .seal.s2 { right: -37px; }
+  .seal.done { background: #B2F2BB; box-shadow: inset 0 0 0 1px #69DB7C, 0 0 0 1px #fff, var(--liftshadow); }
+  .seal.done .chk { background-color: #2B8A3E; width: 12px; height: 12px; }
+  .seal .ring { width: 10px; height: 10px; opacity: .55; }
+  .seal .rank { font-size: 11px; font-weight: bold; color: var(--ink); font-variant-numeric: tabular-nums; line-height: 1; }
+  .seal .tri { position: absolute; top: -2px; right: -2px; width: 0; height: 0; border-left: 4px solid transparent;
+    border-right: 4px solid transparent; }
+  .seal .tri.up { border-bottom: 6px solid #4F800B; }
+  .seal .tri.down { border-top: 6px solid #B52626; border-bottom: none; top: auto; bottom: -2px; }
+  .seal svg.podium { width: 12px; height: 10px; opacity: .55; }
+  .seal svg.podium rect { fill: var(--muted); }
+
+  /* ===== 3 · tear-off leaf + rank tag ===== */
+  .leafrow { display: flex; align-items: center; gap: 8px; margin-top: 12px; }
+  .leaf { position: relative; width: 28px; height: 32px; background: #fff; border-radius: var(--radius-md); corner-shape: squircle;
+    box-shadow: inset 0 0 0 1px var(--edge), var(--liftshadow); overflow: hidden; cursor: pointer; }
+  .leaf .lband { height: 10px; background: var(--band); border-bottom: 1px solid #E7E7E7;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 8px; font-weight: bold; letter-spacing: .06em; color: var(--muted); }
+  .leaf .lday { height: 21px; display: flex; align-items: center; justify-content: center;
+    font-family: "Vollkorn", serif; font-weight: 700; font-size: 15px; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .leaf.done .lband { background: #B2F2BB; color: #2B8A3E; }
+  .leaf.done .lday { opacity: .45; }
+  .leaf .stamp { display: none; position: absolute; left: 50%; top: 15px; width: 14px; height: 14px;
+    transform: translateX(-50%) rotate(-8deg); }
+  .leaf.done .stamp { display: block; }
+  .ranktag { display: inline-flex; align-items: center; gap: 5px; height: 24px; padding: 0 10px; background: #fff;
+    border-radius: var(--radius-md); corner-shape: squircle; box-shadow: inset 0 0 0 1px var(--edge), var(--liftshadow);
+    font-size: 14px; font-weight: bold; color: var(--ink); font-variant-numeric: tabular-nums; cursor: pointer; }
+  .ranktag .gcap { font-size: 10px; font-weight: bold; letter-spacing: .06em; color: var(--muted); }
+
+  /* ===== 4 · the month medal coin ===== */
+  .coin { position: relative; width: 26px; height: 26px; margin-top: 12px; cursor: pointer; }
+  .coin .rim { position: absolute; inset: 0; border-radius: 50%;
+    background: conic-gradient(#868E96 0 20%, #E7E7E7 20% 100%); }
+  .coin .face { position: absolute; inset: 2.5px; border-radius: 50%; background: #fff;
+    box-shadow: inset 0 0 0 1px var(--edge); display: flex; align-items: center; justify-content: center;
+    font-family: "Vollkorn", serif; font-weight: 700; font-size: 12px; color: var(--ink); }
+  .coin .chk { width: 13px; height: 13px; }
+  .coin .cbadge { position: absolute; top: -5px; right: -8px; min-width: 13px; height: 13px; padding: 0 3px;
+    border-radius: 6.5px; display: flex; align-items: center; justify-content: center;
+    font-size: 9px; font-weight: bold; line-height: 1; z-index: 2; }
+  .coin .cbadge.up { background: #C0EB75; color: #4F800B; box-shadow: inset 0 0 0 1px #74B816, 0 0 0 1px #F9F6F2; }
+  .coin .cbadge.down { background: #FFDBD9; color: #B52626; box-shadow: inset 0 0 0 1px #E8A6A1, 0 0 0 1px #F9F6F2; }
+
+  /* ===== 5 · cells inside the live capsule ===== */
+  .capsule .st .chk { width: 16px; height: 16px; }
+  .capsule .st .ring { width: 12px; height: 12px; opacity: .55; }
+  .capsule .st .mut { color: var(--muted); }
+
+  /* ===== 6 · the postscript line ===== */
+  .postline { margin: 12px 0 0; font-size: 16px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .postline .g { color: #2f9e44; font-weight: bold; }
+  .postline .o { color: var(--muted); }
+  .postline b { color: var(--ink); }
+  .postline .up { color: #4F800B; font-weight: bold; }
+  .postline .down { color: #B52626; font-weight: bold; }
+</style>
+</head>
+<body>
+<h1>Status lab &middot; the challenge check &amp; the board number</h1>
+<p class="note">The rail panels are gone; each card below is one concept for the small unit that replaces them,
+shown with the real live capsule. Toggle the states under each card: the challenge is
+<b>attendance-shaped</b> (finishing the deal, win or lose, earns the check), and on the board a <b>rank exists only
+on days you played ranked</b> &mdash; quiet days fall back to the rating, unranked accounts show nothing, and a
+signed-out visitor sees no unit at all (except the calendar leaf, which shows a bare date).</p>
+<div class="grid" id="grid"></div>
+
+<script>
+  var CAPSULE_STOCK =
+    '<span class="capsule"><span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>' +
+    '<span class="st"><b>1,214</b> playing</span><span class="st"><b>143</b> tables</span></span>';
+
+  function chipFor(bd) {
+    return bd === "up" ? ' <span class="lbUp">3</span>' : bd === "down" ? ' <span class="lbDown">2</span>' : '';
+  }
+
+  var CONCEPTS = [
+    { id: "todaypill",
+      cap: "<b>1 · The Today Pill</b> — a 24px twin of the capsule one ladder step down. The only concept with real words; cells collapse per state.",
+      render: function (st) {
+        if (st.viewer === "out") return CAPSULE_STOCK;
+        var cells = '<span class="tc tcap">TODAY</span>';
+        cells += st.ch === "done"
+          ? '<span class="tc"><span class="chk"></span>Challenge done <span class="mut">&middot; 12 wins</span></span>'
+          : '<span class="tc"><span class="ring"></span>Challenge open</span>';
+        if (st.bd === "rest") cells += '<span class="tc">Spades <b>1,581</b></span>';
+        else if (st.bd !== "none") cells += '<span class="tc"><b>no. 23</b>&nbsp;in Spades' + chipFor(st.bd) + '</span>';
+        return CAPSULE_STOCK + '<span class="todaypill">' + cells + '</span>';
+      } },
+    { id: "seals",
+      cap: "<b>2 · Satellite seals</b> — the sketch verbatim: a check seal and a rank seal snapped to the capsule's rim with the friends-badge recipe. Zero layout cost.",
+      render: function (st) {
+        if (st.viewer === "out") return CAPSULE_STOCK;
+        var s1 = st.ch === "done"
+          ? '<span class="seal s1 done"><span class="chk"></span></span>'
+          : '<span class="seal s1"><span class="ring"></span></span>';
+        var s2 = "";
+        if (st.bd === "rest") s2 = '<span class="seal s2"><svg class="podium" viewBox="0 0 12 10"><rect x="0" y="4" width="3.4" height="6"/><rect x="4.3" y="0" width="3.4" height="10"/><rect x="8.6" y="6" width="3.4" height="4"/></svg></span>';
+        else if (st.bd !== "none") s2 = '<span class="seal s2"><span class="rank">23</span><span class="tri ' + st.bd + '"></span></span>';
+        return '<span class="caprow">' + CAPSULE_STOCK + s1 + s2 + '</span>';
+      } },
+    { id: "leaf",
+      cap: "<b>3 · Tear-off leaf + rank tag</b> — a miniature desk-calendar page; finishing the deal stamps it. The warmest object; a blank date is neutral, never a fault. Guests keep the bare leaf.",
+      render: function (st) {
+        var leaf = '<span class="leaf' + (st.viewer === "in" && st.ch === "done" ? " done" : "") + '">' +
+          '<span class="lband">WE</span><span class="lday">20</span><span class="chk stamp"></span></span>';
+        var tag = "";
+        if (st.viewer === "in") {
+          if (st.bd === "rest") tag = '<span class="ranktag"><span class="gcap">SPADES</span>1,581</span>';
+          else if (st.bd !== "none") tag = '<span class="ranktag">&#8470; 23' + chipFor(st.bd) + '</span>';
+        }
+        return CAPSULE_STOCK + '<span class="leafrow">' + leaf + tag + '</span>';
+      } },
+    { id: "coin",
+      cap: "<b>4 · The month medal coin</b> — the face holds today (date &rarr; check), the rim fills with the month's medal metal (the real 10/20/31 math), the corner badge holds the rank.",
+      render: function (st) {
+        if (st.viewer === "out") return CAPSULE_STOCK;
+        var face = st.ch === "done" ? '<span class="chk"></span>' : '20';
+        var badge = "";
+        if (st.bd === "up") badge = '<span class="cbadge up">23</span>';
+        else if (st.bd === "down") badge = '<span class="cbadge down">23</span>';
+        return CAPSULE_STOCK + '<span class="coin"><span class="rim"></span><span class="face">' + face + '</span>' + badge + '</span>';
+      } },
+    { id: "incapsule",
+      cap: "<b>5 · Two more cells</b> — the unit IS the capsule: personal cells appended after the site's, the tables cell dropped to keep the width. Most native, but mixes your state into the room's strip.",
+      render: function (st) {
+        if (st.viewer === "out") return CAPSULE_STOCK;
+        var cells = '<span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>' +
+          '<span class="st"><b>1,214</b> playing</span>';
+        cells += st.ch === "done" ? '<span class="st"><span class="chk"></span></span>'
+          : '<span class="st"><span class="ring"></span></span>';
+        if (st.bd === "rest") cells += '<span class="st"><span class="mut">1,581</span></span>';
+        else if (st.bd !== "none") cells += '<span class="st"><b>no. 23</b>' + chipFor(st.bd) + '</span>';
+        return '<span class="capsule">' + cells + '</span>';
+      } },
+    { id: "postline",
+      cap: "<b>6 · The postscript line</b> — typography only: one quiet 16px line below the capsule, the middot grammar joining the two facts. Zero chrome.",
+      render: function (st) {
+        if (st.viewer === "out") return CAPSULE_STOCK;
+        var parts = [];
+        parts.push(st.ch === "done" ? '<span class="g">&#10003;</span> Challenge won' : '<span class="o">&#9675;</span> Day 51 ready');
+        if (st.bd === "rest") parts.push('Spades <b>1,581</b>');
+        else if (st.bd === "up") parts.push('<b>no. 23</b> in Spades <span class="up">&#9650;3</span>');
+        else if (st.bd === "down") parts.push('<b>no. 23</b> in Spades <span class="down">&#9660;2</span>');
+        else parts.push('<b>12</b> wins this month');
+        return CAPSULE_STOCK + '<p class="postline">' + parts.join(' &middot; ') + '</p>';
+      } }
+  ];
+
+  var VIEWERS = [["in", "Signed in"], ["out", "Signed out"]];
+  var CHALLENGE = [["open", "Open"], ["done", "Done"]];
+  var BOARD = [["none", "Unranked"], ["rest", "Quiet day"], ["up", "On board ▲3"], ["down", "On board ▼2"]];
+
+  var grid = document.getElementById("grid");
+  CONCEPTS.forEach(function (c) {
+    var st = { viewer: "in", ch: "done", bd: "up" };
+    var card = document.createElement("div");
+    card.className = "cv";
+    card.innerHTML = '<p class="dcap">' + c.cap + '</p><div class="stage"></div><div class="ctrl"></div>';
+    var stage = card.querySelector(".stage"), ctrl = card.querySelector(".ctrl");
+
+    function paint() {
+      stage.innerHTML = c.render(st);
+      stage.style.flexDirection = "column";
+      stage.style.alignItems = "flex-start";
+      ctrl.querySelectorAll(".cgroup").forEach(function (g) {
+        var key = g.dataset.key;
+        g.classList.toggle("dim", st.viewer === "out" && key !== "viewer");
+        g.querySelectorAll("button").forEach(function (b) { b.classList.toggle("on", st[key] === b.dataset.v); });
+      });
+    }
+    [["viewer", "Viewer", VIEWERS], ["ch", "Challenge", CHALLENGE], ["bd", "Board", BOARD]].forEach(function (gdef) {
+      var g = document.createElement("div");
+      g.className = "cgroup"; g.dataset.key = gdef[0];
+      g.innerHTML = '<span class="cglab">' + gdef[1] + '</span>';
+      gdef[2].forEach(function (opt) {
+        var b = document.createElement("button");
+        b.type = "button"; b.dataset.v = opt[0]; b.textContent = opt[1];
+        b.addEventListener("click", function () { st[gdef[0]] = opt[0]; paint(); });
+        g.appendChild(b);
+      });
+      ctrl.appendChild(g);
+    });
+    paint();
+    grid.appendChild(card);
+  });
+</script>
+</body>
+</html>
