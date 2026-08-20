@@ -85,6 +85,15 @@
   .railv .phead.caps, .railv .lbtable th.lbcap.caps { font-size: 11px; letter-spacing: .08em; text-transform: uppercase;
     color: var(--muted-soft, #9b9897); height: 28px; line-height: 28px; }
 
+  /* ===== batch four: one header bar — big title left, the game dropdown right, bare panels ===== */
+  .railv .statsbar { display: flex; align-items: center; justify-content: space-between; gap: 8px; height: 40px; }
+  .railv .sbtitle { font-weight: bold; color: var(--ink, #141414); white-space: nowrap; }
+  .railv .statsbar .statsbtn { width: auto; padding: 0 10px 1px; flex-shrink: 0; }
+  .railv .statsbar .statshead { width: auto; height: auto; gap: 6px; flex-shrink: 0;
+    font-size: 16px; }
+  .railv .statsbar .statshead .caret { width: 8px; height: 7px; }
+  .railv .rstats.bar .statsmenu { left: auto; right: 0; min-width: 150px; }
+
   /* ===== per-section game dropdowns (today's layout) ===== */
   .railv .rgame { position: relative; }
   .railv .rgamemenu { display: none; position: absolute; right: 0; top: calc(100% + 6px); z-index: 30;
@@ -207,6 +216,14 @@ top dropdown &mdash; &ldquo;Spades stats&rdquo; &mdash; that picks the game for 
   <div class="rowR" id="batch3"></div>
 </div>
 
+<div class="vsec">
+  <h2>Four &mdash; one header bar: the big title left, the game dropdown right</h2>
+  <p class="desc">No titles anywhere else. &ldquo;Daily challenge &amp; leaderboard&rdquo; heads the rail, and the
+  &ldquo;Spades&rdquo; dropdown sits to its right &mdash; the original section-head grammar, promoted to the whole rail.
+  The panels underneath are bare cards.</p>
+  <div class="rowR" id="batch4"></div>
+</div>
+
 <div class="toast" id="toast">&middot;</div>
 <script>
   var toastEl = document.getElementById("toast"), toastT;
@@ -297,19 +314,26 @@ top dropdown &mdash; &ldquo;Spades stats&rdquo; &mdash; that picks the game for 
       }).join("");
       if (cfg.hide === "menu") items += '<div class="msep"></div><button type="button" data-hide="1"><span>Hide stats &middot; show ads</span></button>';
       var caret = cfg.caret === false ? '' : CARET;
-      var topHtml = cfg.top === "text"
+      var trigger = cfg.top === "text" || (cfg.top === "bar" && cfg.barPicker === "text")
         ? '<button type="button" class="statshead" aria-haspopup="true"><span class="statslabel shlabel">' +
             labelTpl.replace("{g}", game) + '</span>' + caret + '</button>'
         : '<button type="button" class="statsbtn" aria-haspopup="true"><span class="statslabel">' +
             labelTpl.replace("{g}", game) + '</span>' + caret + '</button>';
+      var topHtml = cfg.top === "bar"
+        ? '<div class="statsbar"><span class="sbtitle" style="font-size:' + (cfg.titleSize || 20) + 'px">' +
+            cfg.barTitle + '</span>' + trigger + '</div>'
+        : trigger;
       var mod = cfg.panelHead === "band" ? " band" : cfg.panelHead === "caps" ? " caps" : "";
-      var sections = cfg.panelHead
+      var sections = cfg.panelHead === "bare"
+        ? '<section class="railsec">' + challengeHTML() + '</section>' +
+          '<section class="railsec">' + boardHTML() + '</section>'
+        : cfg.panelHead
         ? '<section class="railsec">' + challengeHTML('<div class="phead' + mod + '">August challenge</div>') + '</section>' +
           '<section class="railsec">' + boardHTML('<tr><th colspan="3" class="lbcap' + mod + '">Daily leaderboard</th></tr>') + '</section>'
         : '<section class="railsec"><div class="rshead"><span class="rstitle">August challenge</span></div>' + challengeHTML() + '</section>' +
           '<section class="railsec"><div class="rshead"><span class="rstitle">Daily leaderboard</span></div>' + boardHTML() + '</section>';
       rail.innerHTML =
-        '<div class="rstats">' + topHtml + '<div class="statsmenu">' + items + '</div></div>' +
+        '<div class="rstats' + (cfg.top === "bar" ? " bar" : "") + '">' + topHtml + '<div class="statsmenu">' + items + '</div></div>' +
         sections + ADS_HTML +
         (cfg.hide === "link" ? '<button type="button" class="hidelink">Hide challenge &amp; leaderboard</button>' : '');
     } else {
@@ -421,10 +445,23 @@ top dropdown &mdash; &ldquo;Spades stats&rdquo; &mdash; that picks the game for 
     { cls: "v-paper", mode: "comb", hide: "link", label: "{g}", panelHead: "caps",
       cap: "Micro-labels — 11px letterspaced captions inside the panels" }
   ];
-  var b1 = document.getElementById("batch1"), b2 = document.getElementById("batch2"), b3 = document.getElementById("batch3");
+  var BATCH4 = [
+    { cls: "v-paper", mode: "comb", hide: "link", top: "bar", barTitle: "Daily challenge & leaderboard",
+      titleSize: 16, label: "{g}", panelHead: "bare",
+      cap: "The full title beside the “Spades ▾” button — 16px is the size that fits (17px is the ceiling; 20px overflows by 40px)" },
+    { cls: "v-paper", mode: "comb", hide: "link", top: "bar", barTitle: "Daily challenge & leaderboard",
+      titleSize: 17, barPicker: "text", label: "{g}", panelHead: "bare",
+      cap: "A chrome-less text picker buys room — the full title at 17px, bold “Spades ▾” with underline on hover" },
+    { cls: "v-paper", mode: "comb", hide: "link", top: "bar", barTitle: "Challenge & leaderboard",
+      label: "{g}", panelHead: "bare",
+      cap: "Keeping the 20px big type means trimming a word — “Challenge & leaderboard”" }
+  ];
+  var b1 = document.getElementById("batch1"), b2 = document.getElementById("batch2"), b3 = document.getElementById("batch3"),
+    b4 = document.getElementById("batch4");
   BATCH1.forEach(function (cfg) { buildRail(b1, cfg); });
   BATCH2.forEach(function (cfg) { buildRail(b2, cfg); });
   BATCH3.forEach(function (cfg) { buildRail(b3, cfg); });
+  BATCH4.forEach(function (cfg) { buildRail(b4, cfg); });
 </script>
 </body>
 </html>
