@@ -507,6 +507,10 @@
   /* the paper does the corner clipping, so the grid lets the top cells'
      spread shadows reach the outer 1px frame and color it too */
   .b14 .qgrid { border-radius: 0; box-shadow: none; margin-top: 0; overflow: visible; }
+  .b14 .qgrid .mtop13:first-child { border-top-left-radius: calc(var(--radius-md) - 1px); corner-shape: squircle; }
+  .b14 .qgrid .mtop13:nth-child(2) { border-top-right-radius: calc(var(--radius-md) - 1px); corner-shape: squircle; }
+  .b14.rows13 .qgrid .mtop13:first-child { border-top-right-radius: calc(var(--radius-md) - 1px); }
+  .b14.rows13 .qgrid .mtop13:nth-child(2) { border-top-right-radius: 0; }
   /* all-cream paper: the pair cells become part of the receipt */
   .b14.rc-cream .qgrid .mtop13 { background: #F9F6F2; color: #141414; text-shadow: none; box-shadow: none; }
   .b14.rc-cream .qgrid .mtop13:hover, .b14.rc-cream .qgrid .mtop13:focus-visible { background: #F4EEE5; }
@@ -647,6 +651,23 @@
     66% { transform: scaleY(1.01); animation-timing-function: cubic-bezier(0.37, 0, 0.63, 1); }
     100% { transform: scaleY(1); }
   }
+
+  /* batch seventeen: the edge top gains contrast steps, and the green top's
+     meta line gets treatments - outlined, smaller, or gone entirely. */
+  .b17.et-light .qgrid .mtop13 { background: #E6E1D8; }
+  .b17.et-light .qgrid .mtop13:hover, .b17.et-light .qgrid .mtop13:focus-visible { background: #DDD7CC; }
+  .b17.et-lighter .qgrid .mtop13 { background: #EFEAE2; }
+  .b17.et-lighter .qgrid .mtop13:hover, .b17.et-lighter .qgrid .mtop13:focus-visible { background: #E6E1D8; }
+  .b17.m-outline .qgrid .mtop13 .dm { color: #fff; opacity: 1;
+    text-shadow: -1px -1px 0 #4F800B, 1px -1px 0 #4F800B, -1px 1px 0 #4F800B, 1px 1px 0 #4F800B; }
+  .b17.m-12 .qgrid .mtop13 .dm { font-size: 12px; font-weight: bold; color: #fff; opacity: 1;
+    text-shadow: -1px -1px 0 #4F800B, 1px -1px 0 #4F800B, -1px 1px 0 #4F800B, 1px 1px 0 #4F800B; }
+  .b17.m-none .qgrid .mtop13 .dm, .b17.m-none24 .qgrid .mtop13 .dm { display: none; }
+  .b17.m-none .qgrid .mtop13 { height: 32px; }
+  .b17.m-none .gmenu { --paper-h: 121px; background: linear-gradient(#4F800B 0 34px, #D8D2C7 34px); }
+  .b17.m-none24 .qgrid .mtop13 { height: 24px; }
+  .b17.m-none24 .qgrid .mtop13 .dl { font-size: 14px; line-height: 24px; }
+  .b17.m-none24 .gmenu { --paper-h: 113px; background: linear-gradient(#4F800B 0 26px, #D8D2C7 26px); }
 
   .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(80px); z-index: 99;
     background: #141414; color: #f9f6f2; padding: 9px 18px; border-radius: 8px; font-size: 14px; transition: transform .18s ease; }
@@ -1416,6 +1437,28 @@ options visible, counters as the leaderboard's signs, and the two primaries trea
       { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 b16 rc-cream fx-spring2 fx-spring3" },
       { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 b16 rc-cream fx-spring2 fx-spring4" },
       { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 b16 rc-cream fx-soft2" }
+    ]
+  });
+
+  /* batch seventeen: edge-top contrast and green-top meta treatments */
+  SECTIONS.push({
+    t: "17 \u00b7 Batch seventeen: edge contrast and the meta line",
+    d: "Two threads. The border-color top with the dark label felt low-contrast, so it steps lighter twice while the walls stay dark: #E6E1D8 and #EFEAE2 under the #B3AC9F frame. The liked dark-green top then works its meta line: the 8-open gets the label's own outline, a 12px bold outlined version, a meta-free pair at 32px, and a meta-free pair at 24px whose label drops to the small buttons' 14px. The corner wedge on colored tops is fixed for every receipt: the top cells' outer corners now follow the paper's curve, so the frame stays a true 1px line.",
+    caps: [
+      "Edge top, lighter: E6E1D8 under dark walls",
+      "Edge top, lighter still: EFEAE2",
+      "Green top, meta outlined like the label",
+      "Green top, meta 12px bold outlined",
+      "Green top, no meta, 32px pair",
+      "Green top, no meta, 24px pair, 14px label"
+    ],
+    cfgs: [
+      { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 rc-edge3 b17 et-light" },
+      { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 rc-edge3 b17 et-lighter" },
+      { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 top-green b17 m-outline" },
+      { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 top-green b17 m-12" },
+      { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 top-green b17 m-none" },
+      { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 top-green b17 m-none24" }
     ]
   });
 
