@@ -337,53 +337,70 @@
     font-size: 14px; color: var(--ink); }
   #adrail .rshead { height: 40px; display: flex; align-items: center; justify-content: space-between; }
   #adrail .rstitle { font-size: 20px; font-weight: bold; }
-  #adrail .rsshow { height: 24px; padding: 0 10px 1px; border: none; cursor: pointer;
-    border-radius: var(--radius-md, 6px); corner-shape: squircle; font-family: inherit;
-    font-size: 14px; font-weight: bold; background: #A5D8FF; color: #1971C2;
-    box-shadow: inset 0 0 0 1px #7AB8EC; }
-  #adrail .rsshow:hover { background: #9ACFF8; }
-  #adrail .rsshow:active { transform: scale(0.98); }
+  /* each section is for one game: the header carries a small game dropdown
+     in the site's lightblue dropdown grammar */
+  #adrail .rgame { position: relative; }
+  #adrail .rgamebtn { height: 24px; border: none; cursor: pointer; border-radius: var(--radius-md, 6px);
+    corner-shape: squircle; font-family: inherit; font-size: 14px; font-weight: bold;
+    background: #A5D8FF url("arrowDownBlue.png") right 6px center / 13px 13px no-repeat;
+    color: #1971C2; box-shadow: inset 0 0 0 1px #7AB8EC; padding: 0 24px 1px 10px; }
+  #adrail .rgamebtn:hover { background-color: #9ACFF8; }
+  #adrail .rgamebtn:active { transform: scale(0.98); }
+  #adrail .rgamemenu { display: none; position: absolute; right: 0; top: calc(100% + 6px); z-index: 30;
+    min-width: 150px; background: var(--surface, #fff); border-radius: 8px; corner-shape: squircle;
+    padding: 4px; box-shadow: 0 0 0 1px var(--edge, #d2cfca), 0 8px 24px rgba(20, 20, 19, .18); }
+  #adrail .rgame.open .rgamemenu { display: block; }
+  #adrail .rgamemenu button { display: block; width: 100%; border: none; background: none; cursor: pointer;
+    text-align: left; font-family: inherit; font-size: 14px; font-weight: bold; color: var(--ink);
+    border-radius: 5px; padding: 6px 8px; }
+  #adrail .rgamemenu button:hover { background: #E7F2FD; }
+  /* the daily leaderboard runs the artifact's own board: rank + movement
+     chips, plain names with the liked heart, Elo, and the you-row in bold */
   #adrail .lbtable { width: 100%; border-collapse: separate; border-spacing: 0;
-    background: #F4EEE5; border-radius: var(--radius-md, 6px); corner-shape: squircle; overflow: hidden;
-    box-shadow: inset 0 0 0 1px #D9D2C4; }
-  #adrail .lbtable th, #adrail .lbtable td { text-align: center; font-size: 14px;
-    border-left: 1px solid rgba(0, 0, 0, .08); }
+    background: #EAE5DD; border-radius: var(--radius-md, 6px); corner-shape: squircle; overflow: hidden;
+    box-shadow: inset 0 0 0 1px #D9D2C4; font-variant-numeric: tabular-nums; }
+  #adrail .lbtable th, #adrail .lbtable td { text-align: left; font-size: 14px; padding: 0 8px;
+    white-space: nowrap; border-left: 1px solid rgba(0, 0, 0, .08); }
   #adrail .lbtable th:first-child, #adrail .lbtable td:first-child { border-left: none; }
-  #adrail .lbtable th { font-weight: normal; line-height: 24px; color: var(--ink-soft, #262626); }
-  #adrail .lbtable tbody td { font-weight: bold; line-height: 32px; border-top: 1px solid rgba(0, 0, 0, .08);
-    font-variant-numeric: tabular-nums; }
-  #adrail .lbtable .lbrank { width: 28px; }
-  #adrail .lbtable .lbwins { width: 52px; }
-  #adrail .lbwho { display: inline-flex; align-items: center; gap: 6px; vertical-align: middle; }
-  #adrail .lbwho img { width: 20px; height: 20px; }
-  #adrail .lbname { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px; }
+  #adrail .lbtable th { font-weight: bold; line-height: 24px; color: var(--ink-soft, #262626); }
+  #adrail .lbtable tbody td { height: 32px; line-height: 20px; font-weight: normal;
+    border-top: 1px solid rgba(0, 0, 0, .08); color: #212529; }
+  #adrail .lbtable b { font-weight: bold; }
+  #adrail .lbname { max-width: 0; width: 100%; overflow: hidden; text-overflow: ellipsis; }
+  #adrail .lbHeart { color: #f03e3e; }
+  #adrail .lbUp, #adrail .lbDown { display: inline-block; vertical-align: middle; border-radius: 4px;
+    font-size: 12px; line-height: 16px; font-weight: bold; padding: 0 4px 0 16px; background-repeat: no-repeat;
+    background-position: 4px center; background-size: 10px 10px; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.08); }
+  #adrail .lbUp { color: #4F800B; background-color: #C0EB75; background-image: url("arrowUpGreenSmall.png"); }
+  #adrail .lbDown { color: #B52626; background-color: #FFDBD9; background-image: url("arrowDownRedSmall.png"); }
   #adrail .lbtable tbody tr { cursor: pointer; }
   #adrail .lbtable tbody tr:hover .lbname { text-decoration: underline; }
-  #adrail .lbtable tr.lbfoot td { font-weight: normal; font-size: 14px; line-height: 18px;
-    padding: 7px 8px; color: var(--muted); cursor: default; }
+  #adrail .rcnext { margin: 0; padding-top: 4px; font-size: 12px; line-height: 20px; color: #868E96;
+    font-variant-numeric: tabular-nums; }
   /* the challenge box: the wins label over the 4px medal bars (10/20/31 in
      the OS ramp, badges at OS's measured 34x32 riding the bar line), then
      the bordered month calendar - today underlined, won days as the green
      masked check, the future in normal weight */
-  #adrail .dcbox { border-radius: var(--radius-md, 6px); corner-shape: squircle; background: #F4EEE5;
+  #adrail .dcbox { border-radius: var(--radius-md, 6px); corner-shape: squircle; background: #EAE5DD;
     overflow: hidden; box-shadow: inset 0 0 0 1px #D9D2C4; }
-  #adrail .dcaward { position: relative; height: 40px; padding: 0 8px; }
+  #adrail .dcaward { position: relative; height: 40px; padding: 0 8px; margin-bottom: 8px; }
   #adrail .dctier { margin: 0; font-size: 14px; font-weight: bold; line-height: 36px; color: var(--ink-soft, #262626); }
-  #adrail .dcbars { position: absolute; left: 8px; right: 25px; bottom: 0; display: flex; height: 4px; }
-  #adrail .mseg { position: relative; flex: 1; height: 4px; }
-  #adrail .mseg.bronze { background: #FFC178; box-shadow: inset 0 0 0 1px #FF932A; border-radius: 2px 0 0 2px; }
-  #adrail .mseg.silver { background: #DEE2E6; box-shadow: inset 0 0 0 1px #AEB5BD; }
-  #adrail .mseg.gold { background: #FFEC99; box-shadow: inset 0 0 0 1px #FDC41B; border-radius: 0 2px 2px 0; }
+  #adrail .dcbars { position: absolute; left: 8px; right: 25px; bottom: 4px; display: flex; height: 4px; }
+  #adrail .mseg { position: relative; flex: 1; height: 4px; box-shadow: 0 0 2px rgba(0, 0, 0, .24); }
+  #adrail .mseg.bronze { background: #FFC178; border-radius: 2px 0 0 2px; }
+  #adrail .mseg.silver { background: #DEE2E6; }
+  #adrail .mseg.gold { background: #FFEC99; border-radius: 0 2px 2px 0; }
   #adrail .mfill { position: absolute; left: 0; top: 0; bottom: 0; }
   #adrail .mseg.bronze .mfill { background: #F76706; border-radius: 2px 0 0 2px; }
   #adrail .mseg.silver .mfill { background: #868E96; }
   #adrail .mseg.gold .mfill { background: #E67700; }
-  #adrail .mbadge { position: absolute; right: -17px; bottom: 0; width: 34px; height: 32px; z-index: 1;
-    filter: drop-shadow(0 0 2px rgba(0, 0, 0, .24)); }
+  #adrail .mbadge { position: absolute; right: -17px; bottom: 0; width: 34px; height: 32px; z-index: 1; }
   #adrail .mbadge img { position: absolute; left: 50%; top: 0; margin-left: -16.5px; width: 33px; height: 32px; }
   #adrail .mbadge span { position: absolute; left: 0; right: 0; top: 0; height: 18px; line-height: 18px;
-    text-align: center; font-size: 14px; font-weight: bold; color: #fff;
-    text-shadow: -1px 0 rgba(0,0,0,.35), 1px 0 rgba(0,0,0,.35), 0 -1px rgba(0,0,0,.35), 0 1px rgba(0,0,0,.35); }
+    text-align: center; font-size: 14px; font-weight: bold; color: #fff; }
+  #adrail .mseg.bronze .mbadge span { text-shadow: -1px 0 #F76706, 0 1px #F76706, 1px 0 #F76706, 0 -1px #F76706; }
+  #adrail .mseg.silver .mbadge span { text-shadow: -1px 0 #868E96, 0 1px #868E96, 1px 0 #868E96, 0 -1px #868E96; }
+  #adrail .mseg.gold .mbadge span { text-shadow: -1px 0 #E67700, 0 1px #E67700, 1px 0 #E67700, 0 -1px #E67700; }
   #adrail .dcweek { display: grid; grid-template-columns: repeat(7, 1fr); border-top: 1px solid rgba(0, 0, 0, .08); }
   #adrail .dcweek span { font-size: 14px; line-height: 24px; text-align: center; color: var(--ink-soft, #262626);
     border-left: 1px solid rgba(0, 0, 0, .08); }
@@ -1880,7 +1897,7 @@
 <aside id="adrail">
   <button type="button" class="adtoggle" id="adtoggle">Show ads</button>
   <section class="railsec" id="railChallenge">
-    <div class="rshead"><span class="rstitle">August challenge</span><button type="button" class="rsshow" data-what="Daily challenge">Show</button></div>
+    <div class="rshead"><span class="rstitle">August challenge</span><div class="rgame"><button type="button" class="rgamebtn">Hearts</button><div class="rgamemenu"><button type="button">Hearts</button><button type="button">Spades</button><button type="button">Euchre</button><button type="button">Canasta</button><button type="button">Gin Rummy</button><button type="button">Cribbage</button></div></div></div>
     <div class="dcbox">
       <div class="dcaward">
         <p class="dctier">12 wins</p>
@@ -1895,18 +1912,18 @@
     </div>
   </section>
   <section class="railsec" id="railBoard">
-    <div class="rshead"><span class="rstitle">Daily leaderboard</span><button type="button" class="rsshow" data-what="Daily leaderboard">Show</button></div>
+    <div class="rshead"><span class="rstitle">Daily leaderboard</span><div class="rgame"><button type="button" class="rgamebtn">Hearts</button><div class="rgamemenu"><button type="button">Hearts</button><button type="button">Spades</button><button type="button">Euchre</button><button type="button">Canasta</button><button type="button">Gin Rummy</button><button type="button">Cribbage</button></div></div></div>
     <table class="lbtable">
-      <thead><tr><th class="lbrank">#</th><th>Player</th><th class="lbwins">Wins</th></tr></thead>
+      <thead><tr><th>Rank</th><th>Player</th><th>Elo</th></tr></thead>
       <tbody>
-        <tr><td class="lbrank">1</td><td><span class="lbwho"><img src="AnimalCat.svg" alt=""><span class="lbname">PiLady10</span></span></td><td class="lbwins">14</td></tr>
-        <tr><td class="lbrank">2</td><td><span class="lbwho"><img src="AnimalFox.svg" alt=""><span class="lbname">Marlene</span></span></td><td class="lbwins">12</td></tr>
-        <tr><td class="lbrank">3</td><td><span class="lbwho"><img src="AnimalBee.svg" alt=""><span class="lbname">granny_ace</span></span></td><td class="lbwins">11</td></tr>
-        <tr><td class="lbrank">4</td><td><span class="lbwho"><img src="AnimalGopher.svg" alt=""><span class="lbname">Bakersfield</span></span></td><td class="lbwins">9</td></tr>
-        <tr><td class="lbrank">5</td><td><span class="lbwho"><img src="AlienBlue.svg" alt=""><span class="lbname">J.T.</span></span></td><td class="lbwins">8</td></tr>
-        <tr class="lbfoot"><td colspan="3">Win a game to join today's board.</td></tr>
+        <tr><td>#44 <span class="lbDown">1</span></td><td class="lbname">cardShark52</td><td>1,493</td></tr>
+        <tr><td>#45</td><td class="lbname">PragueJoe</td><td>1,487</td></tr>
+        <tr><td><b>#46</b> <span class="lbUp">3</span></td><td class="lbname"><b>Holger</b></td><td><b>1,481</b> <span class="lbUp">12</span></td></tr>
+        <tr><td>#47</td><td class="lbname">wendy_h <span class="lbHeart">&hearts;</span></td><td>1,476</td></tr>
+        <tr><td>#48 <span class="lbDown">2</span></td><td class="lbname">GinTonic</td><td>1,470</td></tr>
       </tbody>
     </table>
+    <p class="rcnext">Next refresh in 6h 12m</p>
   </section>
   <div class="adslot"><img src="adMedrec1.png" width="300" height="250" alt=""></div>
   <div class="adslot"><img src="adMedrec2.png" width="300" height="250" alt=""></div>
@@ -4208,10 +4225,26 @@
         flash(name.textContent + " — profile");
       });
     });
-    document.querySelectorAll("#adrail .rsshow").forEach(function (btn) {
-      btn.addEventListener("click", function () {
-        flash(btn.dataset.what + " — opening the full view…");
+    document.querySelectorAll("#adrail .rgame").forEach(function (dd) {
+      var btn = dd.querySelector(".rgamebtn");
+      var section = dd.closest(".railsec").querySelector(".rstitle").textContent;
+      btn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        var was = dd.classList.contains("open");
+        document.querySelectorAll("#adrail .rgame.open").forEach(function (o) { o.classList.remove("open"); });
+        if (!was) dd.classList.add("open");
       });
+      dd.querySelectorAll(".rgamemenu button").forEach(function (item) {
+        item.addEventListener("click", function (e) {
+          e.stopPropagation();
+          dd.classList.remove("open");
+          btn.textContent = item.textContent;
+          flash(section + " — now showing " + item.textContent);
+        });
+      });
+    });
+    document.addEventListener("click", function () {
+      document.querySelectorAll("#adrail .rgame.open").forEach(function (o) { o.classList.remove("open"); });
     });
     /* August 2026 starts on a Saturday; today is the 20th; the checked days
        are the challenges already won (12, matching the card's wins count) */
