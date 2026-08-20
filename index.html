@@ -626,14 +626,12 @@
   .mpempty { font-size: 16px; line-height: 24px; color: var(--muted-soft, #9b9897); width: 230px; }
   .mprow { display: flex; align-items: center; gap: 8px; font-size: 16px; line-height: 24px;
     color: var(--ink-soft); padding: 2px 0; white-space: nowrap; cursor: pointer; }
-  .mprow:hover { text-decoration: underline; }
   .mpav { width: 22px; height: 22px; flex: none; }
   .mpage { margin-left: auto; font-size: 14px; color: var(--muted); padding-left: 14px; }
   .mpdot { width: 8px; height: 8px; border-radius: 50%; background: #64CD00;
     box-shadow: 0 0 0 1.5px #C0EB75; margin-left: 12px; }
   .mudrop .mitem { font-size: 16px; line-height: 24px; color: var(--ink-soft); cursor: pointer;
     white-space: nowrap; padding: 2px 0; }
-  .mudrop .mitem:hover { text-decoration: underline; }
   .mpanel .vPil { display: none; }
   body.viewer-pilady .mpanel .mprow.vPil { display: flex; }
   body.viewer-pilady .mpanel .mitem.vPil { display: block; }
@@ -806,12 +804,7 @@
      the script can let the cycle finish on mouse-out */
   body.cnav-sub-wavesand #herosub .cjw, body.cnav-sub-wavesandbold #herosub .cjw { color: var(--ink-soft); position: relative; }
   body.cnav-sub-wavesandbold #herosub .cjw { font-weight: bold; }
-  body.cnav-sub-wavesand #herosub .cjw::after, body.cnav-sub-wavesandbold #herosub .cjw::after { content: "";
-    position: absolute; left: 0; width: round(down, 100%, 3.5px); bottom: -.26em; height: 7px; z-index: -2; pointer-events: none;
-    background-color: var(--edge-deep, #b8b5b1);
-    -webkit-mask: var(--wavetrough) left center / 7px 7px repeat-x;
-            mask: var(--wavetrough) left center / 7px 7px repeat-x; }
-  /* the colored wave washes in over the resting grey from the left */
+  /* no resting wave: the colored wave washes in from the left on hover */
   body.cnav-sub-wavesand #herosub .cjw::before, body.cnav-sub-wavesandbold #herosub .cjw::before { content: "";
     position: absolute; left: 0; width: round(down, 100%, 3.5px); bottom: -.26em; height: 7px; z-index: -1; pointer-events: none;
     clip-path: inset(0 100% 0 0); transition: clip-path .25s ease-out;
@@ -1330,7 +1323,6 @@
   .sitefooter ul { padding: 0; margin: 0; list-style: none; font-size: 16px; line-height: 28px; }
   .sitefooter li { white-space: nowrap; }
   .sitefooter a { color: inherit; border-bottom: none; }
-  .sitefooter a:hover { text-decoration: underline; }
   .sitefooter .social { display: flex; gap: 12px; margin-top: 4px; width: max-content; }
   .sitefooter .social > a { width: 24px; height: 24px; display: inline-block; }
   .sitefooter .social img, .sitefooter .social svg { width: 100%; height: 100%; display: block; }
@@ -1933,6 +1925,20 @@
   .samphead .pophead { font-size: 20px; margin-bottom: 0; }
   .sampall { font-size: 16px; font-weight: bold; color: var(--muted); text-decoration: none; white-space: nowrap; }
   .sampall:hover { color: var(--ink); }
+  /* the shared link grammar: any text link that is not a button hovers
+     with the edge-deep wave washing in from the left */
+  .sitefooter a, .sampall, .mbcenter .mclink:not(.mgames), .mudrop .mitem, .mprow > span:first-of-type {
+    position: relative; isolation: isolate; }
+  .mudrop .mitem { width: fit-content; }
+  .sitefooter a::after, .sampall::after, .mbcenter .mclink:not(.mgames)::after, .mudrop .mitem::after,
+  .mprow > span:first-of-type::after {
+    content: ""; position: absolute; left: 0; width: round(down, 100%, 3.5px); bottom: -3px; height: 7px;
+    z-index: -1; pointer-events: none; background: var(--edge-deep, #b8b5b1);
+    clip-path: inset(0 100% 0 0); transition: clip-path .22s ease-out;
+    -webkit-mask: var(--wavetrough) left center / 7px 7px repeat-x;
+            mask: var(--wavetrough) left center / 7px 7px repeat-x; }
+  .sitefooter a:hover::after, .sampall:hover::after, .mbcenter .mclink:not(.mgames):hover::after,
+  .mudrop .mitem:hover::after, .mprow:hover > span:first-of-type::after { clip-path: inset(0 0 0 0); }
   .samprow { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; grid-auto-rows: 122px; }
   /* ===== first-visit gate ===== */
   #gate {
