@@ -545,6 +545,42 @@
   .mbcenter .mclogo { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
   .mbcenter .mclogo img { width: 224px; display: block; }
   .mbcenter .muser { margin-left: auto; flex-shrink: 0; }
+  /* live-parity menu hovers: links underline like the site (MenuBar.scss), and
+     Games, the icons, and the avatar grow the site's own dropdowns
+     (menu_bar.dust) rebuilt in this design's card chrome. */
+  .mbcenter .mclink:hover { text-decoration: underline; text-underline-offset: 3px; }
+  .mbcenter .mgames { position: relative; }
+  .mpanel { display: none; position: absolute; top: calc(100% + 10px); left: -14px; z-index: 80; text-align: left;
+    background: var(--surface, #fff); border-radius: 10px; corner-shape: squircle; padding: 12px 16px;
+    box-shadow: 0 0 0 1px var(--edge, var(--panelline)), var(--liftshadow-lg); cursor: default; }
+  .mpanel::before { content: ""; position: absolute; left: -8px; right: -8px; top: -12px; height: 12px; }
+  .mbcenter .mgames:hover .mgdrop { display: flex; gap: 24px; }
+  .mbcenter .muser li:hover .mpanel { display: block; }
+  .mbcenter .muser .mpanel { left: auto; right: -6px; }
+  .mghead { font-size: 12px; font-weight: bold; letter-spacing: .07em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 6px; }
+  .mgcol { display: flex; flex-direction: column; white-space: nowrap; }
+  .mgcol a { font-size: 14px; line-height: 26px; font-weight: normal; color: var(--ink-soft); text-decoration: none; }
+  .mgcol a:hover { text-decoration: underline; text-underline-offset: 3px; color: var(--ink); }
+  .mphead { font-size: 14px; font-weight: bold; color: var(--ink); margin-bottom: 6px;
+    display: flex; align-items: baseline; gap: 8px; white-space: nowrap; }
+  .mpcount { font-size: 12px; font-weight: normal; color: var(--muted); }
+  .mpempty { font-size: 13px; line-height: 19px; color: var(--muted); width: 210px; }
+  .mprow { display: flex; align-items: center; gap: 8px; font-size: 14px; line-height: 20px;
+    color: var(--ink-soft); padding: 4px 0; white-space: nowrap; cursor: pointer; }
+  .mprow:hover { text-decoration: underline; text-underline-offset: 3px; color: var(--ink); }
+  .mpav { width: 22px; height: 22px; flex: none; }
+  .mpage { margin-left: auto; font-size: 12px; color: var(--muted); padding-left: 14px; }
+  .mpdot { width: 8px; height: 8px; border-radius: 50%; background: #64CD00;
+    box-shadow: 0 0 0 1.5px #C0EB75; margin-left: 12px; }
+  .mudrop .mitem { font-size: 14px; line-height: 28px; color: var(--ink-soft); cursor: pointer;
+    white-space: nowrap; padding: 0 2px; }
+  .mudrop .mitem:hover { text-decoration: underline; text-underline-offset: 3px; color: var(--ink); }
+  .mpanel .vPil { display: none; }
+  body.viewer-pilady .mpanel .mprow.vPil { display: flex; }
+  body.viewer-pilady .mpanel .mitem.vPil { display: block; }
+  body.viewer-pilady .mpanel .mpcount.vPil { display: inline; }
+  body.viewer-pilady .mpanel .vAnon { display: none; }
   .mbcap { position: relative; height: 68px; flex-shrink: 0; }
   .mcapsule { position: absolute; left: 50%; top: 10px; transform: translateX(-50%); width: 660px; height: 48px;
     display: flex; align-items: center; gap: 16px; padding: 0 14px 0 18px; box-sizing: border-box;
@@ -1943,12 +1979,42 @@
   </nav>
 
   <div class="mbcenter">
-    <div class="mleft"><span class="mclink">Games<img class="mtri" src="arrowDownBig.png" alt=""></span><span class="mclink">Rules</span><span class="mclink">Leaderboards</span></div>
+    <div class="mleft"><span class="mclink mgames">Games<img class="mtri" src="arrowDownBig.png" alt="">
+      <div class="mpanel mgdrop">
+        <div class="mgcol"><div class="mghead">Trick-taking</div><a href="#">Hearts</a><a href="#">Spades</a><a href="#">Euchre</a><a href="#">Pinochle</a><a href="#">Double Deck Pinochle</a><a href="#">Bridge</a><a href="#">Whist</a><a href="#">Sheepshead</a><a href="#">Twenty-Nine</a><a href="#">Sergeant Major</a></div>
+        <div class="mgcol"><div class="mghead">Rummy</div><a href="#">Canasta</a><a href="#">Gin Rummy</a><a href="#">Hand &amp; Foot</a><a href="#">Rummy</a></div>
+        <div class="mgcol"><div class="mghead">Classics</div><a href="#">Cribbage</a><a href="#">Crazy Eights</a><a href="#">Go Fish</a><a href="#">Old Maid</a></div>
+        <div class="mgcol"><div class="mghead">More games</div><a href="#">Solitaire</a><a href="#">FreeCell</a><a href="#">Spider Solitaire</a><a href="#">2048 Game</a></div>
+      </div>
+    </span><span class="mclink">Rules</span><span class="mclink">Leaderboards</span></div>
     <a class="mclogo" href="#"><img src="wocg-logo.png" alt="World of Card Games"></a>
     <ul class="muser">
-      <li><img class="micon" src="menuActivity.svg" alt="Activity"></li>
-      <li><img class="micon" src="menuFriends.svg" alt="Friends"></li>
-      <li><img class="avatar" src="AnimalFox.svg" alt="Avatar"><span class="uname">Guest #12</span></li>
+      <li><img class="micon" src="menuActivity.svg" alt="Activity">
+        <div class="mpanel mndrop">
+          <div class="mphead">Activities <span class="mpcount vPil">2 new</span></div>
+          <div class="mpempty vAnon">No activities yet. Friend requests, game invites and updates will appear here.</div>
+          <div class="mprow vPil"><img class="mpav" src="AnimalGopher.svg" alt=""><span><b>hootnholler</b> invited you to a Spades table</span><span class="mpage">2m</span></div>
+          <div class="mprow vPil"><img class="mpav" src="AnimalBee.svg" alt=""><span><b>jen11099</b> liked you</span><span class="mpage">1h</span></div>
+        </div>
+      </li>
+      <li><img class="micon" src="menuFriends.svg" alt="Friends">
+        <div class="mpanel mndrop">
+          <div class="mphead">Friends <span class="mpcount vPil">23 online</span></div>
+          <div class="mpempty vAnon">No friends yet. Like players you enjoy playing with to see them here.</div>
+          <div class="mprow vPil"><img class="mpav" src="AnimalCat.svg" alt=""><span>hootnholler</span><span class="mpdot"></span></div>
+          <div class="mprow vPil"><img class="mpav" src="AnimalCow.svg" alt=""><span>nomore35</span><span class="mpdot"></span></div>
+          <div class="mprow vPil"><img class="mpav" src="AnimalBee.svg" alt=""><span>jen11099</span><span class="mpdot"></span></div>
+          <div class="mprow vPil"><img class="mpav" src="AnimalFox.svg" alt=""><span>El_Che</span><span class="mpdot"></span></div>
+        </div>
+      </li>
+      <li><img class="avatar" src="AnimalFox.svg" alt="Avatar"><span class="uname">Guest #12</span>
+        <div class="mpanel mudrop">
+          <div class="mitem">Settings</div>
+          <div class="mitem vAnon">Log in</div>
+          <div class="mitem vAnon">Sign up</div>
+          <div class="mitem vPil">Logout</div>
+        </div>
+      </li>
     </ul>
   </div>
 
