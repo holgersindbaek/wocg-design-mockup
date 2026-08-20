@@ -74,6 +74,65 @@
 
   /* 10 · the ink warms to the site green */
   .v-green .item:hover { color: var(--accent); }
+
+  /* 11 · Lucide's arrow-up-right rises in at the row's end */
+  .v-uparrow .item::after { content: ""; position: absolute; right: 0; top: 50%; width: 13px; height: 13px;
+    margin-top: -6.5px; opacity: 0; transform: translate(-3px, 3px); transition: opacity .14s ease, transform .14s ease;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234e4d4c' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 7h10v10'/%3E%3Cpath d='M7 17 17 7'/%3E%3C/svg%3E") center / contain no-repeat; }
+  .v-uparrow .item:hover { color: var(--ink); }
+  .v-uparrow .item:hover::after { opacity: 1; transform: translate(0, 0); }
+
+  /* 12 · a right arrow slides in at the left and the label steps aside */
+  .v-arrowlead .item .w { display: inline-block; transition: transform .13s ease-out; }
+  .v-arrowlead .item::before { content: ""; position: absolute; left: 0; top: 50%; width: 12px; height: 12px;
+    margin-top: -6px; opacity: 0; transform: translateX(-4px); transition: opacity .13s ease, transform .13s ease;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234e4d4c' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3Cpath d='m12 5 7 7-7 7'/%3E%3C/svg%3E") center / contain no-repeat; }
+  .v-arrowlead .item:hover { color: var(--ink); }
+  .v-arrowlead .item:hover::before { opacity: 1; transform: translateX(0); }
+  .v-arrowlead .item:hover .w { transform: translateX(18px); }
+
+  /* 13 · a small spade tips in after the word */
+  .v-suit .item .w::after { content: "\2660"; position: absolute; right: -16px; top: 0; font-size: 11px;
+    line-height: 24px; color: var(--edge-deep); opacity: 0; transform: rotate(-14deg);
+    transition: opacity .14s ease, transform .14s ease; }
+  .v-suit .item:hover { color: var(--ink); }
+  .v-suit .item:hover .w::after { opacity: 1; transform: rotate(0deg); }
+
+  /* 14 · the row lifts like a picked-up card */
+  .v-lift .item { padding: 2px 8px; margin: 0 -8px; border-radius: 6px; transition: transform .12s ease, box-shadow .12s ease; }
+  .v-lift .item:hover { color: var(--ink); background: var(--surface); transform: translateY(-1px);
+    box-shadow: 0 0 0 1px var(--hairline), var(--liftshadow); }
+
+  /* 15 · the word tilts like a held card */
+  .v-tilt .item .w { display: inline-block; transition: transform .14s ease; transform-origin: left bottom; }
+  .v-tilt .item:hover { color: var(--ink); }
+  .v-tilt .item:hover .w { transform: rotate(-2deg); }
+
+  /* 16 · the underline draws itself in */
+  .v-draw .item .w::after { content: ""; position: absolute; left: 0; bottom: -2px; height: 1.5px; width: 0;
+    background: var(--edge-deep); transition: width .16s ease-out; }
+  .v-draw .item:hover { color: var(--ink); }
+  .v-draw .item:hover .w::after { width: 100%; }
+
+  /* 17 · the wave washes in from the left */
+  .v-wavewash .item .w::after { content: ""; position: absolute; left: 0; right: 0; bottom: -3px; height: 7px;
+    background: var(--edge-deep); pointer-events: none; clip-path: inset(0 100% 0 0);
+    transition: clip-path .22s ease-out;
+    -webkit-mask: var(--wavetrough) left center / 7px 7px repeat-x;
+            mask: var(--wavetrough) left center / 7px 7px repeat-x; }
+  .v-wavewash .item:hover { color: var(--ink); }
+  .v-wavewash .item:hover .w::after { clip-path: inset(0 0 0 0); }
+
+  /* 18 · the letters breathe apart a touch */
+  .v-breathe .item .w { transition: letter-spacing .16s ease; }
+  .v-breathe .item:hover { color: var(--ink); }
+  .v-breathe .item:hover .w { letter-spacing: .015em; }
+
+  /* 19 · the ink sweeps across the word */
+  .v-sweep .item .w { background: linear-gradient(to right, var(--ink) 50%, var(--ink-soft) 50%) no-repeat;
+    background-size: 200% 100%; background-position: 100% 0; -webkit-background-clip: text;
+    background-clip: text; -webkit-text-fill-color: transparent; transition: background-position .22s ease; }
+  .v-sweep .item:hover .w { background-position: 0 0; }
 </style>
 </head>
 <body>
@@ -95,7 +154,16 @@ candidates, all leaning on colors the scheme already owns.</p>
     ["v-bar", "7 · A 2px bar stands at the left edge"],
     ["v-dot", "8 · A dot steps in before the word"],
     ["v-chev", "9 · A quiet chevron at the row's end"],
-    ["v-green", "10 · The ink warms to the site green"]
+    ["v-green", "10 · The ink warms to the site green"],
+    ["v-uparrow", "11 · Lucide's arrow-up-right rises in at the end"],
+    ["v-arrowlead", "12 · An arrow slides in and the label steps aside"],
+    ["v-suit", "13 · A small spade tips in after the word"],
+    ["v-lift", "14 · The row lifts like a picked-up card"],
+    ["v-tilt", "15 · The word tilts like a held card"],
+    ["v-draw", "16 · The underline draws itself in"],
+    ["v-wavewash", "17 · The wave washes in from the left"],
+    ["v-breathe", "18 · The letters breathe apart a touch"],
+    ["v-sweep", "19 · The ink sweeps across the word"]
   ];
   var root = document.getElementById("grid");
   VARIANTS.forEach(function (v) {
