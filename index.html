@@ -605,19 +605,24 @@
   .mgcol a { font-size: 16px; line-height: 24px; padding: 2px 0; font-weight: normal; color: var(--ink-soft);
     text-decoration: none; border-bottom: none; align-self: flex-start; position: relative; }
   .mgcol a::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 7px;
-    opacity: 0; pointer-events: none; transition: opacity .12s ease;
+    z-index: -1; pointer-events: none; clip-path: inset(0 100% 0 0); transition: clip-path .22s ease-out;
     -webkit-mask: var(--wavetrough) left center / 7px 7px repeat-x;
             mask: var(--wavetrough) left center / 7px 7px repeat-x; }
   .mgcol a:hover { text-decoration: none; color: var(--ink); }
-  .mgcol a:hover::after { opacity: 1; animation: wavemarch .4s linear infinite; }
+  .mgcol a:hover::after { clip-path: inset(0 0 0 0); }
   .mgdrop .mgcol:nth-child(-n+2) a::after { background: var(--p3); }
   .mgdrop .mgcol:nth-child(3) a::after { background: var(--p4); }
   .mgdrop .mgcol:nth-child(4) a::after { background: var(--p1); }
-  /* the single-player links carry the subtitle's resting wave in the
-     grey-brown edge-deep; hover colors it pink and marches it */
-  .mgdrop .mgcol:nth-child(5) a::after { opacity: 1; background: var(--edge-deep, #b8b5b1);
-    transition: opacity .12s ease, background-color .18s ease; }
-  .mgdrop .mgcol:nth-child(5) a:hover::after { background: var(--p9); }
+  /* the single-player links keep their resting edge-deep wave; the pink
+     washes over it from the left on hover */
+  .mgdrop .mgcol:nth-child(5) a::after { clip-path: inset(0 0 0 0); z-index: -2;
+    background: var(--edge-deep, #b8b5b1); }
+  .mgdrop .mgcol:nth-child(5) a::before { content: ""; position: absolute; left: 0; right: 0; bottom: -1px;
+    height: 7px; z-index: -1; pointer-events: none; background: var(--p9);
+    clip-path: inset(0 100% 0 0); transition: clip-path .22s ease-out;
+    -webkit-mask: var(--wavetrough) left center / 7px 7px repeat-x;
+            mask: var(--wavetrough) left center / 7px 7px repeat-x; }
+  .mgdrop .mgcol:nth-child(5) a:hover::before { clip-path: inset(0 0 0 0); }
   .mpanel:has(.mphead) { padding-top: 0; padding-bottom: 8px; }
   .mphead { font-size: 16px; font-weight: bold; color: var(--ink); margin: 0 -12px 7px; padding: 0 12px;
     line-height: 32px; background: var(--canvas, #f9f6f2); border-bottom: 1px solid var(--edge, #d2cfca);
@@ -808,15 +813,21 @@
   body.cnav-sub-wavesand #herosub .cjw, body.cnav-sub-wavesandbold #herosub .cjw { color: var(--ink-soft); position: relative; }
   body.cnav-sub-wavesandbold #herosub .cjw { font-weight: bold; }
   body.cnav-sub-wavesand #herosub .cjw::after, body.cnav-sub-wavesandbold #herosub .cjw::after { content: "";
-    position: absolute; left: 0; right: 0; bottom: -.26em; height: 7px; z-index: -1; pointer-events: none;
-    background-color: var(--edge-deep, #b8b5b1); transition: background-color .18s ease;
+    position: absolute; left: 0; right: 0; bottom: -.26em; height: 7px; z-index: -2; pointer-events: none;
+    background-color: var(--edge-deep, #b8b5b1);
     -webkit-mask: var(--wavetrough) left center / 7px 7px repeat-x;
             mask: var(--wavetrough) left center / 7px 7px repeat-x; }
+  /* the colored wave washes in over the resting grey from the left */
+  body.cnav-sub-wavesand #herosub .cjw::before, body.cnav-sub-wavesandbold #herosub .cjw::before { content: "";
+    position: absolute; left: 0; right: 0; bottom: -.26em; height: 7px; z-index: -1; pointer-events: none;
+    clip-path: inset(0 100% 0 0); transition: clip-path .25s ease-out;
+    -webkit-mask: var(--wavetrough) left center / 7px 7px repeat-x;
+            mask: var(--wavetrough) left center / 7px 7px repeat-x; }
+  body.cnav-sub-wavesand #herosub .cjw.c1::before, body.cnav-sub-wavesandbold #herosub .cjw.c1::before { background-color: var(--p3); }
+  body.cnav-sub-wavesand #herosub .cjw.c2::before, body.cnav-sub-wavesandbold #herosub .cjw.c2::before { background-color: var(--p4); }
+  body.cnav-sub-wavesand #herosub .cjw.c3::before, body.cnav-sub-wavesandbold #herosub .cjw.c3::before { background-color: var(--p1); }
   body.cnav-sub-wavesand #herosub .cjw:hover, body.cnav-sub-wavesandbold #herosub .cjw:hover { color: var(--ink); }
-  body.cnav-sub-wavesand #herosub .cjw.waving::after, body.cnav-sub-wavesandbold #herosub .cjw.waving::after { animation: wavemarch .4s linear infinite; }
-  body.cnav-sub-wavesand #herosub .cjw.c1:hover::after, body.cnav-sub-wavesandbold #herosub .cjw.c1:hover::after { background-color: var(--p3); }
-  body.cnav-sub-wavesand #herosub .cjw.c2:hover::after, body.cnav-sub-wavesandbold #herosub .cjw.c2:hover::after { background-color: var(--p4); }
-  body.cnav-sub-wavesand #herosub .cjw.c3:hover::after, body.cnav-sub-wavesandbold #herosub .cjw.c3:hover::after { background-color: var(--p1); }
+  body.cnav-sub-wavesand #herosub .cjw:hover::before, body.cnav-sub-wavesandbold #herosub .cjw:hover::before { clip-path: inset(0 0 0 0); }
   @keyframes wavemarch { to { -webkit-mask-position: 7px center; mask-position: 7px center; } }
   /* the chosen coat: the same sine wave, category-colored from the start,
      words not bold; hover just darkens the words and marches the wave */
