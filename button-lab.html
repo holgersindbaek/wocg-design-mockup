@@ -609,6 +609,26 @@
     100% { transform: translateY(0); }
   }
 
+  /* batch sixteen: the tuned receipt. The close's grip becomes a scaleY tense
+     from the slot - the old translateY tug lifted papers with a 1px tuck 3px
+     clear of the button, which was the visible gap on the way down. The
+     elastic gets a subtler twin, and the container spring carries 18px of
+     slack so its overshoot keeps the slot fed with room to spare. */
+  .b16 .gmenu.isClosing { display: block; animation: receiptBack16 260ms both; }
+  @keyframes receiptBack16 {
+    0% { max-height: var(--paper-h); transform: scaleY(1); animation-timing-function: cubic-bezier(0.333, 0.667, 0.667, 1); }
+    22% { max-height: var(--paper-h); transform: scaleY(1.03); animation-timing-function: cubic-bezier(0.5, 0, 0.8, 0.4); }
+    100% { max-height: 0; transform: scaleY(1); }
+  }
+  .b16.fx-soft .gmenu.isOpen { max-height: var(--paper-h); animation: receiptStretch3 300ms both; }
+  @keyframes receiptStretch3 {
+    0% { transform: scaleY(0); animation-timing-function: cubic-bezier(0.2, 0.6, 0.35, 1); }
+    62% { transform: scaleY(1.018); animation-timing-function: cubic-bezier(0.37, 0, 0.63, 1); }
+    100% { transform: scaleY(1); }
+  }
+  .b16.fx-spring3 .gmenu { bottom: calc(100% - 19px); --paper-h: 157px; }
+  .b16.fx-spring3 .qgrid { padding-bottom: 18px; }
+
   .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(80px); z-index: 99;
     background: #141414; color: #f9f6f2; padding: 9px 18px; border-radius: 8px; font-size: 14px; transition: transform .18s ease; }
   .toast.on { transform: translateX(-50%) translateY(0); }
@@ -1357,6 +1377,22 @@ options visible, counters as the leaderboard's signs, and the two primaries trea
       { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 rc-cream fx-wobble" },
       { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 rc-cream fx-print" },
       { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 rc-cream fx-thunk" }
+    ]
+  });
+
+  /* batch sixteen: the tuned receipt motions */
+  SECTIONS.push({
+    t: "16 \u00b7 Batch sixteen: the tuned receipt",
+    d: "Fixes from judging batch fifteen. The close's anticipation grip was a translateY tug that lifted the whole paper, and on papers tucked only 1px behind the button that opened a 3px slot gap on the way down; the grip is now a scaleY tense from the slot, so the bottom edge never lifts. Three tiles: the width-true elastic with the fixed close, a subtler elastic (1.8% overshoot, 300ms, no second reversal), and the whole-container spring carrying 18px of slack paper so its 7px overshoot keeps the slot fed with 11px to spare.",
+    caps: [
+      "Elastic width-true, fixed close",
+      "Elastic, subtler: 1.8% overshoot, 300ms",
+      "Container spring, 18px slack"
+    ],
+    cfgs: [
+      { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 b16 rc-cream fx-stretch2" },
+      { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 b16 rc-cream fx-soft" },
+      { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 b16 rc-cream fx-spring2 fx-spring3" }
     ]
   });
 
