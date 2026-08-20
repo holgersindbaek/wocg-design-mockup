@@ -471,19 +471,32 @@
      page-cream paper, no white card around it. */
   .b14 .gmenu { bottom: calc(100% - 1px); padding: 1px; background: #D8D2C7; overflow: hidden;
     z-index: 1; border-radius: var(--radius-md) var(--radius-md) 0 0; corner-shape: squircle;
-    box-shadow: 0 -3px 8px rgba(60,45,25,.07); }
-  .b14 .gmenu.isClosing { display: block; animation: receiptBack 240ms cubic-bezier(0.4, 0, 0.7, 0.2) both; }
-  @keyframes receiptBack { from { max-height: 170px; } to { max-height: 0; } }
-  .b14 .gmenu.isOpen { animation: receiptFeed 420ms cubic-bezier(0.25, 0.9, 0.3, 1) both; }
+    box-shadow: 0 -3px 8px rgba(60,45,25,.07); transform-origin: 50% 100%; --paper-h: 137px; }
+  .b14.rows13 .gmenu { --paper-h: 170px; }
+  .b14 .gmenu.isClosing { display: block; animation: receiptBack 260ms both; }
+  @keyframes receiptBack {
+    0% { max-height: var(--paper-h); transform: translateY(0); animation-timing-function: cubic-bezier(0.333, 0.667, 0.667, 1); }
+    22% { max-height: var(--paper-h); transform: translateY(-4px); animation-timing-function: cubic-bezier(0.5, 0, 0.8, 0.4); }
+    100% { max-height: 0; transform: translateY(0); }
+  }
+  .b14 .gmenu.isOpen { animation: receiptFeed 540ms both; will-change: transform; }
+  /* max-height runs to the TRUE paper height (running past it froze the tail
+     of the feed - that dead zone was the perceived pause); the feed's bezier
+     ends still moving and hands its momentum to a scaleY damped spring from
+     the slot origin, so the bottom edge never leaves the printer */
   @keyframes receiptFeed {
-    0% { max-height: 0; transform: translateY(0); }
-    62% { max-height: 170px; transform: translateY(0); }
-    78% { transform: translateY(-5px); }
-    100% { max-height: 170px; transform: translateY(0); }
+    0% { max-height: 0; transform: scaleY(1); animation-timing-function: cubic-bezier(0.32, 0, 0.72, 0.6); }
+    52% { max-height: var(--paper-h); transform: scaleY(1); animation-timing-function: cubic-bezier(0.12, 0.8, 0.32, 1); }
+    66% { max-height: var(--paper-h); transform: scaleY(1.05); animation-timing-function: cubic-bezier(0.37, 0, 0.63, 1); }
+    79% { max-height: var(--paper-h); transform: scaleY(0.982); animation-timing-function: cubic-bezier(0.37, 0, 0.63, 1); }
+    90% { max-height: var(--paper-h); transform: scaleY(1.007); animation-timing-function: cubic-bezier(0.37, 0, 0.63, 1); }
+    100% { max-height: var(--paper-h); transform: scaleY(1); }
   }
   .b14 .gplay { position: relative; z-index: 2;
-    transition: background-color 150ms ease-out, transform 80ms ease-out, border-radius 140ms ease-out; }
-  .b14 .gplay[aria-expanded="true"] { border-top-left-radius: 0; border-top-right-radius: 0; }
+    transition: background-color 150ms ease-out, transform 80ms ease-out, border-radius 120ms ease-out 230ms; }
+  .b14 .gplay[aria-expanded="true"] { border-top-left-radius: 0; border-top-right-radius: 0;
+    transition: background-color 150ms ease-out, transform 80ms ease-out, border-radius 120ms ease-out 0ms; }
+  .b14 .gplay[aria-expanded="true"]:active { transform: none; }
   /* the paper does the corner clipping, so the grid lets the top cells'
      spread shadows reach the outer 1px frame and color it too */
   .b14 .qgrid { border-radius: 0; box-shadow: none; margin-top: 0; overflow: visible; }
@@ -500,6 +513,60 @@
   .b14.rc-edge .qgrid .mtop13 { background: #D8D2C7; color: #141414; text-shadow: none; box-shadow: none; }
   .b14.rc-edge .qgrid .mtop13:hover, .b14.rc-edge .qgrid .mtop13:focus-visible { background: #CFC9BD; }
   .b14.rc-edge .qgrid .mtop13 .dm { color: #6f6a5e; }
+  .b14.rc-edge2 .qgrid .mtop13 { background: #D8D2C7; color: #fff; box-shadow: 0 0 0 1px #B3AC9F;
+    text-shadow: -1px -1px 0 #B3AC9F, 1px -1px 0 #B3AC9F, -1px 1px 0 #B3AC9F, 1px 1px 0 #B3AC9F; }
+  .b14.rc-edge2 .qgrid .mtop13:hover, .b14.rc-edge2 .qgrid .mtop13:focus-visible { background: #CFC9BD; }
+  .b14.rc-edge2 .qgrid .mtop13 .dm { color: rgba(255,255,255,.9); text-shadow: none; }
+  .b13.rows13 .qgrid .mtop13 { grid-column: 1 / -1; height: 40px; flex-direction: row;
+    justify-content: space-between; padding: 0 12px; gap: 8px; }
+
+  /* batch fifteen: five researched motions for the receipt, each a different
+     physics story. All overshoots live in transforms from the slot origin. */
+  .b14.fx-spring .gmenu.isOpen { max-height: var(--paper-h); animation: none; }
+  .b14.fx-spring .gmenu.isOpen .qgrid { animation: sheetSpring 500ms both; will-change: transform;
+    animation-timing-function: linear(0, 0.056, 0.188, 0.352, 0.519, 0.671,
+      0.797, 0.895, 0.966, 1.012, 1.039, 1.052, 1.054, 1.05, 1.042, 1.033,
+      1.024, 1.016, 1.01, 1.005, 1.001, 0.999, 0.998, 0.997, 1); }
+  @keyframes sheetSpring { from { transform: translateY(103%); } to { transform: translateY(0); } }
+  .b14.fx-stretch .gmenu.isOpen { max-height: var(--paper-h); animation: receiptStretch 460ms both; }
+  @keyframes receiptStretch {
+    0% { transform: scale(1.02, 0); animation-timing-function: cubic-bezier(0.16, 0.7, 0.3, 1); }
+    55% { transform: scale(0.985, 1.09); animation-timing-function: cubic-bezier(0.37, 0, 0.63, 1); }
+    76% { transform: scale(1.012, 0.96); animation-timing-function: cubic-bezier(0.37, 0, 0.63, 1); }
+    100% { transform: scale(1, 1); }
+  }
+  .b14.fx-wobble .gmenu.isOpen { animation: receiptWobble 560ms both; }
+  @keyframes receiptWobble {
+    0% { max-height: 0; transform: rotate(0); animation-timing-function: cubic-bezier(0.32, 0, 0.72, 0.6); }
+    48% { max-height: var(--paper-h); transform: rotate(0); animation-timing-function: cubic-bezier(0.14, 0.75, 0.34, 1); }
+    61% { max-height: var(--paper-h); transform: rotate(1.1deg); animation-timing-function: cubic-bezier(0.37, 0, 0.63, 1); }
+    75% { max-height: var(--paper-h); transform: rotate(-0.75deg); animation-timing-function: cubic-bezier(0.37, 0, 0.63, 1); }
+    88% { max-height: var(--paper-h); transform: rotate(0.35deg); animation-timing-function: cubic-bezier(0.37, 0, 0.63, 1); }
+    100% { max-height: var(--paper-h); transform: rotate(0); }
+  }
+  .b14.fx-print .gmenu.isOpen { animation: receiptRush 200ms cubic-bezier(0.3, 0, 0.8, 0.7) both; }
+  @keyframes receiptRush { from { max-height: 0; } to { max-height: var(--paper-h); } }
+  .b14.fx-print .gmenu.isOpen .qgrid > * { animation: rowPop 230ms cubic-bezier(0.34, 1.56, 0.64, 1) backwards; }
+  @keyframes rowPop { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .b14.fx-print .gmenu.isOpen .qgrid > :nth-child(-n+2) { animation-delay: 30ms; }
+  .b14.fx-print .gmenu.isOpen .qgrid > :nth-child(n+3):nth-child(-n+4) { animation-delay: 80ms; }
+  .b14.fx-print .gmenu.isOpen .qgrid > :nth-child(n+5):nth-child(-n+6) { animation-delay: 130ms; }
+  .b14.fx-print .gmenu.isOpen .qgrid > :nth-child(n+7) { animation-delay: 180ms; }
+  .b14.fx-thunk .gmenu.isOpen { animation: receiptThunk 320ms both; }
+  @keyframes receiptThunk {
+    0% { max-height: 0; transform: scale(1, 1); animation-timing-function: cubic-bezier(0.4, 0, 0.8, 0.6); }
+    45% { max-height: var(--paper-h); transform: scale(1, 1); animation-timing-function: cubic-bezier(0.2, 0.9, 0.4, 1); }
+    62% { max-height: var(--paper-h); transform: scale(1.015, 0.94); animation-timing-function: cubic-bezier(0.37, 0, 0.63, 1); }
+    82% { max-height: var(--paper-h); transform: scale(0.997, 1.01); animation-timing-function: cubic-bezier(0.37, 0, 0.63, 1); }
+    100% { max-height: var(--paper-h); transform: scale(1, 1); }
+  }
+  .b14.fx-thunk .gplay[aria-expanded="true"] { animation: printerKick 320ms linear both; }
+  @keyframes printerKick {
+    0%, 42% { transform: translateY(0); }
+    56% { transform: translateY(2px); }
+    74% { transform: translateY(-0.5px); }
+    100% { transform: translateY(0); }
+  }
 
   .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(80px); z-index: 99;
     background: #141414; color: #f9f6f2; padding: 9px 18px; border-radius: 8px; font-size: 14px; transition: transform .18s ease; }
@@ -1199,8 +1266,11 @@ options visible, counters as the leaderboard's signs, and the two primaries trea
       "All-cream, band-cream top",
       "All-cream, pager-cream top",
       "All-cream, border-color top",
+      "Border-color top, darker walls, white label",
+      "Top pair as full-width rows (all cream)",
       "Receipt, lightblue top pair",
       "Receipt, light-green top pair",
+      "Receipt, dark-green top pair",
       "Receipt, dark-blue top pair"
     ],
     cfgs: [
@@ -1208,9 +1278,34 @@ options visible, counters as the leaderboard's signs, and the two primaries trea
       { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 rc-cream rc-band" },
       { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 rc-cream rc-pager" },
       { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 rc-cream rc-edge" },
+      { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 rc-edge2" },
+      { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 rc-cream rows13" },
       { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14" },
       { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 top-lg" },
+      { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 top-green" },
       { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 top-dark" }
+    ]
+  });
+
+  /* batch fifteen: the receipt motion lab */
+  SECTIONS.push({
+    t: "15 \u00b7 Batch fifteen: receipt motion lab",
+    d: "The pause diagnosis: the old feed grew max-height to 170px but the paper is 137px tall, so a fifth of the animation moved nothing - a literal dead zone between feed and bounce - and the feed's easing braked to zero before the lift began. The repaired default (running on every receipt tile) feeds to the true height, arrives still moving, and hands its momentum to a scaleY damped spring from the slot, so the bottom edge never leaves the printer. Five researched alternatives: a true sampled spring on the inner sheet, elastic squash-and-stretch paper, a slot-pivot wobble, a machine print with staggered row pop-in, and a hard thunk with a printer recoil.",
+    caps: [
+      "The repaired default: damped spring from the slot",
+      "True spring: linear() sampled physics on the sheet",
+      "Elastic paper: squash and stretch",
+      "Wobble: the paper sways around the slot",
+      "Machine print: fast feed, rows pop in order",
+      "Hard thunk: impact squash and printer recoil"
+    ],
+    cfgs: [
+      { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 rc-cream" },
+      { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 rc-cream fx-spring" },
+      { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 rc-cream fx-stretch" },
+      { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 rc-cream fx-wobble" },
+      { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 rc-cream fx-print" },
+      { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 rc-cream fx-thunk" }
     ]
   });
 
