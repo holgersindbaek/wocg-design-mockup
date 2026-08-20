@@ -529,13 +529,13 @@
   body.menu-centerporcelain .mbcenter, body.menu-centerlightporc .mbcenter,
   body.menu-centerlighteggshell .mbcenter, body.menu-centerwave .mbcenter { display: flex; }
   body.menu-centerlight .mbcenter { background: var(--surface, #fff); border-bottom: none;
-    box-shadow: var(--ringshadow); position: relative; z-index: 5; }
+    box-shadow: var(--ringshadow); position: relative; z-index: 20; }
   body.menu-centerlightporc .mbcenter { background: color-mix(in srgb, var(--canvas) 50%, white);
-    border-bottom: none; box-shadow: var(--ringshadow); position: relative; z-index: 5; }
+    border-bottom: none; box-shadow: var(--ringshadow); position: relative; z-index: 20; }
   /* eggshell: spends the whole canvas-to-white gap but keeps a warm cast
      wider than the canvas's own, so it reads tinted rather than white */
   body.menu-centerlighteggshell .mbcenter { background: #fffdf6;
-    border-bottom: none; box-shadow: var(--ringshadow); position: relative; z-index: 5; }
+    border-bottom: none; box-shadow: var(--ringshadow); position: relative; z-index: 20; }
   /* porcelain: the missing rung between canvas and surface - lighter than
      the page, not yet white - derived from the canvas itself */
   body.menu-centerporcelain .mbcenter { background: color-mix(in srgb, var(--canvas) 50%, white); }
@@ -543,7 +543,7 @@
   /* the footer's band and wavy divider, mirrored at the top of the page:
      the band color is cut along the wave (::before) and the sand stroke
      traces the same curve (::after) */
-  body.menu-centerwave .mbcenter { background: #F4EEE5; border-bottom: none; position: relative; z-index: 5;
+  body.menu-centerwave .mbcenter { background: #F4EEE5; border-bottom: none; position: relative; z-index: 20;
     /* the wave hangs 8px below the bar; reserve that space so the gap to
        the content stays the full one, measured from the wave's low point */
     margin-bottom: 8px; }
@@ -576,32 +576,31 @@
      (menu_bar.dust) rebuilt in this design's card chrome. */
   .mbcenter .mclink:hover { text-decoration: underline; text-underline-offset: 3px; }
   .mbcenter .mgames { position: relative; }
-  .mpanel { display: none; position: absolute; top: calc(100% + 10px); left: -14px; z-index: 80; text-align: left;
+  .mpanel { display: none; position: absolute; top: calc(100% + 16px); left: -14px; z-index: 80; text-align: left;
     background: var(--surface, #fff); border-radius: 10px; corner-shape: squircle; padding: 12px 16px;
     box-shadow: 0 0 0 1px var(--edge, var(--panelline)), var(--liftshadow-lg); cursor: default; }
-  .mpanel::before { content: ""; position: absolute; left: -8px; right: -8px; top: -12px; height: 12px; }
+  .mpanel::before { content: ""; position: absolute; left: -8px; right: -8px; top: -16px; height: 16px; }
   .mbcenter .mgames:hover .mgdrop { display: flex; gap: 24px; }
   .mbcenter .muser li:hover .mpanel { display: block; }
   .mbcenter .muser .mpanel { left: auto; right: -6px; }
-  .mghead { font-size: 12px; font-weight: bold; letter-spacing: .07em; text-transform: uppercase;
-    color: var(--muted); margin-bottom: 6px; }
+  .mghead { font-size: 12px; font-weight: bold; color: var(--muted); margin-bottom: 6px; }
   .mgcol { display: flex; flex-direction: column; white-space: nowrap; }
-  .mgcol a { font-size: 14px; line-height: 26px; font-weight: normal; color: var(--ink-soft); text-decoration: none; }
-  .mgcol a:hover { text-decoration: underline; text-underline-offset: 3px; color: var(--ink); }
+  .mgcol a { font-size: 14px; line-height: 26px; font-weight: normal; color: var(--ink-soft); text-decoration: none; border-bottom: none; }
+  .mgcol a:hover { text-decoration: underline; }
   .mphead { font-size: 14px; font-weight: bold; color: var(--ink); margin-bottom: 6px;
     display: flex; align-items: baseline; gap: 8px; white-space: nowrap; }
   .mpcount { font-size: 12px; font-weight: normal; color: var(--muted); }
   .mpempty { font-size: 13px; line-height: 19px; color: var(--muted); width: 210px; }
   .mprow { display: flex; align-items: center; gap: 8px; font-size: 14px; line-height: 20px;
     color: var(--ink-soft); padding: 4px 0; white-space: nowrap; cursor: pointer; }
-  .mprow:hover { text-decoration: underline; text-underline-offset: 3px; color: var(--ink); }
+  .mprow:hover { text-decoration: underline; }
   .mpav { width: 22px; height: 22px; flex: none; }
   .mpage { margin-left: auto; font-size: 12px; color: var(--muted); padding-left: 14px; }
   .mpdot { width: 8px; height: 8px; border-radius: 50%; background: #64CD00;
     box-shadow: 0 0 0 1.5px #C0EB75; margin-left: 12px; }
   .mudrop .mitem { font-size: 14px; line-height: 28px; color: var(--ink-soft); cursor: pointer;
     white-space: nowrap; padding: 0 2px; }
-  .mudrop .mitem:hover { text-decoration: underline; text-underline-offset: 3px; color: var(--ink); }
+  .mudrop .mitem:hover { text-decoration: underline; }
   .mpanel .vPil { display: none; }
   body.viewer-pilady .mpanel .mprow.vPil { display: flex; }
   body.viewer-pilady .mpanel .mitem.vPil { display: block; }
@@ -776,7 +775,7 @@
   body.cnav-sub-wavesandbold #herosub .cjw { font-weight: bold; }
   body.cnav-sub-wavesand #herosub .cjw::after, body.cnav-sub-wavesandbold #herosub .cjw::after { content: "";
     position: absolute; left: 0; right: 0; bottom: -.26em; height: 7px; z-index: -1; pointer-events: none;
-    background-color: #D9D2C4; transition: background-color .18s ease;
+    background-color: var(--edge, #d2cfca); transition: background-color .18s ease;
     -webkit-mask: var(--wavetrough) left center / 7px 7px repeat-x;
             mask: var(--wavetrough) left center / 7px 7px repeat-x; }
   body.cnav-sub-wavesand #herosub .cjw:hover, body.cnav-sub-wavesandbold #herosub .cjw:hover { color: var(--ink); }
