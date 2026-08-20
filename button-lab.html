@@ -628,6 +628,25 @@
   }
   .b16.fx-spring3 .gmenu { bottom: calc(100% - 19px); --paper-h: 157px; }
   .b16.fx-spring3 .qgrid { padding-bottom: 18px; }
+  /* softer container spring: 4px overshoot, one gentle return, and the slack
+     strip wears the cells' cream so the overshoot shows paper, not wall grey */
+  .b16.fx-spring4 .gmenu { bottom: calc(100% - 19px); --paper-h: 157px; }
+  .b16.fx-spring4 .qgrid { padding-bottom: 18px;
+    background: linear-gradient(#D8D2C7 0 calc(100% - 18px), #F9F6F2 calc(100% - 18px)); }
+  .b16.fx-spring4 .gmenu.isOpen { animation: receiptSpring4 480ms both; will-change: transform; }
+  @keyframes receiptSpring4 {
+    0% { max-height: 0; transform: translateY(0); animation-timing-function: cubic-bezier(0.32, 0, 0.72, 0.6); }
+    55% { max-height: var(--paper-h); transform: translateY(0); animation-timing-function: cubic-bezier(0.12, 0.8, 0.32, 1); }
+    72% { max-height: var(--paper-h); transform: translateY(-4px); animation-timing-function: cubic-bezier(0.37, 0, 0.63, 1); }
+    88% { max-height: var(--paper-h); transform: translateY(0.8px); animation-timing-function: cubic-bezier(0.37, 0, 0.63, 1); }
+    100% { max-height: var(--paper-h); transform: translateY(0); }
+  }
+  .b16.fx-soft2 .gmenu.isOpen { max-height: var(--paper-h); animation: receiptStretch4 260ms both; }
+  @keyframes receiptStretch4 {
+    0% { transform: scaleY(0); animation-timing-function: cubic-bezier(0.22, 0.6, 0.36, 1); }
+    66% { transform: scaleY(1.01); animation-timing-function: cubic-bezier(0.37, 0, 0.63, 1); }
+    100% { transform: scaleY(1); }
+  }
 
   .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(80px); z-index: 99;
     background: #141414; color: #f9f6f2; padding: 9px 18px; border-radius: 8px; font-size: 14px; transition: transform .18s ease; }
@@ -1387,12 +1406,16 @@ options visible, counters as the leaderboard's signs, and the two primaries trea
     caps: [
       "Elastic width-true, fixed close",
       "Elastic, subtler: 1.8% overshoot, 300ms",
-      "Container spring, 18px slack"
+      "Container spring, 18px slack",
+      "Container spring, softer: 4px, cream slack",
+      "Elastic, quietest: 1% overshoot, 260ms"
     ],
     cfgs: [
       { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 b16 rc-cream fx-stretch2" },
       { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 b16 rc-cream fx-soft" },
-      { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 b16 rc-cream fx-spring2 fx-spring3" }
+      { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 b16 rc-cream fx-spring2 fx-spring3" },
+      { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 b16 rc-cream fx-spring2 fx-spring4" },
+      { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 b16 rc-cream fx-soft2" }
     ]
   });
 
