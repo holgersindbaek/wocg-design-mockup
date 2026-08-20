@@ -414,6 +414,21 @@
   .b11.s-seg .qgrid .r5:hover, .b11.s-seg .qgrid .r5:focus-visible { background: #F4EEE5; }
   .b11.s-seg .qgrid .r5:active { transform: none; box-shadow: inset 0 1px 2px rgba(60,45,25,.06); }
 
+  /* batch twelve: light green joins the ladder (batch six's own c-lg palette),
+     and the pair returns to the original side-by-side duo. c-db is the dark
+     blue duo the earlier batches never needed. */
+  .duo.c-db button { background: #228BE6; box-shadow: inset 0 0 0 1px #1873C5; }
+  .duo.c-db button:hover, .duo.c-db button:focus-visible { background: #1969B2; }
+  .duo.c-db .dl { color: #fff; text-shadow: -1px -1px 0 #1873C5, 1px -1px 0 #1873C5, -1px 1px 0 #1873C5, 1px 1px 0 #1873C5; }
+  .duo.c-db .dm { color: rgba(255,255,255,.88); }
+  .b12.s-lg .qgrid .r5 { background: #B2F2BB; box-shadow: inset 0 0 0 1px #8FD9A0, 0 2px 4px rgba(0,0,0,.06); color: #2B8A3E; }
+  .b12.s-lg .qgrid .r5:hover, .b12.s-lg .qgrid .r5:focus-visible { background: #A5EDB0; }
+  .b12.s-seglg .qgrid { gap: 1px; background: #8FD9A0; border-radius: var(--radius-md); corner-shape: squircle;
+    overflow: hidden; box-shadow: 0 0 0 1px #8FD9A0, 0 2px 4px rgba(0,0,0,.06); }
+  .b12.s-seglg .qgrid .r5 { border-radius: 0; height: 28px; background: #B2F2BB; color: #2B8A3E; }
+  .b12.s-seglg .qgrid .r5:hover, .b12.s-seglg .qgrid .r5:focus-visible { background: #A5EDB0; }
+  .b12.s-seglg .qgrid .r5:active { transform: none; box-shadow: inset 0 1px 2px rgba(60,45,25,.06); }
+
   .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(80px); z-index: 99;
     background: #141414; color: #f9f6f2; padding: 9px 18px; border-radius: 8px; font-size: 14px; transition: transform .18s ease; }
   .toast.on { transform: translateX(-50%) translateY(0); }
@@ -1014,6 +1029,50 @@ options visible, counters as the leaderboard's signs, and the two primaries trea
       { content: "b8open", cls: "a-centroid", tileCls: "b5 b7 b11 p-green s-lb" },
       { content: "b8open", cls: "a-centroid", tileCls: "b5 b7 b11 p-green s-page" },
       { content: "b8open", cls: "a-centroid", tileCls: "b5 b7 b11 p-green s-seg" }
+    ]
+  });
+
+  /* batch twelve: the green ladder completed, and the side-by-side duo back */
+  function b12content(duoCls, labels) {
+    return function (menu, td) {
+      var d = el("div", "duo " + duoCls);
+      [["Join table", "8 open"], ["Play solo", "Instant"]].forEach(function (p) {
+        var b = el("button", "", "<span class='dl'>" + p[0] + "</span><span class='dm'>" + p[1] + "</span>");
+        b.addEventListener("click", function (e) { e.stopPropagation(); closeAll(); flash(td.game + " \u2014 " + p[0].toLowerCase()); });
+        d.appendChild(b);
+      });
+      menu.appendChild(d);
+      var g = el("div", "qgrid");
+      labels.forEach(function (l) {
+        var b = el("button", "r5", "<span class='qw'>" + l + "</span>");
+        b.addEventListener("click", function (e) { e.stopPropagation(); closeAll(); flash(td.game + " \u2014 " + l.toLowerCase()); });
+        g.appendChild(b);
+      });
+      menu.appendChild(g);
+    };
+  }
+  var B12L = ["Open tables", "Play ranked", "Host table", "Join private", "Options", "Rules"];
+  CONTENT.b12lb = b12content("c-lb", B12L);
+  CONTENT.b12db = b12content("c-db", B12L);
+  CONTENT.b12dg = b12content("c-dg", B12L);
+  SECTIONS.push({
+    t: "12 \u00b7 Batch twelve: the green ladder, and the duo returns",
+    d: "Two asks. First, the green family completes: dark-green pair over light-green smalls or a light-green segmented matrix, using batch six's own c-lg palette (#B2F2BB on an #8FD9A0 ring with #2B8A3E ink) so the greens match. Second, the pair goes back to the original side-by-side duo: dark blue, dark green, and the original lightblue duo each sit over a liked small treatment. Smalls keep the corrected .button.small spec from batch eleven.",
+    caps: [
+      "Green pair, light-green smalls",
+      "Green pair, light-green matrix",
+      "Duo dark blue, lightblue smalls",
+      "Duo dark green, light-green smalls",
+      "Duo lightblue (the original), page-cream smalls",
+      "Duo dark blue, segmented page-cream"
+    ],
+    cfgs: [
+      { content: "b8open", cls: "a-centroid", tileCls: "b5 b7 b11 b12 p-green s-lg" },
+      { content: "b8open", cls: "a-centroid", tileCls: "b5 b7 b11 b12 p-green s-seglg" },
+      { content: "b12db", cls: "a-centroid", tileCls: "b5 b7 b11 b12 s-lb" },
+      { content: "b12dg", cls: "a-centroid", tileCls: "b5 b7 b11 b12 s-lg" },
+      { content: "b12lb", cls: "a-centroid", tileCls: "b5 b7 b11 b12 s-page" },
+      { content: "b12db", cls: "a-centroid", tileCls: "b5 b7 b11 b12 s-seg" }
     ]
   });
 
