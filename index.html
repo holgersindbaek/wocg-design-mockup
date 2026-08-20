@@ -3569,14 +3569,26 @@
     var avail = games.parentElement.clientWidth - 48;
     if (document.body.classList.contains("layout-scrab")) {
       /* fluid mode: no transforms, so the type never scales. The clearing
-         keeps its golden 38.2% above the ideal 1112 and holds 425px below
-         it; when the mosaic would drop under 400px the clearing yields down
-         to its 376px floor (the title's own 361px line plus a seam) and the
-         text wraps instead of shrinking. */
+         hugs the text's real ink - the widest rendered line plus a 28px
+         gutter - instead of reserving a fixed golden share; the old 38.2%
+         reservation left dead air between the text and the tiles whenever
+         the copy ran narrow, and the mosaic now takes every spare pixel.
+         When the mosaic would drop under 400px the clearing yields down to
+         its 376px floor and the text wraps instead of shrinking. */
       games.style.transform = ""; games.style.transformOrigin = "";
       games.style.width = ""; games.style.marginRight = ""; games.style.marginBottom = "";
       if (sceneTxt) sceneTxt.style.transform = "";
-      var clearing = Math.max(425, avail * 0.382);
+      var textW = 0;
+      if (sceneTxt && sceneTxt.parentNode) {
+        Array.prototype.forEach.call(sceneTxt.children, function (p) {
+          if (!p.offsetParent) return;
+          var rng = document.createRange();
+          rng.selectNodeContents(p);
+          var rects = rng.getClientRects();
+          for (var i = 0; i < rects.length; i++) textW = Math.max(textW, rects[i].width);
+        });
+      }
+      var clearing = Math.max(textW + 28, 376);
       if (avail - clearing < 400) clearing = Math.max(376, avail - 400);
       var mw = Math.max(avail - clearing, 260);
       /* seams stay a fixed 16px: only the 655x485 inner cell box scales */
@@ -3605,6 +3617,8 @@
     if (sceneTxt && sceneTxt.parentNode) { sceneTxt.style.transform = "scale(" + Math.min(1 / k, 1) + ")"; sceneTxt.style.top = ""; }
   }
   window.addEventListener("resize", fitScene);
+  /* heading fonts load late and change the measured text width */
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitScene);
   /* the below-tiles row lines up with the mosaic itself: measure the tiles'
      visual bounding box (post-scale) and pin the row to those edges */
   function fitCatRow() {
