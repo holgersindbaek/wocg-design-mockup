@@ -436,6 +436,28 @@
     text-shadow: -1px -1px 0 rgba(0,0,0,.2), 1px -1px 0 rgba(0,0,0,.2), -1px 1px 0 rgba(0,0,0,.2), 1px 1px 0 rgba(0,0,0,.2); }
   .b12.s-felt .qgrid .r5:hover, .b12.s-felt .qgrid .r5:focus-visible { background: #2d8b2b; }
 
+  /* batch thirteen: everything in one matrix. The pair becomes the top cells
+     of the segmented unit (lightblue, label over meta), the six sit below in
+     page cream, all sharing #D8D2C7 walls inside one radius-md squircle. */
+  .b13 .qgrid { grid-template-columns: 1fr 1fr; gap: 1px; margin-top: 0; background: #D8D2C7;
+    border-radius: var(--radius-md); corner-shape: squircle; overflow: hidden;
+    box-shadow: 0 0 0 1px #D8D2C7, 0 2px 4px rgba(0,0,0,.06); }
+  .b13 .qgrid .r5 { border-radius: 0; height: 28px; background: #F9F6F2; color: #262626; }
+  .b13 .qgrid .r5:hover, .b13 .qgrid .r5:focus-visible { background: #F4EEE5; }
+  .b13 .qgrid .r5:active { transform: none; box-shadow: inset 0 1px 2px rgba(60,45,25,.06); }
+  .b13 .qgrid .mtop13 { height: 48px; flex-direction: column; gap: 1px; background: #A5D8FF; color: #125289; }
+  .b13 .qgrid .mtop13:hover, .b13 .qgrid .mtop13:focus-visible { background: #9ACFF8; }
+  .b13 .qgrid .mtop13 .dl { font-size: 16px; font-weight: bold; line-height: 20px; }
+  .b13 .qgrid .mtop13 .dm { font-size: 13px; font-weight: normal; line-height: 15px; color: #1971C2; }
+  .b13.top-dark .qgrid .mtop13 { background: #228BE6; color: #fff;
+    text-shadow: -1px -1px 0 #1873C5, 1px -1px 0 #1873C5, -1px 1px 0 #1873C5, 1px 1px 0 #1873C5; }
+  .b13.top-dark .qgrid .mtop13:hover, .b13.top-dark .qgrid .mtop13:focus-visible { background: #1969B2; }
+  .b13.top-dark .qgrid .mtop13 .dm { color: rgba(255,255,255,.88); text-shadow: none; }
+  .b13.top-green .qgrid .mtop13 { background: #66A80F; color: #fff;
+    text-shadow: -1px -1px 0 #4F800B, 1px -1px 0 #4F800B, -1px 1px 0 #4F800B, 1px 1px 0 #4F800B; }
+  .b13.top-green .qgrid .mtop13:hover, .b13.top-green .qgrid .mtop13:focus-visible { background: #5D960D; }
+  .b13.top-green .qgrid .mtop13 .dm { color: rgba(255,255,255,.88); text-shadow: none; }
+
   .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(80px); z-index: 99;
     background: #141414; color: #f9f6f2; padding: 9px 18px; border-radius: 8px; font-size: 14px; transition: transform .18s ease; }
   .toast.on { transform: translateX(-50%) translateY(0); }
@@ -1084,6 +1106,36 @@ options visible, counters as the leaderboard's signs, and the two primaries trea
       { content: "b12db", cls: "a-centroid", tileCls: "b5 b7 b11 b12 s-seg" },
       { content: "b8open", cls: "a-centroid", tileCls: "b5 b7 b11 b12 p-green s-felt" },
       { content: "b12dg", cls: "a-centroid", tileCls: "b5 b7 b11 b12 s-felt" }
+    ]
+  });
+
+  /* batch thirteen: the whole panel as one segmented matrix */
+  CONTENT.b13 = function (menu, td) {
+    var g = el("div", "qgrid");
+    [["Join table", "8 open"], ["Play solo", "Instant"]].forEach(function (p) {
+      var b = el("button", "r5 mtop13", "<span class='dl'>" + p[0] + "</span><span class='dm'>" + p[1] + "</span>");
+      b.addEventListener("click", function (e) { e.stopPropagation(); closeAll(); flash(td.game + " \u2014 " + p[0].toLowerCase()); });
+      g.appendChild(b);
+    });
+    B12L.forEach(function (l) {
+      var b = el("button", "r5", "<span class='qw'>" + l + "</span>");
+      b.addEventListener("click", function (e) { e.stopPropagation(); closeAll(); flash(td.game + " \u2014 " + l.toLowerCase()); });
+      g.appendChild(b);
+    });
+    menu.appendChild(g);
+  };
+  SECTIONS.push({
+    t: "13 \u00b7 Batch thirteen: one matrix for everything",
+    d: "The whole panel collapses into a single segmented unit: the pair becomes the top two cells (taller, label over meta) and the six options fill the rows below in page cream, everything sharing hairline walls inside one squircle ring. The asked version runs the top cells in the site's lightblue; a dark-blue top and a dark-green top ride along for comparison. One object, eight pressable cells.",
+    caps: [
+      "Lightblue top, page-cream six (the ask)",
+      "Dark-blue top, page-cream six",
+      "Dark-green top, page-cream six"
+    ],
+    cfgs: [
+      { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13" },
+      { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 top-dark" },
+      { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 top-green" }
     ]
   });
 
