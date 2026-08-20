@@ -375,7 +375,7 @@
   #adrail .lbDown { color: #B52626; background-color: #FFDBD9; background-image: url("arrowDownRedSmall.png"); }
   #adrail .lbtable tbody tr { cursor: pointer; }
   #adrail .lbtable tbody tr:hover .lbname { text-decoration: underline; }
-  #adrail .rcnext { margin: 0; padding-top: 4px; font-size: 12px; line-height: 20px; color: #868E96;
+  #adrail .rcnext { margin: 0; padding-top: 4px; font-size: 12px; line-height: 20px; color: var(--muted-soft, #9b9897);
     font-variant-numeric: tabular-nums; }
   /* the challenge box: the wins label over the 4px medal bars (10/20/31 in
      the OS ramp, badges at OS's measured 34x32 riding the bar line), then
@@ -433,10 +433,9 @@
   }
 
   /* anonymous switchers — never themed; hidden until you hover the ad rail */
-  /* the switcher's hover zone shrinks to the rail's right padding strip so
-     the rail's own cards stay clickable; the screen's right edge still
-     slides the switchbar out */
-  .switchzone { position: fixed; top: 0; right: 0; bottom: 0; width: 14px; z-index: 21; }
+  /* the switcher opens from the rail's bottom 200px, under the cards, so
+     the rail's own content stays clickable */
+  .switchzone { position: fixed; right: 0; bottom: 0; width: 336px; height: 200px; z-index: 21; }
   .switchbar {
     position: fixed; top: 0; right: 0; bottom: 0; width: var(--adrail-w, 328px); z-index: 22;
     box-sizing: border-box; overflow-y: auto;
@@ -587,8 +586,8 @@
   .mbcenter .muser li { height: 56px; }
   .mbcenter .muser .mpanel { top: 100%; }
   .mbcenter .muser .mpanel { left: auto; right: -6px; }
-  .mghead { font-size: 16px; font-weight: bold; color: var(--muted); line-height: 32px; margin: 0 0 6px; position: relative; z-index: 1; }
-  .mgdrop { padding-top: 0 !important; padding-bottom: 10px !important; }
+  .mghead { font-size: 16px; font-weight: bold; color: var(--muted); line-height: 32px; margin: 0 0 10px; position: relative; z-index: 1; }
+  .mgdrop { padding-top: 0 !important; padding-bottom: 6px !important; }
   .mgdrop::after { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 32px;
     background: var(--canvas, #f9f6f2); border-bottom: 1px solid var(--edge, #d2cfca);
     border-radius: 20px 20px 0 0; corner-shape: squircle; pointer-events: none; }
@@ -601,7 +600,7 @@
     border-radius: 20px 20px 0 0; corner-shape: squircle;
     display: flex; align-items: baseline; gap: 8px; white-space: nowrap; }
   .mpcount { font-size: 14px; font-weight: normal; color: var(--muted); }
-  .mpempty { font-size: 16px; line-height: 24px; color: #868E96; width: 230px; }
+  .mpempty { font-size: 16px; line-height: 24px; color: var(--muted-soft, #9b9897); width: 230px; }
   .mprow { display: flex; align-items: center; gap: 8px; font-size: 16px; line-height: 24px;
     color: var(--ink-soft); padding: 2px 0; white-space: nowrap; cursor: pointer; }
   .mprow:hover { text-decoration: underline; }
@@ -609,6 +608,7 @@
   .mpage { margin-left: auto; font-size: 14px; color: var(--muted); padding-left: 14px; }
   .mpdot { width: 8px; height: 8px; border-radius: 50%; background: #64CD00;
     box-shadow: 0 0 0 1.5px #C0EB75; margin-left: 12px; }
+  .mudrop { min-width: 220px; }
   .mudrop .mitem { font-size: 16px; line-height: 24px; color: var(--ink-soft); cursor: pointer;
     white-space: nowrap; padding: 2px 2px; }
   .mudrop .mitem:hover { text-decoration: underline; }
@@ -1679,6 +1679,9 @@
     /* edge-deep: the scheme's border grey deepened one step with its own
        muted ink (80/20), the missing rung between --edge and --muted */
     --edge-deep: color-mix(in srgb, var(--edge, #d2cfca) 80%, var(--muted, #4e4d4c));
+    /* muted-soft: helper-text grey derived from the scheme itself, the
+       muted ink faded 45% toward the canvas */
+    --muted-soft: color-mix(in srgb, var(--muted, #4e4d4c) 55%, var(--canvas, #f9f6f2));
     /* the design's one chrome: the scheme's --edge draws the line, and the
        soft layers run warm and visible on cream (the old ElevenLabs 4%
        neutrals sank under cream + grain). Everything that wears btnshadow
@@ -2072,8 +2075,7 @@
         <div class="mpanel mudrop">
           <div class="mphead">Account</div>
           <div class="mitem">Settings</div>
-          <div class="mitem vAnon">Log in</div>
-          <div class="mitem vAnon">Sign up</div>
+          <div class="mitem vAnon">Log in or sign up</div>
           <div class="mitem vPil">Logout</div>
         </div>
       </li>
