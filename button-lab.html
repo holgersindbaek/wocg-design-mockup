@@ -662,12 +662,58 @@
     text-shadow: -1px -1px 0 #4F800B, 1px -1px 0 #4F800B, -1px 1px 0 #4F800B, 1px 1px 0 #4F800B; }
   .b17.m-12 .qgrid .mtop13 .dm { font-size: 12px; font-weight: bold; color: #fff; opacity: 1;
     text-shadow: -1px -1px 0 #4F800B, 1px -1px 0 #4F800B, -1px 1px 0 #4F800B, 1px 1px 0 #4F800B; }
+  .b17.m-20 .qgrid .mtop13 .dl { font-size: 20px; line-height: 22px; }
   .b17.m-none .qgrid .mtop13 .dm, .b17.m-none24 .qgrid .mtop13 .dm { display: none; }
   .b17.m-none .qgrid .mtop13 { height: 32px; }
   .b17.m-none .gmenu { --paper-h: 121px; background: linear-gradient(#4F800B 0 34px, #D8D2C7 34px); }
   .b17.m-none24 .qgrid .mtop13 { height: 24px; }
   .b17.m-none24 .qgrid .mtop13 .dl { font-size: 14px; line-height: 24px; }
   .b17.m-none24 .gmenu { --paper-h: 113px; background: linear-gradient(#4F800B 0 26px, #D8D2C7 26px); }
+
+  /* batch eighteen: the bounce lab. Every tile runs the liked paper (green
+     top, 12px outlined meta) with 18px slack whose strip carries both the
+     cream and the center column divider, so overshoot shows finished paper. */
+  .b18 .gmenu { bottom: calc(100% - 19px); --paper-h: 157px; }
+  .b18 .qgrid { padding-bottom: 18px;
+    background:
+      linear-gradient(#D8D2C7, #D8D2C7) center bottom / 1px 18px no-repeat,
+      linear-gradient(#D8D2C7 0 calc(100% - 18px), #F9F6F2 calc(100% - 18px)); }
+  .b18 .gmenu.isOpen { will-change: transform; }
+  .b18.x-cur .gmenu.isOpen { animation: receiptSpring4 480ms both; }
+  .b18.x-fast .gmenu.isOpen { animation: rsFast 360ms both; }
+  @keyframes rsFast {
+    0% { max-height: 0; transform: translateY(0); animation-timing-function: cubic-bezier(0.32, 0, 0.72, 0.6); }
+    50% { max-height: var(--paper-h); transform: translateY(0); animation-timing-function: cubic-bezier(0.12, 0.8, 0.32, 1); }
+    68% { max-height: var(--paper-h); transform: translateY(-4px); animation-timing-function: cubic-bezier(0.37, 0, 0.63, 1); }
+    86% { max-height: var(--paper-h); transform: translateY(0.7px); animation-timing-function: cubic-bezier(0.37, 0, 0.63, 1); }
+    100% { max-height: var(--paper-h); transform: translateY(0); }
+  }
+  .b18.x-slow .gmenu.isOpen { animation: rsSlow 560ms both; }
+  @keyframes rsSlow {
+    0% { max-height: 0; transform: translateY(0); animation-timing-function: cubic-bezier(0.32, 0, 0.72, 0.6); }
+    42% { max-height: var(--paper-h); transform: translateY(0); animation-timing-function: cubic-bezier(0.2, 0.7, 0.45, 1); }
+    68% { max-height: var(--paper-h); transform: translateY(-4px); animation-timing-function: cubic-bezier(0.42, 0, 0.58, 1); }
+    100% { max-height: var(--paper-h); transform: translateY(0); }
+  }
+  .b18.x-damp .gmenu.isOpen { animation: rsDamp 420ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+  @keyframes rsDamp { from { max-height: 0; } to { max-height: var(--paper-h); } }
+  .b18.x-double .gmenu.isOpen { animation: rsDouble 520ms both; }
+  @keyframes rsDouble {
+    0% { max-height: 0; transform: translateY(0); animation-timing-function: cubic-bezier(0.32, 0, 0.72, 0.6); }
+    52% { max-height: var(--paper-h); transform: translateY(0); animation-timing-function: cubic-bezier(0.333, 0.667, 0.667, 1); }
+    66% { max-height: var(--paper-h); transform: translateY(-4px); animation-timing-function: cubic-bezier(0.333, 0, 0.667, 0.333); }
+    78% { max-height: var(--paper-h); transform: translateY(0); animation-timing-function: cubic-bezier(0.333, 0.667, 0.667, 1); }
+    84.5% { max-height: var(--paper-h); transform: translateY(-1.3px); animation-timing-function: cubic-bezier(0.333, 0, 0.667, 0.333); }
+    91% { max-height: var(--paper-h); transform: translateY(0); }
+    100% { max-height: var(--paper-h); transform: translateY(0); }
+  }
+  .b18.x-feather .gmenu.isOpen { animation: rsFeather 500ms both; }
+  @keyframes rsFeather {
+    0% { max-height: 0; transform: translateY(0); animation-timing-function: cubic-bezier(0.32, 0, 0.72, 0.6); }
+    55% { max-height: var(--paper-h); transform: translateY(0); animation-timing-function: cubic-bezier(0.25, 0.75, 0.5, 1); }
+    75% { max-height: var(--paper-h); transform: translateY(-2px); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+    100% { max-height: var(--paper-h); transform: translateY(0); }
+  }
 
   .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(80px); z-index: 99;
     background: #141414; color: #f9f6f2; padding: 9px 18px; border-radius: 8px; font-size: 14px; transition: transform .18s ease; }
@@ -1449,6 +1495,7 @@ options visible, counters as the leaderboard's signs, and the two primaries trea
       "Edge top, lighter still: EFEAE2",
       "Green top, meta outlined like the label",
       "Green top, meta 12px bold outlined",
+      "Green top, meta 12px, label at the Play 20px",
       "Green top, no meta, 32px pair",
       "Green top, no meta, 24px pair, 14px label"
     ],
@@ -1457,8 +1504,31 @@ options visible, counters as the leaderboard's signs, and the two primaries trea
       { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 rc-edge3 b17 et-lighter" },
       { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 top-green b17 m-outline" },
       { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 top-green b17 m-12" },
+      { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 top-green b17 m-12 m-20" },
       { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 top-green b17 m-none" },
       { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 top-green b17 m-none24" }
+    ]
+  });
+
+  /* batch eighteen: the bounce lab on the liked paper */
+  SECTIONS.push({
+    t: "18 \u00b7 Batch eighteen: the bounce lab",
+    d: "Perfecting the container spring on the liked paper: green top with the 12px outlined meta, 18px slack whose strip now carries the center column divider so overshoot shows finished paper. Six bounce characters: the current softer spring as the baseline, a faster feed with the same soft bounce, a slow unhurried bloom, a critically damped cushion with no overshoot at all, a double bounce with honest ballistic spacing (the second hop is smaller and quicker), and a feather with a 2px drift and a long settle.",
+    caps: [
+      "Current softer spring (baseline)",
+      "Faster up, same soft bounce",
+      "Slow bloom: unhurried",
+      "Critically damped: cushioned, no overshoot",
+      "Double bounce, ballistic spacing",
+      "Feather: 2px, long settle"
+    ],
+    cfgs: [
+      { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 b16 b17 top-green m-12 b18 x-cur" },
+      { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 b16 b17 top-green m-12 b18 x-fast" },
+      { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 b16 b17 top-green m-12 b18 x-slow" },
+      { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 b16 b17 top-green m-12 b18 x-damp" },
+      { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 b16 b17 top-green m-12 b18 x-double" },
+      { content: "b13", cls: "a-centroid", tileCls: "b5 b7 b11 b13 b14 b16 b17 top-green m-12 b18 x-feather" }
     ]
   });
 
