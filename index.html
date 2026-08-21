@@ -1882,33 +1882,34 @@
   body.playbtn-evernoteyellow .gmenu .gmGrid .gmTop { background: #f4c360; color: #6B4E00;
     box-shadow: 0 0 0 1px #e2a62f; text-shadow: none; }
   body.playbtn-evernoteyellow .gmenu .gmGrid .gmTop:hover, body.playbtn-evernoteyellow .gmenu .gmGrid .gmTop:focus-visible { background: #f0b945; }
-  /* the category sections wear the games-dropdown category colors on their
-     play buttons and dropups, bound to the SAME palette slots the menu
-     underlines use (p3 trick-taking, p4 rummy, p1 classics), so they follow
-     whatever tile palette is active. Rings and hovers derive by darkening. */
-  #sec-tt { --pcat: var(--p3); --pcatring: color-mix(in srgb, var(--p3) 78%, black);
-    --pcathover: color-mix(in srgb, var(--p3) 92%, black); --pcatink: #fff; }
-  #sec-rummy { --pcat: var(--p4); --pcatring: color-mix(in srgb, var(--p4) 78%, black);
-    --pcathover: color-mix(in srgb, var(--p4) 92%, black); --pcatink: #fff; }
-  #sec-classic { --pcat: var(--p1); --pcatring: color-mix(in srgb, var(--p1) 72%, #5e4200);
-    --pcathover: color-mix(in srgb, var(--p1) 92%, black); --pcatink: #6B4E00; }
+  /* the category sections wear a family-matched trio derived from the rummy
+     green in OKLCH: the green's own lightness (.627) and chroma (.167) with
+     only the hue rotated to the category's blue (252) and yellow (83.4, at
+     the max chroma the sRGB gamut allows there). All three carry white text
+     with the standard ring outline. */
+  #sec-tt { --pcat: #298ae9; --pcatring: color-mix(in srgb, var(--pcat) 78%, black);
+    --pcathover: color-mix(in srgb, var(--pcat) 92%, black); --pcatink: #fff; }
+  #sec-rummy { --pcat: var(--p4); --pcatring: color-mix(in srgb, var(--pcat) 78%, black);
+    --pcathover: color-mix(in srgb, var(--pcat) 92%, black); --pcatink: #fff; }
+  /* yellow is the family's exception: at the green's depth yellow reads as
+     brown, so it sits at the deepest lightness where it still reads yellow
+     (OKLCH .76, max gamut chroma), and the ring outline carries white text */
+  #sec-classic { --pcat: #e0a600; --pcatring: color-mix(in srgb, var(--pcat) 78%, black);
+    --pcathover: color-mix(in srgb, var(--pcat) 92%, black); --pcatink: #fff; }
   #sec-tt .gplay, #sec-rummy .gplay, #sec-classic .gplay {
     --pring: var(--pcatring); background: var(--pcat); color: var(--pcatink);
     text-shadow: -1px -1px 0 var(--pring), 1px -1px 0 var(--pring), -1px 1px 0 var(--pring), 1px 1px 0 var(--pring); }
-  #sec-classic .gplay { text-shadow: none; }
   #sec-tt .gplay:hover, #sec-tt .gplay:focus-visible,
   #sec-rummy .gplay:hover, #sec-rummy .gplay:focus-visible,
   #sec-classic .gplay:hover, #sec-classic .gplay:focus-visible { background: var(--pcathover); }
-  #sec-tt .gplay .gzarr, #sec-rummy .gplay .gzarr {
+  #sec-tt .gplay .gzarr, #sec-rummy .gplay .gzarr, #sec-classic .gplay .gzarr {
     filter: brightness(0) invert(1) drop-shadow(1px 0 var(--pring)) drop-shadow(-1px 0 var(--pring))
       drop-shadow(0 1px var(--pring)) drop-shadow(0 -1px var(--pring)); }
-  #sec-classic .gplay .gzarr { filter: brightness(0) opacity(.72); }
   #sec-tt .gmenu, #sec-rummy .gmenu, #sec-classic .gmenu {
     background: linear-gradient(var(--pcatring) 0 50px, #D8D2C7 50px); }
   #sec-tt .gmenu .gmGrid .gmTop, #sec-rummy .gmenu .gmGrid .gmTop, #sec-classic .gmenu .gmGrid .gmTop {
     background: var(--pcat); color: var(--pcatink); box-shadow: 0 0 0 1px var(--pcatring);
     text-shadow: -1px -1px 0 var(--pcatring), 1px -1px 0 var(--pcatring), -1px 1px 0 var(--pcatring), 1px 1px 0 var(--pcatring); }
-  #sec-classic .gmenu .gmGrid .gmTop { text-shadow: none; }
   #sec-tt .gmenu .gmGrid .gmTop:hover, #sec-tt .gmenu .gmGrid .gmTop:focus-visible,
   #sec-rummy .gmenu .gmGrid .gmTop:hover, #sec-rummy .gmenu .gmGrid .gmTop:focus-visible,
   #sec-classic .gmenu .gmGrid .gmTop:hover, #sec-classic .gmenu .gmGrid .gmTop:focus-visible { background: var(--pcathover); }
