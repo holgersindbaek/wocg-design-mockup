@@ -767,7 +767,7 @@
   body.cnav-sub-suits #herosub .cjw::after { content: ""; position: absolute; left: 0; right: 0;
     bottom: -6px; height: 9px; pointer-events: none;
     background: var(--gst, none) left top / 100% 9px no-repeat;
-    clip-path: inset(0 100% 0 0); transition: clip-path .35s ease-out; }
+    clip-path: inset(0 100% 0 0); transition: clip-path .25s ease-out; }
   body.cnav-sub-suits #herosub .cjw:hover::after { clip-path: inset(0 0 0 0); }
   /* gold signs: the online-solitaire "Playing" tag, inline in the sentence */
   body.cnav-sub-sign #herosub .cjw { display: inline-block; padding: 0 9px; border-radius: 6px;
@@ -3672,11 +3672,12 @@
       if (!on) { el.style.removeProperty("--gst"); return; }
       var w = el.offsetWidth;
       if (!w) return;
-      var n = Math.max(2, Math.round(w / 12));
+      var pad = 2, span = w - pad * 2;
+      var n = Math.max(2, Math.round(span / 12));
       var sw = 0, i;
       for (i = 0; i < n; i++) sw += GSUITS[i % 4].w;
-      var gap = (w - sw) / (n - 1);
-      var x = 0, parts = "";
+      var gap = (span - sw) / (n - 1);
+      var x = pad, parts = "";
       for (i = 0; i < n; i++) {
         var t = GSUITS[i % 4];
         parts += "%3Cg transform='translate(" + (x - t.x0 * t.s).toFixed(2) + " " + (4.5 - t.cy * t.s).toFixed(2) + ") scale(" + t.s + ")'%3E%3Cpath d='" + t.d + "' fill='" + t.f + "' fill-opacity='" + t.o + "'/%3E%3C/g%3E";
