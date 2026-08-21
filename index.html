@@ -537,14 +537,34 @@
      Evernote-style warm container, starting with Open tables ===== */
   /* the container's outer edges sit on the same 1112px column as every other
      section's content (the .lobbyscope 24px gutters stay outside it); the
-     tiles inset 20px from its edge. Ring: the band's own edge color, the same
-     #D9D2C4 the menu bar's divider and the rail panels use */
+     tiles inset 24px from its edge — the page gutter rhythm. Ring: the band's
+     own edge color, the same #D9D2C4 the menu bar's divider and the rail
+     panels use */
   body.sect-contained #openTablesTop { width: calc(100% - 48px); max-width: 1112px; margin: 0 auto 34px;
     background: var(--band, #f4eee5); border-radius: 20px; corner-shape: squircle;
-    box-shadow: inset 0 0 0 1px #D9D2C4; padding: 20px; }
-  /* the hero sits 20px above the container — the same distance as the tiles
+    box-shadow: inset 0 0 0 1px #D9D2C4; padding: 24px; }
+  /* the heading's 32px canvas offset would stack on the padding in here */
+  body.sect-contained #openTablesTop .lobbyhead { margin-top: 0; }
+  /* the hero sits 24px above the container — the same distance as the tiles
      to the container's sides */
-  body.sect-contained #popsec { padding-bottom: 20px; }
+  body.sect-contained #popsec { padding-bottom: 24px; }
+  /* the wave-band variant: no box — the zone is a full-width strip of the
+     band color, and the menu bar's wave divider cuts its top and bottom
+     edges. Content stays on the same 1112px column as the other sections */
+  body.sect-waveband #openTablesTop { max-width: none; position: relative;
+    background: var(--band, #f4eee5); margin-bottom: 34px;
+    padding: 24px max(24px, calc((100% - 1112px) / 2)) 24px; }
+  body.sect-waveband #openTablesTop .lobbyhead { margin-top: 0; }
+  body.sect-waveband #openTablesTop::before, body.sect-waveband #openTablesTop::after {
+    content: ""; position: absolute; left: 0; right: 0; height: 8px; pointer-events: none;
+    background-color: #D9D2C4;
+    -webkit-mask: var(--wavedivider) left center / 20px 8px repeat-x;
+            mask: var(--wavedivider) left center / 20px 8px repeat-x; }
+  body.sect-waveband #openTablesTop::before { top: -8px; }
+  body.sect-waveband #openTablesTop::after { bottom: -8px; }
+  /* hero tiles sit 24px from the band's top-wave midline (which rides 4px
+     above the band edge), matching the menu-wave spacing rule */
+  body.sect-waveband #popsec { padding-bottom: 28px; }
 
   /* the fine-wave variant: the same bar, but the divider runs the hover
      links' own 7px trough tile */
@@ -1857,7 +1877,9 @@
   body.layout-scrab { --sch: 517px; }
   body.layout-scrab .games { --clx: 425px; --mw: 687px; --mh: 517px; --moy: 0px;
     --miw: calc(var(--mw) - 32px); --mih: calc(var(--mh) - 32px); }
-  body.layout-scrab #popsec { padding-top: 24px; }
+  /* 20px puts the topmost tile 24px from the menu wave's perceived center
+     (the wave's midline rides 4px below the bar) */
+  body.layout-scrab #popsec { padding-top: 20px; }
   body.layout-scrab .pos-a { left: var(--clx); top: var(--moy); width: calc(var(--miw) * 0.658015 + 16px); height: calc(var(--mih) * 0.663918 + 16px); }
   body.layout-scrab .pos-d { left: calc(var(--clx) + var(--miw) * 0.658015 + 32px); top: var(--moy); width: calc(var(--miw) * 0.341985); height: calc(var(--mih) * 0.331959); }
   body.layout-scrab .pos-b { left: calc(var(--clx) + var(--miw) * 0.658015 + 32px); top: calc(var(--moy) + var(--mih) * 0.331959 + 16px); width: calc(var(--miw) * 0.341985); height: calc(var(--mih) * 0.331959); }
@@ -2737,7 +2759,8 @@
   ];
   var SECTS = [
     ["none", "Sections on the canvas (as today)"],
-    ["contained", "Open tables in the Evernote container"]
+    ["contained", "Open tables in the Evernote container"],
+    ["waveband", "Open tables on a wave-edged band"]
   ];
   var MENUS = [
     ["current", "Today's bar"],
