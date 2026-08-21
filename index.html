@@ -58,6 +58,13 @@
   body.font-ppeditold #herotitle, body.font-ppeditold .pophead, body.font-ppeditold .wrap h2 { font-family: "PP Editorial Old", serif; font-weight: 400; }
   body.font-vollkorn  #herotitle, body.font-vollkorn  .pophead, body.font-vollkorn  .wrap h2 { font-family: "Vollkorn", serif; font-weight: 500; }
   body.font-vollkornsb #herotitle, body.font-vollkornsb .pophead, body.font-vollkornsb .wrap h2 { font-family: "Vollkorn", serif; font-weight: 600; }
+  /* Mailchimp's brand serif (the "That's odd" face on their unsubscribe pages),
+     loaded from their CDN as a trial. Proprietary: shipping it needs a license. */
+  @font-face { font-family: 'Means Web';
+    src: url('https://mailchimp.com/cdn/product/fonts/mailchimp/means/Means-Regular-Web.woff2') format('woff2'),
+         url('https://mailchimp.com/cdn/product/fonts/mailchimp/means/Means-Regular-Web.woff') format('woff');
+    font-weight: 400; font-display: swap; }
+  body.font-means    #herotitle, body.font-means    .pophead, body.font-means    .wrap h2 { font-family: "Means Web", Georgia, serif; font-weight: 400; }
   /* the Fauna exact recipe: theartof.app/fauna sets Vollkorn Regular 400 and
      narrows the display line to 90% with a transform, not a condensed face */
   body.font-fauna     #herotitle, body.font-fauna     .pophead, body.font-fauna     .wrap h2 { font-family: "Vollkorn", serif; font-weight: 400; }
@@ -1488,7 +1495,7 @@
     height: 32px; line-height: 32px; display: inline-block; text-align: center; padding: 0 8px; box-sizing: border-box;
     cursor: pointer; border: none; transition: background-color 24ms ease-out, box-shadow 24ms ease-out, transform 80ms ease-out; }
   .lobbyscope .button:active { transform: scale(0.98); }
-  .lobbyscope .button.small { font-size: 14px; height: 24px; line-height: 22px; padding: 0 10px 1px; }
+  .lobbyscope .button.small { font-size: 16px; height: 24px; line-height: 24px; padding: 0 10px; }
   .lobbyscope .button.green { background-color: #66A80F; box-shadow: inset 0 0 0 1px #4F800B, 0 2px 4px rgba(0, 0, 0, .06);
     text-shadow: -1px -1px 0 #4F800B, 1px -1px 0 #4F800B, -1px 1px 0 #4F800B, 1px 1px 0 #4F800B; }
   .lobbyscope .button.green:hover { background-color: #5D960D; }
@@ -1510,14 +1517,14 @@
   .lobbyscope .ldMore { position: relative; flex: 0 0 auto; cursor: pointer; }
   .lobbyscope .ldMore::after { content: ""; position: absolute; top: 100%; left: 0; width: 100%; height: 8px; }
   .lobbyscope .ldMore .dropupButton { display: flex; align-items: center; height: 24px; border-radius: var(--radius-md, 6px); corner-shape: squircle; padding: 0 10px;
-    font-size: 14px; font-weight: bold; background-color: #A5D8FF; box-shadow: inset 0 0 0 1px #7AB8EC, 0 2px 4px rgba(0, 0, 0, .06); color: #1971C2; }
+    font-size: 16px; line-height: 24px; font-weight: bold; background-color: #A5D8FF; box-shadow: inset 0 0 0 1px #7AB8EC, 0 2px 4px rgba(0, 0, 0, .06); color: #1971C2; }
   .lobbyscope .ldMore .dropupButton .dropupButtonText { background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 7'%3E%3Cpath d='M1.2 1h5.6L4 6z' fill='%231971C2' stroke='%231971C2' stroke-width='2' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right center / 8px 7px; padding: 0 14px 0 0; }
   .lobbyscope .ldMore:hover .dropupButton { background-color: #9ACFF8; }
   .lobbyscope .dropupContent { display: none; position: absolute; z-index: 2; top: calc(100% + 8px); right: 0; min-width: 100%;
     background-color: #fff; border: 1px solid #63B4F2; border-radius: 6px; box-sizing: border-box; overflow: hidden;
     text-align: left; list-style-type: none; padding: 0; margin: 0; }
   .lobbyscope .ldMore:hover .dropupContent { display: block; }
-  .lobbyscope .dropupContent li { display: block; font-size: 14px; line-height: 24px; font-weight: bold; white-space: nowrap;
+  .lobbyscope .dropupContent li { display: block; font-size: 16px; line-height: 24px; font-weight: bold; white-space: nowrap;
     color: #1971C2; background-color: #A5D8FF; border-bottom: 1px solid #63B4F2; padding: 0 12px; cursor: pointer; }
   .lobbyscope .dropupContent li:last-child { border-bottom: none; }
   .lobbyscope .dropupContent li:hover { background-color: #9ACFF8; }
@@ -1602,14 +1609,61 @@
     filter: url(#avatarInnerEdge) var(--avshadow);
     transform-origin: center bottom; transition: transform 80ms ease-in-out, filter 80ms ease-in-out; }
   .lobbyscope .player.seatAvailable:hover img, .lobbyscope .player.isEmpty:hover img { transform: scale(1.12); }
+  /* nameplates on dark felt: shadows alone barely read on a dark ground, so
+     the pop comes from three layers working together: a 1px dark OUTER contour
+     hugging the shape (the crisp core of the shadow, not a drawn border), the
+     soft drops beneath it, and a faint light inner top edge so the plate reads
+     lit from above */
   .lobbyscope .playerNameContainer { background-color: #A5D8FF; color: #1665AD;
-    box-shadow: inset 0 0 0 1px #343A40, 0 0 4px 0 rgba(0,0,0,0.24); border-radius: 6px; height: 20px;
-    position: absolute; bottom: 0; width: 100%; }
-  .lobbyscope .playerName { font-size: 16px; font-weight: bold; line-height: 20px; white-space: nowrap;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 0 0 1px rgba(0,0,0,.30),
+      0 1px 3px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25);
+    border-radius: var(--radius-md, 6px); corner-shape: squircle;
+    height: 20px; position: absolute; bottom: 0; width: 100%; }
+  .lobbyscope .playerName { font-size: 14px; font-weight: bold; line-height: 20px; white-space: nowrap;
     overflow: hidden; text-overflow: ellipsis; padding: 0 6px; }
   .lobbyscope .playerBadge { display: block; width: 20px; height: 20px; position: absolute; left: -10px; top: -10px; }
   .lobbyscope .playerBadge.isBot { background: url("botBadge.png") no-repeat center / 16px 16px; }
   .lobbyscope .playerBadge.isLiked { background: url("likedBadge.png") no-repeat center / 16px 16px; }
+  /* open-seat preview: hovering an empty seat sits you down, replicating the
+     game's animateJoinedPlayerAvatar: chair out 140ms EASE-IN-2 (lingers, then
+     vanishes crisply; in game it is one node, so chair and avatar never overlap),
+     then after 60ms the avatar fades 120ms linear while scaling .86 -> 1.04 over
+     220ms ease-out-2 and settling over 100ms. Hover-out runs the same sequence
+     backwards: avatar leaves first, the chair returns only after it is gone.
+     Curves from Transition.js. No z-index on the avatar, so the nameplate keeps
+     painting on top of it, like every seated player. */
+  /* .joinable is stamped by JS on every seat you can take in the open-table
+     cards: the empty seats AND the bot seats, since sitting on a bot kicks it.
+     The new-table card's placeholders stay plain. */
+  .lobbyscope .player.joinable { cursor: pointer; }
+  .lobbyscope .player.joinable img:not(.seatYou) { transition: opacity 140ms cubic-bezier(0.33,1,0.68,1) 140ms, transform 140ms cubic-bezier(0.33,1,0.68,1) 140ms; }
+  .lobbyscope .player.joinable:hover img:not(.seatYou) { opacity: 0; transform: scale(.88);
+    transition: opacity 140ms cubic-bezier(0.32,0,0.67,0), transform 140ms cubic-bezier(0.32,0,0.67,0); }
+  /* no filter or height here: the incoming avatar inherits the generic
+     .player img rules, so it wears exactly the edge and shadow treatment the
+     seated avatars wear, whatever the switchers say */
+  .lobbyscope .player.joinable .seatYou { position: absolute; left: 50%; top: 0; width: auto;
+    transform: translateX(-50%) scale(.86); transform-origin: center bottom; opacity: 0;
+    pointer-events: none;
+    transition: opacity 120ms linear, transform 140ms ease; }
+  .lobbyscope .player.joinable:hover .seatYou { opacity: 1; transform: translateX(-50%) scale(1);
+    transition: opacity 120ms linear 200ms;
+    animation: seatYouIn 320ms 200ms both; }
+  @keyframes seatYouIn {
+    0% { transform: translateX(-50%) scale(.86); animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
+    68.75% { transform: translateX(-50%) scale(1.04); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+    100% { transform: translateX(-50%) scale(1); } }
+  /* the plate rolls: the rest label slides down and out while "Join" drops in
+     from the top, timed to the avatar landing, with the dropup damping. The
+     texts roll inside their own clipper so the bot badge is never clipped. */
+  .lobbyscope .player.joinable .plateRoll { position: absolute; inset: 0; overflow: hidden;
+    border-radius: inherit; corner-shape: inherit; }
+  .lobbyscope .player.joinable .plateRoll .playerName:not(.pnJoin) { position: absolute; inset: 0; padding: 0;
+    transform: translateY(0); transition: transform 220ms cubic-bezier(.22,1,.36,1) 120ms; }
+  .lobbyscope .player.joinable .pnJoin { position: absolute; inset: 0; padding: 0;
+    transform: translateY(-100%); transition: transform 220ms cubic-bezier(.22,1,.36,1) 120ms; }
+  .lobbyscope .player.joinable:hover .plateRoll .playerName:not(.pnJoin) { transform: translateY(100%); transition-delay: 200ms; }
+  .lobbyscope .player.joinable:hover .pnJoin { transform: translateY(0); transition-delay: 200ms; }
   .lobbyscope .tableListing .content { display: inline-block; width: 100%; box-sizing: border-box; padding: 75% 12px 12px 12px; }
   .lobbyscope .contentTop { display: flex; justify-content: space-between; white-space: nowrap; overflow: hidden; width: 100%; padding: 6px 0; }
   .lobbyscope .tableNumber { color: #212529; font-size: 16px; font-weight: bold; flex-shrink: 1;
@@ -1728,6 +1782,42 @@
   body.playbtn-felt .gplay:hover, body.playbtn-felt .gplay:focus-visible { filter: brightness(1.08); }
   body.playbtn-felt .gplay .gzarr { filter: brightness(0) invert(1) drop-shadow(1px 0 rgba(0,0,0,.4)) drop-shadow(-1px 0 rgba(0,0,0,.4))
     drop-shadow(0 1px rgba(0,0,0,.4)) drop-shadow(0 -1px rgba(0,0,0,.4)); }
+  /* the dropup's main buttons wear the Play button's full colorway: fill, ink,
+     ring, the four-way text outline in the ring color, and the menu frame's
+     gradient top, which is painted in the pair's own ring. Green is the base. */
+  body.playbtn-lightblue .gmenu { background: linear-gradient(#7AB8EC 0 50px, #D8D2C7 50px); }
+  body.playbtn-lightblue .gmenu .gmGrid .gmTop { background: #A5D8FF; color: #1971C2;
+    box-shadow: 0 0 0 1px #7AB8EC; text-shadow: none; }
+  body.playbtn-lightblue .gmenu .gmGrid .gmTop:hover, body.playbtn-lightblue .gmenu .gmGrid .gmTop:focus-visible { background: #9ACFF8; }
+  body.playbtn-darkgreen .gmenu { background: linear-gradient(#3A5E08 0 50px, #D8D2C7 50px); }
+  body.playbtn-darkgreen .gmenu .gmGrid .gmTop { background: #4F800B; color: #fff;
+    box-shadow: 0 0 0 1px #3A5E08;
+    text-shadow: -1px -1px 0 #3A5E08, 1px -1px 0 #3A5E08, -1px 1px 0 #3A5E08, 1px 1px 0 #3A5E08; }
+  body.playbtn-darkgreen .gmenu .gmGrid .gmTop:hover, body.playbtn-darkgreen .gmenu .gmGrid .gmTop:focus-visible { background: #457009; }
+  body.playbtn-evernote .gmenu { background: linear-gradient(#008a25 0 50px, #D8D2C7 50px); }
+  body.playbtn-evernote .gmenu .gmGrid .gmTop { background: #00a82d; color: #fff;
+    box-shadow: 0 0 0 1px #008a25;
+    text-shadow: -1px -1px 0 #008a25, 1px -1px 0 #008a25, -1px 1px 0 #008a25, 1px 1px 0 #008a25; }
+  body.playbtn-evernote .gmenu .gmGrid .gmTop:hover, body.playbtn-evernote .gmenu .gmGrid .gmTop:focus-visible { background: #009628; }
+  body.playbtn-live .gmenu { background: linear-gradient(#2B8A3E 0 50px, #D8D2C7 50px); }
+  body.playbtn-live .gmenu .gmGrid .gmTop { background: #2f9e44; color: #fff;
+    box-shadow: 0 0 0 1px #2B8A3E;
+    text-shadow: -1px -1px 0 #2B8A3E, 1px -1px 0 #2B8A3E, -1px 1px 0 #2B8A3E, 1px 1px 0 #2B8A3E; }
+  body.playbtn-live .gmenu .gmGrid .gmTop:hover, body.playbtn-live .gmenu .gmGrid .gmTop:focus-visible { background: #2b9340; }
+  body.playbtn-blue .gmenu { background: linear-gradient(#1873C5 0 50px, #D8D2C7 50px); }
+  body.playbtn-blue .gmenu .gmGrid .gmTop { background: #228BE6; color: #fff;
+    box-shadow: 0 0 0 1px #1873C5;
+    text-shadow: -1px -1px 0 #1873C5, 1px -1px 0 #1873C5, -1px 1px 0 #1873C5, 1px 1px 0 #1873C5; }
+  body.playbtn-blue .gmenu .gmGrid .gmTop:hover, body.playbtn-blue .gmenu .gmGrid .gmTop:focus-visible { background: #1E7FD4; }
+  body.playbtn-gold .gmenu { background: linear-gradient(#e2a62f 0 50px, #D8D2C7 50px); }
+  body.playbtn-gold .gmenu .gmGrid .gmTop { background: #f4c360; color: #6B4E00;
+    box-shadow: 0 0 0 1px #e2a62f; text-shadow: none; }
+  body.playbtn-gold .gmenu .gmGrid .gmTop:hover, body.playbtn-gold .gmenu .gmGrid .gmTop:focus-visible { background: #f0b945; }
+  body.playbtn-felt .gmenu { background: linear-gradient(rgba(0,0,0,.55) 0 50px, #D8D2C7 50px), url("green-felt.jpg"); }
+  body.playbtn-felt .gmenu .gmGrid .gmTop { background: #35654d url("green-felt.jpg"); color: #fff;
+    box-shadow: 0 0 0 1px rgba(0,0,0,.55);
+    text-shadow: -1px -1px 0 rgba(0,0,0,.4), 1px -1px 0 rgba(0,0,0,.4), -1px 1px 0 rgba(0,0,0,.4), 1px 1px 0 rgba(0,0,0,.4); }
+  body.playbtn-felt .gmenu .gmGrid .gmTop:hover, body.playbtn-felt .gmenu .gmGrid .gmTop:focus-visible { filter: brightness(1.08); }
   /* the crowned receipt from the button lab: the panel docks flush on the
      Play button and feeds out of it, critically damped - a cushioned rise,
      no overshoot, and a plain accelerating pull back in. One matrix: the
@@ -2133,7 +2223,7 @@
     <label class="ctl"><span>Tile shadow</span><select id="sel-shadow"></select></label>
     <label class="ctl"><span>Tile edge</span><select id="sel-edge"></select></label>
     <label class="ctl"><span>Live counter</span><select id="sel-counter"></select></label>
-    <label class="ctl"><span>Play button</span><select id="sel-playbtn"></select></label>
+    <label class="ctl"><span>★ Play button</span><select id="sel-playbtn"></select></label>
   </div>
   <div class="swgroup">
     <div class="swhead">Page</div>
@@ -2812,7 +2902,8 @@
     ["caprasimo", "Caprasimo + BuloRounded"],
     ["gambetta", "Gambetta + BuloRounded"],
     ["zodiak", "Zodiak + BuloRounded"],
-    ["sentient", "Sentient + BuloRounded"]
+    ["sentient", "Sentient + BuloRounded"],
+    ["means", "Means + BuloRounded (Mailchimp, That's odd)"]
   ];
   var curFont = "gelicamd";
   var SHADOWS = [
@@ -4553,6 +4644,175 @@
     }
     document.getElementById("gate-go").onclick = attempt;
     inp.addEventListener("keydown", function (e) { if (e.key === "Enter") attempt(); });
+  })();
+</script>
+<script>
+  /* open-seat preview: drop your avatar (the signed-in viewer) into every
+     joinable empty seat, revealed on hover by the CSS above */
+  document.querySelectorAll(".lobbyscope .player.isEmpty .playerName").forEach(function (p) {
+    p.textContent = "Empty";
+  });
+  /* every takeable seat in the open tables gets the join preview: the empty
+     seats and the bot seats, since sitting on a bot replaces it */
+  document.querySelectorAll(".lobbyscope .ltCard:not(.isNew) .player.isEmpty, .lobbyscope .ltCard:not(.isNew) .player.isBot").forEach(function (seat) {
+    seat.classList.add("joinable");
+    var you = document.createElement("img");
+    you.className = "seatYou";
+    /* your avatar is whatever the account menu shows for the current viewer:
+       AnimalFox for Guest #12, WomanSuperGirl2 when PiLady10 is previewed */
+    function myAvatar() {
+      var av = document.querySelector(".muser .avatar");
+      return av ? av.src : "WomanSuperGirl2.svg";
+    }
+    you.src = myAvatar();
+    you.alt = "";
+    you.width = 32; you.height = 32;
+    var plate = seat.querySelector(".playerNameContainer");
+    seat.insertBefore(you, plate);
+    seat.addEventListener("mouseenter", function () { you.src = myAvatar(); });
+    /* the rolling texts live in their own clipper so badges outside it never clip */
+    var roll = document.createElement("div");
+    roll.className = "plateRoll";
+    roll.appendChild(seat.querySelector(".playerName"));
+    var join = document.createElement("p");
+    join.className = "playerName pnJoin";
+    join.textContent = "Join";
+    roll.appendChild(join);
+    plate.insertBefore(roll, plate.firstChild);
+  });
+</script>
+<style>
+  /* ── the site tooltip: C2 from tooltip-lab. Capsule chrome (edge ring over
+     the liftshadow), squircle radius from the buttons, welded arrow, dropup
+     damping, 250ms pause with a 350ms warm window between neighbors. ── */
+  /* the outer element is a transparent 14px frame so paint containment can
+     clip at ITS edge while the bubble, its shadow, and the arrow all sit
+     inside. Containment plus the compositor layer is what keeps the hover
+     smooth over the filtered avatars. */
+  #wtip { position: fixed; z-index: 10000; left: 0; top: 0; padding: 14px; pointer-events: none;
+    opacity: 0; visibility: hidden; transform: translateY(5px) scale(.96); transform-origin: center bottom;
+    will-change: transform, opacity; contain: layout paint;
+    /* the exit is fast and plain on purpose: it fires at the same moment the
+       card hover repaints reverse, so it must be done before they land */
+    transition: opacity .08s linear, transform .08s ease, visibility 0s .08s; }
+  #wtip.on { opacity: 1; visibility: visible; transform: translateY(0) scale(1);
+    transition: opacity .1s linear, transform .22s cubic-bezier(.22,1,.36,1), visibility 0s; }
+  #wtip .wtipBox { max-width: 230px; background: #F9F6F2; color: #262626;
+    font-size: 13px; line-height: 18px; font-weight: normal;
+    font-family: "BuloRounded", "Verdana", "Arial", sans-serif; text-align: left; white-space: nowrap;
+    padding: 7px 11px 8px; border-radius: var(--radius-md, 6px); corner-shape: squircle;
+    box-shadow: inset 0 0 0 1px #d2cfca, var(--liftshadow); }
+  #wtip b { font-weight: bold; }
+  #wtip .wtipHint { display: block; font-size: 11px; line-height: 15px; color: #8a857c; white-space: normal; }
+  #wtip::after { content: ""; position: absolute; bottom: 8.5px; left: var(--ax, 50%);
+    width: 10px; height: 10px; margin-left: -5px; box-sizing: border-box;
+    transform: rotate(45deg); background: #F9F6F2;
+    border: 0 solid #d2cfca; border-right-width: 1px; border-bottom-width: 1px; border-radius: 0 0 2px 0; }
+  #wtip.below { transform: translateY(-5px) scale(.96); transform-origin: center top; }
+  #wtip.below.on { transform: translateY(0) scale(1); }
+  #wtip.below::after { bottom: auto; top: 9.5px; transform: rotate(225deg); }
+</style>
+<script>
+  /* the tooltip engine plus every attachment on this page: lobby players and
+     badges, challenge medals and calendar days, leaderboard names and chips */
+  (function () {
+    var tip = document.createElement("div");
+    tip.id = "wtip";
+    document.body.appendChild(tip);
+    var showTimer = null, warmUntil = 0, current = null;
+    function show(el) {
+      if (current === el && tip.classList.contains("on")) return;
+      var html = el.__wtip;
+      if (typeof html === "function") html = html();
+      tip.innerHTML = '<div class="wtipBox">' + html + "</div>";
+      current = el;
+      var r = el.getBoundingClientRect();
+      tip.classList.remove("below");
+      tip.style.left = "0px"; tip.style.top = "0px";
+      /* the 14px frame is transparent, so the clamps and gaps offset by it:
+         a visual 8px screen margin and a 9px gap to the target */
+      var w = tip.offsetWidth, h = tip.offsetHeight;
+      var x = Math.round(r.left + r.width / 2 - w / 2);
+      x = Math.max(-6, Math.min(x, window.innerWidth - w + 6));
+      var y = Math.round(r.top - h + 1);
+      if (y < -6) { tip.classList.add("below"); y = Math.round(r.bottom - 1); }
+      tip.style.left = x + "px"; tip.style.top = y + "px";
+      var ax = Math.round(r.left + r.width / 2 - x);
+      tip.style.setProperty("--ax", Math.max(26, Math.min(ax, w - 26)) + "px");
+      tip.classList.add("on");
+    }
+    function hide() { tip.classList.remove("on"); current = null; warmUntil = Date.now() + 350; }
+    function attach(el, html) {
+      el.__wtip = html;
+      el.addEventListener("mouseenter", function () {
+        clearTimeout(showTimer);
+        var wait = (current || Date.now() < warmUntil) ? 0 : 250;
+        showTimer = setTimeout(function () { show(el); }, wait);
+      });
+      el.addEventListener("mouseleave", function (e) {
+        clearTimeout(showTimer);
+        if (current === el) hide();
+        var t = e.relatedTarget;
+        while (t && t !== document.body && t.__wtip === undefined) t = t.parentElement;
+        if (t && t !== document.body && t.__wtip !== undefined) {
+          showTimer = setTimeout(function () { show(t); }, 0);
+        }
+      });
+    }
+
+    function hashOf(s) { var h = 0; for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0; return h; }
+    /* no name line: the nameplate already says who it is (production format) */
+    function statsHtml(name) {
+      var h = hashOf(name);
+      var elo = 1200 + h % 500, games = 40 + (h >> 3) % 860, fin = 88 + (h >> 7) % 12;
+      return "Elo: <b>" + elo.toLocaleString("en-US") + "</b><br>Games: <b>" + games + "</b><br>Finishes: <b>" + fin + "%</b>";
+    }
+
+    /* joinable seats (empty and bot seats in the open tables) get the join
+       preview instead of any tooltip */
+    document.querySelectorAll(".lobbyscope .player:not(.isEmpty)").forEach(function (p) {
+      if (p.classList.contains("joinable")) return;
+      var nameEl = p.querySelector(".playerName");
+      if (!nameEl) return;
+      var name = nameEl.textContent.trim();
+      if (p.querySelector(".playerBadge.isBot")) {
+        attach(p, "Bot. Plays until a person takes the seat.");
+      } else {
+        attach(p, statsHtml(name));
+      }
+    });
+    document.querySelectorAll(".lobbyscope .playerBadge.isBot").forEach(function (b) {
+      if (b.closest(".joinable")) return;
+      attach(b, "Bot");
+    });
+    document.querySelectorAll(".lobbyscope .playerBadge.isLiked").forEach(function (b) { attach(b, "You liked this player"); });
+
+    var MEDALS = { bronze: "Bronze &middot; won at 10 challenge wins",
+      silver: "Silver &middot; at 20 wins", gold: "Gold &middot; at 31 wins, the full month" };
+    Object.keys(MEDALS).forEach(function (k) {
+      var m = document.querySelector("#adrail .mseg." + k + " .mbadge");
+      if (m) attach(m, MEDALS[k]);
+    });
+    document.querySelectorAll("#adrail .dcday:not(.future)").forEach(function (c) {
+      attach(c, function () {
+        var d = c.textContent.trim();
+        if (c.classList.contains("today")) return "August " + d + " &middot; today&rsquo;s challenge";
+        return "August " + d + " &middot; " + (c.classList.contains("won") ? "won" : "not played");
+      });
+    });
+
+    document.querySelectorAll("#railBoard .lbUp, #railBoard .lbDown").forEach(function (chip) {
+      var n = chip.textContent.trim();
+      var up = chip.classList.contains("lbUp");
+      var isRank = chip.parentElement.textContent.indexOf("#") !== -1;
+      attach(chip, isRank
+        ? (up ? "Up " + n + " places since yesterday" : "Down " + n + " places since yesterday")
+        : (up ? "Gained " + n + " Elo today" : "Lost " + n + " Elo today"));
+    });
+    document.querySelectorAll("#railBoard .lbHeart").forEach(function (h2) { attach(h2, "You liked this player"); });
+    document.querySelectorAll("#railBoard .lbname").forEach(function (n) {
+      attach(n, statsHtml(n.textContent.replace("♥", "").trim()));
+    });
   })();
 </script>
 </body>

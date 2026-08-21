@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tooltip lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vollkorn:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  @font-face {
+    font-family: 'BuloRounded';
+    src: url("BuloRounded-Regular.woff2") format('woff2');
+    font-style: normal; font-weight: normal; font-display: swap;
+  }
+  @font-face {
+    font-family: 'BuloRounded';
+    src: url("BuloRounded-Bold.woff2") format('woff2');
+    font-style: normal; font-weight: bold; font-display: swap;
+  }
+
+  :root {
+    --tipdelay: .25s;
+    --radius-md: 6px;
+    --tileshadow-soft: 0 1px 2px rgba(60,45,25,.08), 0 2px 5px rgba(60,45,25,.08), 0 5px 12px rgba(60,45,25,.08);
+    --panelline: rgba(60,45,25,0.15);
+    --liftshadow: 0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09);
+    --avshadow: drop-shadow(1px 0 rgba(0,0,0,.12)) drop-shadow(-1px 0 rgba(0,0,0,.12))
+      drop-shadow(0 1px rgba(0,0,0,.12)) drop-shadow(0 -1px rgba(0,0,0,.12))
+      drop-shadow(0 1px 1px rgba(0,0,0,.14)) drop-shadow(0 2px 3px rgba(0,0,0,.14))
+      drop-shadow(0 5px 9px rgba(0,0,0,.18));
+  }
+
+  @supports (corner-shape: squircle) { :root { --radius-md: 12px; } }
+
+  body { margin: 0; padding: 28px 24px 80px; background: #f9f6f2; color: #2b2722;
+    font-family: "BuloRounded", "Verdana", "Arial", sans-serif; -webkit-font-smoothing: antialiased; }
+  h1 { font-family: "Vollkorn", serif; font-weight: 500; font-size: 26px; margin: 0 0 4px; }
+  h2 { font-family: "Vollkorn", serif; font-weight: 500; font-size: 19px; margin: 0 0 3px; }
+  p.note { font-size: 13px; color: #8a857c; margin: 0 0 10px; max-width: 780px; line-height: 1.5; }
+  .pinbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 30px; font-size: 13.5px; font-weight: bold; }
+  .pinbar input { width: 16px; height: 16px; accent-color: #66A80F; }
+  .pinbar .pinhint { font-weight: normal; color: #999488; }
+  .pinbar .pinsep { color: #d0c9bc; font-weight: normal; margin: 0 2px; }
+  .pinbar .dopt { display: inline-flex; align-items: center; gap: 4px; font-weight: normal; cursor: pointer; }
+  .pinbar .dopt input { width: 14px; height: 14px; }
+
+  .vsec { margin: 0 0 46px; max-width: 1120px; }
+  .vsec .desc { font-size: 12.5px; color: #999488; margin: 0 0 16px; max-width: 700px; line-height: 1.5; }
+  .vgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 18px 16px; }
+  .vcell h3 { font-size: 13.5px; margin: 0 0 2px; }
+  .vcell .src { font-size: 11.5px; color: #999488; margin: 0 0 10px; min-height: 42px; line-height: 1.45; }
+  .vcell .meta { font-size: 11px; color: #b0aa9e; margin: 8px 0 0; }
+
+  /* ===== the demo stage: three real site triggers ===== */
+  .stage { position: relative; background: #fff; border-radius: 14px;
+    box-shadow: inset 0 0 0 1px var(--panelline), var(--liftshadow);
+    padding: 84px 16px 16px; display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; }
+  .stage.onFelt { background: #327333 url("green-felt.jpg") repeat; background-size: 300px 300px;
+    box-shadow: inset 0 0 0 1px rgba(52,58,64,.4), var(--liftshadow); }
+  .trig { position: relative; display: flex; flex-direction: column; align-items: center; cursor: default; }
+
+  .tAv { width: 44px; height: 44px; filter: url(#avatarInnerEdge) var(--avshadow); }
+  .tPlate { margin-top: 3px; background: #A5D8FF; color: #1665AD; font-size: 12px; font-weight: bold;
+    line-height: 17px; padding: 0 7px; border-radius: 5px; box-shadow: inset 0 0 0 1px #343A40, 0 0 4px rgba(0,0,0,.24); }
+  .tChip { min-width: 30px; height: 30px; border-radius: 8px; background: #fff; color: #B02A2A;
+    box-shadow: 0 0 1px rgba(0,0,0,.4), 0 1px 1px rgba(0,0,0,.04), 0 2px 4px rgba(0,0,0,.04);
+    display: flex; align-items: center; justify-content: center; font-size: 17px; padding: 0 6px; }
+  .tLabel { font-size: 14px; font-weight: bold; color: #2b2722; border-bottom: 1px dotted #999488; padding-bottom: 1px; }
+  .stage.onFelt .tLabel { color: #fff; border-bottom-color: rgba(255,255,255,.6); }
+
+  /* ===== tooltip base: anchored above the trigger ===== */
+  .tip { position: absolute; bottom: calc(100% + 10px); left: 50%; z-index: 9;
+    transform: translateX(-50%); transform-origin: center bottom;
+    white-space: nowrap; text-align: left; pointer-events: none;
+    opacity: 0; visibility: hidden; }
+  .tip b, .tip strong { font-weight: bold; }
+  .tip .tipHint { opacity: .62; font-weight: normal; }
+  .tip.ml { white-space: normal; width: max-content; max-width: 200px; line-height: 1.45; }
+  .tip::after { content: ""; position: absolute; top: calc(100% - 5px); left: 50%; width: 9px; height: 9px;
+    margin-left: -4.5px; transform: rotate(45deg); background: inherit; border-radius: 0 0 2px 0; }
+  .noArrow .tip::after { display: none; }
+
+  /* default show: 150ms fade + 4px rise + zoom from the anchor, out faster */
+  .tip { transition: opacity .1s ease, transform .1s ease, visibility .1s; }
+  .trig:hover .tip, .trig.pin .tip { opacity: 1; visibility: visible;
+    transform: translateX(-50%) translateY(0) scale(1);
+    transition: opacity .15s cubic-bezier(.23,1,.32,1) var(--tipdelay), transform .15s cubic-bezier(.23,1,.32,1) var(--tipdelay), visibility 0s var(--tipdelay); }
+  .trig:not(:hover):not(.pin) .tip { transform: translateX(-50%) translateY(4px) scale(.95); }
+  .trig.pin .tip { transition-delay: 0s; }
+
+  /* ===== R: the tooltip today ===== */
+  .sToday .tip { background: #f8f9fa; color: #212529; font-size: 20px; line-height: 24px; font-weight: bold;
+    padding: 12px; border-radius: 6px; opacity: 0; box-shadow: 0 0 0 1px #343A40, 0 0 12px 0 rgba(0,0,0,.32); }
+  .sToday .trig:hover .tip, .sToday .trig.pin .tip { opacity: .88; transition-delay: 0s; }
+  .sToday .trig:not(:hover):not(.pin) .tip { transform: translateX(-50%); }
+  .sToday.noArrow .tip.ml { max-width: none; }
+  .sTidy .tip { background: #f8f9fa; color: #212529; font-size: 13.5px; line-height: 19px;
+    padding: 7px 10px; border-radius: 8px; box-shadow: 0 0 0 1px #343A40, 0 4px 10px rgba(0,0,0,.16); }
+
+  /* ===== A: materials ===== */
+  .sInk .tip { background: #2b2722; color: #f9f6f2; font-size: 13px; line-height: 18px; font-weight: normal;
+    letter-spacing: .005em; padding: 6px 11px 7px; border-radius: 7px;
+    box-shadow: 0 2px 6px rgba(43,39,34,.18), 0 6px 16px rgba(43,39,34,.14); }
+  .sInk .tip b { color: #fff; }
+
+  .sCream .tip { background: #fffdf9; color: #2b2722; font-size: 13px; line-height: 18px; font-weight: normal;
+    padding: 7px 11px 8px; border-radius: 10px;
+    box-shadow: inset 0 0 0 1px rgba(60,45,25,.14), 0 2px 5px rgba(60,45,25,.10), 0 8px 20px rgba(60,45,25,.12); }
+  .sCream .tip::after { box-shadow: 1px 1px 0 rgba(60,45,25,.14); }
+
+  .sGlass .tip { background: rgba(43,39,34,.62); color: #fdfbf7; font-size: 13px; line-height: 18px; font-weight: normal;
+    padding: 7px 11px 8px; border-radius: 10px;
+    -webkit-backdrop-filter: blur(14px) saturate(180%); backdrop-filter: blur(14px) saturate(180%);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.16), 0 4px 14px rgba(0,0,0,.18); }
+  .sGlass .tip::after { -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
+
+  .sFelt .tip { background: #35654d url("green-felt.jpg") repeat; background-size: 150px 150px;
+    color: #eaf3ee; font-size: 13px; line-height: 18px; font-weight: normal; padding: 7px 11px 8px; border-radius: 8px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.14), inset 0 0 0 1px rgba(0,0,0,.45), 0 3px 10px rgba(0,0,0,.25); }
+  .sFelt .tip b { color: #fff; }
+  .sFelt .tip::after { background: #35654d; box-shadow: 1px 1px 0 rgba(0,0,0,.45); }
+
+  .sParch .tip { background: #f6efdf; color: #2b2722; font-size: 13px; line-height: 18px; font-weight: normal;
+    padding: 7px 11px 8px; border-radius: 9px;
+    box-shadow: 0 0 0 1px rgba(244,195,96,.55), inset 0 0 0 2px #f6efdf, inset 0 0 0 3px rgba(226,166,47,.35),
+      0 3px 10px rgba(60,45,25,.16); }
+  .sParch .tip::after { box-shadow: 1px 1px 0 rgba(244,195,96,.55); }
+
+  .sMicro .tip { background: #2b2722; color: #efe9e1; font-size: 11px; line-height: 16px; font-weight: normal;
+    letter-spacing: .02em; padding: 4px 8px; border-radius: 4px; box-shadow: none; }
+
+  .sSticker .tip { background: #fffdf9; color: #2b2722; font-size: 13px; line-height: 18px; font-weight: bold;
+    padding: 6px 10px 7px; border-radius: 8px; border: 2px solid #2b2722;
+    box-shadow: 3px 3px 0 rgba(43,39,34,.18); }
+  .sSticker .tip::after { border-right: 2px solid #2b2722; border-bottom: 2px solid #2b2722; margin-top: 1px; }
+
+  .sBalloon .tip { background: #A5D8FF; color: #14507e; font-size: 13px; line-height: 18px; font-weight: bold;
+    padding: 7px 11px 8px; border-radius: 12px; box-shadow: inset 0 0 0 1px #343A40, 0 3px 8px rgba(0,0,0,.16); }
+  .sBalloon .tip::after { width: 11px; height: 11px; margin-left: -5.5px; box-shadow: 1px 1px 0 #343A40; }
+
+  .sCardback .tip { background: #2b2722; color: #f9f6f2; font-size: 13px; line-height: 18px; font-weight: normal;
+    padding: 8px 12px 9px; border-radius: 8px;
+    box-shadow: inset 0 0 0 2px #2b2722, inset 0 0 0 3px rgba(244,195,96,.8), 0 3px 10px rgba(43,39,34,.22); }
+  .sCardback .tip b { color: #f4c360; }
+
+  .sKeycap .tip { background: #2b2722; color: #f9f6f2; font-size: 13px; line-height: 18px; font-weight: normal;
+    padding: 6px 11px 7px; border-radius: 7px; box-shadow: 0 2px 6px rgba(43,39,34,.18), 0 6px 16px rgba(43,39,34,.14); }
+  .sKeycap .tip .tipHint { display: block; font-size: 11px; line-height: 15px; color: rgba(249,246,242,.62); opacity: 1; }
+
+  /* ===== C: the pick, the Hide-ad button's chrome (#F9F6F2 / #D8D2C7 / #262626).
+     Squircle radius from the big buttons, the game tiles' soft shadow coat, and a
+     welded arrow: real hairline borders on its two exposed faces, tucked under the
+     box so the ring flows into the arrow as one outline. ===== */
+  .sAd .tip, .sAdLift .tip, .sTile .tip, .sBand .tip, .sWhiteHair .tip, .sAdBold .tip, .sAdDeep .tip {
+    background: #F9F6F2; color: #262626; font-size: 13px; line-height: 18px; font-weight: normal;
+    padding: 7px 11px 8px; border-radius: var(--radius-md, 6px); corner-shape: squircle;
+    /* the capsule's chrome: the --edge ring over the liftshadow, same as the
+       stats capsule, the category tiles, and the lobby cards */
+    box-shadow: inset 0 0 0 1px #d2cfca, var(--liftshadow); }
+  .sAd .tip::after, .sAdLift .tip::after, .sTile .tip::after, .sBand .tip::after, .sWhiteHair .tip::after,
+  .sAdBold .tip::after, .sAdDeep .tip::after {
+    top: 100%; left: 50%; width: 10px; height: 10px; margin: -5.5px 0 0 -5px; box-sizing: border-box;
+    transform: rotate(45deg); background: inherit; box-shadow: none;
+    border: 0 solid #d2cfca; border-right-width: 1px; border-bottom-width: 1px;
+    border-bottom-right-radius: 2px; border-radius: 0 0 2px 0; }
+  .sAd .tip { box-shadow: inset 0 0 0 1px #D8D2C7; }
+  .sAd .tip::after { border-color: #D8D2C7; }
+  .sTile .tip { box-shadow: inset 0 0 0 1px #d2cfca, var(--tileshadow-soft); }
+  .sBand .tip { background: #F4EEE5; }
+  .sWhiteHair .tip { background: #fff; }
+  .sAdBold .tip { font-weight: bold; }
+  .sAdDeep .tip { box-shadow: inset 0 0 0 1px #b8b5b1, var(--liftshadow); }
+  .sAdDeep .tip::after { border-color: #b8b5b1; }
+
+  /* ===== B: motion, all on the picked Hide-ad cream skin ===== */
+  .mInstant .trig:hover .tip, .mInstant .trig.pin .tip { transition: none; }
+  .mInstant .trig:not(:hover):not(.pin) .tip { transform: translateX(-50%); transition: none; }
+  .mFade .trig:not(:hover):not(.pin) .tip { transform: translateX(-50%); }
+  .mFade .trig:hover .tip, .mFade .trig.pin .tip { transition: opacity .15s ease var(--tipdelay), visibility 0s var(--tipdelay); }
+  .mRise .trig:not(:hover):not(.pin) .tip { transform: translateX(-50%) translateY(5px); }
+  .mZoom .trig:not(:hover):not(.pin) .tip { transform: translateX(-50%) scale(.96); }
+  .mZoom .trig:hover .tip, .mZoom .trig.pin .tip {
+    transition: opacity .1s linear var(--tipdelay), transform .12s cubic-bezier(.23,1,.32,1) var(--tipdelay), visibility 0s var(--tipdelay); }
+  .mSpring .trig:not(:hover):not(.pin) .tip { transform: translateX(-50%) translateY(4px) scale(.92); }
+  .mSpring .trig:hover .tip, .mSpring .trig.pin .tip {
+    transition: opacity .1s linear var(--tipdelay), transform .2s cubic-bezier(.3,1.4,.5,1) var(--tipdelay), visibility 0s var(--tipdelay); }
+  /* the game-tile dropup's landing: fast start, long soft settle, no bounce */
+  .mDamp .trig:not(:hover):not(.pin) .tip { transform: translateX(-50%) translateY(5px) scale(.96); }
+  .mDamp .trig:hover .tip, .mDamp .trig.pin .tip {
+    transition: opacity .1s linear var(--tipdelay), transform .22s cubic-bezier(.22,1,.36,1) var(--tipdelay), visibility 0s var(--tipdelay); }
+  .mCursor .tip { display: none; }
+  .cursorTip { position: fixed; z-index: 60; background: #F9F6F2; color: #262626; font-size: 13px;
+    padding: 6px 11px 7px; border-radius: 9px; pointer-events: none; white-space: nowrap;
+    box-shadow: inset 0 0 0 1px #D8D2C7, 0 2px 5px rgba(60,45,25,.10); opacity: 0; }
+  .cursorTip.on { opacity: 1; }
+  .mCursor .trig.pin .tipPinned { display: block; position: absolute; bottom: calc(100% + 10px); left: 50%;
+    transform: translateX(-50%); background: #F9F6F2; color: #262626; font-size: 13px; padding: 6px 11px 7px;
+    border-radius: 9px; white-space: nowrap; box-shadow: inset 0 0 0 1px #D8D2C7, 0 2px 5px rgba(60,45,25,.10); }
+  .tipPinned { display: none; }
+
+  /* ===== C: content stress test, pinned examples ===== */
+  .contentRow { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 14px; }
+  .contentRow .ex { position: relative; }
+  .contentRow .tip { position: static; opacity: 1; visibility: visible; transform: none; display: inline-block; }
+  .contentRow .tip::after { display: none; }
+  .exCap { font-size: 11px; color: #b0aa9e; margin: 6px 0 0; }
+
+  /* ===== D: dark strip ===== */
+  .darkStrip { background: #23211d; border-radius: 14px; padding: 22px 18px 18px;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.06); }
+  .darkStrip .dTitle { font-size: 12px; color: #8a857c; margin: 0 0 14px; }
+  .darkRow { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-start; }
+  .darkRow .ex { position: relative; }
+  .darkRow .tip { position: static; opacity: 1; visibility: visible; transform: none; display: inline-block; }
+  .darkRow .tip::after { display: none; }
+  .darkRow .exCap { color: #6f6a61; }
+
+  /* ===== research section ===== */
+  .research { max-width: 760px; border-top: 1px solid #e7dfd2; padding-top: 22px; }
+  .research p { font-size: 12.5px; color: #6a655c; line-height: 1.65; margin: 0 0 12px; }
+  .research b { color: #2b2722; }
+  footer { margin-top: 40px; font-size: 12px; color: #999488; line-height: 1.7; max-width: 760px; }
+  footer a { color: #7a746a; }
+  code { font-size: 11.5px; }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <filter id="avatarInnerEdge" x="-2%" y="-2%" width="104%" height="104%" color-interpolation-filters="sRGB">
+      <feMorphology in="SourceAlpha" operator="erode" radius="1" result="eroded"/>
+      <feComposite in="SourceAlpha" in2="eroded" operator="out" result="ring"/>
+      <feFlood flood-color="#000000" flood-opacity="0.64"/>
+      <feComposite in2="ring" operator="in" result="ringInk"/>
+      <feComposite in="ringInk" in2="SourceGraphic" operator="over"/>
+    </filter>
+  </defs>
+</svg>
+
+<h1>Tooltip lab</h1>
+<p class="note">One new tooltip for the whole site. Today's tooltip is a white box at 88% opacity with a hard dark ring,
+a heavy 12px blur, and 20px bold text, and it follows the cursor. It has 117 call sites and no dark mode. Every variant
+below shows the same three real site triggers: a player avatar (multi-line Elo stats), a trump chip (short label), and
+a settings label (full sentence). Hover them, or pin everything open. Round two: group C refines the picked direction,
+the cream card hairline recolored to the Hide ad button's chrome, entering with the game-tile dropup's damping.</p>
+<div class="pinbar">
+  <input type="checkbox" id="pinAll">
+  <label for="pinAll">Pin every tooltip open</label>
+  <span class="pinsep">&middot;</span>
+  <span>Show pause:</span>
+  <label class="dopt"><input type="radio" name="tipdelay" value="0"> none</label>
+  <label class="dopt"><input type="radio" name="tipdelay" value="0.15"> 150 ms</label>
+  <label class="dopt"><input type="radio" name="tipdelay" value="0.25" checked> 250 ms</label>
+  <label class="dopt"><input type="radio" name="tipdelay" value="0.4"> 400 ms</label>
+  <span class="pinsep">&middot;</span>
+  <label class="dopt"><input type="checkbox" id="warmSkip" checked> skip the pause between neighbors</label>
+</div>
+
+<div id="sections"></div>
+
+<section class="vsec">
+  <h2>Content stress test</h2>
+  <p class="desc">The two lead materials carrying every real content shape from the codebase: a 2-word label (41% of all
+  tooltips), a full sentence (32%), the lobby Elo stats block, and the richest one, a Hand and Foot meld summary.
+  The fix for today's all-bold text: bold carries only names and numbers, the rest is regular.</p>
+  <div id="contentBlocks"></div>
+</section>
+
+<section class="vsec">
+  <h2>On a dark table</h2>
+  <p class="desc">24% of page views run dark mode, and in a game the background is dark felt either way. Today's tooltip
+  has no dark styling at all. The finalists side by side on a dark surface: the constant-identity chips (ink, glass,
+  felt) survive unchanged, the cream card needs its dark twin, and the micro chip inverts.</p>
+  <div class="darkStrip">
+    <p class="dTitle">The same tooltips on the dark surface</p>
+    <div class="darkRow" id="darkRow"></div>
+  </div>
+</section>
+
+<section class="vsec research">
+  <h2>What the research says</h2>
+  <p><b>What today's tooltip gets wrong, by 2026 standards.</b> Global 88% opacity on the whole box (the single most
+  dated tell), 20px bold for everything, a hard 1px ring plus a heavy 12px blur, cursor-following instead of anchored,
+  no arrow, no show delay, and no dark mode. Every major product anchors the tooltip to its trigger, uses 11 to 13px
+  regular text, one soft shadow or none, and shows after a short pause.</p>
+  <p><b>The current consensus spec.</b> shadcn and Vercel: near-black chip, 12px regular text, 6 to 8px radius, no
+  border, no shadow, a small rotated-square arrow, 150 ms fade plus zoom from 95%. GitHub: 11px on a #24292f chip,
+  0.1 s appear. Material 3: inverse surface, 4dp radius, no arrow, 150 ms in and 75 ms out. Linear and Notion: soft
+  wide shadow, hairline instead of a ring, often a second muted hint line. Motion rules: enter 125 to 200 ms, exit
+  faster, scale from the anchor with transform-origin, never from scale(0), strong ease-out like
+  cubic-bezier(.23,1,.32,1). Delay: Radix uses 700 ms with a 300 ms skip window for neighbors; 250 to 500 ms is the
+  common band. Arrows are optional; Vercel reserves the arrow for tooltips alone, so nothing else in the UI has one.</p>
+  <p><b>Dark mode strategies.</b> Most systems bind the tooltip to an inverse token so it auto-flips (shadcn, Material,
+  Carbon, GitHub). The brand-safe alternative is one constant-identity chip designed to survive both surfaces, which is
+  what Figma ships and what the espresso ink chip does here. Frosted glass solves both surfaces with one spec at the
+  cost of a backdrop-filter.</p>
+  <p><b>Migration is small.</b> All 117 call sites keep working: the skin lives in one 14-line file
+  (CustomTooltip.scss), and the engine already has node-anchored placement built in
+  (positionTooltipAtNode, used for the touch path today). Switching from cursor-following to anchored, adding the
+  250 ms pause, and restyling the box touches CustomTooltip.js and its SCSS only. The one content change worth making:
+  stop wrapping every label in strong, and let multi-line tooltips use bold for names and numbers only.</p>
+  <p><b>My take, round two.</b> Within the picked family, C2: the capsule's chrome, the #d2cfca edge ring over the
+  liftshadow, so the tooltip is one more piece of the family the stats capsule, category tiles, and lobby cards
+  already belong to. C3's band fill is the fallback if any shadow feels heavy over game art, and C6 swaps the ring to
+  the site's edge-deep divider token when the light ring gets lost. On text, C2's regular-with-bold-accents beats
+  C5's all-bold in the stress test below, especially on the stats blocks. On motion, B6, the dropup damping, is the
+  pick: it is what the tiles already do, and at 220 ms it stays snappy. One open question for the dark table: the
+  cream chip glows on dark felt, so decide between keeping it (a lit card on the table reads fine) or giving it a
+  dark twin from the same recipe (#262626 fill, #4a453e hairline, #F9F6F2 text).</p>
+</section>
+
+<footer>
+  Sources: shadcn/ui v4 + Radix Tooltip defaults · GitHub Primer tooltips.scss · Material 3 tooltip + motion tokens ·
+  IBM Carbon tooltip · Vercel Geist tooltip · Linear and Notion shipped UIs · Apple HIG help tags ·
+  Emil Kowalski's UI animation standards.<br>
+  In our codebase: <code>static/scss/CustomTooltip.scss</code> (the whole skin, 14 lines),
+  <code>static/js/CustomTooltip.js</code> (engine: cursor-follow on desktop, tap-tooltip on touch,
+  <code>positionTooltipAtNode</code> already anchors), 117 call sites in 32 files, Table.js holds 34.
+</footer>
+
+<script>
+  function el(tag, cls, html) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (html !== undefined) e.innerHTML = html;
+    return e;
+  }
+
+  var STATS = 'Elo: <b>1524</b><br>Games: <b>318</b><br>Finishes: <b>96%</b>';
+  var MELD = '<b>Clean book &middot; 350 + 500 points</b><br>Dirty &middot; 4&#8202;/&#8202;7 &middot; 90 points';
+
+  /* the three real triggers every variant demos */
+  function makeStage(opts) {
+    opts = opts || {};
+    var stage = el("div", "stage" + (opts.felt ? " onFelt" : ""));
+    var t1 = el("div", "trig");
+    t1.appendChild(el("img", "tAv")).src = "AnimalCat.svg";
+    t1.appendChild(el("div", "tPlate", "Duckling"));
+    t1.appendChild(el("span", "tip ml", opts.keycap
+      ? 'Duckling<span class="tipHint">Elo 1524 &middot; 318 games &middot; 96% finishes</span>'
+      : STATS));
+    var t2 = el("div", "trig");
+    t2.appendChild(el("div", "tChip", "&hearts;"));
+    t2.appendChild(el("span", "tip", opts.keycap
+      ? 'Trump is hearts<span class="tipHint">Named by Marge</span>'
+      : "Trump is hearts"));
+    var t3 = el("div", "trig");
+    t3.appendChild(el("div", "tLabel", "Game hints"));
+    t3.appendChild(el("span", "tip ml", "Show suggested moves when you are low on time"));
+    stage.appendChild(t1); stage.appendChild(t2); stage.appendChild(t3);
+    return stage;
+  }
+
+  var GROUPS = [
+    { id: "ref", title: "References", desc: "Today's tooltip rebuilt exactly from CustomTooltip.scss (values resolved: #f8f9fa, 20px bold, 12px padding, ring #343A40 plus 12px blur, 88% opacity, no delay), and the smallest respectful tidy of the same skin." },
+    { id: "c", title: "C · The pick, in the house chrome", desc: "The cream card on the site's own furniture recipe: canvas #F9F6F2, soft ink #262626, the big buttons' squircle radius, and the capsule's chrome, the #d2cfca edge ring over the liftshadow, exactly what the stats capsule, category tiles, and lobby cards wear. The arrow is welded on: real hairline borders on its two faces, tucked under the box so ring and arrow read as one outline. All variations enter with the dropup damping, cubic-bezier(.22,1,.36,1)." },
+    { id: "a", title: "A · Materials", desc: "The wider field from round one, kept for comparison. Anchored above the trigger, 250 ms pause, 150 ms fade with a soft zoom from the anchor, quicker exit, arrow where noted." },
+    { id: "b", title: "B · Motion", desc: "The picked cream skin wearing seven entrances. B4 and B5 are tightened to snappy (120 and 200 ms, small travel), and B6 is the game-tile dropup's damping on a tooltip. Enter after the pause, exit always fast and plain." }
+  ];
+
+  var VARIANTS = [
+    { id: "r1", group: "ref", cls: "sToday noArrow mInstant", title: "R1 · The site today", felt: false,
+      desc: "20px bold on translucent white, hard ring, heavy blur, shows instantly. In production it also trails the cursor.",
+      meta: "The baseline every variant is judged against" },
+    { id: "r2", group: "ref", cls: "sTidy", title: "R2 · Today, tidied", felt: false,
+      desc: "Same white-and-ring identity, but 13.5px, full opacity, anchored with an arrow, softer shadow, 250 ms pause.",
+      meta: "The minimum-change path" },
+
+    { id: "c1", group: "c", cls: "sAd mDamp", title: "C1 · The button, exactly", felt: false,
+      desc: "The Hide ad recipe untouched: flat canvas cream, the #D8D2C7 hairline, no shadow. Text at 13px regular instead of the button's bold.",
+      meta: "Quietest &middot; sits flat on white cards, ring does the separating" },
+    { id: "c2", group: "c", cls: "sAdLift mDamp", title: "C2 · The capsule's chrome", felt: false,
+      desc: "The stats capsule's exact coat: the #d2cfca edge ring over the liftshadow, two whisper layers at 5% and 9%. The tooltip becomes one more piece of the capsule family.",
+      meta: "The pick" },
+    { id: "c2b", group: "c", cls: "sTile mDamp", title: "C2b · Tile coat, for comparison", felt: false,
+      desc: "The same ring over the game tiles' shadow instead: three even 8% layers reaching 12px. A half step heavier than the capsule coat, judge them side by side.",
+      meta: "Compare with C2" },
+    { id: "c3", group: "c", cls: "sBand mDamp", title: "C3 · Band fill", felt: false,
+      desc: "The button's own hover tone #F4EEE5 as the fill. A half step warmer and darker, separates from white without leaning on the shadow.",
+      meta: "Warmest of the family" },
+    { id: "c4", group: "c", cls: "sWhiteHair mDamp", title: "C4 · White step", felt: false,
+      desc: "Pure white with the same hairline and lift. The brightest surface the palette allows, one step above the cream page.",
+      meta: "Crispest on the cream page" },
+    { id: "c5", group: "c", cls: "sAdBold mDamp", title: "C5 · Bold, the button's voice", felt: false,
+      desc: "C2 but all bold at 13px, the way the button itself speaks. Judge bold against regular side by side.",
+      meta: "Bold everywhere is today's habit &middot; compare with C2" },
+    { id: "c6", group: "c", cls: "sAdDeep mDamp", title: "C6 · Edge-deep hairline", felt: false,
+      desc: "The ring stepped to the site's own edge-deep token, #b8b5b1, the menu divider color, for when the tooltip sits over busy art or white panels and the edge ring gets lost.",
+      meta: "The sturdier ring, from an existing token" },
+
+    { id: "a1", group: "a", cls: "sInk", title: "A1 · Espresso ink chip", felt: false,
+      desc: "The 2026 consensus spec in the site's own ink: #2b2722, 13px regular, 7px radius, no border, soft double shadow, rounded arrow.",
+      meta: "shadcn, Vercel, Notion register &middot; constant identity in dark mode" },
+    { id: "a2", group: "a", cls: "sCream", title: "A2 · Cream card, hairline", felt: false,
+      desc: "The site's card stock, half a step brighter than the page, hairline instead of a ring, wide soft shadow.",
+      meta: "Linear, Stripe register &middot; needs a dark twin" },
+    { id: "a3", group: "a", cls: "sGlass", title: "A3 · Frosted glass", felt: false,
+      desc: "Translucent espresso with backdrop blur. One spec that reads on any surface, light page or dark felt.",
+      meta: "Apple Liquid Glass register &middot; costs a backdrop-filter" },
+    { id: "a4", group: "a", cls: "sFelt", title: "A4 · Felt chip", felt: false,
+      desc: "Cut from the table felt with a top highlight and the button family's dark ring. The game speaking.",
+      meta: "Game-flavored &middot; constant identity" },
+    { id: "a5", group: "a", cls: "sParch", title: "A5 · Gilded parchment", felt: false,
+      desc: "Warm parchment with a quiet gold rule. The most characterful, Balatro-adjacent direction.",
+      meta: "Highest ceiling, highest risk" },
+    { id: "a6", group: "a", cls: "sMicro noArrow", title: "A6 · Micro chip", felt: false,
+      desc: "Material 3 restraint: 11px, 4px radius, tiny padding, no arrow, no shadow. As quiet as a tooltip gets.",
+      meta: "Material, GitHub register &middot; small for the site's older audience" },
+    { id: "a7", group: "a", cls: "sSticker", title: "A7 · Paper sticker", felt: false,
+      desc: "A real 2px ink border and a hard offset shadow, no blur. Playful and physical, Duolingo-adjacent.",
+      meta: "Loudest light option" },
+    { id: "a8", group: "a", cls: "sBalloon", title: "A8 · Nameplate balloon", felt: false,
+      desc: "The nameplate blue as a speech balloon with the nameplate's own ink ring. The tooltip as table furniture.",
+      meta: "House language &middot; competes with the real nameplates" },
+    { id: "a9", group: "a", cls: "sCardback noArrow", title: "A9 · Card back", felt: false,
+      desc: "Ink chip with an inset gold rule like a playing-card back, gold for the numbers.",
+      meta: "Game-flavored formal &middot; constant identity" },
+    { id: "a10", group: "a", cls: "sKeycap", title: "A10 · Label plus hint", felt: false, keycap: true,
+      desc: "A structural upgrade on the ink chip: bold label line, muted 11px hint line beneath. Carries name and detail without becoming a popover.",
+      meta: "Figma, Linear, Notion structure" },
+
+    { id: "b1", group: "b", cls: "sAdLift mInstant", title: "B1 · Instant", felt: false,
+      desc: "No animation at all. Appears after the pause, gone on leave.", meta: "GitHub-fast" },
+    { id: "b2", group: "b", cls: "sAdLift mFade", title: "B2 · Fade", felt: false,
+      desc: "150 ms opacity only. The safest possible motion.", meta: "Material plain" },
+    { id: "b3", group: "b", cls: "sAdLift mRise", title: "B3 · Fade and rise", felt: false,
+      desc: "Fade plus a 5px rise toward its place.", meta: "The common web default" },
+    { id: "b4", group: "b", cls: "sAdLift mZoom", title: "B4 · Zoom, snappy", felt: false,
+      desc: "Tightened: 120 ms from 96%, strong ease-out, origin at the trigger. Barely there, just enough life.",
+      meta: "shadcn register, sharpened" },
+    { id: "b5", group: "b", cls: "sAdLift mSpring", title: "B5 · Spring, snappy", felt: false,
+      desc: "Tightened: 200 ms, small 4px travel, a whisper of overshoot instead of the old bounce.",
+      meta: "The playful one, now to the point" },
+    { id: "b6", group: "b", cls: "sAdLift mDamp", title: "B6 · Dropup damping", felt: false,
+      desc: "The game-tile dropup's landing on a tooltip: cubic-bezier(.22,1,.36,1) over 220 ms. Fast start, long soft settle, no bounce.",
+      meta: "The pick &middot; what group C uses" },
+    { id: "b7", group: "b", cls: "sAdLift mCursor", title: "B7 · Cursor-following", felt: false,
+      desc: "Today's behavior on the new skin: the chip trails the pointer. Kept here to feel why anchoring wins.",
+      meta: "For comparison &middot; pin shows it anchored", cursor: true }
+  ];
+
+  var root = document.getElementById("sections");
+  GROUPS.forEach(function (g) {
+    var sec = el("section", "vsec");
+    sec.appendChild(el("h2", "", g.title));
+    sec.appendChild(el("p", "desc", g.desc));
+    var grid = el("div", "vgrid");
+    VARIANTS.filter(function (v) { return v.group === g.id; }).forEach(function (v) {
+      var cell = el("div", "vcell " + v.cls);
+      cell.appendChild(el("h3", "", v.title));
+      cell.appendChild(el("p", "src", v.desc));
+      var stage = makeStage({ felt: v.felt, keycap: v.keycap });
+      if (v.cursor) initCursor(stage);
+      cell.appendChild(stage);
+      cell.appendChild(el("p", "meta", v.meta));
+      grid.appendChild(cell);
+    });
+    sec.appendChild(grid);
+    root.appendChild(sec);
+  });
+
+  /* B6: cursor-following demo */
+  function initCursor(stage) {
+    var tipTexts = ["Duckling &middot; Elo 1524", "Trump is hearts", "Show suggested moves when you are low on time"];
+    stage.querySelectorAll(".trig").forEach(function (trig, i) {
+      trig.appendChild(el("span", "tipPinned", tipTexts[i]));
+      var ct = el("div", "cursorTip", tipTexts[i]);
+      document.body.appendChild(ct);
+      trig.addEventListener("mouseenter", function () { if (!trig.classList.contains("pin")) ct.classList.add("on"); });
+      trig.addEventListener("mouseleave", function () { ct.classList.remove("on"); });
+      trig.addEventListener("mousemove", function (e) {
+        if (trig.classList.contains("pin")) return;
+        var w = ct.offsetWidth;
+        var left = e.clientX + 10;
+        if (e.clientX > window.innerWidth / 2) left = e.clientX - w - 10;
+        ct.style.left = left + "px";
+        ct.style.top = Math.max(e.clientY - ct.offsetHeight - 10, 0) + "px";
+      });
+    });
+  }
+
+  /* content stress test: the two lead materials on all four shapes */
+  var SHAPES = [
+    { html: "Round score", cap: "2-word label &middot; 41% of tooltips" },
+    { html: "Award win to the bidder if both sides reach 500", cap: "sentence &middot; 32%", ml: true },
+    { html: STATS, cap: "lobby Elo stats", ml: true },
+    { html: MELD, cap: "Hand and Foot meld", ml: true }
+  ];
+  var cb = document.getElementById("contentBlocks");
+  [["sAdLift", "C2 · Hide-ad cream, regular text"], ["sAdBold", "C5 · Hide-ad cream, all bold"]].forEach(function (skin) {
+    var wrap = el("div", "vcell " + skin[0] + " noArrow");
+    wrap.appendChild(el("h3", "", skin[1]));
+    var row = el("div", "contentRow");
+    SHAPES.forEach(function (s) {
+      var ex = el("div", "ex");
+      ex.appendChild(el("span", "tip" + (s.ml ? " ml" : ""), s.html));
+      ex.appendChild(el("p", "exCap", s.cap));
+      row.appendChild(ex);
+    });
+    wrap.appendChild(row);
+    wrap.style.marginBottom = "18px";
+    cb.appendChild(wrap);
+  });
+
+  /* dark strip: finalists on a dark surface */
+  var dark = document.getElementById("darkRow");
+  [["sAdLift noArrow", "Hide-ad cream, its light self"],
+   ["sBand noArrow", "band fill, its light self"],
+   ["sInk noArrow", "espresso ink, unchanged"],
+   ["sGlass noArrow", "frosted glass, unchanged"],
+   ["sFelt noArrow", "felt chip, unchanged"]].forEach(function (d) {
+    var ex = el("div", "ex " + d[0]);
+    ex.appendChild(el("span", "tip", "Trump is hearts"));
+    ex.appendChild(el("p", "exCap", d[1]));
+    dark.appendChild(ex);
+  });
+
+  /* pin toggle */
+  document.getElementById("pinAll").addEventListener("change", function () {
+    var on = this.checked;
+    document.querySelectorAll(".trig").forEach(function (t) { t.classList.toggle("pin", on); });
+  });
+
+  /* show-pause switcher plus the Radix-style warm group: after one tooltip has
+     shown, neighbors within 350 ms open with no pause */
+  var chosenDelay = 0.25;
+  var warmTimer = null;
+  function applyDelay(v) { document.documentElement.style.setProperty("--tipdelay", v + "s"); }
+  document.querySelectorAll('input[name="tipdelay"]').forEach(function (r) {
+    r.addEventListener("change", function () { chosenDelay = parseFloat(r.value); applyDelay(chosenDelay); });
+  });
+  var warmSkip = document.getElementById("warmSkip");
+  document.querySelectorAll(".trig").forEach(function (t) {
+    var hoverTimer = null;
+    t.addEventListener("mouseenter", function () {
+      clearTimeout(hoverTimer);
+      hoverTimer = setTimeout(function () { t.dataset.shown = "1"; }, chosenDelay * 1000);
+    });
+    t.addEventListener("mouseleave", function () {
+      clearTimeout(hoverTimer);
+      if (t.dataset.shown && warmSkip.checked && chosenDelay > 0) {
+        applyDelay(0);
+        clearTimeout(warmTimer);
+        warmTimer = setTimeout(function () { applyDelay(chosenDelay); }, 350);
+      }
+      delete t.dataset.shown;
+    });
+  });
+</script>
+</body>
+</html>
