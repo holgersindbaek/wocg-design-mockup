@@ -1247,9 +1247,11 @@
   .heroarea > * { position: relative; z-index: 1; }
   .stats { display: flex; align-items: center; justify-content: center; gap: 9px; margin-top: 34px; flex-wrap: wrap; font-size: 16px; color: var(--muted); }
   body:not(.stats-brief) .statsBrief { display: none; }
-  body.stats-brief .statsFull, body.stats-capsule .statsFull, body.stats-capsulesm .statsFull, body.stats-capsule2 .statsFull, body.stats-capsuleshort .statsFull, body.stats-sign .statsFull, body.stats-signsolid .statsFull, body.stats-signbtn .statsFull, body.stats-signpulse .statsFull, body.stats-signtag .statsFull { display: none; }
-  body:not(.stats-capsule):not(.stats-capsulesm) .statsCapsule:not(.isShort) { display: none; }
+  body.stats-brief .statsFull, body.stats-capsule .statsFull, body.stats-capsulesm .statsFull, body.stats-capsule2 .statsFull, body.stats-capsuleshort .statsFull, body.stats-capsuleat .statsFull, body.stats-sign .statsFull, body.stats-signsolid .statsFull, body.stats-signbtn .statsFull, body.stats-signpulse .statsFull, body.stats-signtag .statsFull { display: none; }
+  body:not(.stats-capsule):not(.stats-capsulesm) .statsCapsule:not(.isShort):not(.isAt) { display: none; }
   body:not(.stats-capsuleshort):not(.stats-capsule2) .statsCapsule.isShort { display: none; }
+  /* capsuleat: the capsule's one-line sentence - X playing at X tables */
+  body:not(.stats-capsuleat) .statsCapsule.isAt { display: none; }
   /* capsule2: the big capsule with only the playing and tables cells */
   body.stats-capsule2 .statsCapsule.isShort .st:has(#stc2-seats) { display: none; }
   body:not(.stats-sign):not(.stats-signsolid):not(.stats-signbtn):not(.stats-signpulse):not(.stats-signtag) .statsSign { display: none; }
@@ -2267,6 +2269,12 @@
         <span class="st"><b class="creel" id="stc2-seats" data-v="87">87</b> open</span>
       </span>
     </div>
+    <div class="stats statsCapsule isAt">
+      <span class="capsule">
+        <span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>
+        <span class="st"><b class="creel" id="stc3-players" data-v="1214">1214</b> playing at <b class="creel" id="stc3-games" data-v="143">143</b> tables</span>
+      </span>
+    </div>
     <div class="stats statsSign">
       <span class="signchip"><span class="ldot"></span><span class="greencap">LIVE</span></span>
       <span class="bs"><b class="creel" id="sts-players" data-v="1214">1214</b> players online</span>
@@ -2819,6 +2827,7 @@
     ["capsule2", "Capsule: playing \u00b7 tables only"],
     ["capsulesm", "Capsule: small (24px tall, 14px text)"],
     ["capsuleshort", "Capsule: playing \u00b7 tables \u00b7 open"],
+    ["capsuleat", "Capsule: one line, playing at tables"],
     ["sign", "Sign: light-green button + bare counts"],
     ["signsolid", "Sign: solid green"],
     ["signbtn", "Sign: white button"],
@@ -3630,8 +3639,8 @@
   function sceneParts() {
     return [document.getElementById("herotitle"), document.getElementById("herosub"),
       document.querySelector(".statsBrief"), document.querySelector(".statsFull"),
-      document.querySelector(".statsCapsule:not(.isShort)"), document.querySelector(".statsCapsule.isShort"),
-      document.querySelector(".statsSign")];
+      document.querySelector(".statsCapsule:not(.isShort):not(.isAt)"), document.querySelector(".statsCapsule.isShort"),
+      document.querySelector(".statsCapsule.isAt"), document.querySelector(".statsSign")];
   }
   function setSceneDom(scene) {
     var games = document.querySelector(".games");
@@ -3766,7 +3775,7 @@
     "sel-edge": ["softlight"],
     "sel-texture": ["grain"],
     "sel-catalog": ["split"],
-    "sel-stats": ["capsuleshort", "signsolid", "capsule", "signbtn", "signpulse", "signtag", "brief"],
+    "sel-stats": ["capsuleat", "capsuleshort", "signsolid", "capsule", "signbtn", "signpulse", "signtag", "brief"],
     "sel-menu": ["centerlight", "centerwave", "centerlighteggshell", "centerlightporc", "center", "centerporcelain", "current", "crest", "gthreads"],
     "sel-rail": ["suits", "cards", "band"],
     "sel-avedge": ["luminosity", "lum-deep", "lum-dark", "lum-light", "lum-soft", "none", "ink", "color-burn"],
@@ -4140,6 +4149,8 @@
       { id: "stc2-seats", min: 74, max: 99, step: 6 },
       { id: "stc-games", min: 128, max: 158, step: 4 },
       { id: "stc-seats", min: 74, max: 99, step: 6 },
+      { id: "stc3-players", min: 1150, max: 1290, step: 18 },
+      { id: "stc3-games", min: 128, max: 158, step: 4 },
       { id: "sts-players", min: 1150, max: 1290, step: 18 },
       { id: "sts-games", min: 128, max: 158, step: 4 },
       { id: "sts-seats", min: 74, max: 99, step: 6 }
