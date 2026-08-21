@@ -503,7 +503,8 @@
   .mbcenter, .mbcap { display: none; }
   body.menu-center .mbcenter, body.menu-centerband .mbcenter, body.menu-centerlight .mbcenter,
   body.menu-centerporcelain .mbcenter, body.menu-centerlightporc .mbcenter,
-  body.menu-centerlighteggshell .mbcenter, body.menu-centerwave .mbcenter { display: flex; }
+  body.menu-centerlighteggshell .mbcenter, body.menu-centerwave .mbcenter,
+  body.menu-centerwavefine .mbcenter { display: flex; }
   body.menu-centerlight .mbcenter { background: var(--surface, #fff); border-bottom: none;
     box-shadow: var(--ringshadow); position: relative; z-index: 20; }
   body.menu-centerlightporc .mbcenter { background: color-mix(in srgb, var(--canvas) 50%, white);
@@ -531,6 +532,19 @@
     bottom: -8px; height: 8px; pointer-events: none;
     -webkit-mask: var(--wavedivider) left center / 20px 8px repeat-x;
             mask: var(--wavedivider) left center / 20px 8px repeat-x;
+    background-color: #D9D2C4; }
+  /* the fine-wave variant: the same bar, but the divider runs the hover
+     links' own 7px trough tile */
+  body.menu-centerwavefine .mbcenter { background: #F4EEE5; border-bottom: none; position: relative; z-index: 20;
+    margin-bottom: 7px; }
+  body.menu-centerwavefine .mbcenter::before { content: ""; position: absolute; left: 0; right: 0;
+    bottom: -7px; height: 7px; pointer-events: none; background: #F4EEE5;
+    -webkit-mask: var(--wavecutdownfine) left center / 7px 7px repeat-x;
+            mask: var(--wavecutdownfine) left center / 7px 7px repeat-x; }
+  body.menu-centerwavefine .mbcenter::after { content: ""; position: absolute; left: 0; right: 0;
+    bottom: -7px; height: 7px; pointer-events: none;
+    -webkit-mask: var(--wavetrough) left center / 7px 7px repeat-x;
+            mask: var(--wavetrough) left center / 7px 7px repeat-x;
     background-color: #D9D2C4; }
   body.menu-crestleft .mbcap.v-crestleft { display: block; }
   body.menu-crest .mbcap.v-crest { display: block; }
@@ -658,6 +672,7 @@
        wave (above the curve for the menu, below it for the footer) */
     --wavedivider: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 8'%3E%3Cpath d='M0 4C2.5 1 7.5 1 10 4C12.5 7 17.5 7 20 4' fill='none' stroke='white' stroke-width='2'/%3E%3C/svg%3E");
     --wavecutdown: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 8'%3E%3Cpath d='M0 4C2.5 1 7.5 1 10 4C12.5 7 17.5 7 20 4L20 0L0 0Z' fill='white'/%3E%3C/svg%3E");
+    --wavecutdownfine: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 7 7'%3E%3Cpath d='M0 5C1.4 5 2.1 2 3.5 2C4.9 2 5.6 5 7 5L7 0L0 0Z' fill='white'/%3E%3C/svg%3E");
     --wavecutup: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 8'%3E%3Cpath d='M0 4C2.5 1 7.5 1 10 4C12.5 7 17.5 7 20 4L20 8L0 8Z' fill='white'/%3E%3C/svg%3E");
     /* the fine subtitle wave, phase-shifted to start at its lowest point */
     --wavetrough: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 7 7'%3E%3Cpath d='M0 5C1.4 5 2.1 2 3.5 2C4.9 2 5.6 5 7 5' fill='none' stroke='white' stroke-width='1.5'/%3E%3C/svg%3E"); }
@@ -2711,6 +2726,7 @@
     ["center", "Centered mark"],
     ["centerband", "Centered mark, Evernote band"],
     ["centerwave", "Centered mark, band + the footer's wavy divider (default)"],
+    ["centerwavefine", "Centered mark, band + the hover links' fine wave"],
     ["centerlight", "Centered mark, light surface (capsule chrome)"],
     ["centerporcelain", "Centered mark, porcelain (lighter than page, not white)"],
     ["centerlightporc", "Capsule chrome, porcelain fill"],
