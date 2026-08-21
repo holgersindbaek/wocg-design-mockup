@@ -758,6 +758,27 @@ and circles, Aviator's pinstripes. 76, 77 and 83 are also live in the mockup's s
       ["filetorne", "Filet orné — the French ornamented rule: the house suits at a matched 10px, 56px apart, a gold bead at each midpoint"],
       ["finialrule", "Finial rule — the line ends in a gold finial on each side, and the four suits stand wide between them"],
       ["drawn", "The drawn line — one cursive pen stroke that never lifts: it runs the line, loops each 12px suit centered on it, strikes through, and continues (animates once on load; respects reduced motion)"]
+    ]},
+    { head: "The shortlist — every divider you flagged, in one place", fixed: true, items: [
+      ["pips", "Pip thread — the four suits strung on a hairline like beads", 8],
+      ["ticket", "Tear here — score-sheet perforation punched into the band", 19],
+      ["deco", "Monte Carlo rule — the deco thick-thin pair with a gold lozenge", 23],
+      ["newdeck", "New deck order — the pip thread in true deck colors", 33],
+      ["solitaire", "The solitaire — one gold spade at dead center, like a clasp", 34],
+      ["crescendo", "Crescendo beads — diamonds swelling 4·5·7·5·4, the peak in gold", 36],
+      ["morse", "Morse pips — a dotted line where every sixth dot is a pip", 38],
+      ["blush", "Blush deck — 33 faded like a deck left in a sunny window", 63],
+      ["longdeal", "Long deal — half the pips at twice the spacing, 9px and confident", 65],
+      ["claspfour", "Clasp of four — the whole deck as one center charm", 68],
+      ["truemorse", "True deck morse — every seventh beat a real-color suit", 73],
+      ["blushicons", "Blush deck, house suits — in the mockup's Divider toggle", 76],
+      ["longdealicons", "Long deal, house suits — in the mockup's Divider toggle", 77],
+      ["bracelet", "Charm bracelet — the four suits in their own gaps around center", 79],
+      ["morseicons", "True deck morse, larger — in the mockup's Divider toggle", 83],
+      ["loosebrace", "Bracelet, loose — the charms spread over 120px of center", 85],
+      ["yielded", "The yielded middle — the line stops and the suits own the air", 88],
+      ["filetorne", "Filet orné — the house suits at 10px with gold beads between", 100],
+      ["drawn", "The drawn line — one cursive stroke looping every suit (animated)", 102]
     ]}
   ];
   var root = document.getElementById("labroot");
@@ -767,9 +788,10 @@ and circles, Aviator's pinstripes. 76, 77 and 83 are also live in the mockup's s
     h.textContent = g.head;
     root.appendChild(h);
     g.items.forEach(function (it) {
+      var num = g.fixed ? it[2] : (n++);
       var d = document.createElement("div");
       d.className = "dvar v-" + it[0];
-      d.innerHTML = '<p class="tag">' + (n++) + ' · ' + it[1] + '</p>' +
+      d.innerHTML = '<p class="tag">' + num + ' · ' + it[1] + '</p>' +
         '<div class="scene">' + BAR + '<div class="seam"></div><div class="pagearea"></div></div>';
       root.appendChild(d);
     });
