@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Menu divider lab</title>
+<style>
+  @font-face { font-family: 'BuloRounded'; src: url("BuloRounded-Regular.woff2") format('woff2'); font-weight: normal; font-display: swap; }
+  @font-face { font-family: 'BuloRounded'; src: url("BuloRounded-Bold.woff2") format('woff2'); font-weight: bold; font-display: swap; }
+  body { margin: 0; padding: 28px 24px 80px; background: #f9f6f2; color: #141414;
+    font-family: "BuloRounded", "Verdana", "Arial", sans-serif; -webkit-font-smoothing: antialiased;
+    --canvas: #f9f6f2; --band: #f4eee5; --sandline: #d9d2c4; --deep: #cfc6b4; --pale: #e3dcce;
+    --gold: #c9a24c; --goldlight: #dcc08a; --green: #00a82d; --ink: #141414; --ink-soft: #262626;
+    /* the mockup's own wave tiles, for the baseline and its variations */
+    --waveline: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 8'%3E%3Cpath d='M0 4C2.5 1 7.5 1 10 4C12.5 7 17.5 7 20 4' fill='none' stroke='white' stroke-width='2'/%3E%3C/svg%3E");
+    --wavecut: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 8'%3E%3Cpath d='M0 4C2.5 1 7.5 1 10 4C12.5 7 17.5 7 20 4L20 0L0 0Z' fill='white'/%3E%3C/svg%3E");
+    --waveband: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 8'%3E%3Cpath d='M0 4C2.5 1 7.5 1 10 4C12.5 7 17.5 7 20 4L20 0L0 0Z' fill='%23F4EEE5'/%3E%3Cpath d='M0 4C2.5 1 7.5 1 10 4C12.5 7 17.5 7 20 4' fill='none' stroke='%23D9D2C4' stroke-width='2'/%3E%3C/svg%3E"); }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  p.note { font-size: 13px; color: #8a857c; margin: 0 0 8px; max-width: 860px; }
+  h2 { font-size: 15px; margin: 52px 0 20px; color: #6b6559; max-width: 860px;
+    border-bottom: 1px solid #e5dfd2; padding-bottom: 6px; }
+  .dvar { margin: 0 0 52px; }
+  .dvar .tag { font-size: 12px; color: #999488; margin: 0 0 10px; max-width: 860px; }
+
+  /* ===== the scene: the mockup's centered menu bar + 100px of page ===== */
+  .scene { position: relative; }
+  .bar { position: relative; height: 56px; display: flex; align-items: center; padding: 0 24px;
+    background: var(--band); z-index: 2; }
+  .mleft { display: flex; gap: 18px; flex: 1; align-items: center; }
+  .mclink { font-size: 16px; font-weight: bold; color: var(--ink-soft); cursor: pointer; }
+  .mclink:hover { text-decoration: underline; }
+  .mtri { display: inline-block; width: 8px; height: 7px; margin-left: 5px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 7'%3E%3Cpath d='M1.2 1h5.6L4 6z' fill='%23262626' stroke='%23262626' stroke-width='2' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E") center / 8px 7px no-repeat; }
+  .mclogo { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
+  .mclogo img { height: 40px; display: block; }
+  .muser { display: flex; gap: 6px; align-items: center; margin-left: auto; flex-shrink: 0; }
+  .muser .micon { width: 40px; height: 32px; display: block; cursor: pointer; }
+  .muser .avatar { width: 28px; height: 28px; margin: 0 5px 0 6px; display: block; }
+  .uname { font-size: 16px; font-weight: bold; color: var(--ink-soft); }
+  .seam { position: relative; height: 0; z-index: 3; }
+  .seam::before, .seam::after { content: none; position: absolute; left: 0; right: 0; pointer-events: none; }
+  .pagearea { height: 100px; }
+  @media (prefers-reduced-motion: reduce) { .seam::before, .seam::after { animation: none !important; } }
+
+  /* ===== 1 · the current wave (baseline) ===== */
+  .v-wave .seam::before { content: ""; top: 0; height: 8px; background: var(--band);
+    -webkit-mask: var(--wavecut) left center / 20px 8px repeat-x;
+            mask: var(--wavecut) left center / 20px 8px repeat-x; }
+  .v-wave .seam::after { content: ""; top: 0; height: 8px; background: var(--sandline);
+    -webkit-mask: var(--waveline) left center / 20px 8px repeat-x;
+            mask: var(--waveline) left center / 20px 8px repeat-x; }
+
+  /* ===== 2 · dealer's drift: a second, softer wave breathes behind the first ===== */
+  .v-drift .seam::before { content: ""; top: 2px; height: 10px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 10'%3E%3Cpath d='M0 5C3.5 1.5 10.5 1.5 14 5C17.5 8.5 24.5 8.5 28 5L28 0L0 0Z' fill='%23EFE8DB'/%3E%3C/svg%3E") left top / 28px 10px repeat-x;
+    animation: drift 40s linear infinite; }
+  .v-drift .seam::after { content: ""; top: 0; height: 8px;
+    background: var(--waveband) left top / 20px 8px repeat-x; }
+  @keyframes drift { to { background-position: 28px 0; } }
+
+  /* ===== 3 · shuffle sheen: one gold glint sweeps the wave on load (and on hover) ===== */
+  .v-sheen .seam::before { content: ""; top: 0; height: 8px;
+    background: var(--waveband) left top / 20px 8px repeat-x; }
+  .v-sheen .seam::after { content: ""; top: 0; height: 8px;
+    background: linear-gradient(100deg, transparent 40%, rgba(201,162,76,.28) 50%, transparent 60%) 150% 0 / 300% 100% no-repeat;
+    -webkit-mask: var(--wavecut) left center / 20px 8px repeat-x;
+            mask: var(--wavecut) left center / 20px 8px repeat-x;
+    animation: sheen 1.8s .6s both; }
+  .v-sheen .scene:hover .seam::after { animation: sheenb 1.6s both; }
+  @keyframes sheen { from { background-position: 150% 0; } to { background-position: -50% 0; } }
+  @keyframes sheenb { from { background-position: 150% 0; } to { background-position: -50% 0; } }
+
+  /* ===== 4 · meeple queue: the wave's period becomes head-and-shoulders ===== */
+  .v-meeple .seam::before { content: ""; top: 0; height: 13px; background: var(--band);
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 13'%3E%3Cpath d='M0 12.5C3 12.5 4.5 7 8.5 5.8C10.5 5.2 10 1.5 13 1.5C16 1.5 15.5 5.2 17.5 5.8C21.5 7 23 12.5 26 12.5L26 0L0 0Z' fill='white'/%3E%3C/svg%3E") left top / 26px 13px repeat-x;
+            mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 13'%3E%3Cpath d='M0 12.5C3 12.5 4.5 7 8.5 5.8C10.5 5.2 10 1.5 13 1.5C16 1.5 15.5 5.2 17.5 5.8C21.5 7 23 12.5 26 12.5L26 0L0 0Z' fill='white'/%3E%3C/svg%3E") left top / 26px 13px repeat-x; }
+  .v-meeple .seam::after { content: ""; top: 0; height: 13px; background: var(--sandline);
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 13'%3E%3Cpath d='M0 12.5C3 12.5 4.5 7 8.5 5.8C10.5 5.2 10 1.5 13 1.5C16 1.5 15.5 5.2 17.5 5.8C21.5 7 23 12.5 26 12.5' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") left top / 26px 13px repeat-x;
+            mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 13'%3E%3Cpath d='M0 12.5C3 12.5 4.5 7 8.5 5.8C10.5 5.2 10 1.5 13 1.5C16 1.5 15.5 5.2 17.5 5.8C21.5 7 23 12.5 26 12.5' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") left top / 26px 13px repeat-x; }
+
+  /* ===== 5 · dealt row: face-down cards tucked under the dealer's edge ===== */
+  .v-dealt .seam::after { content: ""; top: 0; height: 10px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 10'%3E%3Cpath d='M1 0V4Q1 8.5 5.5 8.5H30.5Q35 8.5 35 4V0Z' fill='%23F4EEE5'/%3E%3Cpath d='M1 0V4Q1 8.5 5.5 8.5H30.5Q35 8.5 35 4V0' fill='none' stroke='%23D9D2C4' stroke-width='1.5'/%3E%3C/svg%3E") left top / 36px 10px repeat-x; }
+
+  /* ===== 6 · fanned deck: scallops with the card-back's echo line inside ===== */
+  .v-fan .seam::after { content: ""; top: 0; height: 9px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 9'%3E%3Cpath d='M0 1Q12 12 24 1L24 0L0 0Z' fill='%23F4EEE5'/%3E%3Cpath d='M0 -1.5Q12 9.5 24 -1.5' fill='none' stroke='%23D9D2C4' stroke-width='1' opacity='.45'/%3E%3Cpath d='M0 1Q12 12 24 1' fill='none' stroke='%23D9D2C4' stroke-width='1.5'/%3E%3C/svg%3E") left top / 24px 9px repeat-x; }
+
+  /* ===== 7 · corner kiss: a flat line dipping into paired card corners ===== */
+  .v-corners .seam::after { content: ""; top: 0; height: 7px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 7'%3E%3Cpath d='M0 1.5H9Q12 1.5 12.6 5.2' fill='none' stroke='%23D9D2C4' stroke-width='1.5' stroke-linecap='round'/%3E%3Cpath d='M28 1.5H19Q16 1.5 15.4 5.2' fill='none' stroke='%23D9D2C4' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E") left top / 28px 7px repeat-x; }
+
+  /* ===== 8 · pip thread: the four suits strung on a hairline like beads ===== */
+  .v-pips .seam::after { content: ""; top: -6px; height: 12px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 12'%3E%3Cg fill='%23D9D2C4'%3E%3Crect y='5.5' width='16' height='1'/%3E%3Crect x='32' y='5.5' width='32' height='1'/%3E%3Crect x='80' y='5.5' width='32' height='1'/%3E%3Crect x='128' y='5.5' width='32' height='1'/%3E%3Crect x='176' y='5.5' width='16' height='1'/%3E%3C/g%3E%3Cg fill='%23DCC08A'%3E%3Cpath d='M24 2.5L27.2 6L24 9.5L20.8 6Z'/%3E%3Ccircle cx='70.4' cy='4.8' r='2'/%3E%3Ccircle cx='73.6' cy='4.8' r='2'/%3E%3Cpath d='M69 5.9L75 5.9L72 9.7Z'/%3E%3C/g%3E%3Cg fill='%23CFC6B4'%3E%3Ccircle cx='118.4' cy='6.1' r='2'/%3E%3Ccircle cx='121.6' cy='6.1' r='2'/%3E%3Cpath d='M117 6L123 6L120 2.4Z'/%3E%3Crect x='119.3' y='7.6' width='1.4' height='2' rx='.6'/%3E%3Ccircle cx='168' cy='3.7' r='1.9'/%3E%3Ccircle cx='165.9' cy='6.5' r='1.9'/%3E%3Ccircle cx='170.1' cy='6.5' r='1.9'/%3E%3Crect x='167.3' y='7.8' width='1.4' height='1.9' rx='.6'/%3E%3C/g%3E%3C/svg%3E") left top / 192px 12px repeat-x; }
+
+  /* ===== 9 · ribbon spread: the dealer's ribbon of overlapped cards, edge-on ===== */
+  .v-ribbon .seam::after { content: ""; top: 0; height: 10px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 10'%3E%3Crect width='8' height='10' fill='%23F4EEE5'/%3E%3Cpath d='M2 8.5L5.5 1.5' stroke='%23D9D2C4' stroke-width='1' stroke-linecap='round'/%3E%3Crect y='9' width='8' height='1' fill='%23D9D2C4'/%3E%3C/svg%3E") left top / 8px 10px repeat-x; }
+
+  /* ===== 10 · deck edge: three card edges fading, a deck seen side-on ===== */
+  .v-deckedge .seam::after { content: ""; top: 0; height: 5px;
+    background: linear-gradient(to bottom, #D9D2C4 0 1px, transparent 1px 2px,
+      rgba(217,210,196,.55) 2px 3px, transparent 3px 4px, rgba(217,210,196,.28) 4px 5px); }
+
+  /* ===== 11 · lucky pip: one gold diamond sitting on the line ===== */
+  .v-lucky .seam::before { content: ""; top: 0; height: 1.5px;
+    background: linear-gradient(90deg, #D9D2C4 0 calc(21% - 9px), transparent calc(21% - 9px) calc(21% + 9px), #D9D2C4 calc(21% + 9px)); }
+  .v-lucky .seam::after { content: ""; left: calc(21% - 3.5px); right: auto; top: -3px;
+    width: 7px; height: 7px; background: var(--gold); border-radius: 2px; transform: rotate(45deg); }
+
+  /* ===== 12 · backgammon points: alternating home-board triangles ===== */
+  .v-backgammon .seam::after { content: ""; top: 0; height: 12px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 12'%3E%3Cpath d='M0 0L18 0L9 10.5Z' fill='%23EAE0C9'/%3E%3Cpath d='M18 0L36 0L27 10.5Z' fill='%23F4EEE5'/%3E%3Cpath d='M0 0L9 10.5L18 0' fill='none' stroke='%23D9D2C4' stroke-linejoin='round'/%3E%3Cpath d='M18 0L27 10.5L36 0' fill='none' stroke='%23D9D2C4' stroke-linejoin='round'/%3E%3C/svg%3E") left top / 36px 12px repeat-x; }
+
+  /* ===== 13 · cribbage rail: peg holes in fives, one green peg still in play ===== */
+  .v-cribbage .seam::before { content: ""; top: 0; height: 13px;
+    background: linear-gradient(#F4EEE5 0 12px, #D9D2C4 12px 13px); }
+  .v-cribbage .seam::after { content: ""; top: 0; height: 12px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 126 12'%3E%3Cg fill='%23FBF8F2'%3E%3Ccircle cx='7' cy='4.7' r='1.4'/%3E%3Ccircle cx='14' cy='4.7' r='1.4'/%3E%3Ccircle cx='21' cy='4.7' r='1.4'/%3E%3Ccircle cx='28' cy='4.7' r='1.4'/%3E%3Ccircle cx='35' cy='4.7' r='1.4'/%3E%3Ccircle cx='7' cy='8.7' r='1.4'/%3E%3Ccircle cx='14' cy='8.7' r='1.4'/%3E%3Ccircle cx='21' cy='8.7' r='1.4'/%3E%3Ccircle cx='28' cy='8.7' r='1.4'/%3E%3Ccircle cx='35' cy='8.7' r='1.4'/%3E%3Ccircle cx='49' cy='4.7' r='1.4'/%3E%3Ccircle cx='56' cy='4.7' r='1.4'/%3E%3Ccircle cx='63' cy='4.7' r='1.4'/%3E%3Ccircle cx='70' cy='4.7' r='1.4'/%3E%3Ccircle cx='77' cy='4.7' r='1.4'/%3E%3Ccircle cx='49' cy='8.7' r='1.4'/%3E%3Ccircle cx='56' cy='8.7' r='1.4'/%3E%3Ccircle cx='63' cy='8.7' r='1.4'/%3E%3Ccircle cx='70' cy='8.7' r='1.4'/%3E%3Ccircle cx='77' cy='8.7' r='1.4'/%3E%3Ccircle cx='91' cy='4.7' r='1.4'/%3E%3Ccircle cx='98' cy='4.7' r='1.4'/%3E%3Ccircle cx='105' cy='4.7' r='1.4'/%3E%3Ccircle cx='112' cy='4.7' r='1.4'/%3E%3Ccircle cx='119' cy='4.7' r='1.4'/%3E%3Ccircle cx='91' cy='8.7' r='1.4'/%3E%3Ccircle cx='98' cy='8.7' r='1.4'/%3E%3Ccircle cx='105' cy='8.7' r='1.4'/%3E%3Ccircle cx='112' cy='8.7' r='1.4'/%3E%3Ccircle cx='119' cy='8.7' r='1.4'/%3E%3C/g%3E%3Cg fill='%23CFC6B4'%3E%3Ccircle cx='14' cy='4' r='1.4'/%3E%3Ccircle cx='21' cy='4' r='1.4'/%3E%3Ccircle cx='28' cy='4' r='1.4'/%3E%3Ccircle cx='35' cy='4' r='1.4'/%3E%3Ccircle cx='7' cy='8' r='1.4'/%3E%3Ccircle cx='14' cy='8' r='1.4'/%3E%3Ccircle cx='21' cy='8' r='1.4'/%3E%3Ccircle cx='28' cy='8' r='1.4'/%3E%3Ccircle cx='35' cy='8' r='1.4'/%3E%3Ccircle cx='49' cy='4' r='1.4'/%3E%3Ccircle cx='56' cy='4' r='1.4'/%3E%3Ccircle cx='63' cy='4' r='1.4'/%3E%3Ccircle cx='70' cy='4' r='1.4'/%3E%3Ccircle cx='77' cy='4' r='1.4'/%3E%3Ccircle cx='49' cy='8' r='1.4'/%3E%3Ccircle cx='56' cy='8' r='1.4'/%3E%3Ccircle cx='63' cy='8' r='1.4'/%3E%3Ccircle cx='70' cy='8' r='1.4'/%3E%3Ccircle cx='77' cy='8' r='1.4'/%3E%3Ccircle cx='91' cy='4' r='1.4'/%3E%3Ccircle cx='98' cy='4' r='1.4'/%3E%3Ccircle cx='105' cy='4' r='1.4'/%3E%3Ccircle cx='112' cy='4' r='1.4'/%3E%3Ccircle cx='119' cy='4' r='1.4'/%3E%3Ccircle cx='91' cy='8' r='1.4'/%3E%3Ccircle cx='98' cy='8' r='1.4'/%3E%3Ccircle cx='105' cy='8' r='1.4'/%3E%3Ccircle cx='112' cy='8' r='1.4'/%3E%3Ccircle cx='119' cy='8' r='1.4'/%3E%3C/g%3E%3Ccircle cx='7' cy='4' r='2' fill='%2300a82d'/%3E%3C/svg%3E") left top / 126px 12px repeat-x; }
+
+  /* ===== 14 · lucky roll: the die faces 1 through 6, hidden in the chrome ===== */
+  .v-dice .bar { box-shadow: inset 0 -1px 0 var(--sandline); }
+  .v-dice .seam::after { content: ""; top: 3px; height: 10px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 10'%3E%3Cg fill='%23CFC6B4'%3E%3Ccircle cx='10' cy='5' r='1.2'/%3E%3Ccircle cx='28' cy='3' r='1.2'/%3E%3Ccircle cx='32' cy='7' r='1.2'/%3E%3Ccircle cx='48' cy='3' r='1.2'/%3E%3Ccircle cx='50' cy='5' r='1.2'/%3E%3Ccircle cx='52' cy='7' r='1.2'/%3E%3Ccircle cx='68' cy='3' r='1.2'/%3E%3Ccircle cx='72' cy='3' r='1.2'/%3E%3Ccircle cx='68' cy='7' r='1.2'/%3E%3Ccircle cx='72' cy='7' r='1.2'/%3E%3Ccircle cx='88' cy='3' r='1.2'/%3E%3Ccircle cx='92' cy='3' r='1.2'/%3E%3Ccircle cx='90' cy='5' r='1.2'/%3E%3Ccircle cx='88' cy='7' r='1.2'/%3E%3Ccircle cx='92' cy='7' r='1.2'/%3E%3Ccircle cx='108' cy='2.5' r='1.2'/%3E%3Ccircle cx='108' cy='5' r='1.2'/%3E%3Ccircle cx='108' cy='7.5' r='1.2'/%3E%3Ccircle cx='112' cy='2.5' r='1.2'/%3E%3Ccircle cx='112' cy='5' r='1.2'/%3E%3Ccircle cx='112' cy='7.5' r='1.2'/%3E%3C/g%3E%3C/svg%3E") left top / 120px 10px repeat-x; }
+
+  /* ===== 15 · puzzle seam: bar and page are two pieces of the same puzzle ===== */
+  .v-puzzle .seam::before { content: ""; top: 0; height: 12px; background: var(--band);
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 12'%3E%3Cpath d='M0 1.5H24C27 1.5 27.5 3.5 26 5C23.5 7.2 24.5 10.5 32 10.5C39.5 10.5 40.5 7.2 38 5C36.5 3.5 37 1.5 40 1.5H64V0H0Z' fill='white'/%3E%3C/svg%3E") left top / 64px 12px repeat-x;
+            mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 12'%3E%3Cpath d='M0 1.5H24C27 1.5 27.5 3.5 26 5C23.5 7.2 24.5 10.5 32 10.5C39.5 10.5 40.5 7.2 38 5C36.5 3.5 37 1.5 40 1.5H64V0H0Z' fill='white'/%3E%3C/svg%3E") left top / 64px 12px repeat-x; }
+  .v-puzzle .seam::after { content: ""; top: 0; height: 12px; background: var(--sandline);
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 12'%3E%3Cpath d='M0 1.5H24C27 1.5 27.5 3.5 26 5C23.5 7.2 24.5 10.5 32 10.5C39.5 10.5 40.5 7.2 38 5C36.5 3.5 37 1.5 40 1.5H64' fill='none' stroke='white' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") left top / 64px 12px repeat-x;
+            mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 12'%3E%3Cpath d='M0 1.5H24C27 1.5 27.5 3.5 26 5C23.5 7.2 24.5 10.5 32 10.5C39.5 10.5 40.5 7.2 38 5C36.5 3.5 37 1.5 40 1.5H64' fill='none' stroke='white' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") left top / 64px 12px repeat-x; }
+
+  /* ===== 16 · the track: a path of board squares, the start square in green ===== */
+  .v-track .seam::after { content: ""; top: 2px; height: 9px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 9'%3E%3Crect x='1' y='1' width='7' height='7' rx='2' fill='rgba(0,168,45,0.14)' stroke='rgba(0,168,45,0.5)'/%3E%3Cg fill='none' stroke='%23D9D2C4'%3E%3Crect x='11' y='1' width='7' height='7' rx='2'/%3E%3Crect x='21' y='1' width='7' height='7' rx='2'/%3E%3Crect x='31' y='1' width='7' height='7' rx='2'/%3E%3Crect x='41' y='1' width='7' height='7' rx='2'/%3E%3Crect x='51' y='1' width='7' height='7' rx='2'/%3E%3Crect x='61' y='1' width='7' height='7' rx='2'/%3E%3Crect x='71' y='1' width='7' height='7' rx='2'/%3E%3Crect x='81' y='1' width='7' height='7' rx='2'/%3E%3Crect x='91' y='1' width='7' height='7' rx='2'/%3E%3Crect x='101' y='1' width='7' height='7' rx='2'/%3E%3Crect x='111' y='1' width='7' height='7' rx='2'/%3E%3C/g%3E%3C/svg%3E") left top / 120px 9px repeat-x; }
+
+  /* ===== 17 · board fold: the crease of a folded game board, one face lit ===== */
+  .v-fold .seam::after { content: ""; top: 0; height: 10px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 10'%3E%3Cpath d='M0 0H24V8L0 2Z' fill='%23F4EEE5'/%3E%3Cpath d='M24 0H48V2L24 8Z' fill='%23EDE5D6'/%3E%3Cpath d='M0 2L24 8L48 2' fill='none' stroke='%23D9D2C4' stroke-width='1.5' stroke-linejoin='round'/%3E%3C/svg%3E") left top / 48px 10px repeat-x; }
+
+  /* ===== 18 · king row: a checkers border so quiet it reads as linen ===== */
+  .v-checker .seam::before { content: ""; top: 0; height: 8px;
+    background: repeating-conic-gradient(#F4EEE5 0 25%, #EBE3D2 0 50%) 0 0 / 8px 8px; }
+  .v-checker .seam::after { content: ""; top: 8px; height: 1px; background: var(--sandline); }
+
+  /* ===== 19 · tear here: score-sheet perforation punched into the band ===== */
+  .v-ticket .seam::after { content: ""; top: 0; height: 6px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 9 6'%3E%3Crect width='9' height='6' fill='%23F4EEE5'/%3E%3Crect y='2.5' width='9' height='1' fill='%23D9D2C4'/%3E%3Ccircle cx='4.5' cy='3' r='1.6' fill='%23F9F6F2'/%3E%3Cpath d='M3.1 3A1.4 1.4 0 0 1 5.9 3' stroke='rgba(84,66,37,0.12)' stroke-width='.6' fill='none'/%3E%3C/svg%3E") left top / 9px 6px repeat-x; }
+
+  /* ===== 20 · postage edge: the band bitten like a stamp's die-cut edge ===== */
+  .v-stamp .seam::before { content: ""; top: 1px; height: 8px; background: #E7DFD2;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Crect width='8' height='8' fill='white'/%3E%3Ccircle cx='4' cy='8' r='3' fill='black'/%3E%3C/svg%3E") left top / 8px 8px repeat-x;
+            mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Crect width='8' height='8' fill='white'/%3E%3Ccircle cx='4' cy='8' r='3' fill='black'/%3E%3C/svg%3E") left top / 8px 8px repeat-x; }
+  .v-stamp .seam::after { content: ""; top: 0; height: 8px; background: var(--band);
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Crect width='8' height='8' fill='white'/%3E%3Ccircle cx='4' cy='8' r='3' fill='black'/%3E%3C/svg%3E") left top / 8px 8px repeat-x;
+            mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Crect width='8' height='8' fill='white'/%3E%3Ccircle cx='4' cy='8' r='3' fill='black'/%3E%3C/svg%3E") left top / 8px 8px repeat-x; }
+
+  /* ===== 21 · deckle edge: the score pad's torn sheet ===== */
+  .v-deckle .seam::after { content: ""; top: 0; height: 12px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 12'%3E%3Cg transform='translate(0 1.5)'%3E%3Cpath d='M0 4C8 2 14 7 22 5C30 3 36 8 46 6C54 4 60 2 70 5C80 8 88 3 98 6C106 8 112 3 120 4L120 0L0 0Z' fill='%23E9E1D3'/%3E%3C/g%3E%3Cpath d='M0 4C8 2 14 7 22 5C30 3 36 8 46 6C54 4 60 2 70 5C80 8 88 3 98 6C106 8 112 3 120 4L120 0L0 0Z' fill='%23F4EEE5'/%3E%3C/svg%3E") left top / 120px 12px repeat-x; }
+
+  /* ===== 22 · engine turn: the card-back's guilloche braid on the seam ===== */
+  .v-guilloche .seam::after { content: ""; top: -4px; height: 8px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 8'%3E%3Cpath d='M0 1.5C6 1.5 6 6.5 12 6.5C18 6.5 18 1.5 24 1.5' fill='none' stroke='%23D9D2C4' stroke-linecap='round'/%3E%3Cpath d='M0 6.5C6 6.5 6 1.5 12 1.5C18 1.5 18 6.5 24 6.5' fill='none' stroke='%23D9D2C4' stroke-linecap='round'/%3E%3Ccircle cx='18' cy='4' r='.8' fill='%23C9A24C' opacity='.7'/%3E%3C/svg%3E") left top / 24px 8px repeat-x; }
+
+  /* ===== 23 · monte carlo rule: deco thick-thin with a gold lozenge ===== */
+  .v-deco .seam::after { content: ""; top: 0; height: 10px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 10'%3E%3Crect width='40' height='2' fill='%23D9D2C4'/%3E%3Crect y='7' width='40' height='1' fill='%23E3DCCE'/%3E%3Cpath d='M20 2.5L22.5 5L20 7.5L17.5 5Z' fill='%23C9A24C' opacity='.65'/%3E%3C/svg%3E") left top / 40px 10px repeat-x; }
+
+  /* ===== 24 · above the line: the bridge scorepad's double rule ===== */
+  .v-scorepad .seam::after { content: ""; top: 0; height: 6px;
+    background: linear-gradient(to bottom, #D9D2C4 0 2px, transparent 2px 5px, #DDD6C8 5px 6px); }
+
+  /* ===== 25 · bicycle trellis: card-back lattice dissolving downward ===== */
+  .v-trellis .bar { box-shadow: inset 0 -1px 0 var(--sandline); }
+  .v-trellis .seam::after { content: ""; top: 1px; height: 6px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 6'%3E%3Cpath d='M0 6L8 0M0 0L8 6' stroke='%23E0D9CB' stroke-width='1'/%3E%3C/svg%3E") left top / 8px 6px repeat-x;
+    -webkit-mask-image: linear-gradient(#000 20%, transparent 100%);
+            mask-image: linear-gradient(#000 20%, transparent 100%); }
+
+  /* ===== 26 · engraver's swell: a hand-cut rule that breathes thick and thin ===== */
+  .v-swell .seam::after { content: ""; top: 3px; height: 6px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 6'%3E%3Cpath d='M0 2.7C8 2.7 10 1.75 16 1.75C22 1.75 26 2.6 32 2.6C38 2.6 42 1.75 48 1.75C54 1.75 58 2.7 64 2.7L64 3.3C58 3.3 54 4.25 48 4.25C42 4.25 38 3.4 32 3.4C26 3.4 22 4.25 16 4.25C10 4.25 8 3.3 0 3.3Z' fill='%23CFC7B6'/%3E%3C/svg%3E") left top / 64px 6px repeat-x; }
+
+  /* ===== 27 · baize stitch: a blanket stitch hemming the bar's felt edge ===== */
+  .v-stitch .seam::after { content: ""; top: -7px; height: 8px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 8'%3E%3Cg fill='none' stroke='%239DBFA4' stroke-width='1.25' stroke-linecap='round'%3E%3Cpath d='M0 7H6.5'/%3E%3Cpath d='M8 1V5.5Q8 7 9.5 7H16'/%3E%3C/g%3E%3Ccircle cx='8' cy='1' r='.6' fill='%23CFC7B6'/%3E%3C/svg%3E") left top / 16px 8px repeat-x; }
+
+  /* ===== 28 · rail bumper: the padded rail your wrist rests on ===== */
+  .v-bumper .bar { box-shadow: inset 0 -1px 0 #E8E1D4; }
+  .v-bumper .seam::after { content: ""; top: 1px; height: 8px;
+    background: linear-gradient(#F8F4EC, #F4EEE5 45%, #F0E9DC);
+    border-bottom: 1px solid var(--sandline); box-shadow: 0 1px 2px rgba(20,20,20,.05); }
+
+  /* ===== 29 · felt rail: no ornament, just baize and lamplight ===== */
+  .v-felt .bar { box-shadow: inset 0 -1px 0 var(--sandline); }
+  .v-felt .seam::before { content: ""; top: 1px; height: 3px; background: rgba(0,168,45,.10); }
+  .v-felt .seam::after { content: ""; top: 4px; height: 12px;
+    background: linear-gradient(rgba(84,66,37,.07), rgba(84,66,37,.02) 60%, rgba(84,66,37,0)); }
+
+  /* ===== 30 · inked by hand: a rule with a scribe's waver (feTurbulence) ===== */
+  .v-ink .seam::after { content: ""; top: 0; height: 8px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 8'%3E%3Cfilter id='k' x='-5%25' y='-50%25' width='110%25' height='200%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.012 0.05' numOctaves='2' seed='7' stitchTiles='stitch'/%3E%3CfeDisplacementMap in='SourceGraphic' scale='3' xChannelSelector='R' yChannelSelector='G'/%3E%3C/filter%3E%3Crect x='-10' y='3.2' width='260' height='1.6' fill='%23CFC6B4' filter='url(%23k)'/%3E%3C/svg%3E") left top / 240px 8px repeat-x; }
+
+  /* ===== 31 · marching pips: dealt dashes that walk on hover ===== */
+  .v-march .seam::after { content: ""; top: 2px; height: 3px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 3'%3E%3Crect width='8' height='3' rx='1.5' fill='%23D9D2C4'/%3E%3C/svg%3E") left top / 14px 3px repeat-x; }
+  .v-march .scene:hover .seam::after { animation: deal 1.4s linear infinite; }
+  @keyframes deal { to { background-position: 14px 0; } }
+
+  /* ===== 32 · riffle bridge: two dash rows interleave once on load ===== */
+  .v-bridge .seam::before { content: ""; top: 0; height: 2px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 2'%3E%3Crect width='6' height='2' rx='1' fill='%23D9D2C4'/%3E%3C/svg%3E") 0 0 / 14px 2px repeat-x;
+    animation: riffa .9s .3s cubic-bezier(.2,.8,.2,1) both; }
+  .v-bridge .seam::after { content: ""; top: 5px; height: 2px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 2'%3E%3Crect width='6' height='2' rx='1' fill='%23D9D2C4'/%3E%3C/svg%3E") 7px 0 / 14px 2px repeat-x;
+    animation: riffb .9s .3s cubic-bezier(.2,.8,.2,1) both; }
+  @keyframes riffa { from { background-position: -7px 0; } to { background-position: 0 0; } }
+  @keyframes riffb { from { background-position: 14px 0; } to { background-position: 7px 0; } }
+</style>
+</head>
+<body>
+
+<h1>Menu divider lab</h1>
+<p class="note">The mockup's menu bar over 100px of page, once per divider idea. The first scene is
+today's wave, for comparison. Sourced from the card table, the game shelf, and the print shop; four
+of them move (2 and 3 drift and glint on their own, 31 marches on hover, 32 riffles on load and
+honors reduced-motion).</p>
+
+<div id="labroot"></div>
+
+<script>
+  var BAR =
+    '<div class="bar">' +
+      '<div class="mleft"><span class="mclink">Games<span class="mtri"></span></span>' +
+      '<span class="mclink">Rules</span><span class="mclink">Leaderboards</span></div>' +
+      '<a class="mclogo" href="#"><img src="wocg-logo.png" alt="World of Card Games"></a>' +
+      '<div class="muser"><img class="micon" src="menuActivity.svg" alt="Activity">' +
+      '<img class="micon" src="menuFriends.svg" alt="Friends">' +
+      '<img class="avatar" src="AnimalFox.svg" alt="Avatar"><span class="uname">Guest #12</span></div>' +
+    '</div>';
+  var GROUPS = [
+    { head: "The wave, varied", items: [
+      ["wave", "The current wave — 20×8 sine, band cut along the curve, 2px sand stroke (baseline)"],
+      ["drift", "Dealer's drift — a softer second wave peeks out below and drifts, one tile per 40s (animated)"],
+      ["sheen", "Shuffle sheen — the same wave, but a gold glint sweeps it once on load; hover to replay (animated)"],
+      ["meeple", "Meeple queue — the wave's period redrawn as head-and-shoulders, a row of meeples waiting to play"]
+    ]},
+    { head: "From the card table", items: [
+      ["dealt", "Dealt row — the bottoms of face-down cards peek from under the bar, a 2px sliver of page between each"],
+      ["fan", "Fanned deck — shallow scallops with a fainter echo line inside each arc, like the frame printed on a card back"],
+      ["corners", "Corner kiss — a flat line that dips into paired rounded card corners every 28px"],
+      ["pips", "Pip thread — the four suits strung on a hairline like beads: diamond and heart in gold-sand, spade and club in deep sand"],
+      ["ribbon", "Ribbon spread — the dealer's ribbon of overlapped cards seen edge-on: a slim band crossed by leaning card edges"],
+      ["deckedge", "Deck edge — three hairlines fading downward, a deck of cards seen from the side"],
+      ["lucky", "Lucky pip — a plain line broken once by a single gold diamond, sitting at 21% like a gem on a game box spine"],
+      ["stitch", "Baize stitch — a blanket stitch in muted green thread hems the bar's felt edge"],
+      ["bumper", "Rail bumper — the padded rail around the felt: a cushioned band with a soft warm shadow, no motif at all"],
+      ["felt", "Felt rail — no line to speak of: a whisper of baize and a lamplight shadow melting into the page"]
+    ]},
+    { head: "From the game shelf", items: [
+      ["backgammon", "Backgammon points — shallow home-board triangles alternating sand and gold-sand, tips softened"],
+      ["cribbage", "Cribbage rail — peg holes drilled in groups of five, two rows, one green peg still in the game"],
+      ["dice", "Lucky roll — the faces of a die from 1 to 6 marching under a clean rule, for whoever leans in"],
+      ["puzzle", "Puzzle seam — a calm line that blooms into a jigsaw knob every 64px: bar and page are two pieces that fit"],
+      ["track", "The track — a path of tiny board squares; every twelfth is the green start square"],
+      ["fold", "Board fold — the crease of a folded game board: a long zigzag with one face lit, one shaded"],
+      ["checker", "King row — a checkers border in two sands so close it reads as linen until you lean in"]
+    ]},
+    { head: "From the print shop", items: [
+      ["ticket", "Tear here — score-sheet perforation punched into the band, holes threaded on a hairline"],
+      ["stamp", "Postage edge — the band's edge bitten like a stamp's die-cut, with a darker paper lip beneath"],
+      ["deckle", "Deckle edge — the score pad's torn sheet: an uneven paper edge with its own 1.5px shadow layer"],
+      ["guilloche", "Engine turn — the card-back's guilloche braid straddling the seam, a gold bead at every other crossing"],
+      ["deco", "Monte Carlo rule — the casino deco thick-thin pair with a translucent gold lozenge every 40px"],
+      ["scorepad", "Above the line — the bridge scorepad's double rule: 2px, a breath of page, then a paler hairline"],
+      ["trellis", "Bicycle trellis — the card-back lattice compressed to a 6px band that dissolves downward"],
+      ["swell", "Engraver's swell — one rule that breathes from hairline to full weight, cut like an old Hoyle chapter close"],
+      ["ink", "Inked by hand — a machine-straight rule displaced by paper grain, thick here and thin there"]
+    ]},
+    { head: "Set in motion", items: [
+      ["march", "Marching pips — a row of dealt dashes, still until you hover the scene; then they walk at reading pace (animated)"],
+      ["bridge", "Riffle bridge — two dash rows slide together and interleave once on load, the shuffle's last bridge (animated)"]
+    ]}
+  ];
+  var root = document.getElementById("labroot");
+  var n = 1;
+  GROUPS.forEach(function (g) {
+    var h = document.createElement("h2");
+    h.textContent = g.head;
+    root.appendChild(h);
+    g.items.forEach(function (it) {
+      var d = document.createElement("div");
+      d.className = "dvar v-" + it[0];
+      d.innerHTML = '<p class="tag">' + (n++) + ' · ' + it[1] + '</p>' +
+        '<div class="scene">' + BAR + '<div class="seam"></div><div class="pagearea"></div></div>';
+      root.appendChild(d);
+    });
+  });
+</script>
+
+</body>
+</html>
