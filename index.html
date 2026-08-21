@@ -533,6 +533,11 @@
     -webkit-mask: var(--wavedivider) left center / 20px 8px repeat-x;
             mask: var(--wavedivider) left center / 20px 8px repeat-x;
     background-color: #D9D2C4; }
+  /* ===== section containers (Sections switcher): sections sit in the
+     Evernote-style warm container, starting with Open tables ===== */
+  body.sect-contained #openTablesTop { background: var(--band, #f4eee5); border-radius: 20px;
+    corner-shape: squircle; padding: 20px; }
+
   /* the fine-wave variant: the same bar, but the divider runs the hover
      links' own 7px trough tile */
   body.menu-centerwavefine .mbcenter { background: #F4EEE5; border-bottom: none; position: relative; z-index: 20;
@@ -2029,6 +2034,7 @@
     <label class="ctl"><span>Ad rail</span><select id="sel-rail"></select></label>
     <label class="ctl"><span>Live stats</span><select id="sel-stats"></select></label>
     <label class="ctl"><span>Menu bar</span><select id="sel-menu"></select></label>
+    <label class="ctl"><span>Sections</span><select id="sel-sect"></select></label>
     <label class="ctl"><span>Hero title</span><select id="titlesel"></select></label>
     <label class="ctl"><span>Hero subtitle</span><select id="subsel"></select></label>
   </div>
@@ -2721,6 +2727,10 @@
     ["sampler", "Category sampler + full sections"],
     ["split", "Popular grid + categories"]
   ];
+  var SECTS = [
+    ["none", "Sections on the canvas (as today)"],
+    ["contained", "Open tables in the Evernote container"]
+  ];
   var MENUS = [
     ["current", "Today's bar"],
     ["center", "Centered mark"],
@@ -2775,7 +2785,7 @@
     ["ghostdot", "Ghost: still dot + naked number"],
     ["ghostnum", "Ghost: naked number only (big tile keeps its word)"]
   ];
-  var curShadow = "soft", curEdge = "softlight", curTexture = "grain", curCatalog = "split", curStats = "capsule2", curMenu = "centerwave", curCounter = "ghostdot", curRail = "suits", curPlayBtn = "green";
+  var curShadow = "soft", curEdge = "softlight", curTexture = "grain", curCatalog = "split", curStats = "capsule2", curMenu = "centerwave", curCounter = "ghostdot", curRail = "suits", curPlayBtn = "green", curSect = "contained";
   /* every CSS blend mode as an avatar-rim coat: one filter per mode is stamped
      into the SVG defs (same eroded rim, #737373 @ .9 ink, only feBlend's mode
      changes) plus a matching mix-blend ring for the invitee circles */
@@ -3506,7 +3516,7 @@
   }
   function applyBody() {
     var scene = curLayout.indexOf("sc") === 0;
-    document.body.className = curBase + " play-" + curPlay + " layout-" + curLayout + (scene ? " scenehero" : "") + " font-" + curFont + " shadow-" + curShadow + " edge-" + curEdge + " tex-" + curTexture + " cat-" + curCatalog + " stats-" + curStats + " menu-" + curMenu + " counter-" + curCounter + " rail-" + curRail + " playbtn-" + curPlayBtn + " avedge-" + curAvedge + " avsh-" + curAvshadow + " cnav-" + curCnav + " foot-" + curFooter + " viewer-" + curViewer + (palShown ? " show-palette" : "");
+    document.body.className = curBase + " play-" + curPlay + " layout-" + curLayout + (scene ? " scenehero" : "") + " font-" + curFont + " shadow-" + curShadow + " edge-" + curEdge + " tex-" + curTexture + " cat-" + curCatalog + " stats-" + curStats + " menu-" + curMenu + " counter-" + curCounter + " rail-" + curRail + " playbtn-" + curPlayBtn + " avedge-" + curAvedge + " avsh-" + curAvshadow + " cnav-" + curCnav + " foot-" + curFooter + " viewer-" + curViewer + " sect-" + curSect + (palShown ? " show-palette" : "");
     var ht = document.getElementById("herotitle"), hs = document.getElementById("herosub");
     if (scene) {
       if (curLayout === "scpyr") {
@@ -3534,6 +3544,7 @@
     document.getElementById("sel-catalog").value = curCatalog;
     document.getElementById("sel-stats").value = curStats;
     document.getElementById("sel-menu").value = curMenu;
+    document.getElementById("sel-sect").value = curSect;
     document.getElementById("sel-counter").value = curCounter;
     document.getElementById("sel-rail").value = curRail;
     document.getElementById("sel-playbtn").value = curPlayBtn;
@@ -3744,6 +3755,7 @@
   buildSel("sel-catalog", CATALOGS, function (v) { curCatalog = v; });
   buildSel("sel-stats", STATSLINES, function (v) { curStats = v; });
   buildSel("sel-menu", MENUS, function (v) { curMenu = v; });
+  buildSel("sel-sect", SECTS, function (v) { curSect = v; });
   buildSel("sel-counter", COUNTERS, function (v) { curCounter = v; });
   buildSel("sel-rail", RAILS, function (v) { curRail = v; });
   buildSel("sel-playbtn", PLAYBTNS, function (v) { curPlayBtn = v; });
