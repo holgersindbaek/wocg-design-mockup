@@ -294,6 +294,167 @@
   .pcard .pd.today.won { background: #66A80F; box-shadow: none; }
   .pcard .pd.fut { background: #EDE9E1; }
   .pcard .pd.blank { background: none; }
+
+  /* ===== batch four: the big month leaf — todo & status ===== */
+  .bigrow { display: flex; align-items: flex-start; gap: 10px; margin-top: 14px; }
+
+  /* shared page grammar */
+  .b4page { position: relative; display: inline-flex; flex-direction: column; background: #fff;
+    border-radius: 12px; corner-shape: squircle; box-shadow: inset 0 0 0 1px var(--edge), var(--liftshadow);
+    overflow: hidden; }
+  .b4band { flex-shrink: 0; position: relative; background: var(--band); border-bottom: 1px solid #E7E7E7;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: bold; letter-spacing: .12em; color: var(--muted); }
+  .b4page.done .b4band { background: #B2F2BB; color: #2B8A3E; }
+  .b4num { position: relative; display: flex; align-items: center; justify-content: center;
+    font-family: "Vollkorn", serif; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .b4num i { font-style: normal; }
+  .b4page.done .b4num i { opacity: .55; }
+  .nstamp { display: none; position: absolute; left: 50%; top: 50%; opacity: .9; }
+  .b4page.done .nstamp { display: block; }
+  .b4box { display: inline-block; width: 10px; height: 10px; border: 1.5px solid var(--muted); border-radius: 2px;
+    box-sizing: border-box; flex-shrink: 0; }
+  .b4box.filled { position: relative; background: #66A80F; border-color: #66A80F; }
+  .b4box .wtick { position: absolute; inset: 1px; background-color: #fff;
+    -webkit-mask: url("dealDayCheck.svg") center / contain no-repeat; mask: url("dealDayCheck.svg") center / contain no-repeat; }
+  .b4chkwrap { position: relative; display: inline-flex; flex-shrink: 0; }
+  .b4chkwrap .over { position: absolute; left: -3px; top: -6px; width: 15px; height: 15px; transform: rotate(-8deg); }
+  .b4strike { text-decoration: line-through; opacity: .45; }
+
+  /* F1 · the memo page (merge of both memo leaves) */
+  .mleaf { width: 140px; }
+  .mleaf .mtear { height: 6px; border-bottom: 1px dashed #C9C0AF; flex-shrink: 0; }
+  .mleaf .b4band { height: 20px; font-size: 9px; }
+  .mleaf .mwk { position: absolute; right: 6px; font-size: 7px; opacity: .6; letter-spacing: .05em; }
+  .mleaf .b4num { height: 62px; font-size: 44px; }
+  .mleaf .nstamp { width: 28px; height: 28px; transform: translate(-50%, -50%) rotate(-8deg); }
+  .mleaf .magenda { position: relative; padding: 2px 0 8px; }
+  .mleaf .magenda::before { content: ""; position: absolute; left: 16px; top: 0; bottom: 8px; width: 1px;
+    background: rgba(201, 42, 42, .22); }
+  .mleaf .mrow { position: relative; height: 26px; margin: 0 10px 0 22px; border-bottom: 1px solid #E7E7E7;
+    display: flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 600; color: var(--ink); }
+  .mleaf .mrow .push { margin-left: auto; display: inline-flex; align-items: center; gap: 4px; }
+  .mleaf .mcap { font-size: 8px; font-weight: bold; letter-spacing: .1em; color: var(--muted); }
+  .mleaf .mtal { font-size: 8px; font-weight: bold; letter-spacing: .05em; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .mleaf .mtal.g { color: #2B8A3E; }
+  .mleaf .mfig { font-size: 10px; font-weight: bold; color: var(--ink); font-variant-numeric: tabular-nums; }
+
+  /* F2 · the almanac page (Agate ledger + Red-Letter hero stamp) */
+  .alma { width: 172px; padding-bottom: 6px; }
+  .alma .b4band { height: 24px; font-size: 10px; letter-spacing: .14em; }
+  .alma .b4num { height: 58px; font-size: 44px; }
+  .alma .astamp { display: none; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) rotate(-12deg);
+    border: 2px solid #66A80F; border-radius: 4px; padding: 2px 7px; opacity: .88; }
+  .alma.done .astamp { display: inline-flex; align-items: center; gap: 4px; }
+  .alma .astamp .chk { width: 11px; height: 11px; }
+  .alma .astamp b { font-size: 13px; font-weight: 800; color: #66A80F; letter-spacing: .02em; font-variant-numeric: tabular-nums; }
+  .alma .atear { margin: 2px 14px 6px; border-top: 1px dashed #C9C0AF; }
+  .alma .aline { display: flex; align-items: center; gap: 5px; height: 22px; margin: 0 14px; font-size: 11px;
+    font-weight: 600; color: var(--ink); }
+  .alma .aline.agst { justify-content: center; }
+  .alma .aline .b4box { width: 11px; height: 11px; }
+  .alma .acap { font-size: 9px; font-weight: bold; letter-spacing: .1em; color: var(--muted); }
+  .alma .lead { flex: 1; border-bottom: 1px dotted #C9C0AF; margin: 0 2px; transform: translateY(-3px); }
+  .alma .afig { font-size: 11px; font-weight: bold; color: var(--ink); font-variant-numeric: tabular-nums; }
+
+  /* F3 · the desk block (the pad as an object) */
+  .dbwrap { display: inline-flex; flex-direction: column; align-items: center; }
+  .dbsheet { width: 208px; height: 82px; }
+  .dbsheet .dbrem { height: 5px; background: rgba(244, 238, 229, .5); border-bottom: 1px dashed #C9C0AF; flex-shrink: 0; }
+  .dbsheet .dbbody { flex: 1; display: flex; min-height: 0; }
+  .dbdate { width: 64px; border-right: 1px solid #E7E7E7; display: flex; flex-direction: column; flex-shrink: 0; }
+  .dbdate .b4band { height: 14px; font-size: 7px; }
+  .dbdate .b4num { flex: 1; font-size: 30px; }
+  .dbdate .nstamp { width: 24px; height: 24px; transform: translate(-50%, -50%) rotate(-10deg); }
+  .dbdate .dbwd { text-align: center; font-size: 7px; font-weight: bold; letter-spacing: .1em; color: var(--muted);
+    padding-bottom: 3px; }
+  .dbmemo { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+  .dbmemo .dbrow { flex: 1; display: flex; align-items: center; gap: 5px; padding: 0 10px;
+    font-size: 11px; font-weight: 600; color: var(--ink); }
+  .dbmemo .dbrow + .dbrow { border-top: 1px solid #E7E7E7; }
+  .dbmemo .dbrow .push { margin-left: auto; display: inline-flex; align-items: center; gap: 4px; }
+  .dbmemo .dbrow.dbimp { justify-content: center; font-size: 6.5px; font-weight: bold; letter-spacing: .12em;
+    color: #C9C0AF; }
+  .dbmemo .dbcap { font-size: 8px; font-weight: bold; letter-spacing: .1em; color: var(--muted); }
+  .dbmemo .dbtal { font-size: 7px; font-weight: bold; letter-spacing: .08em; color: var(--muted); }
+  .dbmemo .dbtal.g { color: #2B8A3E; }
+  .dbmemo .dbfig { font-size: 12px; font-weight: bold; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .dbedge { height: 3px; background: #fff; box-shadow: inset 0 0 0 1px var(--edge); border-radius: 0 0 3px 3px; margin-top: 1px; }
+  .dbedge.e1 { width: 200px; }
+  .dbedge.e2 { width: 192px; }
+  .dbsheet.done { cursor: pointer; }
+  @keyframes dbTear { to { transform: translate(30px, -46px) rotate(-6deg); opacity: 0; } }
+  .dbsheet.tearing { animation: dbTear 350ms ease-in forwards; }
+
+  /* F4 · the day ledger (numeral left, labeled rows right) */
+  .dledg { width: 188px; }
+  .dledg .b4band { height: 24px; font-size: 10px; letter-spacing: .1em; }
+  .dledg .dlbody { display: flex; height: 106px; }
+  .dledg .dlnum { width: 60px; flex-shrink: 0; padding-top: 8px; align-items: flex-start; font-size: 40px; }
+  .dledg .dlnum .nstamp { top: 32px; width: 32px; height: 32px; transform: translate(-50%, -50%) rotate(-12deg); }
+  .dledg .dlrows { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+  .dledg .dlrow { flex: 1; position: relative; display: flex; flex-direction: column; justify-content: center;
+    gap: 2px; padding: 0 22px 0 8px; cursor: pointer; }
+  .dledg .dlrow + .dlrow::before { content: ""; position: absolute; top: 0; left: 0; right: 10px; height: 1px;
+    background: #ECEAE6; }
+  .dledg .dlcap { display: flex; align-items: center; gap: 4px; font-size: 8.5px; font-weight: bold;
+    letter-spacing: .08em; color: #8A8783; }
+  .dledg .dlcap .chk { width: 11px; height: 11px; }
+  .dledg .dlcap.g { color: #2B8A3E; }
+  .dledg .dlcap.mut { color: #B9B5AE; }
+  .dledg .dlval { display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: bold;
+    color: var(--ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .dledg .dlval.g { color: #2B8A3E; }
+  .dledg .dlval.mut { color: #B9B5AE; font-weight: normal; font-size: 11px; }
+  .dledg .dlsuf { font-size: 9px; color: #B9B5AE; font-weight: normal; }
+  .dledg .dlchev { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); font-size: 13px;
+    color: #C9C0AF; }
+
+  /* F5 · the stamped verdict (the page is the answer) */
+  .sverd { width: 148px; }
+  .sverd .b4band { height: 26px; font-size: 10px; }
+  .sverd .b4num { height: 62px; font-size: 50px; }
+  .sverd .nstamp { width: 40px; height: 40px; transform: translate(-50%, -50%) rotate(-12deg); }
+  .sverd .strip { height: 34px; flex-shrink: 0; border-top: 1px solid #E7E7E7; display: flex; align-items: center;
+    justify-content: center; gap: 6px; font-size: 11px; font-weight: bold; color: var(--ink);
+    font-variant-numeric: tabular-nums; cursor: pointer; }
+  .sverd .strip + .strip { border-top: 1px solid #ECEAE6; }
+  .sverd .strip:hover { background: #FAF7F2; }
+  .sverd .rdot { width: 8px; height: 8px; border-radius: 50%; background: #C92A2A; flex-shrink: 0; }
+  .sverd .strip .chk { width: 11px; height: 11px; }
+  .sverd .strip.g { color: #2B8A3E; }
+  .sverd .strip .mut { color: #B9B5AE; font-weight: normal; font-size: 10px; }
+  .sverd .scap { font-size: 9px; font-weight: bold; letter-spacing: .08em; color: #8A8783; }
+  .sverd .chev { font-size: 12px; color: #C9C0AF; font-weight: normal; }
+
+  /* F6 · the tear-off stub (state as shape) */
+  .tswrap { display: inline-flex; flex-direction: column; width: 172px; }
+  .tspage { width: 172px; border-radius: 12px 12px 0 0; }
+  .tspage .b4band { height: 24px; font-size: 10px; }
+  .tspage .tsbody { height: 82px; display: flex; align-items: center; padding: 0 12px; gap: 8px; }
+  .tspage .b4num { font-size: 42px; }
+  .tspage .nstamp { width: 34px; height: 34px; transform: translate(-50%, -50%) rotate(-12deg); }
+  .tsstat { margin-left: auto; min-width: 0; }
+  .tsstat .scap { font-size: 9px; font-weight: bold; letter-spacing: .08em; color: #8A8783; }
+  .tsstat .sval { display: flex; align-items: center; gap: 5px; margin-top: 2px; font-size: 14px; font-weight: bold;
+    color: var(--ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .tsstat .sval.mut { color: #B9B5AE; font-weight: normal; font-size: 11px; }
+  .tsstat .ssuf { font-size: 9px; color: #B9B5AE; font-weight: normal; }
+  .tsstat .smut { font-size: 10px; color: #8A8783; }
+  .tsstub, .tsfoil { background: #fff; border-radius: 0 0 12px 12px; corner-shape: squircle;
+    box-shadow: inset 0 0 0 1px var(--edge), var(--liftshadow); border-top: 1.5px dashed #C9C0AF;
+    display: flex; align-items: center; padding: 0 12px; box-sizing: border-box; width: 172px; }
+  .tsstub { height: 40px; cursor: pointer; }
+  .tsstub:hover { border-top-color: #B9AF9E; }
+  .tsstub .tslab { font-size: 8.5px; font-weight: bold; letter-spacing: .08em; color: #8A8783; }
+  .tsstub .tsact { font-size: 12px; font-weight: bold; color: var(--ink); margin-top: 1px; }
+  .tsstub .tspull { margin-left: auto; width: 22px; height: 22px; border-radius: 50%; background: var(--band);
+    display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--muted); flex-shrink: 0; }
+  .tsfoil { height: 24px; gap: 5px; font-size: 10px; font-weight: 600; color: var(--ink); }
+  .tsfoil .chk { width: 10px; height: 10px; }
+  .tsfoil .foilg { color: #2B8A3E; font-weight: bold; }
+  @keyframes tsTear { to { transform: translateY(26px) rotate(-4deg); opacity: 0; } }
+  .tsstub.tearing { animation: tsTear 250ms ease-in forwards; }
 </style>
 </head>
 <body>
@@ -320,6 +481,15 @@ signed-out visitor sees no unit at all (except the calendar leaf, which shows a 
   axes that compose: the completion <b>gesture</b>, the month's <b>memory</b>, what the page <b>reveals</b>, and
   what's <b>printed</b> on the front. Cards marked &ldquo;click&rdquo; have a playable gesture.</p>
   <div class="grid" id="grid3"></div>
+</div>
+
+<div class="vsec2">
+  <h2>Four &mdash; the big month leaf: the challenge as a todo, the board as a status</h2>
+  <p class="desc">D1 grown up: a calendar page large enough to carry two printed lines &mdash; the daily challenge as
+  a checkboxed todo, the leaderboard as a daily status. Twelve designs came from four lenses (stationery, planner,
+  ink, product) and went through three judges; these six survived. Two are the merges the judges asked for. All keep
+  the family grammar: the band flips green, done content strikes at 45%, and the numeral takes the stamp.</p>
+  <div class="grid" id="grid4"></div>
 </div>
 
 <script>
@@ -617,6 +787,204 @@ signed-out visitor sees no unit at all (except the calendar leaf, which shows a 
       } }
   ];
 
+  function b4box(done) {
+    return done
+      ? '<span class="b4chkwrap"><span class="b4box"></span><span class="chk over"></span></span>'
+      : '<span class="b4chkwrap"><span class="b4box"></span></span>';
+  }
+
+  var CONCEPTS4 = [
+    { id: "memopage",
+      cap: "<b>F1 · The memo page</b> — the judges' merge of the two memo-leaf designs: the red margin rule, the todo as a checkboxed diary entry sitting ON the writing rule, the board as a logbook figure — and the D1 numeral stamp kept, so done still reads across the room.",
+      render: function (st) {
+        var done = st.viewer === "in" && st.ch === "done";
+        var row1, row2 = "";
+        if (st.viewer === "out") {
+          row1 = '<span class="mrow">' + b4box(false) + '<span>Play deal #51</span></span>';
+          row2 = '<span class="mrow"></span>';
+        } else if (done) {
+          row1 = '<span class="mrow">' + b4box(true) + '<span class="b4strike">Play deal #51</span>' +
+            '<span class="push"><span class="mtal g">beat 62%</span></span></span>';
+        } else {
+          row1 = '<span class="mrow">' + b4box(false) + '<span>Play deal #51</span>' +
+            '<span class="push"><span class="mtal">12 WON</span></span></span>';
+        }
+        if (st.viewer === "in") {
+          if (st.bd === "none") row2 = '<span class="mrow"></span>';
+          else if (st.bd === "rest") row2 = '<span class="mrow"><span class="mcap">SPADES</span>' +
+            '<span class="push"><span class="mfig">1,581</span></span></span>';
+          else row2 = '<span class="mrow"><span>No. 23 · Spades</span><span class="push">' + chipFor(st.bd) + '</span></span>';
+        }
+        return CAPSULE_STOCK + '<span class="bigrow"><span class="b4page mleaf' + (done ? " done" : "") + '">' +
+          '<span class="mtear"></span>' +
+          '<span class="b4band">WED · AUG<span class="mwk">WK 34</span></span>' +
+          '<span class="b4num"><i>20</i><span class="chk nstamp"></span></span>' +
+          '<span class="magenda">' + row1 + row2 + '</span></span></span>';
+      } },
+    { id: "almapage",
+      cap: "<b>F2 · The almanac page</b> — the other asked-for merge: Almanac Agate's dot-leader ledger and never-blank slot, with Red-Letter's hero stamp — completion and result as ONE ink hit (check + 62%) across the numeral. The status slot always prints something true.",
+      render: function (st) {
+        function aline(l, r, extra) {
+          return '<span class="aline"><span class="acap">' + l + '</span><i class="lead"></i>' +
+            '<span class="afig">' + r + '</span>' + (extra || "") + '</span>';
+        }
+        var done = st.viewer === "in" && st.ch === "done";
+        var page = '<span class="b4page alma' + (done ? " done" : "") + '">' +
+          '<span class="b4band">WED · AUG</span>' +
+          '<span class="b4num"><i>20</i>' +
+          '<span class="astamp"><span class="chk"></span><b>62%</b></span></span>' +
+          '<span class="atear"></span>';
+        if (st.viewer === "out") {
+          page += '<span class="aline agst">' + b4box(false) + '<span class="acap" style="letter-spacing:.12em">DEAL #51</span></span>';
+        } else {
+          page += done
+            ? '<span class="aline"><span class="b4box filled"><i class="wtick"></i></span><span class="b4strike">Play deal #51</span></span>'
+            : '<span class="aline">' + b4box(false) + '<span>Play deal #51</span></span>';
+          if (st.bd === "none") page += aline("DAYS WON", done ? "13" : "12");
+          else if (st.bd === "rest") page += aline("SPADES", "1,581");
+          else page += aline("SPADES", "no. 23", chipFor(st.bd));
+        }
+        return CAPSULE_STOCK + '<span class="bigrow">' + page + '</span></span>';
+      } },
+    { id: "deskblock",
+      cap: "<b>F3 · The desk block</b> — the pad as an object: stacked page edges below, yesterday's torn remnant above, date-left / memo-right. The unranked slot prints the pad's stock imprint instead of fake data. When done, click the sheet — tearing it off is what this object is for.",
+      render: function (st) {
+        var done = st.viewer === "in" && st.ch === "done";
+        var row1, row2;
+        if (st.viewer === "out") {
+          row1 = '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+            '<span class="push"><span class="dbtal">today’s deal</span></span></span>';
+          row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+        } else {
+          row1 = done
+            ? '<span class="dbrow">' + b4box(true) + '<span class="b4strike">Deal #51</span>' +
+              '<span class="push"><span class="dbtal g">13 WON</span></span></span>'
+            : '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+              '<span class="push"><span class="dbtal">12 WON</span></span></span>';
+          if (st.bd === "none") row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+          else if (st.bd === "rest") row2 = '<span class="dbrow"><span class="dbcap">SPADES</span>' +
+            '<span class="push"><span class="dbfig">1,581</span></span></span>';
+          else row2 = '<span class="dbrow"><span>No. 23 · Spades</span><span class="push">' + chipFor(st.bd) + '</span></span>';
+        }
+        return CAPSULE_STOCK + '<span class="bigrow"><span class="dbwrap">' +
+          '<span class="b4page dbsheet' + (done ? ' done" title="Tear off the finished page' : "") + '">' +
+          '<span class="dbrem"></span><span class="dbbody">' +
+          '<span class="dbdate"><span class="b4band">AUG</span>' +
+          '<span class="b4num"><i>20</i><span class="chk nstamp"></span></span>' +
+          '<span class="dbwd">WED</span></span>' +
+          '<span class="dbmemo">' + row1 + row2 + '</span>' +
+          '</span></span>' +
+          '<span class="dbedge e1"></span><span class="dbedge e2"></span></span></span>';
+      },
+      wire: function (stage) {
+        var sheet = stage.querySelector(".dbsheet.done");
+        if (!sheet) return;
+        sheet.addEventListener("click", function () {
+          if (sheet.classList.contains("tearing")) return;
+          sheet.classList.add("tearing");
+          sheet.addEventListener("animationend", function () {
+            sheet.classList.remove("tearing", "done");
+            sheet.removeAttribute("title");
+            sheet.innerHTML = '<span class="dbrem"></span><span class="dbbody">' +
+              '<span class="dbdate"><span class="b4band">AUG</span><span class="b4num"><i>21</i></span>' +
+              '<span class="dbwd">THU</span></span>' +
+              '<span class="dbmemo"><span class="dbrow">' + b4box(false) + '<span>Deal #52</span></span>' +
+              '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span></span></span>';
+          });
+        });
+      } },
+    { id: "dayledger",
+      cap: "<b>F4 · The day ledger</b> — the fastest 'where do I stand': labeled rows in fixed positions, each its own door. Done REPLACES the task with the result ('Better than 62%') — the result is the confirmation. And the best guest copy in the field: 'Everyone plays deal #51.'",
+      render: function (st) {
+        var top, bot;
+        if (st.viewer === "out") {
+          top = '<span class="dlrow"><span class="dlcap">TODAY’S DEAL</span>' +
+            '<span class="dlval">Everyone plays deal #51</span><span class="dlchev">›</span></span>';
+          bot = '<span class="dlrow"><span class="dlval mut">Sign in to keep score</span><span class="dlchev">›</span></span>';
+        } else {
+          top = st.ch === "done"
+            ? '<span class="dlrow"><span class="dlcap g"><span class="chk"></span>DEAL #51</span>' +
+              '<span class="dlval g">Better than 62%</span><span class="dlchev">›</span></span>'
+            : '<span class="dlrow"><span class="dlcap">DEAL #51</span>' +
+              '<span class="dlval">Play today’s deal</span><span class="dlchev">›</span></span>';
+          if (st.bd === "none") bot = '<span class="dlrow"><span class="dlcap mut">RANKED</span>' +
+            '<span class="dlval mut">No rank yet</span><span class="dlchev">›</span></span>';
+          else if (st.bd === "rest") bot = '<span class="dlrow"><span class="dlcap">SPADES</span>' +
+            '<span class="dlval">1,581 <span class="dlsuf">rating</span></span><span class="dlchev">›</span></span>';
+          else bot = '<span class="dlrow"><span class="dlcap">SPADES · TODAY</span>' +
+            '<span class="dlval">no. 23' + chipFor(st.bd) + '</span><span class="dlchev">›</span></span>';
+        }
+        var done = st.viewer === "in" && st.ch === "done";
+        return CAPSULE_STOCK + '<span class="bigrow"><span class="b4page dledg' + (done ? " done" : "") + '">' +
+          '<span class="b4band">WED · AUG</span>' +
+          '<span class="dlbody"><span class="b4num dlnum"><i>20</i><span class="chk nstamp"></span></span>' +
+          '<span class="dlrows">' + top + bot + '</span></span></span></span>';
+      } },
+    { id: "verdict",
+      cap: "<b>F5 · The stamped verdict</b> — the page IS the answer: a red open-dot or a stamped numeral says played / not-played before you read a word; the strips are just captions. The only design that also signals NOT-yet at distance. Guest gets an honestly shorter page.",
+      render: function (st) {
+        var strips = "";
+        if (st.viewer === "out") {
+          strips = '<span class="strip">&spades; Deal #51 · everyone plays<span class="chev">›</span></span>';
+        } else {
+          strips = st.ch === "done"
+            ? '<span class="strip g"><span class="chk"></span>Done · better than 62%</span>'
+            : '<span class="strip"><span class="rdot"></span>Play deal #51<span class="chev">›</span></span>';
+          if (st.bd === "none") strips += '<span class="strip"><span class="mut">No rank yet</span></span>';
+          else if (st.bd === "rest") strips += '<span class="strip"><span class="scap">SPADES</span>1,581</span>';
+          else strips += '<span class="strip">Spades no. 23' + chipFor(st.bd) + '</span>';
+        }
+        var done = st.viewer === "in" && st.ch === "done";
+        return CAPSULE_STOCK + '<span class="bigrow"><span class="b4page sverd' + (done ? " done" : "") + '">' +
+          '<span class="b4band">WED · AUG</span>' +
+          '<span class="b4num"><i>20</i><span class="chk nstamp"></span></span>' +
+          strips + '</span></span>';
+      } },
+    { id: "tearstub",
+      cap: "<b>F6 · The tear-off stub</b> — state as shape: a stub hanging below the perforation means not-played; a short struck counterfoil means played — legible at silhouette level. Click the stub to perform the tear (set Challenge to Open first). The status lives beside the numeral.",
+      render: function (st) {
+        var stat;
+        if (st.viewer === "out") stat = '<span class="tsstat"><span class="smut">Sign in to<br>see your rank</span></span>';
+        else if (st.bd === "none") stat = '<span class="tsstat"><span class="scap">RANKED</span>' +
+          '<span class="sval mut">Not on board</span></span>';
+        else if (st.bd === "rest") stat = '<span class="tsstat"><span class="scap">SPADES</span>' +
+          '<span class="sval">1,581 <span class="ssuf">rating</span></span></span>';
+        else stat = '<span class="tsstat"><span class="scap">SPADES</span>' +
+          '<span class="sval">no. 23' + chipFor(st.bd) + '</span></span>';
+        var done = st.viewer === "in" && st.ch === "done";
+        var below;
+        if (done) {
+          below = '<span class="tsfoil"><span class="b4strike">Play #51</span><span class="chk"></span>' +
+            '<span class="foilg">better than 62%</span></span>';
+        } else if (st.viewer === "out") {
+          below = '<span class="tsstub"><span><span class="tslab">TODAY’S DEAL</span><br>' +
+            '<span class="tsact">Join deal #51</span></span><span class="tspull">→</span></span>';
+        } else {
+          below = '<span class="tsstub" data-live="1" title="Tear off the stub — play the deal">' +
+            '<span><span class="tslab">TODAY’S DEAL</span><br>' +
+            '<span class="tsact">Play #51</span></span><span class="tspull">→</span></span>';
+        }
+        return CAPSULE_STOCK + '<span class="bigrow"><span class="tswrap">' +
+          '<span class="b4page tspage' + (done ? " done" : "") + '">' +
+          '<span class="b4band">WED · AUG</span>' +
+          '<span class="tsbody"><span class="b4num"><i>20</i><span class="chk nstamp"></span></span>' +
+          stat + '</span></span>' + below + '</span></span>';
+      },
+      wire: function (stage) {
+        var stub = stage.querySelector('.tsstub[data-live]');
+        if (!stub) return;
+        stub.addEventListener("click", function () {
+          if (stub.classList.contains("tearing")) return;
+          stub.classList.add("tearing");
+          stub.addEventListener("animationend", function () {
+            stage.querySelector(".tspage").classList.add("done");
+            stub.outerHTML = '<span class="tsfoil"><span class="b4strike">Play #51</span><span class="chk"></span>' +
+              '<span class="foilg">better than 62%</span></span>';
+          });
+        });
+      } }
+  ];
+
   var VIEWERS = [["in", "Signed in"], ["out", "Signed out"]];
   var CHALLENGE = [["open", "Open"], ["done", "Done"]];
   var BOARD = [["none", "Unranked"], ["rest", "Quiet day"], ["up", "On board ▲3"], ["down", "On board ▼2"]];
@@ -654,10 +1022,12 @@ signed-out visitor sees no unit at all (except the calendar leaf, which shows a 
     paint();
     host.appendChild(card);
   }
-  var grid = document.getElementById("grid"), grid2 = document.getElementById("grid2"), grid3 = document.getElementById("grid3");
+  var grid = document.getElementById("grid"), grid2 = document.getElementById("grid2"),
+    grid3 = document.getElementById("grid3"), grid4 = document.getElementById("grid4");
   CONCEPTS.forEach(function (c) { buildCard(grid, c); });
   CONCEPTS2.forEach(function (c) { buildCard(grid2, c); });
   CONCEPTS3.forEach(function (c) { buildCard(grid3, c); });
+  CONCEPTS4.forEach(function (c) { buildCard(grid4, c); });
 </script>
 </body>
 </html>
