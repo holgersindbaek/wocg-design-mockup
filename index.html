@@ -2143,10 +2143,10 @@
     transition: opacity 120ms linear, transform 140ms ease; }
   .lobbyscope .player.joinable:hover .seatYou { opacity: 1; transform: translateX(-50%) scale(1);
     transition: opacity 120ms linear 200ms;
-    animation: seatYouIn 320ms 200ms both; }
+    animation: seatYouIn 320ms cubic-bezier(0.22, 1, 0.36, 1) 200ms both; }
+  /* no overshoot: the avatar lands on the play menu's own feed curve */
   @keyframes seatYouIn {
-    0% { transform: translateX(-50%) scale(.86); animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); }
-    68.75% { transform: translateX(-50%) scale(1.04); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+    0% { transform: translateX(-50%) scale(.86); }
     100% { transform: translateX(-50%) scale(1); } }
   /* the plate rolls: the rest label slides down and out while "Join" drops in
      from the top, timed to the avatar landing, with the dropup damping. The
@@ -2666,6 +2666,12 @@
     z-index: -1; pointer-events: none;
     background: var(--gst, none) left top / 100% 9px no-repeat;
     clip-path: inset(0 100% 0 0); transition: clip-path .25s ease-out; }
+  /* Link hover switcher: the same left-to-right flow-in, but a bare line */
+  body.lhover-line .sitefooter a:not(:has(img))::after, body.lhover-line .sampall::after,
+  body.lhover-line .mbcenter .mclink:not(.mgames)::after, body.lhover-line .mudrop .mitem::after,
+  body.lhover-line .mprow > span:first-of-type::after, body.lhover-line .mgcol a::after,
+  body.lhover-line.cnav-sub-suits #herosub .cjw::after {
+    background: linear-gradient(#CFC6B4, #CFC6B4) 2px 4px / calc(100% - 4px) 1.2px no-repeat; }
   .sitefooter a:not(:has(img)):hover::after, .sampall:hover::after, .mbcenter .mclink:not(.mgames):hover::after,
   .mudrop .mitem:hover::after, .mprow:hover > span:first-of-type::after { clip-path: inset(0 0 0 0); }
   /* per-family seat corrections so every wave sits the subtitle's distance
@@ -2777,6 +2783,7 @@
     <label class="ctl"><span>Menu bar</span><select id="sel-menu"></select></label>
     <label class="ctl"><span>Sections</span><select id="sel-sect"></select></label>
     <label class="ctl"><span>★ Divider</span><select id="sel-divider"></select></label>
+    <label class="ctl"><span>Link hover</span><select id="sel-lhover"></select></label>
     <label class="ctl"><span>Hero title</span><select id="titlesel"></select></label>
     <label class="ctl"><span>Hero subtitle</span><select id="subsel"></select></label>
   </div>
@@ -3510,6 +3517,10 @@
     ["full", "Three counters (players / games / seats)"],
     ["brief", "One line: players & open tables"]
   ];
+  var LHOVERS = [
+    ["suits", "Suit thread (default)"],
+    ["line", "Just a line, same flow-in"]
+  ];
   var DIVIDERS = [
     ["wave", "The wave"],
     ["blushdeck", "Blush deck — suit thread in deck colors (lab 76)"],
@@ -3571,7 +3582,7 @@
     ["ghostdot", "Ghost: still dot + naked number"],
     ["ghostnum", "Ghost: naked number only (big tile keeps its word)"]
   ];
-  var curShadow = "soft", curEdge = "softlight", curTexture = "grain", curCatalog = "split", curStats = "capsule2", curMenu = "centerwave", curCounter = "ghostdot", curRail = "suits", curPlayBtn = "evernote", curTileBg = "cardroomcusp", curSect = "waveband", curDivider = "longdealopt";
+  var curShadow = "soft", curEdge = "softlight", curTexture = "grain", curCatalog = "split", curStats = "capsule2", curMenu = "centerwave", curCounter = "ghostdot", curRail = "suits", curPlayBtn = "evernote", curTileBg = "cardroomcusp", curSect = "waveband", curDivider = "longdealopt", curLhover = "suits";
   /* every CSS blend mode as an avatar-rim coat: one filter per mode is stamped
      into the SVG defs (same eroded rim, #737373 @ .9 ink, only feBlend's mode
      changes) plus a matching mix-blend ring for the invitee circles */
@@ -4358,7 +4369,7 @@
   }
   function applyBody() {
     var scene = curLayout.indexOf("sc") === 0;
-    document.body.className = curBase + " play-" + curPlay + " layout-" + curLayout + (scene ? " scenehero" : "") + " font-" + curFont + " shadow-" + curShadow + " edge-" + curEdge + " tex-" + curTexture + " cat-" + curCatalog + " stats-" + curStats + " menu-" + curMenu + " counter-" + curCounter + " rail-" + curRail + " playbtn-" + curPlayBtn + " avedge-" + curAvedge + " avsh-" + curAvshadow + " cnav-" + curCnav + " foot-" + curFooter + " viewer-" + curViewer + " sect-" + curSect + " div-" + curDivider + " tilebg-" + curTileBg + (palShown ? " show-palette" : "");
+    document.body.className = curBase + " play-" + curPlay + " layout-" + curLayout + (scene ? " scenehero" : "") + " font-" + curFont + " shadow-" + curShadow + " edge-" + curEdge + " tex-" + curTexture + " cat-" + curCatalog + " stats-" + curStats + " menu-" + curMenu + " counter-" + curCounter + " rail-" + curRail + " playbtn-" + curPlayBtn + " avedge-" + curAvedge + " avsh-" + curAvshadow + " cnav-" + curCnav + " foot-" + curFooter + " viewer-" + curViewer + " sect-" + curSect + " div-" + curDivider + " lhover-" + curLhover + " tilebg-" + curTileBg + (palShown ? " show-palette" : "");
     var ht = document.getElementById("herotitle"), hs = document.getElementById("herosub");
     if (scene) {
       if (curLayout === "scpyr") {
@@ -4389,6 +4400,7 @@
     document.getElementById("sel-menu").value = curMenu;
     document.getElementById("sel-sect").value = curSect;
     document.getElementById("sel-divider").value = curDivider;
+    document.getElementById("sel-lhover").value = curLhover;
     document.getElementById("sel-counter").value = curCounter;
     document.getElementById("sel-rail").value = curRail;
     document.getElementById("sel-playbtn").value = curPlayBtn;
@@ -4609,6 +4621,7 @@
   buildSel("sel-menu", MENUS, function (v) { curMenu = v; });
   buildSel("sel-sect", SECTS, function (v) { curSect = v; });
   buildSel("sel-divider", DIVIDERS, function (v) { curDivider = v; });
+  buildSel("sel-lhover", LHOVERS, function (v) { curLhover = v; });
   buildSel("sel-counter", COUNTERS, function (v) { curCounter = v; });
   buildSel("sel-rail", RAILS, function (v) { curRail = v; });
   buildSel("sel-playbtn", PLAYBTNS, function (v) { curPlayBtn = v; });
