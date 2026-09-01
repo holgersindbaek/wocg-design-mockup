@@ -2710,6 +2710,18 @@
     transition: none; }
   /* dots at rest in the divider's sand; hovering trades them for the plain
      underline */
+  /* the fine wave, the site's previous hover, kept as an option */
+  body.lhover-wave .sitefooter a:not(:has(img))::after, body.lhover-wave .sampall::after,
+  body.lhover-wave .mbcenter .mclink:not(.mgames)::after, body.lhover-wave .mudrop .mitem::after,
+  body.lhover-wave .mprow > span:first-of-type::after, body.lhover-wave .mgcol a::after,
+  body.lhover-wave.cnav-sub-suits #herosub .cjw::after {
+    width: round(down, 100%, 3.5px); bottom: -.26em; height: 7px;
+    background: var(--edge-deep, #b8b5b1);
+    -webkit-mask: var(--wavetrough) left center / 7px 7px repeat-x;
+            mask: var(--wavetrough) left center / 7px 7px repeat-x;
+    clip-path: inset(0 100% 0 0); transition: clip-path .22s ease-out; }
+  body.lhover-wave .mgcol a::after { bottom: 0; }
+  body.lhover-wave .mbcenter .mclink:not(.mgames)::after { bottom: calc(-.26em + 2px); }
   /* resting glossary dots live only on the hero words; every other link is
      bare and takes the plain underline on hover */
   body.lhover-dots .sitefooter a:not(:has(img))::after, body.lhover-dots .sampall::after,
@@ -3577,6 +3589,7 @@
   ];
   var LHOVERS = [
     ["suits", "Suit thread (default)"],
+    ["wave", "The fine wave, wiping in (the old hover)"],
     ["line", "Just a line, same flow-in"],
     ["lineplain", "Plain 2px underline, no animation"],
     ["dots", "Hero: glossary dots at rest; all links: plain underline on hover"]
