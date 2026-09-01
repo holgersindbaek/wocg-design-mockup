@@ -407,6 +407,22 @@
   /* the salmon reference: the equal-lightness match kept for comparison */
   .dsalmon .dsband { background: #ED5C53; box-shadow: inset 0 0 0 1px #B5463F;
     text-shadow: -1px -1px 0 #B5463F, 1px -1px 0 #B5463F, -1px 1px 0 #B5463F, 1px 1px 0 #B5463F; }
+  /* Corner cap II: the divider follows the cap (starts below it), 32px rows */
+  .dcol3 { width: 232px; height: 64px; overflow: hidden; }
+  .dcol3 .dbbody { flex: 1; display: flex; min-height: 0; }
+  .dcol3 .dbdate { border-right: none; }
+  .dcol3 .dbdate .b4band { height: 20px; font-size: 12px; letter-spacing: .14em;
+    background: #D5201E; border-bottom: none; box-shadow: inset 0 0 0 1px #A60000; color: #fff;
+    text-shadow: -1px -1px 0 #A60000, 1px -1px 0 #A60000, -1px 1px 0 #A60000, 1px 1px 0 #A60000; }
+  .dcol3 .b4num { flex: 1; font-size: 30px; border-right: 1px solid #E7E7E7; }
+  .dcol3 .nstamp { width: 22px; height: 22px; transform: translate(-50%, -50%) rotate(-10deg); }
+  .dcol3 .dbmemo .dbrow { flex: 0 0 32px; }
+  /* Corner cap II, perforated: holes on the cap's own bottom edge */
+  .dcolperf .dbdate .b4band { box-shadow: inset 0 1px 0 #A60000, inset 1px 0 0 #A60000, inset -1px 0 0 #A60000;
+    position: relative; }
+  .dcolperf .dbdate .b4band::after { content: ""; position: absolute; left: 2px; right: 2px; bottom: -2.5px; height: 5px;
+    background-image: radial-gradient(circle at 2.5px 2.5px, var(--canvas) 1.4px, rgba(0, 0, 0, .25) 1.5px 1.9px, transparent 2px);
+    background-size: 8px 5px; background-repeat: repeat-x; z-index: 1; }
   /* perforation: punched holes straddling the cap's bottom edge, no solid line there */
   .dperf .dsband { box-shadow: inset 0 1px 0 #A60000, inset 1px 0 0 #A60000, inset -1px 0 0 #A60000;
     position: relative; }
@@ -414,13 +430,13 @@
     background-image: radial-gradient(circle at 2.5px 2.5px, var(--canvas) 1.4px, rgba(0, 0, 0, .25) 1.5px 1.9px, transparent 2px);
     background-size: 8px 5px; background-repeat: repeat-x; z-index: 1; }
   /* the date in the hero's own face at the normal ink */
-  .b4page.dsolo .b4num, .b4page.dcol2 .b4num { font-family: "Gelica", "Georgia", serif; font-weight: 500; }
-  .b4page.dsolo .b4num i, .b4page.dcol2 .b4num i { color: var(--ink); opacity: 1; }
+  .b4page.dsolo .b4num, .b4page.dcol2 .b4num, .b4page.dcol3 .b4num { font-family: "Gelica", "Georgia", serif; font-weight: 500; }
+  .b4page.dsolo .b4num i, .b4page.dcol2 .b4num i, .b4page.dcol3 .b4num i { color: var(--ink); opacity: 1; }
   /* nothing below 12px in this family */
-  .dsolo .dbrow, .dcol2 .dbrow { font-size: 12px; }
-  .dsolo .dbtal, .dcol2 .dbtal, .dsolo .dbcap, .dcol2 .dbcap { font-size: 12px; }
-  .dsolo .dbrow.dbimp, .dcol2 .dbrow.dbimp { font-size: 12px; letter-spacing: .08em; }
-  .dsolo .dbfig, .dcol2 .dbfig { font-size: 13px; }
+  .dsolo .dbrow, .dcol2 .dbrow, .dcol3 .dbrow { font-size: 12px; }
+  .dsolo .dbtal, .dcol2 .dbtal, .dcol3 .dbtal, .dsolo .dbcap, .dcol2 .dbcap, .dcol3 .dbcap { font-size: 12px; }
+  .dsolo .dbrow.dbimp, .dcol2 .dbrow.dbimp, .dcol3 .dbrow.dbimp { font-size: 12px; letter-spacing: .08em; }
+  .dsolo .dbfig, .dcol2 .dbfig, .dcol3 .dbfig { font-size: 13px; }
 
   /* F4 · the day ledger (numeral left, labeled rows right) */
   .dledg { width: 188px; }
@@ -1150,6 +1166,60 @@ signed-out visitor sees no unit at all (except the calendar leaf, which shows a 
           '<span class="dsband">AUG</span>' +
           '<span class="dbbody">' +
           '<span class="dbdate"><span class="b4num"><i>20</i><span class="chk nstamp"></span></span></span>' +
+          '<span class="dbmemo">' + row1 + row2 + '</span>' +
+          '</span></span></span>';
+      } },
+    { id: "dcolfollow",
+      cap: "<b>R5 · Corner cap II</b> — the divider line now follows the cap: it starts below it, beside the numeral only. The memo rows fix at 32px each, so the sheet tightens to 64px.",
+      render: function (st) {
+        var done = st.viewer === "in" && st.ch === "done";
+        var row1, row2;
+        if (st.viewer === "out") {
+          row1 = '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+            '<span class="push"><span class="dbtal">today’s deal</span></span></span>';
+          row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+        } else {
+          row1 = done
+            ? '<span class="dbrow">' + b4box(true) + '<span class="b4strike">Deal #51</span>' +
+              '<span class="push"><span class="dbtal g">13 WON</span></span></span>'
+            : '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+              '<span class="push"><span class="dbtal">12 WON</span></span></span>';
+          if (st.bd === "none") row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+          else if (st.bd === "rest") row2 = '<span class="dbrow"><span class="dbcap">SPADES</span>' +
+            '<span class="push"><span class="dbfig">1,581</span></span></span>';
+          else row2 = '<span class="dbrow"><span>No. 23 · Spades</span><span class="push">' + chipFor(st.bd) + '</span></span>';
+        }
+        return CAPSULE_STOCK + '<span class="bigrow"><span class="b4page dcol3' + (done ? " done" : "") + '">' +
+          '<span class="dbbody">' +
+          '<span class="dbdate"><span class="b4band">AUG</span>' +
+          '<span class="b4num"><i>20</i><span class="chk nstamp"></span></span></span>' +
+          '<span class="dbmemo">' + row1 + row2 + '</span>' +
+          '</span></span></span>';
+      } },
+    { id: "dcolfollowperf",
+      cap: "<b>R6 · Corner cap II, perforated</b> — R5 with the punched holes on the cap's own bottom edge, cap-width only.",
+      render: function (st) {
+        var done = st.viewer === "in" && st.ch === "done";
+        var row1, row2;
+        if (st.viewer === "out") {
+          row1 = '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+            '<span class="push"><span class="dbtal">today’s deal</span></span></span>';
+          row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+        } else {
+          row1 = done
+            ? '<span class="dbrow">' + b4box(true) + '<span class="b4strike">Deal #51</span>' +
+              '<span class="push"><span class="dbtal g">13 WON</span></span></span>'
+            : '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+              '<span class="push"><span class="dbtal">12 WON</span></span></span>';
+          if (st.bd === "none") row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+          else if (st.bd === "rest") row2 = '<span class="dbrow"><span class="dbcap">SPADES</span>' +
+            '<span class="push"><span class="dbfig">1,581</span></span></span>';
+          else row2 = '<span class="dbrow"><span>No. 23 · Spades</span><span class="push">' + chipFor(st.bd) + '</span></span>';
+        }
+        return CAPSULE_STOCK + '<span class="bigrow"><span class="b4page dcol3 dcolperf' + (done ? " done" : "") + '">' +
+          '<span class="dbbody">' +
+          '<span class="dbdate"><span class="b4band">AUG</span>' +
+          '<span class="b4num"><i>20</i><span class="chk nstamp"></span></span></span>' +
           '<span class="dbmemo">' + row1 + row2 + '</span>' +
           '</span></span></span>';
       } },
