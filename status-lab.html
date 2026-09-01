@@ -440,6 +440,18 @@
   .dcolhead .dbmemo .dshead { flex: 0 0 20px; display: flex; align-items: center; padding: 0 10px;
     font-size: 12px; font-weight: bold; letter-spacing: .08em; color: #A63A31; background: #F8D3CE;
     box-shadow: inset 0 -1px 0 #F0BCB5; }
+  /* the ticket family: a vertical perforation divides the calendar from
+     the status stub, airline style */
+  .dtick .b4num { border-right: none; }
+  .dtickholes::before { content: ""; position: absolute; top: 2px; bottom: 2px; left: 61px; width: 5px;
+    z-index: 2; background-image: radial-gradient(circle at 2.5px 4px, var(--canvas) 1.4px, rgba(0, 0, 0, .25) 1.5px 1.9px, transparent 2px);
+    background-size: 5px 8px; background-repeat: repeat-y; }
+  .dticknotch::before { content: ""; position: absolute; top: 0; bottom: 0; left: 63px; width: 1px;
+    z-index: 2; background: repeating-linear-gradient(180deg, rgba(0, 0, 0, .30) 0 4px, transparent 4px 8px); }
+  .dticknotch .tnotch { position: absolute; left: 59px; width: 9px; height: 9px; border-radius: 50%;
+    background: var(--canvas); box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .14); z-index: 3; }
+  .dticknotch .tnotch.tn1 { top: -5px; }
+  .dticknotch .tnotch.tn2 { bottom: -5px; }
   /* the flip family: the cap is bound at the top, the page flips over */
   .dcol3.dflip { overflow: visible; }
   .dflip .dbdate { position: relative; }
@@ -1426,6 +1438,60 @@ signed-out visitor sees no unit at all (except the calendar leaf, which shows a 
           '<span class="dbdate"><span class="b4band">AUG</span>' +
           '<span class="b4num"><i>20</i><span class="chk nstamp"></span></span></span>' +
           '<span class="dbmemo"><span class="dshead">SPADES TODAY</span>' + row1 + row2 + '</span>' +
+          '</span></span></span>';
+      } },
+    { id: "dticket",
+      cap: "<b>R18 · The ticket</b> — R6 with a second perforation running vertically between the calendar and the status side: the same punched holes, so the right half reads as a stub you could rip off.",
+      render: function (st) {
+        var done = st.viewer === "in" && st.ch === "done";
+        var row1, row2;
+        if (st.viewer === "out") {
+          row1 = '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+            '<span class="push"><span class="dbtal">today’s deal</span></span></span>';
+          row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+        } else {
+          row1 = done
+            ? '<span class="dbrow">' + b4box(true) + '<span class="b4strike">Deal #51</span>' +
+              '<span class="push"><span class="dbtal g">13 WON</span></span></span>'
+            : '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+              '<span class="push"><span class="dbtal">12 WON</span></span></span>';
+          if (st.bd === "none") row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+          else if (st.bd === "rest") row2 = '<span class="dbrow"><span class="dbcap">SPADES</span>' +
+            '<span class="push"><span class="dbfig">1,581</span></span></span>';
+          else row2 = '<span class="dbrow"><span>No. 23 · Spades</span><span class="push">' + chipFor(st.bd) + '</span></span>';
+        }
+        return CAPSULE_STOCK + '<span class="bigrow"><span class="b4page dcol3 dcolperf dtick dtickholes' + (done ? " done" : "") + '">' +
+          '<span class="dbbody">' +
+          '<span class="dbdate"><span class="b4band">AUG</span>' +
+          '<span class="b4num"><i>20</i><span class="chk nstamp"></span></span></span>' +
+          '<span class="dbmemo">' + row1 + row2 + '</span>' +
+          '</span></span></span>';
+      } },
+    { id: "dboarding",
+      cap: "<b>R19 · The boarding pass</b> — the micro-hole cap with the airline treatment on the divide: a fine dashed tear line plus the two edge notches where the rip starts.",
+      render: function (st) {
+        var done = st.viewer === "in" && st.ch === "done";
+        var row1, row2;
+        if (st.viewer === "out") {
+          row1 = '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+            '<span class="push"><span class="dbtal">today’s deal</span></span></span>';
+          row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+        } else {
+          row1 = done
+            ? '<span class="dbrow">' + b4box(true) + '<span class="b4strike">Deal #51</span>' +
+              '<span class="push"><span class="dbtal g">13 WON</span></span></span>'
+            : '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+              '<span class="push"><span class="dbtal">12 WON</span></span></span>';
+          if (st.bd === "none") row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+          else if (st.bd === "rest") row2 = '<span class="dbrow"><span class="dbcap">SPADES</span>' +
+            '<span class="push"><span class="dbfig">1,581</span></span></span>';
+          else row2 = '<span class="dbrow"><span>No. 23 · Spades</span><span class="push">' + chipFor(st.bd) + '</span></span>';
+        }
+        return CAPSULE_STOCK + '<span class="bigrow"><span class="b4page dcol3 dperfmicro dtick dticknotch' + (done ? " done" : "") + '">' +
+          '<span class="tnotch tn1"></span><span class="tnotch tn2"></span><span class="dbbody">' +
+          '<span class="dbdate"><span class="b4band">AUG</span>' +
+          '<span class="b4num"><i>20</i><span class="chk nstamp"></span></span></span>' +
+          '<span class="dbmemo">' + row1 + row2 + '</span>' +
           '</span></span></span>';
       } },
     { id: "dflippins",
