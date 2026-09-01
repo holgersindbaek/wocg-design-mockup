@@ -386,6 +386,24 @@
   @keyframes dbTear { to { transform: translate(30px, -46px) rotate(-6deg); opacity: 0; } }
   .dbsheet.tearing { animation: dbTear 350ms ease-in forwards; }
 
+  /* G · the desk block refined: one sheet, red cap in the green button's clothes */
+  .dsolo { width: 208px; height: 82px; overflow: hidden; }
+  .dsolo .dsband { height: 20px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+    background: #ED5C53; box-shadow: inset 0 0 0 1px #B5463F;
+    font-size: 12px; font-weight: bold; letter-spacing: .14em; line-height: 20px; color: #fff;
+    text-shadow: -1px -1px 0 #B5463F, 1px -1px 0 #B5463F, -1px 1px 0 #B5463F, 1px 1px 0 #B5463F; }
+  .dsolo .dbbody { flex: 1; display: flex; min-height: 0; }
+  .dsolo .dbdate { justify-content: center; }
+  .dsolo .b4num { flex: 1; font-size: 30px; }
+  .dsolo .nstamp { width: 24px; height: 24px; transform: translate(-50%, -50%) rotate(-10deg); }
+  .dcol2 .dbbody { flex: 1; display: flex; min-height: 0; }
+  .dcol2 .dbdate .b4band { height: 20px; font-size: 11px; letter-spacing: .14em;
+    background: #ED5C53; border-bottom: none; box-shadow: inset 0 0 0 1px #B5463F; color: #fff;
+    text-shadow: -1px -1px 0 #B5463F, 1px -1px 0 #B5463F, -1px 1px 0 #B5463F, 1px 1px 0 #B5463F; }
+  .dcol2 .b4num { flex: 1; font-size: 30px; }
+  .dcol2 .nstamp { width: 24px; height: 24px; transform: translate(-50%, -50%) rotate(-10deg); }
+  .dperf .dbbody { border-top: 1px dashed #D8D2C7; }
+
   /* F4 · the day ledger (numeral left, labeled rows right) */
   .dledg { width: 188px; }
   .dledg .b4band { height: 24px; font-size: 10px; letter-spacing: .1em; }
@@ -892,6 +910,87 @@ signed-out visitor sees no unit at all (except the calendar leaf, which shows a 
               '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span></span></span>';
           });
         });
+      } },
+    { id: "dsoloband",
+      cap: "<b>G1 · The desk block, one sheet</b> — F3 stripped to a single page: no stacked edges, no torn remnant, no weekday. The red cap runs the full width at 20px (the nameplate height) in the green button's exact clothes: same lightness and chroma in red, white lettering with the darker-ring outline.",
+      render: function (st) {
+        var done = st.viewer === "in" && st.ch === "done";
+        var row1, row2;
+        if (st.viewer === "out") {
+          row1 = '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+            '<span class="push"><span class="dbtal">today’s deal</span></span></span>';
+          row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+        } else {
+          row1 = done
+            ? '<span class="dbrow">' + b4box(true) + '<span class="b4strike">Deal #51</span>' +
+              '<span class="push"><span class="dbtal g">13 WON</span></span></span>'
+            : '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+              '<span class="push"><span class="dbtal">12 WON</span></span></span>';
+          if (st.bd === "none") row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+          else if (st.bd === "rest") row2 = '<span class="dbrow"><span class="dbcap">SPADES</span>' +
+            '<span class="push"><span class="dbfig">1,581</span></span></span>';
+          else row2 = '<span class="dbrow"><span>No. 23 · Spades</span><span class="push">' + chipFor(st.bd) + '</span></span>';
+        }
+        return CAPSULE_STOCK + '<span class="bigrow"><span class="b4page dsolo' + (done ? " done" : "") + '">' +
+          '<span class="dsband">AUG</span>' +
+          '<span class="dbbody">' +
+          '<span class="dbdate"><span class="b4num"><i>20</i><span class="chk nstamp"></span></span></span>' +
+          '<span class="dbmemo">' + row1 + row2 + '</span>' +
+          '</span></span></span>';
+      } },
+    { id: "dsolocol",
+      cap: "<b>G2 · One sheet, corner cap</b> — the same single page but the red cap stays where F3 had it, over the date column only, 20px tall. The memo rows get the full height beside it.",
+      render: function (st) {
+        var done = st.viewer === "in" && st.ch === "done";
+        var row1, row2;
+        if (st.viewer === "out") {
+          row1 = '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+            '<span class="push"><span class="dbtal">today’s deal</span></span></span>';
+          row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+        } else {
+          row1 = done
+            ? '<span class="dbrow">' + b4box(true) + '<span class="b4strike">Deal #51</span>' +
+              '<span class="push"><span class="dbtal g">13 WON</span></span></span>'
+            : '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+              '<span class="push"><span class="dbtal">12 WON</span></span></span>';
+          if (st.bd === "none") row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+          else if (st.bd === "rest") row2 = '<span class="dbrow"><span class="dbcap">SPADES</span>' +
+            '<span class="push"><span class="dbfig">1,581</span></span></span>';
+          else row2 = '<span class="dbrow"><span>No. 23 · Spades</span><span class="push">' + chipFor(st.bd) + '</span></span>';
+        }
+        return CAPSULE_STOCK + '<span class="bigrow"><span class="b4page dcol2' + (done ? " done" : "") + '">' +
+          '<span class="dbbody">' +
+          '<span class="dbdate"><span class="b4band">AUG</span>' +
+          '<span class="b4num"><i>20</i><span class="chk nstamp"></span></span></span>' +
+          '<span class="dbmemo">' + row1 + row2 + '</span>' +
+          '</span></span></span>';
+      } },
+    { id: "dsoloperf",
+      cap: "<b>G3 · One sheet, perforated</b> — G1 plus a single dashed perforation line under the red cap: the tear-off promise told in one line instead of stacked paper.",
+      render: function (st) {
+        var done = st.viewer === "in" && st.ch === "done";
+        var row1, row2;
+        if (st.viewer === "out") {
+          row1 = '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+            '<span class="push"><span class="dbtal">today’s deal</span></span></span>';
+          row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+        } else {
+          row1 = done
+            ? '<span class="dbrow">' + b4box(true) + '<span class="b4strike">Deal #51</span>' +
+              '<span class="push"><span class="dbtal g">13 WON</span></span></span>'
+            : '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+              '<span class="push"><span class="dbtal">12 WON</span></span></span>';
+          if (st.bd === "none") row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+          else if (st.bd === "rest") row2 = '<span class="dbrow"><span class="dbcap">SPADES</span>' +
+            '<span class="push"><span class="dbfig">1,581</span></span></span>';
+          else row2 = '<span class="dbrow"><span>No. 23 · Spades</span><span class="push">' + chipFor(st.bd) + '</span></span>';
+        }
+        return CAPSULE_STOCK + '<span class="bigrow"><span class="b4page dsolo dperf' + (done ? " done" : "") + '">' +
+          '<span class="dsband">AUG</span>' +
+          '<span class="dbbody">' +
+          '<span class="dbdate"><span class="b4num"><i>20</i><span class="chk nstamp"></span></span></span>' +
+          '<span class="dbmemo">' + row1 + row2 + '</span>' +
+          '</span></span></span>';
       } },
     { id: "dayledger",
       cap: "<b>F4 · The day ledger</b> — the fastest 'where do I stand': labeled rows in fixed positions, each its own door. Done REPLACES the task with the result ('Better than 62%') — the result is the confirmation. And the best guest copy in the field: 'Everyone plays deal #51.'",
