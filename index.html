@@ -880,7 +880,15 @@
     border-left: 1px solid rgba(229, 229, 229, .8);
     font-family: -apple-system, "Helvetica Neue", Arial, sans-serif;
   }
-  .switchzone:hover ~ .switchbar, .switchbar:hover, .switchbar:focus-within { transform: translateX(0); }
+  /* hovering the zone opens the bar; it stays pinned until a click lands
+     outside it */
+  .switchbar.isOpen, .switchbar:focus-within { transform: translateX(0); }
+  .swadv { margin-top: 22px; }
+  .swadv summary { cursor: pointer; font-size: 14px; font-weight: 700; color: #888;
+    padding-bottom: 5px; border-bottom: 1px solid #e5e5e5; list-style: none; }
+  .swadv summary::before { content: "\25B8  "; font-size: 11px; }
+  .swadv[open] summary::before { content: "\25BE  "; }
+  .swadv > .swgroup:first-of-type { margin-top: 16px; }
   .swgroup { margin-bottom: 22px; }
   .swgroup:last-child { margin-bottom: 0; }
   .swhead { font-size: 14px; font-weight: 700; color: #222222; margin-bottom: 10px;
@@ -2760,41 +2768,47 @@
 <div class="switchzone"></div>
 <div class="switchbar">
   <div class="swgroup">
-    <div class="swhead">Look</div>
+    <div class="swhead">In play</div>
     <label class="ctl"><span>Viewer</span><select id="sel-viewer"></select></label>
     <label class="ctl"><span>Signed-in copy</span><select id="sel-pcopy"></select></label>
-    <label class="ctl"><span>Color scheme</span><select id="sel-base"></select></label>
-    <button type="button" class="swbtn" id="palette-toggle">Show scheme swatches (bottom of page)</button>
-    <label class="ctl"><span>Avatar edge</span><select id="sel-avedge"></select></label>
-    <label class="ctl"><span>Avatar shadow</span><select id="sel-avshadow"></select></label>
-    <label class="ctl"><span>Heading font</span><select id="sel-font"></select></label>
-    <label class="ctl"><span>Texture</span><select id="sel-texture"></select></label>
-  </div>
-  <div class="swgroup">
-    <div class="swhead">Game tiles</div>
-    <label class="ctl"><span>Tile artwork</span><select id="sel-play"></select></label>
-    <label class="ctl"><span>Hero layout</span><select id="sel-layout"></select></label>
-    <label class="ctl"><span>Tile shadow</span><select id="sel-shadow"></select></label>
-    <label class="ctl"><span>Tile edge</span><select id="sel-edge"></select></label>
     <label class="ctl"><span>★ Tile colors</span><select id="sel-tilebg"></select></label>
-    <label class="ctl"><span>Live counter</span><select id="sel-counter"></select></label>
     <label class="ctl"><span>★ Play button</span><select id="sel-playbtn"></select></label>
-  </div>
-  <div class="swgroup">
-    <div class="swhead">Page</div>
-    <label class="ctl"><span>Category nav</span><select id="sel-cnav"></select></label>
-    <label class="ctl"><span>Category copy</span><select id="sel-ccopy"></select></label>
-    <label class="ctl"><span>Footer</span><select id="sel-footer"></select></label>
-    <label class="ctl"><span>Catalog layout</span><select id="sel-catalog"></select></label>
-    <label class="ctl"><span>Ad rail</span><select id="sel-rail"></select></label>
-    <label class="ctl"><span>Live stats</span><select id="sel-stats"></select></label>
-    <label class="ctl"><span>Menu bar</span><select id="sel-menu"></select></label>
-    <label class="ctl"><span>Sections</span><select id="sel-sect"></select></label>
     <label class="ctl"><span>★ Divider</span><select id="sel-divider"></select></label>
     <label class="ctl"><span>Link hover</span><select id="sel-lhover"></select></label>
+    <label class="ctl"><span>Category nav</span><select id="sel-cnav"></select></label>
+    <label class="ctl"><span>Category copy</span><select id="sel-ccopy"></select></label>
     <label class="ctl"><span>Hero title</span><select id="titlesel"></select></label>
     <label class="ctl"><span>Hero subtitle</span><select id="subsel"></select></label>
   </div>
+  <details class="swadv">
+    <summary>Advanced — settled settings</summary>
+    <div class="swgroup">
+      <div class="swhead">Look</div>
+      <label class="ctl"><span>Color scheme</span><select id="sel-base"></select></label>
+      <button type="button" class="swbtn" id="palette-toggle">Show scheme swatches (bottom of page)</button>
+      <label class="ctl"><span>Avatar edge</span><select id="sel-avedge"></select></label>
+      <label class="ctl"><span>Avatar shadow</span><select id="sel-avshadow"></select></label>
+      <label class="ctl"><span>Heading font</span><select id="sel-font"></select></label>
+      <label class="ctl"><span>Texture</span><select id="sel-texture"></select></label>
+    </div>
+    <div class="swgroup">
+      <div class="swhead">Game tiles</div>
+      <label class="ctl"><span>Tile artwork</span><select id="sel-play"></select></label>
+      <label class="ctl"><span>Hero layout</span><select id="sel-layout"></select></label>
+      <label class="ctl"><span>Tile shadow</span><select id="sel-shadow"></select></label>
+      <label class="ctl"><span>Tile edge</span><select id="sel-edge"></select></label>
+      <label class="ctl"><span>Live counter</span><select id="sel-counter"></select></label>
+    </div>
+    <div class="swgroup">
+      <div class="swhead">Page</div>
+      <label class="ctl"><span>Footer</span><select id="sel-footer"></select></label>
+      <label class="ctl"><span>Catalog layout</span><select id="sel-catalog"></select></label>
+      <label class="ctl"><span>Ad rail</span><select id="sel-rail"></select></label>
+      <label class="ctl"><span>Live stats</span><select id="sel-stats"></select></label>
+      <label class="ctl"><span>Menu bar</span><select id="sel-menu"></select></label>
+      <label class="ctl"><span>Sections</span><select id="sel-sect"></select></label>
+    </div>
+  </details>
 </div>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -4631,6 +4645,14 @@
   buildSel("sel-sect", SECTS, function (v) { curSect = v; });
   buildSel("sel-divider", DIVIDERS, function (v) { curDivider = v; });
   buildSel("sel-lhover", LHOVERS, function (v) { curLhover = v; });
+  (function () {
+    var bar = document.querySelector(".switchbar");
+    var zone = document.querySelector(".switchzone");
+    zone.addEventListener("mouseenter", function () { bar.classList.add("isOpen"); });
+    document.addEventListener("mousedown", function (e) {
+      if (!bar.contains(e.target) && !zone.contains(e.target)) bar.classList.remove("isOpen");
+    });
+  })();
   buildSel("sel-counter", COUNTERS, function (v) { curCounter = v; });
   buildSel("sel-rail", RAILS, function (v) { curRail = v; });
   buildSel("sel-playbtn", PLAYBTNS, function (v) { curPlayBtn = v; });
