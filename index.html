@@ -686,6 +686,17 @@
       background-size: 128px 128px, 100% 100% !important; }
   }
 
+  /* ===== Pinochle pair test bench: overrides the pair on top of any
+     tile-colors mode; Pinochle wears the darker step ===== */
+  body.pinpair-plum .gimg:has(> .glogo[alt="Pinochle"]) { background-color: #5d2d5e !important; }
+  body.pinpair-plum .gimg:has(> .glogo[alt="Double Deck Pinochle"]) { background-color: #854384 !important; }
+  body.pinpair-graphite .gimg:has(> .glogo[alt="Pinochle"]) { background-color: #363e49 !important; }
+  body.pinpair-graphite .gimg:has(> .glogo[alt="Double Deck Pinochle"]) { background-color: #5a6474 !important; }
+  body.pinpair-petrol .gimg:has(> .glogo[alt="Pinochle"]) { background-color: #004d58 !important; }
+  body.pinpair-petrol .gimg:has(> .glogo[alt="Double Deck Pinochle"]) { background-color: #007b88 !important; }
+  body.pinpair-cocoa .gimg:has(> .glogo[alt="Pinochle"]) { background-color: #592d12 !important; }
+  body.pinpair-cocoa .gimg:has(> .glogo[alt="Double Deck Pinochle"]) { background-color: #9c6238 !important; }
+
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
     font-family: "BuloRounded", "Verdana", "Arial", "Helvetica", sans-serif;
@@ -2793,6 +2804,7 @@
     <div class="swhead">In play</div>
     <label class="ctl"><span>Viewer</span><select id="sel-viewer"></select></label>
     <label class="ctl"><span>Tile colors</span><select id="sel-tilebg"></select></label>
+    <label class="ctl"><span>★ Pinochle pair</span><select id="sel-pinpair"></select></label>
     <label class="ctl"><span>Play button</span><select id="sel-playbtn"></select></label>
     <label class="ctl"><span>Divider</span><select id="sel-divider"></select></label>
     <label class="ctl"><span>Sections</span><select id="sel-sect"></select></label>
@@ -3586,6 +3598,13 @@
     ["cards", "Cards on canvas"],
     ["suits", "Suit-print band"]
   ];
+  var PINPAIRS = [
+    ["coral", "Coral & brick (current)"],
+    ["plum", "Plum & aubergine"],
+    ["graphite", "Graphite & ink"],
+    ["petrol", "Petrol & deep sea"],
+    ["cocoa", "Cocoa & copper"]
+  ];
   var TILEBGS = [
     ["slots", "Palette slots (as before)", "Base"],
     ["raph", "Raphael icon colors", "Base"],
@@ -3630,7 +3649,7 @@
     ["ghostdot", "Ghost: still dot + naked number"],
     ["ghostnum", "Ghost: naked number only (big tile keeps its word)"]
   ];
-  var curShadow = "soft", curEdge = "softlight", curTexture = "grain", curCatalog = "split", curStats = "capsule2", curMenu = "centerwave", curCounter = "ghostdot", curRail = "suits", curPlayBtn = "evernote", curTileBg = "cardroomcusp", curSect = "waveband", curDivider = "longdealopt", curLhover = "suits";
+  var curShadow = "soft", curEdge = "softlight", curTexture = "grain", curCatalog = "split", curStats = "capsule2", curMenu = "centerwave", curCounter = "ghostdot", curRail = "suits", curPlayBtn = "evernote", curTileBg = "cardroomcusp", curPinPair = "coral", curSect = "waveband", curDivider = "longdealopt", curLhover = "suits";
   /* every CSS blend mode as an avatar-rim coat: one filter per mode is stamped
      into the SVG defs (same eroded rim, #737373 @ .9 ink, only feBlend's mode
      changes) plus a matching mix-blend ring for the invitee circles */
@@ -4417,7 +4436,7 @@
   }
   function applyBody() {
     var scene = curLayout.indexOf("sc") === 0;
-    document.body.className = curBase + " play-" + curPlay + " layout-" + curLayout + (scene ? " scenehero" : "") + " font-" + curFont + " shadow-" + curShadow + " edge-" + curEdge + " tex-" + curTexture + " cat-" + curCatalog + " stats-" + curStats + " menu-" + curMenu + " counter-" + curCounter + " rail-" + curRail + " playbtn-" + curPlayBtn + " avedge-" + curAvedge + " avsh-" + curAvshadow + " cnav-" + curCnav + " foot-" + curFooter + " viewer-" + curViewer + " sect-" + curSect + " div-" + curDivider + " lhover-" + curLhover + " tilebg-" + curTileBg + (palShown ? " show-palette" : "");
+    document.body.className = curBase + " play-" + curPlay + " layout-" + curLayout + (scene ? " scenehero" : "") + " font-" + curFont + " shadow-" + curShadow + " edge-" + curEdge + " tex-" + curTexture + " cat-" + curCatalog + " stats-" + curStats + " menu-" + curMenu + " counter-" + curCounter + " rail-" + curRail + " playbtn-" + curPlayBtn + " avedge-" + curAvedge + " avsh-" + curAvshadow + " cnav-" + curCnav + " foot-" + curFooter + " viewer-" + curViewer + " sect-" + curSect + " div-" + curDivider + " lhover-" + curLhover + " tilebg-" + curTileBg + " pinpair-" + curPinPair + (palShown ? " show-palette" : "");
     var ht = document.getElementById("herotitle"), hs = document.getElementById("herosub");
     if (scene) {
       if (curLayout === "scpyr") {
@@ -4453,6 +4472,7 @@
     document.getElementById("sel-rail").value = curRail;
     document.getElementById("sel-playbtn").value = curPlayBtn;
     document.getElementById("sel-tilebg").value = curTileBg;
+    document.getElementById("sel-pinpair").value = curPinPair;
     document.getElementById("sel-avedge").value = curAvedge;
     document.getElementById("sel-avshadow").value = curAvshadow;
     document.getElementById("sel-cnav").value = curCnav;
@@ -4682,6 +4702,7 @@
   buildSel("sel-rail", RAILS, function (v) { curRail = v; });
   buildSel("sel-playbtn", PLAYBTNS, function (v) { curPlayBtn = v; });
   buildSel("sel-tilebg", TILEBGS, function (v) { curTileBg = v; });
+  buildSel("sel-pinpair", PINPAIRS, function (v) { curPinPair = v; });
   buildSel("sel-avedge", AVEDGES, function (v) { curAvedge = v; });
   buildSel("sel-avshadow", AVSHADOWS, function (v) { curAvshadow = v; });
   buildSel("sel-cnav", CNAVS, function (v) { curCnav = v; });
