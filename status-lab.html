@@ -423,6 +423,17 @@
   .dcolperf .dbdate .b4band::after { content: ""; position: absolute; left: 2px; right: 2px; bottom: -2.5px; height: 5px;
     background-image: radial-gradient(circle at 2.5px 2.5px, var(--canvas) 1.4px, rgba(0, 0, 0, .25) 1.5px 1.9px, transparent 2px);
     background-size: 8px 5px; background-repeat: repeat-x; z-index: 1; }
+  /* perforation studies on the corner cap */
+  .dperfdash .dbdate .b4band, .dperfstamp .dbdate .b4band, .dperfmicro .dbdate .b4band {
+    box-shadow: inset 0 1px 0 #A60000, inset 1px 0 0 #A60000, inset -1px 0 0 #A60000; position: relative; }
+  .dperfdash .dbdate .b4band::after { content: ""; position: absolute; left: 2px; right: 2px; bottom: -1px;
+    height: 2px; background: repeating-linear-gradient(90deg, rgba(0, 0, 0, .30) 0 5px, transparent 5px 9px); }
+  .dperfstamp .dbdate .b4band::after { content: ""; position: absolute; left: 0; right: 0; bottom: -2px;
+    height: 4px; background-image: radial-gradient(circle at 2px 2px, #fff 1.7px, transparent 1.9px);
+    background-size: 7px 4px; background-repeat: repeat-x; }
+  .dperfmicro .dbdate .b4band::after { content: ""; position: absolute; left: 2px; right: 2px; bottom: -1.5px;
+    height: 3px; background-image: radial-gradient(circle at 1.5px 1.5px, var(--canvas) .9px, rgba(0, 0, 0, .28) 1px 1.2px, transparent 1.3px);
+    background-size: 4px 3px; background-repeat: repeat-x; }
   /* the flip family: the cap is bound at the top, the page flips over */
   .dcol3.dflip { overflow: visible; }
   .dflip .dbdate { position: relative; }
@@ -437,14 +448,7 @@
   /* R9-R12: the feedback round. Pegs at the fold (the page hangs from the
      cap), pegs contained in the cap, the F6 page without the stub, and the
      whole object as the button. */
-  .dfold .dbdate, .dintop .dbdate { position: relative; }
-  .dfold .fpeg, .dintop .fpeg { position: absolute; width: 5px; height: 10px; border-radius: 2.5px;
-    background: #33383F; z-index: 2; }
-  .dfold .fpeg { top: 15px; }
-  .dintop .fpeg { top: 2px; }
-  .dfold .fpeg.p1, .dintop .fpeg.p1 { left: 15px; }
-  .dfold .fpeg.p2, .dintop .fpeg.p2 { left: 44px; }
-  .dpage { width: 200px; height: 84px; overflow: hidden; }
+  .dpage { width: 216px; height: 84px; overflow: hidden; }
   .dpage .dbbody { flex: 1; display: flex; min-height: 0; }
   .dpage .dbdate { width: 64px; border-right: 1px solid #E7E7E7; justify-content: center; flex-shrink: 0;
     display: flex; flex-direction: column; }
@@ -1283,6 +1287,87 @@ signed-out visitor sees no unit at all (except the calendar leaf, which shows a 
           '<span class="dbmemo">' + row1 + row2 + '</span>' +
           '</span></span></span>';
       } },
+    { id: "dperfdash2",
+      cap: "<b>R13 · Perforation: cut dashes</b> — the tear line as short dark slits along the cap's edge, the die-cut look.",
+      render: function (st) {
+        var done = st.viewer === "in" && st.ch === "done";
+        var row1, row2;
+        if (st.viewer === "out") {
+          row1 = '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+            '<span class="push"><span class="dbtal">today’s deal</span></span></span>';
+          row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+        } else {
+          row1 = done
+            ? '<span class="dbrow">' + b4box(true) + '<span class="b4strike">Deal #51</span>' +
+              '<span class="push"><span class="dbtal g">13 WON</span></span></span>'
+            : '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+              '<span class="push"><span class="dbtal">12 WON</span></span></span>';
+          if (st.bd === "none") row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+          else if (st.bd === "rest") row2 = '<span class="dbrow"><span class="dbcap">SPADES</span>' +
+            '<span class="push"><span class="dbfig">1,581</span></span></span>';
+          else row2 = '<span class="dbrow"><span>No. 23 · Spades</span><span class="push">' + chipFor(st.bd) + '</span></span>';
+        }
+        return CAPSULE_STOCK + '<span class="bigrow"><span class="b4page dcol3 dperfdash' + (done ? " done" : "") + '">' +
+          '<span class="dbbody">' +
+          '<span class="dbdate"><span class="b4band">AUG</span>' +
+          '<span class="b4num"><i>20</i><span class="chk nstamp"></span></span></span>' +
+          '<span class="dbmemo">' + row1 + row2 + '</span>' +
+          '</span></span></span>';
+      } },
+    { id: "dperfstamp2",
+      cap: "<b>R14 · Perforation: stamp notches</b> — white half-circles bitten out of the cap's bottom, the postage-stamp edge.",
+      render: function (st) {
+        var done = st.viewer === "in" && st.ch === "done";
+        var row1, row2;
+        if (st.viewer === "out") {
+          row1 = '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+            '<span class="push"><span class="dbtal">today’s deal</span></span></span>';
+          row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+        } else {
+          row1 = done
+            ? '<span class="dbrow">' + b4box(true) + '<span class="b4strike">Deal #51</span>' +
+              '<span class="push"><span class="dbtal g">13 WON</span></span></span>'
+            : '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+              '<span class="push"><span class="dbtal">12 WON</span></span></span>';
+          if (st.bd === "none") row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+          else if (st.bd === "rest") row2 = '<span class="dbrow"><span class="dbcap">SPADES</span>' +
+            '<span class="push"><span class="dbfig">1,581</span></span></span>';
+          else row2 = '<span class="dbrow"><span>No. 23 · Spades</span><span class="push">' + chipFor(st.bd) + '</span></span>';
+        }
+        return CAPSULE_STOCK + '<span class="bigrow"><span class="b4page dcol3 dperfstamp' + (done ? " done" : "") + '">' +
+          '<span class="dbbody">' +
+          '<span class="dbdate"><span class="b4band">AUG</span>' +
+          '<span class="b4num"><i>20</i><span class="chk nstamp"></span></span></span>' +
+          '<span class="dbmemo">' + row1 + row2 + '</span>' +
+          '</span></span></span>';
+      } },
+    { id: "dperfmicro2",
+      cap: "<b>R15 · Perforation: micro holes</b> — the punch line finer and denser, quieter at a glance.",
+      render: function (st) {
+        var done = st.viewer === "in" && st.ch === "done";
+        var row1, row2;
+        if (st.viewer === "out") {
+          row1 = '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+            '<span class="push"><span class="dbtal">today’s deal</span></span></span>';
+          row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+        } else {
+          row1 = done
+            ? '<span class="dbrow">' + b4box(true) + '<span class="b4strike">Deal #51</span>' +
+              '<span class="push"><span class="dbtal g">13 WON</span></span></span>'
+            : '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+              '<span class="push"><span class="dbtal">12 WON</span></span></span>';
+          if (st.bd === "none") row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+          else if (st.bd === "rest") row2 = '<span class="dbrow"><span class="dbcap">SPADES</span>' +
+            '<span class="push"><span class="dbfig">1,581</span></span></span>';
+          else row2 = '<span class="dbrow"><span>No. 23 · Spades</span><span class="push">' + chipFor(st.bd) + '</span></span>';
+        }
+        return CAPSULE_STOCK + '<span class="bigrow"><span class="b4page dcol3 dperfmicro' + (done ? " done" : "") + '">' +
+          '<span class="dbbody">' +
+          '<span class="dbdate"><span class="b4band">AUG</span>' +
+          '<span class="b4num"><i>20</i><span class="chk nstamp"></span></span></span>' +
+          '<span class="dbmemo">' + row1 + row2 + '</span>' +
+          '</span></span></span>';
+      } },
     { id: "dflippins",
       cap: "<b>R7 · Flip pins</b> — not a tear-off but a flip calendar: two pegs bind the red cap at the top, the way the page flips over. Binding on the left cap only.",
       render: function (st) {
@@ -1337,60 +1422,6 @@ signed-out visitor sees no unit at all (except the calendar leaf, which shows a 
           '<span class="dbmemo">' + row1 + row2 + '</span>' +
           '</span></span></span>';
       } },
-    { id: "dfoldpins",
-      cap: "<b>R9 · Pins at the fold</b> — the binding sits where the perforation was: the page hangs from the cap on two pegs, which is how a real flip calendar works. Everything stays inside the container.",
-      render: function (st) {
-        var done = st.viewer === "in" && st.ch === "done";
-        var row1, row2;
-        if (st.viewer === "out") {
-          row1 = '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
-            '<span class="push"><span class="dbtal">today’s deal</span></span></span>';
-          row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
-        } else {
-          row1 = done
-            ? '<span class="dbrow">' + b4box(true) + '<span class="b4strike">Deal #51</span>' +
-              '<span class="push"><span class="dbtal g">13 WON</span></span></span>'
-            : '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
-              '<span class="push"><span class="dbtal">12 WON</span></span></span>';
-          if (st.bd === "none") row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
-          else if (st.bd === "rest") row2 = '<span class="dbrow"><span class="dbcap">SPADES</span>' +
-            '<span class="push"><span class="dbfig">1,581</span></span></span>';
-          else row2 = '<span class="dbrow"><span>No. 23 · Spades</span><span class="push">' + chipFor(st.bd) + '</span></span>';
-        }
-        return CAPSULE_STOCK + '<span class="bigrow"><span class="b4page dcol3 dfold' + (done ? " done" : "") + '">' +
-          '<span class="dbbody">' +
-          '<span class="dbdate"><span class="fpeg p1"></span><span class="fpeg p2"></span><span class="b4band">AUG</span>' +
-          '<span class="b4num"><i>20</i><span class="chk nstamp"></span></span></span>' +
-          '<span class="dbmemo">' + row1 + row2 + '</span>' +
-          '</span></span></span>';
-      } },
-    { id: "dinpins",
-      cap: "<b>R10 · Pins in the cap</b> — R7 contained: the pegs hang from the cap's top edge inside the red, nothing extends past the container.",
-      render: function (st) {
-        var done = st.viewer === "in" && st.ch === "done";
-        var row1, row2;
-        if (st.viewer === "out") {
-          row1 = '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
-            '<span class="push"><span class="dbtal">today’s deal</span></span></span>';
-          row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
-        } else {
-          row1 = done
-            ? '<span class="dbrow">' + b4box(true) + '<span class="b4strike">Deal #51</span>' +
-              '<span class="push"><span class="dbtal g">13 WON</span></span></span>'
-            : '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
-              '<span class="push"><span class="dbtal">12 WON</span></span></span>';
-          if (st.bd === "none") row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
-          else if (st.bd === "rest") row2 = '<span class="dbrow"><span class="dbcap">SPADES</span>' +
-            '<span class="push"><span class="dbfig">1,581</span></span></span>';
-          else row2 = '<span class="dbrow"><span>No. 23 · Spades</span><span class="push">' + chipFor(st.bd) + '</span></span>';
-        }
-        return CAPSULE_STOCK + '<span class="bigrow"><span class="b4page dcol3 dintop' + (done ? " done" : "") + '">' +
-          '<span class="dbbody">' +
-          '<span class="dbdate"><span class="fpeg p1"></span><span class="fpeg p2"></span><span class="b4band">AUG</span>' +
-          '<span class="b4num"><i>20</i><span class="chk nstamp"></span></span></span>' +
-          '<span class="dbmemo">' + row1 + row2 + '</span>' +
-          '</span></span></span>';
-      } },
     { id: "dpagecal",
       cap: "<b>R11 · The calendar page</b> — F6 without the stub: the full-width cap makes it read calendar first, and the cap carries the game, answering where the specificity lives.",
       render: function (st) {
@@ -1412,8 +1443,8 @@ signed-out visitor sees no unit at all (except the calendar leaf, which shows a 
           else row2 = '<span class="dbrow"><span>No. 23 · Spades</span><span class="push">' + chipFor(st.bd) + '</span></span>';
         }
         return CAPSULE_STOCK + '<span class="bigrow"><span class="b4page dpage' + (done ? " done" : "") + '">' +
-          '<span class="dbbody">' +
-          '<span class="dsband">SPADES · AUG</span><span class="dbdate"><span class="qq b4band" style="display:none">AUG</span>' +
+          '<span class="dsband">SPADES · AUG</span><span class="dbbody">' +
+          '<span class="dbdate">' +
           '<span class="b4num"><i>20</i><span class="chk nstamp"></span></span></span>' +
           '<span class="dbmemo">' + row1 + row2 + '</span>' +
           '</span></span></span>';
@@ -1439,8 +1470,8 @@ signed-out visitor sees no unit at all (except the calendar leaf, which shows a 
           else row2 = '<span class="dbrow"><span>No. 23 · Spades</span><span class="push">' + chipFor(st.bd) + '</span></span>';
         }
         return CAPSULE_STOCK + '<span class="bigrow"><span class="b4page dpage dclick' + (done ? " done" : "") + '" title="Daily challenge & Spades Elo">' +
-          '<span class="dbbody">' +
-          '<span class="dsband">SPADES · AUG</span><span class="dbdate"><span class="qq b4band" style="display:none">AUG</span>' +
+          '<span class="dsband">SPADES · AUG</span><span class="dbbody">' +
+          '<span class="dbdate">' +
           '<span class="b4num"><i>20</i><span class="chk nstamp"></span></span></span>' +
           '<span class="dbmemo">' + row1 + row2 + '</span>' +
           '</span><span class="dchev">›</span></span></span>';
