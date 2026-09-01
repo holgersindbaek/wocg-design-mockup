@@ -462,6 +462,8 @@
   .dbp2::before { content: ""; position: absolute; top: 10px; bottom: 10px; left: 63px; width: 2px;
     z-index: 2; background: repeating-linear-gradient(180deg, #C2BBAD 0 5px, transparent 5px 10px); }
   .dstubtint .dbmemo { background: #FBECEA; }
+  .dneutralhead .dbmemo .dshead { background: var(--band); color: var(--muted);
+    box-shadow: inset 0 -1px 0 var(--edge); letter-spacing: .1em; }
   .dperfdashfine .dbdate .b4band { box-shadow: inset 0 1px 0 #A60000, inset 1px 0 0 #A60000, inset -1px 0 0 #A60000;
     position: relative; }
   .dperfdashfine .dbdate .b4band::after { content: ""; position: absolute; left: 2px; right: 2px; bottom: 0;
@@ -1839,6 +1841,33 @@ signed-out visitor sees no unit at all (except the calendar leaf, which shows a 
           '<span class="dbdate"><span class="b4band">AUG</span>' +
           '<span class="b4num"><i>20</i><span class="chk nstamp"></span></span></span>' +
           '<span class="dbmemo">' + row1 + row2 + '</span>' +
+          '</span></span></span>';
+      } },
+    { id: "dneutralbar",
+      cap: "<b>R28 · The quiet status bar</b> — R27's steady body with R16's header idea, but in the site's neutral band instead of red: the game is named without competing with the cap.",
+      render: function (st) {
+        var done = st.viewer === "in" && st.ch === "done";
+        var row1, row2;
+        if (st.viewer === "out") {
+          row1 = '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+            '<span class="push"><span class="dbtal">today’s deal</span></span></span>';
+          row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+        } else {
+          row1 = done
+            ? '<span class="dbrow">' + b4box(true) + '<span class="b4strike">Deal #51</span>' +
+              '<span class="push"><span class="dbtal g">13 WON</span></span></span>'
+            : '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+              '<span class="push"><span class="dbtal">12 WON</span></span></span>';
+          if (st.bd === "none") row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+          else if (st.bd === "rest") row2 = '<span class="dbrow"><span class="dbcap">ELO</span>' +
+            '<span class="push"><span class="dbfig">1,581</span></span></span>';
+          else row2 = '<span class="dbrow"><span>No. 23</span><span class="push">' + chipFor(st.bd) + '</span></span>';
+        }
+        return CAPSULE_STOCK + '<span class="bigrow"><span class="b4page dcol3 dcolhead dneutralhead' + (done ? " done" : "") + '">' +
+          '<span class="dbbody">' +
+          '<span class="dbdate"><span class="b4band">AUG</span>' +
+          '<span class="b4num"><i>20</i><span class="chk nstamp"></span></span></span>' +
+          '<span class="dbmemo"><span class="dshead">SPADES STATUS</span>' + row1 + row2 + '</span>' +
           '</span></span></span>';
       } },
   ];
