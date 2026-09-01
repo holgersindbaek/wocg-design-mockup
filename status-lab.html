@@ -470,6 +470,28 @@
   .dedgehead .dbmemo .dshead { background: #F5EEE5; color: var(--ink); justify-content: center;
     padding: 0; letter-spacing: .1em; box-shadow: inset 0 1px 0 #DAD2C5, inset -1px 0 0 #DAD2C5, inset 0 -1px 0 #DAD2C5;
     border-top-right-radius: 12px; corner-shape: squircle; }
+  /* header treatment studies: the R31 layout, eight headers */
+  .hbase .dbmemo .dshead { background: transparent; justify-content: center; padding: 0;
+    letter-spacing: .1em; border-top-right-radius: 12px; corner-shape: squircle; }
+  .h33 .dbmemo .dshead { color: var(--ink);
+    background-image: linear-gradient(var(--ink), var(--ink)), linear-gradient(var(--ink), var(--ink));
+    background-size: 100% 1px, 100% 1px; background-position: 0 calc(100% - 3px), 0 100%;
+    background-repeat: no-repeat; }
+  .h34 .dbmemo .dshead { color: #4E4D4C; text-shadow: 0 1px 0 rgba(255, 255, 255, .9);
+    box-shadow: inset 0 -1px 0 #DAD2C5; }
+  .h35 .dbmemo .dshead { color: #0065c3; box-shadow: inset 0 -1px 0 rgba(0, 101, 195, .35); }
+  .h36 .dbmemo .dshead { color: var(--ink); background-color: #fff;
+    box-shadow: inset 0 3px 0 #0065c3, inset 0 -1px 0 #DAD2C5; }
+  .h37 .dbmemo .dshead .stampf { font-style: normal; padding: 1px 8px; border: 1.5px solid rgba(0, 101, 195, .5);
+    border-radius: 3px; color: rgba(0, 101, 195, .85); transform: rotate(-1.2deg); }
+  .h38 .dbmemo .dshead { color: var(--ink); gap: 8px; padding: 0 8px; }
+  .h38 .dbmemo .dshead::before, .h38 .dbmemo .dshead::after { content: ""; flex: 1; height: 1px;
+    background: #DAD2C5; }
+  .h38 .dbmemo .dshead .hpip { width: 5px; height: 5px; background: #0065c3; transform: rotate(45deg);
+    border-radius: 1px; flex-shrink: 0; }
+  .h39 .dbmemo .dshead { background-color: #E5F0FA; color: #005AAE;
+    box-shadow: inset 0 -1px 0 rgba(0, 101, 195, .22); }
+  .h40 .dbmemo .dshead { background-color: #33383F; color: #fff; box-shadow: inset 0 -2px 0 #0065c3; }
   .dswapbg .dbdate .b4num { background: #F5EEE5; }
   .dswapbg .dbmemo .dshead { background: transparent; }
   .dperfdashfine .dbdate .b4band { box-shadow: inset 0 1px 0 #A60000, inset 1px 0 0 #A60000, inset -1px 0 0 #A60000;
@@ -1980,6 +2002,222 @@ signed-out visitor sees no unit at all (except the calendar leaf, which shows a 
           else row2 = '<span class="dbrow"><span>No. 23</span><span class="push">' + chipFor(st.bd) + '</span></span>';
         }
         return CAPSULE_STOCK + '<span class="bigrow"><span class="b4page dcol3 dcolhead dedgehead dswapbg' + (done ? " done" : "") + '">' +
+          '<span class="dbbody">' +
+          '<span class="dbdate"><span class="b4band">AUG</span>' +
+          '<span class="b4num"><i>20</i><span class="chk nstamp"></span></span></span>' +
+          '<span class="dbmemo"><span class="dshead">SPADES DAILY</span>' + row1 + row2 + '</span>' +
+          '</span></span></span>';
+      } },
+    { id: "h33x",
+      cap: "<b>R33 · Ledger double rule</b> — no fill at all: ink caps over a double ledger rule, the 1950s column head.",
+      render: function (st) {
+        var done = st.viewer === "in" && st.ch === "done";
+        var row1, row2;
+        if (st.viewer === "out") {
+          row1 = '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+            '<span class="push"><span class="dbtal">today’s deal</span></span></span>';
+          row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+        } else {
+          row1 = done
+            ? '<span class="dbrow">' + b4box(true) + '<span class="b4strike">Deal #51</span>' +
+              '<span class="push"><span class="dbtal g">13 WON</span></span></span>'
+            : '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+              '<span class="push"><span class="dbtal">12 WON</span></span></span>';
+          if (st.bd === "none") row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+          else if (st.bd === "rest") row2 = '<span class="dbrow"><span class="dbcap">ELO</span>' +
+            '<span class="push"><span class="dbfig">1,581</span></span></span>';
+          else row2 = '<span class="dbrow"><span>No. 23</span><span class="push">' + chipFor(st.bd) + '</span></span>';
+        }
+        return CAPSULE_STOCK + '<span class="bigrow"><span class="b4page dcol3 dcolhead hbase h33' + (done ? " done" : "") + '">' +
+          '<span class="dbbody">' +
+          '<span class="dbdate"><span class="b4band">AUG</span>' +
+          '<span class="b4num"><i>20</i><span class="chk nstamp"></span></span></span>' +
+          '<span class="dbmemo"><span class="dshead">SPADES DAILY</span>' + row1 + row2 + '</span>' +
+          '</span></span></span>';
+      } },
+    { id: "h34x",
+      cap: "<b>R34 · Letterpress</b> — grey ink pressed into the paper with an emboss lip, the quietest treatment; the film grain reads as paper tooth.",
+      render: function (st) {
+        var done = st.viewer === "in" && st.ch === "done";
+        var row1, row2;
+        if (st.viewer === "out") {
+          row1 = '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+            '<span class="push"><span class="dbtal">today’s deal</span></span></span>';
+          row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+        } else {
+          row1 = done
+            ? '<span class="dbrow">' + b4box(true) + '<span class="b4strike">Deal #51</span>' +
+              '<span class="push"><span class="dbtal g">13 WON</span></span></span>'
+            : '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+              '<span class="push"><span class="dbtal">12 WON</span></span></span>';
+          if (st.bd === "none") row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+          else if (st.bd === "rest") row2 = '<span class="dbrow"><span class="dbcap">ELO</span>' +
+            '<span class="push"><span class="dbfig">1,581</span></span></span>';
+          else row2 = '<span class="dbrow"><span>No. 23</span><span class="push">' + chipFor(st.bd) + '</span></span>';
+        }
+        return CAPSULE_STOCK + '<span class="bigrow"><span class="b4page dcol3 dcolhead hbase h34' + (done ? " done" : "") + '">' +
+          '<span class="dbbody">' +
+          '<span class="dbdate"><span class="b4band">AUG</span>' +
+          '<span class="b4num"><i>20</i><span class="chk nstamp"></span></span></span>' +
+          '<span class="dbmemo"><span class="dshead">SPADES DAILY</span>' + row1 + row2 + '</span>' +
+          '</span></span></span>';
+      } },
+    { id: "h35x",
+      cap: "<b>R35 · Spot ink</b> — the game's own tile azure as a second printing ink: colored caps over a soft azure underline. Every game gets its own header color for free.",
+      render: function (st) {
+        var done = st.viewer === "in" && st.ch === "done";
+        var row1, row2;
+        if (st.viewer === "out") {
+          row1 = '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+            '<span class="push"><span class="dbtal">today’s deal</span></span></span>';
+          row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+        } else {
+          row1 = done
+            ? '<span class="dbrow">' + b4box(true) + '<span class="b4strike">Deal #51</span>' +
+              '<span class="push"><span class="dbtal g">13 WON</span></span></span>'
+            : '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+              '<span class="push"><span class="dbtal">12 WON</span></span></span>';
+          if (st.bd === "none") row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+          else if (st.bd === "rest") row2 = '<span class="dbrow"><span class="dbcap">ELO</span>' +
+            '<span class="push"><span class="dbfig">1,581</span></span></span>';
+          else row2 = '<span class="dbrow"><span>No. 23</span><span class="push">' + chipFor(st.bd) + '</span></span>';
+        }
+        return CAPSULE_STOCK + '<span class="bigrow"><span class="b4page dcol3 dcolhead hbase h35' + (done ? " done" : "") + '">' +
+          '<span class="dbbody">' +
+          '<span class="dbdate"><span class="b4band">AUG</span>' +
+          '<span class="b4num"><i>20</i><span class="chk nstamp"></span></span></span>' +
+          '<span class="dbmemo"><span class="dshead">SPADES DAILY</span>' + row1 + row2 + '</span>' +
+          '</span></span></span>';
+      } },
+    { id: "h36x",
+      cap: "<b>R36 · Passbook edge</b> — a 3px azure bound edge along the top, black ink text, hairline below: the bank-book page head.",
+      render: function (st) {
+        var done = st.viewer === "in" && st.ch === "done";
+        var row1, row2;
+        if (st.viewer === "out") {
+          row1 = '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+            '<span class="push"><span class="dbtal">today’s deal</span></span></span>';
+          row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+        } else {
+          row1 = done
+            ? '<span class="dbrow">' + b4box(true) + '<span class="b4strike">Deal #51</span>' +
+              '<span class="push"><span class="dbtal g">13 WON</span></span></span>'
+            : '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+              '<span class="push"><span class="dbtal">12 WON</span></span></span>';
+          if (st.bd === "none") row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+          else if (st.bd === "rest") row2 = '<span class="dbrow"><span class="dbcap">ELO</span>' +
+            '<span class="push"><span class="dbfig">1,581</span></span></span>';
+          else row2 = '<span class="dbrow"><span>No. 23</span><span class="push">' + chipFor(st.bd) + '</span></span>';
+        }
+        return CAPSULE_STOCK + '<span class="bigrow"><span class="b4page dcol3 dcolhead hbase h36' + (done ? " done" : "") + '">' +
+          '<span class="dbbody">' +
+          '<span class="dbdate"><span class="b4band">AUG</span>' +
+          '<span class="b4num"><i>20</i><span class="chk nstamp"></span></span></span>' +
+          '<span class="dbmemo"><span class="dshead">SPADES DAILY</span>' + row1 + row2 + '</span>' +
+          '</span></span></span>';
+      } },
+    { id: "h37x",
+      cap: "<b>R37 · Rubber stamp</b> — the clerk's daily stamp in faded azure, slightly rotated, open frame.",
+      render: function (st) {
+        var done = st.viewer === "in" && st.ch === "done";
+        var row1, row2;
+        if (st.viewer === "out") {
+          row1 = '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+            '<span class="push"><span class="dbtal">today’s deal</span></span></span>';
+          row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+        } else {
+          row1 = done
+            ? '<span class="dbrow">' + b4box(true) + '<span class="b4strike">Deal #51</span>' +
+              '<span class="push"><span class="dbtal g">13 WON</span></span></span>'
+            : '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+              '<span class="push"><span class="dbtal">12 WON</span></span></span>';
+          if (st.bd === "none") row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+          else if (st.bd === "rest") row2 = '<span class="dbrow"><span class="dbcap">ELO</span>' +
+            '<span class="push"><span class="dbfig">1,581</span></span></span>';
+          else row2 = '<span class="dbrow"><span>No. 23</span><span class="push">' + chipFor(st.bd) + '</span></span>';
+        }
+        return CAPSULE_STOCK + '<span class="bigrow"><span class="b4page dcol3 dcolhead hbase h37' + (done ? " done" : "") + '">' +
+          '<span class="dbbody">' +
+          '<span class="dbdate"><span class="b4band">AUG</span>' +
+          '<span class="b4num"><i>20</i><span class="chk nstamp"></span></span></span>' +
+          '<span class="dbmemo"><span class="dshead"><i class="stampf">SPADES DAILY</i></span>' + row1 + row2 + '</span>' +
+          '</span></span></span>';
+      } },
+    { id: "h38x",
+      cap: "<b>R38 · Rule and pip</b> — the stationer's centering device: hairline, azure pip, title, hairline.",
+      render: function (st) {
+        var done = st.viewer === "in" && st.ch === "done";
+        var row1, row2;
+        if (st.viewer === "out") {
+          row1 = '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+            '<span class="push"><span class="dbtal">today’s deal</span></span></span>';
+          row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+        } else {
+          row1 = done
+            ? '<span class="dbrow">' + b4box(true) + '<span class="b4strike">Deal #51</span>' +
+              '<span class="push"><span class="dbtal g">13 WON</span></span></span>'
+            : '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+              '<span class="push"><span class="dbtal">12 WON</span></span></span>';
+          if (st.bd === "none") row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+          else if (st.bd === "rest") row2 = '<span class="dbrow"><span class="dbcap">ELO</span>' +
+            '<span class="push"><span class="dbfig">1,581</span></span></span>';
+          else row2 = '<span class="dbrow"><span>No. 23</span><span class="push">' + chipFor(st.bd) + '</span></span>';
+        }
+        return CAPSULE_STOCK + '<span class="bigrow"><span class="b4page dcol3 dcolhead hbase h38' + (done ? " done" : "") + '">' +
+          '<span class="dbbody">' +
+          '<span class="dbdate"><span class="b4band">AUG</span>' +
+          '<span class="b4num"><i>20</i><span class="chk nstamp"></span></span></span>' +
+          '<span class="dbmemo"><span class="dshead"><i class="hpip"></i>SPADES DAILY</span>' + row1 + row2 + '</span>' +
+          '</span></span></span>';
+      } },
+    { id: "h39x",
+      cap: "<b>R39 · Azure screen</b> — a 10% screen of the game color as the flattest possible printed fill; cool, so it frames the red cap instead of diluting it.",
+      render: function (st) {
+        var done = st.viewer === "in" && st.ch === "done";
+        var row1, row2;
+        if (st.viewer === "out") {
+          row1 = '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+            '<span class="push"><span class="dbtal">today’s deal</span></span></span>';
+          row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+        } else {
+          row1 = done
+            ? '<span class="dbrow">' + b4box(true) + '<span class="b4strike">Deal #51</span>' +
+              '<span class="push"><span class="dbtal g">13 WON</span></span></span>'
+            : '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+              '<span class="push"><span class="dbtal">12 WON</span></span></span>';
+          if (st.bd === "none") row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+          else if (st.bd === "rest") row2 = '<span class="dbrow"><span class="dbcap">ELO</span>' +
+            '<span class="push"><span class="dbfig">1,581</span></span></span>';
+          else row2 = '<span class="dbrow"><span>No. 23</span><span class="push">' + chipFor(st.bd) + '</span></span>';
+        }
+        return CAPSULE_STOCK + '<span class="bigrow"><span class="b4page dcol3 dcolhead hbase h39' + (done ? " done" : "") + '">' +
+          '<span class="dbbody">' +
+          '<span class="dbdate"><span class="b4band">AUG</span>' +
+          '<span class="b4num"><i>20</i><span class="chk nstamp"></span></span></span>' +
+          '<span class="dbmemo"><span class="dshead">SPADES DAILY</span>' + row1 + row2 + '</span>' +
+          '</span></span></span>';
+      } },
+    { id: "h40x",
+      cap: "<b>R40 · Ink bar, tile selvage</b> — the dark bar refined with a 2px band of the game color along its bottom edge.",
+      render: function (st) {
+        var done = st.viewer === "in" && st.ch === "done";
+        var row1, row2;
+        if (st.viewer === "out") {
+          row1 = '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+            '<span class="push"><span class="dbtal">today’s deal</span></span></span>';
+          row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+        } else {
+          row1 = done
+            ? '<span class="dbrow">' + b4box(true) + '<span class="b4strike">Deal #51</span>' +
+              '<span class="push"><span class="dbtal g">13 WON</span></span></span>'
+            : '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+              '<span class="push"><span class="dbtal">12 WON</span></span></span>';
+          if (st.bd === "none") row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+          else if (st.bd === "rest") row2 = '<span class="dbrow"><span class="dbcap">ELO</span>' +
+            '<span class="push"><span class="dbfig">1,581</span></span></span>';
+          else row2 = '<span class="dbrow"><span>No. 23</span><span class="push">' + chipFor(st.bd) + '</span></span>';
+        }
+        return CAPSULE_STOCK + '<span class="bigrow"><span class="b4page dcol3 dcolhead hbase h40' + (done ? " done" : "") + '">' +
           '<span class="dbbody">' +
           '<span class="dbdate"><span class="b4band">AUG</span>' +
           '<span class="b4num"><i>20</i><span class="chk nstamp"></span></span></span>' +
