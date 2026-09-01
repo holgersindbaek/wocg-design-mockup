@@ -389,7 +389,7 @@
 
   /* Five · the red cap desk block (one sheet, corrected red) */
   .dsolo { width: 232px; height: 88px; overflow: hidden; }
-  .dsolo .dsband { height: 20px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+  .dsolo .dsband, .dpage .dsband { height: 20px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
     background: #D5201E; box-shadow: inset 0 0 0 1px #A60000;
     font-size: 12px; font-weight: bold; letter-spacing: .14em; line-height: 20px; color: #fff;
     text-shadow: -1px -1px 0 #A60000, 1px -1px 0 #A60000, -1px 1px 0 #A60000, 1px 1px 0 #A60000; }
@@ -434,6 +434,28 @@
     border-bottom: 0; border-radius: 4px 4px 0 0; z-index: 2; }
   .dflip .fring.r1 { left: 6px; } .dflip .fring.r2 { left: 21px; }
   .dflip .fring.r3 { left: 36px; } .dflip .fring.r4 { left: 51px; }
+  /* R9-R12: the feedback round. Pegs at the fold (the page hangs from the
+     cap), pegs contained in the cap, the F6 page without the stub, and the
+     whole object as the button. */
+  .dfold .dbdate, .dintop .dbdate { position: relative; }
+  .dfold .fpeg, .dintop .fpeg { position: absolute; width: 5px; height: 10px; border-radius: 2.5px;
+    background: #33383F; z-index: 2; }
+  .dfold .fpeg { top: 15px; }
+  .dintop .fpeg { top: 2px; }
+  .dfold .fpeg.p1, .dintop .fpeg.p1 { left: 15px; }
+  .dfold .fpeg.p2, .dintop .fpeg.p2 { left: 44px; }
+  .dpage { width: 200px; height: 84px; overflow: hidden; }
+  .dpage .dbbody { flex: 1; display: flex; min-height: 0; }
+  .dpage .dbdate { width: 64px; border-right: 1px solid #E7E7E7; justify-content: center; flex-shrink: 0;
+    display: flex; flex-direction: column; }
+  .dpage .b4num { flex: 1; font-size: 34px; }
+  .dpage .nstamp { width: 24px; height: 24px; transform: translate(-50%, -50%) rotate(-10deg); }
+  .dpage .dbmemo { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+  .dpage .dbmemo .dbrow { flex: 0 0 32px; }
+  .dclick { cursor: pointer; transition: transform .12s ease, box-shadow .12s ease; }
+  .dclick:hover { transform: translateY(-1px);
+    box-shadow: inset 0 0 0 1px var(--edge), 0 2px 4px rgba(60, 45, 25, .08), 0 6px 14px rgba(60, 45, 25, .12); }
+  .dclick .dchev { position: absolute; right: 7px; bottom: 5px; font-size: 13px; color: #C9C0AF; z-index: 2; }
   /* perforation: punched holes straddling the cap's bottom edge, no solid line there */
   .dperf .dsband { box-shadow: inset 0 1px 0 #A60000, inset 1px 0 0 #A60000, inset -1px 0 0 #A60000;
     position: relative; }
@@ -441,13 +463,13 @@
     background-image: radial-gradient(circle at 2.5px 2.5px, var(--canvas) 1.4px, rgba(0, 0, 0, .25) 1.5px 1.9px, transparent 2px);
     background-size: 8px 5px; background-repeat: repeat-x; z-index: 1; }
   /* the date in the hero's own face at the normal ink */
-  .b4page.dsolo .b4num, .b4page.dcol2 .b4num, .b4page.dcol3 .b4num { font-family: "Gelica", "Georgia", serif; font-weight: 500; }
-  .b4page.dsolo .b4num i, .b4page.dcol2 .b4num i, .b4page.dcol3 .b4num i { color: var(--ink); opacity: 1; }
+  .b4page.dsolo .b4num, .b4page.dcol2 .b4num, .b4page.dcol3 .b4num, .b4page.dpage .b4num { font-family: "Gelica", "Georgia", serif; font-weight: 500; }
+  .b4page.dsolo .b4num i, .b4page.dcol2 .b4num i, .b4page.dcol3 .b4num i, .b4page.dpage .b4num i { color: var(--ink); opacity: 1; }
   /* nothing below 12px in this family */
-  .dsolo .dbrow, .dcol2 .dbrow, .dcol3 .dbrow { font-size: 12px; }
-  .dsolo .dbtal, .dcol2 .dbtal, .dcol3 .dbtal, .dsolo .dbcap, .dcol2 .dbcap, .dcol3 .dbcap { font-size: 12px; }
-  .dsolo .dbrow.dbimp, .dcol2 .dbrow.dbimp, .dcol3 .dbrow.dbimp { font-size: 12px; letter-spacing: .08em; }
-  .dsolo .dbfig, .dcol2 .dbfig, .dcol3 .dbfig { font-size: 13px; }
+  .dsolo .dbrow, .dcol2 .dbrow, .dcol3 .dbrow, .dpage .dbrow { font-size: 12px; }
+  .dsolo .dbtal, .dcol2 .dbtal, .dcol3 .dbtal, .dpage .dbtal, .dsolo .dbcap, .dcol2 .dbcap, .dcol3 .dbcap, .dpage .dbcap { font-size: 12px; }
+  .dsolo .dbrow.dbimp, .dcol2 .dbrow.dbimp, .dcol3 .dbrow.dbimp, .dpage .dbrow.dbimp { font-size: 12px; letter-spacing: .08em; }
+  .dsolo .dbfig, .dcol2 .dbfig, .dcol3 .dbfig, .dpage .dbfig { font-size: 13px; }
 
   /* F4 · the day ledger (numeral left, labeled rows right) */
   .dledg { width: 188px; }
@@ -1061,7 +1083,7 @@ signed-out visitor sees no unit at all (except the calendar leaf, which shows a 
   var BOARD = [["none", "Unranked"], ["rest", "Quiet day"], ["up", "On board ▲3"], ["down", "On board ▼2"]];
 
   function buildCard(host, c) {
-    var st = { viewer: "in", ch: "done", bd: "up" };
+    var st = { viewer: "in", ch: "open", bd: "up" };
     var card = document.createElement("div");
     card.className = "cv";
     card.innerHTML = '<p class="dcap">' + c.cap + '</p><div class="stage"></div><div class="ctrl"></div>';
@@ -1314,6 +1336,114 @@ signed-out visitor sees no unit at all (except the calendar leaf, which shows a 
           '<span class="b4num"><i>20</i><span class="chk nstamp"></span></span></span>' +
           '<span class="dbmemo">' + row1 + row2 + '</span>' +
           '</span></span></span>';
+      } },
+    { id: "dfoldpins",
+      cap: "<b>R9 · Pins at the fold</b> — the binding sits where the perforation was: the page hangs from the cap on two pegs, which is how a real flip calendar works. Everything stays inside the container.",
+      render: function (st) {
+        var done = st.viewer === "in" && st.ch === "done";
+        var row1, row2;
+        if (st.viewer === "out") {
+          row1 = '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+            '<span class="push"><span class="dbtal">today’s deal</span></span></span>';
+          row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+        } else {
+          row1 = done
+            ? '<span class="dbrow">' + b4box(true) + '<span class="b4strike">Deal #51</span>' +
+              '<span class="push"><span class="dbtal g">13 WON</span></span></span>'
+            : '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+              '<span class="push"><span class="dbtal">12 WON</span></span></span>';
+          if (st.bd === "none") row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+          else if (st.bd === "rest") row2 = '<span class="dbrow"><span class="dbcap">SPADES</span>' +
+            '<span class="push"><span class="dbfig">1,581</span></span></span>';
+          else row2 = '<span class="dbrow"><span>No. 23 · Spades</span><span class="push">' + chipFor(st.bd) + '</span></span>';
+        }
+        return CAPSULE_STOCK + '<span class="bigrow"><span class="b4page dcol3 dfold' + (done ? " done" : "") + '">' +
+          '<span class="dbbody">' +
+          '<span class="dbdate"><span class="fpeg p1"></span><span class="fpeg p2"></span><span class="b4band">AUG</span>' +
+          '<span class="b4num"><i>20</i><span class="chk nstamp"></span></span></span>' +
+          '<span class="dbmemo">' + row1 + row2 + '</span>' +
+          '</span></span></span>';
+      } },
+    { id: "dinpins",
+      cap: "<b>R10 · Pins in the cap</b> — R7 contained: the pegs hang from the cap's top edge inside the red, nothing extends past the container.",
+      render: function (st) {
+        var done = st.viewer === "in" && st.ch === "done";
+        var row1, row2;
+        if (st.viewer === "out") {
+          row1 = '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+            '<span class="push"><span class="dbtal">today’s deal</span></span></span>';
+          row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+        } else {
+          row1 = done
+            ? '<span class="dbrow">' + b4box(true) + '<span class="b4strike">Deal #51</span>' +
+              '<span class="push"><span class="dbtal g">13 WON</span></span></span>'
+            : '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+              '<span class="push"><span class="dbtal">12 WON</span></span></span>';
+          if (st.bd === "none") row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+          else if (st.bd === "rest") row2 = '<span class="dbrow"><span class="dbcap">SPADES</span>' +
+            '<span class="push"><span class="dbfig">1,581</span></span></span>';
+          else row2 = '<span class="dbrow"><span>No. 23 · Spades</span><span class="push">' + chipFor(st.bd) + '</span></span>';
+        }
+        return CAPSULE_STOCK + '<span class="bigrow"><span class="b4page dcol3 dintop' + (done ? " done" : "") + '">' +
+          '<span class="dbbody">' +
+          '<span class="dbdate"><span class="fpeg p1"></span><span class="fpeg p2"></span><span class="b4band">AUG</span>' +
+          '<span class="b4num"><i>20</i><span class="chk nstamp"></span></span></span>' +
+          '<span class="dbmemo">' + row1 + row2 + '</span>' +
+          '</span></span></span>';
+      } },
+    { id: "dpagecal",
+      cap: "<b>R11 · The calendar page</b> — F6 without the stub: the full-width cap makes it read calendar first, and the cap carries the game, answering where the specificity lives.",
+      render: function (st) {
+        var done = st.viewer === "in" && st.ch === "done";
+        var row1, row2;
+        if (st.viewer === "out") {
+          row1 = '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+            '<span class="push"><span class="dbtal">today’s deal</span></span></span>';
+          row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+        } else {
+          row1 = done
+            ? '<span class="dbrow">' + b4box(true) + '<span class="b4strike">Deal #51</span>' +
+              '<span class="push"><span class="dbtal g">13 WON</span></span></span>'
+            : '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+              '<span class="push"><span class="dbtal">12 WON</span></span></span>';
+          if (st.bd === "none") row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+          else if (st.bd === "rest") row2 = '<span class="dbrow"><span class="dbcap">SPADES</span>' +
+            '<span class="push"><span class="dbfig">1,581</span></span></span>';
+          else row2 = '<span class="dbrow"><span>No. 23 · Spades</span><span class="push">' + chipFor(st.bd) + '</span></span>';
+        }
+        return CAPSULE_STOCK + '<span class="bigrow"><span class="b4page dpage' + (done ? " done" : "") + '">' +
+          '<span class="dbbody">' +
+          '<span class="dsband">SPADES · AUG</span><span class="dbdate"><span class="qq b4band" style="display:none">AUG</span>' +
+          '<span class="b4num"><i>20</i><span class="chk nstamp"></span></span></span>' +
+          '<span class="dbmemo">' + row1 + row2 + '</span>' +
+          '</span></span></span>';
+      } },
+    { id: "dpageclick",
+      cap: "<b>R12 · The page is the button</b> — R11 clickable: the whole object lifts on hover with a quiet chevron, and a click would open the daily challenge and Elo modal. No separate button; the object is the door.",
+      render: function (st) {
+        var done = st.viewer === "in" && st.ch === "done";
+        var row1, row2;
+        if (st.viewer === "out") {
+          row1 = '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+            '<span class="push"><span class="dbtal">today’s deal</span></span></span>';
+          row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+        } else {
+          row1 = done
+            ? '<span class="dbrow">' + b4box(true) + '<span class="b4strike">Deal #51</span>' +
+              '<span class="push"><span class="dbtal g">13 WON</span></span></span>'
+            : '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+              '<span class="push"><span class="dbtal">12 WON</span></span></span>';
+          if (st.bd === "none") row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+          else if (st.bd === "rest") row2 = '<span class="dbrow"><span class="dbcap">SPADES</span>' +
+            '<span class="push"><span class="dbfig">1,581</span></span></span>';
+          else row2 = '<span class="dbrow"><span>No. 23 · Spades</span><span class="push">' + chipFor(st.bd) + '</span></span>';
+        }
+        return CAPSULE_STOCK + '<span class="bigrow"><span class="b4page dpage dclick' + (done ? " done" : "") + '" title="Daily challenge & Spades Elo">' +
+          '<span class="dbbody">' +
+          '<span class="dsband">SPADES · AUG</span><span class="dbdate"><span class="qq b4band" style="display:none">AUG</span>' +
+          '<span class="b4num"><i>20</i><span class="chk nstamp"></span></span></span>' +
+          '<span class="dbmemo">' + row1 + row2 + '</span>' +
+          '</span><span class="dchev">›</span></span></span>';
       } },
   ];
   CONCEPTS4.forEach(function (c) { buildCard(grid4, c); });
