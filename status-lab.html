@@ -423,6 +423,17 @@
   .dcolperf .dbdate .b4band::after { content: ""; position: absolute; left: 2px; right: 2px; bottom: -2.5px; height: 5px;
     background-image: radial-gradient(circle at 2.5px 2.5px, var(--canvas) 1.4px, rgba(0, 0, 0, .25) 1.5px 1.9px, transparent 2px);
     background-size: 8px 5px; background-repeat: repeat-x; z-index: 1; }
+  /* the flip family: the cap is bound at the top, the page flips over */
+  .dcol3.dflip { overflow: visible; }
+  .dflip .dbdate { position: relative; }
+  .dflip .dbdate .b4band { border-top-left-radius: 12px; corner-shape: squircle; }
+  .dflip .fpin { position: absolute; top: -6px; width: 5px; height: 12px; border-radius: 2.5px;
+    background: #33383F; z-index: 2; }
+  .dflip .fpin.p1 { left: 15px; } .dflip .fpin.p2 { left: 44px; }
+  .dflip .fring { position: absolute; top: -7px; width: 7px; height: 12px; border: 2px solid #33383F;
+    border-bottom: 0; border-radius: 4px 4px 0 0; z-index: 2; }
+  .dflip .fring.r1 { left: 6px; } .dflip .fring.r2 { left: 21px; }
+  .dflip .fring.r3 { left: 36px; } .dflip .fring.r4 { left: 51px; }
   /* perforation: punched holes straddling the cap's bottom edge, no solid line there */
   .dperf .dsband { box-shadow: inset 0 1px 0 #A60000, inset 1px 0 0 #A60000, inset -1px 0 0 #A60000;
     position: relative; }
@@ -1088,6 +1099,33 @@ signed-out visitor sees no unit at all (except the calendar leaf, which shows a 
   CONCEPTS2.forEach(function (c) { buildCard(grid2, c); });
   CONCEPTS3.forEach(function (c) { buildCard(grid3, c); });
   var CONCEPTS5 = [
+    { id: "dsalmon",
+      cap: "<b>R4 · The equal-lightness red, for reference</b> — the salmon that a strict lightness-and-chroma match to the button green produces. First in the row so the corrected red everywhere else can be judged against it.",
+      render: function (st) {
+        var done = st.viewer === "in" && st.ch === "done";
+        var row1, row2;
+        if (st.viewer === "out") {
+          row1 = '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+            '<span class="push"><span class="dbtal">today’s deal</span></span></span>';
+          row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+        } else {
+          row1 = done
+            ? '<span class="dbrow">' + b4box(true) + '<span class="b4strike">Deal #51</span>' +
+              '<span class="push"><span class="dbtal g">13 WON</span></span></span>'
+            : '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+              '<span class="push"><span class="dbtal">12 WON</span></span></span>';
+          if (st.bd === "none") row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+          else if (st.bd === "rest") row2 = '<span class="dbrow"><span class="dbcap">SPADES</span>' +
+            '<span class="push"><span class="dbfig">1,581</span></span></span>';
+          else row2 = '<span class="dbrow"><span>No. 23 · Spades</span><span class="push">' + chipFor(st.bd) + '</span></span>';
+        }
+        return CAPSULE_STOCK + '<span class="bigrow"><span class="b4page dsolo dsalmon' + (done ? " done" : "") + '">' +
+          '<span class="dsband">AUG</span>' +
+          '<span class="dbbody">' +
+          '<span class="dbdate"><span class="b4num"><i>20</i><span class="chk nstamp"></span></span></span>' +
+          '<span class="dbmemo">' + row1 + row2 + '</span>' +
+          '</span></span></span>';
+      } },
     { id: "dsoloband",
       cap: "<b>R1 · Full cap</b> — one sheet, the red cap across the full width at 20px. The red is corrected: the live dot's relative saturation carried to red's own best depth, not an equal-lightness match.",
       render: function (st) {
@@ -1223,8 +1261,8 @@ signed-out visitor sees no unit at all (except the calendar leaf, which shows a 
           '<span class="dbmemo">' + row1 + row2 + '</span>' +
           '</span></span></span>';
       } },
-    { id: "dsalmon",
-      cap: "<b>R4 · The equal-lightness red, for reference</b> — the salmon that a strict lightness-and-chroma match to the button green produces. Kept to show why the corrected red above wins.",
+    { id: "dflippins",
+      cap: "<b>R7 · Flip pins</b> — not a tear-off but a flip calendar: two pegs bind the red cap at the top, the way the page flips over. Binding on the left cap only.",
       render: function (st) {
         var done = st.viewer === "in" && st.ch === "done";
         var row1, row2;
@@ -1243,10 +1281,37 @@ signed-out visitor sees no unit at all (except the calendar leaf, which shows a 
             '<span class="push"><span class="dbfig">1,581</span></span></span>';
           else row2 = '<span class="dbrow"><span>No. 23 · Spades</span><span class="push">' + chipFor(st.bd) + '</span></span>';
         }
-        return CAPSULE_STOCK + '<span class="bigrow"><span class="b4page dsolo dsalmon' + (done ? " done" : "") + '">' +
-          '<span class="dsband">AUG</span>' +
+        return CAPSULE_STOCK + '<span class="bigrow"><span class="b4page dcol3 dflip' + (done ? " done" : "") + '">' +
           '<span class="dbbody">' +
-          '<span class="dbdate"><span class="b4num"><i>20</i><span class="chk nstamp"></span></span></span>' +
+          '<span class="dbdate"><span class="fpin p1"></span><span class="fpin p2"></span><span class="b4band">AUG</span>' +
+          '<span class="b4num"><i>20</i><span class="chk nstamp"></span></span></span>' +
+          '<span class="dbmemo">' + row1 + row2 + '</span>' +
+          '</span></span></span>';
+      } },
+    { id: "dflipspiral",
+      cap: "<b>R8 · Flip spiral</b> — the same flip idea with four spiral loops along the cap, the desk flip-calendar binding.",
+      render: function (st) {
+        var done = st.viewer === "in" && st.ch === "done";
+        var row1, row2;
+        if (st.viewer === "out") {
+          row1 = '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+            '<span class="push"><span class="dbtal">today’s deal</span></span></span>';
+          row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+        } else {
+          row1 = done
+            ? '<span class="dbrow">' + b4box(true) + '<span class="b4strike">Deal #51</span>' +
+              '<span class="push"><span class="dbtal g">13 WON</span></span></span>'
+            : '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+              '<span class="push"><span class="dbtal">12 WON</span></span></span>';
+          if (st.bd === "none") row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+          else if (st.bd === "rest") row2 = '<span class="dbrow"><span class="dbcap">SPADES</span>' +
+            '<span class="push"><span class="dbfig">1,581</span></span></span>';
+          else row2 = '<span class="dbrow"><span>No. 23 · Spades</span><span class="push">' + chipFor(st.bd) + '</span></span>';
+        }
+        return CAPSULE_STOCK + '<span class="bigrow"><span class="b4page dcol3 dflip' + (done ? " done" : "") + '">' +
+          '<span class="dbbody">' +
+          '<span class="dbdate"><span class="fring r1"></span><span class="fring r2"></span><span class="fring r3"></span><span class="fring r4"></span><span class="b4band">AUG</span>' +
+          '<span class="b4num"><i>20</i><span class="chk nstamp"></span></span></span>' +
           '<span class="dbmemo">' + row1 + row2 + '</span>' +
           '</span></span></span>';
       } },
