@@ -434,6 +434,12 @@
   .dperfmicro .dbdate .b4band::after { content: ""; position: absolute; left: 2px; right: 2px; bottom: -1.5px;
     height: 3px; background-image: radial-gradient(circle at 1.5px 1.5px, var(--canvas) .9px, rgba(0, 0, 0, .28) 1px 1.2px, transparent 1.3px);
     background-size: 4px 3px; background-repeat: repeat-x; }
+  /* the status header: the right side opens with a light-red continuation
+     of the cap, carrying the game name */
+  .dcolhead { height: 84px; }
+  .dcolhead .dbmemo .dshead { flex: 0 0 20px; display: flex; align-items: center; padding: 0 10px;
+    font-size: 12px; font-weight: bold; letter-spacing: .08em; color: #A63A31; background: #F8D3CE;
+    box-shadow: inset 0 -1px 0 #F0BCB5; }
   /* the flip family: the cap is bound at the top, the page flips over */
   .dcol3.dflip { overflow: visible; }
   .dflip .dbdate { position: relative; }
@@ -1366,6 +1372,60 @@ signed-out visitor sees no unit at all (except the calendar leaf, which shows a 
           '<span class="dbdate"><span class="b4band">AUG</span>' +
           '<span class="b4num"><i>20</i><span class="chk nstamp"></span></span></span>' +
           '<span class="dbmemo">' + row1 + row2 + '</span>' +
+          '</span></span></span>';
+      } },
+    { id: "dheadstatus",
+      cap: "<b>R16 · The status header</b> — the right side opens with its own 20px header in a light tint of the cap red, so the band continues across the whole top. Headline: the game plus STATUS.",
+      render: function (st) {
+        var done = st.viewer === "in" && st.ch === "done";
+        var row1, row2;
+        if (st.viewer === "out") {
+          row1 = '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+            '<span class="push"><span class="dbtal">today’s deal</span></span></span>';
+          row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+        } else {
+          row1 = done
+            ? '<span class="dbrow">' + b4box(true) + '<span class="b4strike">Deal #51</span>' +
+              '<span class="push"><span class="dbtal g">13 WON</span></span></span>'
+            : '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+              '<span class="push"><span class="dbtal">12 WON</span></span></span>';
+          if (st.bd === "none") row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+          else if (st.bd === "rest") row2 = '<span class="dbrow"><span class="dbcap">ELO</span>' +
+            '<span class="push"><span class="dbfig">1,581</span></span></span>';
+          else row2 = '<span class="dbrow"><span>No. 23</span><span class="push">' + chipFor(st.bd) + '</span></span>';
+        }
+        return CAPSULE_STOCK + '<span class="bigrow"><span class="b4page dcol3 dcolperf dcolhead' + (done ? " done" : "") + '">' +
+          '<span class="dbbody">' +
+          '<span class="dbdate"><span class="b4band">AUG</span>' +
+          '<span class="b4num"><i>20</i><span class="chk nstamp"></span></span></span>' +
+          '<span class="dbmemo"><span class="dshead">SPADES STATUS</span>' + row1 + row2 + '</span>' +
+          '</span></span></span>';
+      } },
+    { id: "dheadtoday",
+      cap: "<b>R17 · The today header</b> — the same continuation with the warmer headline: the game plus TODAY, since everything printed below is today's state.",
+      render: function (st) {
+        var done = st.viewer === "in" && st.ch === "done";
+        var row1, row2;
+        if (st.viewer === "out") {
+          row1 = '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+            '<span class="push"><span class="dbtal">today’s deal</span></span></span>';
+          row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+        } else {
+          row1 = done
+            ? '<span class="dbrow">' + b4box(true) + '<span class="b4strike">Deal #51</span>' +
+              '<span class="push"><span class="dbtal g">13 WON</span></span></span>'
+            : '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+              '<span class="push"><span class="dbtal">12 WON</span></span></span>';
+          if (st.bd === "none") row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+          else if (st.bd === "rest") row2 = '<span class="dbrow"><span class="dbcap">ELO</span>' +
+            '<span class="push"><span class="dbfig">1,581</span></span></span>';
+          else row2 = '<span class="dbrow"><span>No. 23</span><span class="push">' + chipFor(st.bd) + '</span></span>';
+        }
+        return CAPSULE_STOCK + '<span class="bigrow"><span class="b4page dcol3 dcolperf dcolhead' + (done ? " done" : "") + '">' +
+          '<span class="dbbody">' +
+          '<span class="dbdate"><span class="b4band">AUG</span>' +
+          '<span class="b4num"><i>20</i><span class="chk nstamp"></span></span></span>' +
+          '<span class="dbmemo"><span class="dshead">SPADES TODAY</span>' + row1 + row2 + '</span>' +
           '</span></span></span>';
       } },
     { id: "dflippins",
