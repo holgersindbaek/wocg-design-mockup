@@ -2331,23 +2331,23 @@
      (OKLCH .76, max gamut chroma), and the ring outline carries white text */
   #sec-classic { --pcat: #e0a600; --pcatring: color-mix(in srgb, var(--pcat) 78%, black);
     --pcathover: color-mix(in srgb, var(--pcat) 92%, black); --pcatink: #fff; }
-  #sec-tt .gplay, #sec-rummy .gplay, #sec-classic .gplay {
+  body.playbtn-cat #sec-tt .gplay, body.playbtn-cat #sec-rummy .gplay, body.playbtn-cat #sec-classic .gplay {
     --pring: var(--pcatring); background: var(--pcat); color: var(--pcatink);
     text-shadow: -1px -1px 0 var(--pring), 1px -1px 0 var(--pring), -1px 1px 0 var(--pring), 1px 1px 0 var(--pring); }
-  #sec-tt .gplay:hover, #sec-tt .gplay:focus-visible,
-  #sec-rummy .gplay:hover, #sec-rummy .gplay:focus-visible,
-  #sec-classic .gplay:hover, #sec-classic .gplay:focus-visible { background: var(--pcathover); }
-  #sec-tt .gplay .gzarr, #sec-rummy .gplay .gzarr, #sec-classic .gplay .gzarr {
+  body.playbtn-cat #sec-tt .gplay:hover, body.playbtn-cat #sec-tt .gplay:focus-visible,
+  body.playbtn-cat #sec-rummy .gplay:hover, body.playbtn-cat #sec-rummy .gplay:focus-visible,
+  body.playbtn-cat #sec-classic .gplay:hover, body.playbtn-cat #sec-classic .gplay:focus-visible { background: var(--pcathover); }
+  body.playbtn-cat #sec-tt .gplay .gzarr, body.playbtn-cat #sec-rummy .gplay .gzarr, body.playbtn-cat #sec-classic .gplay .gzarr {
     filter: brightness(0) invert(1) drop-shadow(1px 0 var(--pring)) drop-shadow(-1px 0 var(--pring))
       drop-shadow(0 1px var(--pring)) drop-shadow(0 -1px var(--pring)); }
-  #sec-tt .gmenu, #sec-rummy .gmenu, #sec-classic .gmenu {
+  body.playbtn-cat #sec-tt .gmenu, body.playbtn-cat #sec-rummy .gmenu, body.playbtn-cat #sec-classic .gmenu {
     background: linear-gradient(var(--pcatring) 0 50px, #D8D2C7 50px); }
-  #sec-tt .gmenu .gmGrid .gmTop, #sec-rummy .gmenu .gmGrid .gmTop, #sec-classic .gmenu .gmGrid .gmTop {
+  body.playbtn-cat #sec-tt .gmenu .gmGrid .gmTop, body.playbtn-cat #sec-rummy .gmenu .gmGrid .gmTop, body.playbtn-cat #sec-classic .gmenu .gmGrid .gmTop {
     background: var(--pcat); color: var(--pcatink); box-shadow: 0 0 0 1px var(--pcatring);
     text-shadow: -1px -1px 0 var(--pcatring), 1px -1px 0 var(--pcatring), -1px 1px 0 var(--pcatring), 1px 1px 0 var(--pcatring); }
-  #sec-tt .gmenu .gmGrid .gmTop:hover, #sec-tt .gmenu .gmGrid .gmTop:focus-visible,
-  #sec-rummy .gmenu .gmGrid .gmTop:hover, #sec-rummy .gmenu .gmGrid .gmTop:focus-visible,
-  #sec-classic .gmenu .gmGrid .gmTop:hover, #sec-classic .gmenu .gmGrid .gmTop:focus-visible { background: var(--pcathover); }
+  body.playbtn-cat #sec-tt .gmenu .gmGrid .gmTop:hover, body.playbtn-cat #sec-tt .gmenu .gmGrid .gmTop:focus-visible,
+  body.playbtn-cat #sec-rummy .gmenu .gmGrid .gmTop:hover, body.playbtn-cat #sec-rummy .gmenu .gmGrid .gmTop:focus-visible,
+  body.playbtn-cat #sec-classic .gmenu .gmGrid .gmTop:hover, body.playbtn-cat #sec-classic .gmenu .gmGrid .gmTop:focus-visible { background: var(--pcathover); }
   body.playbtn-live .gmenu { background: linear-gradient(#2B8A3E 0 50px, #D8D2C7 50px); }
   body.playbtn-live .gmenu .gmGrid .gmTop { background: #2f9e44; color: #fff;
     box-shadow: 0 0 0 1px #2B8A3E;
@@ -3009,7 +3009,7 @@
       <div class="gtile pos-f"><div class="gimg t7"><span class="gchip"><b>128</b> playing</span><img class="glogo" src="ddpinochle_logo.png" alt="Double Deck Pinochle"></div></div>
       <div class="gtile pos-g"><div class="gimg t8"><span class="gchip"><b>87</b> playing</span><img class="glogo" src="handfoot_logo.png" alt="Hand & Foot"></div></div>
       <div class="gtile pos-h"><div class="gimg t2"><span class="gchip"><b>45</b> playing</span><img class="glogo" src="rummy_logo.png" alt="Rummy"></div></div>
-      <div class="gtile pos-i"><div class="gimg t9"><span class="gchip"><b>58</b> playing</span><img class="glogo" src="crazyeights_logo.png" alt="Crazy Eights"></div></div>
+      <div class="gtile pos-i"><div class="gimg t9"><span class="gchip"><b>58</b> playing</span><img class="glogo" src="twentynine_logo.png" alt="Twenty-Nine"></div></div>
     </div>
     <div id="catbtnrow">
       <a class="r1" href="#sec-tt"><span class="cbLabel">Trick-taking</span><span class="cbBadge">10</span><span class="cbSub">10 games</span><span class="cbCount">&middot; 10</span></a>
@@ -3601,6 +3601,7 @@
     ["midnight", "Midnight felt — darkest", "One hue per game"]
   ];
   var PLAYBTNS = [
+    ["cat", "Category trio (blue/green/yellow)"],
     ["green", "Green (site)"],
     ["lightblue", "Light blue"],
     ["darkgreen", "Dark green"],
@@ -3619,7 +3620,7 @@
     ["ghostdot", "Ghost: still dot + naked number"],
     ["ghostnum", "Ghost: naked number only (big tile keeps its word)"]
   ];
-  var curShadow = "soft", curEdge = "softlight", curTexture = "grain", curCatalog = "split", curStats = "capsule2", curMenu = "centerwave", curCounter = "ghostdot", curRail = "suits", curPlayBtn = "evernote", curTileBg = "cardroomcusp", curSect = "waveband", curDivider = "longdealopt", curLhover = "suits";
+  var curShadow = "soft", curEdge = "softlight", curTexture = "grain", curCatalog = "split", curStats = "capsule2", curMenu = "centerwave", curCounter = "ghostdot", curRail = "suits", curPlayBtn = "cat", curTileBg = "cardroomcusp", curSect = "waveband", curDivider = "longdealopt", curLhover = "suits";
   /* every CSS blend mode as an avatar-rim coat: one filter per mode is stamped
      into the SVG defs (same eroded rim, #737373 @ .9 ink, only feBlend's mode
      changes) plus a matching mix-blend ring for the invitee circles */
