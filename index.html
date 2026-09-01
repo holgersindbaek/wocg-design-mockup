@@ -2672,11 +2672,13 @@
 
   /* ===== film-grain texture (ElevenLabs recipe): their 256px black+alpha noise tile
      (alpha pre-halved = their opacity .5), overlay blend, 1 grain = 1 device pixel ===== */
-  body.tex-grain .gimg { background-image: url("noise.png"); background-size: 256px 256px;
+  body.tex-grain .gimg, body.tex-grainsoft .gimg { background-image: url("noise.png"); background-size: 256px 256px;
     background-repeat: repeat; background-blend-mode: overlay; image-rendering: pixelated; }
   /* pixelated is inherited: undo it for the logo art and the suit print, grain only on the bg */
-  body.tex-grain .gimg::before, body.tex-grain .gimg img { image-rendering: auto; }
-  @media (min-resolution: 2dppx) { body.tex-grain .gimg { background-size: 128px 128px; } }
+  body.tex-grain .gimg::before, body.tex-grain .gimg img, body.tex-grainsoft .gimg::before, body.tex-grainsoft .gimg img { image-rendering: auto; }
+  /* the softer cut: the same noise through soft-light, about half the bite */
+  body.tex-grainsoft .gimg { background-blend-mode: soft-light; }
+  @media (min-resolution: 2dppx) { body.tex-grain .gimg, body.tex-grainsoft .gimg { background-size: 128px 128px; } }
 
   /* ===== catalog experiment: every game once, the categories ARE the layout ===== */
   html { scroll-behavior: smooth; }
@@ -3572,6 +3574,7 @@
   ];
   var TEXTURES = [
     ["grain", "Film grain (ElevenLabs)"],
+    ["grainsoft", "Film grain, softer (soft-light)"],
     ["none", "None"]
   ];
   var CATALOGS = [
@@ -3682,7 +3685,7 @@
   ];
   var PLAYBTNS = [
     ["cat", "Category trio (blue/green/yellow)"],
-    ["triogreen", "Trio green — the rummy tile green, alone"],
+    ["triogreen", "Trio green — the rummy tile green (default)"],
     ["green", "Green (site)"],
     ["lightblue", "Light blue"],
     ["darkgreen", "Dark green"],
@@ -3701,7 +3704,7 @@
     ["ghostdot", "Ghost: still dot + naked number"],
     ["ghostnum", "Ghost: naked number only (big tile keeps its word)"]
   ];
-  var curShadow = "soft", curEdge = "softlight", curTexture = "grain", curCatalog = "split", curStats = "capsule2", curMenu = "centerwave", curCounter = "ghostdot", curRail = "suitscool", curPlayBtn = "evernote", curTileBg = "cardroomcusp", curPinPair = "cocoa", curSect = "waveband", curDivider = "longdealopt", curLhover = "suits";
+  var curShadow = "soft", curEdge = "softlight", curTexture = "grain", curCatalog = "split", curStats = "capsule2", curMenu = "centerwave", curCounter = "ghostdot", curRail = "suitscool", curPlayBtn = "triogreen", curTileBg = "cardroomcusp", curPinPair = "cocoa", curSect = "waveband", curDivider = "longdealopt", curLhover = "suits";
   /* every CSS blend mode as an avatar-rim coat: one filter per mode is stamped
      into the SVG defs (same eroded rim, #737373 @ .9 ink, only feBlend's mode
      changes) plus a matching mix-blend ring for the invitee circles */
