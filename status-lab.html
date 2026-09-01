@@ -417,7 +417,7 @@
     text-shadow: -1px -1px 0 #A60000, 1px -1px 0 #A60000, -1px 1px 0 #A60000, 1px 1px 0 #A60000; }
   .dcol3 .b4num { flex: 1; font-size: 30px; border-right: 1px solid var(--edge); }
   .dcol3 .nstamp { width: 22px; height: 22px; transform: translate(-50%, -50%) rotate(-10deg); }
-  .dcol3 .dbmemo .dbrow { flex: 0 0 32px; }
+  .dcol3 .dbmemo .dbrow { flex: 0 0 32px; box-sizing: border-box; }
   /* Corner cap II, perforated: holes on the cap's own bottom edge */
   .dcolperf .dbdate .b4band { box-shadow: inset 0 1px 0 #A60000, inset 1px 0 0 #A60000, inset -1px 0 0 #A60000;
     position: relative; }
@@ -470,6 +470,8 @@
   .dedgehead .dbmemo .dshead { background: #F5EEE5; color: var(--ink); justify-content: center;
     padding: 0; letter-spacing: .1em; box-shadow: inset 0 1px 0 #DAD2C5, inset -1px 0 0 #DAD2C5, inset 0 -1px 0 #DAD2C5;
     border-top-right-radius: 12px; corner-shape: squircle; }
+  .dswapbg .dbdate .b4num { background: #F5EEE5; }
+  .dswapbg .dbmemo .dshead { background: transparent; }
   .dperfdashfine .dbdate .b4band { box-shadow: inset 0 1px 0 #A60000, inset 1px 0 0 #A60000, inset -1px 0 0 #A60000;
     position: relative; }
   .dperfdashfine .dbdate .b4band::after { content: ""; position: absolute; left: 2px; right: 2px; bottom: 0;
@@ -1951,6 +1953,33 @@ signed-out visitor sees no unit at all (except the calendar leaf, which shows a 
           else row2 = '<span class="dbrow"><span>No. 23</span><span class="push">' + chipFor(st.bd) + '</span></span>';
         }
         return CAPSULE_STOCK + '<span class="bigrow"><span class="b4page dcol3 dcolhead dedgehead' + (done ? " done" : "") + '">' +
+          '<span class="dbbody">' +
+          '<span class="dbdate"><span class="b4band">AUG</span>' +
+          '<span class="b4num"><i>20</i><span class="chk nstamp"></span></span></span>' +
+          '<span class="dbmemo"><span class="dshead">SPADES DAILY</span>' + row1 + row2 + '</span>' +
+          '</span></span></span>';
+      } },
+    { id: "dswapbg2",
+      cap: "<b>R32 · Swapped grounds</b> — the numeral area wears the sand instead: the 20 sits on #F5EEE5 while SPADES DAILY goes bare on the white sheet, keeping only its border lines.",
+      render: function (st) {
+        var done = st.viewer === "in" && st.ch === "done";
+        var row1, row2;
+        if (st.viewer === "out") {
+          row1 = '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+            '<span class="push"><span class="dbtal">today’s deal</span></span></span>';
+          row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+        } else {
+          row1 = done
+            ? '<span class="dbrow">' + b4box(true) + '<span class="b4strike">Deal #51</span>' +
+              '<span class="push"><span class="dbtal g">13 WON</span></span></span>'
+            : '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+              '<span class="push"><span class="dbtal">12 WON</span></span></span>';
+          if (st.bd === "none") row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+          else if (st.bd === "rest") row2 = '<span class="dbrow"><span class="dbcap">ELO</span>' +
+            '<span class="push"><span class="dbfig">1,581</span></span></span>';
+          else row2 = '<span class="dbrow"><span>No. 23</span><span class="push">' + chipFor(st.bd) + '</span></span>';
+        }
+        return CAPSULE_STOCK + '<span class="bigrow"><span class="b4page dcol3 dcolhead dedgehead dswapbg' + (done ? " done" : "") + '">' +
           '<span class="dbbody">' +
           '<span class="dbdate"><span class="b4band">AUG</span>' +
           '<span class="b4num"><i>20</i><span class="chk nstamp"></span></span></span>' +
