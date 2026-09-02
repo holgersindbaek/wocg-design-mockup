@@ -676,17 +676,37 @@
   .alma2 .afig.g { color: #2B8A3E; }
   /* R55: R54 with the cap in R31's sand, the game name alone in ink, the month under the numeral */
   .alma3 .dsband { background: #F5EEE5; box-shadow: inset 0 0 0 1px #DAD2C5; color: var(--ink); text-shadow: none;
-    letter-spacing: .1em; }
+    letter-spacing: .1em; border-radius: 12px 12px 0 0; corner-shape: squircle; }
   .alma3 .swcaret { opacity: .6; }
-  /* R56: R55's frame with R53's doors: sentence case throughout, heavy arrows instead of leaders */
-  .alma4 .dsband, .alma4 .awd { letter-spacing: .02em; }
+  /* R56: R55's frame with R53's doors: sentence case throughout, the open-table nameplate's 14px in the bar,
+     and the All games button's triangle (masked, so it takes the text colour) on the caret and on every door */
+  .alma4 .dsband { font-size: 14px; letter-spacing: 0; }
+  .alma4 .awd { letter-spacing: .02em; }
   .alma4 .abody { padding-right: 0; }
-  .alma4 .aline { position: relative; padding-right: 34px; }
+  .alma4 .aline { position: relative; padding-right: 34px; white-space: nowrap; }
   .alma4 .aline:hover { background: #FAF7F2; }
-  .alma4 .aline .push { margin-left: auto; display: inline-flex; align-items: center; }
+  .alma4 .aline .push { margin-left: auto; display: inline-flex; align-items: center; gap: 4px; }
   .alma4 .afig { font-size: 13px; }
-  .alma4 .rchev { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); line-height: 1;
-    font-size: 16px; font-weight: bold; color: #8A8783; }
+  .alma4 .swcaret, .alma4 .rchev { display: inline-block; background-color: currentColor; opacity: 1;
+    -webkit-mask: var(--tri) center / contain no-repeat; mask: var(--tri) center / contain no-repeat; }
+  .alma4 .swcaret { width: 8px; height: 7px; margin-left: 6px; color: var(--ink);
+    --tri: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 7'%3E%3Cpath d='M1.2 1h5.6L4 6z' fill='%23000' stroke='%23000' stroke-width='2' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E"); }
+  .alma4 .rchev { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); width: 7px; height: 8px; color: var(--muted);
+    --tri: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 7 8'%3E%3Cpath d='M1 1.2v5.6L6 4z' fill='%23000' stroke='%23000' stroke-width='2' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E"); }
+  /* R57-R60: a left mark on the second door, sized to the checkbox */
+  .alma4 .lmark { display: inline-block; width: 12px; height: 12px; flex-shrink: 0; position: relative;
+    background: no-repeat center / contain; }
+  .alma4 .lmark.up { background-image: url("arrowUpGreenSmall.png"); }
+  .alma4 .lmark.down { background-image: url("arrowDownRedSmall.png"); }
+  .alma4 .lmark.level::after { content: ""; position: absolute; left: 2px; right: 2px; top: 5px; height: 2px;
+    border-radius: 1px; background: #B8B4AE; }
+  .alma4 .lmark.ring { border: 1.5px solid var(--muted); border-radius: 50%; box-sizing: border-box; }
+  .alma4 .lmark.laurel { background-color: var(--muted); -webkit-mask: url("dailyChallengeGoldSmall.svg") center / contain no-repeat;
+    mask: url("dailyChallengeGoldSmall.svg") center / contain no-repeat; }
+  .alma4 .lmark.bars { background: linear-gradient(var(--muted), var(--muted)) 0 100% / 3px 5px no-repeat,
+    linear-gradient(var(--muted), var(--muted)) 4.5px 100% / 3px 8px no-repeat,
+    linear-gradient(var(--muted), var(--muted)) 9px 100% / 3px 12px no-repeat; }
+  .alma4 .lmark.medal { background-image: url("dailyChallengeGoldSmall.svg"); }
   /* perforation: punched holes straddling the cap's bottom edge, no solid line there */
   .dperf .dsband { box-shadow: inset 0 1px 0 #A60000, inset 1px 0 0 #A60000, inset -1px 0 0 #A60000;
     position: relative; }
@@ -1133,6 +1153,21 @@ signed-out visitor sees no unit at all (except the calendar leaf, which shows a 
         apply();
       });
     });
+  }
+
+  /* the R56 family: R55's sand almanac with doors; the caller supplies the second door */
+  function alma4Page(st, row2) {
+    var done = st.viewer === "in" && st.ch === "done";
+    var row1 = '<span class="aline">' + b4box(done) + (done ? '<span class="b4strike">Daily challenge</span>' : '<span>Daily challenge</span>') +
+      '<span class="rchev"></span></span>';
+    return CAPSULE_STOCK + '<span class="bigrow"><span class="b4page alma2 alma3 alma4' + (done ? " done" : "") + '">' +
+      '<span class="dsband gswap" title="Switch game"><span class="gname">Spades</span><span class="swcaret"></span></span>' +
+      '<span class="abody"><span class="adate"><span class="anum">20</span><span class="awd">Aug</span></span>' +
+      '<span class="alines">' + row1 + (st.viewer === "out" ? "" : row2) + '</span></span></span></span>';
+  }
+  function alma4Door(mark, text, push) {
+    return '<span class="aline">' + (mark ? '<span class="lmark ' + mark + '"></span>' : '') + '<span>' + text + '</span>' +
+      (push ? '<span class="push">' + push + '</span>' : '') + '<span class="rchev"></span></span>';
   }
 
   var CONCEPTS4 = [
@@ -2746,23 +2781,41 @@ signed-out visitor sees no unit at all (except the calendar leaf, which shows a 
       },
       wire: function (stage) { wireGameSwitch(stage, this); } },
     { id: "alma4x",
-      cap: "<b>R56 · The almanac, sand cap, doors</b> — R55 with R53's rows: Daily challenge and the Elo rating as doors with the heavy arrows, no leaders, and nothing in capitals: Spades in the bar, Aug under the numeral.",
+      cap: "<b>R56 · The almanac, sand cap, doors</b> — R55 with R53's rows: Daily challenge and the Elo rating as doors, nothing in capitals, the bar at the open-table nameplate's 14px, and the All games button's triangle as the caret and as every door's arrow.",
       render: function (st) {
-        var done = st.viewer === "in" && st.ch === "done";
-        var lines = "";
-        if (st.viewer === "out") {
-          lines = '<span class="aline">' + b4box(false) + '<span>Daily challenge</span><span class="rchev">›</span></span>';
-        } else {
-          lines = done
-            ? '<span class="aline">' + b4box(true) + '<span class="b4strike">Daily challenge</span><span class="rchev">›</span></span>'
-            : '<span class="aline">' + b4box(false) + '<span>Daily challenge</span><span class="rchev">›</span></span>';
-          if (st.bd === "none") lines += '<span class="aline"><span>No rank yet</span><span class="rchev">›</span></span>';
-          else lines += '<span class="aline"><span>Elo rating</span><span class="push"><span class="afig">1,581</span></span><span class="rchev">›</span></span>';
-        }
-        return CAPSULE_STOCK + '<span class="bigrow"><span class="b4page alma2 alma3 alma4' + (done ? " done" : "") + '">' +
-          '<span class="dsband gswap" title="Switch game"><span class="gname">Spades</span><span class="swcaret">&#9662;</span></span>' +
-          '<span class="abody"><span class="adate"><span class="anum">20</span><span class="awd">Aug</span></span>' +
-          '<span class="alines">' + lines + '</span></span></span></span>';
+        var row2 = st.bd === "none" ? alma4Door(null, "No rank yet") : alma4Door(null, "Elo rating", '<span class="afig">1,581</span>');
+        return alma4Page(st, row2);
+      },
+      wire: function (stage) { wireGameSwitch(stage, this); } },
+    { id: "alma4trend",
+      cap: "<b>R57 · The trend mark</b> — R56 with a left mark on the Elo door to pair with the checkbox: the site's green up or red down arrow for today's move, a short grey bar on a quiet day, a hollow ring when there is no rank yet.",
+      render: function (st) {
+        var row2 = st.bd === "none" ? alma4Door("ring", "No rank yet")
+          : alma4Door(st.bd === "rest" ? "level" : st.bd, "Elo rating", '<span class="afig">1,581</span>');
+        return alma4Page(st, row2);
+      },
+      wire: function (stage) { wireGameSwitch(stage, this); } },
+    { id: "alma4place",
+      cap: "<b>R58 · The placing</b> — the second door reads the placing instead of the rating: the trophy in the muted ink at the left and No. 23 in Spades. The trend chip does not fit beside that line at this width, so the day's move is not shown.",
+      render: function (st) {
+        var row2 = st.bd === "none" ? alma4Door("ring", "No rank yet")
+          : alma4Door("laurel", 'No. 23 in <span class="gname">Spades</span>');
+        return alma4Page(st, row2);
+      },
+      wire: function (stage) { wireGameSwitch(stage, this); } },
+    { id: "alma4chart",
+      cap: "<b>R59 · The bars mark</b> — three rising bars drawn in the muted ink as the left mark, with the Elo rating and its figure. The menu's activity glyph was tried first and turns to a smudge at 12px.",
+      render: function (st) {
+        var row2 = st.bd === "none" ? alma4Door("ring", "No rank yet") : alma4Door("bars", "Elo rating", '<span class="afig">1,581</span>');
+        return alma4Page(st, row2);
+      },
+      wire: function (stage) { wireGameSwitch(stage, this); } },
+    { id: "alma4medal",
+      cap: "<b>R60 · The trophy and the place</b> — the daily-challenge trophy in its own colours at the left and the placing written out as 23rd in Spades. The rating figure does not fit beside that line, so this one shows the place only.",
+      render: function (st) {
+        var row2 = st.bd === "none" ? alma4Door("ring", "No rank yet")
+          : alma4Door("medal", '23rd in <span class="gname">Spades</span>');
+        return alma4Page(st, row2);
       },
       wire: function (stage) { wireGameSwitch(stage, this); } },
   ];
