@@ -539,10 +539,10 @@
   /* R43-R44: the dated page — the band carries the date, no numeral column */
   .ddated .dbmemo .dbrow { box-sizing: border-box; }
   /* R45: F5 on the Five-family standards — red 20px cap, Gelica numeral, 32px strips */
-  .sverd2 { width: 148px; overflow: hidden; }
-  .sverd2 .b4num { height: 56px; font-family: "Gelica", "Georgia", serif; font-weight: 700; font-size: 40px; }
+  .sverd2 { width: 136px; overflow: hidden; }
+  .sverd2 .b4num { height: 44px; font-family: "Gelica", "Georgia", serif; font-weight: 700; font-size: 30px; }
   .sverd2 .b4num i { color: var(--ink); opacity: 1; }
-  .sverd2 .nstamp { width: 32px; height: 32px; transform: translate(-50%, -50%) rotate(-12deg); }
+  .sverd2 .nstamp { width: 26px; height: 26px; transform: translate(-50%, -50%) rotate(-12deg); }
   .sverd2 .strip { flex: 0 0 32px; box-sizing: border-box; border-top: 1px solid var(--edge);
     display: flex; align-items: center; justify-content: center; gap: 5px;
     font-size: 12px; font-weight: bold; color: var(--ink); font-variant-numeric: tabular-nums; cursor: pointer; }
@@ -560,11 +560,19 @@
   .leaf.lf46.done .lday { opacity: 1; }
   .leaf.lf46 .stamp { top: 36px; left: 50%; width: 22px; height: 22px; transform: translate(-50%, -50%) rotate(-8deg); }
   .leafline .postline { margin: 0; }
-  /* R47: the dated pill — the Today Pill opened by a red calendar tab */
-  .todaypill.tp47 { padding-left: 0; overflow: hidden; }
-  .tp47 .tdate { display: inline-flex; align-items: center; align-self: stretch; padding: 0 10px;
+  /* the smaller leaf for R46 */
+  .leaf.lf46.lfsm { width: 36px; height: 42px; }
+  .leaf.lf46.lfsm .dsband { height: 16px; line-height: 16px; letter-spacing: .08em; }
+  .leaf.lf46.lfsm .lday { height: 26px; font-size: 18px; }
+  .leaf.lf46.lfsm .stamp { top: 29px; width: 16px; height: 16px; }
+  /* R47: the dated pill — the Today Pill opened by a red calendar tab, at the capsule's scale */
+  .todaypill.tp47 { padding-left: 0; overflow: hidden; height: 32px; font-size: 16px; }
+  .tp47 .tc { padding: 0 11px; gap: 4px; }
+  .tp47 .tc .chk { width: 16px; height: 16px; }
+  .tp47 .tc .ring { width: 12px; height: 12px; opacity: .55; }
+  .tp47 .tdate { display: inline-flex; align-items: center; align-self: stretch; padding: 0 11px;
     background: #D5201E; box-shadow: inset 0 0 0 1px #A60000; color: #fff;
-    font-size: 12px; font-weight: bold; letter-spacing: .1em;
+    font-size: 14px; font-weight: bold; letter-spacing: .06em;
     text-shadow: -1px -1px 0 #A60000, 1px -1px 0 #A60000, -1px 1px 0 #A60000, 1px 1px 0 #A60000; }
   /* R48: the small leaf standing beside the pill */
   .leafline .todaypill { margin-top: 0; }
@@ -2368,7 +2376,7 @@ signed-out visitor sees no unit at all (except the calendar leaf, which shows a 
       render: function (st) {
         var strips = "";
         if (st.viewer === "out") {
-          strips = '<span class="strip">&spades; Deal #51 · all play<span class="chev">›</span></span>';
+          strips = '<span class="strip">Deal #51 · all play<span class="chev">›</span></span>';
         } else {
           strips = st.ch === "done"
             ? '<span class="strip g"><span class="chk"></span>Better than 62%</span>'
@@ -2398,13 +2406,13 @@ signed-out visitor sees no unit at all (except the calendar leaf, which shows a 
           else parts.push('<b>12</b> wins this month');
         }
         return CAPSULE_STOCK + '<span class="leafline">' +
-          '<span class="leaf lf46' + (done ? " done" : "") + '">' +
+          '<span class="leaf lf46 lfsm' + (done ? " done" : "") + '">' +
           '<span class="dsband">AUG</span><span class="lday">20</span><span class="chk stamp"></span></span>' +
           '<span class="postline">' + parts.join(' &middot; ') + '</span>' +
           '</span>';
       } },
     { id: "tp47x",
-      cap: "<b>R47 · The dated pill</b> — the Today Pill with a calendar feel: the TODAY cap becomes a red date tab in the cap recipe, and the cells follow it.",
+      cap: "<b>R47 · The dated pill</b> — the Today Pill with a calendar feel, now at the live capsule's scale: 32px tall with the capsule type, the TODAY cap replaced by a red date tab.",
       render: function (st) {
         var cells = "";
         if (st.viewer === "out") {
