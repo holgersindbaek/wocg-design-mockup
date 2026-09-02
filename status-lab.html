@@ -674,6 +674,10 @@
   .alma2 .lead { flex: 1; border-bottom: 1px dotted #C9C0AF; margin: 0 2px; transform: translateY(-3px); }
   .alma2 .afig { font-size: 12px; font-weight: bold; color: var(--ink); font-variant-numeric: tabular-nums; }
   .alma2 .afig.g { color: #2B8A3E; }
+  /* R55: R54 with the cap in R31's sand, the game name alone in ink, the month under the numeral */
+  .alma3 .dsband { background: #F5EEE5; box-shadow: inset 0 -1px 0 #DAD2C5; color: var(--ink); text-shadow: none;
+    letter-spacing: .1em; }
+  .alma3 .swcaret { opacity: .6; }
   /* perforation: punched holes straddling the cap's bottom edge, no solid line there */
   .dperf .dsband { box-shadow: inset 0 1px 0 #A60000, inset 1px 0 0 #A60000, inset -1px 0 0 #A60000;
     position: relative; }
@@ -2709,6 +2713,26 @@ signed-out visitor sees no unit at all (except the calendar leaf, which shows a 
         return CAPSULE_STOCK + '<span class="bigrow"><span class="b4page alma2' + (done ? " done" : "") + '">' +
           '<span class="dsband gswap" title="Switch game">AUG ·&nbsp;<span class="gnameu">SPADES</span><span class="swcaret">&#9662;</span></span>' +
           '<span class="abody"><span class="adate"><span class="anum">20</span><span class="awd">WED</span></span>' +
+          '<span class="alines">' + lines + '</span></span></span></span>';
+      },
+      wire: function (stage) { wireGameSwitch(stage, this); } },
+    { id: "alma3x",
+      cap: "<b>R55 · The almanac, sand cap</b> — R54 with the top in R31's sand instead of red: the game name alone in ink on the #F5EEE5 bar with its #DAD2C5 line, and the month under the numeral where the weekday was.",
+      render: function (st) {
+        var done = st.viewer === "in" && st.ch === "done";
+        var lines = "";
+        if (st.viewer === "out") {
+          lines = '<span class="aline agst">' + b4box(false) + '<span class="acap" style="letter-spacing:.12em">DEAL #51</span></span>';
+        } else {
+          lines = done
+            ? '<span class="aline">' + b4box(true) + '<span class="b4strike">Play deal #51</span><i class="lead"></i><span class="afig g">62%</span></span>'
+            : '<span class="aline">' + b4box(false) + '<span>Play deal #51</span><i class="lead"></i></span>';
+          if (st.bd === "none") lines += '<span class="aline"><span class="acap">DAYS WON</span><i class="lead"></i><span class="afig">' + (done ? "13" : "12") + '</span></span>';
+          else lines += '<span class="aline"><span class="acap">ELO RATING</span><i class="lead"></i><span class="afig">1,581</span></span>';
+        }
+        return CAPSULE_STOCK + '<span class="bigrow"><span class="b4page alma2 alma3' + (done ? " done" : "") + '">' +
+          '<span class="dsband gswap" title="Switch game"><span class="gnameu">SPADES</span><span class="swcaret">&#9662;</span></span>' +
+          '<span class="abody"><span class="adate"><span class="anum">20</span><span class="awd">AUG</span></span>' +
           '<span class="alines">' + lines + '</span></span></span></span>';
       },
       wire: function (stage) { wireGameSwitch(stage, this); } },
