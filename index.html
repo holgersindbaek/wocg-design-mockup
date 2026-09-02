@@ -2059,14 +2059,15 @@
      button's trio green (--p4 with the playbtn-triogreen ring and hover:
      78% and 92% toward black), blue is the trick-taking trio blue (#298ae9,
      the green's OKLCH depth at hue 252, see #sec-tt), and light blue is
-     the old Mantine blue-2/3/8 set turned to that hue in OKLCH (L .86 /
-     .76 / .54, chroma clipped to the sRGB gamut). The light red is the
-     light blue's fill and ink at the tile red's hue (26.4, --p8 in the
+     the old Mantine blue-2/3 fill and ring turned to that hue in OKLCH
+     (L .86 / .76, chroma clipped to the sRGB gamut); its text keeps the
+     old blue-8 ink, which already sits on the family hue. The light red
+     is the light blue's fill at the tile red's hue (26.4, --p8 in the
      Raphael scheme; the old plate red already sat at 26.5). */
   body { --triogreen: var(--p4); --triogreenring: color-mix(in srgb, var(--p4) 78%, black); --triogreenhover: color-mix(in srgb, var(--p4) 92%, black);
     --trioblue: #298ae9; --triobluering: color-mix(in srgb, #298ae9 78%, black); --triobluehover: color-mix(in srgb, #298ae9 92%, black);
-    --triolight: #b0d5ff; --triolightring: #83b5ef; --triolightink: #1c71c2; --triolighthover: #a3ccfb; --triolightline: #72b0f6;
-    --trioredlight: #fdc0b9; --trioredink: #b6453f; }
+    --triolight: #b0d5ff; --triolightring: #83b5ef; --triolightink: #1971C2; --triolighthover: #a3ccfb; --triolightline: #72b0f6;
+    --trioredlight: #fdc0b9; }
   .lobbyscope .button, .cattabs .button { border-radius: var(--radius-md, 6px); corner-shape: squircle; text-decoration: none; color: #fff; font-weight: bold; font-size: 20px;
     height: 32px; line-height: 32px; display: inline-block; text-align: center; padding: 0 8px; box-sizing: border-box;
     cursor: pointer; border: none; transition: background-color 24ms ease-out, box-shadow 24ms ease-out, transform 80ms ease-out; }
@@ -2100,7 +2101,7 @@
   .lobbyscope .ldMore .dropupButton .dropupButtonText { padding: 0 10px 0 0; }
   .lobbyscope .ldMore .dropupButton::before { content: ""; order: 1; width: 1px; align-self: stretch; background: var(--triolightring); }
   .lobbyscope .ldMore .dropupButton::after { content: ""; order: 2; aspect-ratio: 1; align-self: stretch;
-    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 7'%3E%3Cpath d='M1.2 1h5.6L4 6z' fill='%231c71c2' stroke='%231c71c2' stroke-width='2' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E") center / 8px 7px no-repeat; }
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 7'%3E%3Cpath d='M1.2 1h5.6L4 6z' fill='%231971C2' stroke='%231971C2' stroke-width='2' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E") center / 8px 7px no-repeat; }
   .lobbyscope .ldMore:hover .dropupButton { background-color: var(--triolighthover); }
   .lobbyscope .dropupContent { display: none; position: absolute; z-index: 2; top: calc(100% + 8px); right: 0; min-width: 100%;
     background-color: #fff; border: 1px solid var(--triolightline); border-radius: 6px; box-sizing: border-box; overflow: hidden;
@@ -2201,11 +2202,11 @@
       0 1px 3px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25);
     border-radius: var(--radius-md, 6px); corner-shape: squircle;
     height: 20px; position: absolute; bottom: 0; width: 100%; }
-  /* Nameplates switch: the plates and their names take the light-blue
-     button set, and the partner plates take that set's red */
-  body.plates-trio .lobbyscope .playerNameContainer { background-color: var(--triolight); color: var(--triolightink); }
+  /* Nameplates switch: the plates take the light-blue button fill and the
+     partner plates its red; the names keep their inks */
+  body.plates-trio .lobbyscope .playerNameContainer { background-color: var(--triolight); }
   body.plates-trio .lobbyscope .tableListing.isTeamGame .playernumber1 .playerNameContainer,
-  body.plates-trio .lobbyscope .tableListing.isTeamGame .playernumber3 .playerNameContainer { background-color: var(--trioredlight); color: var(--trioredink); }
+  body.plates-trio .lobbyscope .tableListing.isTeamGame .playernumber3 .playerNameContainer { background-color: var(--trioredlight); }
   .lobbyscope .playerName { font-size: 14px; font-weight: bold; line-height: 20px; white-space: nowrap;
     overflow: hidden; text-overflow: ellipsis; padding: 0 6px; }
   .lobbyscope .playerBadge { display: block; width: 20px; height: 20px; position: absolute; left: -10px; top: -10px; }
@@ -3792,7 +3793,7 @@
   var curShadow = "soft", curEdge = "softlight", curTexture = "grainbal", curCatalog = "split", curStats = "capsule2", curMenu = "centerwave", curCounter = "ghostdot", curRail = "suitscool", curPlayBtn = "triogreen", curTileBg = "cardroomcusp", curPinPair = "violet", curSect = "waveband", curDivider = "longdealopt", curLhover = "suits";
   var PLATES = [
     ["mantine", "Mantine blue & red (as today)"],
-    ["trio", "Trio family: the light-blue button set & its red"]
+    ["trio", "Trio family: light-blue fill & its red, names as today"]
   ];
   var curPlates = "mantine";
   /* every CSS blend mode as an avatar-rim coat: one filter per mode is stamped
