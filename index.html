@@ -1008,13 +1008,6 @@
   }
   .mlogo { height: 32px; flex-shrink: 0; border: 0; }
   .mlogo img { width: 170px; height: 32px; display: block; }
-  /* logo option: the mark leaves the menu bar and sits above the hero title at the
-     classic bar's 170x32, drawn on the title itself so it follows the title into
-     the scene layer, whose own fitting re-centres the taller block */
-  body.logo-hero .mlogo, body.logo-hero .mclogo, body.logo-hero .mcapmark, body.logo-hero .mcaplogo { display: none; }
-  body.logo-hero #herotitle::before { content: ""; display: block; width: 170px; height: 32px; margin: 0 0 16px;
-    background: url("wocg-logo.png") left center / contain no-repeat; }
-  body.logo-hero.layout-scsplit #herotitle::before { margin-left: auto; margin-right: auto; }
   .mnav { display: flex; list-style: none; gap: 14px; flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; }
   .mnav li { color: var(--ink-soft); cursor: pointer; }
   .mnav li:hover { text-decoration: underline; }
@@ -1124,7 +1117,7 @@
   .mtri { width: 8px; height: 7px; vertical-align: 1px; margin-left: 5px;
     content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 7'%3E%3Cpath d='M1.2 1h5.6L4 6z' fill='%23262626' stroke='%23262626' stroke-width='2' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E"); }
   .mbcenter .mclogo { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
-  .mbcenter .mclogo img { width: auto; display: block; height: 40px; }
+  .mbcenter .mclogo img { width: auto; display: block; height: 35px; }
   .mbcenter .muser { margin-left: auto; flex-shrink: 0; }
   /* live-parity menu hovers: links underline like the site (MenuBar.scss), and
      Games, the icons, and the avatar grow the site's own dropdowns
@@ -2929,7 +2922,6 @@
     <label class="ctl"><span>Divider</span><select id="sel-divider"></select></label>
     <label class="ctl"><span>Sections</span><select id="sel-sect"></select></label>
     <label class="ctl"><span>Menu bar</span><select id="sel-menu"></select></label>
-    <label class="ctl"><span>Logo</span><select id="sel-logo"></select></label>
     <label class="ctl"><span>Link hover</span><select id="sel-lhover"></select></label>
   </div>
   <details class="swadv">
@@ -3679,10 +3671,6 @@
     ["contained", "Open tables in the Evernote container"],
     ["waveband", "Open tables on a wave-edged band"]
   ];
-  var LOGOS = [
-    ["menu", "In the menu bar (default)"],
-    ["hero", "Above the hero title, a size down"]
-  ];
   var MENUS = [
     ["current", "Today's bar"],
     ["center", "Centered mark"],
@@ -3804,7 +3792,6 @@
     ["ghostnum", "Ghost: naked number only (big tile keeps its word)"]
   ];
   var curShadow = "capsule", curEdge = "softlight", curTexture = "grainbal", curCatalog = "split", curStats = "capsule2", curMenu = "centerwave", curCounter = "ghostdot", curRail = "suitscool", curPlayBtn = "triogreen", curTileBg = "cardroomcusp", curPinPair = "violet", curSect = "waveband", curDivider = "longdealopt", curLhover = "suits";
-  var curLogo = "menu";
   /* every CSS blend mode as an avatar-rim coat: one filter per mode is stamped
      into the SVG defs (same eroded rim, #737373 @ .9 ink, only feBlend's mode
      changes) plus a matching mix-blend ring for the invitee circles */
@@ -4639,7 +4626,7 @@
   }
   function applyBody() {
     var scene = curLayout.indexOf("sc") === 0;
-    document.body.className = curBase + " play-" + curPlay + " layout-" + curLayout + (scene ? " scenehero" : "") + " font-" + curFont + " shadow-" + curShadow + " edge-" + curEdge + " tex-" + curTexture + " cat-" + curCatalog + " stats-" + curStats + " menu-" + curMenu + " logo-" + curLogo + " counter-" + curCounter + " rail-" + curRail + " playbtn-" + curPlayBtn + " avedge-" + curAvedge + " avsh-" + curAvshadow + " cnav-" + curCnav + " foot-" + curFooter + " viewer-" + curViewer + " sect-" + curSect + " div-" + curDivider + " lhover-" + curLhover + " tilebg-" + curTileBg + " pinpair-" + curPinPair + (palShown ? " show-palette" : "");
+    document.body.className = curBase + " play-" + curPlay + " layout-" + curLayout + (scene ? " scenehero" : "") + " font-" + curFont + " shadow-" + curShadow + " edge-" + curEdge + " tex-" + curTexture + " cat-" + curCatalog + " stats-" + curStats + " menu-" + curMenu + " counter-" + curCounter + " rail-" + curRail + " playbtn-" + curPlayBtn + " avedge-" + curAvedge + " avsh-" + curAvshadow + " cnav-" + curCnav + " foot-" + curFooter + " viewer-" + curViewer + " sect-" + curSect + " div-" + curDivider + " lhover-" + curLhover + " tilebg-" + curTileBg + " pinpair-" + curPinPair + (palShown ? " show-palette" : "");
     var ht = document.getElementById("herotitle"), hs = document.getElementById("herosub");
     if (scene) {
       if (curLayout === "scpyr") {
@@ -4668,7 +4655,6 @@
     document.getElementById("sel-catalog").value = curCatalog;
     document.getElementById("sel-stats").value = curStats;
     document.getElementById("sel-menu").value = curMenu;
-    document.getElementById("sel-logo").value = curLogo;
     document.getElementById("sel-sect").value = curSect;
     document.getElementById("sel-divider").value = curDivider;
     document.getElementById("sel-lhover").value = curLhover;
@@ -4892,7 +4878,6 @@
   buildSel("sel-catalog", CATALOGS, function (v) { curCatalog = v; });
   buildSel("sel-stats", STATSLINES, function (v) { curStats = v; });
   buildSel("sel-menu", MENUS, function (v) { curMenu = v; });
-  buildSel("sel-logo", LOGOS, function (v) { curLogo = v; });
   buildSel("sel-sect", SECTS, function (v) { curSect = v; });
   buildSel("sel-divider", DIVIDERS, function (v) { curDivider = v; });
   buildSel("sel-lhover", LHOVERS, function (v) { curLhover = v; });
