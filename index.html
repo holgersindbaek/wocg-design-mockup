@@ -2060,10 +2060,13 @@
      78% and 92% toward black), blue is the trick-taking trio blue (#298ae9,
      the green's OKLCH depth at hue 252, see #sec-tt), and light blue is
      the old Mantine blue-2/3/8 set turned to that hue in OKLCH (L .86 /
-     .76 / .54, chroma clipped to the sRGB gamut) */
+     .76 / .54, chroma clipped to the sRGB gamut). The light red is the
+     light blue's fill and ink at the tile red's hue (26.4, --p8 in the
+     Raphael scheme; the old plate red already sat at 26.5). */
   body { --triogreen: var(--p4); --triogreenring: color-mix(in srgb, var(--p4) 78%, black); --triogreenhover: color-mix(in srgb, var(--p4) 92%, black);
     --trioblue: #298ae9; --triobluering: color-mix(in srgb, #298ae9 78%, black); --triobluehover: color-mix(in srgb, #298ae9 92%, black);
-    --triolight: #b0d5ff; --triolightring: #83b5ef; --triolightink: #1c71c2; --triolighthover: #a3ccfb; --triolightline: #72b0f6; }
+    --triolight: #b0d5ff; --triolightring: #83b5ef; --triolightink: #1c71c2; --triolighthover: #a3ccfb; --triolightline: #72b0f6;
+    --trioredlight: #fdc0b9; --trioredink: #b6453f; }
   .lobbyscope .button, .cattabs .button { border-radius: var(--radius-md, 6px); corner-shape: squircle; text-decoration: none; color: #fff; font-weight: bold; font-size: 20px;
     height: 32px; line-height: 32px; display: inline-block; text-align: center; padding: 0 8px; box-sizing: border-box;
     cursor: pointer; border: none; transition: background-color 24ms ease-out, box-shadow 24ms ease-out, transform 80ms ease-out; }
@@ -2198,6 +2201,11 @@
       0 1px 3px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25);
     border-radius: var(--radius-md, 6px); corner-shape: squircle;
     height: 20px; position: absolute; bottom: 0; width: 100%; }
+  /* Nameplates switch: the plates and their names take the light-blue
+     button set, and the partner plates take that set's red */
+  body.plates-trio .lobbyscope .playerNameContainer { background-color: var(--triolight); color: var(--triolightink); }
+  body.plates-trio .lobbyscope .tableListing.isTeamGame .playernumber1 .playerNameContainer,
+  body.plates-trio .lobbyscope .tableListing.isTeamGame .playernumber3 .playerNameContainer { background-color: var(--trioredlight); color: var(--trioredink); }
   .lobbyscope .playerName { font-size: 14px; font-weight: bold; line-height: 20px; white-space: nowrap;
     overflow: hidden; text-overflow: ellipsis; padding: 0 6px; }
   .lobbyscope .playerBadge { display: block; width: 20px; height: 20px; position: absolute; left: -10px; top: -10px; }
@@ -2909,6 +2917,7 @@
     <label class="ctl"><span>Tile colors</span><select id="sel-tilebg"></select></label>
     <label class="ctl"><span>Play button</span><select id="sel-playbtn"></select></label>
     <label class="ctl"><span>Catalog layout</span><select id="sel-catalog"></select></label>
+    <label class="ctl"><span>Nameplates</span><select id="sel-plates"></select></label>
     <label class="ctl"><span>Divider</span><select id="sel-divider"></select></label>
     <label class="ctl"><span>Sections</span><select id="sel-sect"></select></label>
     <label class="ctl"><span>Menu bar</span><select id="sel-menu"></select></label>
@@ -3781,6 +3790,11 @@
     ["ghostnum", "Ghost: naked number only (big tile keeps its word)"]
   ];
   var curShadow = "soft", curEdge = "softlight", curTexture = "grainbal", curCatalog = "split", curStats = "capsule2", curMenu = "centerwave", curCounter = "ghostdot", curRail = "suitscool", curPlayBtn = "triogreen", curTileBg = "cardroomcusp", curPinPair = "violet", curSect = "waveband", curDivider = "longdealopt", curLhover = "suits";
+  var PLATES = [
+    ["mantine", "Mantine blue & red (as today)"],
+    ["trio", "Trio family: the light-blue button set & its red"]
+  ];
+  var curPlates = "mantine";
   /* every CSS blend mode as an avatar-rim coat: one filter per mode is stamped
      into the SVG defs (same eroded rim, #737373 @ .9 ink, only feBlend's mode
      changes) plus a matching mix-blend ring for the invitee circles */
@@ -4615,7 +4629,7 @@
   }
   function applyBody() {
     var scene = curLayout.indexOf("sc") === 0;
-    document.body.className = curBase + " play-" + curPlay + " layout-" + curLayout + (scene ? " scenehero" : "") + " font-" + curFont + " shadow-" + curShadow + " edge-" + curEdge + " tex-" + curTexture + " cat-" + curCatalog + " stats-" + curStats + " menu-" + curMenu + " counter-" + curCounter + " rail-" + curRail + " playbtn-" + curPlayBtn + " avedge-" + curAvedge + " avsh-" + curAvshadow + " cnav-" + curCnav + " foot-" + curFooter + " viewer-" + curViewer + " sect-" + curSect + " div-" + curDivider + " lhover-" + curLhover + " tilebg-" + curTileBg + " pinpair-" + curPinPair + (palShown ? " show-palette" : "");
+    document.body.className = curBase + " play-" + curPlay + " layout-" + curLayout + (scene ? " scenehero" : "") + " font-" + curFont + " shadow-" + curShadow + " edge-" + curEdge + " tex-" + curTexture + " cat-" + curCatalog + " stats-" + curStats + " menu-" + curMenu + " counter-" + curCounter + " rail-" + curRail + " playbtn-" + curPlayBtn + " avedge-" + curAvedge + " avsh-" + curAvshadow + " cnav-" + curCnav + " foot-" + curFooter + " viewer-" + curViewer + " sect-" + curSect + " div-" + curDivider + " lhover-" + curLhover + " tilebg-" + curTileBg + " pinpair-" + curPinPair + " plates-" + curPlates + (palShown ? " show-palette" : "");
     var ht = document.getElementById("herotitle"), hs = document.getElementById("herosub");
     if (scene) {
       if (curLayout === "scpyr") {
@@ -4659,6 +4673,7 @@
     document.getElementById("sel-footer").value = curFooter;
     document.getElementById("sel-viewer").value = curViewer;
     document.getElementById("sel-pcopy").value = curPcopy;
+    document.getElementById("sel-plates").value = curPlates;
     moveLobby();
     moveCatalog();
     if (typeof renderPlayset === "function") renderPlayset();
@@ -4870,6 +4885,7 @@
   buildSel("sel-sect", SECTS, function (v) { curSect = v; });
   buildSel("sel-divider", DIVIDERS, function (v) { curDivider = v; });
   buildSel("sel-lhover", LHOVERS, function (v) { curLhover = v; });
+  buildSel("sel-plates", PLATES, function (v) { curPlates = v; });
   (function () {
     var bar = document.querySelector(".switchbar");
     var zone = document.querySelector(".switchzone");
