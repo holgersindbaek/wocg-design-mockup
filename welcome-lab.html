@@ -67,6 +67,26 @@
   .glyph { display: inline-block; width: 22px; height: 22px; background-size: contain; background-repeat: no-repeat; background-position: center; vertical-align: middle; }
   .muted { color: var(--muted); }
 
+  /* ===== Now: the avatar with the greeting ===== */
+  .nameplate { display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
+  .nameplate h3 { margin: 0; }
+  .letterhead { display: block; margin-bottom: 10px; }
+  .col p.sub .fico { display: inline-block; width: 22px; height: 18px; vertical-align: -3px; margin-right: 4px; background: url("menuFriends.svg") center / contain no-repeat; }
+  .col p.sub .sglyph { display: inline-block; width: 16px; height: 16px; vertical-align: -2px; margin-right: 4px; background: url("icon-pack/spades.png") center / contain no-repeat; }
+  .col p.sub .sep { color: #B9B5AE; margin: 0 6px; }
+  .col p.sub.quietline { color: var(--muted); }
+  .col p.sub .nudge { color: var(--muted); }
+  .mypill { display: inline-flex; align-items: center; height: 32px; font-size: 16px; background: #fff; border-radius: 20px; box-shadow: inset 0 0 0 1px var(--edge), var(--liftshadow); padding: 0 4px; margin-top: 4px; }
+  .mypill .st { display: inline-flex; align-items: center; padding: 0 11px; gap: 5px; align-self: stretch; }
+  .mypill .st + .st { border-left: 1px solid var(--edge); }
+  .mypill .st.me { padding-left: 5px; gap: 8px; font-weight: bold; }
+  .mypill b { font-variant-numeric: tabular-nums; }
+  .mypill .chk { margin-right: 0; }
+  .mypill .fico { display: inline-block; width: 22px; height: 18px; background: url("menuFriends.svg") center / contain no-repeat; }
+  .col .mypill + .stats { margin-top: 12px; }
+  .col p.sub .faces { margin-right: 6px; }
+  .col p.sub .faces .av + .av { margin-left: -8px; }
+
   /* the title with a face before it (card 7) */
   .col h3 .av.face { margin-right: 10px; vertical-align: -4px; }
 
@@ -126,6 +146,10 @@
 </head>
 <body>
 <h1>Welcome lab &middot; the signed-in hero column</h1>
+<p class="note"><b>Steer (2 Sep, afternoon):</b> no "X has a seat open" lines, that is what Open tables is for. The friends-online count is
+interesting. The avatar is interesting because it makes the greeting feel addressed to her. The deal and the rank only matter to people who
+take part, so the casual case (neither ranked nor the deal) is the one to design first. Section "Now" below is built on that; the sections
+after it are the earlier round, kept for comparison.</p>
 <p class="note">The question widened: not "how do we draw the challenge check and the board number" but "what should the hero say about the
 player who just walked in". Every card is the whole signed-in column at 1x: the two-line greeting, the sub, the live capsule (the room's
 fact, unchanged), plus one idea for the player's own status. The toggles run the states the real payloads carry: who of her people is
@@ -184,7 +208,7 @@ bronze distance (the calendar card below carries those); avatars uncropped in th
     ["back", "Absence", [["no", "Regular"], ["yes", "Back after 3 weeks"]]]
   ];
   function buildCard(host, c) {
-    var st = { co: "seat", ch: "open", bd: "up", back: "no" };
+    var st = { co: "idle", ch: "open", bd: "up", back: "no", part: "none", frn: "23" };
     (c.extra || []).forEach(function (g) { st[g[0]] = g[2][0][0]; });
     Object.keys(c.defaults || {}).forEach(function (k) { st[k] = c.defaults[k]; });
     var card = document.createElement("div");
@@ -198,7 +222,7 @@ bronze distance (the calendar card below carries those); avatars uncropped in th
         g.querySelectorAll("button").forEach(function (b) { b.classList.toggle("on", st[g.dataset.key] === b.dataset.v); });
       });
     }
-    CONTROLS.concat(c.extra || []).forEach(function (gdef) {
+    (c.ctrls || CONTROLS).concat(c.extra || []).forEach(function (gdef) {
       if (c.controls && c.controls.indexOf(gdef[0]) === -1) return;
       var g = document.createElement("div");
       g.className = "cgroup"; g.dataset.key = gdef[0];
@@ -232,6 +256,79 @@ bronze distance (the calendar card below carries those); avatars uncropped in th
       var l2 = st.bd === "up" ? "You're " + link("no. 23 in Spades") + " on today's board." : st.bd === "quiet" ? "Your " + link("Spades rating") + " is 1,581." : "";
       return title(st) + sub([l1, l2]) + stats();
     } });
+
+  /* ===== Now · the avatar, the friends count, and the casual player ===== */
+  var CONTROLS2 = [
+    ["part", "Plays", [["none", "Neither (casual)"], ["deal", "The deal"], ["ranked", "Ranked"], ["both", "Both"]]],
+    ["frn", "Friends online", [["23", "23"], ["3", "3"], ["0", "0"]]],
+    ["ch", "Deal", [["open", "Open"], ["done", "Done"]]],
+    ["back", "Absence", [["no", "Regular"], ["yes", "Back after 3 weeks"]]]
+  ];
+  function friendsCount(st, withIcon) {
+    if (st.frn === "0") return "";
+    var n = st.frn === "3" ? "3 friends" : "23 friends";
+    return (withIcon ? '<span class="fico"></span>' : "") + link(n + " online") + ".";
+  }
+  function dealShort(st) { return st.ch === "done" ? '<span class="chk"></span>' + link("Today's deal") + " done." : link("Today's deal") + " is ready."; }
+  function rankShort(st) { return st.back === "yes" ? "" : link("No. 23 in Spades") + " today, up 3."; }
+  /* the sub by participation: friends first, then only what she takes part in */
+  function partLines(st, opts) {
+    opts = opts || {};
+    var lines = [friendsCount(st, opts.icon)];
+    if (st.part === "deal" || st.part === "both") lines.push(dealShort(st));
+    if (st.part === "ranked" || st.part === "both") lines.push(rankShort(st));
+    return lines.filter(Boolean);
+  }
+  function nameplate(st, size) {
+    var l1 = st.back === "yes" ? "Welcome back," : greetWord() + " " + ME.name + ".";
+    var l2 = st.back === "yes" ? ME.name + "." : "Your table is ready.";
+    return '<div class="nameplate">' + av(ME.avatar, size) + '<h3>' + l1 + '<br>' + l2 + '</h3></div>';
+  }
+  section("Now &mdash; the avatar, the friends count, and the casual player",
+    "Built on the steer. Every card starts from the casual case: she plays neither ranked nor the deal, so the only personal facts are her face and how many of her people are online. The Plays toggle adds the deal line and the rank line only for those who take part. No seat lines anywhere.", [
+    { cap: "<b>12 &middot; The nameplate</b> &mdash; her avatar beside the two-line greeting, vertically centred, so the greeting reads as said to her. Sub: friends online, then only what she takes part in. Casual: one line.",
+      ctrls: CONTROLS2, extra: [["fs", "Avatar", [["44", "44px"], ["56", "56px"]]]],
+      render: function (st) { var lines = partLines(st); return nameplate(st, +st.fs) + sub(lines) + stats(!lines.length); } },
+    { cap: "<b>13 &middot; The letterhead</b> &mdash; her avatar above the greeting, like a portrait at the head of a letter. The same sub. The column grows by one avatar height.",
+      ctrls: CONTROLS2, extra: [["fs", "Avatar", [["40", "40px"], ["48", "48px"]]]],
+      render: function (st) { var lines = partLines(st); return av(ME.avatar, +st.fs, "letterhead") + title(st) + sub(lines) + stats(!lines.length); } },
+    { cap: "<b>14 &middot; Inline</b> &mdash; her avatar inside the first title line, before the greeting word. The smallest footprint; the second line wraps back to the margin.",
+      ctrls: CONTROLS2, extra: [["fs", "Avatar", [["32", "32px"], ["40", "40px"]]]],
+      render: function (st) { var lines = partLines(st); return title(st, null, av(ME.avatar, +st.fs, "face")) + sub(lines) + stats(!lines.length); } },
+    { cap: "<b>15 &middot; The status line</b> &mdash; one line under the greeting with small glyphs instead of sentences: the friends icon from the menu bar and the count, then the deal check, then the rank. Casual: the friends item alone. Avatar as in 12.",
+      ctrls: CONTROLS2, extra: [["fs", "Avatar", [["44", "44px"], ["0", "None"]]]],
+      render: function (st) {
+        var items = [];
+        if (st.frn !== "0") items.push('<span class="fico"></span>' + link((st.frn === "3" ? "3" : "23") + " friends online"));
+        if (st.part === "deal" || st.part === "both") items.push('<span class="chk' + (st.ch === "done" ? "" : " off") + '"></span>' + link("Today's deal") + (st.ch === "done" ? " done" : ""));
+        if ((st.part === "ranked" || st.part === "both") && st.back !== "yes") items.push('<span class="sglyph"></span>' + link("No. 23 today") + ' <span class="lbUp">3</span>');
+        var head = +st.fs ? nameplate(st, +st.fs) : title(st);
+        return head + (items.length ? '<p class="sub">' + items.join('<span class="sep">&middot;</span>') + '</p>' : "") + stats(!items.length);
+      } },
+    { cap: "<b>16 &middot; Your pill, then the room's</b> &mdash; a personal capsule under the greeting: her face and name, friends online, the deal, the rank. The live capsule follows 12px below. Two pills, but the same chrome, and hers comes first.",
+      ctrls: CONTROLS2,
+      render: function (st) {
+        var cells = '<span class="st me">' + av(ME.avatar, 26) + ME.name + '</span>';
+        if (st.frn !== "0") cells += '<span class="st"><span class="fico"></span><b>' + (st.frn === "3" ? "3" : "23") + '</b> friends online</span>';
+        if (st.part === "deal" || st.part === "both") cells += '<span class="st"><span class="chk' + (st.ch === "done" ? "" : " off") + '"></span>Today\'s deal</span>';
+        if ((st.part === "ranked" || st.part === "both") && st.back !== "yes") cells += '<span class="st"><b>no. 23</b> <span class="lbUp">3</span></span>';
+        return title(st) + '<span class="mypill">' + cells + '</span>' + stats();
+      } },
+    { cap: "<b>17 &middot; The casual regular, in words</b> &mdash; what the column says when she takes part in nothing: her face, the greeting, the friends line. The Nudge toggle adds one muted invitation to the deal, the only time a non-participant hears about it.",
+      ctrls: CONTROLS2, extra: [["nudge", "Nudge", [["off", "Off"], ["on", "On"]]]],
+      render: function (st) {
+        var lines = partLines(st);
+        if (st.nudge === "on" && st.part !== "deal" && st.part !== "both") lines.push('<span class="nudge">Never tried ' + link("today's deal") + '? Same hand for everyone.</span>');
+        return nameplate(st, 44) + sub(lines) + stats(!lines.length);
+      } },
+    { cap: "<b>18 &middot; Friends with faces</b> &mdash; the count keeps its number but three of the faces lead it, the way the friends panel shows them. The one place friends' faces are tried in this round.",
+      ctrls: CONTROLS2,
+      render: function (st) {
+        var lines = partLines(st);
+        if (st.frn !== "0") lines[0] = faces(st.frn === "3" ? [P.joy, P.hoot, P.wendy] : [P.joy, P.hoot, P.wendy], 22) + link((st.frn === "3" ? "3" : "23") + " friends online") + ".";
+        return nameplate(st, 44) + sub(lines) + stats(!lines.length);
+      } }
+  ], "now");
 
   /* ===== One · words only ===== */
   section("One &mdash; words only",
@@ -340,7 +437,7 @@ bronze distance (the calendar card below carries those); avatars uncropped in th
         return title(st) + stats(true, cap);
       } }
   ], "four");
-  /* ?only=one|two|three|four shows a single section (screenshot aid) */
+  /* ?only=now|one|two|three|four shows a single section (screenshot aid) */
   (function () {
     var only = new URLSearchParams(location.search).get("only");
     if (!only) return;
