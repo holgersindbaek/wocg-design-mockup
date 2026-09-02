@@ -72,8 +72,13 @@
   .nameplate h3 { margin: 0; }
   .letterhead { display: block; margin-bottom: 10px; }
   .col p.sub .fico { display: inline-block; width: 22px; height: 18px; vertical-align: -3px; margin-right: 4px; background: url("menuFriends.svg") center / contain no-repeat; }
-  .col p.sub .sglyph { display: inline-block; width: 16px; height: 16px; vertical-align: -2px; margin-right: 4px; background: url("icon-pack/spades.png") center / contain no-repeat; }
+  .col .sglyph { display: inline-block; width: 18px; text-align: center; font-size: 15px; line-height: 1; color: var(--ink); vertical-align: -1px; margin-right: 4px; }
+  .col .sglyph::before { content: "\2660"; }
   .col p.sub .sep { color: #B9B5AE; margin: 0 6px; }
+  .col p.sub .aico { display: inline-block; width: 20px; height: 18px; vertical-align: -3px; margin-right: 6px; background: url("menuActivity.svg") center / contain no-repeat; }
+  .col p.sub.glyphs .fico, .col p.sub.glyphs .sglyph, .col p.sub.glyphs .chk, .col p.sub.glyphs .aico { margin-right: 7px; }
+  .col p.sub.glyphs .sglyph { margin-right: 9px; }
+  .col p.sub .gspace { display: inline-block; width: 0; }
   .col p.sub.quietline { color: var(--muted); }
   .col p.sub .nudge { color: var(--muted); }
   .mypill { display: inline-flex; align-items: center; height: 32px; font-size: 16px; background: #fff; border-radius: 20px; box-shadow: inset 0 0 0 1px var(--edge), var(--liftshadow); padding: 0 4px; margin-top: 4px; }
@@ -208,7 +213,7 @@ bronze distance (the calendar card below carries those); avatars uncropped in th
     ["back", "Absence", [["no", "Regular"], ["yes", "Back after 3 weeks"]]]
   ];
   function buildCard(host, c) {
-    var st = { co: "idle", ch: "open", bd: "up", back: "no", part: "none", frn: "23" };
+    var st = { co: "idle", ch: "open", bd: "up", back: "no", part: "none", frn: "23", lines: "3", recent: "yes" };
     (c.extra || []).forEach(function (g) { st[g[0]] = g[2][0][0]; });
     Object.keys(c.defaults || {}).forEach(function (k) { st[k] = c.defaults[k]; });
     var card = document.createElement("div");
@@ -260,24 +265,33 @@ bronze distance (the calendar card below carries those); avatars uncropped in th
   /* ===== Now · the avatar, the friends count, and the casual player ===== */
   var CONTROLS2 = [
     ["part", "Plays", [["none", "Neither (casual)"], ["deal", "The deal"], ["ranked", "Ranked"], ["both", "Both"]]],
+    ["lines", "Lines", [["3", "Three"], ["2", "Two"]]],
     ["frn", "Friends online", [["23", "23"], ["3", "3"], ["0", "0"]]],
+    ["recent", "Last night", [["yes", "4 hands with hootnholler"], ["no", "Nothing"]]],
     ["ch", "Deal", [["open", "Open"], ["done", "Done"]]],
     ["back", "Absence", [["no", "Regular"], ["yes", "Back after 3 weeks"]]]
   ];
-  function friendsCount(st, withIcon) {
-    if (st.frn === "0") return "";
-    var n = st.frn === "3" ? "3 friends" : "23 friends";
-    return (withIcon ? '<span class="fico"></span>' : "") + link(n + " online") + ".";
+  /* the ladder, in Holger's own voice from the copy variants: an absence
+     first, then the friends count, then only what she takes part in, then
+     last night, her usual game, the room's calendar, and a muted nudge.
+     Each rung carries the glyph card 15 draws for it. */
+  function ladder(st) {
+    var rungs = [];
+    if (st.back === "yes") rungs.push({ g: "", h: "Three weeks is nothing between old friends." });
+    if (st.frn !== "0") rungs.push({ g: "fico", h: link((st.frn === "3" ? "3" : "23") + " friends") + " are online. Deal them in." });
+    if (st.part === "deal" || st.part === "both") rungs.push({ g: st.ch === "done" ? "chk" : "chkoff",
+      h: st.ch === "done" ? link("Today's deal") + " is done. Nicely played." : link("Today's deal") + " is ready when you are." });
+    if ((st.part === "ranked" || st.part === "both") && st.back !== "yes") rungs.push({ g: "sglyph", h: "You're " + link("no. 23 in Spades") + " today, up 3 spots." });
+    if (st.recent === "yes" && st.back !== "yes") rungs.push({ g: "aico", h: "Last night: four hands of Spades with " + link("hootnholler") + "." });
+    rungs.push({ g: "sglyph", h: st.back === "yes" ? "Jump back into " + link("Spades") + " whenever you like." : link("Spades game 16,447") + " is ready when you are." });
+    rungs.push({ g: "aico", h: link("Spades Night") + " is Friday at 8. All welcome." });
+    if (st.part !== "deal" && st.part !== "both") rungs.push({ g: "chkoff", h: '<span class="nudge">Never tried ' + link("today's deal") + "? Same hand for everyone.</span>" });
+    return rungs.slice(0, +st.lines);
   }
-  function dealShort(st) { return st.ch === "done" ? '<span class="chk"></span>' + link("Today's deal") + " done." : link("Today's deal") + " is ready."; }
-  function rankShort(st) { return st.back === "yes" ? "" : link("No. 23 in Spades") + " today, up 3."; }
-  /* the sub by participation: friends first, then only what she takes part in */
-  function partLines(st, opts) {
-    opts = opts || {};
-    var lines = [friendsCount(st, opts.icon)];
-    if (st.part === "deal" || st.part === "both") lines.push(dealShort(st));
-    if (st.part === "ranked" || st.part === "both") lines.push(rankShort(st));
-    return lines.filter(Boolean);
+  function ladderSub(st) { return sub(ladder(st).map(function (r) { return r.h; })); }
+  function glyphFor(g) {
+    return g === "fico" ? '<span class="fico"></span>' : g === "chk" ? '<span class="chk"></span>' : g === "chkoff" ? '<span class="chk off"></span>'
+      : g === "sglyph" ? '<span class="sglyph"></span>' : g === "aico" ? '<span class="aico"></span>' : '<span class="gspace"></span>';
   }
   function nameplate(st, size) {
     var l1 = st.back === "yes" ? "Welcome back," : greetWord() + " " + ME.name + ".";
@@ -285,48 +299,41 @@ bronze distance (the calendar card below carries those); avatars uncropped in th
     return '<div class="nameplate">' + av(ME.avatar, size) + '<h3>' + l1 + '<br>' + l2 + '</h3></div>';
   }
   section("Now &mdash; the avatar, the friends count, and the casual player",
-    "Built on the steer. Every card starts from the casual case: she plays neither ranked nor the deal, so the only personal facts are her face and how many of her people are online. The Plays toggle adds the deal line and the rank line only for those who take part. No seat lines anywhere.", [
-    { cap: "<b>12 &middot; The nameplate</b> &mdash; her avatar beside the two-line greeting, vertically centred, so the greeting reads as said to her. Sub: friends online, then only what she takes part in. Casual: one line.",
+    "Built on the steer. Every card starts from the casual case: she plays neither ranked nor the deal, so the column fills its two or three lines from what it honestly knows instead: how many of her people are online, last night's hands, her usual game, the room's calendar. The Plays toggle adds the deal line and the rank line only for those who take part. The lines are in the voice of the mockup's own copy variants. No seat lines anywhere.", [
+    { cap: "<b>12 &middot; The nameplate</b> &mdash; her avatar beside the two-line greeting, vertically centred, so the greeting reads as said to her. Below it two or three lines from the ladder: friends first, then only what she takes part in, then last night, her usual game, the calendar.",
       ctrls: CONTROLS2, extra: [["fs", "Avatar", [["44", "44px"], ["56", "56px"]]]],
-      render: function (st) { var lines = partLines(st); return nameplate(st, +st.fs) + sub(lines) + stats(!lines.length); } },
-    { cap: "<b>13 &middot; The letterhead</b> &mdash; her avatar above the greeting, like a portrait at the head of a letter. The same sub. The column grows by one avatar height.",
+      render: function (st) { return nameplate(st, +st.fs) + ladderSub(st) + stats(); } },
+    { cap: "<b>13 &middot; The letterhead</b> &mdash; her avatar above the greeting, like a portrait at the head of a letter. The same lines. The column grows by one avatar height.",
       ctrls: CONTROLS2, extra: [["fs", "Avatar", [["40", "40px"], ["48", "48px"]]]],
-      render: function (st) { var lines = partLines(st); return av(ME.avatar, +st.fs, "letterhead") + title(st) + sub(lines) + stats(!lines.length); } },
+      render: function (st) { return av(ME.avatar, +st.fs, "letterhead") + title(st) + ladderSub(st) + stats(); } },
     { cap: "<b>14 &middot; Inline</b> &mdash; her avatar inside the first title line, before the greeting word. The smallest footprint; the second line wraps back to the margin.",
       ctrls: CONTROLS2, extra: [["fs", "Avatar", [["32", "32px"], ["40", "40px"]]]],
-      render: function (st) { var lines = partLines(st); return title(st, null, av(ME.avatar, +st.fs, "face")) + sub(lines) + stats(!lines.length); } },
-    { cap: "<b>15 &middot; The status line</b> &mdash; one line under the greeting with small glyphs instead of sentences: the friends icon from the menu bar and the count, then the deal check, then the rank. Casual: the friends item alone. Avatar as in 12.",
+      render: function (st) { return title(st, null, av(ME.avatar, +st.fs, "face")) + ladderSub(st) + stats(); } },
+    { cap: "<b>15 &middot; The glyph lines</b> &mdash; the same two or three lines, each led by a small glyph: the menu bar's friends icon, the deal check (grey until done), the spade for her game and the rank, the activity mark for last night and the calendar. Avatar as in 12.",
       ctrls: CONTROLS2, extra: [["fs", "Avatar", [["44", "44px"], ["0", "None"]]]],
       render: function (st) {
-        var items = [];
-        if (st.frn !== "0") items.push('<span class="fico"></span>' + link((st.frn === "3" ? "3" : "23") + " friends online"));
-        if (st.part === "deal" || st.part === "both") items.push('<span class="chk' + (st.ch === "done" ? "" : " off") + '"></span>' + link("Today's deal") + (st.ch === "done" ? " done" : ""));
-        if ((st.part === "ranked" || st.part === "both") && st.back !== "yes") items.push('<span class="sglyph"></span>' + link("No. 23 today") + ' <span class="lbUp">3</span>');
-        var head = +st.fs ? nameplate(st, +st.fs) : title(st);
-        return head + (items.length ? '<p class="sub">' + items.join('<span class="sep">&middot;</span>') + '</p>' : "") + stats(!items.length);
+        var lines = ladder(st).map(function (r) { return glyphFor(r.g) + r.h; });
+        return (+st.fs ? nameplate(st, +st.fs) : title(st)) + '<p class="sub glyphs">' + lines.join("<br>") + '</p>' + stats();
       } },
-    { cap: "<b>16 &middot; Your pill, then the room's</b> &mdash; a personal capsule under the greeting: her face and name, friends online, the deal, the rank. The live capsule follows 12px below. Two pills, but the same chrome, and hers comes first.",
+    { cap: "<b>16 &middot; Your pill, then the room's</b> &mdash; the personal facts as a capsule under the greeting (her face and name, friends online, the deal, the rank), the lines below it carrying the rest, and the live capsule last. The most object-like of the set.",
       ctrls: CONTROLS2,
       render: function (st) {
         var cells = '<span class="st me">' + av(ME.avatar, 26) + ME.name + '</span>';
         if (st.frn !== "0") cells += '<span class="st"><span class="fico"></span><b>' + (st.frn === "3" ? "3" : "23") + '</b> friends online</span>';
         if (st.part === "deal" || st.part === "both") cells += '<span class="st"><span class="chk' + (st.ch === "done" ? "" : " off") + '"></span>Today\'s deal</span>';
         if ((st.part === "ranked" || st.part === "both") && st.back !== "yes") cells += '<span class="st"><b>no. 23</b> <span class="lbUp">3</span></span>';
-        return title(st) + '<span class="mypill">' + cells + '</span>' + stats();
+        var rest = ladder(st).filter(function (r) { return r.g !== "fico" && r.g !== "chk" && r.g !== "chkoff" && r.g !== "sglyph" || r.h.indexOf("game 16,447") > -1 || r.h.indexOf("Jump back") > -1; })
+          .filter(function (r) { return r.h.indexOf("no. 23") === -1 && r.h.indexOf("Never tried") === -1; }).slice(0, 2);
+        return title(st) + '<span class="mypill">' + cells + '</span>' + sub(rest.map(function (r) { return r.h; })) + stats();
       } },
-    { cap: "<b>17 &middot; The casual regular, in words</b> &mdash; what the column says when she takes part in nothing: her face, the greeting, the friends line. The Nudge toggle adds one muted invitation to the deal, the only time a non-participant hears about it.",
-      ctrls: CONTROLS2, extra: [["nudge", "Nudge", [["off", "Off"], ["on", "On"]]]],
-      render: function (st) {
-        var lines = partLines(st);
-        if (st.nudge === "on" && st.part !== "deal" && st.part !== "both") lines.push('<span class="nudge">Never tried ' + link("today's deal") + '? Same hand for everyone.</span>');
-        return nameplate(st, 44) + sub(lines) + stats(!lines.length);
-      } },
-    { cap: "<b>18 &middot; Friends with faces</b> &mdash; the count keeps its number but three of the faces lead it, the way the friends panel shows them. The one place friends' faces are tried in this round.",
+    { cap: "<b>17 &middot; Words only</b> &mdash; the same ladder with no avatar at all, to judge what the face adds. This is card 1's shape with the new lines.",
+      ctrls: CONTROLS2,
+      render: function (st) { return title(st) + ladderSub(st) + stats(); } },
+    { cap: "<b>18 &middot; Friends with faces</b> &mdash; the count keeps its number but three of the faces lead its line, the way the friends panel shows them. The one place friends' faces are tried in this round.",
       ctrls: CONTROLS2,
       render: function (st) {
-        var lines = partLines(st);
-        if (st.frn !== "0") lines[0] = faces(st.frn === "3" ? [P.joy, P.hoot, P.wendy] : [P.joy, P.hoot, P.wendy], 22) + link((st.frn === "3" ? "3" : "23") + " friends online") + ".";
-        return nameplate(st, 44) + sub(lines) + stats(!lines.length);
+        var lines = ladder(st).map(function (r) { return r.g === "fico" ? faces([P.joy, P.hoot, P.wendy], 22) + r.h : r.h; });
+        return nameplate(st, 44) + sub(lines) + stats();
       } }
   ], "now");
 
@@ -387,7 +394,7 @@ bronze distance (the calendar card below carries those); avatars uncropped in th
         if (st.co === "maple") { chairs = chair(P.carol, 24) + chair(P.dot, 24, "online"); lbl = "<b>maple</b> · Carol's there"; door = "Take a seat ›"; }
         else if (st.co === "seat") { chairs = chair(P.hoot, 24) + chair(P.joy, 24, "online"); lbl = "<b>hootnholler</b> · Spades · 1 seat open"; door = "Join ›"; }
         else if (st.co === "invite") { chairs = chair(P.hoot, 24); lbl = "<b>hootnholler's table</b> · Spades"; door = "You're invited ›"; }
-        else { chairs = '<span class="glyph" style="background-image:url(icon-pack/spades.png)"></span>'; lbl = "Your usual Spades table"; door = "Deal me in ›"; }
+        else { chairs = '<span class="sglyph"></span>'; lbl = "Your usual Spades table"; door = "Deal me in ›"; }
         return title(st) + '<a class="seatchip ' + (st.chrome === "white" ? "white" : "") + '" href="#"><span class="faces">' + chairs + '</span><span class="lbl">' + lbl + '</span><span class="door">' + door + '</span></a>' + stats();
       } },
     { cap: "<b>6 &middot; Your chair</b> &mdash; her own avatar drawn the way the Open tables cards draw every seat: a 32px face over a name plate, next to one sentence about her table and one door. The biggest object in the set, and the one that gives her face a job.",
