@@ -1690,6 +1690,11 @@
   /* the soft coat rides the shared warm material at large-surface scale:
      same cast as the capsule and category tiles, bigger reach */
   body.shadow-soft .gtile { box-shadow: var(--liftshadow-lg); }
+  /* the capsule's own recipe on the hero tiles: the shared 1px edge ring and the small warm
+     lift. The ring sits outside because the artwork would cover an inset one; on hover the
+     lift grows and the ring stays */
+  body.shadow-capsule .gtile { box-shadow: 0 0 0 1px var(--edge, var(--panelline)), var(--liftshadow); }
+  body.shadow-capsule .gtile:hover { box-shadow: 0 0 0 1px var(--edge, var(--panelline)), 0 2px 4px rgba(60,45,25,.08), 0 6px 12px rgba(60,45,25,.10), 0 14px 26px rgba(60,45,25,.12); }
   body.shadow-soft .gtile:hover { box-shadow: 0 2px 4px rgba(60,45,25,.08), 0 6px 12px rgba(60,45,25,.10), 0 14px 26px rgba(60,45,25,.12); }
   body.shadow-softstrong .gtile { box-shadow: 0 1px 2px rgba(60,45,25,.11), 0 3px 7px rgba(60,45,25,.12), 0 7px 16px rgba(60,45,25,.13); }
   body.shadow-softstrong .gtile:hover { box-shadow: 0 2px 4px rgba(60,45,25,.11), 0 8px 15px rgba(60,45,25,.14), 0 18px 32px rgba(60,45,25,.17); }
@@ -3638,6 +3643,7 @@
   ];
   var curFont = "gelicamd";
   var SHADOWS = [
+    ["capsule", "Capsule recipe: edge ring + small lift (default)"],
     ["current", "Current (single 24%)"],
     ["soft", "Soft layered, warm-tinted"],
     ["softstrong", "Soft layered, stronger"],
@@ -3798,7 +3804,7 @@
     ["ghostdot", "Ghost: still dot + naked number"],
     ["ghostnum", "Ghost: naked number only (big tile keeps its word)"]
   ];
-  var curShadow = "soft", curEdge = "softlight", curTexture = "grainbal", curCatalog = "split", curStats = "capsule2", curMenu = "centerwave", curCounter = "ghostdot", curRail = "suitscool", curPlayBtn = "triogreen", curTileBg = "cardroomcusp", curPinPair = "violet", curSect = "waveband", curDivider = "longdealopt", curLhover = "suits";
+  var curShadow = "capsule", curEdge = "softlight", curTexture = "grainbal", curCatalog = "split", curStats = "capsule2", curMenu = "centerwave", curCounter = "ghostdot", curRail = "suitscool", curPlayBtn = "triogreen", curTileBg = "cardroomcusp", curPinPair = "violet", curSect = "waveband", curDivider = "longdealopt", curLhover = "suits";
   var curLogo = "menu";
   /* every CSS blend mode as an avatar-rim coat: one filter per mode is stamped
      into the SVG defs (same eroded rim, #737373 @ .9 ink, only feBlend's mode
@@ -4819,7 +4825,7 @@
     "sel-play": ["raph", "funner", "picks"],
     "sel-layout": ["ed43", "scw9b", "scsplit", "scrab", "scpyr", "scstair"],
     "sel-font": ["vollkorn", "gelicamd", "rza", "fraunbulo", "poynter", "mackinac"],
-    "sel-shadow": ["soft"],
+    "sel-shadow": ["capsule", "soft"],
     "sel-edge": ["softlight"],
     "sel-texture": ["grainbal", "grainsoft", "grain"],
     "sel-catalog": ["split", "tabs"],
