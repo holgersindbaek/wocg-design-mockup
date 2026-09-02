@@ -2171,7 +2171,7 @@
 
   .lobbyscope .tableListing { width: 100%; position: relative; }
   .lobbyscope .tableListing.isTeamGame .playernumber1 .playerNameContainer,
-  .lobbyscope .tableListing.isTeamGame .playernumber3 .playerNameContainer { background-color: #FFC1BF; color: #B52626; }
+  .lobbyscope .tableListing.isTeamGame .playernumber3 .playerNameContainer { background-color: var(--trioredlight); color: #B52626; }
   .lobbyscope .tableListing .header { position: absolute; overflow: hidden; top: 0; width: 100%; padding-top: 75%;
     background: #327333 url("green-felt.jpg") repeat; background-size: 300px 300px; }
   @media (min-resolution: 2dppx) { .lobbyscope .tableListing .header { background-size: 100px 100px; } }
@@ -2199,16 +2199,11 @@
      hugging the shape (the crisp core of the shadow, not a drawn border), the
      soft drops beneath it, and a faint light inner top edge so the plate reads
      lit from above */
-  .lobbyscope .playerNameContainer { background-color: #A5D8FF; color: #1665AD;
+  .lobbyscope .playerNameContainer { background-color: var(--triolight); color: #1665AD;
     box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 0 0 1px rgba(0,0,0,.30),
       0 1px 3px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25);
     border-radius: var(--radius-md, 6px); corner-shape: squircle;
     height: 20px; position: absolute; bottom: 0; width: 100%; }
-  /* Nameplates switch: the plates take the light-blue button fill and the
-     partner plates its red; the names keep their inks */
-  body.plates-trio .lobbyscope .playerNameContainer { background-color: var(--triolight); }
-  body.plates-trio .lobbyscope .tableListing.isTeamGame .playernumber1 .playerNameContainer,
-  body.plates-trio .lobbyscope .tableListing.isTeamGame .playernumber3 .playerNameContainer { background-color: var(--trioredlight); }
   .lobbyscope .playerName { font-size: 14px; font-weight: bold; line-height: 20px; white-space: nowrap;
     overflow: hidden; text-overflow: ellipsis; padding: 0 6px; }
   .lobbyscope .playerBadge { display: block; width: 20px; height: 20px; position: absolute; left: -10px; top: -10px; }
@@ -2920,7 +2915,6 @@
     <label class="ctl"><span>Tile colors</span><select id="sel-tilebg"></select></label>
     <label class="ctl"><span>Play button</span><select id="sel-playbtn"></select></label>
     <label class="ctl"><span>Catalog layout</span><select id="sel-catalog"></select></label>
-    <label class="ctl"><span>Nameplates</span><select id="sel-plates"></select></label>
     <label class="ctl"><span>Divider</span><select id="sel-divider"></select></label>
     <label class="ctl"><span>Sections</span><select id="sel-sect"></select></label>
     <label class="ctl"><span>Menu bar</span><select id="sel-menu"></select></label>
@@ -3793,11 +3787,6 @@
     ["ghostnum", "Ghost: naked number only (big tile keeps its word)"]
   ];
   var curShadow = "soft", curEdge = "softlight", curTexture = "grainbal", curCatalog = "split", curStats = "capsule2", curMenu = "centerwave", curCounter = "ghostdot", curRail = "suitscool", curPlayBtn = "triogreen", curTileBg = "cardroomcusp", curPinPair = "violet", curSect = "waveband", curDivider = "longdealopt", curLhover = "suits";
-  var PLATES = [
-    ["trio", "Trio family: light-blue fill & its red, names as before (default)"],
-    ["mantine", "Mantine blue & red (the old plates)"]
-  ];
-  var curPlates = "trio";
   /* every CSS blend mode as an avatar-rim coat: one filter per mode is stamped
      into the SVG defs (same eroded rim, #737373 @ .9 ink, only feBlend's mode
      changes) plus a matching mix-blend ring for the invitee circles */
@@ -4632,7 +4621,7 @@
   }
   function applyBody() {
     var scene = curLayout.indexOf("sc") === 0;
-    document.body.className = curBase + " play-" + curPlay + " layout-" + curLayout + (scene ? " scenehero" : "") + " font-" + curFont + " shadow-" + curShadow + " edge-" + curEdge + " tex-" + curTexture + " cat-" + curCatalog + " stats-" + curStats + " menu-" + curMenu + " counter-" + curCounter + " rail-" + curRail + " playbtn-" + curPlayBtn + " avedge-" + curAvedge + " avsh-" + curAvshadow + " cnav-" + curCnav + " foot-" + curFooter + " viewer-" + curViewer + " sect-" + curSect + " div-" + curDivider + " lhover-" + curLhover + " tilebg-" + curTileBg + " pinpair-" + curPinPair + " plates-" + curPlates + (palShown ? " show-palette" : "");
+    document.body.className = curBase + " play-" + curPlay + " layout-" + curLayout + (scene ? " scenehero" : "") + " font-" + curFont + " shadow-" + curShadow + " edge-" + curEdge + " tex-" + curTexture + " cat-" + curCatalog + " stats-" + curStats + " menu-" + curMenu + " counter-" + curCounter + " rail-" + curRail + " playbtn-" + curPlayBtn + " avedge-" + curAvedge + " avsh-" + curAvshadow + " cnav-" + curCnav + " foot-" + curFooter + " viewer-" + curViewer + " sect-" + curSect + " div-" + curDivider + " lhover-" + curLhover + " tilebg-" + curTileBg + " pinpair-" + curPinPair + (palShown ? " show-palette" : "");
     var ht = document.getElementById("herotitle"), hs = document.getElementById("herosub");
     if (scene) {
       if (curLayout === "scpyr") {
@@ -4676,7 +4665,6 @@
     document.getElementById("sel-footer").value = curFooter;
     document.getElementById("sel-viewer").value = curViewer;
     document.getElementById("sel-pcopy").value = curPcopy;
-    document.getElementById("sel-plates").value = curPlates;
     moveLobby();
     moveCatalog();
     if (typeof renderPlayset === "function") renderPlayset();
@@ -4888,7 +4876,6 @@
   buildSel("sel-sect", SECTS, function (v) { curSect = v; });
   buildSel("sel-divider", DIVIDERS, function (v) { curDivider = v; });
   buildSel("sel-lhover", LHOVERS, function (v) { curLhover = v; });
-  buildSel("sel-plates", PLATES, function (v) { curPlates = v; });
   (function () {
     var bar = document.querySelector(".switchbar");
     var zone = document.querySelector(".switchzone");
