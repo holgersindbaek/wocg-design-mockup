@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Welcome lab &middot; the signed-in hero column</title>
+<style>
+  @font-face { font-family: "BuloRounded"; src: url("BuloRounded-Regular.woff2") format("woff2"); font-weight: normal; font-display: swap; }
+  @font-face { font-family: "BuloRounded"; src: url("BuloRounded-Bold.woff2") format("woff2"); font-weight: bold; font-display: swap; }
+  @font-face { font-family: "BuloRounded"; src: url("BuloRounded-Italic.otf") format("opentype"); font-style: italic; font-weight: normal; font-display: swap; }
+  @font-face { font-family: "Gelica"; src: url("Gelica-Regular.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+  @font-face { font-family: "Gelica"; src: url("Gelica-Medium.woff2") format("woff2"); font-weight: 500; font-display: swap; }
+  @font-face { font-family: "Gelica"; src: url("Gelica-SemiBold.woff2") format("woff2"); font-weight: 600; font-display: swap; }
+
+  body { margin: 0; padding: 28px 24px 80px; background: #f9f6f2; color: #141414;
+    font-family: "BuloRounded", "Verdana", "Arial", sans-serif; -webkit-font-smoothing: antialiased;
+    --radius-md: 6px; --edge: #D2CFCA; --muted: #4E4D4C; --ink: #141414; --ink-soft: #262626; --band: #F4EEE5; --canvas: #F9F6F2;
+    --green: #2f9e44; --door: #1c71c2; --liftshadow: 0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09);
+    --evershadow: 0 8px 24px -8px rgba(0,0,21,.12), 0 14px 40px -8px rgba(0,0,21,.04), 0 0 0 1px rgba(0,0,21,.08); }
+  @supports (corner-shape: squircle) { body { --radius-md: 12px; } }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  h2 { font-size: 17px; margin: 0 0 6px; }
+  p.note, p.desc { font-size: 13px; color: #8a857c; margin: 0 0 22px; max-width: 900px; line-height: 1.45; }
+  .vsec { margin-top: 44px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(560px, 1fr)); gap: 24px; max-width: 1760px; }
+  .cv { background: #fff; border-radius: 12px; corner-shape: squircle; box-shadow: 0 0 0 1px rgba(0,0,0,.06), var(--liftshadow); overflow: hidden; }
+  .cv .dcap { font-size: 12.5px; color: #6f6b62; margin: 0; padding: 12px 16px 10px; border-bottom: 1px solid #eeeae3; line-height: 1.4; }
+  .cv .dcap b { color: #141414; font-size: 13px; }
+  .stage { background: var(--canvas); padding: 34px 32px 34px 28px; min-height: 250px; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; }
+  .ctrl { display: flex; flex-wrap: wrap; gap: 8px 18px; padding: 10px 16px 12px; border-top: 1px solid #eeeae3; }
+  .cgroup { display: flex; align-items: center; gap: 4px; }
+  .cgroup .cglab { font-size: 11px; color: #999488; margin-right: 2px; }
+  .cgroup button { border: 1px solid #ddd; background: #fff; color: #555; font-family: inherit; font-size: 11.5px; font-weight: 600; padding: 2px 8px; border-radius: 6px; cursor: pointer; }
+  .cgroup button.on { background: #A5D8FF; border-color: #7AB8EC; color: #1971C2; }
+
+  /* ===== the hero column, verbatim from index.html's signed-in scene ===== */
+  .col { width: 470px; max-width: 100%; }
+  .col h3 { font-family: "Gelica", "Georgia", serif; font-weight: 500; font-size: 38px; letter-spacing: -0.01em; line-height: 1.15; margin: 0 0 8px; color: var(--ink); }
+  .col p.sub { font-size: 16px; line-height: 1.5; margin: 0; max-width: 416px; color: var(--ink); }
+  .col .sub b, .col .cjw { font-weight: bold; color: var(--ink-soft); }
+  .col a.cjw { text-decoration: none; white-space: nowrap; cursor: pointer; }
+  .col a.cjw:hover { color: var(--ink); text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; text-decoration-color: rgba(60,45,25,.35); }
+  .col .stats { margin-top: 28px; }
+  .col .stats.tight { margin-top: 24px; }
+  .capsule { display: inline-flex; align-items: center; height: 32px; font-size: 16px; background: #fff; border-radius: 20px;
+    box-shadow: inset 0 0 0 1px var(--edge), var(--liftshadow); padding: 0 4px; }
+  .capsule .st { display: inline-flex; align-items: center; padding: 0 11px; gap: 4px; align-self: stretch; }
+  .capsule .st + .st { border-left: 1px solid var(--edge); }
+  .capsule .stlive { padding: 0 9px; gap: 6px; }
+  .capsule .greencap { font-size: 14px; font-weight: bold; letter-spacing: .06em; color: var(--green); }
+  .capsule .ldot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+  .capsule b { color: var(--ink); font-weight: bold; font-variant-numeric: tabular-nums; }
+
+  /* ===== shared pieces: site avatars bake their own rounded-square frame, so no crop ===== */
+  .av { display: inline-block; flex-shrink: 0; vertical-align: middle; }
+  .chairwrap { position: relative; display: inline-block; line-height: 0; }
+  .chairwrap.online .av { opacity: .45; }
+  .chairwrap .pdot { position: absolute; right: -3px; bottom: -3px; width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 2px var(--canvas); }
+  .faces { display: inline-flex; align-items: center; vertical-align: middle; margin-right: 8px; }
+  .faces .av + .av, .faces .chairwrap + .chairwrap { margin-left: -8px; }
+  .lbUp, .lbDown { display: inline-block; vertical-align: 1px; border-radius: 4px; font-size: 12px; line-height: 16px; font-weight: bold; padding: 0 4px 0 16px;
+    background-repeat: no-repeat; background-position: 4px center; background-size: 10px 10px; box-shadow: inset 0 0 0 1px rgba(0,0,0,.08); }
+  .lbUp { color: #4F800B; background-color: #C0EB75; background-image: url("arrowUpGreenSmall.png"); }
+  .lbDown { color: #B52626; background-color: #FFDBD9; background-image: url("arrowDownRedSmall.png"); }
+  .chk { display: inline-block; width: 16px; height: 16px; vertical-align: -2px; margin-right: 3px; background: url("checkmark.png") center / 16px 16px no-repeat; }
+  .chk.off { background-image: url("checkmarkDisabled.png"); }
+  .glyph { display: inline-block; width: 22px; height: 22px; background-size: contain; background-repeat: no-repeat; background-position: center; vertical-align: middle; }
+  .muted { color: var(--muted); }
+
+  /* the title with a face before it (card 7) */
+  .col h3 .av.face { margin-right: 10px; vertical-align: -4px; }
+
+  /* the seat chip (card 5): one door, the site's band, chairs on the left */
+  .seatchip { display: inline-flex; align-items: center; gap: 10px; height: 32px; padding: 0 12px 0 5px; border-radius: 16px; background: #F0EEE6;
+    font-size: 16px; color: var(--ink); text-decoration: none; cursor: pointer; max-width: 360px; margin-top: 12px; white-space: nowrap; }
+  .seatchip.white { background: #fff; box-shadow: inset 0 0 0 1px var(--edge), var(--liftshadow); }
+  .seatchip:hover { background: #E9E6DC; }
+  .seatchip.white:hover { background: #FCFAF6; }
+  .seatchip .lbl { overflow: hidden; text-overflow: ellipsis; }
+  .seatchip .lbl b { font-weight: bold; }
+  .seatchip .door { font-weight: bold; color: var(--door); margin-left: 2px; }
+  .seatchip .faces { margin-right: 0; }
+  .seatchip .faces .av + .av, .seatchip .faces .chairwrap + .chairwrap { margin-left: -6px; }
+  .seatchip .chairwrap .pdot { box-shadow: 0 0 0 2px #F0EEE6; }
+  .col .seatchip + .stats { margin-top: 24px; }
+
+  /* your chair (card 6): the Open tables cards' seat language */
+  .chairrow { display: flex; align-items: center; gap: 14px; margin-top: 10px; cursor: pointer; border-radius: var(--radius-md); }
+  .chairrow:hover .plate { background: #E9E6DC; }
+  .chair { width: 80px; display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+  .chair .av { display: block; }
+  .chair .plate { margin-top: -3px; height: 20px; line-height: 20px; padding: 0 8px; border-radius: 6px; background: #F0EEE6; font-size: 13px; font-weight: bold; color: var(--ink-soft); white-space: nowrap; }
+  .chair .plate.blue { background: #abd2ff; color: #1c71c2; }
+  .chairtxt { font-size: 16px; line-height: 1.5; max-width: 270px; }
+  .chairtxt .door { font-weight: bold; color: var(--door); white-space: nowrap; }
+  .col .chairrow + .stats { margin-top: 28px; }
+
+  /* the member pill and the today strip (drawn anyway) */
+  .mpill { display: inline-flex; align-items: center; height: 28px; font-size: 14px; background: #fff; border-radius: 16px; box-shadow: inset 0 0 0 1px var(--edge), var(--liftshadow); padding: 0 4px; margin-top: 10px; }
+  .mpill .st { display: inline-flex; align-items: center; padding: 0 10px; gap: 5px; align-self: stretch; }
+  .mpill .st + .st { border-left: 1px solid var(--edge); }
+  .mpill .st.me { padding-left: 4px; }
+  .mpill b { font-variant-numeric: tabular-nums; }
+  .mpill .chk { width: 14px; height: 14px; margin-right: 0; }
+  .chiprow { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 2px; }
+  .chip { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 12px; border-radius: 14px; background: #fff; font-size: 14px; color: var(--ink);
+    box-shadow: inset 0 0 0 1px var(--edge), var(--liftshadow); cursor: pointer; white-space: nowrap; }
+  .chip:hover { background: #FCFAF6; }
+  .chip .chk { width: 14px; height: 14px; margin-right: 0; }
+  .chip .faces { margin-right: 0; }
+  .capsule .st.frnd .faces { margin-right: 2px; }
+  .capsule .st.frnd .faces .av + .av { margin-left: -6px; }
+
+  /* faces on the felt (card 8): a slice of her Spades hero tile */
+  .duo { display: flex; align-items: flex-start; gap: 48px; }
+  .minitile { position: relative; width: 236px; height: 158px; border-radius: 16px; corner-shape: squircle; background: #1a5fc6; flex-shrink: 0; margin-top: 8px;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,.25), 0 1px 2px rgba(60,45,25,.08), 0 2px 5px rgba(60,45,25,.08), 0 5px 12px rgba(60,45,25,.08); overflow: hidden; }
+  .minitile img.logo { position: absolute; left: 50%; top: 44%; width: 150px; transform: translate(-50%, -50%); filter: drop-shadow(0 2px 3px rgba(0,0,0,.35)); }
+  .minitile .cnt { position: absolute; left: 12px; bottom: 11px; font-size: 13px; font-weight: bold; color: #fff; text-shadow: -1px -1px 0 rgba(0,0,0,.35), 1px -1px 0 rgba(0,0,0,.35), -1px 1px 0 rgba(0,0,0,.35), 1px 1px 0 rgba(0,0,0,.35); }
+  .minitile .cnt::before { content: ""; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #fff; margin-right: 6px; vertical-align: 2px; }
+  .minitile .strip { position: absolute; right: 10px; bottom: 8px; display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px 0 4px; border-radius: 14px; background: rgba(255,255,255,.92);
+    font-size: 13px; font-weight: bold; color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,.25); }
+  .minitile .strip .faces { margin-right: 0; }
+  .minitile .strip .faces .av + .av { margin-left: -8px; }
+</style>
+</head>
+<body>
+<h1>Welcome lab &middot; the signed-in hero column</h1>
+<p class="note">The question widened: not "how do we draw the challenge check and the board number" but "what should the hero say about the
+player who just walked in". Every card is the whole signed-in column at 1x: the two-line greeting, the sub, the live capsule (the room's
+fact, unchanged), plus one idea for the player's own status. The toggles run the states the real payloads carry: who of her people is
+around (an invite, her standing table "maple" live, a friend seated with a seat open, friends idle, nobody), the daily deal, the board, and
+a genuine absence. PiLady10 is the persona: joined 2015, Spades first, 475 liked players, supporter. Rules every card follows: names, never
+counts (the "23 friends" number counts one-sided likes); no Elo number; the rank only as the last rung on a rank day; no "N wins" and no
+bronze distance (the calendar card below carries those); avatars uncropped in their own frame.</p>
+<div class="grid" id="grid0"></div>
+<div id="sections"></div>
+
+<script>
+  /* ===== the persona and the stock pieces ===== */
+  var ME = { name: "PiLady10", avatar: "WomanSuperGirl2.svg" };
+  var P = { hoot: "AnimalFox.svg", joy: "AnimalCat.svg", wendy: "AnimalBee.svg", carol: "AnimalBeaver.svg", dot: "AnimalButterfly.svg" };
+  function greetWord() {
+    var h = new Date().getHours();
+    return h < 12 ? "Morning" : h < 17 ? "Afternoon" : "Evening";
+  }
+  function title(st, line2, before) {
+    var l1 = st.back === "yes" ? "Welcome back," : greetWord() + " " + ME.name + ".";
+    var l2 = st.back === "yes" ? ME.name + "." : (line2 || "Your table is ready.");
+    return "<h3>" + (before || "") + l1 + "<br>" + l2 + "</h3>";
+  }
+  var CAPSULE = '<span class="capsule"><span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>' +
+    '<span class="st"><b>1,214</b> playing</span><span class="st"><b>143</b> tables</span></span>';
+  function stats(tight, inner) { return '<div class="stats' + (tight ? " tight" : "") + '">' + (inner || CAPSULE) + '</div>'; }
+  function av(src, size, cls) { return '<img class="av ' + (cls || "") + '" src="' + src + '" width="' + size + '" height="' + size + '" alt="">'; }
+  function chair(src, size, mode) {
+    return '<span class="chairwrap' + (mode === "online" ? " online" : "") + '">' + av(src, size) + (mode === "online" ? '<span class="pdot"></span>' : "") + '</span>';
+  }
+  function faces(list, size) { return '<span class="faces">' + list.map(function (s) { return av(s, size); }).join("") + '</span>'; }
+  function link(txt) { return '<a class="cjw" href="#">' + txt + '</a>'; }
+  function sub(lines) {
+    lines = lines.filter(Boolean);
+    return lines.length ? '<p class="sub">' + lines.join("<br>") + '</p>' : "";
+  }
+  /* the host's news, one sentence, in the server's own tier order */
+  function companyLine(st) {
+    if (st.co === "invite") return "hootnholler " + link("invited you to Spades") + ".";
+    if (st.co === "maple") return "Carol's at " + link("your maple table") + ". One seat open.";
+    if (st.co === "seat") return "hootnholler has a " + link("seat open at Spades") + ".";
+    if (st.co === "idle") return link("Joy_ and hootnholler") + " are around. Start a Spades table?";
+    return "";
+  }
+  function dealLine(st) {
+    return st.ch === "done" ? '<span class="chk"></span>' + link("Today's deal") + " is done." : link("Today's deal") + " is ready when you are.";
+  }
+  function rankLine(st) { return st.bd === "up" && st.back !== "yes" ? link("No. 23 in Spades") + " today, up 3." : ""; }
+  function ladder(st, max) { return [companyLine(st), dealLine(st), rankLine(st)].filter(Boolean).slice(0, max || 2); }
+
+  /* ===== the state toggles every card shares, plus per-card extras ===== */
+  var CONTROLS = [
+    ["co", "Company", [["invite", "Invited"], ["maple", "Maple table live"], ["seat", "Friend seated"], ["idle", "Friends idle"], ["none", "Nobody"]]],
+    ["ch", "Deal", [["open", "Open"], ["done", "Done"]]],
+    ["bd", "Board", [["up", "Rank day ▲3"], ["quiet", "Quiet day"], ["none", "Unrated"]]],
+    ["back", "Absence", [["no", "Regular"], ["yes", "Back after 3 weeks"]]]
+  ];
+  function buildCard(host, c) {
+    var st = { co: "seat", ch: "open", bd: "up", back: "no" };
+    (c.extra || []).forEach(function (g) { st[g[0]] = g[2][0][0]; });
+    Object.keys(c.defaults || {}).forEach(function (k) { st[k] = c.defaults[k]; });
+    var card = document.createElement("div");
+    card.className = "cv";
+    if (c.wide) card.style.gridColumn = "1 / -1";
+    card.innerHTML = '<p class="dcap">' + c.cap + '</p><div class="stage"></div><div class="ctrl"></div>';
+    var stage = card.querySelector(".stage"), ctrl = card.querySelector(".ctrl");
+    function paint() {
+      stage.innerHTML = c.raw ? c.render(st) : '<div class="col">' + c.render(st) + '</div>';
+      ctrl.querySelectorAll(".cgroup").forEach(function (g) {
+        g.querySelectorAll("button").forEach(function (b) { b.classList.toggle("on", st[g.dataset.key] === b.dataset.v); });
+      });
+    }
+    CONTROLS.concat(c.extra || []).forEach(function (gdef) {
+      if (c.controls && c.controls.indexOf(gdef[0]) === -1) return;
+      var g = document.createElement("div");
+      g.className = "cgroup"; g.dataset.key = gdef[0];
+      g.innerHTML = '<span class="cglab">' + gdef[1] + '</span>';
+      gdef[2].forEach(function (opt) {
+        var b = document.createElement("button");
+        b.type = "button"; b.dataset.v = opt[0]; b.textContent = opt[1];
+        b.addEventListener("click", function () { st[gdef[0]] = opt[0]; paint(); });
+        g.appendChild(b);
+      });
+      ctrl.appendChild(g);
+    });
+    paint();
+    host.appendChild(card);
+  }
+  function section(t, desc, concepts, id) {
+    var sec = document.createElement("div");
+    sec.className = "vsec"; sec.id = "sec-" + id;
+    sec.innerHTML = "<h2>" + t + "</h2><p class=\"desc\">" + desc + "</p><div class=\"grid\"></div>";
+    document.getElementById("sections").appendChild(sec);
+    var grid = sec.querySelector(".grid");
+    concepts.forEach(function (c) { buildCard(grid, c); });
+  }
+
+  /* ===== 0 · the column as the mockup draws it today ===== */
+  buildCard(document.getElementById("grid0"), {
+    cap: "<b>0 &middot; Today's mockup</b> &mdash; the two-line greeting, the two status sentences (challenge, board) as prose with linked phrases, and the capsule. The control every card below must beat.",
+    controls: ["ch", "bd", "back"],
+    render: function (st) {
+      var l1 = st.ch === "done" ? link("Daily challenge") + " is done. Seven wins to bronze." : link("Daily challenge") + " is ready. Eight wins to bronze.";
+      var l2 = st.bd === "up" ? "You're " + link("no. 23 in Spades") + " on today's board." : st.bd === "quiet" ? "Your " + link("Spades rating") + " is 1,581." : "";
+      return title(st) + sub([l1, l2]) + stats();
+    } });
+
+  /* ===== One · words only ===== */
+  section("One &mdash; words only",
+    "The panel's ship candidate and its two neighbours. The host says one true thing about tonight, people first, and stops. The deal and the rank are lower rungs of the same ladder, never a second object.", [
+    { cap: "<b>1 &middot; One name</b> &mdash; the prose ladder. Line one is the first rung that is true: an invite, your standing table, a friend with a seat open, friends idle, then today's deal, then the rank. One bold phrase per line is the door. Nothing added to the column.",
+      extra: [["lines", "Lines", [["2", "Up to two"], ["1", "One"]]]],
+      render: function (st) { return title(st) + sub(ladder(st, +st.lines)) + stats(); } },
+    { cap: "<b>2 &middot; The name in the title</b> &mdash; a friend's name in display type. Only an invite, a seated friend or a live standing table may take the second title line (capped at 20 characters); every other state keeps the promise and speaks in the sub.",
+      render: function (st) {
+        var l2, s;
+        if (st.co === "invite") { l2 = "You're invited."; s = "hootnholler wants you at " + link("their Spades table") + "."; }
+        else if (st.co === "maple") { l2 = "Carol's at maple."; s = "One seat open at " + link("your maple table") + "."; }
+        else if (st.co === "seat") { l2 = "hootnholler's here."; s = "There's a " + link("seat by hootnholler") + " at Spades."; }
+        else if (st.co === "idle") { s = link("Joy_ and hootnholler") + " are around. Start a Spades table?"; }
+        else { s = dealLine(st); }
+        if (st.back === "yes") s = "We kept your seat. " + s;
+        return title(st, l2) + sub([s]) + stats();
+      } },
+    { cap: "<b>3 &middot; The hush</b> &mdash; the control: name, promise, room. Everything else already has a home in the zones below. A single deal line is the only optional extra; without it the capsule closes up to 24px.",
+      controls: ["ch", "back"], extra: [["deal", "Deal line", [["off", "Off"], ["on", "On"]]]],
+      render: function (st) { var on = st.deal === "on"; return title(st) + (on ? sub([dealLine(st)]) : "") + stats(!on); } }
+  ], "one");
+
+  /* ===== Two · people ===== */
+  section("Two &mdash; people, with pictures",
+    "The fact a guest can never have is company. These put faces to it, and they are the faces of her friends, never her own. The earlier ruling was that faces in the stats row were too much; this is the test of whether they belong in a sentence instead.", [
+    { cap: "<b>4 &middot; Faces at the door</b> &mdash; up to three friends' avatars, uncropped, lead the sentence that names them. Seated friends come first, then idle ones. No \"+N\" pill, no count. With nobody around the line falls back to the deal.",
+      extra: [["fs", "Faces", [["24", "24px"], ["20", "20px"]]]],
+      render: function (st) {
+        var size = +st.fs, line;
+        if (st.co === "invite") line = faces([P.hoot], size) + "hootnholler " + link("invited you to Spades") + ".";
+        else if (st.co === "maple") line = faces([P.carol, P.dot], size) + "Carol and Dot are at " + link("your maple table") + ". One seat open.";
+        else if (st.co === "seat") line = faces([P.hoot, P.joy], size) + "hootnholler's at Spades, " + link("one seat open") + ". Joy_ is around too.";
+        else if (st.co === "idle") line = faces([P.joy, P.hoot, P.wendy], size) + link("Joy_, hootnholler and wendy_h") + " are around.";
+        else line = dealLine(st);
+        return title(st) + sub([line]) + stats();
+      } },
+    { cap: "<b>8 &middot; Faces on the felt</b> &mdash; the column stays words (card 1, one line) and the people go onto her Spades tile instead: a small strip of faces and \"1 seat open\" on the tile's bottom edge, its own button. Drawn beside a slice of the tile.",
+      raw: true, wide: true,
+      render: function (st) {
+        var strip = st.co === "seat" ? '<span class="strip">' + faces([P.hoot], 22) + '1 seat open</span>'
+          : st.co === "maple" ? '<span class="strip">' + faces([P.carol, P.dot], 22) + 'maple</span>'
+          : st.co === "idle" ? '<span class="strip">' + faces([P.joy, P.hoot, P.wendy], 22) + 'around</span>' : "";
+        return '<div class="duo"><div class="col">' + title(st) + sub(ladder(st, 1)) + stats() + '</div>' +
+          '<div class="minitile"><img class="logo" src="spades_logo.png" alt=""><span class="cnt">173 playing</span>' + strip + '</div></div>';
+      } }
+  ], "two");
+
+  /* ===== Three · objects and the avatar ===== */
+  section("Three &mdash; one object, and where her own avatar could go",
+    "The budget allows one resume chip. These are the three honest places for it, two of them with her own face. The player-lens judge called her face a mirror; the identity lens found it a calm job on a chair. Card 3 is what each must beat.", [
+    { cap: "<b>5 &middot; The seat chip</b> &mdash; the host pulls out the chair: title, then one 32px chip on the site's band, then the capsule. Real chairs on the left (seated in full colour, online-but-idle dimmed with a dot), one label, one door word. Never under the capsule.",
+      extra: [["chrome", "Chrome", [["band", "Band"], ["white", "White pill"]]]],
+      render: function (st) {
+        var chairs, lbl, door;
+        if (st.co === "maple") { chairs = chair(P.carol, 24) + chair(P.dot, 24, "online"); lbl = "<b>maple</b> · Carol's there"; door = "Take a seat ›"; }
+        else if (st.co === "seat") { chairs = chair(P.hoot, 24) + chair(P.joy, 24, "online"); lbl = "<b>hootnholler</b> · Spades · 1 seat open"; door = "Join ›"; }
+        else if (st.co === "invite") { chairs = chair(P.hoot, 24); lbl = "<b>hootnholler's table</b> · Spades"; door = "You're invited ›"; }
+        else { chairs = '<span class="glyph" style="background-image:url(icon-pack/spades.png)"></span>'; lbl = "Your usual Spades table"; door = "Deal me in ›"; }
+        return title(st) + '<a class="seatchip ' + (st.chrome === "white" ? "white" : "") + '" href="#"><span class="faces">' + chairs + '</span><span class="lbl">' + lbl + '</span><span class="door">' + door + '</span></a>' + stats();
+      } },
+    { cap: "<b>6 &middot; Your chair</b> &mdash; her own avatar drawn the way the Open tables cards draw every seat: a 32px face over a name plate, next to one sentence about her table and one door. The biggest object in the set, and the one that gives her face a job.",
+      extra: [["plate", "Plate", [["band", "Band"], ["blue", "Table blue"]]]],
+      render: function (st) {
+        var txt, door;
+        if (st.co === "maple") { txt = "Your <b>maple</b> table is up. Carol's there, 2 seats open."; door = "Take a seat ›"; }
+        else if (st.co === "seat") { txt = "hootnholler has a seat open at <b>Spades</b>."; door = "Sit with hootnholler ›"; }
+        else if (st.co === "invite") { txt = "hootnholler invited you to <b>Spades</b>."; door = "Take the seat ›"; }
+        else { txt = "Your usual <b>Spades</b> table, ready when you are."; door = "Take a seat ›"; }
+        return title(st, "Your seat is saved.") +
+          '<div class="chairrow"><div class="chair">' + av(ME.avatar, 32) + '<span class="plate ' + (st.plate === "blue" ? "blue" : "") + '">' + ME.name + '</span></div>' +
+          '<div class="chairtxt">' + txt + ' <span class="door">' + door + '</span></div></div>' + stats();
+      } },
+    { cap: "<b>7 &middot; The face at the door</b> &mdash; Holger's own question at its smallest honest size: her avatar inline before the greeting, the rest as card 1. Drawn so it can be said no to on sight rather than argued about; it doubles the face 90px from the menu bar.",
+      extra: [["fs", "Face", [["32", "32px"], ["40", "40px"]]], ["who", "Avatar", [["me", "Supergirl"], ["fox", "Default animal"]]]],
+      render: function (st) {
+        var src = st.who === "fox" ? P.hoot : ME.avatar;
+        return title(st, null, av(src, +st.fs, "face")) + sub(ladder(st, 2)) + stats();
+      } }
+  ], "three");
+
+  /* ===== Four · drawn anyway ===== */
+  section("Four &mdash; killed by the panel, drawn anyway",
+    "Three shapes the judges scored low (a second pill, a strip of chips, a member cell in the room's capsule) because they turn the column into a dashboard or touch the locked capsule. A drawn no beats an argued no, so here they are.", [
+    { cap: "<b>9 &middot; The member pill</b> &mdash; the room's pill and your pill: a second, smaller capsule under the first with her face, the deal check and the rank. Two pills 10px apart is exactly the neighbourhood R53 lived in.",
+      controls: ["ch", "bd", "back"],
+      render: function (st) {
+        var cells = '<span class="st me">' + av(ME.avatar, 20) + '<b>' + ME.name + '</b></span>' +
+          '<span class="st"><span class="chk' + (st.ch === "done" ? "" : " off") + '"></span>Today\'s deal</span>' +
+          (st.bd === "up" ? '<span class="st"><b>no. 23</b> in Spades <span class="lbUp">3</span></span>' : "");
+        return title(st) + stats(false, CAPSULE + '<br><span class="mpill">' + cells + '</span>');
+      } },
+    { cap: "<b>10 &middot; The today strip</b> &mdash; the sub slot holds two or three small chips instead of sentences: the deal, the rank, the people. Scannable, but it is a to-do list in a friendly font, and three doors where the budget allows one.",
+      render: function (st) {
+        var chips = '<span class="chip"><span class="chk' + (st.ch === "done" ? "" : " off") + '"></span>Today\'s deal</span>';
+        if (st.bd === "up") chips += '<span class="chip"><b>no. 23</b> in Spades <span class="lbUp">3</span></span>';
+        if (st.co === "seat" || st.co === "idle" || st.co === "maple") chips += '<span class="chip">' + faces([P.joy, P.hoot], 18) + (st.co === "maple" ? "maple is up" : "friends around") + '</span>';
+        return title(st) + '<div class="chiprow">' + chips + '</div>' + stats();
+      } },
+    { cap: "<b>11 &middot; The fourth cell</b> &mdash; a members-only cell joins the live capsule: her friends' faces and \"friends around\". Cheapest of all, but it mixes her fact into the room's strip, and the capsule is locked.",
+      controls: ["co", "back"],
+      render: function (st) {
+        var cell = st.co === "none" ? "" : '<span class="st frnd">' + faces([P.joy, P.hoot, P.wendy], 18) + 'friends around</span>';
+        var cap = '<span class="capsule"><span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>' +
+          '<span class="st"><b>1,214</b> playing</span><span class="st"><b>143</b> tables</span>' + cell + '</span>';
+        return title(st) + stats(true, cap);
+      } }
+  ], "four");
+  /* ?only=one|two|three|four shows a single section (screenshot aid) */
+  (function () {
+    var only = new URLSearchParams(location.search).get("only");
+    if (!only) return;
+    document.querySelectorAll(".vsec, #grid0, h1, p.note").forEach(function (el) { if (el.id !== "sec-" + only) el.style.display = "none"; });
+  })();
+</script>
+</body>
+</html>
