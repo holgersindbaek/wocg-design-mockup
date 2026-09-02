@@ -390,7 +390,7 @@
 
   /* Five · the red cap desk block (one sheet, corrected red) */
   .dsolo { width: 232px; height: 88px; overflow: hidden; }
-  .dsolo .dsband, .dpage .dsband { height: 20px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+  .dsolo .dsband, .dpage .dsband, .sverd2 .dsband { height: 20px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
     background: #D5201E; box-shadow: inset 0 0 0 1px #A60000;
     font-size: 12px; font-weight: bold; letter-spacing: .14em; line-height: 20px; color: #fff;
     text-shadow: -1px -1px 0 #A60000, 1px -1px 0 #A60000, -1px 1px 0 #A60000, 1px 1px 0 #A60000; }
@@ -538,6 +538,21 @@
   .dclick .dchev { position: absolute; right: 7px; bottom: 5px; font-size: 13px; color: #C9C0AF; z-index: 2; }
   /* R43-R44: the dated page — the band carries the date, no numeral column */
   .ddated .dbmemo .dbrow { box-sizing: border-box; }
+  /* R45: F5 on the Five-family standards — red 20px cap, Gelica numeral, 32px strips */
+  .sverd2 { width: 148px; overflow: hidden; }
+  .sverd2 .b4num { height: 56px; font-family: "Gelica", "Georgia", serif; font-weight: 700; font-size: 40px; }
+  .sverd2 .b4num i { color: var(--ink); opacity: 1; }
+  .sverd2 .nstamp { width: 32px; height: 32px; transform: translate(-50%, -50%) rotate(-12deg); }
+  .sverd2 .strip { flex: 0 0 32px; box-sizing: border-box; border-top: 1px solid var(--edge);
+    display: flex; align-items: center; justify-content: center; gap: 5px;
+    font-size: 12px; font-weight: bold; color: var(--ink); font-variant-numeric: tabular-nums; cursor: pointer; }
+  .sverd2 .strip:hover { background: #FAF7F2; }
+  .sverd2 .strip.g { color: #2B8A3E; }
+  .sverd2 .strip .chk { width: 11px; height: 11px; }
+  .sverd2 .strip .mut { color: #B9B5AE; font-weight: normal; }
+  .sverd2 .scap { font-size: 12px; font-weight: bold; letter-spacing: .08em; color: #8A8783; }
+  .sverd2 .chev { font-size: 12px; color: #C9C0AF; font-weight: normal; }
+  .sverd2 .rdot { width: 8px; height: 8px; border-radius: 50%; background: #C92A2A; flex-shrink: 0; }
   /* perforation: punched holes straddling the cap's bottom edge, no solid line there */
   .dperf .dsband { box-shadow: inset 0 1px 0 #A60000, inset 1px 0 0 #A60000, inset -1px 0 0 #A60000;
     position: relative; }
@@ -2332,6 +2347,26 @@ signed-out visitor sees no unit at all (except the calendar leaf, which shows a 
           '<span class="dsband">SPADES · AUG 20</span><span class="dbbody">' +
           '<span class="dbmemo">' + row1 + row2 + '</span>' +
           '</span><span class="dchev">›</span></span></span>';
+      } },
+    { id: "sverd2x",
+      cap: "<b>R45 · The stamped verdict II</b> — F5 on the Five-family standards: the 20px red cap says AUG · SPADES, the numeral is Gelica ink, and the strips sit at 32px with nothing under 12px.",
+      render: function (st) {
+        var strips = "";
+        if (st.viewer === "out") {
+          strips = '<span class="strip">&spades; Deal #51 · all play<span class="chev">›</span></span>';
+        } else {
+          strips = st.ch === "done"
+            ? '<span class="strip g"><span class="chk"></span>Better than 62%</span>'
+            : '<span class="strip"><span class="rdot"></span>Play deal #51<span class="chev">›</span></span>';
+          if (st.bd === "none") strips += '<span class="strip"><span class="mut">No rank yet</span></span>';
+          else if (st.bd === "rest") strips += '<span class="strip"><span class="scap">SPADES</span>1,581</span>';
+          else strips += '<span class="strip">No. 23' + chipFor(st.bd) + '</span>';
+        }
+        var done = st.viewer === "in" && st.ch === "done";
+        return CAPSULE_STOCK + '<span class="bigrow"><span class="b4page sverd2' + (done ? " done" : "") + '">' +
+          '<span class="dsband">AUG · SPADES</span>' +
+          '<span class="b4num"><i>20</i><span class="chk nstamp"></span></span>' +
+          strips + '</span></span>';
       } },
   ];
   CONCEPTS4.forEach(function (c) { buildCard(grid4, c); });
