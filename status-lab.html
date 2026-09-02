@@ -492,7 +492,7 @@
   .h39 .dbmemo .dshead { background-color: #E5F0FA; color: #005AAE;
     box-shadow: inset 0 -1px 0 rgba(0, 101, 195, .22); }
   .h40 .dbmemo .dshead { background-color: #33383F; color: #fff; box-shadow: inset 0 -2px 0 #0065c3; }
-  .h41 .dbmemo .dshead { background-color: #33383F; color: #fff; box-shadow: inset 0 -2px 0 #D5201E; }
+  .h41 .dbmemo .dshead { background-color: #33383F; color: #fff; box-shadow: none; }
   .h42 .dbmemo .dshead { background-color: #005AAE; color: #fff; }
   .h42 .dbmemo .dbrow { background: #E5F0FA; }
   .dswapbg .dbdate .b4num { background: #F5EEE5; }
@@ -536,6 +536,8 @@
   .dclick:hover { transform: translateY(-1px);
     box-shadow: inset 0 0 0 1px var(--edge), 0 2px 4px rgba(60, 45, 25, .08), 0 6px 14px rgba(60, 45, 25, .12); }
   .dclick .dchev { position: absolute; right: 7px; bottom: 5px; font-size: 13px; color: #C9C0AF; z-index: 2; }
+  /* R43-R44: the dated page — the band carries the date, no numeral column */
+  .ddated .dbmemo .dbrow { box-sizing: border-box; }
   /* perforation: punched holes straddling the cap's bottom edge, no solid line there */
   .dperf .dsband { box-shadow: inset 0 1px 0 #A60000, inset 1px 0 0 #A60000, inset -1px 0 0 #A60000;
     position: relative; }
@@ -2228,7 +2230,7 @@ signed-out visitor sees no unit at all (except the calendar leaf, which shows a 
           '</span></span></span>';
       } },
     { id: "h41x",
-      cap: "<b>R41 · Ink bar, red selvage</b> — R40 with the selvage in the cap's own red, so the bar belongs to the calendar instead of introducing a third color.",
+      cap: "<b>R41 · Ink bar</b> — R40's bar with no selvage at all; the bottom edge is just the bar's own dark ink.",
       render: function (st) {
         var done = st.viewer === "in" && st.ch === "done";
         var row1, row2;
@@ -2280,6 +2282,56 @@ signed-out visitor sees no unit at all (except the calendar leaf, which shows a 
           '<span class="b4num"><i>20</i><span class="chk nstamp"></span></span></span>' +
           '<span class="dbmemo"><span class="dshead">SPADES DAILY</span>' + row1 + row2 + '</span>' +
           '</span></span></span>';
+      } },
+    { id: "ddated43",
+      cap: "<b>R43 · The dated page</b> — R12 with the numeral column gone: the cap itself says the date in full, and the rows take the whole width. The page is still the button.",
+      render: function (st) {
+        var done = st.viewer === "in" && st.ch === "done";
+        var row1, row2;
+        if (st.viewer === "out") {
+          row1 = '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+            '<span class="push"><span class="dbtal">today’s deal</span></span></span>';
+          row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+        } else {
+          row1 = done
+            ? '<span class="dbrow">' + b4box(true) + '<span class="b4strike">Deal #51</span>' +
+              '<span class="push"><span class="dbtal g">13 WON</span></span></span>'
+            : '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+              '<span class="push"><span class="dbtal">12 WON</span></span></span>';
+          if (st.bd === "none") row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+          else if (st.bd === "rest") row2 = '<span class="dbrow"><span class="dbcap">SPADES</span>' +
+            '<span class="push"><span class="dbfig">1,581</span></span></span>';
+          else row2 = '<span class="dbrow"><span>No. 23 · Spades</span><span class="push">' + chipFor(st.bd) + '</span></span>';
+        }
+        return CAPSULE_STOCK + '<span class="bigrow"><span class="b4page dpage dclick ddated' + (done ? " done" : "") + '" title="Daily challenge & Spades Elo">' +
+          '<span class="dsband">20TH OF AUGUST</span><span class="dbbody">' +
+          '<span class="dbmemo">' + row1 + row2 + '</span>' +
+          '</span><span class="dchev">›</span></span></span>';
+      } },
+    { id: "ddated44",
+      cap: "<b>R44 · The dated page, short</b> — the same page with the short form, keeping the game in the cap so the signed-out state still names it.",
+      render: function (st) {
+        var done = st.viewer === "in" && st.ch === "done";
+        var row1, row2;
+        if (st.viewer === "out") {
+          row1 = '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+            '<span class="push"><span class="dbtal">today’s deal</span></span></span>';
+          row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+        } else {
+          row1 = done
+            ? '<span class="dbrow">' + b4box(true) + '<span class="b4strike">Deal #51</span>' +
+              '<span class="push"><span class="dbtal g">13 WON</span></span></span>'
+            : '<span class="dbrow">' + b4box(false) + '<span>Deal #51</span>' +
+              '<span class="push"><span class="dbtal">12 WON</span></span></span>';
+          if (st.bd === "none") row2 = '<span class="dbrow dbimp">DAILY MEMO · FORM NO. 8</span>';
+          else if (st.bd === "rest") row2 = '<span class="dbrow"><span class="dbcap">SPADES</span>' +
+            '<span class="push"><span class="dbfig">1,581</span></span></span>';
+          else row2 = '<span class="dbrow"><span>No. 23 · Spades</span><span class="push">' + chipFor(st.bd) + '</span></span>';
+        }
+        return CAPSULE_STOCK + '<span class="bigrow"><span class="b4page dpage dclick ddated' + (done ? " done" : "") + '" title="Daily challenge & Spades Elo">' +
+          '<span class="dsband">SPADES · AUG 20</span><span class="dbbody">' +
+          '<span class="dbmemo">' + row1 + row2 + '</span>' +
+          '</span><span class="dchev">›</span></span></span>';
       } },
   ];
   CONCEPTS4.forEach(function (c) { buildCard(grid4, c); });
