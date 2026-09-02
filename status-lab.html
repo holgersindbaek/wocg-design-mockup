@@ -678,6 +678,15 @@
   .alma3 .dsband { background: #F5EEE5; box-shadow: inset 0 0 0 1px #DAD2C5; color: var(--ink); text-shadow: none;
     letter-spacing: .1em; }
   .alma3 .swcaret { opacity: .6; }
+  /* R56: R55's frame with R53's doors: sentence case throughout, heavy arrows instead of leaders */
+  .alma4 .dsband, .alma4 .awd { letter-spacing: .02em; }
+  .alma4 .abody { padding-right: 0; }
+  .alma4 .aline { position: relative; padding-right: 34px; }
+  .alma4 .aline:hover { background: #FAF7F2; }
+  .alma4 .aline .push { margin-left: auto; display: inline-flex; align-items: center; }
+  .alma4 .afig { font-size: 13px; }
+  .alma4 .rchev { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); line-height: 1;
+    font-size: 16px; font-weight: bold; color: #8A8783; }
   /* perforation: punched holes straddling the cap's bottom edge, no solid line there */
   .dperf .dsband { box-shadow: inset 0 1px 0 #A60000, inset 1px 0 0 #A60000, inset -1px 0 0 #A60000;
     position: relative; }
@@ -2733,6 +2742,26 @@ signed-out visitor sees no unit at all (except the calendar leaf, which shows a 
         return CAPSULE_STOCK + '<span class="bigrow"><span class="b4page alma2 alma3' + (done ? " done" : "") + '">' +
           '<span class="dsband gswap" title="Switch game"><span class="gnameu">SPADES</span><span class="swcaret">&#9662;</span></span>' +
           '<span class="abody"><span class="adate"><span class="anum">20</span><span class="awd">AUG</span></span>' +
+          '<span class="alines">' + lines + '</span></span></span></span>';
+      },
+      wire: function (stage) { wireGameSwitch(stage, this); } },
+    { id: "alma4x",
+      cap: "<b>R56 · The almanac, sand cap, doors</b> — R55 with R53's rows: Daily challenge and the Elo rating as doors with the heavy arrows, no leaders, and nothing in capitals: Spades in the bar, Aug under the numeral.",
+      render: function (st) {
+        var done = st.viewer === "in" && st.ch === "done";
+        var lines = "";
+        if (st.viewer === "out") {
+          lines = '<span class="aline">' + b4box(false) + '<span>Daily challenge</span><span class="rchev">›</span></span>';
+        } else {
+          lines = done
+            ? '<span class="aline">' + b4box(true) + '<span class="b4strike">Daily challenge</span><span class="rchev">›</span></span>'
+            : '<span class="aline">' + b4box(false) + '<span>Daily challenge</span><span class="rchev">›</span></span>';
+          if (st.bd === "none") lines += '<span class="aline"><span>No rank yet</span><span class="rchev">›</span></span>';
+          else lines += '<span class="aline"><span>Elo rating</span><span class="push"><span class="afig">1,581</span></span><span class="rchev">›</span></span>';
+        }
+        return CAPSULE_STOCK + '<span class="bigrow"><span class="b4page alma2 alma3 alma4' + (done ? " done" : "") + '">' +
+          '<span class="dsband gswap" title="Switch game"><span class="gname">Spades</span><span class="swcaret">&#9662;</span></span>' +
+          '<span class="abody"><span class="adate"><span class="anum">20</span><span class="awd">Aug</span></span>' +
           '<span class="alines">' + lines + '</span></span></span></span>';
       },
       wire: function (stage) { wireGameSwitch(stage, this); } },
