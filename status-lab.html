@@ -576,10 +576,21 @@
     text-shadow: -1px -1px 0 #A60000, 1px -1px 0 #A60000, -1px 1px 0 #A60000, 1px 1px 0 #A60000; }
   /* R48: the small leaf standing beside the pill */
   .leafline .todaypill { margin-top: 0; }
-  /* R49: R46's facts as one capsule at the live capsule's scale */
+  /* R49: one capsule — the calendar as the first segment, then the facts */
   .lrow49 { display: inline-flex; align-items: center; height: 32px; font-size: 16px; background: #fff;
     border-radius: 20px; box-shadow: inset 0 0 0 1px var(--edge), var(--liftshadow);
     overflow: hidden; font-variant-numeric: tabular-nums; color: var(--ink); }
+  .lrow49 .ldate { position: relative; display: inline-flex; flex-direction: column; align-self: stretch;
+    width: 40px; flex-shrink: 0; border-right: 1px solid var(--edge); }
+  .lrow49 .ldb { height: 15px; display: flex; align-items: center; justify-content: center;
+    background: #D5201E; box-shadow: inset 0 0 0 1px #A60000;
+    font-size: 12px; font-weight: bold; letter-spacing: .04em; color: #fff;
+    text-shadow: -1px -1px 0 #A60000, 1px -1px 0 #A60000, -1px 1px 0 #A60000, 1px 1px 0 #A60000; }
+  .lrow49 .ldn { flex: 1; display: flex; align-items: center; justify-content: center;
+    font-family: "Gelica", "Georgia", serif; font-weight: 700; font-size: 15px; color: var(--ink); }
+  .lrow49 .ldate .stamp { display: none; position: absolute; left: 50%; top: 22px; width: 14px; height: 14px;
+    transform: translate(-50%, -50%) rotate(-8deg); }
+  .lrow49.done .ldate .stamp { display: block; }
   .lrow49 .lcell { display: inline-flex; align-items: center; gap: 5px; padding: 0 11px; align-self: stretch; cursor: pointer; }
   .lrow49 .lcell + .lcell { border-left: 1px solid var(--edge); }
   .lrow49 .lcell:hover { background: rgba(0, 0, 0, .04); }
@@ -2459,7 +2470,7 @@ signed-out visitor sees no unit at all (except the calendar leaf, which shows a 
           '</span>';
       } },
     { id: "lrow49x",
-      cap: "<b>R49 · The leaf and the capsule</b> — R46's facts as one capsule at the live capsule's scale: no header, 16px type, the leaf holding the date beside it.",
+      cap: "<b>R49 · The dated capsule</b> — everything in one container: the calendar is the capsule's first segment, red band over the numeral, and the facts follow at the capsule's own type.",
       render: function (st) {
         var done = st.viewer === "in" && st.ch === "done";
         var cells = "";
@@ -2473,9 +2484,9 @@ signed-out visitor sees no unit at all (except the calendar leaf, which shows a 
           else if (st.bd !== "none") cells += '<span class="lcell"><b>no. 23</b>&nbsp;in Spades' + chipFor(st.bd) + '</span>';
         }
         return CAPSULE_STOCK + '<span class="leafline">' +
-          '<span class="leaf lf46 lfsm' + (done ? " done" : "") + '">' +
-          '<span class="dsband">AUG</span><span class="lday">20</span><span class="chk stamp"></span></span>' +
-          '<span class="lrow49">' + cells + '</span>' +
+          '<span class="lrow49' + (done ? " done" : "") + '">' +
+          '<span class="ldate"><span class="ldb">AUG</span><span class="ldn">20</span><span class="chk stamp"></span></span>' +
+          cells + '</span>' +
           '</span>';
       } },
   ];
