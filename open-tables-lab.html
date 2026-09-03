@@ -57,6 +57,12 @@
   .vsec2 .cmpwrap { margin-bottom: 22px; }
   .vsec2 .cmplab { font-size: 12.5px; color: var(--muted-soft); margin: 0 0 8px; }
   .vsec2 .cmplab b { color: var(--ink); }
+  /* c23: the merged plate at four across, at the two widths the homepage could give it */
+  #sec-c23 .cmp-0 .tgrid { grid-template-columns: repeat(4, 213px); gap: 16px; }
+  #sec-c23 .cmp-0 .ltCard { width: 213px; }
+  #sec-c23 .cmp-0 .playerName { font-size: 13px; padding: 0 4px; }
+  #sec-c23 .cmp-1 .tgrid { grid-template-columns: repeat(4, 266px); gap: 16px; }
+  #sec-c23 .cmp-1 .ltCard { width: 266px; }
 
   /* ===== state chips (which sample tables every section shows) ===== */
   .statebar { position: sticky; top: 0; z-index: 20; background: rgba(249,246,242,.94); backdrop-filter: blur(6px);
@@ -1003,6 +1009,55 @@
   box-shadow: inset 0 0 0 1px rgba(0,0,0,.18), 0 1px 3px rgba(0,0,0,.25); }
 #sec-c20 .ltCard.isNew .player.c20-you .playerName { font-weight: normal; }
 </style>
+<style>
+/* ===== concept c21: The thin rail ===== */
+/* c21 · The thin rail: the whole tile is the 4:3 felt, the seats lifted a little, one gold plate top right for state and clock,
+   a thin dark rail along the bottom edge inside the felt with the game name left and the people or the facts right */
+#sec-c21 .ltCard { background-color: #327333; }
+#sec-c21 .ltCard:hover { background-color: #327333; }
+#sec-c21 .ltCard .tableListing { padding-top: 75%; }
+#sec-c21 .ltCard .tableListing .header { padding-top: 0; inset: 0; }
+#sec-c21 .ltCard .tableListing .header::before { border-radius: 20px; }
+#sec-c21 .ltCard .tableListing .header::after { border-radius: 20px; }
+/* the seats sit 22px higher so the rail has its own strip; the faces lose about 7px each */
+#sec-c21 .ltCard .playersContainer { top: 6px; bottom: 34px; }
+/* the shared content block would add the felt's height again, so it is gone: the felt is the card */
+#sec-c21 .ltCard .c21-content { display: none; }
+/* the 2 and 3 seat felts start with a face in the top row, so that row drops and the top corners stay free for the plates */
+#sec-c21 .players2 .playersContainer > .verticalSpacer:nth-child(1),
+#sec-c21 .players3 .playersContainer > .verticalSpacer:nth-child(1) { height: 16.5%; }
+#sec-c21 .players2 .playersContainer > .verticalSpacer:nth-child(9),
+#sec-c21 .players3 .playersContainer > .verticalSpacer:nth-child(9) { height: 5.7%; }
+
+/* the plates share the seat nameplate's grammar: 20px, bold, squircle, the same shadow */
+#sec-c21 .c21-plate { position: absolute; z-index: 3; height: 20px; line-height: 20px; padding: 0 7px; box-sizing: border-box;
+  font-size: 13px; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 30%;
+  border-radius: var(--radius-md, 6px); corner-shape: squircle; cursor: default;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.35), 0 0 0 1px rgba(0,0,0,.30), 0 1px 3px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25); }
+#sec-c21 .players2 .c21-plate, #sec-c21 .players3 .c21-plate { max-width: 62%; }
+/* the clock: gold, top right, the one fixed slot on every tile. before the deal it says Waiting */
+#sec-c21 .c21-clock { top: 2px; right: 0; background: #FFD166; color: #3D2A00; }
+#sec-c21 .c21-clock.c21-has { cursor: help; }
+/* a player left and the seat is open again: the loudest fact, stacked under the clock in the warmer green */
+#sec-c21 .c21-open { top: 26px; right: 0; background: #C0EB75; color: #2F5106; cursor: help; }
+
+/* the rail: 28px along the bottom edge inside the felt, the felt's own shadow, white text with a soft shadow */
+/* the rail hangs below the lifted seat container (inset 12px, bottom 34px) so it lies on the felt's bottom edge */
+#sec-c21 .c21-rail { position: absolute; z-index: 3; left: -12px; right: -12px; bottom: -34px; height: 28px; box-sizing: border-box;
+  display: flex; align-items: center; gap: 10px; padding: 0 12px; background: rgba(0, 0, 0, .34); border-radius: 0 0 20px 20px; }
+#sec-c21 .c21-game { flex: 0 1 auto; min-width: 0; font-size: 13px; font-weight: bold; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  text-shadow: 0 1px 1px rgba(0,0,0,.3); }
+#sec-c21 .c21-game.c21-cut { cursor: help; }
+#sec-c21 .c21-fact { flex: 1 1 auto; min-width: 0; font-size: 13px; color: rgba(255,255,255,.88); text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  text-shadow: 0 1px 1px rgba(0,0,0,.3); cursor: help; }
+#sec-c21 .c21-fact b { color: #D8F5A2; font-weight: bold; }
+#sec-c21 .c21-host { flex: none; margin-left: auto; }
+/* the placeholders: an empty table with your own chair pulled out at the near seat */
+#sec-c21 .ltCard.isNew .player.c21-you img { opacity: .85; }
+#sec-c21 .ltCard.isNew .player.c21-you .playerNameContainer { background-color: #fff; color: #4e4d4c;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.18), 0 1px 3px rgba(0,0,0,.25); }
+#sec-c21 .ltCard.isNew .player.c21-you .playerName { font-weight: normal; }
+</style>
 <!-- CONCEPT STYLES END -->
 </head>
 <body>
@@ -1326,10 +1381,10 @@ function conceptById(id) { return CONCEPTS.filter(function (c) { return c.id ===
 /* a compare section renders other concepts side by side on a few states, borrowing their css under its own id */
 function renderCompare(c, sec) {
   var grid = sec.querySelector(".cgrid"); grid.innerHTML = "";
-  c.compare.forEach(function (id) {
+  c.compare.forEach(function (id, i) {
     var other = conceptById(id); if (!other) return;
-    var wrap = document.createElement("div"); wrap.className = "cmpwrap as-" + id;
-    var lab = document.createElement("p"); lab.className = "cmplab"; lab.innerHTML = "<b>" + id + "</b> &middot; " + other.title; wrap.appendChild(lab);
+    var wrap = document.createElement("div"); wrap.className = "cmpwrap as-" + id + " cmp-" + i;
+    var lab = document.createElement("p"); lab.className = "cmplab"; lab.innerHTML = (c.labels && c.labels[i]) || ("<b>" + id + "</b> &middot; " + other.title); wrap.appendChild(lab);
     var host = document.createElement("div"); wrap.appendChild(host);
     renderSlots(host, other.render, c.states, other.scope);
     grid.appendChild(wrap);
@@ -1372,7 +1427,7 @@ function renderConcepts() {
       foldButton(sec, function () { renderSection(c, sec); });
       if (!sec.classList.contains("folded")) renderSection(c, sec);
     });
-    if (round === 2) { var v2 = document.getElementById("sec-verdict2"); if (v2) frag.appendChild(v2); }
+    if (round === 2) { var v3 = document.getElementById("sec-verdict3"); if (v3) frag.appendChild(v3); var v2 = document.getElementById("sec-verdict2"); if (v2) frag.appendChild(v2); }
   });
   var end = document.querySelector("#concepts-end");
   end.parentNode.insertBefore(frag, end);
@@ -4829,8 +4884,211 @@ registerConcept((function () {
   };
 })());
 </script>
+<script>
+/* ===== concept c21: The thin rail ===== */
+registerConcept((function () {
+  var MODELS = {};
+  var TIPS = {
+    "Ranked": "Counts toward your rating · real players only",
+    "Private": "A named table with the host’s saved rules",
+    "Last seat": "Yours is the last seat · the deal starts when you sit",
+    "No bots": "The seats wait for people · no bots fill them",
+    "Tournament rules": "Cards are passed on every hand",
+    "Dealer may pass": "The dealer may pass instead of naming trump",
+    "No bag penalty": "Extra tricks over the bid cost nothing here",
+    "Experienced only": "Players with ten finished games",
+    "Registered only": "Signed in players only",
+    "Registered and experienced only": "Signed in players with ten finished games"
+  };
+  var SHORT = { "Double Deck Pinochle": "DD Pinochle" };
+
+  function isBot(name) { return !!(name && PEOPLE[name] && PEOPLE[name].bot); }
+  function botNames(t) { var b = []; for (var i = 0; i < t.n; i++) { if (isBot(t.seats[i])) b.push(t.seats[i]); } return b; }
+  function targetText(t) { return (t.gameid === "hearts" ? "Ends at " : "Plays to ") + fmt(t.target); }
+  function botTake(bots) { return bots.length === 1 ? "You take " + bots[0] + "’s hand and score" : "You take a bot’s hand and score"; }
+  function block(html) { return '<span style="display:block;white-space:normal;max-width:208px">' + html + '</span>'; }
+  function overflows(el) { return el.scrollWidth > el.clientWidth + 1; }
+  function gameName(t) { return SHORT[t.game] || t.game; }
+
+  /* the model of one tile: the clock plate, the open seat plate, the footer fact, the quieter facts for the tooltip */
+  function build(t) {
+    var m = { clock: "", clockTip: "", open: false, facts: [], name: "", nameTip: "", host: null, people: "" };
+    var bots = botNames(t), k = emptySeats(t);
+    if (t.empty) {
+      var r = t.placeholder === "ranked";
+      m.clock = r ? "Ranked" : "New table";
+      m.clockTip = r ? "A new ranked table · counts toward your rating · real players only" : "A new table with your rules · bots may fill empty seats";
+      m.host = r ? "Host ranked" : "Host";
+      m.name = LAB.mode === "home" ? gameName(t) : "";
+      return m;
+    }
+    if (t.started) {
+      m.clock = t.age > 0 ? ageText(t.age) : "Dealing";
+      m.clockTip = t.age > 0 ? "In play for " + ageText(t.age) : "The deal is seconds away";
+      if (k > 0) { m.open = true; m.facts.push("A player left · you take their hand and score"); }
+      if (bots.length) m.facts.push(botTake(bots));
+    } else {
+      m.clock = "Waiting";
+      m.clockTip = k === 1 ? "One seat left · the deal starts when you sit" : "Waiting for players";
+    }
+    var friend = humans(t).filter(function (n) { return PEOPLE[n].liked; })[0];
+    if (friend) m.people = "<b>" + esc(friend) + "</b> is here";
+    else if (t.started && bots.length === 1) m.people = "Take over <b>" + esc(bots[0]) + "</b>";
+    else if (t.started && bots.length > 1) m.people = "Take over a bot";
+    if (t.ranked) m.facts.push("Ranked");
+    if (t.ptn) m.facts.push("Private");
+    if (!t.started && k === 1) m.facts.push("Last seat");
+    (t.variants || []).forEach(function (v) { m.facts.push(v); });
+    if (!t.started && t.bots === false && !t.ranked) m.facts.push("No bots");
+    if (t.regOnly && t.expOnly) m.facts.push("Registered and experienced only");
+    else if (t.expOnly) m.facts.push("Experienced only");
+    else if (t.regOnly && !t.ranked) m.facts.push("Registered only");
+    if (t.target) m.facts.push(targetText(t));
+    /* the footer left: the game on the mixed grid, the saved name in the See all box */
+    if (LAB.mode === "home") { m.name = gameName(t); m.nameTip = t.ptn ? esc(t.game) + " · " + esc(t.ptn) : esc(t.game); }
+    else if (t.ptn) { m.name = t.ptn; m.nameTip = esc(t.ptn); }
+    return m;
+  }
+  /* the footer right shows the first fact that is a short word; the whole list lives in its tooltip */
+  function footFact(m) {
+    var short = m.facts.filter(function (f) { return f.length <= 16 || TIPS[f]; });
+    var pick = short.filter(function (f) { return f.length <= 16; })[0] || "";
+    return pick;
+  }
+  function factsTip(m) {
+    if (!m.facts.length) return "";
+    return block(m.facts.map(function (f, i) {
+      var line = esc(f) + (TIPS[f] ? " · " + esc(TIPS[f]) : "");
+      return i === 0 ? "<b>" + esc(f) + "</b>" + (TIPS[f] ? " · " + esc(TIPS[f]) : "") : line;
+    }).join("<br>"));
+  }
+
+  function partnerLine(t, idx) {
+    if (!t.team || t.n !== 4) return "";
+    var pn = t.seats[(idx + 2) % 4];
+    if (!pn) return "Your partner’s seat is empty too";
+    if (isBot(pn)) return "Your partner would be <b>" + esc(pn) + "</b> until a person takes that seat";
+    return "Your partner would be <b>" + esc(pn) + "</b>";
+  }
+  function seatTip(t, idx, bot) {
+    var lines = [];
+    if (bot) lines.push(t.started ? "You take <b>" + esc(t.seats[idx]) + "</b>’s hand and score" : "You play <b>" + esc(t.seats[idx]) + "</b>’s hand from the first deal");
+    else if (t.started) lines.push("You take their hand and score");
+    var pn = partnerLine(t, idx);
+    if (pn) lines.push(pn);
+    else if (t.n === 2 && humans(t).length) lines.push("You play <b>" + esc(humans(t)[0]) + "</b>");
+    return lines.join("<br>");
+  }
+  /* mid game a takeable seat rolls to Take over, before the shared code rolls the waiting seats to Join */
+  function rollSeat(seat, word) {
+    seat.classList.add("joinable");
+    var plate = seat.querySelector(".playerNameContainer");
+    var you = document.createElement("img");
+    you.className = "seatYou"; you.src = VIEWER_AVATAR; you.alt = ""; you.width = 32; you.height = 32;
+    seat.insertBefore(you, plate);
+    var roll = document.createElement("div");
+    roll.className = "plateRoll";
+    roll.appendChild(seat.querySelector(".playerName"));
+    var pn = document.createElement("p");
+    pn.className = "playerName pnJoin"; pn.textContent = word;
+    roll.appendChild(pn);
+    plate.insertBefore(roll, plate.firstChild);
+  }
+  function armSeatTips(cardEl, t) {
+    cardEl.querySelectorAll(".player.isEmpty, .player.isBot.seatAvailable").forEach(function (seat) {
+      var idx = Number(seat.getAttribute("data-seat"));
+      if (t.started && !seat.classList.contains("joinable")) rollSeat(seat, "Take over");
+      var tip = seatTip(t, idx, seat.classList.contains("isBot"));
+      if (tip && seat.__wtip === undefined) attachTip(seat, block(tip));
+    });
+  }
+  function armPlaceholder(cardEl, t) {
+    var near = cardEl.querySelector(".player.playernumber" + (t.n === 4 ? 3 : t.n === 3 ? 2 : 1));
+    if (!near) return;
+    near.classList.add("c21-you");
+    near.querySelector("img").src = VIEWER_AVATAR;
+    near.querySelector(".playerName").textContent = "Your seat";
+    attachTip(near, t.placeholder === "ranked" ? "You sit here and host the table · real players fill the rest" : "You sit here and pick the rules");
+  }
+  /* the touch path: a tap on a plate or a footer word shows its tooltip, a tap elsewhere hides it */
+  function armTaps(sec) {
+    if (sec.__c21tap) return;
+    sec.__c21tap = true;
+    function close() { var open = sec.__c21open; if (open) { open.dispatchEvent(new Event("mouseleave")); sec.__c21open = null; } }
+    sec.addEventListener("click", function (e) {
+      var el = e.target;
+      while (el && el !== sec && el.__wtip === undefined) el = el.parentElement;
+      if (!el || el === sec || el.classList.contains("player") || el.classList.contains("button")) return;
+      e.stopPropagation(); e.preventDefault();
+      if (sec.__c21open === el) { close(); return; }
+      close();
+      el.dispatchEvent(new Event("mouseenter"));
+      sec.__c21open = el;
+    });
+    document.addEventListener("click", close);
+  }
+  /* a game name that runs out of its corner keeps its full name in a tooltip; the footer fact takes the first fact that fits its corner */
+  function fit(sec) {
+    sec.querySelectorAll(".c21-game[data-tip]").forEach(function (el) {
+      if (overflows(el)) { el.classList.add("c21-cut"); if (el.__wtip === undefined) attachTip(el, el.getAttribute("data-tip")); }
+    });
+    sec.querySelectorAll(".ltCard").forEach(function (cardEl) {
+      var fact = cardEl.querySelector(".c21-fact"), m = MODELS[cardEl.getAttribute("data-state")];
+      if (!fact || !m) return;
+      /* the corner shows the first short fact that fits; the sentences and the target score live in the tooltip only */
+      if (m.people) { fact.innerHTML = m.people; return; }
+      var picked = "";
+      var cands = m.facts.filter(function (f) { return !/^(Ends at|Plays to)/.test(f) && f.length <= 40; });
+      for (var i = 0; i < cands.length; i++) {
+        fact.textContent = cands[i];
+        if (!overflows(fact)) { picked = cands[i]; break; }
+      }
+      if (!picked) fact.textContent = cands.slice().sort(function (a, b) { return a.length - b.length; })[0] || "";
+    });
+  }
+
+  return {
+    id: "c21",
+    round: 2,
+    open: true,
+    title: "The thin rail",
+    desc: "The same 4:3 felt and gold clock plate as the merged plate, but the seats sit 22px higher and a thin dark rail runs along the bottom edge inside the felt, so the footer has a full line: the game name at the left, and at the right the people first (<b>BobK is here</b>, <b>Take over Bot Ada</b>) or else the quiet facts (<b>Ranked</b>, <b>Tournament rules</b>, <b>No bots</b>), with the whole list in the tooltip. The faces lose about 7px of height for it. The placeholders host from the rail.",
+    render: function (t) {
+      var m = build(t);
+      MODELS[t.id] = m;
+      var felt = '<div class="c21-plate c21-clock' + (m.facts.length ? ' c21-has' : '') + '">' + esc(m.clock) + '</div>' +
+        (m.open ? '<div class="c21-plate c21-open">Seat open</div>' : '') +
+        '<div class="c21-rail">' + (m.name ? '<div class="c21-game" data-tip="' + m.nameTip + '">' + esc(m.name) + '</div>' : '') +
+        (m.host ? '<span class="button green small c21-host">' + esc(m.host === "Host" ? "Host table" : "Host ranked table") + '</span>' :
+          ((m.people || m.facts.length) ? '<div class="c21-fact">' + m.people + '</div>' : '')) + '</div>';
+      return card(t, '', { feltExtra: felt, contentClass: 'c21-content' });
+    },
+    afterRender: function (sec) {
+      sec.querySelectorAll(".ltCard").forEach(function (cardEl) {
+        var t = tableById(cardEl.getAttribute("data-state")), m = t && MODELS[t.id];
+        if (!m) return;
+        var clock = cardEl.querySelector(".c21-clock");
+        var tip = factsTip(m);
+        attachTip(clock, tip ? block("<b>" + esc(m.clockTip) + "</b><br>") + tip : esc(m.clockTip));
+        var open = cardEl.querySelector(".c21-open");
+        if (open) attachTip(open, "A player left mid game · you take their hand and score");
+        var fact = cardEl.querySelector(".c21-fact");
+        if (fact && tip) attachTip(fact, tip);
+        if (t.empty) armPlaceholder(cardEl, t); else armSeatTips(cardEl, t);
+      });
+      fit(sec);
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { fit(sec); });
+      armTaps(sec);
+    }
+  };
+})());
+</script>
 <!-- CONCEPT SCRIPTS END -->
 <script>
+registerConcept({ id: "c23", round: 2, open: true, compare: ["c20", "c20"],
+  labels: ["<b>Four across at 213px</b> &middot; the homepage grid next to the ad rail is 902px wide, so four tiles are 213px each", "<b>Four across at 266px</b> &middot; the full 1112px content width, if the ad rail moved"],
+  title: "Four across at the real width",
+  desc: "Holger wants four tables per row. The merged plate tile (c20) rendered four across at the two widths the homepage could give it. The question is whether faces, names and the plates stay legible at 213px, and whether four felts in a row still read as tables." });
 registerConcept({ id: "cmp", round: 2, open: true, compare: ["c18", "c15"], states: ["a", "c", "j"],
   title: "The open question: the state plate in the row or on the felt",
   desc: "The judges left one question open. <b>c18</b> keeps the felt untouched and puts the status nameplate in the white row. <b>c15</b> puts it in the felt's top left corner with the clock top right. The same three tables side by side, a waiting table, a ranked table one seat short, and the table a player left. The corner wins if the eye finds <b>Seat open</b> before it reaches the bottom row. The row wins if the felt reads calmer without plates over the faces." });
@@ -4900,6 +5158,37 @@ registerConcept({ id: "cmp", round: 2, open: true, compare: ["c18", "c15"], stat
   </div>
 </div>
 <!-- VERDICT END -->
+<!-- VERDICT3 START -->
+<style>
+  #sec-verdict3 .vtable { border-collapse: collapse; font-size: 12.5px; margin: 0 0 16px; background: #fff; border-radius: 12px; corner-shape: squircle; box-shadow: var(--btnshadow); overflow: hidden; }
+  #sec-verdict3 .vtable th, #sec-verdict3 .vtable td { text-align: left; padding: 6px 12px; border-bottom: 1px solid #eeeae3; vertical-align: top; }
+  #sec-verdict3 .vtable th { font-size: 11.5px; color: var(--muted-soft); font-weight: bold; background: var(--band); }
+  #sec-verdict3 .vtable tr:last-child td { border-bottom: none; }
+  #sec-verdict3 .vtable td.num, #sec-verdict3 .vtable th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  #sec-verdict3 .vtable tr.win td { background: #F5F9EA; }
+  #sec-verdict3 .vtable tr.syn td { background: #F9F6F2; }
+  #sec-verdict3 .vcols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; max-width: 1100px; }
+  #sec-verdict3 .vcol { background: #fff; border-radius: 12px; corner-shape: squircle; box-shadow: var(--btnshadow); padding: 12px 14px 14px; }
+  #sec-verdict3 .vcol h3 { font-size: 13px; margin: 0 0 8px; padding-bottom: 6px; border-bottom: 1px solid #eeeae3; }
+  #sec-verdict3 .vcol ul { margin: 0; padding: 0 0 0 16px; font-size: 12.5px; line-height: 1.4; color: #3a3733; }
+  #sec-verdict3 .vcol li { margin: 0 0 5px; }
+  #sec-verdict3 .vcol li b { color: var(--ink); }
+  #sec-verdict3 p.desc + p.desc { margin-top: -6px; }
+</style>
+<div class="vsec2" id="sec-verdict3">
+  <h2>Verdict &middot; round three</h2>
+  <p class="desc">Round three built the one big table at a strict 4:3 in three ways, all with the gold clock plate at the top right that reads <b>Waiting</b> before the deal and the minutes in play after it, and a green <b>Seat open</b> plate under it on the table a player left. The judge pass could not run: the subagent service was overloaded on five launches in a row, so the three variants were built by hand and this verdict is the orchestrator's own reading, not a panel's.</p>
+  <table class="vtable"><thead><tr><th>Id</th><th>Variant</th><th class="num">Tile height</th><th>What it shows</th></tr></thead><tbody>
+    <tr class="win"><td><b>c21</b></td><td>The thin rail</td><td class="num">218</td><td>The seats lifted 22px, a 28px rail inside the felt with the game name at the left and the people or the facts at the right. The footer has a full line, so Tournament rules, BobK is here and Take over a bot all fit.</td></tr>
+    <tr><td><b>c20</b></td><td>The merged plate</td><td class="num">218</td><td>The seats untouched, the game name and one quiet fact in the bottom corners beside the bottom seat. The corners are 80px wide, so a rule variant drops to the tooltip and Sergeant Major truncates.</td></tr>
+    <tr><td><b>c23</b></td><td>Four across at the real width</td><td class="num">160 and 200</td><td>c20 four across at 213px (the 902px grid next to the ad rail) and at 266px. At 213px the plates and names clip; at 266px it holds.</td></tr>
+  </tbody></table>
+  <p class="desc"><b>The footer.</b> The corners keep the felt exactly as production draws it, but 80px is too little for the facts the brief marks need to have. The rail costs each face about 7px and gives the footer a full line, which is where the game name and the one right hand phrase belong. So c21 is the recommended shape: game name at the left, and at the right the people first (<b>BobK is here</b>, <b>Take over Bot Ada</b>) or else the one quiet fact (<b>Ranked</b>, <b>Tournament rules</b>, <b>Last seat</b>, <b>No bots</b>), with the whole list in the tooltip.</p>
+  <p class="desc"><b>What else is vital, besides the clock.</b> From the brief, and unchanged by three rounds: who is seated (the felt carries it), the game name on the mixed homepage grid, what a bot seat means (the seat rolls to <b>Take over</b>), and a way in (the seats). Then the quiet need to haves, one word each and only when they apply: <b>Ranked</b>, <b>Private</b> with the saved name, the rule variant when it differs from the default, <b>Last seat</b> when the deal starts as you sit, <b>No bots</b>, and the entry limit. Everything else, the target score, who may sit, the host, is tooltip material.</p>
+  <p class="desc"><b>Four across.</b> Only if the grid can be 1112px wide. At the homepage's 902px next to the ad rail the tile is 213px and the plates and names clip, so three across at 290px stays.</p>
+</div>
+
+<!-- VERDICT3 END -->
 <!-- VERDICT2 START -->
 <style>
   #sec-verdict2 .vtable { border-collapse: collapse; font-size: 12.5px; margin: 0 0 16px; background: #fff; border-radius: 12px; corner-shape: squircle; box-shadow: var(--btnshadow); overflow: hidden; }
