@@ -32,6 +32,7 @@
   .cgroup .cglab { font-size: 11px; color: #999488; margin-right: 2px; }
   .cgroup button { border: 1px solid #ddd; background: #fff; color: #555; font-family: inherit; font-size: 11.5px; font-weight: 600; padding: 2px 8px; border-radius: 6px; cursor: pointer; }
   .cgroup button.on { background: #A5D8FF; border-color: #7AB8EC; color: #1971C2; }
+  .cgroup select { border: 1px solid #ddd; background: #fff; color: #333; font-family: inherit; font-size: 11.5px; font-weight: 600; padding: 2px 6px; border-radius: 6px; max-width: 220px; }
 
   /* ===== the hero column, verbatim from index.html's signed-in scene ===== */
   .col { width: 470px; max-width: 100%; }
@@ -151,6 +152,10 @@
 </head>
 <body>
 <h1>Welcome lab &middot; the signed-in hero column</h1>
+<p class="note"><b>Steer (2 Sep, evening):</b> text only, two or three lines under the greeting. No "last night" recaps. The open
+question is what the lines can say to the many players who take part in neither the daily deal nor ranked play. Section "Text" below is
+the answer space: every line is a fact the site actually has for a casual regular, written in the voice of the mockup's own copy variants,
+with a mixer so any two or three can be tried together. The sections after it are earlier rounds, kept for comparison.</p>
 <p class="note"><b>Steer (2 Sep, afternoon):</b> no "X has a seat open" lines, that is what Open tables is for. The friends-online count is
 interesting. The avatar is interesting because it makes the greeting feel addressed to her. The deal and the rank only matter to people who
 take part, so the casual case (neither ranked nor the deal) is the one to design first. Section "Now" below is built on that; the sections
@@ -213,7 +218,7 @@ bronze distance (the calendar card below carries those); avatars uncropped in th
     ["back", "Absence", [["no", "Regular"], ["yes", "Back after 3 weeks"]]]
   ];
   function buildCard(host, c) {
-    var st = { co: "idle", ch: "open", bd: "up", back: "no", part: "none", frn: "23", lines: "3", recent: "yes" };
+    var st = { co: "idle", ch: "open", bd: "up", back: "no", part: "none", frn: "23", lines: "3", recent: "yes", word: "1" };
     (c.extra || []).forEach(function (g) { st[g[0]] = g[2][0][0]; });
     Object.keys(c.defaults || {}).forEach(function (k) { st[k] = c.defaults[k]; });
     var card = document.createElement("div");
@@ -232,6 +237,15 @@ bronze distance (the calendar card below carries those); avatars uncropped in th
       var g = document.createElement("div");
       g.className = "cgroup"; g.dataset.key = gdef[0];
       g.innerHTML = '<span class="cglab">' + gdef[1] + '</span>';
+      if (gdef[3] === "select") {
+        var sel = document.createElement("select");
+        gdef[2].forEach(function (opt) { sel.appendChild(new Option(opt[1], opt[0])); });
+        sel.value = st[gdef[0]];
+        sel.addEventListener("change", function () { st[gdef[0]] = sel.value; paint(); });
+        g.appendChild(sel);
+        ctrl.appendChild(g);
+        return;
+      }
       gdef[2].forEach(function (opt) {
         var b = document.createElement("button");
         b.type = "button"; b.dataset.v = opt[0]; b.textContent = opt[1];
@@ -261,6 +275,81 @@ bronze distance (the calendar card below carries those); avatars uncropped in th
       var l2 = st.bd === "up" ? "You're " + link("no. 23 in Spades") + " on today's board." : st.bd === "quiet" ? "Your " + link("Spades rating") + " is 1,581." : "";
       return title(st) + sub([l1, l2]) + stats();
     } });
+
+  /* ===== Text · what the lines can say to a casual regular ===== */
+  function hourWord() { var h = new Date().getHours(); return h < 12 ? "morning" : h < 17 ? "afternoon" : h < 22 ? "evening" : "night"; }
+  /* every fact family the site has for a casual player, each with a few
+     wordings (index picked by the Wording toggle); the bold phrase is the door */
+  var FAM = {
+    none:      { label: "(nothing)", w: [""] },
+    friends:   { label: "Friends online", w: function (st) {
+      var n = st.frn === "3" ? "3" : "23";
+      return st.frn === "0" ? ["", "", ""] : [link(n + " friends") + " are online. Deal them in.", link(n + " friends") + " are online right now.", "Also, " + link(n + " friends") + " are here. Coincidence?"]; } },
+    usual:     { label: "Her usual game", w: ["Tonight's " + link("Spades table") + " is set for you.", link("Spades game 16,447") + " is ready when you are.", "Your " + link("Spades table") + " is ready whenever you are."] },
+    choice:    { label: "Dealer's choice", w: ["Or " + link("Hearts") + ", or " + link("Euchre") + ". Dealer's choice.", link("Spades") + ", " + link("Hearts") + ", or " + link("Euchre") + "? You call it.", "Or a change of pace: " + link("Hearts") + " or " + link("Euchre") + "."] },
+    together:  { label: "Games together", w: ["You and " + link("hootnholler") + " are 212 games in.", "212 games with " + link("hootnholler") + " and counting.", link("hootnholler") + " has sat across from you 212 times."] },
+    month:     { label: "Days this month", w: ["Twelve days at the table " + link("this month") + ".", "That's twelve days of cards " + link("this month") + ".", "Twelve days in " + link("this month") + ". No hurry on the rest."] },
+    news:      { label: "What's new", w: ["New this week: " + link("Hand & Foot") + " got a rules tune-up.", link("Hand & Foot") + " plays a little better since Tuesday.", "Fresh from the workshop: a " + link("Hand & Foot") + " fix."] },
+    night:     { label: "Game Night", w: [link("Spades Night") + " is Friday at 8. All welcome.", "Friday at 8 is " + link("Spades Night") + ". Save the seat.", link("Spades Night") + " comes round Friday at 8."] },
+    supporter: { label: "Supporter thanks", w: ["The lights stay on because of " + link("players like you") + ".", "Ads off, lights on. Thank you, " + link("supporter") + ".", "Thanks for keeping the " + link("lights on") + "."] },
+    mood:      { label: "Time of day (no data)", w: function () {
+      var h = hourWord();
+      return h === "morning" ? ["First deal's yours.", "A fresh deck for a fresh morning.", "Coffee, then cards."]
+        : h === "afternoon" ? ["Sneak in a hand.", "A quick hand fits a short break.", "The afternoon table is quiet and yours."]
+        : h === "evening" ? ["Pull up a chair. The next deal is yours.", "The evening tables are filling up.", "Good hour for a game."]
+        : ["One last hand?", "A calm one to close the night.", "The night owls are dealing."]; } },
+    dealintro: { label: "Deal, first mention", w: ["Never tried " + link("today's deal") + "? Same hand for everyone.", "There's a " + link("daily deal") + " now: one hand, everyone plays it.", "New here: " + link("today's deal") + ", the same hand for all of us."] },
+    table:     { label: "Her standing table", w: ["Your " + link("maple table") + " is set. Carol and Dot are regulars.", link("maple") + " is up. Carol was in last, Dot's around.", "The " + link("maple table") + " keeps your seat. Carol and Dot know."] },
+    stats:     { label: "Her record", w: ["Four of your last six " + link("Spades games") + " went your way.", "You've won 52% of your " + link("Spades games") + ". Steady hands.", "16,446 " + link("Spades games") + ". Someone's been practicing."] },
+    deal:      { label: "Today's deal (participants)", w: function (st) {
+      return st.ch === "done" ? [link("Today's deal") + " is done. Nicely played.", link("Today's deal") + " is done. Tomorrow's lands in the morning.", "Done: " + link("today's deal") + ". Well played."]
+        : [link("Today's deal") + " is ready when you are.", link("Today's deal") + " is on the table.", "The " + link("daily deal") + " is waiting, no hurry."]; } },
+    rank:      { label: "Today's board (participants)", w: ["You're " + link("no. 23 in Spades") + " today, up 3 spots.", "Up 3 spots to " + link("no. 23 in Spades") + " today.", link("No. 23 in Spades") + " and climbing."] },
+    back:      { label: "Welcome back", w: ["Three weeks is nothing between old friends.", "The chairs kept your shape.", "We saved your seat. Three weeks is nothing."] }
+  };
+  function famLine(key, st) {
+    var f = FAM[key]; if (!f) return "";
+    var w = typeof f.w === "function" ? f.w(st) : f.w;
+    return w[Math.min(+st.word - 1, w.length - 1)] || "";
+  }
+  /* participants: the deal and the board take lines two and three; the
+     welcome-back line takes line one after an absence */
+  function composed(st, keys) {
+    var k = keys.slice();
+    if (st.back === "yes") k[0] = "back";
+    if (st.part === "deal") k[1] = "deal";
+    if (st.part === "ranked") k[1] = "rank";
+    if (st.part === "both") { k[1] = "deal"; k[2] = "rank"; }
+    var lines = k.map(function (key) { return famLine(key, st); });
+    return sub(lines.slice(0, +st.lines));
+  }
+  var FAMOPTS = Object.keys(FAM).map(function (k) { return [k, FAM[k].label]; });
+  var CONTROLS3 = [
+    ["part", "Plays", [["none", "Neither (casual)"], ["deal", "The deal"], ["ranked", "Ranked"], ["both", "Both"]]],
+    ["lines", "Lines", [["3", "Three"], ["2", "Two"]]],
+    ["frn", "Friends online", [["23", "23"], ["3", "3"], ["0", "0"]]],
+    ["word", "Wording", [["1", "A"], ["2", "B"], ["3", "C"]]],
+    ["ch", "Deal", [["open", "Open"], ["done", "Done"]]],
+    ["back", "Absence", [["no", "Regular"], ["yes", "Back after 3 weeks"]]]
+  ];
+  function preset(num, name, why, keys) {
+    return { cap: "<b>" + num + " &middot; " + name + "</b> &mdash; " + why, ctrls: CONTROLS3,
+      render: function (st) { return title(st) + composed(st, keys) + stats(); } };
+  }
+  section("Text &mdash; what the lines can say to a casual regular",
+    "Text only. Each card is one strategy for the two or three lines when there is no deal and no rank to report; the Plays toggle shows how the same card changes for participants (the deal takes line two, the board line three). Wording A, B, C cycles three phrasings of every line. The last card is a mixer: pick any family for each line.", [
+    preset("19", "People first", "the friends count leads, then her usual game, then a way to vary it. The host's order: who is here, where you sit, what else is on.", ["friends", "usual", "choice"]),
+    preset("20", "Her game first", "her table leads, the friends follow, and a long-running pair count gives the third line a memory without a recap.", ["usual", "friends", "together"]),
+    preset("21", "The room's calendar", "friends, then Game Night, then her table: the column is about the room's week rather than her stats.", ["friends", "night", "usual"]),
+    preset("22", "The living site", "friends, her table, and what changed on the site this week. The third line is the honest 'is this place maintained' signal.", ["friends", "usual", "news"]),
+    preset("23", "Mood, then facts", "a time-of-day line with no data behind it opens, the friends count follows, her table closes. Warm even for a brand-new account.", ["mood", "friends", "usual"]),
+    preset("24", "The month, kept quietly", "friends, then days at the table this month (a tally, never a streak), then her table. Closest to a keepsake.", ["friends", "month", "usual"]),
+    preset("25", "First mention of the deal", "for someone who has never played it: friends, her table, then one muted introduction to today's deal. Shown once, not daily.", ["friends", "usual", "dealintro"]),
+    { cap: "<b>26 &middot; The mixer</b> &mdash; pick any family for each of the three lines and any wording; the Plays toggle still overrides lines two and three for participants.",
+      ctrls: CONTROLS3.concat([["l1", "Line 1", FAMOPTS, "select"], ["l2", "Line 2", FAMOPTS, "select"], ["l3", "Line 3", FAMOPTS, "select"]]),
+      defaults: { l1: "friends", l2: "usual", l3: "night" },
+      render: function (st) { return title(st) + composed(st, [st.l1, st.l2, st.l3]) + stats(); } }
+  ], "text");
 
   /* ===== Now · the avatar, the friends count, and the casual player ===== */
   var CONTROLS2 = [
@@ -444,7 +533,7 @@ bronze distance (the calendar card below carries those); avatars uncropped in th
         return title(st) + stats(true, cap);
       } }
   ], "four");
-  /* ?only=now|one|two|three|four shows a single section (screenshot aid) */
+  /* ?only=text|now|one|two|three|four shows a single section (screenshot aid) */
   (function () {
     var only = new URLSearchParams(location.search).get("only");
     if (!only) return;
