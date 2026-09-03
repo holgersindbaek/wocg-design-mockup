@@ -2483,6 +2483,10 @@
   body.tint-l97 :is(.catgrid, #allgrid) .gtile { --tintbg: oklch(from var(--tint) .97 .03 h); --tintring: oklch(from var(--tint) .87 .09 h); }
   body.tint-l95 :is(.catgrid, #allgrid) .gtile { --tintbg: oklch(from var(--tint) .95 .045 h); --tintring: oklch(from var(--tint) .85 .10 h); }
   body.tint-l93 :is(.catgrid, #allgrid) .gtile { --tintbg: oklch(from var(--tint) .93 .055 h); --tintring: oklch(from var(--tint) .83 .11 h); }
+  body.tint-l93inkdeep :is(.catgrid, #allgrid) .gtile { --tintbg: oklch(from var(--tint) .93 .055 h); --tintring: oklch(from var(--tint) .83 .11 h);
+    --tintink: oklch(from var(--tint) .44 .15 h); --tintsub: oklch(from var(--tint) .52 .10 h); }
+  body.tint-l93inknp :is(.catgrid, #allgrid) .gtile { --tintbg: oklch(from var(--tint) .93 .055 h); --tintring: oklch(from var(--tint) .83 .11 h);
+    --tintink: oklch(from var(--tint) .40 .15 h); --tintsub: oklch(from var(--tint) .48 .11 h); }
   body.tint-l90 :is(.catgrid, #allgrid) .gtile { --tintbg: oklch(from var(--tint) .90 .065 h); --tintring: oklch(from var(--tint) .80 .12 h);
     --tintink: oklch(from var(--tint) .44 .15 h); --tintsub: oklch(from var(--tint) .52 .10 h); }
   body.tint-l86 :is(.catgrid, #allgrid) .gtile { --tintbg: oklch(from var(--tint) .86 .075 h); --tintring: oklch(from var(--tint) .76 .12 h);
@@ -4008,6 +4012,8 @@
     ["l97", "Own hue, whisper (L 97)", "Lightness"],
     ["l95", "Own hue, light (L 95)", "Lightness"],
     ["l93", "Own hue, mid (L 93)", "Lightness"],
+    ["l93inkdeep", "Own hue, mid (L 93), text from deep", "Lightness"],
+    ["l93inknp", "Own hue, mid (L 93), text from the nameplate level", "Lightness"],
     ["l90", "Own hue, deep (L 90)", "Lightness"],
     ["l86", "Own hue at the nameplate's level (L 86)", "Lightness"],
     ["pale", "L 95, barely colored", "Chroma"],
@@ -5378,6 +5384,22 @@
       setter(el.value); applyBody();
     };
   }
+  /* after a pick, the arrow keys step the focused switcher down or up its list without opening the popup
+     (macOS opens it on arrows), applying at once; the list does not wrap, so a step past either end does nothing */
+  document.addEventListener("keydown", function (e) {
+    if (e.key !== "ArrowUp" && e.key !== "ArrowDown") return;
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    var el = document.activeElement;
+    if (!el || el.tagName !== "SELECT" || !el.closest(".ctl")) return;
+    e.preventDefault();
+    var step = e.key === "ArrowDown" ? 1 : -1, cur = el.value, j = el.selectedIndex;
+    do { j += step; } while (j >= 0 && j < el.options.length && (el.options[j].disabled || el.options[j].value === cur));
+    if (j < 0 || j >= el.options.length) return;
+    el.selectedIndex = j;
+    el.dispatchEvent(new Event("change"));
+    /* the rail re-sync sets the value, which snaps to the first option carrying it (the Favorites copy); keep the row we stepped to */
+    if (el.value === el.options[j].value) el.selectedIndex = j;
+  });
   /* Cmd+Z flips the last-changed switcher between its two latest options,
      for quick A/B judging */
   var lastFlip = null;
