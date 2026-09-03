@@ -3439,8 +3439,7 @@
 
   /* the section is live: seats fill and empty, tables appear and expire on the listing beat */
   #openTablesTop .ltCard { transition: opacity .3s ease, transform .3s cubic-bezier(.22,1,.36,1); }
-  #openTablesTop .ltCard.ltEnter { opacity: 0; transform: scale(.93); }
-  #openTablesTop .ltCard.ltLeave { opacity: 0; transform: scale(.94); pointer-events: none; }
+  #openTablesTop .ltCard.ltLeave { pointer-events: none; }
   #openTablesTop .ltCard.ltFlip { transition: none; }
   #openTablesTop .player img.ltPop { animation: ltPop .36s cubic-bezier(.22,1,.36,1) both; }
   @keyframes ltPop { 0% { opacity: 0; transform: scale(.78) translateY(5px); } 60% { opacity: 1; } 100% { opacity: 1; transform: none; } }
@@ -6255,7 +6254,22 @@
     if (!sec) return;
     var grid = sec.querySelector(".ltGrid");
     if (!grid) return;
-    var TICK = 4500, MAX_CARDS = 5; /* five live tables plus the New table card fills the two rows */
+    var TICK = 4500, LIVE_CARDS = 5; /* five live tables plus the New table card: the grid is always two full rows */
+    var reduced = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+    /* a table leaves and arrives the way the hero title's lines do: it rises and blurs away, and the
+       one that takes its place drops in and comes into focus */
+    function motionOut(el, done) {
+      if (reduced || !el.animate) { done(); return; }
+      el.animate([{ transform: "translateY(0)", opacity: 1, filter: "blur(0px)" },
+                  { transform: "translateY(-18px)", opacity: 0, filter: "blur(6px)" }],
+        { duration: 520, easing: "cubic-bezier(.4,0,.6,1)", fill: "forwards" }).onfinish = done;
+    }
+    function motionIn(el) {
+      if (reduced || !el.animate) return;
+      el.animate([{ transform: "translateY(20px)", opacity: 0, filter: "blur(6px)" },
+                  { transform: "translateY(0)", opacity: 1, filter: "blur(0px)" }],
+        { duration: 640, delay: 120, easing: "cubic-bezier(.2,.8,.2,1)", fill: "backwards" });
+    }
 
     var PEOPLE = [
       ["Marge", "AnimalGopher.svg", 97], ["carl52", "AnimalDragon.svg", 91], ["Vera", "AnimalChicken.svg", 99],
@@ -6284,6 +6298,8 @@
     function realCards() {
       return [].slice.call(grid.querySelectorAll(".ltCard:not(.isNew):not(.ltLeave)"));
     }
+    /* a table on its way out still holds its place in the grid, so it counts until it is gone */
+    function slotCount() { return grid.querySelectorAll(".ltCard:not(.isNew)").length; }
 
     /* FLIP: the cards that stay put slide to their new places instead of jumping */
     function flip(mutate) {
@@ -6411,17 +6427,30 @@
       }
     }
 
-    /* the table stops being listed: it filled up, or it ended */
-    function expire(card) {
-      card.classList.add("ltLeave");
-      setTimeout(function () { flip(function () { card.remove(); }); }, 300);
+    /* the table stops being listed: it filled up, or it ended. Its replacement is inserted in the same
+       reflow, so the grid keeps its two full rows and the survivors slide only once */
+    function makeCard() {
+      var card = buildCard(pick(NEW_TABLES));
+      grid.insertBefore(card, grid.firstElementChild);
+      return card;
     }
     function appear() {
-      var game = pick(NEW_TABLES);
-      var card = buildCard(game);
-      flip(function () { grid.insertBefore(card, grid.firstElementChild); });
-      armCard(card);
-      requestAnimationFrame(function () { requestAnimationFrame(function () { card.classList.remove("ltEnter"); }); });
+      if (slotCount() >= LIVE_CARDS) return;
+      var card = null;
+      flip(function () { card = makeCard(); });
+      if (card) { armCard(card); motionIn(card); }
+    }
+    function expire(card, replace) {
+      if (card.classList.contains("ltLeave")) return;
+      card.classList.add("ltLeave");
+      motionOut(card, function () {
+        var fresh = null;
+        flip(function () {
+          card.remove();
+          if (replace !== false && slotCount() < LIVE_CARDS) fresh = makeCard();
+        });
+        if (fresh) { armCard(fresh); motionIn(fresh); }
+      });
     }
 
     /* in-play tables gain a minute on every beat, as the age on the payload does */
@@ -6448,6 +6477,9 @@
       beat++;
       if (beat % 3 === 0) tickClocks();
       var cards = realCards();
+      /* the grid is never short: if a table is missing, one arrives before anything else happens */
+      if (slotCount() < LIVE_CARDS) { appear(); return; }
+      if (!cards.length) return;
       var withEmpty = cards.filter(function (c) { return emptySeats(c).length; });
       var withPeople = cards.filter(function (c) { return humanSeats(c).length > 1; });
       var roll = Math.random();
