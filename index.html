@@ -2493,6 +2493,11 @@
   /* mixes instead of a fixed lightness: dark arts (Pinochle brown, Rummy purple) tint the ground a little heavier than light ones */
   body.tint-paper :is(.catgrid, #allgrid) .gtile { --tintbg: color-mix(in oklab, var(--tint) 9%, var(--canvas)); --tintring: color-mix(in oklab, var(--tint) 32%, var(--canvas)); }
   body.tint-white :is(.catgrid, #allgrid) .gtile { --tintbg: color-mix(in oklab, var(--tint) 8%, white); --tintring: color-mix(in oklab, var(--tint) 30%, white); }
+  /* the text mixed with the page's own ink and muted colors, so it sits between the tile hue and normal type */
+  body.tint-whiteink :is(.catgrid, #allgrid) .gtile { --tintbg: color-mix(in oklab, var(--tint) 8%, white); --tintring: color-mix(in oklab, var(--tint) 30%, white);
+    --tintink: color-mix(in oklab, var(--tint) 50%, var(--ink)); --tintsub: color-mix(in oklab, var(--tint) 50%, var(--muted)); }
+  body.tint-whitedull :is(.catgrid, #allgrid) .gtile { --tintbg: color-mix(in oklab, var(--tint) 8%, white); --tintring: color-mix(in oklab, var(--tint) 30%, white);
+    --tintink: color-mix(in oklab, var(--tint) 33%, var(--ink)); --tintsub: color-mix(in oklab, var(--tint) 33%, var(--muted)); }
   /* text ink at L 95 */
   body.tint-inkdeep :is(.catgrid, #allgrid) .gtile { --tintbg: oklch(from var(--tint) .95 .045 h); --tintring: oklch(from var(--tint) .85 .10 h);
     --tintink: oklch(from var(--tint) .38 .13 h); --tintsub: oklch(from var(--tint) .48 .10 h); }
@@ -4005,6 +4010,8 @@
     ["vivid", "L 95, more color", "Chroma"],
     ["paper", "Mixed into the page paper, warm", "Hue"],
     ["white", "Mixed into white, keeps each tile's own lightness", "Hue"],
+    ["whiteink", "Mixed into white, text half tile color and half page ink", "Hue"],
+    ["whitedull", "Mixed into white, text a third tile color and two thirds page ink", "Hue"],
     ["inkdeep", "L 95 with deeper text ink", "Text"],
     ["inkneutral", "L 95 with the page's neutral text", "Text"]
   ];
