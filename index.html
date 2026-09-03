@@ -2457,6 +2457,47 @@
     box-shadow: 0 0 0 1px var(--tgring);
     text-shadow: -1px -1px 0 var(--tgring), 1px -1px 0 var(--tgring), -1px 1px 0 var(--tgring), 1px 1px 0 var(--tgring); }
   body.playbtn-triogreen .gmenu .gmGrid .gmTop:hover, body.playbtn-triogreen .gmenu .gmGrid .gmTop:focus-visible { background: var(--tghover); }
+
+  /* ===== tinted tile shell (experiment, 3 Sep) =====
+     The catalog tile's white shell takes a pale version of its own art color, on the light-blue
+     button's recipe: a flat tint for the ground, a 1px ring of the same hue a step darker, and
+     the deep ink of that hue for the text; the Play button wears the art's main color with the
+     trio-green ring and hover formula. --tint is stamped per tile by applyTints() from the art's
+     computed background, so every Tile colors option feeds it. Hero mosaic untouched.
+     Relative color syntax (oklch(from ...)) needs Chrome 119+ / Safari 16.4+. */
+  body:where([class*=" tint-"]:not(.tint-none)) :is(.catgrid, #allgrid) .gtile {
+    --tintink: oklch(from var(--tint) .48 .15 h); --tintsub: oklch(from var(--tint) .56 .09 h);
+    --tintbtnring: color-mix(in srgb, var(--tint) 78%, black); --tintbtnhover: color-mix(in srgb, var(--tint) 92%, black);
+    background: var(--tintbg); }
+  body:where([class*=" tint-"]:not(.tint-none)) :is(.catgrid, #allgrid) .gtile,
+  body:where([class*=" tint-"]:not(.tint-none)) :is(.catgrid, #allgrid) .gtile:hover { box-shadow: inset 0 0 0 1px var(--tintring), var(--liftshadow); }
+  body:where([class*=" tint-"]:not(.tint-none)) :is(.catgrid, #allgrid) .gtile .gtitle { color: var(--tintink); }
+  body:where([class*=" tint-"]:not(.tint-none)) :is(.catgrid, #allgrid) .gtile .gsub { color: var(--tintsub); }
+  body:where([class*=" tint-"]:not(.tint-none)) :is(.catgrid, #allgrid) .gtile .gplay { --pring: var(--tintbtnring); background: var(--tint); color: #fff;
+    text-shadow: -1px -1px 0 var(--pring), 1px -1px 0 var(--pring), -1px 1px 0 var(--pring), 1px 1px 0 var(--pring); }
+  body:where([class*=" tint-"]:not(.tint-none)) :is(.catgrid, #allgrid) .gtile .gplay:hover,
+  body:where([class*=" tint-"]:not(.tint-none)) :is(.catgrid, #allgrid) .gtile .gplay:focus-visible { background: var(--tintbtnhover); }
+  body:where([class*=" tint-"]:not(.tint-none)) :is(.catgrid, #allgrid) .gtile .gplay .gzarr { background-image: url("arrowDownBigTrim.png");
+    filter: brightness(0) invert(1) drop-shadow(1px 0 var(--pring)) drop-shadow(-1px 0 var(--pring)) drop-shadow(0 1px var(--pring)) drop-shadow(0 -1px var(--pring)); }
+  /* lightness ladder: the light-blue button sits at about L .85 (ground) / L .75 (ring); the nameplate shares its ground */
+  body.tint-l97 :is(.catgrid, #allgrid) .gtile { --tintbg: oklch(from var(--tint) .97 .03 h); --tintring: oklch(from var(--tint) .87 .09 h); }
+  body.tint-l95 :is(.catgrid, #allgrid) .gtile { --tintbg: oklch(from var(--tint) .95 .045 h); --tintring: oklch(from var(--tint) .85 .10 h); }
+  body.tint-l93 :is(.catgrid, #allgrid) .gtile { --tintbg: oklch(from var(--tint) .93 .055 h); --tintring: oklch(from var(--tint) .83 .11 h); }
+  body.tint-l90 :is(.catgrid, #allgrid) .gtile { --tintbg: oklch(from var(--tint) .90 .065 h); --tintring: oklch(from var(--tint) .80 .12 h);
+    --tintink: oklch(from var(--tint) .44 .15 h); --tintsub: oklch(from var(--tint) .52 .10 h); }
+  body.tint-l86 :is(.catgrid, #allgrid) .gtile { --tintbg: oklch(from var(--tint) .86 .075 h); --tintring: oklch(from var(--tint) .76 .12 h);
+    --tintink: oklch(from var(--tint) .40 .15 h); --tintsub: oklch(from var(--tint) .48 .11 h); }
+  /* chroma at L 95 */
+  body.tint-pale :is(.catgrid, #allgrid) .gtile { --tintbg: oklch(from var(--tint) .95 .022 h); --tintring: oklch(from var(--tint) .85 .06 h); }
+  body.tint-vivid :is(.catgrid, #allgrid) .gtile { --tintbg: oklch(from var(--tint) .95 .07 h); --tintring: oklch(from var(--tint) .84 .14 h); }
+  /* mixes instead of a fixed lightness: dark arts (Pinochle brown, Rummy purple) tint the ground a little heavier than light ones */
+  body.tint-paper :is(.catgrid, #allgrid) .gtile { --tintbg: color-mix(in oklab, var(--tint) 9%, var(--canvas)); --tintring: color-mix(in oklab, var(--tint) 32%, var(--canvas)); }
+  body.tint-white :is(.catgrid, #allgrid) .gtile { --tintbg: color-mix(in oklab, var(--tint) 8%, white); --tintring: color-mix(in oklab, var(--tint) 30%, white); }
+  /* text ink at L 95 */
+  body.tint-inkdeep :is(.catgrid, #allgrid) .gtile { --tintbg: oklch(from var(--tint) .95 .045 h); --tintring: oklch(from var(--tint) .85 .10 h);
+    --tintink: oklch(from var(--tint) .38 .13 h); --tintsub: oklch(from var(--tint) .48 .10 h); }
+  body.tint-inkneutral :is(.catgrid, #allgrid) .gtile { --tintbg: oklch(from var(--tint) .95 .045 h); --tintring: oklch(from var(--tint) .85 .10 h);
+    --tintink: var(--ink); --tintsub: var(--muted); }
   body.playbtn-cat :is(#sec-tt, #sec-rummy, #sec-classic, #sec-all) .gplay {
     --pring: var(--pcatring); background: var(--pcat); color: var(--pcatink);
     text-shadow: -1px -1px 0 var(--pring), 1px -1px 0 var(--pring), -1px 1px 0 var(--pring), 1px 1px 0 var(--pring); }
@@ -3082,6 +3123,7 @@
     <label class="ctl"><span>Status state</span><select id="sel-dstate"></select></label>
     <label class="ctl"><span>Status game</span><select id="sel-dgame"></select></label>
     <label class="ctl"><span>Tile colors</span><select id="sel-tilebg"></select></label>
+    <label class="ctl"><span>Tile shell</span><select id="sel-tint"></select></label>
     <label class="ctl"><span>Play button</span><select id="sel-playbtn"></select></label>
     <label class="ctl"><span>Catalog layout</span><select id="sel-catalog"></select></label>
     <label class="ctl"><span>Divider</span><select id="sel-divider"></select></label>
@@ -3951,6 +3993,21 @@
     ["gold", "Gold"],
     ["felt", "Felt"]
   ];
+  /* tinted tile shell (3 Sep experiment): the catalog tile's white shell in a pale version of its own art color */
+  var TINTS = [
+    ["none", "White (as before)", "Base"],
+    ["l97", "Own hue, whisper (L 97)", "Lightness"],
+    ["l95", "Own hue, light (L 95)", "Lightness"],
+    ["l93", "Own hue, mid (L 93)", "Lightness"],
+    ["l90", "Own hue, deep (L 90)", "Lightness"],
+    ["l86", "Own hue at the nameplate's level (L 86)", "Lightness"],
+    ["pale", "L 95, barely colored", "Chroma"],
+    ["vivid", "L 95, more color", "Chroma"],
+    ["paper", "Mixed into the page paper, warm", "Hue"],
+    ["white", "Mixed into white, keeps each tile's own lightness", "Hue"],
+    ["inkdeep", "L 95 with deeper text ink", "Text"],
+    ["inkneutral", "L 95 with the page's neutral text", "Text"]
+  ];
   var COUNTERS = [
     ["tab", "Site corner tab (docked)"],
     ["scrim", "Ghost on a scrim"],
@@ -3959,6 +4016,7 @@
     ["ghostnum", "Ghost: naked number only (big tile keeps its word)"]
   ];
   var curShadow = "capsule", curEdge = "softlight", curTexture = "grainbal", curCatalog = "split", curStats = "capsule2", curMenu = "centerwave", curCounter = "ghostdot", curRail = "suitscool", curPlayBtn = "triogreen", curTileBg = "cardroomcusp", curPinPair = "violet", curSect = "waveband", curDivider = "fourstations", curLhover = "suits";
+  var curTint = "none";
   /* every CSS blend mode as an avatar-rim coat: one filter per mode is stamped
      into the SVG defs (same eroded rim, #737373 @ .9 ink, only feBlend's mode
      changes) plus a matching mix-blend ring for the invitee circles */
@@ -5014,17 +5072,28 @@
     pvHTML(document.querySelector("#lobbyBoardCard .lbRows"), PILADY_ROWS);
     if (window.rescanTileCounts) window.rescanTileCounts();
   }
+  /* stamp each catalog tile with its art's main color, so the tinted shell follows the Tile colors and Pinochle pair switchers */
+  function applyTints() {
+    document.querySelectorAll(".catgrid .gtile, #allgrid .gtile").forEach(function (t) {
+      var g = t.querySelector(".gimg"); if (!g) return;
+      var cs = getComputedStyle(g), c = cs.backgroundColor;
+      if (!c || c === "transparent" || c === "rgba(0, 0, 0, 0)") { var m = /rgba?\([^)]*\)|#[0-9a-f]{3,8}/i.exec(cs.backgroundImage); c = m ? m[0] : "#888"; }
+      t.style.setProperty("--tint", c);
+    });
+  }
   function applyBody() {
     var scene = curLayout.indexOf("sc") === 0;
-    document.body.className = curBase + " play-" + curPlay + " layout-" + curLayout + (scene ? " scenehero" : "") + " font-" + curFont + " shadow-" + curShadow + " edge-" + curEdge + " tex-" + curTexture + " cat-" + curCatalog + " stats-" + curStats + " menu-" + curMenu + " counter-" + curCounter + " rail-" + curRail + " playbtn-" + curPlayBtn + " avedge-" + curAvedge + " avsh-" + curAvshadow + " cnav-" + curCnav + " foot-" + curFooter + " viewer-" + curViewer + " sect-" + curSect + " div-" + curDivider + " lhover-" + curLhover + " tilebg-" + curTileBg + " pinpair-" + curPinPair + (palShown ? " show-palette" : "");
+    document.body.className = curBase + " play-" + curPlay + " layout-" + curLayout + (scene ? " scenehero" : "") + " font-" + curFont + " shadow-" + curShadow + " edge-" + curEdge + " tex-" + curTexture + " cat-" + curCatalog + " stats-" + curStats + " menu-" + curMenu + " counter-" + curCounter + " rail-" + curRail + " playbtn-" + curPlayBtn + " avedge-" + curAvedge + " avsh-" + curAvshadow + " cnav-" + curCnav + " foot-" + curFooter + " viewer-" + curViewer + " sect-" + curSect + " div-" + curDivider + " lhover-" + curLhover + " tilebg-" + curTileBg + " pinpair-" + curPinPair + " tint-" + curTint + (palShown ? " show-palette" : "");
+    applyTints();
     var ht = document.getElementById("herotitle"), hs = document.getElementById("herosub");
     if (scene) {
+      var picked = pickedSub();
       if (curLayout === "scpyr") {
         ht.innerHTML = curViewer === "pilady" ? piladyTitleFlat() : "Play card games in good company";
-        hs.innerHTML = curViewer === "pilady" ? piladyPlain().replace("|", " ") : "Classic card games. Join a table or play solo. Free to play, hard to stop.";
+        hs.innerHTML = curViewer === "pilady" ? piladyPlain().replace("|", " ") : (picked || "Classic card games. Join a table or play solo. Free to play, hard to stop.");
       } else {
         ht.innerHTML = curViewer === "pilady" ? piladyTitleHTML() : "Play card games<br>in good company";
-        hs.innerHTML = curViewer === "pilady" ? piladyPlain().replace("|", "<br>") : "Classic card games. Join a table or play solo.<br>Free to play, hard to stop.";
+        hs.innerHTML = curViewer === "pilady" ? piladyPlain().replace("|", "<br>") : (picked || "Classic card games. Join a table or play solo.<br>Free to play, hard to stop.");
       }
     } else if (typeof titlesel !== "undefined" && titlesel && titlesel.options && titlesel.options.length) {
       applyCopy();
@@ -5053,6 +5122,7 @@
     document.getElementById("sel-rail").value = curRail;
     document.getElementById("sel-playbtn").value = curPlayBtn;
     document.getElementById("sel-tilebg").value = curTileBg;
+    document.getElementById("sel-tint").value = curTint;
     document.getElementById("sel-pinpair").value = curPinPair;
     document.getElementById("sel-avedge").value = curAvedge;
     document.getElementById("sel-avshadow").value = curAvshadow;
@@ -5334,6 +5404,7 @@
   buildSel("sel-rail", RAILS, function (v) { curRail = v; });
   buildSel("sel-playbtn", PLAYBTNS, function (v) { curPlayBtn = v; });
   buildSel("sel-tilebg", TILEBGS, function (v) { curTileBg = v; });
+  buildSel("sel-tint", TINTS, function (v) { curTint = v; });
   buildSel("sel-pinpair", PINPAIRS, function (v) { curPinPair = v; });
   buildSel("sel-avedge", AVEDGES, function (v) { curAvedge = v; });
   buildSel("sel-avshadow", AVSHADOWS, function (v) { curAvshadow = v; });
