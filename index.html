@@ -3440,12 +3440,8 @@
   /* the section is live: seats fill and empty, and a table that stops being listed is replaced in its
      own slot, so nothing in the grid ever moves */
   #openTablesTop .ltCard.ltLeave { pointer-events: none; }
-  #openTablesTop .player img.ltPop { animation: ltPop .36s cubic-bezier(.22,1,.36,1) both; }
-  @keyframes ltPop { 0% { opacity: 0; transform: scale(.78) translateY(5px); } 60% { opacity: 1; } 100% { opacity: 1; transform: none; } }
-  #openTablesTop .player img.ltDrop { animation: ltDrop .3s cubic-bezier(.32,0,.67,0) both; }
-  @keyframes ltDrop { 0% { opacity: 1; transform: none; } 100% { opacity: 0; transform: scale(.8) translateY(4px); } }
-  #openTablesTop .playerNameContainer.ltPlate { animation: ltPlate .34s ease both; }
-  @keyframes ltPlate { 0% { opacity: .15; } 100% { opacity: 1; } }
+  #openTablesTop .playerNameContainer.ltPlate { animation: ltPlate .32s cubic-bezier(.22,1,.36,1) both; }
+  @keyframes ltPlate { 0% { opacity: 0; } 100% { opacity: 1; } }
   #openTablesTop .ltTime span.ltTick { animation: ltPlate .3s ease both; }
 
   /* the placeholder is an ordinary waiting table with every seat empty: sitting hosts it */
@@ -6255,19 +6251,20 @@
     if (!grid) return;
     var TICK = 4500, LIVE_CARDS = 5; /* five live tables plus the New table card: the grid is always two full rows */
     var reduced = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
-    /* a table leaves and arrives the way the hero title's lines do: it rises and blurs away, and the
-       one that takes its place drops in and comes into focus */
-    function motionOut(el, done) {
-      if (reduced || !el.animate) { done(); return; }
-      el.animate([{ transform: "translateY(0)", opacity: 1, filter: "blur(0px)" },
-                  { transform: "translateY(-18px)", opacity: 0, filter: "blur(6px)" }],
-        { duration: 520, easing: "cubic-bezier(.4,0,.6,1)", fill: "forwards" }).onfinish = done;
+    /* a table changes the way the hero title's lines do, but the felt itself never goes: only what sits
+       on it, the seats, the art, the time and the marks, blurs and fades out, then fades back in */
+    function contents(card) { return card.querySelector(".playersContainer"); }
+    function motionOut(card, done) {
+      var box = contents(card);
+      if (reduced || !box || !box.animate) { done(); return; }
+      box.animate([{ opacity: 1, filter: "blur(0px)" }, { opacity: 0, filter: "blur(6px)" }],
+        { duration: 420, easing: "cubic-bezier(.4,0,.6,1)", fill: "forwards" }).onfinish = done;
     }
-    function motionIn(el) {
-      if (reduced || !el.animate) return;
-      el.animate([{ transform: "translateY(20px)", opacity: 0, filter: "blur(6px)" },
-                  { transform: "translateY(0)", opacity: 1, filter: "blur(0px)" }],
-        { duration: 640, delay: 120, easing: "cubic-bezier(.2,.8,.2,1)", fill: "backwards" });
+    function motionIn(card) {
+      var box = contents(card);
+      if (reduced || !box || !box.animate) return;
+      box.animate([{ opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)" }],
+        { duration: 520, easing: "cubic-bezier(.2,.8,.2,1)", fill: "backwards" });
     }
 
     var PEOPLE = [
@@ -6300,51 +6297,60 @@
     /* a table on its way out still holds its place in the grid, so it counts until it is gone */
     function slotCount() { return grid.querySelectorAll(".ltCard:not(.isNew)").length; }
 
-    /* a seat takes a player: the silhouette drops out, the face pops in, the plate takes the name */
+    /* a face leaves and a face arrives on the seat with the very motion the empty-seat hover uses:
+       the old one shrinks to .88 and goes over 140ms, the new one comes up from .86 over 320ms */
+    function faceOut(img, done) {
+      if (reduced || !img.animate) { done(); return; }
+      img.animate([{ opacity: 1, transform: "scale(1)" }, { opacity: 0, transform: "scale(.88)" }],
+        { duration: 140, easing: "cubic-bezier(0.32,0,0.67,0)", fill: "forwards" }).onfinish = done;
+    }
+    function faceIn(img) {
+      if (reduced || !img.animate) return;
+      img.animate([{ transform: "scale(.86)" }, { transform: "scale(1)" }],
+        { duration: 320, easing: "cubic-bezier(0.22,1,0.36,1)", fill: "backwards" });
+      img.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 120, easing: "linear", fill: "backwards" });
+    }
+    /* a seat takes a player: the silhouette goes, the face arrives, the plate takes the name */
     function sit(seat, person) {
       var img = seat.querySelector("img:not(.seatYou)");
       var plate = seat.querySelector(".playerNameContainer");
       var nameEl = plate.querySelector(".playerName:not(.pnJoin)");
-      img.classList.add("ltDrop");
-      setTimeout(function () {
+      faceOut(img, function () {
         seat.classList.remove("isEmpty", "joinable");
         var roll = plate.querySelector(".plateRoll");
         if (roll) { plate.insertBefore(nameEl, roll); roll.remove(); }
         var you = seat.querySelector(".seatYou");
         if (you) you.remove();
-        img.classList.remove("ltDrop");
         img.src = person[1];
-        img.classList.add("ltPop");
         nameEl.textContent = person[0];
-        plate.classList.add("ltPlate");
         if (person[2] >= 70) {
           var badge = document.createElement("span");
           badge.className = "completionBadge" + (person[2] === 100 ? " is100" : "");
           badge.textContent = person[2] === 100 ? "" : person[2];
           plate.appendChild(badge);
         }
-        setTimeout(function () { img.classList.remove("ltPop"); plate.classList.remove("ltPlate"); }, 400);
-      }, 260);
+        faceIn(img);
+        plate.classList.add("ltPlate");
+        setTimeout(function () { plate.classList.remove("ltPlate"); }, 360);
+      });
     }
 
-    /* a player leaves: the face drops out and the seat is open again */
+    /* a player leaves: the face goes the same way and the seat is open again */
     function stand(seat) {
       var img = seat.querySelector("img:not(.seatYou)");
       var plate = seat.querySelector(".playerNameContainer");
       var nameEl = plate.querySelector(".playerName:not(.pnJoin)");
       var badge = plate.querySelector(".completionBadge");
-      img.classList.add("ltDrop");
-      setTimeout(function () {
+      faceOut(img, function () {
         if (badge) badge.remove();
-        img.classList.remove("ltDrop");
         img.src = "avatarEmpty.png";
-        img.classList.add("ltPop");
         nameEl.textContent = "Empty";
-        plate.classList.add("ltPlate");
         seat.classList.add("isEmpty");
         if (window.ltArmSeat) window.ltArmSeat(seat);
-        setTimeout(function () { img.classList.remove("ltPop"); plate.classList.remove("ltPlate"); }, 400);
-      }, 260);
+        faceIn(img);
+        plate.classList.add("ltPlate");
+        setTimeout(function () { plate.classList.remove("ltPlate"); }, 360);
+      });
     }
 
     function seatHtmlFor(i, person, bot) {
@@ -6446,7 +6452,7 @@
     }
 
     var beat = 0;
-    setInterval(function () {
+    function tick() {
       beat++;
       if (beat % 3 === 0) tickClocks();
       var cards = realCards();
@@ -6463,18 +6469,27 @@
         var free = PEOPLE.filter(function (p) { return taken.indexOf(p[0]) === -1; });
         if (!free.length) return;
         sit(pick(emptySeats(card)), pick(free));
-        /* a table that fills up is no longer open, so the next beat drops it */
+        /* a table that fills up is no longer open, so the next beat drops it and another takes its place */
         if (emptySeats(card).length === 1) setTimeout(function () { expire(card); }, TICK - 600);
-      } else if (roll < 0.68 && withPeople.length) {
+      } else if (roll < 0.72 && withPeople.length) {
         stand(pick(humanSeats(pick(withPeople))));
-      } else if (roll < 0.84 && cards.length < MAX_CARDS) {
-        appear();
-      } else if (cards.length > 3) {
+      } else {
         expire(pick(cards));
-      } else if (cards.length < MAX_CARDS) {
-        appear();
       }
-    }, TICK);
+    }
+    /* the first update lands one line-beat after the hero title settles, so the section reads as the
+       next line of the same thought. The intro waits for the fonts and a few smooth frames before it
+       starts, so it announces its schedule when it knows it; if it never plays, the section opens on
+       its own after the same pause it would have had */
+    var started = false;
+    function startBeat(at) {
+      if (started) return;
+      started = true;
+      setTimeout(function () { tick(); setInterval(tick, TICK); }, Math.max(0, at - Date.now()));
+    }
+    window.ltOnIntroBeat = startBeat;
+    if (window.ltFirstBeat) startBeat(window.ltFirstBeat);
+    setTimeout(function () { startBeat(Date.now()); }, 14000);
   });
 </script>
 <style>
@@ -6873,9 +6888,13 @@
     phase = "playing";
     var cap = document.getElementById("stc2-players"), count = cap ? parseInt(cap.dataset.cur || cap.dataset.v, 10) : 1214;
     if (!(count > 0)) count = 1214;
-    var lines = ['with <span data-spin="1">' + count + "</span> people", "just with friends", "against our robots", closerNow()];
+    var lines = ['with <span data-spin="1">' + count + "</span> people", "against our robots", "just with friends", "in good company"];
     runSweep(400);
     riseSettle(h, lines, 1500, 2200);
+    /* the Open tables section joins the intro's rhythm: its first listing update lands one line-beat
+       after the headline settles, as if the title had one more line to turn to */
+    window.ltFirstBeat = Date.now() + 1500 + lines.length * 2200;
+    if (typeof window.ltOnIntroBeat === "function") window.ltOnIntroBeat(window.ltFirstBeat);
   }
   /* keep the settled line and the swept seam if a switcher rebuilds the headline or the bar later */
   if (typeof window.applyBody === "function") {
