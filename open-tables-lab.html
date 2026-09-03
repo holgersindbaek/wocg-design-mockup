@@ -54,6 +54,9 @@
   .vsec2 h2 .fold:hover { background: #F8F7F4; }
   .vsec2.folded { margin-bottom: 14px; }
   .vsec2.folded > :not(h2) { display: none; }
+  .vsec2 .cmpwrap { margin-bottom: 22px; }
+  .vsec2 .cmplab { font-size: 12.5px; color: var(--muted-soft); margin: 0 0 8px; }
+  .vsec2 .cmplab b { color: var(--ink); }
 
   /* ===== state chips (which sample tables every section shows) ===== */
   .statebar { position: sticky; top: 0; z-index: 20; background: rgba(249,246,242,.94); backdrop-filter: blur(6px);
@@ -766,36 +769,37 @@
 </style>
 <style>
 /* ===== concept c15: The corner plate ===== */
-/* ===== concept c15: The corner plate ===== */
 /* c15 · the corner plate: the state as a nameplate at the top left of the felt, the clock at the top right, one short white row */
 #sec-c15 .ltCard .content.c15-content { display: block; padding: 75% 0 0; }
-#sec-c15 .c15-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; height: 44px; padding: 0 12px; box-sizing: border-box; }
+#sec-c15 .c15-row { display: flex; align-items: center; justify-content: flex-start; gap: 10px; height: 44px; padding: 0 12px; box-sizing: border-box; }
 #sec-c15 .c15-title { display: flex; align-items: baseline; flex: 1 1 auto; min-width: 0; font-size: 16px; font-weight: bold; line-height: 20px; color: #212529; white-space: nowrap; }
 #sec-c15 .c15-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 #sec-c15 .c15-mode { flex: none; font-size: 14px; font-weight: normal; color: #8a857c; cursor: default; }
 #sec-c15 .c15-name + .c15-mode { margin-left: 5px; }
-#sec-c15 .ltCard .content .button.c15-btn { width: auto; flex: none; }
+/* the seats are the way in, so a real table carries no button; only a placeholder keeps the small green verb */
+#sec-c15 .c15-row .button.small { flex: none; width: auto; }
+/* the See all box: a real table has no white row, so the felt rounds all four corners */
+#sec-c15 .ltCard.c15-feltonly .tableListing .header::before,
+#sec-c15 .ltCard.c15-feltonly .tableListing .header::after { border-radius: 20px; }
 
-/* the plates: the nameplate grammar, 20px tall, pinned at the top corners of the felt, level with the seat columns */
+/* the plates: the nameplate grammar on paper, 20px tall, pinned at the top corners of the felt, so they never read as a seat */
 #sec-c15 .c15-plate { position: absolute; top: 0; z-index: 3; height: 20px; line-height: 20px; padding: 0 7px; box-sizing: border-box; max-width: 104px;
-  font-size: 13px; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center; cursor: default;
-  background-color: #A5D8FF; color: #1665AD; border-radius: var(--radius-md, 6px); corner-shape: squircle;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 0 0 1px rgba(0,0,0,.30), 0 1px 3px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25); }
-#sec-c15 .c15-state { left: 0; }
+  font-size: 14px; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center; cursor: default;
+  background: #F9F6F2; color: #262626; border-radius: var(--radius-md, 6px); corner-shape: squircle;
+  box-shadow: inset 0 1px 0 #fff, 0 0 0 1px rgba(0,0,0,.30), 0 1px 3px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25); }
+#sec-c15 .c15-state { left: 0; cursor: help; }
 #sec-c15 .c15-time { right: 0; }
 /* a table where a player left shouts a little: the warmer green */
-#sec-c15 .c15-state.c15-open { background-color: #C0EB75; color: #4F800B; }
-/* the 4 seat felt has a face 122px in, so the plate stops short of it; the 2 and 3 seat felts leave the whole top band free */
-#sec-c15 .players2 .c15-state, #sec-c15 .players3 .c15-state { max-width: 160px; }
-/* on the 2 and 3 seat felts the top row of faces starts 22px down, so the rows slide 7px lower and the plates keep clear of the faces */
-#sec-c15 .players2 .playersContainer > .verticalSpacer:first-child, #sec-c15 .players3 .playersContainer > .verticalSpacer:first-child { height: 14.5%; }
-#sec-c15 .players2 .playersContainer > .verticalSpacer:last-child, #sec-c15 .players3 .playersContainer > .verticalSpacer:last-child { height: 7.7%; }
+#sec-c15 .c15-state.c15-open { background: #C0EB75; color: #2F5106;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.45), 0 0 0 1px rgba(0,0,0,.30), 0 1px 3px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25); }
+/* the 4 seat felt has a face 122px in, so the plate stops short of it; the 2 and 3 seat felts keep the production seat positions and give the plate more room */
+#sec-c15 .players2 .c15-state, #sec-c15 .players3 .c15-state { max-width: 62%; }
 </style>
 <style>
 /* ===== concept c16: The felt banner ===== */
 /* ===== concept c16: The felt banner ===== */
 /* c16 · the felt banner: the state is a plate along the bottom edge of the felt, the white bottom is the name alone */
-#sec-c16 { --c16-band: 28px; }
+#sec-c16 { --c16-band: 24px; }
 #sec-c16 .ltCard .tableListing .header { padding-top: calc(75% + var(--c16-band)); }
 #sec-c16 .ltCard .tableListing .content.c16-content { display: block; padding: calc(75% + var(--c16-band)) 0 0; }
 #sec-c16 .ltCard .playersContainer { bottom: calc(12px + var(--c16-band)); }
@@ -804,67 +808,80 @@
 #sec-c16 .ltCard.c16-feltonly .tableListing .header::before,
 #sec-c16 .ltCard.c16-feltonly .tableListing .header::after { border-radius: 20px; }
 
-/* the banner: a nameplate the width of the seat columns, 8px off the felt edge, 8px under the bottom seat's plate */
-#sec-c16 .c16-band { position: absolute; left: 0; right: 0; bottom: calc(-4px - var(--c16-band)); height: 24px; z-index: 3; box-sizing: border-box;
+/* the banner: a 20px plate in the seat nameplate grammar, on paper so it is not a fifth seat,
+   8px off the felt edge and 8px under the bottom seat's plate */
+#sec-c16 .c16-band { position: absolute; left: 0; right: 0; bottom: calc(-4px - var(--c16-band)); height: 20px; z-index: 3; box-sizing: border-box;
   display: flex; align-items: center; gap: 8px; padding: 0 8px;
-  background-color: #A5D8FF; color: #1665AD; border-radius: var(--radius-md, 6px); corner-shape: squircle;
+  background-color: #F9F6F2; color: #262626; border-radius: var(--radius-md, 6px); corner-shape: squircle;
   box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 0 0 1px rgba(0,0,0,.30), 0 1px 3px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25);
-  font-size: 13px; line-height: 24px; white-space: nowrap; cursor: default; }
+  font-size: 13px; line-height: 20px; white-space: nowrap; cursor: help; }
+/* a player left mid game and the seat is open again: the state that matters most, in the green plate */
+#sec-c16 .c16-band.c16-open { background-color: #C0EB75; color: #4F800B; }
 #sec-c16 .c16-state { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; font-weight: bold; }
-#sec-c16 .c16-state .c16-quiet { font-weight: normal; }
+#sec-c16 .c16-state .c16-quiet { font-weight: normal; color: #4e4d4c; }
+#sec-c16 .c16-band.c16-open .c16-state .c16-quiet { color: #4F800B; }
 #sec-c16 .c16-time { flex: none; font-weight: bold; }
-/* the placeholders in the See all box: the banner slot holds the verb */
-#sec-c16 .ltCard .c16-hostband { position: absolute; left: 0; right: 0; bottom: calc(-4px - var(--c16-band)); z-index: 3; display: block; }
+/* the placeholders in the See all box: the banner slot holds the small host button at its right end */
+#sec-c16 .ltCard .c16-hostband { position: absolute; right: 0; bottom: calc(-4px - var(--c16-band)); z-index: 3; }
 
 /* the white bottom: the name, the quiet mode word, and on a placeholder the small host button */
-#sec-c16 .c16-bottom { display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 12px; box-sizing: border-box; }
+#sec-c16 .c16-bottom { display: flex; align-items: center; gap: 12px; height: 32px; padding: 0 12px; box-sizing: border-box; }
 #sec-c16 .c16-name { flex: 1 1 auto; min-width: 0; display: flex; align-items: baseline; font-size: 16px; font-weight: bold; line-height: 20px; color: #212529; white-space: nowrap; overflow: hidden; }
-#sec-c16 .c16-ptn { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
-#sec-c16 .c16-game { flex: none; font-weight: normal; color: #4e4d4c; white-space: pre; }
-#sec-c16 .c16-mode { flex: none; font-size: 13px; line-height: 20px; color: #8a857c; cursor: default; }
+/* a long saved name keeps half the row: the game name beside it is the part that gives way */
+#sec-c16 .c16-ptn { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+#sec-c16 .c16-game { flex: 0 1 auto; min-width: 0; max-width: 50%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: normal; color: #4e4d4c; }
+#sec-c16 .c16-mode { flex: none; font-size: 13px; line-height: 20px; color: #8a857c; cursor: help; }
 #sec-c16 .c16-bottom .button.small { flex: none; width: auto; }
 </style>
 <style>
 /* ===== concept c17: One big table ===== */
-/* c17 · One big table: no white part, the whole tile is the felt with a dark rail along the bottom edge */
+/* ===== concept c17: One big table ===== */
+/* c17 · One big table: no white part, the whole tile is the felt with a quiet rail along the bottom edge */
 #sec-c17 { --c17-rail: 42px; }
-#sec-c17 .c17-tile { display: flex; flex-direction: column; gap: 7px; }
+/* the card and the game name under it are one object, so the tile carries the pointer and the hover */
+#sec-c17 .c17-tile { display: flex; flex-direction: column; gap: 7px; cursor: pointer; }
+#sec-c17 .c17-tile:has(.isNew) { cursor: default; }
 #sec-c17 .ltCard { background-color: #327333; }
 #sec-c17 .ltCard:hover { background-color: #327333; }
-#sec-c17 .ltCard:not(.isNew):hover .c17-rail { background: rgba(8, 14, 8, .5); }
+#sec-c17 .c17-tile:hover .ltCard:not(.isNew) .c17-rail { background: rgba(0, 0, 0, .42); }
 #sec-c17 .ltCard .tableListing { padding-top: calc(75% + var(--c17-rail)); }
 #sec-c17 .ltCard .tableListing .header { padding-top: 0; inset: 0; }
 #sec-c17 .ltCard .tableListing .header::before { border-radius: 20px; }
 #sec-c17 .ltCard .tableListing .header::after { border-radius: 20px; }
 /* the seats keep the felt's own 4:3 box, so every face and plate sits exactly where the production tile puts it */
 #sec-c17 .ltCard .playersContainer { bottom: calc(12px + var(--c17-rail)); }
+/* the 2 and 3 seat felts start with a face in the top row, so that row drops and the plates keep their air
+   (the plates are the container's last children, so the spacers are taken by position) */
+#sec-c17 .players2 .playersContainer > .verticalSpacer:nth-child(1),
+#sec-c17 .players3 .playersContainer > .verticalSpacer:nth-child(1) { height: 16.5%; }
+#sec-c17 .players2 .playersContainer > .verticalSpacer:nth-child(9),
+#sec-c17 .players3 .playersContainer > .verticalSpacer:nth-child(9) { height: 5.7%; }
 
-/* the two fixed slots: the state at the top left, the time in play at the top right, both in the nameplate grammar */
+/* the two fixed slots: the state at the top left, the time in play at the top right, both in the seat nameplate's grammar */
 #sec-c17 .c17-state, #sec-c17 .c17-time { position: absolute; top: 2px; z-index: 3; height: 20px; line-height: 20px; padding: 0 7px; box-sizing: border-box;
   font-size: 14px; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  background: #F9F6F2; color: #262626; border-radius: var(--radius-md, 6px); corner-shape: squircle; cursor: default;
-  box-shadow: inset 0 1px 0 #fff, 0 0 0 1px rgba(0,0,0,.30), 0 1px 3px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25); }
+  background: #A5D8FF; color: #1665AD; border-radius: var(--radius-md, 6px); corner-shape: squircle; cursor: default;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 0 0 1px rgba(0,0,0,.30), 0 1px 3px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25); }
 /* the four seat felt puts the top face 110px in, so the plates stop short of it; two and three seat felts leave the top row free */
-#sec-c17 .c17-state { left: 0; max-width: 106px; cursor: help; }
-#sec-c17 .c17-time { right: 0; max-width: 106px; font-weight: normal; color: #4e4d4c; }
+#sec-c17 .c17-state { left: 0; max-width: 106px; }
+#sec-c17 .c17-time { right: 0; max-width: 106px; }
 #sec-c17 .players2 .c17-state, #sec-c17 .players3 .c17-state { max-width: 62%; }
-#sec-c17 .c17-state.c17-open { background: #C0EB75; color: #2F5106; box-shadow: inset 0 1px 0 rgba(255,255,255,.45), 0 0 0 1px rgba(0,0,0,.30), 0 1px 3px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25); }
+#sec-c17 .c17-state.c17-has, #sec-c17 .c17-time { cursor: help; }
+/* a player left mid game and the seat is open again: the one state that matters most, in the warmer green */
+#sec-c17 .c17-state.c17-open { background: #C0EB75; color: #2F5106; }
 
-/* the rail: the table's apron, dark and translucent, the quiet words at the left and the one small thing at the right */
+/* the rail: the table's apron, the felt's own shadow, the quiet words at the left and the one small thing at the right */
 #sec-c17 .c17-rail { position: absolute; left: 0; right: 0; bottom: 0; height: var(--c17-rail); z-index: 3; box-sizing: border-box;
-  display: flex; align-items: center; gap: 10px; padding: 0 11px 0 12px;
-  background: rgba(8, 14, 8, .58); box-shadow: inset 0 1px 0 rgba(255,255,255,.08); }
+  display: flex; align-items: center; gap: 10px; padding: 0 12px;
+  background: rgba(0, 0, 0, .32); }
 #sec-c17 .c17-words { flex: 1 1 auto; min-width: 0; font-size: 13px; line-height: 18px; color: rgba(255,255,255,.86);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 1px 1px rgba(0,0,0,.3); }
 #sec-c17 .c17-word[data-tip] { cursor: help; }
 #sec-c17 .c17-name { color: #fff; font-weight: bold; }
-#sec-c17 .c17-info { flex: none; display: block; width: 18px; height: 18px; color: rgba(255,255,255,.72); cursor: help; }
-#sec-c17 .c17-info:hover { color: #fff; }
-#sec-c17 .c17-info svg { display: block; width: 18px; height: 18px; }
 #sec-c17 .c17-rail .button.small { flex: none; }
 
-/* the game name lives under the tile on the homepage grid, as a quiet caption, and goes away in the See all box */
-#sec-c17 .c17-cap { margin: 0; padding: 0 3px; font-size: 13px; line-height: 18px; color: #4e4d4c;
+/* the game name is the tile's own title under the card on the homepage grid, and goes away in the See all box */
+#sec-c17 .c17-cap { margin: 0; padding: 0 12px; font-size: 15px; font-weight: bold; line-height: 20px; color: #212529;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 /* the placeholders: an empty table with your own chair pulled out at the near seat */
@@ -875,25 +892,34 @@
 </style>
 <style>
 /* ===== concept c18: The nameplate bottom ===== */
-/* ===== concept c18: The nameplate bottom ===== */
 /* c18 · the felt as it is, and one 44px row under it: the game name at left, the state as a nameplate at right */
 #sec-c18 .ltCard .content { padding: calc(75% + 10px) 12px 10px; }
 #sec-c18 .c18-row { display: flex; align-items: center; justify-content: flex-end; gap: 8px; height: 24px; min-width: 0; }
 #sec-c18 .c18-title { flex: 1 1 auto; min-width: 0; display: flex; align-items: baseline; margin: 0;
   font-size: 15px; font-weight: bold; line-height: 20px; color: #212529; }
-/* the saved name gives way first, so the game name is never the part that gets cut */
-#sec-c18 .c18-title .c18-main { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-#sec-c18 .c18-title .c18-game { flex: none; font-weight: normal; color: #4e4d4c; white-space: nowrap; }
+/* the saved name keeps a readable stub and the game name takes the ellipsis */
+#sec-c18 .c18-title .c18-main { min-width: 72px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#sec-c18 .c18-title .c18-game { flex: 0 1 auto; min-width: 0; font-weight: normal; color: #4e4d4c;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* the See all box names the game already, so the left slot carries the quiet facts that fit whole */
+#sec-c18 .c18-facts { flex: 1 1 auto; min-width: 0; font-size: 13px; line-height: 20px; color: #4e4d4c;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 #sec-c18 .c18-mode { flex: none; font-size: 13px; line-height: 20px; color: #8a857c; white-space: nowrap; cursor: help; }
-/* the status plate: the seat nameplate grammar, on paper. The time is always its right end */
-#sec-c18 .c18-plate { flex: none; height: 20px; line-height: 20px; padding: 0 8px; box-sizing: border-box; max-width: 100%;
+/* the status plate: the seat nameplate grammar, on paper, padded like a seat plate. The time is always its right end */
+#sec-c18 .c18-plate { flex: none; height: 20px; line-height: 20px; padding: 0 6px; box-sizing: border-box; max-width: 60%;
   font-size: 14px; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   background-color: #A5D8FF; color: #1665AD; border-radius: var(--radius-md, 6px); corner-shape: squircle; cursor: help;
   box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 0 0 1px rgba(0,0,0,.30), 0 1px 3px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25); }
 /* a player left mid game and the seat is open again: the one state that matters most, in the green plate */
-#sec-c18 .c18-plate.c18-open { background-color: #C0EB75; color: #4F800B; }
+#sec-c18 .c18-plate.c18-open { background-color: #C0EB75; color: #2F5106; }
 #sec-c18 .c18-plate .c18-time { font-weight: normal; }
 #sec-c18 .ltCard .content .button.c18-host { width: auto; flex: none; white-space: nowrap; }
+/* the dark twin for the white row: the felt and both plates already survive the dark canvas */
+#sec-c18:is([data-theme="dark"] *) .ltCard .content { background: #1e1e1c; }
+#sec-c18:is([data-theme="dark"] *) .c18-title { color: #f2f0ea; }
+#sec-c18:is([data-theme="dark"] *) .c18-title .c18-game,
+#sec-c18:is([data-theme="dark"] *) .c18-facts { color: #b8b3aa; }
+#sec-c18:is([data-theme="dark"] *) .c18-mode { color: #948e84; }
 </style>
 <style>
 /* ===== concept c19: Four across ===== */
@@ -902,31 +928,33 @@
 #sec-c19 .ltCard { width: 266px; }
 /* at 266px a seat plate is 97px wide, so the name face drops one step and its padding tightens */
 #sec-c19 .ltCard .playerName { font-size: 13px; padding: 0 5px; }
-/* the two fixed felt slots: the state plate top left, the clock top right, both in the nameplate grammar */
-#sec-c19 .ltCard .c19-state { position: absolute; z-index: 3; left: 0; top: 2px; height: 20px; line-height: 20px; max-width: 96px;
+/* the two fixed felt slots: the state plate top left, the clock top right, both in the nameplate grammar.
+   the plate is capped at one seat plate's width so it never grows into the faces */
+#sec-c19 .ltCard .c19-state { position: absolute; z-index: 3; left: 0; top: 2px; height: 20px; line-height: 20px; max-width: 40%;
   padding: 0 7px; box-sizing: border-box; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  font-size: 13px; font-weight: bold; color: #262626; background: #F9F6F2; cursor: default;
+  font-size: 13px; font-weight: bold; color: #262626; background: #F9F6F2; cursor: help;
   border-radius: var(--radius-md, 6px); corner-shape: squircle;
   box-shadow: inset 0 1px 0 rgba(255,255,255,.6), 0 0 0 1px rgba(0,0,0,.30), 0 1px 3px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25); }
+/* the 2 and 3 seat felts leave the top left corner free, so the plate may say the long phrase there */
+#sec-c19 .players2 .c19-state, #sec-c19 .players3 .c19-state { max-width: 62%; }
 /* the one loud state: a player left mid game and the seat is open again */
 #sec-c19 .ltCard .c19-state.c19-open { background: #C0EB75; color: #3E6608; }
 #sec-c19 .ltCard .c19-clock { position: absolute; z-index: 3; right: 0; top: 2px; height: 20px; line-height: 20px; padding: 0 7px; box-sizing: border-box;
-  font-size: 13px; font-weight: bold; color: #262626; background: #F9F6F2; white-space: nowrap; cursor: default;
+  font-size: 13px; font-weight: bold; color: #262626; background: #F9F6F2; white-space: nowrap; cursor: help;
   border-radius: var(--radius-md, 6px); corner-shape: squircle;
   box-shadow: inset 0 1px 0 rgba(255,255,255,.6), 0 0 0 1px rgba(0,0,0,.30), 0 1px 3px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25); }
 /* 3 seat felt: the upper row moves down so the two slots clear the two upper faces */
 #sec-c19 .ltCard .players3 .playersContainer > .verticalSpacer:nth-child(1) { height: 16.5%; }
 #sec-c19 .ltCard .players3 .playersContainer > .verticalSpacer:nth-child(9) { height: 5.7%; }
-/* the one row bottom, 40px: 8px, a 24px row, 8px */
-#sec-c19 .ltCard .content { padding: calc(75% + 8px) 10px 8px 12px; }
+/* the one row bottom, 40px: 8px, a 24px row, 8px. the right edge lands on the clock plate's right edge */
+#sec-c19 .ltCard .content { padding: calc(75% + 8px) 12px 8px 12px; }
 #sec-c19 .c19-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; height: 24px; min-width: 0; }
-#sec-c19 .c19-title { flex: 1 1 auto; min-width: 0; font-size: 15px; font-weight: bold; line-height: 24px; color: #212529;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-#sec-c19 .c19-title .c19-game { font-weight: normal; color: #4e4d4c; }
-#sec-c19 .c19-facts { flex: 1 1 auto; min-width: 0; font-size: 13px; line-height: 24px; color: #4e4d4c;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-#sec-c19 .c19-facts b { font-size: 15px; color: #212529; }
-#sec-c19 .c19-mode { flex: none; font-size: 13px; line-height: 24px; color: #8a857c; white-space: nowrap; cursor: default; }
+/* the title is two slots: the name gives way first, the game name is never cut */
+#sec-c19 .c19-title { display: flex; align-items: baseline; flex: 1 1 auto; min-width: 0; overflow: hidden;
+  font-size: 15px; font-weight: bold; line-height: 24px; color: #212529; }
+#sec-c19 .c19-ptn { flex: 0 1 auto; min-width: 48px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#sec-c19 .c19-game { flex: none; white-space: nowrap; font-weight: normal; color: #4e4d4c; }
+#sec-c19 .c19-mode { flex: none; font-size: 13px; line-height: 24px; color: #8a857c; white-space: nowrap; cursor: help; }
 #sec-c19 .ltCard .content .button.c19-host { width: auto; flex: none; }
 </style>
 <!-- CONCEPT STYLES END -->
@@ -1242,10 +1270,28 @@ function foldButton(sec, onOpen) {
   });
   sec.querySelector("h2").appendChild(b);
 }
+function conceptById(id) { return CONCEPTS.filter(function (c) { return c.id === id; })[0]; }
+/* a compare section renders other concepts side by side on a few states, borrowing their css under its own id */
+function renderCompare(c, sec) {
+  var grid = sec.querySelector(".cgrid"); grid.innerHTML = "";
+  c.compare.forEach(function (id) {
+    var other = conceptById(id); if (!other) return;
+    var wrap = document.createElement("div"); wrap.className = "cmpwrap as-" + id;
+    var lab = document.createElement("p"); lab.className = "cmplab"; lab.innerHTML = "<b>" + id + "</b> &middot; " + other.title; wrap.appendChild(lab);
+    var host = document.createElement("div"); wrap.appendChild(host);
+    renderSlots(host, other.render, c.states, other.scope);
+    grid.appendChild(wrap);
+    if (other.afterRender) other.afterRender(wrap);
+    if (!document.getElementById("cmpstyle-" + c.id + "-" + id)) {
+      var src = Array.prototype.filter.call(document.querySelectorAll("style"), function (st) { return st.textContent.indexOf("concept " + id + ":") !== -1; })[0];
+      if (src) { var st = document.createElement("style"); st.id = "cmpstyle-" + c.id + "-" + id; st.textContent = src.textContent.split("#sec-" + id).join("#sec-" + c.id + " .as-" + id); document.head.appendChild(st); }
+    }
+  });
+}
 function renderSection(c, sec) {
-  renderSlots(sec.querySelector(".cgrid"), c.render, c.states, c.scope);
+  if (c.compare) renderCompare(c, sec); else renderSlots(sec.querySelector(".cgrid"), c.render, c.states, c.scope);
   sec.classList.add("rendered");
-  if (c.afterRender) c.afterRender(sec);
+  if (!c.compare && c.afterRender) c.afterRender(sec);
   armSeats(sec); armTips(sec);
   document.querySelectorAll(".statebar button[data-state]").forEach(function (b) {
     if (b.classList.contains("on")) return;
@@ -1274,6 +1320,7 @@ function renderConcepts() {
       foldButton(sec, function () { renderSection(c, sec); });
       if (!sec.classList.contains("folded")) renderSection(c, sec);
     });
+    if (round === 2) { var v2 = document.getElementById("sec-verdict2"); if (v2) frag.appendChild(v2); }
   });
   var end = document.querySelector("#concepts-end");
   end.parentNode.insertBefore(frag, end);
@@ -3788,7 +3835,6 @@ registerConcept((function () {
 </script>
 <script>
 /* ===== concept c15: The corner plate ===== */
-/* ===== concept c15: The corner plate ===== */
 registerConcept((function () {
   var MODE_TIPS = {
     Ranked: "Counts toward your rating. Real players only.",
@@ -3800,11 +3846,11 @@ registerConcept((function () {
   function targetText(t) { return (t.gameid === "hearts" ? "Ends at " : "Plays to ") + fmt(t.target); }
   function overflows(el) { return el.scrollWidth > el.clientWidth + 1; }
 
-  /* the state plate: the words in order of preference, fit() takes the first that fits the corner */
+  /* the state plate: the words in order of preference, fitPlate takes the first that fits the corner */
   function stateWords(t) {
     if (t.empty) return ["New table"];
     if (t.started) return emptySeats(t) ? ["A player left", "Seat open"] : ["In play"];
-    return emptySeats(t) === 1 ? ["Starts when you sit", "Waiting"] : ["Waiting"];
+    return emptySeats(t) === 1 ? ["Starts when you sit", "Sit to start"] : ["Waiting"];
   }
   /* what the seat you would take costs you, mid game */
   function takeLine(t) {
@@ -3820,10 +3866,7 @@ registerConcept((function () {
     if (t.empty) f.push(t.placeholder === "ranked" ? "Real players only" : "Your rules");
     else {
       if (t.started && takeLine(t)) f.push(esc(takeLine(t)));
-      if (t.ptn) {
-        var host = t.host ? ", hosted by " + esc(t.host) : "";
-        f.push(modal() ? (t.host ? "Hosted by " + esc(t.host) : "A saved table") : "<b>" + esc(t.ptn) + "</b>" + host);
-      }
+      if (t.ptn) f.push("<b>" + esc(t.ptn) + "</b>" + (t.host ? ", hosted by " + esc(t.host) : ""));
       (t.variants || []).forEach(function (v) { f.push(esc(v)); });
       if (!t.started && t.bots === false && !t.ranked) f.push("No bots");
       if (t.regOnly && t.expOnly) f.push("Registered, experienced only");
@@ -3833,23 +3876,22 @@ registerConcept((function () {
     if (t.target) f.push(targetText(t));
     return f;
   }
-  function verb(t) {
-    if (t.empty) return { text: "Host", cls: "green" };
-    if (t.started) return { text: "Take over", cls: "blue", tip: takeLine(t) };
-    return { text: "Join", cls: "blue" };
-  }
 
   function render(t) {
-    var words = stateWords(t), v = verb(t);
+    var words = stateWords(t);
     var plate = '<div class="c15-plate c15-state' + (t.started && emptySeats(t) ? ' c15-open' : '') +
       '" data-words="' + esc(JSON.stringify(words)).replace(/"/g, "&quot;") + '">' + esc(words[0]) + '</div>';
     var clock = t.started ? '<div class="c15-plate c15-time">' + esc(t.age > 0 ? ageText(t.age) : "just now") + '</div>' : '';
     var name = modal() ? (t.ptn || "") : t.game;
     var mode = t.ranked ? "Ranked" : t.ptn ? "Private" : "";
+    /* the See all box already names the game, so a table with nothing left to say drops the white row and is all felt */
+    if (modal() && !name && !mode && !t.empty) {
+      return card(t, '', { feltExtra: plate + clock, contentClass: "c15-content", cardClass: "c15-feltonly" });
+    }
     var title = '<span class="c15-title">' + (name ? '<span class="c15-name">' + esc(name) + '</span>' : '') +
       (mode ? '<span class="c15-mode" data-mode="' + mode + '">' + (name ? '· ' : '') + mode + '</span>' : '') + '</span>';
-    var btn = '<span class="button ' + v.cls + ' small c15-btn">' + v.text + '</span>';
-    return card(t, '<div class="c15-row">' + title + btn + '</div>', { feltExtra: plate + clock, contentClass: "c15-content" });
+    var host = t.empty ? '<span class="button green small c15-host">Host</span>' : '';
+    return card(t, '<div class="c15-row">' + title + host + '</div>', { feltExtra: plate + clock, contentClass: "c15-content" });
   }
 
   /* the plate takes the first wording that fits its corner; a shortened plate repeats the full words at the top of its tooltip */
@@ -3862,21 +3904,7 @@ registerConcept((function () {
     if (el.__wtip === undefined) attachTip(el, html); else el.__wtip = html;
   }
 
-  /* seats: in play, a seat you can take rolls to Take over (the shared code rolls waiting seats to Join); partner games name the partner */
-  function rollSeat(seat, word) {
-    seat.classList.add("joinable");
-    var plate = seat.querySelector(".playerNameContainer");
-    var you = document.createElement("img");
-    you.className = "seatYou"; you.src = VIEWER_AVATAR; you.alt = ""; you.width = 32; you.height = 32;
-    seat.insertBefore(you, plate);
-    var roll = document.createElement("div");
-    roll.className = "plateRoll";
-    roll.appendChild(seat.querySelector(".playerName"));
-    var pn = document.createElement("p");
-    pn.className = "playerName pnJoin"; pn.textContent = word;
-    roll.appendChild(pn);
-    plate.insertBefore(roll, plate.firstChild);
-  }
+  /* the seats are the way in: the shared roll turns every takeable seat into Join, and the tooltip says what the seat costs you */
   function partnerLine(t, idx) {
     var pn = t.seats[(idx + 2) % 4];
     if (!pn) return "Your partner’s seat is empty too";
@@ -3886,7 +3914,6 @@ registerConcept((function () {
     if (t.empty) return;
     cardEl.querySelectorAll(".player.isEmpty, .player.isBot.seatAvailable").forEach(function (seat) {
       var idx = Number(seat.getAttribute("data-seat")), lines = [];
-      if (t.started && !seat.classList.contains("joinable")) rollSeat(seat, "Take over");
       if (t.started) lines.push(seat.classList.contains("isBot") ? "You take <b>" + esc(t.seats[idx]) + "</b>’s hand and score" : "You take the open hand and score");
       if (t.team && t.n === 4) lines.push(partnerLine(t, idx));
       if (lines.length && seat.__wtip === undefined) attachTip(seat, lines.join("<br>"));
@@ -3917,8 +3944,6 @@ registerConcept((function () {
       if (!t) return;
       var mode = cardEl.querySelector(".c15-mode");
       if (mode) attachTip(mode, MODE_TIPS[mode.getAttribute("data-mode")]);
-      var v = verb(t);
-      if (v.tip) attachTip(cardEl.querySelector(".c15-btn"), esc(v.tip));
       armCard(cardEl, t);
     });
     function fitAll() {
@@ -3933,7 +3958,7 @@ registerConcept((function () {
     round: 2,
     open: true,
     title: "The corner plate",
-    desc: "The state is a nameplate pinned at the top left of every felt (<b>Waiting</b>, <b>Starts when you sit</b>, <b>In play</b>, and <b>A player left</b> in the warmer green), and the clock has its own slot at the top right while the game is in play, so the eye learns one place for each. The white bottom is one short row, the game name with a quiet Ranked or Private and one small verb, and the quieter facts wait in a tooltip on the state plate.",
+    desc: "The state is a paper nameplate pinned at the top left of every felt (<b>Waiting</b>, <b>Starts when you sit</b>, <b>In play</b>, and loudest of all <b>A player left</b> in the warmer green), and the clock has its own slot at the top right while the game is in play, so the eye learns one place for each. The plates are paper, not the blue of a seat, so the state never reads as a player. The seats are the way in: every seat you can take rolls to <b>Join</b> under the pointer, so a real table carries no button. The white bottom is one short row, the game name with a quiet Ranked or Private, and in the See all box, where the game is already named, the row goes away and the tile is all felt. The quieter facts wait in a tooltip on the state plate, and a placeholder keeps one small green Host button.",
     render: render,
     afterRender: afterRender
   };
@@ -3952,13 +3977,15 @@ registerConcept((function () {
   function targetLine(t) { return (t.gameid === "hearts" ? "Ends at " : "Plays to ") + fmt(t.target); }
   function quiet(s) { return '<span class="c16-quiet">' + esc(s) + '</span>'; }
   function overflows(el) { return el.scrollWidth > el.clientWidth + 1; }
+  function setTip(el, html) { if (el.__wtip === undefined) attachTip(el, html); else el.__wtip = html; }
 
-  /* the banner words: the loud part, an optional quiet tail, and the time for the fixed right slot */
+  /* the banner words: the loud part, an optional quiet tail, and the time for the fixed right slot.
+     A seat left open mid game is the state that matters most, so it turns the plate green */
   function stateOf(t) {
     if (t.empty) return { main: "New table" };
     if (t.started) {
       var time = t.age > 0 ? ageText(t.age) : "";
-      if (emptySeats(t) > 0) return { main: "Seat open", tail: "a player left", time: time };
+      if (emptySeats(t) > 0) return { main: "Seat open", tail: "a player left", time: time, open: true };
       return { main: t.age > 0 ? "In play" : "Starting", time: time };
     }
     return { main: emptySeats(t) === 1 ? "Starts when you sit" : "Waiting" };
@@ -3972,11 +3999,11 @@ registerConcept((function () {
       return ["You pick the options", "Bots can fill the empty seats"];
     }
     var bots = botNames(t), open = emptySeats(t);
-    if (modal && t.ptn) L.push("<b>" + esc(t.ptn) + "</b>" + (t.host ? ", " + esc(t.host) + "’s table" : ""));
+    if (modal && t.ptn && t.host) L.push("Hosted by " + esc(t.host));
     if (t.started) {
       if (open > 0 && !bots.length) L.push("You take the empty hand and its score");
       if (bots.length === 1) L.push(esc(bots[0]) + " holds a seat, you take its hand and score");
-      else if (bots.length > 1) L.push(bots.length + " bots hold seats, you take a bot’s hand and score");
+      else if (bots.length > 1) L.push("Bots hold seats, you take a bot’s hand and score");
     } else if (bots.length) {
       L.push(esc(bots[0]) + " holds a seat you can take");
     }
@@ -3996,16 +4023,17 @@ registerConcept((function () {
     if (t.empty && modal) return '<button type="button" class="button green small c16-hostband">' + hostLabel(t) + '</button>';
     var s = stateOf(t);
     var left = esc(s.main) + (s.tail ? quiet(" · " + s.tail) : "");
+    /* in the See all box the white row is gone, so the quiet word rides in the band. A saved name says private on its own */
     if (modal && !t.empty) {
       if (t.ranked) left += quiet(" · Ranked");
-      else if (t.ptn) left += quiet(" · Private");
+      else if (t.ptn) left += quiet(" · " + t.ptn);
     }
     var right = s.time ? '<span class="c16-time">' + esc(s.time) + '</span>' : "";
-    return '<div class="c16-band"><span class="c16-state">' + left + '</span>' + right + '</div>';
+    return '<div class="c16-band' + (s.open ? ' c16-open' : '') + '"><span class="c16-state">' + left + '</span>' + right + '</div>';
   }
 
   function bottomHtml(t) {
-    var name = t.ptn ? '<span class="c16-ptn">' + esc(t.ptn) + '</span><span class="c16-game"> · ' + esc(t.game) + '</span>'
+    var name = t.ptn ? '<span class="c16-ptn">' + esc(t.ptn) + '</span><span class="c16-game">&nbsp;· ' + esc(t.game) + '</span>'
       : '<span class="c16-ptn">' + esc(t.game) + '</span>';
     var mode = "";
     if (t.ranked) mode = '<span class="c16-mode" data-mode="ranked">Ranked</span>';
@@ -4014,12 +4042,29 @@ registerConcept((function () {
     return '<div class="c16-bottom"><span class="c16-name">' + name + '</span>' + mode + btn + '</div>';
   }
 
+  /* the touch path: a tap on the banner or the mode word opens the same tooltip a hover opens */
+  function armTaps(sec) {
+    if (sec.__c16tap) return;
+    sec.__c16tap = true;
+    function close() { var open = sec.__c16open; if (open) { open.dispatchEvent(new Event("mouseleave")); sec.__c16open = null; } }
+    sec.addEventListener("click", function (e) {
+      var el = e.target.closest ? e.target.closest(".c16-band, .c16-mode") : null;
+      if (!el || el.__wtip === undefined || !sec.contains(el)) return;
+      e.stopPropagation(); e.preventDefault();
+      if (sec.__c16open === el) { close(); return; }
+      close();
+      el.dispatchEvent(new Event("mouseenter"));
+      sec.__c16open = el;
+    });
+    document.addEventListener("click", close);
+  }
+
   return {
     id: "c16",
     round: 2,
     open: true,
     title: "The felt banner",
-    desc: "The state is a plate along the bottom edge of the felt, in the nameplate grammar: <b>Waiting</b>, <b>Starts when you sit</b>, <b>In play</b>, and loudest of all <b>Seat open · a player left</b>. The time sits at the banner's right end on every in-play tile. The seats are the way in, so a real table has no Join button: the white bottom is the game name with the quiet Ranked or Private word, and in the See all box it goes away and the tile is the felt. The rule variant, no bots, who may sit and the target score wait in the banner's tooltip. A placeholder carries a small green Host table button.",
+    desc: "The state is a plate along the bottom edge of the felt, in the nameplate grammar and on paper so it never reads as a fifth seat: <b>Waiting</b>, <b>Starts when you sit</b>, <b>In play</b>, and loudest of all the green <b>Seat open · a player left</b>. The time sits at the banner's right end on every in-play tile. The seats are the way in, so a real table has no Join button: the white bottom is the game name with the quiet Ranked or Private word, and in the See all box the row goes away, the tile is the felt, and the band carries the saved name. The rule variant, no bots, who may sit and the target score wait in the banner's tooltip, which a tap opens as well as a hover. A placeholder carries a small green Host table button.",
     render: function (t) {
       var modal = LAB.mode === "modal";
       var cls = "ltCard c16-card" + (t.empty ? " isNew" : "") + (modal ? " c16-feltonly" : "");
@@ -4050,10 +4095,11 @@ registerConcept((function () {
           var st = band.querySelector(".c16-state");
           if (!overflows(st)) return;
           var full = esc(st.textContent);
-          band.__wtip = full + (band.__wtip ? "<br>" + band.__wtip : "");
+          setTip(band, full + (band.__wtip ? "<br>" + band.__wtip : ""));
         });
       }
       if (document.fonts && document.fonts.ready) document.fonts.ready.then(check); else check();
+      armTaps(sec);
     }
   };
 })());
@@ -4063,21 +4109,21 @@ registerConcept((function () {
 /* ===== concept c17: One big table ===== */
 registerConcept((function () {
   var MODELS = {};
-  var INFO_SVG = '<svg viewBox="0 0 18 18" aria-hidden="true"><circle cx="9" cy="9" r="7.5" fill="none" stroke="currentColor" stroke-width="1.5"/>' +
-    '<circle cx="9" cy="5.6" r="1.15" fill="currentColor"/><rect x="8.1" y="7.9" width="1.8" height="5.2" rx=".9" fill="currentColor"/></svg>';
   var TIPS = {
-    ranked: "Counts toward your rating. Real players only.",
-    "private": "A named table with the host’s saved rules.",
-    sit: "Yours is the last seat. The deal starts when you take it.",
-    left: "Someone left mid game. Sit and you take their hand and score.",
-    "Tournament rules": "Cards are passed on every hand.",
-    "Dealer may pass": "The dealer may pass instead of naming trump.",
-    "No bag penalty": "Extra tricks over the bid cost nothing here."
+    ranked: "Counts toward your rating · real players only",
+    "private": "A named table with the host’s saved rules",
+    sit: "Yours is the last seat · the deal starts when you sit",
+    left: "A player left mid game · you take their hand and score",
+    "No bots": "The seats wait for people · no bots fill them",
+    "Tournament rules": "Cards are passed on every hand",
+    "Dealer may pass": "The dealer may pass instead of naming trump",
+    "No bag penalty": "Extra tricks over the bid cost nothing here"
   };
 
   function isBot(name) { return !!(name && PEOPLE[name] && PEOPLE[name].bot); }
   function botNames(t) { var b = []; for (var i = 0; i < t.n; i++) { if (isBot(t.seats[i])) b.push(t.seats[i]); } return b; }
   function targetText(t) { return (t.gameid === "hearts" ? "Ends at " : "Plays to ") + fmt(t.target); }
+  function botTake(bots) { return bots.length === 1 ? "You take " + bots[0] + "’s hand and score" : "You take a bot’s hand and score"; }
   function block(html) { return '<span style="display:block;white-space:normal;max-width:208px">' + html + '</span>'; }
   function overflows(el) { return el.scrollWidth > el.clientWidth + 1; }
 
@@ -4097,11 +4143,10 @@ registerConcept((function () {
       if (k > 0) {
         m.state = "Seat open"; m.open = true;
         m.words.push({ text: "A player left", tip: TIPS.left });
-        m.facts.push("A player left"); m.facts.push("You take their hand and score");
+        m.facts.push("You take their hand and score");
       }
       else { m.state = t.age > 0 ? "In play" : "Dealing"; }
-      if (bots.length === 1) m.facts.push("You take " + bots[0] + "’s hand and score");
-      else if (bots.length > 1) m.facts.push("You take a bot’s hand and score");
+      if (bots.length) m.words.push({ text: "Bot seat", tip: botTake(bots) });
       if (t.ranked) m.words.push({ text: "Ranked", tip: TIPS.ranked });
     } else {
       m.state = "Waiting";
@@ -4115,6 +4160,11 @@ registerConcept((function () {
     else if (t.expOnly) m.facts.push("Experienced only");
     else if (t.regOnly && !t.ranked) m.facts.push("Registered only");
     if (t.target) m.facts.push(targetText(t));
+    /* the rail never runs empty: a table with no quiet word of its own takes the first fact up into it */
+    if (!m.words.length && m.facts.length > 1) {
+      var lead = m.facts.shift();
+      m.words.push({ text: lead, tip: TIPS[lead] || "" });
+    }
     return m;
   }
 
@@ -4143,17 +4193,33 @@ registerConcept((function () {
   function seatTip(t, idx, bot) {
     var lines = [];
     if (bot) lines.push(t.started ? "You take <b>" + esc(t.seats[idx]) + "</b>’s hand and score" : "You play <b>" + esc(t.seats[idx]) + "</b>’s hand from the first deal");
-    else if (t.started) lines.push("A player left. You take their hand and score");
+    else if (t.started) lines.push("You take their hand and score");
     var pn = partnerLine(t, idx);
     if (pn) lines.push(pn);
     else if (t.n === 2 && humans(t).length) lines.push("You play <b>" + esc(humans(t)[0]) + "</b>");
     return lines.join("<br>");
   }
+  /* mid game a takeable seat rolls to Take over, before the shared code rolls the waiting seats to Join */
+  function rollSeat(seat, word) {
+    seat.classList.add("joinable");
+    var plate = seat.querySelector(".playerNameContainer");
+    var you = document.createElement("img");
+    you.className = "seatYou"; you.src = VIEWER_AVATAR; you.alt = ""; you.width = 32; you.height = 32;
+    seat.insertBefore(you, plate);
+    var roll = document.createElement("div");
+    roll.className = "plateRoll";
+    roll.appendChild(seat.querySelector(".playerName"));
+    var pn = document.createElement("p");
+    pn.className = "playerName pnJoin"; pn.textContent = word;
+    roll.appendChild(pn);
+    plate.insertBefore(roll, plate.firstChild);
+  }
   function armSeatTips(cardEl, t) {
     cardEl.querySelectorAll(".player.isEmpty, .player.isBot.seatAvailable").forEach(function (seat) {
       var idx = Number(seat.getAttribute("data-seat"));
+      if (t.started && !seat.classList.contains("joinable")) rollSeat(seat, "Take over");
       var tip = seatTip(t, idx, seat.classList.contains("isBot"));
-      if (tip) attachTip(seat, block(tip));
+      if (tip && seat.__wtip === undefined) attachTip(seat, block(tip));
     });
   }
   function armPlaceholder(cardEl, t) {
@@ -4162,9 +4228,9 @@ registerConcept((function () {
     near.classList.add("c17-you");
     near.querySelector("img").src = VIEWER_AVATAR;
     near.querySelector(".playerName").textContent = "Your seat";
-    attachTip(near, t.placeholder === "ranked" ? "You sit here and host the table. Real players fill the rest." : "You sit here and pick the rules.");
+    attachTip(near, t.placeholder === "ranked" ? "You sit here and host the table · real players fill the rest" : "You sit here and pick the rules");
   }
-  /* the touch path: a tap on the plate, a rail word or the details mark shows its tooltip, a tap elsewhere hides it */
+  /* the touch path: a tap on the plate, the clock or a rail word shows its tooltip, a tap elsewhere hides it */
   function armTaps(sec) {
     if (sec.__c17tap) return;
     sec.__c17tap = true;
@@ -4195,14 +4261,13 @@ registerConcept((function () {
     round: 2,
     open: true,
     title: "One big table",
-    desc: "No white part: the whole tile is the table. The state sits at the top left in a paper plate (<b>Waiting</b>, <b>In play</b>, <b>Seat open</b>), the time in play at the top right, and a dark rail along the bottom edge carries the quiet words (<b>Ranked</b>, <b>Private</b>, <b>Starts when you sit</b>, <b>A player left</b>) and a small details mark that opens the quieter facts. The seats do the joining, so a real table has no button and only the placeholders host. The game name is a quiet caption under the tile on the homepage grid and goes away in the See all box.",
+    desc: "No white part: the whole tile is the table. The state sits at the top left in a seat nameplate (<b>Waiting</b>, <b>In play</b>, and <b>Seat open</b> in the warmer green), the time in play at the top right, and a rail along the bottom edge carries the quiet words (<b>A player left</b>, <b>Bot seat</b>, <b>Ranked</b>, <b>Private</b>, <b>Starts when you sit</b>), with the quieter facts in a tooltip on the plate. The seats do the joining, and mid game a seat you can take rolls to <b>Take over</b>, so a real table needs no button and only the placeholders host. The game name is the tile's own title under the card on the homepage grid and goes away in the See all box.",
     render: function (t) {
       var m = build(t);
       MODELS[t.id] = m;
-      var felt = '<div class="c17-state' + (m.open ? ' c17-open' : '') + '">' + esc(m.state) + '</div>' +
+      var felt = '<div class="c17-state' + (m.open ? ' c17-open' : '') + (m.facts.length ? ' c17-has' : '') + '">' + esc(m.state) + '</div>' +
         (m.time ? '<div class="c17-time">' + esc(m.time) + '</div>' : '');
-      var right = m.button ? '<span class="button green small c17-btn">' + esc(m.button) + '</span>' :
-        (m.facts.length ? '<span class="c17-info">' + INFO_SVG + '</span>' : '');
+      var right = m.button ? '<span class="button green small c17-btn">' + esc(m.button) + '</span>' : '';
       var rail = '<div class="c17-rail"><div class="c17-words" data-full="' + esc(wordsText(m.words)) + '">' + wordsHtml(m.words) + '</div>' + right + '</div>';
       var cls = "ltCard c17-card" + (t.empty ? " isNew" : "") + (hasFriend(t) ? " isFriend" : "");
       var cardHtml = '<div class="' + cls + '" data-state="' + t.id + '"><div class="tableListing ' + t.gameid + (t.team ? ' isTeamGame' : '') + (t.ranked ? ' isRanked' : '') + '">' +
@@ -4215,12 +4280,7 @@ registerConcept((function () {
         var t = tableById(cardEl.getAttribute("data-state")), m = t && MODELS[t.id];
         if (!m) return;
         var tip = factsTip(m);
-        var state = cardEl.querySelector(".c17-state");
-        if (tip) {
-          attachTip(state, tip);
-          var info = cardEl.querySelector(".c17-info");
-          if (info) attachTip(info, tip);
-        }
+        if (tip) attachTip(cardEl.querySelector(".c17-state"), tip);
         var time = cardEl.querySelector(".c17-time");
         if (time) attachTip(time, "In play for " + ageText(t.age));
         cardEl.querySelectorAll(".c17-word[data-tip]").forEach(function (w) { attachTip(w, w.getAttribute("data-tip")); });
@@ -4235,7 +4295,6 @@ registerConcept((function () {
 </script>
 <script>
 /* ===== concept c18: The nameplate bottom ===== */
-/* ===== concept c18: The nameplate bottom ===== */
 registerConcept((function () {
   var WORD_TIPS = {
     ranked: "Counts toward your rating. Real players only.",
@@ -4244,6 +4303,8 @@ registerConcept((function () {
 
   function isBot(name) { return !!(name && PEOPLE[name] && PEOPLE[name].bot); }
   function botNames(t) { var b = []; for (var i = 0; i < t.n; i++) { if (isBot(t.seats[i])) b.push(t.seats[i]); } return b; }
+  /* the mixed grid prints the game name as production does */
+  function gameName(t) { return t.game === "Double Deck Pinochle" ? "DD Pinochle" : t.game; }
   function targetText(t) { return (t.gameid === "hearts" ? "Ends at " : "Plays to ") + fmt(t.target); }
   function entryText(t) {
     if (t.regOnly && t.expOnly) return "Registered and experienced only";
@@ -4253,27 +4314,33 @@ registerConcept((function () {
   }
   function modeWord(t) { return t.ranked ? "Ranked" : (t.ptn ? "Private" : ""); }
   function block(html) { return '<span style="display:block;white-space:normal;max-width:208px">' + html + '</span>'; }
+  function overflows(el) { return !!el && el.scrollWidth > el.clientWidth + 1; }
 
-  /* the plate: what the felt cannot show. A seat open mid game comes first, then in play, then the last seat, then waiting.
-     The long form has a short fallback for the rare row where the game name beside it would be cut */
+  /* the plate: what the felt cannot show. A player leaving mid game comes first and loudest, then in play,
+     then the last seat, then waiting. The long form has a short fallback for the row that runs out of width */
   function status(t) {
     if (t.started) {
       var time = t.age > 0 ? ageText(t.age) : "";
-      if (emptySeats(t) > 0) return { text: "Seat open", time: time, open: true };
+      if (emptySeats(t) > 0) return { text: "A player left", short: "Seat open", time: time, open: true };
       return { text: "In play", time: time };
     }
-    if (emptySeats(t) === 1) return { text: "Starts when you sit", short: "Waiting" };
+    if (emptySeats(t) === 1) return { text: "Starts when you sit", short: "Last seat" };
     return { text: "Waiting" };
   }
 
-  /* the quieter facts, one short line each */
-  function tipLines(t, titleHasName, shortened) {
-    var L = [], bots = botNames(t);
-    if (shortened) L.push("<b>Starts when you sit</b>");
-    if (t.ptn && !titleHasName) L.push("<b>" + esc(t.ptn) + "</b>");
+  /* the quieter facts, one short line each. What the row had to drop leads the list in bold */
+  function tipLines(t, o) {
+    o = o || {};
+    var L = [], bots = botNames(t), s = status(t), open = emptySeats(t) > 0;
+    if (o.shortened && !s.open) L.push("<b>" + esc(s.text) + "</b>");
+    if (o.modeHidden && modeWord(t)) L.push("<b>" + modeWord(t) + "</b>");
+    if (t.ptn && !o.titleHasName) L.push("<b>" + esc(t.ptn) + "</b>");
     if (t.host) L.push("Hosted by " + esc(t.host));
     if (t.started) {
-      if (emptySeats(t) > 0) { L.push("A player left"); L.push("You take the open hand and score"); }
+      if (open) {
+        if (!o.omitState) L.push("<b>A player left</b>");
+        L.push("You take the open hand and score");
+      }
       else if (bots.length === 1) L.push("You take " + esc(bots[0]) + "’s hand and score");
       else if (bots.length > 1) L.push("You take a bot’s hand and score");
     }
@@ -4283,6 +4350,7 @@ registerConcept((function () {
     if (t.target) L.push(targetText(t));
     return L;
   }
+  function seatTip(t, name) { return t.started ? "You take " + esc(name) + "’s hand and score" : "You take " + esc(name) + "’s seat"; }
   function hostTip(t) {
     return t.placeholder === "ranked" ? "Counts toward your rating<br>Real players only" : "Your rules<br>Bots can fill empty seats";
   }
@@ -4293,18 +4361,40 @@ registerConcept((function () {
   }
   function setTip(el, html) { if (el.__wtip === undefined) attachTip(el, html); else el.__wtip = html; }
 
-  /* the plate keeps its long wording unless the game name beside it would be cut; what it drops goes to its tooltip */
+  /* the row gives way in order: the plate keeps its long wording, then falls to its short form, then the mode
+     word goes. What the row drops goes to the plate's tooltip */
   function fit(sec) {
     sec.querySelectorAll(".c18-plate").forEach(function (plate) {
       var t = tableById(plate.getAttribute("data-id")), s = status(t);
-      var row = plate.parentElement, main = row.querySelector(".c18-main");
-      var titleHasName = !!(t.ptn && main);
-      var shortened = false;
-      if (s.short && main) {
-        plate.innerHTML = plateHtml(s, false);
-        if (main.scrollWidth > main.clientWidth + 1) { plate.innerHTML = plateHtml(s, true); shortened = true; }
+      var row = plate.parentElement;
+      var main = row.querySelector(".c18-main"), game = row.querySelector(".c18-game"), mode = row.querySelector(".c18-mode");
+      if (mode) mode.hidden = false;
+      plate.innerHTML = plateHtml(s, false);
+      function tight() { return overflows(plate) || overflows(main) || overflows(game); }
+      var shortened = false, modeHidden = false;
+      if (s.short && tight()) { plate.innerHTML = plateHtml(s, true); shortened = true; }
+      if (mode && tight()) { mode.hidden = true; modeHidden = true; }
+      setTip(plate, block(tipLines(t, {
+        titleHasName: !!(t.ptn && main), shortened: shortened, modeHidden: modeHidden
+      }).join("<br>")));
+    });
+  }
+
+  /* the See all box row: the top facts that fit whole, and if none of them do, the first shorter one that does */
+  function fillFacts(sec) {
+    sec.querySelectorAll(".c18-facts").forEach(function (el) {
+      var t = tableById(el.getAttribute("data-id"));
+      var list = tipLines(t, { titleHasName: true, omitState: true }), L = list.slice(0, 2), i;
+      while (L.length) {
+        el.innerHTML = L.join(" · ");
+        if (!overflows(el)) return;
+        L.pop();
       }
-      setTip(plate, block(tipLines(t, titleHasName, shortened).join("<br>")));
+      for (i = 1; i < list.length; i++) {
+        el.innerHTML = list[i];
+        if (!overflows(el)) return;
+      }
+      el.innerHTML = "";
     });
   }
 
@@ -4330,17 +4420,19 @@ registerConcept((function () {
     round: 2,
     open: true,
     title: "The nameplate bottom",
-    desc: "The felt stays exactly as it is, and the white bottom is one 44px row: the game name at left and, at right, <b>the state as a nameplate</b> in the seat plate grammar that reads Waiting, Starts when you sit, In play · 12 min, or on a seat left open mid game the green <b>Seat open · 10 min</b>, with the time always at its right end, Ranked or Private as one quiet word before it, and the quieter facts in its tooltip. There is no Join button, the seats join with the shared hover roll, the placeholders swap the plate for a small Host table button, and in the See all box the game name goes and the row keeps only the plate.",
+    desc: "The felt stays exactly as it is, and the white bottom is one 44px row: the game name at left and, at right, <b>the state as a nameplate</b> in the seat plate grammar that reads Waiting, Starts when you sit, In play · 12 min, and loudest of all the green <b>A player left · 10 min</b> when a seat opened mid game, with the time always at its right end, Ranked or Private as one quiet word before it, and the quieter facts in its tooltip. There is no Join button, the seats join with the shared hover roll and a bot seat says whose hand you take, the placeholders swap the plate for a small Host table button, and in the See all box the game name goes and the left slot carries the quiet facts that fit whole.",
     render: function (t) {
-      var modal = LAB.mode === "modal";
+      var modal = LAB.mode === "modal", name = gameName(t);
       var left = "";
       if (t.ptn && !t.empty) {
         left = '<p class="c18-title"><span class="c18-main">' + esc(t.ptn) + '</span>' +
-          (modal ? '' : '<span class="c18-game">&nbsp;· ' + esc(t.game) + '</span>') + '</p>';
+          (modal ? '' : '<span class="c18-game">&nbsp;· ' + esc(name) + '</span>') + '</p>';
       } else if (!modal) {
-        left = '<p class="c18-title"><span class="c18-main">' + esc(t.game) + '</span></p>';
+        left = '<p class="c18-title"><span class="c18-main">' + esc(name) + '</span></p>';
+      } else if (!t.empty) {
+        left = '<span class="c18-facts" data-id="' + t.id + '"></span>';
       }
-      var mode = modeWord(t);
+      var mode = t.empty && modal ? "" : modeWord(t);
       var modeHtml = mode ? '<span class="c18-mode" data-word="' + mode.toLowerCase() + '">' + mode + '</span>' : "";
       var right;
       if (t.empty) right = '<span class="button green small c18-host" data-id="' + t.id + '">Host table</span>';
@@ -4350,14 +4442,24 @@ registerConcept((function () {
     afterRender: function (sec) {
       sec.querySelectorAll(".c18-mode").forEach(function (w) { attachTip(w, WORD_TIPS[w.getAttribute("data-word")]); });
       sec.querySelectorAll(".c18-host").forEach(function (b) { attachTip(b, hostTip(tableById(b.getAttribute("data-id")))); });
-      fit(sec);
-      if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { fit(sec); });
+      /* what a bot seat means, said where the hand hovers */
+      sec.querySelectorAll(".ltCard").forEach(function (cardEl) {
+        var t = tableById(cardEl.getAttribute("data-state"));
+        if (!t || t.empty) return;
+        cardEl.querySelectorAll(".player.isBot.seatAvailable").forEach(function (seat) {
+          attachTip(seat, seatTip(t, seat.getAttribute("data-name")));
+        });
+      });
+      function refit() { fit(sec); fillFacts(sec); }
+      refit();
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(refit);
       armTaps(sec);
     }
   };
 })());
 </script>
 <script>
+/* ===== concept c19: Four across ===== */
 /* ===== concept c19: Four across ===== */
 registerConcept((function () {
   var TIPS = { Ranked: "Counts toward your rating.", Private: "A table with a saved name, set up by its host." };
@@ -4369,24 +4471,26 @@ registerConcept((function () {
   function targetText(t) { return (t.gameid === "hearts" ? "ends at " : "plays to ") + fmt(t.target); }
   function overflows(el) { return el.scrollWidth > el.clientWidth; }
 
-  /* the state plate: one short phrase, never a seat count. The open seat after a player left is the loud one */
+  /* the state plate: one short phrase, never a seat count. A seat left open mid game is the loud one.
+     The long wordings carry a short fallback for the narrow slot on the 4 seat felt */
   function state(t) {
     if (t.empty) return { text: t.placeholder === "ranked" ? "Ranked table" : "New table" };
-    if (t.started) return (!botSeats(t) && emptySeats(t)) ? { text: "Seat open", open: true } : { text: "In play" };
-    return { text: emptySeats(t) === 1 ? "Sit to start" : "Waiting" };
+    if (t.started) return emptySeats(t) ? { text: "A player left", short: "Seat open", open: true } : { text: "In play" };
+    return emptySeats(t) === 1 ? { text: "Starts when you sit", short: "Last seat" } : { text: "Waiting" };
   }
   function clockText(t) { return t.started && t.age > 0 ? ageText(t.age) : ""; }
   function modeWord(t) { if (t.empty) return ""; if (t.ranked) return "Ranked"; if (t.ptn) return "Private"; return ""; }
 
-  /* the quiet facts in priority order: what the seat costs you, the variant, no bots, who may sit, the host, the target */
+  /* the quiet facts in priority order: the open hand first, then what a bot seat costs you, the variant,
+     no bots, who may sit, the host, the target. They live in the plate's tooltip, never on the face */
   function facts(t) {
     if (t.empty) return t.placeholder === "ranked" ? ["counts toward your rating", "no bots"] : ["your rules", "bots can fill the empty seats"];
     var f = [], bots = botNames(t);
     if (t.started) {
+      if (emptySeats(t)) f.push("a player left", "you take the open hand and score");
       if (bots.length === 1) f.push("you take " + bots[0] + "’s hand and score");
       else if (bots.length > 1) f.push("you take a bot’s hand and score");
-      else if (emptySeats(t)) f.push("a player left", "you take the open hand and score");
-    } else if (emptySeats(t) === 1) f.push("starts when you sit");
+    }
     (t.variants || []).forEach(function (v) { f.push(low(v)); });
     if (t.bots === false && !t.started) f.push("no bots");
     if (t.expOnly && t.regOnly) f.push("registered and experienced only");
@@ -4396,28 +4500,51 @@ registerConcept((function () {
     if (t.target) f.push(targetText(t));
     return f;
   }
-  function tipHtml(t) { return facts(t).map(function (x) { return esc(cap(x)); }).join("<br>"); }
+  /* the tooltip never repeats the plate. What the narrow slot made the plate drop leads it instead, in bold */
+  function tipHtml(t, plateText, shortened) {
+    var lines = facts(t).map(function (x) { return esc(cap(x)); }), head = esc(plateText);
+    if (lines[0] === head) { if (shortened) lines[0] = "<b>" + head + "</b>"; else lines.shift(); }
+    else if (shortened) lines.unshift("<b>" + head + "</b>");
+    return lines.join("<br>");
+  }
 
-  /* the homepage row: the game, or the saved name with the game quiet. The placeholders say only the game, the plate says new */
+  /* the homepage row: the game, or the saved name with the game quiet. The name gives way first,
+     so the game name is never the one that is cut on the mixed grid */
   function titleHtml(t) {
-    if (t.ptn && !t.empty) return esc(t.ptn) + '<span class="c19-game"> · ' + esc(t.game) + '</span>';
-    return esc(t.game);
+    if (t.ptn && !t.empty) return '<span class="c19-ptn">' + esc(t.ptn) + '</span><span class="c19-game">&nbsp;· ' + esc(t.game) + '</span>';
+    return '<span class="c19-ptn">' + esc(t.game) + '</span>';
   }
-  /* the See all box row: the saved name in bold, then the facts. Whole facts drop from the end until the line fits */
-  function factsHtml(t, list) {
-    var lead = t.ptn && !t.empty ? "<b>" + esc(t.ptn) + "</b>" : "";
-    var s = list.map(function (x, i) { return esc(i === 0 && !lead ? cap(x) : x); }).join(" · ");
-    return lead ? lead + (s ? " · " + s : "") : s;
-  }
+  function setTip(el, html) { if (el.__wtip === undefined) attachTip(el, html); else el.__wtip = html; }
   function fit(sec) {
-    sec.querySelectorAll(".c19-facts").forEach(function (el) {
-      var t = tableById(el.getAttribute("data-id")), list = facts(t);
-      el.innerHTML = factsHtml(t, list);
-      while (list.length > 1 && overflows(el)) { list.pop(); el.innerHTML = factsHtml(t, list); }
+    sec.querySelectorAll(".c19-state").forEach(function (el) {
+      var t = tableById(el.getAttribute("data-id")), s = state(t), shortened = false;
+      if (s.short) {
+        el.textContent = s.text;
+        if (overflows(el)) { el.textContent = s.short; shortened = true; }
+      }
+      setTip(el, tipHtml(t, s.text, shortened));
     });
     sec.querySelectorAll(".c19-title").forEach(function (el) {
-      if (overflows(el) && el.__wtip === undefined) attachTip(el, esc(el.textContent));
+      var name = el.querySelector(".c19-ptn");
+      if (name && overflows(name) && el.__wtip === undefined) attachTip(el, esc(el.textContent));
     });
+  }
+
+  /* the touch path: a tap on the plate, the clock or the mode word opens the tooltip a hover opens */
+  function armTaps(sec) {
+    if (sec.__c19tap) return;
+    sec.__c19tap = true;
+    function close() { var open = sec.__c19open; if (open) { open.dispatchEvent(new Event("mouseleave")); sec.__c19open = null; } }
+    sec.addEventListener("click", function (e) {
+      var el = e.target.closest ? e.target.closest(".c19-state, .c19-clock, .c19-mode") : null;
+      if (!el || el.__wtip === undefined || !sec.contains(el)) return;
+      e.stopPropagation(); e.preventDefault();
+      if (sec.__c19open === el) { close(); return; }
+      close();
+      el.dispatchEvent(new Event("mouseenter"));
+      sec.__c19open = el;
+    });
+    document.addEventListener("click", close);
   }
 
   return {
@@ -4425,22 +4552,20 @@ registerConcept((function () {
     round: 2,
     open: true,
     title: "Four across",
-    desc: "The density test: four tiles per row at 266px, with the state on the felt as a paper plate in a fixed top left slot (<b>Waiting</b>, <b>Sit to start</b>, <b>In play</b>, and a green <b>Seat open</b> when a player left mid game), the clock in a fixed top right slot, and one 40px white row for the game name with a quiet <b>Ranked</b> or <b>Private</b>. No Join button, the seats are the button, the placeholders keep a small green <b>Host</b>, and the rest is a tooltip on the plate.",
+    desc: "The density test: four tiles per row at 266px, with the state on the felt as a paper plate in a fixed top left slot (<b>Waiting</b>, <b>Starts when you sit</b>, <b>In play</b>, and a green <b>A player left</b> on the seat left open mid game), the clock in a fixed top right slot, and one 40px white row for the game name with a quiet <b>Ranked</b> or <b>Private</b>. No Join button, the seats are the button, the placeholders keep a small green <b>Host</b>, and every quieter fact is a tooltip on the plate, on hover or on tap. The verdict on density: 266px is the tablet and See all width, because four across inside the 902px homepage box gives a 213px tile whose 76px seat plate cuts <b>Guest #4,821</b> and <b>PragueJoe</b>, so on the homepage this same tile runs three across at 290px.",
     render: function (t) {
       var modal = LAB.mode === "modal", st = state(t), mode = modeWord(t), clock = clockText(t);
-      var extra = '<div class="c19-state' + (st.open ? ' c19-open' : '') + '">' + esc(st.text) + '</div>' +
+      var extra = '<div class="c19-state' + (st.open ? ' c19-open' : '') + '" data-id="' + t.id + '">' + esc(st.text) + '</div>' +
         (clock ? '<div class="c19-clock">' + esc(clock) + '</div>' : '');
-      var left = modal ? '<span class="c19-facts" data-id="' + t.id + '">' + factsHtml(t, facts(t)) + '</span>'
-        : '<span class="c19-title">' + titleHtml(t) + '</span>';
+      /* in the See all box the filter already names the game, so the row keeps only a saved table name */
+      var left = '<span class="c19-title">' +
+        (modal ? (t.ptn && !t.empty ? '<span class="c19-ptn">' + esc(t.ptn) + '</span>' : '') : titleHtml(t)) + '</span>';
       var right = t.empty ? '<span class="button green small c19-host">Host</span>'
         : (mode ? '<span class="c19-mode" data-mode="' + mode + '">' + esc(mode) + '</span>' : '');
       return card(t, '<div class="c19-row">' + left + right + '</div>', { feltExtra: extra, cardClass: "c19-card" + (modal ? " c19-modal" : "") });
     },
     afterRender: function (sec) {
       sec.querySelectorAll(".ltCard").forEach(function (cardEl) {
-        var t = tableById(cardEl.getAttribute("data-state"));
-        if (!t) return;
-        attachTip(cardEl.querySelector(".c19-state"), tipHtml(t));
         var clock = cardEl.querySelector(".c19-clock");
         if (clock) attachTip(clock, "In play for " + esc(clock.textContent));
         var mode = cardEl.querySelector(".c19-mode");
@@ -4453,11 +4578,17 @@ registerConcept((function () {
         Promise.all([document.fonts.load("13px BuloRounded"), document.fonts.load("bold 15px BuloRounded")]).then(refit, refit);
         document.fonts.ready.then(refit);
       }
+      armTaps(sec);
     }
   };
 })());
 </script>
 <!-- CONCEPT SCRIPTS END -->
+<script>
+registerConcept({ id: "cmp", round: 2, open: true, compare: ["c18", "c15"], states: ["a", "c", "j"],
+  title: "The open question: the state plate in the row or on the felt",
+  desc: "The judges left one question open. <b>c18</b> keeps the felt untouched and puts the status nameplate in the white row. <b>c15</b> puts it in the felt's top left corner with the clock top right. The same three tables side by side, a waiting table, a ranked table one seat short, and the table a player left. The corner wins if the eye finds <b>Seat open</b> before it reaches the bottom row. The row wins if the felt reads calmer without plates over the faces." });
+</script>
 <div id="concepts-end"></div>
 <!-- VERDICT START -->
 <style>
@@ -4523,5 +4654,39 @@ registerConcept((function () {
   </div>
 </div>
 <!-- VERDICT END -->
+<!-- VERDICT2 START -->
+<style>
+  #sec-verdict2 .vtable { border-collapse: collapse; font-size: 12.5px; margin: 0 0 16px; background: #fff; border-radius: 12px; corner-shape: squircle; box-shadow: var(--btnshadow); overflow: hidden; }
+  #sec-verdict2 .vtable th, #sec-verdict2 .vtable td { text-align: left; padding: 6px 12px; border-bottom: 1px solid #eeeae3; vertical-align: top; }
+  #sec-verdict2 .vtable th { font-size: 11.5px; color: var(--muted-soft); font-weight: bold; background: var(--band); }
+  #sec-verdict2 .vtable tr:last-child td { border-bottom: none; }
+  #sec-verdict2 .vtable td.num, #sec-verdict2 .vtable th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  #sec-verdict2 .vtable tr.win td { background: #F5F9EA; }
+  #sec-verdict2 .vtable tr.syn td { background: #F9F6F2; }
+  #sec-verdict2 .vcols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; max-width: 1100px; }
+  #sec-verdict2 .vcol { background: #fff; border-radius: 12px; corner-shape: squircle; box-shadow: var(--btnshadow); padding: 12px 14px 14px; }
+  #sec-verdict2 .vcol h3 { font-size: 13px; margin: 0 0 8px; padding-bottom: 6px; border-bottom: 1px solid #eeeae3; }
+  #sec-verdict2 .vcol ul { margin: 0; padding: 0 0 0 16px; font-size: 12.5px; line-height: 1.4; color: #3a3733; }
+  #sec-verdict2 .vcol li { margin: 0 0 5px; }
+  #sec-verdict2 .vcol li b { color: var(--ink); }
+  #sec-verdict2 p.desc + p.desc { margin-top: -6px; }
+</style>
+<div class="vsec2" id="sec-verdict2">
+  <h2>Verdict &middot; round two</h2>
+  <p class="desc">Three judges looked at the five sections above in both modes: <b>the returning regular</b>, <b>the craft critic</b>, and <b>the rulings applied literally</b> (an owner's reading of the eight rulings, quoting every string that breaks one). Each scored six things from one to five and named a top three. Every concept was then polished against their fixes.</p>
+  <table class="vtable"><thead><tr><th>Id</th><th>Concept</th><th class="num">Tile height</th><th class="num">Mean score</th><th>Top three picks</th></tr></thead><tbody>
+    <tr class="win"><td><b>c18</b></td><td>The nameplate bottom</td><td class="num">262</td><td class="num">4.3</td><td>the craft critic #1, the rulings #1, the regular #2</td></tr>
+    <tr><td><b>c15</b></td><td>The corner plate</td><td class="num">262</td><td class="num">4.0</td><td>the craft critic #2, the rulings #2</td></tr>
+    <tr><td><b>c19</b></td><td>Four across</td><td class="num">240 at 266 wide</td><td class="num">3.8</td><td>the regular #1, the craft critic #3</td></tr>
+    <tr><td><b>c16</b></td><td>The felt banner</td><td class="num">282</td><td class="num">3.5</td><td>the rulings #3</td></tr>
+    <tr><td><b>c17</b></td><td>One big table</td><td class="num">285</td><td class="num">3.5</td><td>the regular #3</td></tr>
+  </tbody></table>
+  <p class="desc"><b>The consensus.</b> c18 is the rulings made visible: the felt exactly as production draws it, the seats as the way in, one white row with the game name at the left and the state as a real nameplate at the right with the clock always at its right end, green only for the seat a player left, and everything quieter in the plate's tooltip. No button on a real table. It is also the shortest complete tile of both rounds at 262px. The one question left open is where the state plate lives: in the row (c18) or in the felt's top left corner with the clock top right (c15). The section above this one puts both side by side on the three states that decide it.</p>
+  <p class="desc"><b>Grafts the judges named.</b> From c15, the in-play seat roll to <b>Take over</b> with the partner named in the seat tooltip, and the wording ladder that falls from <b>Starts when you sit</b> to <b>Last seat</b>, never to Waiting. From c16, the state j phrase as a loud word with a quiet tail, <b>Seat open · a player left</b>. From c17, the placeholder with your own chair pulled out (<b>Your seat</b>), and the paper plate for any concept that puts the state on the felt. From c19, the See all facts line at the row's left, so the modal never shows a lone plate on empty white.</p>
+  <p class="desc"><b>Closed doors.</b> The full width felt banner (c16) merges with the seat plates and its state j was no louder than the rest. The whole felt tile (c17) buries the game name in a caption and three green blocks lose the page's card rhythm. Four across (c19) works at 266px, but the homepage grid is 902px wide next to the ad rail, which makes the tile 213px, so the density test must be re-run at that width before it decides anything; as built it is a See all or phone layout.</p>
+  <p class="desc"><b>Before c18 goes into the mockup.</b> A tap path for the tooltips (the engine is hover only). The <b>Join</b> verb on an open seat mid game and <b>Take over</b> only on a bot seat. Production's <b>DD Pinochle</b> abbreviation in the title. The saved table name truncates before the game name. The green plate colour must not meet the liked tint on one tile.</p>
+</div>
+
+<!-- VERDICT2 END -->
 </body>
 </html>
