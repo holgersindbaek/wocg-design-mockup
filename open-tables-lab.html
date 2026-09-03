@@ -41,6 +41,20 @@
   .brief li b { color: var(--ink); }
   .brief li .why { display: block; font-size: 11.5px; color: var(--muted-soft); }
 
+  .brief.rulings { grid-template-columns: 1fr; margin-top: 12px; }
+  .brief .bcol.rule h3 .tag { background: #FFE8A3; color: #8A5A00; }
+  .brief .bcol.rule ul { columns: 2; column-gap: 28px; }
+  .brief .bcol.rule li { break-inside: avoid; }
+
+  /* ===== rounds and folded sections (round one renders only when opened, the page was lagging) ===== */
+  h2.roundhead { font-size: 15px; color: var(--muted-soft); margin: 30px 0 14px; padding-top: 14px; border-top: 1px solid #e9e4db; }
+  h2.roundhead b { color: var(--ink); }
+  .vsec2 h2 .fold { font-family: inherit; font-size: 11.5px; font-weight: bold; color: #555; background: #fff; border: 1px solid #ddd;
+    border-radius: 6px; padding: 2px 9px; cursor: pointer; margin-left: 10px; vertical-align: 2px; }
+  .vsec2 h2 .fold:hover { background: #F8F7F4; }
+  .vsec2.folded { margin-bottom: 14px; }
+  .vsec2.folded > :not(h2) { display: none; }
+
   /* ===== state chips (which sample tables every section shows) ===== */
   .statebar { position: sticky; top: 0; z-index: 20; background: rgba(249,246,242,.94); backdrop-filter: blur(6px);
     display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 8px 0 10px; margin: 0 0 18px; border-bottom: 1px solid #e9e4db; }
@@ -771,7 +785,7 @@
 and repeats the seat count on the button. This lab first settles <b>what a tile must say</b> (from the listing payload, the production
 modal, competitor lobbies and three player lenses), then tries bottom panels that say it. Every section shows the same
 sample tables so the states compare: waiting, in play with a bot seat, ranked, a friend's named table with a rule variant,
-two and three seat games, a table with entry limits, and the placeholders. Twelve directions were built and judged from four lenses, then the two syntheses the judges asked for. The verdict is at the end.</p>
+two and three seat games, a table with entry limits, and the placeholders. Round one built twelve directions, judged them from four lenses and added two syntheses; it is folded below with its verdict. Round two, built on Holger's rulings, comes first.</p>
 
 <div class="vsec2" id="sec-brief">
   <h2>Zero &middot; the brief: what a tile must say</h2>
@@ -781,7 +795,7 @@ two and three seat games, a table with entry limits, and the placeholders. Twelv
   <div class="brief">
     <div class="bcol vital"><h3>Vital <span class="tag">every tile, at a glance</span></h3><ul>
       <li><b>Who is seated.</b> Faces, names, bot badge, liked star, finisher badge. <span class="why">The felt does this already. Keep it.</span></li>
-      <li><b>Waiting or in play, in words.</b> "Waiting for 2 more" or "In play 12 min". <span class="why">The one fact the felt cannot show. A fresh table and a 40 minute old game with a bot seat look identical today.</span></li>
+      <li><b>Waiting or in play, in words.</b> "Waiting" or "In play · 12 min", and above all "a player left, the seat is open". <span class="why">The one fact the felt cannot show. A fresh table and a 40 minute old game with an open seat look identical today. Never a seat count, the felt shows those.</span></li>
       <li><b>The game, on the homepage grid.</b> <span class="why">In the See all box the filter names the game (99.7% of use is one game), so there the state takes the bold slot.</span></li>
       <li><b>One verb on one button.</b> Join, Take the bot's seat, Host table. <span class="why">The button is read as the promise. A seat count is not a verb.</span></li>
       <li><b>What a bot seat means.</b> You take the bot's hand and its score, mid trick. <span class="why">Every listed table lets you do it, and nothing warns you today.</span></li>
@@ -813,6 +827,16 @@ two and three seat games, a table with entry limits, and the placeholders. Twelv
       <li><b>Reputation score.</b> A private moderation signal. Never.</li>
     </ul></div>
   </div>
+  <div class="brief rulings"><div class="bcol rule"><h3>Round two rulings <span class="tag">Holger, after round one</span></h3><ul>
+      <li><b>No seat counts.</b> The felt already shows the empty seats. "Waiting for 2 more" says nothing the faces do not.</li>
+      <li><b>The state that matters most</b> is a game in play where a player has left and the seat is open again (state j). Say that before anything else.</li>
+      <li><b>Facts may sit on the felt</b>, but not the game name. The time gets one fixed slot on every tile.</li>
+      <li><b>The finish badge stays on the player</b>, as production does it: the green completion badge at 70% and above with ten finished games, gold at 100%.</li>
+      <li><b>Seats are how you join.</b> The new frontpage already lets you click an empty or bot seat. Keep that. A separate Join button is open to question.</li>
+      <li><b>The less important facts go in a tooltip</b>, not a drawer, and never the player stats, which the seats already carry.</li>
+      <li><b>Not wordy.</b> No sentences, no game icon, no colour strip, no ticket dressing, no centre placard. A status plate in the nameplate grammar is welcome.</li>
+      <li><b>Try four across</b> and try the whole tile as one table.</li>
+    </ul></div></div>
   <p class="desc" style="margin-top:12px"><b>Facts that shape the copy.</b> The open-tables box shows 0 to 5 tables 77% of the time and 1 to 3 tables half the time, so
   each tile has room to speak. Euchre, Spades, Hearts and Double Deck Pinochle carry 80% of listing use, so partnership games and
   their options come first. Bots are invited by a seated player, not by a timer, so a tile may never promise a start time.
@@ -897,6 +921,10 @@ var TABLES = [
   { id: "g", label: "three seats, in play 1h 5m, two bot seats, a guest",
     gameid: "threefiveeight", game: "Sergeant Major", n: 3, tableNumber: 12,
     seats: { 0: "Guest #4,821", 1: "Robot 2", 2: "Robot 3" }, started: true, age: 65, bots: true, variants: [], options: [], target: 12 },
+  { id: "j", label: "in play 10 min, a player left, one open seat, no bot (lists as casual)",
+    gameid: "euchre", game: "Euchre", n: 4, team: true, tableNumber: 301,
+    seats: { 1: "Vera", 0: "PragueJoe", 2: "cardShark52" }, started: true, age: 10, bots: true, variants: [],
+    options: [["Stick the dealer", true]], target: 10 },
   { id: "h", label: "the New table placeholder",
     gameid: "hearts", game: "Hearts", n: 4, empty: true, placeholder: "new", seats: {}, started: false, age: 0, bots: true, variants: [],
     options: [["Allow first turn", false], ["Tournament rules", false]], target: 100 },
@@ -1038,21 +1066,54 @@ function renderRefs() {
     '</div>';
 }
 
+var R1_STATES = ["a", "b", "c", "d", "e", "f", "g", "h", "i"];
+function foldButton(sec, onOpen) {
+  var b = document.createElement("button");
+  b.type = "button"; b.className = "fold"; b.textContent = sec.classList.contains("folded") ? "Show" : "Hide";
+  b.addEventListener("click", function () {
+    var open = sec.classList.toggle("folded") === false;
+    b.textContent = open ? "Hide" : "Show";
+    if (open && onOpen && !sec.classList.contains("rendered")) { onOpen(); }
+  });
+  sec.querySelector("h2").appendChild(b);
+}
+function renderSection(c, sec) {
+  renderSlots(sec.querySelector(".cgrid"), c.render, c.states, c.scope);
+  sec.classList.add("rendered");
+  if (c.afterRender) c.afterRender(sec);
+  armSeats(sec); armTips(sec);
+  document.querySelectorAll(".statebar button[data-state]").forEach(function (b) {
+    if (b.classList.contains("on")) return;
+    sec.querySelectorAll('.slot[data-state="' + b.getAttribute("data-state") + '"]').forEach(function (s) { s.hidden = true; });
+  });
+}
 function renderConcepts() {
-  var startMark = document.querySelector("#sec-ref");
   var frag = document.createDocumentFragment();
-  CONCEPTS.forEach(function (c, i) {
-    var sec = document.createElement("div");
-    sec.className = "vsec2";
-    sec.id = "sec-" + c.id;
-    var word = WORDS[conceptNumber + i] || String(conceptNumber + i);
-    sec.innerHTML = '<h2>' + word + ' &middot; ' + c.title + '</h2><p class="desc">' + c.desc + '</p><div class="cgrid"></div>';
-    frag.appendChild(sec);
-    renderSlots(sec.querySelector(".cgrid"), c.render, c.states, c.scope);
+  var rounds = [2, 1];
+  rounds.forEach(function (round) {
+    var list = CONCEPTS.filter(function (c) { return (c.round || 1) === round; });
+    if (!list.length) return;
+    var head = document.createElement("h2");
+    head.className = "roundhead";
+    head.innerHTML = round === 2 ? "<b>Round two</b> &middot; built on the rulings above" :
+      "<b>Round one</b> &middot; the first twelve directions, their syntheses and the verdict, folded. Open one to render it.";
+    frag.appendChild(head);
+    list.forEach(function (c, i) {
+      var sec = document.createElement("div");
+      sec.className = "vsec2" + (round === 1 && !c.open ? " folded" : "");
+      sec.id = "sec-" + c.id;
+      if (round === 1 && !c.states) c.states = R1_STATES;
+      var word = WORDS[(round === 1 ? conceptNumber : 1) + i] || String(i + 1);
+      sec.innerHTML = '<h2>' + word + ' &middot; ' + c.title + '</h2><p class="desc">' + c.desc + '</p><div class="cgrid"></div>';
+      frag.appendChild(sec);
+      foldButton(sec, function () { renderSection(c, sec); });
+      if (!sec.classList.contains("folded")) renderSection(c, sec);
+    });
   });
   var end = document.querySelector("#concepts-end");
   end.parentNode.insertBefore(frag, end);
-  CONCEPTS.forEach(function (c) { if (c.afterRender) c.afterRender(document.getElementById("sec-" + c.id)); });
+  var verdict = document.getElementById("sec-verdict");
+  if (verdict) { verdict.classList.add("folded"); foldButton(verdict, null); }
 }
 
 /* the join preview on every seat you can take (ported from the mockup) */
@@ -1119,15 +1180,8 @@ function armTips(root) {
 function rerenderConcepts() {
   CONCEPTS.forEach(function (c) {
     var sec = document.getElementById("sec-" + c.id);
-    if (!sec) return;
-    renderSlots(sec.querySelector(".cgrid"), c.render, c.states, c.scope);
-    if (c.afterRender) c.afterRender(sec);
-  });
-  armSeats(document);
-  armTips(document);
-  document.querySelectorAll(".statebar button[data-state]").forEach(function (b) {
-    var on = b.classList.contains("on");
-    document.querySelectorAll('.slot[data-state="' + b.getAttribute("data-state") + '"]').forEach(function (s) { s.hidden = !on; });
+    if (!sec || !sec.classList.contains("rendered")) return;
+    renderSection(c, sec);
   });
 }
 function buildStateBar() {
@@ -1164,8 +1218,8 @@ document.addEventListener("DOMContentLoaded", function () {
   buildStateBar();
   renderRefs();
   renderConcepts();
-  armSeats(document);
-  armTips(document);
+  armSeats(document.getElementById("refs"));
+  armTips(document.getElementById("refs"));
 });
 </script>
 <!-- CONCEPT SCRIPTS START -->
