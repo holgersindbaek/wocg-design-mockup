@@ -59,6 +59,8 @@
   .seamlayer .ttl { position: absolute; white-space: nowrap; font-family: "Gelica", Georgia, serif; font-weight: 500; color: var(--ink); }
   .seamlayer .dot { position: absolute; top: 5.5px; width: 3px; height: 3px; border-radius: 50%; background: var(--rule); }
   .seamlayer .tab { position: absolute; border-radius: 6px 6px 0 0; }
+  .seamlayer .tab.bordered { border: 1px solid var(--rule); border-bottom: 0; border-radius: 9px 9px 0 0; corner-shape: squircle; box-sizing: border-box; }
+  .seamlayer .tab.plate { border-bottom: 1px solid var(--rule); border-radius: 9px; }
   .seamlayer .tabdown { position: absolute; border-radius: 0 0 6px 6px; }
   .seamlayer .row4 { position: absolute; display: flex; align-items: center; }
   .seamlayer .row4 .su { position: static; }
@@ -217,14 +219,15 @@
     if (R.from === "title" && first) x0 = Math.max(x0, first[0]);
     if (R.stop != null) breaks.push([CX - R.stop, CX + R.stop]);
     if (R.hide) breaks.push([0, W]);
-    var merged = mergeBreaks(breaks), prev = x0, afterTitle = false;
-    merged.forEach(function (b) {
-      var holdsTitle = !!first && b[0] <= first[0] && b[1] >= last[1];
-      if (b[0] > prev) ruleSeg(layer, prev, Math.min(b[0], x1), X.swelled ? (holdsTitle ? "r" : (afterTitle ? "l" : null)) : null);
-      if (holdsTitle) afterTitle = true;
+    var merged = mergeBreaks(breaks), prev = x0, gi0 = -1, gi1 = -1;
+    /* the swelled rule thickens toward the group at the centre: the title and any suits within 200px of it; ticks inside the group stay hairline */
+    if (X.swelled && first) merged.forEach(function (b, i) { if (b[1] > first[0] - 200 && b[0] < last[1] + 200) { if (gi0 < 0) gi0 = i; gi1 = i; } });
+    merged.forEach(function (b, i) {
+      var sw = X.swelled ? (i === gi0 ? "r" : (gi1 >= 0 && i === gi1 + 1 ? "l" : null)) : null;
+      if (b[0] > prev) ruleSeg(layer, prev, Math.min(b[0], x1), sw);
       prev = Math.max(prev, b[1]);
     });
-    if (prev < x1) ruleSeg(layer, prev, x1, X.swelled && afterTitle ? "l" : null);
+    if (prev < x1) ruleSeg(layer, prev, x1, X.swelled && gi1 >= 0 && gi1 === merged.length - 1 ? "l" : null);
     /* the double rule: a second hairline over the head, column extent, 8px above the cap height */
     if (X.doubleRule && first) {
       var capTop = Math.min.apply(null, boxes.map(function (b) { return parseFloat(b[2].style.top); })) + base - m.cap;
@@ -232,8 +235,10 @@
     }
     /* the tab: the lower section's paper rises behind the title, from the rule up to just over the letters */
     if (X.tab && first && place === "inrule") {
-      var tab = el("span", "tab"), tabTop = Math.min.apply(null, boxes.map(function (b) { return parseFloat(b[2].style.top); })) + base - m.cap - 6;
-      tab.style.cssText = "left:" + (first[0] - pad) + "px;width:" + (last[1] - first[0] + 2 * pad) + "px;top:" + tabTop + "px;height:" + (7 - tabTop) + "px;background:var(--" + sc.lower + ");";
+      var tab = el("span", "tab" + (X.tabBorder ? " bordered" : "")), tabTop = Math.min.apply(null, boxes.map(function (b) { return parseFloat(b[2].style.top); })) + base - m.cap - (X.tabBorder ? 7 : 6);
+      var tabBottom = X.plate ? Math.max.apply(null, boxes.map(function (b) { return parseFloat(b[2].style.top); })) + base + m.desc + 4 : 7;
+      if (X.plate) tab.className += " plate";
+      tab.style.cssText = "left:" + (first[0] - pad) + "px;width:" + (last[1] - first[0] + 2 * pad) + "px;top:" + tabTop + "px;height:" + (tabBottom - tabTop) + "px;background:" + (X.plate === "white" ? "#fff" : "var(--" + sc.lower + ")") + ";";
       layer.insertBefore(tab, layer.firstChild);
     }
     if (X.dots && first && place === "inrule") {
@@ -688,6 +693,34 @@
 
     h2("13 · Recommendation");
     root.appendChild(el("div", "reco", RECO));
+
+    /* ===== 14 · Holger's asks, round two ===== */
+    h2("14 · Round two: the parted stations spaced evenly, the bordered tab, the swelled rule with pairs");
+    note("Built on Holger’s notes after the first round. The parted stations keep the same paper gap between the suits as between the title and the nearest suit (three spacings). The tab gets squircle corners and a 1px border in the rule’s own colour, on the centred head and on the left standing head. The swelled rule gets two suits a side. These carry the study’s own verdict only.");
+    VERDICTS["Stations parted, even at 40"] = '<span class="maybe">The four stations as a close garland.</span> Suit centres 40px apart and the first suit 34px from the title’s edge, so the paper gaps read equal; the ticks shrink to 10 and 20px and the group reads as one ornament about 310px wide.';
+    lab("Stations parted, even at 40", "Title 24px in the rule, pad 14; club and diamond left, spade and heart right, 40px apart, the first suit the same clear distance from the title (tick 10).", { title: { place: "inrule", size: 24 }, rule: { pad: 14, tick: 10 }, suits: { arr: "flankFour", step: 40 } });
+    VERDICTS["Stations parted, even at 48"] = '<span class="yes">The inner station pitch, halved twice.</span> 48px between suit centres and 42px of paper from the title to the first suit; the ticks of 18 and 28px keep the suits on the rule, and the group stays inside 330px.';
+    lab("Stations parted, even at 48", "Title 24px in the rule, pad 14; the four suits 48px apart, two a side, the first the same clear distance from the title (tick 18).", { title: { place: "inrule", size: 24 }, rule: { pad: 14, tick: 18 }, suits: { arr: "flankFour", step: 48 } });
+    VERDICTS["Stations parted, even at 64"] = '<span class="maybe">Airier.</span> 64px between suits and 58px from the title; the ticks grow to 34 and 44px and the group spreads to about 390px, which starts to look like a border again.';
+    lab("Stations parted, even at 64", "Title 24px in the rule, pad 14; the four suits 64px apart, two a side, the first the same clear distance from the title (tick 34).", { title: { place: "inrule", size: 24 }, rule: { pad: 14, tick: 34 }, suits: { arr: "flankFour", step: 64 } });
+    VERDICTS["Tab with a squircle border"] = '<span class="maybe">The tab drawn as a plate.</span> The lower paper rises behind the head with squircle corners and a 1px edge in the rule’s colour that joins the rule at the bottom corners, so the rule appears to arch over the head; a spade either side after a 24px tick.';
+    lab("Tab with a squircle border", "Title 24px in the rule, pad 14, tick 24, a spade either side; the lower paper rises behind the head in a tab with 9px squircle corners and a 1px #D9D2C4 border joining the rule.", { title: { place: "inrule", size: 24 }, rule: { pad: 14, tick: 24 }, suits: { arr: "flankOne", which: ["spade", "spade"] }, extras: { tab: true, tabBorder: true } });
+    VERDICTS["Tab with a squircle border, stations parted at 48"] = '<span class="maybe">The plate with the four stations around it.</span> The bordered tab and the evenly parted stations together; the group reads as one setting, and the plate makes the head a label.';
+    lab("Tab with a squircle border, stations parted at 48", "The bordered tab with the four suits 48px apart, two a side, tick 18.", { title: { place: "inrule", size: 24 }, rule: { pad: 14, tick: 18 }, suits: { arr: "flankFour", step: 48 }, extras: { tab: true, tabBorder: true } });
+    VERDICTS["Tab with a squircle border, own suit fixed"] = '<span class="maybe">The plate with the fixed marks.</span> The bordered tab with the section’s suit at 144px either side; the marks line up down the page and the plate carries the head.';
+    lab("Tab with a squircle border, own suit fixed", "The bordered tab with the section’s own suit fixed at 144px either side.", { title: { place: "inrule", size: 24 }, rule: { pad: 14 }, suits: { arr: "fixedFlank", at: 144, which: "perSection" }, extras: { tab: true, tabBorder: true } });
+    VERDICTS["Plate with a squircle border"] = '<span class="maybe">The whole head on a plate.</span> The bordered squircle box encloses the head from above the caps to below the descenders, filled with the lower paper, the rule ending at its sides; a label in the rule rather than a tab over it.';
+    lab("Plate with a squircle border", "Title 24px in the rule inside a bordered squircle plate (pad 14) that spans from 7px above the caps to 4px below the descenders, filled with the lower section’s paper; a spade either side after a 24px tick.", { title: { place: "inrule", size: 24 }, rule: { pad: 14, tick: 24 }, suits: { arr: "flankOne", which: ["spade", "spade"] }, extras: { tab: true, tabBorder: true, plate: true } });
+    VERDICTS["White plate with a squircle border"] = '<span class="maybe">The plate as a card.</span> The same box filled white like the tiles; the head becomes a nameplate on the seam, the strongest object on the rule.';
+    lab("White plate with a squircle border", "The same plate filled white, like the tiles.", { title: { place: "inrule", size: 24 }, rule: { pad: 14, tick: 24 }, suits: { arr: "flankOne", which: ["spade", "spade"] }, extras: { tab: true, tabBorder: true, plate: "white" } });
+    VERDICTS["Left, suits running right, bordered tab"] = '<span class="maybe">The standing head on a plate, the suits running out.</span> The tab rises behind the left head with its border joining the rule; the suits follow every 96px to the edge, so the seam reads as a tabbed border.';
+    lab("Left, suits running right, bordered tab", "Title 24px at the column’s left in the rule on a bordered squircle tab (pad 14, rule from the title); suits every 96px to the right, cycling club, diamond, spade, heart, tick 24.", { title: { place: "inrule", size: 24, align: "left" }, rule: { pad: 14, tick: 24, from: "title" }, suits: { arr: "rightRun", step: 96 }, extras: { tab: true, tabBorder: true } });
+    VERDICTS["Left, one suit after it, bordered tab"] = '<span class="maybe">The plate with one mark.</span> The same tab on the left head, one spade after a 24px tick, the rule plain to the edge; quieter than the run.';
+    lab("Left, one suit after it, bordered tab", "Title 24px left in the rule on a bordered squircle tab, one spade after a 24px tick, the rule plain to the right edge.", { title: { place: "inrule", size: 24, align: "left" }, rule: { pad: 14, tick: 24, from: "title" }, suits: { arr: "rightRun", count: 1, which: ["spade"] }, extras: { tab: true, tabBorder: true } });
+    VERDICTS["Swelled rule, pairs"] = '<span class="maybe">The engraver’s rule with two fleurons a side.</span> The rule tapers from a hairline at the edges to 3px at the outer suit; club and diamond, then the head, then spade and heart, all in one opening. Handsome as a title-page rule, heavy against the tile’s hairline elsewhere.';
+    lab("Swelled rule, pairs", "Title 24px centred, pad 18; club and diamond 22px apart on the left, spade and heart on the right, in the same opening (tick 0); the rule swells from a hairline at the edges to 3px at the outer suits.", { title: { place: "inrule", size: 24 }, rule: { pad: 18, tick: 0 }, suits: { arr: "flankPairs", step: 22 }, extras: { swelled: true } });
+    VERDICTS["Swelled rule, pairs with ticks"] = '<span class="maybe">The same with hairline ticks inside the group.</span> Suits 36px apart with a 16px tick of plain rule between each, the swell ending at the outer suit; the group reads as set on the rule rather than in a hole.';
+    lab("Swelled rule, pairs with ticks", "Title 24px centred, pad 14, tick 16; two suits a side 36px apart with hairline ticks between; the rule swells to 3px at the outer suits.", { title: { place: "inrule", size: 24 }, rule: { pad: 14, tick: 16 }, suits: { arr: "flankPairs", step: 36 }, extras: { swelled: true } });
     fitAll();
   }
 
