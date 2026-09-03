@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Title seam lab: the section title set into the rule</title>
+<style>
+  @font-face { font-family: 'BuloRounded'; src: url("BuloRounded-Regular.woff2") format('woff2'); font-weight: normal; font-display: swap; }
+  @font-face { font-family: 'BuloRounded'; src: url("BuloRounded-Bold.woff2") format('woff2'); font-weight: bold; font-display: swap; }
+  @font-face { font-family: "Gelica"; src: url("Gelica-Regular.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+  @font-face { font-family: "Gelica"; src: url("Gelica-Medium.woff2") format("woff2"); font-weight: 500; font-display: swap; }
+  @font-face { font-family: "Gelica"; src: url("Gelica-SemiBold.woff2") format("woff2"); font-weight: 600; font-display: swap; }
+
+  :root { --canvas:#f9f6f2; --band:#f4eee5; --ink:#141414; --muted:#4e4d4c; --rule:#D9D2C4; --edge:#d2cfca; }
+  body { margin: 0; padding: 28px 24px 80px; background: var(--canvas); color: #2b2722; font-family: "BuloRounded", -apple-system, "Helvetica Neue", Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+  h1 { font-size: 22px; margin: 0 0 4px; font-family: "Gelica", serif; font-weight: 500; }
+  h2 { font-size: 17px; margin: 44px 0 12px; padding-bottom: 6px; border-bottom: 1px solid var(--edge); }
+  p.note { font-size: 13px; color: #8a857c; margin: 0 0 18px; max-width: 860px; line-height: 1.45; }
+  p.note b { color: #2b2722; }
+  .lab { margin: 0 0 34px; }
+  .lab .tag { font-size: 12.5px; color: #8a857c; margin: 0 0 6px; max-width: 900px; line-height: 1.45; }
+  .lab .tag b { color: #2b2722; }
+  .lab .verdict { font-size: 12.5px; color: #6f6a60; margin: -2px 0 10px; max-width: 900px; line-height: 1.45; }
+  .lab .verdict .yes { color: #2B8A3E; font-weight: bold; }
+  .lab .verdict .maybe { color: #b98520; font-weight: bold; }
+  .lab .verdict .no { color: #B52626; font-weight: bold; }
+  .fit { width: 100%; }
+  .scene { width: 1160px; position: relative; background: var(--canvas); border: 1px solid rgba(9,15,21,.08); border-radius: 10px; overflow: hidden; transform-origin: top left; }
+
+  /* ===== the page strip: alternating band and canvas panels with ghost content, a seam layer on each boundary ===== */
+  .panel { position: relative; }
+  .panel.band { background: var(--band); }
+  .panel.canvas { background: var(--canvas); }
+  .tiles { position: absolute; left: 24px; right: 24px; display: flex; gap: 16px; }
+  .tile { flex: 1; background: #fff; border-radius: 14px; box-shadow: 0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09); overflow: hidden; }
+  .tile .im { height: 96px; background: #e6e0d6; }
+  .tile .tx { padding: 11px 12px 12px; }
+  .tile .tx i { display: block; height: 9px; border-radius: 5px; background: #ebe6de; margin: 0 0 7px; }
+  .tile .tx i.s { width: 58%; margin-bottom: 0; }
+  .tail { position: absolute; left: 24px; right: 24px; display: flex; gap: 16px; }
+  .tail .tile { height: 60px; }
+  .head { position: absolute; left: 24px; font-family: "Gelica", Georgia, serif; font-weight: 500; font-size: 24px; line-height: 36px; color: var(--ink); white-space: nowrap; }
+  .head .live, .ttl .live { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #64CD00; margin-right: 9px; vertical-align: .12em; }
+  .ctlrow { position: absolute; right: 24px; display: flex; gap: 8px; align-items: center; }
+  .btn { font: bold 16px/24px "BuloRounded", sans-serif; height: 24px; padding: 0 10px; border-radius: 6px; color: #fff; background: #3c9a3f; box-shadow: inset 0 0 0 1px rgba(0,0,0,.18), 0 2px 4px rgba(0,0,0,.06); }
+  .btn.lb { background: #abd2ff; color: #1971C2; box-shadow: inset 0 0 0 1px #83b5ef; padding-right: 26px; position: relative; }
+  .btn.lb::after { content: ""; position: absolute; right: 8px; top: 9px; border-left: 4px solid transparent; border-right: 4px solid transparent; border-top: 6px solid #1971C2; }
+
+  /* the seam layer: 14px tall, straddling the boundary like the tile (top -7px), rule at y 6.5 inside an SVG so it rasterises soft */
+  .seamlayer { position: absolute; left: 0; right: 0; top: -7px; height: 14px; z-index: 5; pointer-events: none; }
+  .seamlayer .ln { position: absolute; top: 0; height: 14px; }
+  .seamlayer .ln svg { display: block; height: 14px; }
+  .seamlayer .su { position: absolute; display: block; }
+  .seamlayer .su svg { width: 100%; height: 100%; display: block; }
+  .seamlayer .ttl { position: absolute; white-space: nowrap; font-family: "Gelica", Georgia, serif; font-weight: 500; color: var(--ink); }
+  .seamlayer .dot { position: absolute; top: 5.5px; width: 3px; height: 3px; border-radius: 50%; background: var(--rule); }
+  .seamlayer .tab { position: absolute; border-radius: 6px 6px 0 0; }
+  .seamlayer .tabdown { position: absolute; border-radius: 0 0 6px 6px; }
+  .seamlayer .row4 { position: absolute; display: flex; align-items: center; }
+  .seamlayer .row4 .su { position: static; }
+
+  .reco { max-width: 860px; font-size: 13.5px; line-height: 1.5; color: #2b2722; }
+  .reco h3 { font-family: "Gelica", serif; font-weight: 500; font-size: 18px; margin: 26px 0 8px; }
+  .reco table { border-collapse: collapse; font-size: 12.5px; margin: 8px 0 14px; }
+  .reco td, .reco th { text-align: left; padding: 4px 14px 4px 0; vertical-align: top; border-bottom: 1px solid #ece7de; }
+  .reco th { color: #8a857c; font-weight: normal; }
+  .reco ul { padding-left: 18px; } .reco li { margin: 0 0 4px; }
+</style>
+</head>
+<body>
+<h1>Title seam lab: the section title set into the rule</h1>
+<p class="note">A static study for the frontpage mockup (<b>index.html</b>): the section title moves onto, above or beside the section seam, the way a book printer sets a chapter head into a rule with a fleuron either side. Every scene shows two seams from the middle of the page, a band-to-canvas seam (<b>Trick-taking games</b>) and a canvas-to-band seam (<b>Rummy games</b>), with ghost tiles above and below so the rhythm can be judged. The rule is the tile's own: 1px #D9D2C4 at a half-pixel offset inside a 14px layer, so it rasterises soft. The suits are the tile's own glyphs, sizes and inks (grey 45%, red 65%, with the inner rim). Nothing moves. Scene 1 changes nothing and is the control.</p>
+<p class="note">Reading the numbers: <b>pad</b> is the clear rule either side of the title; <b>tick</b> is a short piece of rule between the title's break and the nearest suit (0 means the suit shares the title's opening); suits cut their own 20px gaps as on the tile. Titles set into the rule have their x-height centred on the rule, so the paper boundary runs through the letters; the two papers are close in tone, and the "tab" variants show the alternative.</p>
+<div id="labroot"></div>
+
+<script>
+(function () {
+  /* ===== the tile's own suit paths, sizes, inks (index.html, --divorder and the intro script) ===== */
+  var SUITS = {
+    spade: "M39.95,9 C39.95,9 69.97,20.85 70,43.08 C70.01,52.75 62.13,60.61 52.39,60.62 C49.42,60.63 46.62,59.90 44.16,58.61 L48,71.00 L32,71.00 L35.82,58.65 C33.38,59.93 30.60,60.65 27.64,60.66 C17.91,60.67 10.01,52.83 10,43.16 C9.96,20.92 39.95,9 39.95,9 Z",
+    heart: "M52.34,13.99 C56.93,13.99 61.08,15.95 64.09,19.13 C67.12,22.32 68.99,26.74 69.00,31.62 C69.02,53.20 43.52,65.35 40.04,66.90 C37.71,65.85 26.39,60.44 18.57,50.99 C14.26,45.79 11.00,39.34 10.99,31.70 C10.99,26.82 12.85,22.40 15.87,19.19 C18.87,16.01 23.02,14.03 27.60,14.03 C32.15,14.02 36.26,15.95 39.26,19.07 C39.51,19.33 39.75,19.60 39.98,19.87 C40.21,19.60 40.46,19.33 40.70,19.07 C43.70,15.94 47.80,14.00 52.34,13.99 Z",
+    club: "M39.99,11 C47.76,11 54.06,17.3 54.06,25.06 C54.06,28.79 52.61,32.18 50.24,34.70 C51.98,33.93 53.90,33.50 55.93,33.50 C63.70,33.50 70,39.80 70,47.57 C70,55.33 63.70,61.63 55.93,61.63 C50.95,61.63 46.57,59.04 44.08,55.13 C44.14,55.40 44.21,55.66 44.27,55.93 L44.44,56.61 C44.47,56.73 44.49,56.84 44.52,56.96 L44.69,57.65 L44.85,58.33 C46.17,63.81 47.36,69 47.36,69 L32.93,69 C32.93,69 33.93,64.19 35.11,58.95 L35.27,58.26 L35.35,57.92 L35.51,57.23 C35.69,56.45 35.87,55.68 36.05,54.91 C33.57,58.94 29.13,61.63 24.06,61.63 C16.29,61.63 10,55.33 10,47.57 C10,39.80 16.29,33.50 24.06,33.50 C26.09,33.50 28.01,33.93 29.76,34.70 C27.38,32.19 25.93,28.80 25.93,25.06 C25.93,17.3 32.23,11 39.99,11 Z",
+    diamond: "M40,3.68 L66.75,40.00 L40,76.31 L13.24,40.00 L40,3.68 Z"
+  };
+  /* per suit: top offset inside the 14px layer, scale of the 80-unit path (so the glyph is 11.4 to 12.7px) */
+  var TILE = { club: [.88, .153], diamond: [.64, .159], spade: [1.32, .142], heart: [1.08, .148] };
+  var INK = { club: ["#262626", .45, .24], spade: ["#262626", .45, .24], heart: ["#B54A3F", .65, .32], diamond: ["#B54A3F", .65, .32] };
+  var ORDER = ["club", "diamond", "spade", "heart"];
+  var W = 1160, COL_L = 24, COL_R = 1136, CX = W / 2;
+  var svgN = 0;
+  function el(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; }
+  function suitSVG(name) {
+    var p = SUITS[name], k = INK[name], id = "sr" + (svgN++);
+    return '<svg viewBox="0 0 80 80"><clipPath id="' + id + '"><path d="' + p + '"/></clipPath><path d="' + p + '" fill="' + k[0] + '" fill-opacity="' + k[1] + '"/><path d="' + p + '" fill="none" stroke="' + k[0] + '" stroke-opacity="' + k[2] + '" stroke-width="9" clip-path="url(#' + id + ')"/></svg>';
+  }
+  /* a suit at the tile's size, its centre at x, on the rule (dy 0) or offset */
+  function suitAt(layer, name, x, dy) {
+    var t = TILE[name], size = 80 * t[1], su = el("span", "su", suitSVG(name));
+    su.style.cssText = "left:" + (x - size / 2) + "px;top:" + (t[0] + (dy || 0)) + "px;width:" + size + "px;height:" + size + "px;";
+    layer.appendChild(su); return su;
+  }
+  /* a piece of rule from x0 to x1, drawn like the tile: rect y 6.5, height 1, in a 14px-tall SVG (integer widths keep the raster identical) */
+  function ruleSeg(layer, x0, x1, swell) {
+    x0 = Math.round(x0); x1 = Math.round(x1); var w = x1 - x0; if (w < 10) return;
+    var s = el("span", "ln"); s.style.left = x0 + "px"; s.style.width = w + "px";
+    if (swell) {
+      /* the swelled rule: hairline at the far end, 3px at the end nearest the title (swell = "l" means the title is to the left) */
+      var near = swell === "l" ? 0 : w, far = swell === "l" ? w : 0;
+      s.innerHTML = '<svg viewBox="0 0 ' + w + ' 14" width="' + w + '" height="14"><path d="M' + far + ',6.5 L' + near + ',5.5 L' + near + ',8.5 L' + far + ',7.5 Z" fill="#D9D2C4"/></svg>';
+    } else {
+      s.innerHTML = '<svg viewBox="0 0 ' + w + ' 14" width="' + w + '" height="14"><rect y="6.5" width="' + w + '" height="1" fill="#D9D2C4"/></svg>';
+    }
+    layer.appendChild(s);
+  }
+  var METRICS = {};
+  function metrics(size, weight) {
+    var key = weight + "/" + size; if (METRICS[key]) return METRICS[key];
+    var c = document.createElement("canvas").getContext("2d");
+    c.font = weight + " " + size + "px Gelica";
+    var g = c.measureText("Hg"), x = c.measureText("x"), H = c.measureText("H");
+    return (METRICS[key] = { asc: g.fontBoundingBoxAscent, desc: g.fontBoundingBoxDescent, xh: x.actualBoundingBoxAscent, cap: H.actualBoundingBoxAscent });
+  }
+  function mergeBreaks(br) {
+    br.sort(function (a, b) { return a[0] - b[0]; }); var out = [];
+    br.forEach(function (b) { var last = out[out.length - 1]; if (last && b[0] <= last[1]) last[1] = Math.max(last[1], b[1]); else out.push([b[0], b[1]]); });
+    return out;
+  }
+
+  /* ===== drawSeam: renders one seam from a spec =====
+     sc: { titles: [{ text, live, x (centre) | left }], idx (seam index down the page), lower, upper (panel kinds) } */
+  function drawSeam(layer, spec, sc) {
+    var T = spec.title || {}, R = spec.rule || {}, S = spec.suits || {}, X = spec.extras || {};
+    var place = T.place || "below", size = T.size || 24, weight = T.weight || 500, ink = T.ink === "muted" ? "#4e4d4c" : "#141414";
+    var pad = R.pad == null ? 14 : R.pad, tick = R.tick || 0, gapExtra = S.gap || 0;
+    var breaks = [], boxes = [], m = metrics(size, weight), base = (size - (m.asc + m.desc)) / 2 + m.asc;
+    var titleY = place === "inrule" ? 7 + (T.dy || 0) : 7 - (T.gapAbove == null ? 10 : T.gapAbove) + (T.dy || 0); /* the x-height centre (inrule) or the baseline (above) */
+    if (place === "inrule" || place === "above") {
+      sc.titles.forEach(function (tt) {
+        var ttl = el("span", "ttl", (tt.live ? '<span class="live"></span>' : "") + tt.text);
+        ttl.style.cssText = "font-size:" + size + "px;line-height:" + size + "px;font-weight:" + weight + ";color:" + ink + ";";
+        layer.appendChild(ttl);
+        var tw = ttl.offsetWidth, left = T.align === "left" ? (tt.left != null ? tt.left : COL_L) + (T.dx || 0) : (tt.x != null ? tt.x : CX) - tw / 2 + (T.dx || 0);
+        var top = place === "inrule" ? titleY - base + m.xh / 2 : titleY - base;
+        ttl.style.left = left + "px"; ttl.style.top = top + "px";
+        boxes.push([left, left + tw, ttl]);
+        if (place === "inrule") breaks.push([left - pad - (X.dots ? 14 : 0), left + tw + pad + (X.dots ? 14 : 0)]);
+      });
+    }
+    if (place === "below" && sc.head) {
+      /* the head under the rule (the .head in the panel): its boxes, so suits can flank it at its own level */
+      var spans = sc.titles.length > 1 ? Array.prototype.slice.call(sc.head.querySelectorAll("span")) : [sc.head];
+      spans.forEach(function (pEl) { var l = pEl === sc.head ? sc.head.offsetLeft : sc.head.offsetLeft + pEl.offsetLeft; boxes.push([l, l + pEl.offsetWidth, pEl]); });
+    }
+    var first = boxes[0], last = boxes[boxes.length - 1];
+    /* where a flanking suit's centre goes: past the title's pad, the tick, and half its own gap */
+    var refL = first ? first[0] - pad - tick - 10 - gapExtra : null, refR = last ? last[1] + pad + tick + 10 + gapExtra : null;
+    var suitDy = 0; /* flanking suits sit on the rule for inrule titles; at the title's own level for above/below titles unless told otherwise */
+    if (place === "above" && !X.suitsOnRule) { suitDy = titleY - m.xh / 2 - 7; refL = first ? first[0] - 10 - 8 - gapExtra : null; refR = last ? last[1] + 10 + 8 + gapExtra : null; }
+    if (place === "below" && first) { var m36 = metrics(24, 500), base36 = (36 - (m36.asc + m36.desc)) / 2 + m36.asc; suitDy = 32 + base36 - m36.xh / 2; refL = first[0] - 10 - 8 - gapExtra; refR = last[1] + 10 + 8 + gapExtra; }
+    var suits = [], arr = S.arr || "fourStations", step = S.step, which = S.which;
+    function per(i) { return ORDER[(sc.idx + (i || 0)) % 4]; }
+    function w2(dflt) { if (which === "perSection") return [per(), per()]; return Array.isArray(which) && which.length >= 2 ? which : (Array.isArray(which) && which.length === 1 ? [which[0], which[0]] : dflt); }
+    switch (arr) {
+      case "none": break;
+      case "fourStations": ORDER.forEach(function (n, i) { suits.push([n, CX + (i - 1.5) * 96, 0]); }); break;
+      case "flankOne": { var ws = w2(["spade", "spade"]); if (refL == null) { ws.forEach(function (n, i) { suits.push([n, CX + (i - .5) * (step || 96), 0]); }); break; } suits.push([ws[0], refL, suitDy], [ws[1], refR, suitDy]); break; }
+      case "flankPairs": { var st = step || 22; if (refL == null) break; suits.push(["diamond", refL, suitDy], ["club", refL - st, suitDy], ["spade", refR, suitDy], ["heart", refR + st, suitDy]); break; }
+      case "flankFour": { var st4 = step || 96; if (refL == null) break; suits.push(["diamond", refL, suitDy], ["club", refL - st4, suitDy], ["spade", refR, suitDy], ["heart", refR + st4, suitDy]); break; }
+      case "rightRun": {
+        /* suits run to the right of each title (every title on a double seam gets its own run) until the next title or the rule's end */
+        var st2 = step || 96, limit = (R.extent === "column" ? COL_R : W) - 14;
+        var runs = boxes.length ? boxes.map(function (b, i) { return [b[1] + pad + tick + 10 + gapExtra, boxes[i + 1] ? boxes[i + 1][0] - pad - 14 : limit]; }) : [[COL_L + 10, limit]];
+        runs.forEach(function (run) { var x = run[0], k = 0; while (x < run[1] && (S.count == null || k < S.count)) { suits.push([which === "perSection" ? per() : (Array.isArray(which) ? which[k % which.length] : ORDER[k % 4]), x, suitDy]); x += st2; k++; } });
+        break;
+      }
+      case "fixedFlank": case "fixedFour": {
+        /* suits at fixed distances from the title's centre (default 144, today's outer stations), whatever the title's width */
+        var at = S.at || 144, wfx = w2(["spade", "spade"]), centres = boxes.length && place !== "below" ? boxes.map(function (b) { return (b[0] + b[1]) / 2; }) : [CX];
+        centres.forEach(function (c) {
+          if (arr === "fixedFour") suits.push(["diamond", c - at, 0], ["club", c - at - 96, 0], ["spade", c + at, 0], ["heart", c + at + 96, 0]);
+          else suits.push([wfx[0], c - at, 0], [wfx[1], c + at, 0]);
+        });
+        break;
+      }
+      case "finials": { var wf = w2(["spade", "diamond"]); suits.push([wf[0], COL_L + 6, 0], [wf[1], COL_R - 6, 0]); break; }
+      case "centreOnly": { var wc = which === "perSection" ? per() : (Array.isArray(which) ? which[0] : "spade"); suits.push([wc, CX, 0]); break; }
+      case "belowTitle": case "aboveTitle": {
+        var box = first ? [first[0], last[1]] : [CX - 60, CX + 60], midx = (box[0] + box[1]) / 2, stp = step || 16;
+        var rowY = arr === "belowTitle" ? (place === "inrule" ? titleY + m.xh / 2 + (S.gap || 8) : (place === "above" ? 7 + (S.gap || 6) : 47)) : (place === "inrule" ? titleY - m.xh / 2 - (S.gap || 8) - 12 : titleY - m.asc - (S.gap || 6) - 12);
+        var rowSuits = which === "perSection" ? [per()] : (Array.isArray(which) ? which : ORDER);
+        rowSuits.forEach(function (n, i) { suits.push([n, midx + (i - (rowSuits.length - 1) / 2) * stp, rowY - 7]); });
+        break;
+      }
+    }
+    /* suits on the rule cut their own gaps; suits off the rule do not */
+    suits.forEach(function (s) { if (Math.abs(s[2]) < 2) breaks.push([s[1] - 10, s[1] + 10]); });
+    var x0 = R.extent === "column" ? COL_L : 0, x1 = R.extent === "column" ? COL_R : W;
+    if (R.from === "title" && first) x0 = Math.max(x0, first[0]);
+    if (R.stop != null) breaks.push([CX - R.stop, CX + R.stop]);
+    if (R.hide) breaks.push([0, W]);
+    var merged = mergeBreaks(breaks), prev = x0, afterTitle = false;
+    merged.forEach(function (b) {
+      var holdsTitle = !!first && b[0] <= first[0] && b[1] >= last[1];
+      if (b[0] > prev) ruleSeg(layer, prev, Math.min(b[0], x1), X.swelled ? (holdsTitle ? "r" : (afterTitle ? "l" : null)) : null);
+      if (holdsTitle) afterTitle = true;
+      prev = Math.max(prev, b[1]);
+    });
+    if (prev < x1) ruleSeg(layer, prev, x1, X.swelled && afterTitle ? "l" : null);
+    /* the tab: the lower section's paper rises behind the title, from the rule up to just over the letters */
+    if (X.tab && first && place === "inrule") {
+      var tab = el("span", "tab"), tabTop = Math.min.apply(null, boxes.map(function (b) { return parseFloat(b[2].style.top); })) + base - m.cap - 6;
+      tab.style.cssText = "left:" + (first[0] - pad) + "px;width:" + (last[1] - first[0] + 2 * pad) + "px;top:" + tabTop + "px;height:" + (7 - tabTop) + "px;background:var(--" + sc.lower + ");";
+      layer.insertBefore(tab, layer.firstChild);
+    }
+    if (X.dots && first && place === "inrule") {
+      boxes.forEach(function (b) { var d1 = el("span", "dot"), d2 = el("span", "dot"); d1.style.left = (b[0] - pad - 5.5) + "px"; d2.style.left = (b[1] + pad + 2.5) + "px"; layer.appendChild(d1); layer.appendChild(d2); });
+    }
+    suits.forEach(function (s) { suitAt(layer, s[0], s[1], s[2]); });
+  }
+
+  /* ===== the strip: panels alternate band and canvas; each seam gets a layer; titles below the rule use the .head ===== */
+  var STD = [
+    { titles: [{ text: "Trick-taking games" }], idx: 1, upper: "band", lower: "canvas" },
+    { titles: [{ text: "Rummy games" }], idx: 2, upper: "canvas", lower: "band" }
+  ];
+  function tilesRow(n, cls) { var r = el("div", cls || "tiles"); for (var i = 0; i < n; i++) r.appendChild(el("div", "tile", cls ? "" : '<div class="im"></div><div class="tx"><i></i><i class="s"></i></div>')); return r; }
+  function buildScene(scene, spec, seams) {
+    seams = seams || STD;
+    var T = spec.title || {}, place = T.place || "below", size = T.size || 24;
+    var gapAbove = 40 + (place === "above" ? size + (T.gapAbove == null ? 10 : T.gapAbove) - 2 : 0);
+    var gapBelow = place === "below" ? 76 : (spec.content && spec.content.top) || 40;
+    if (place === "inrule" && spec.suits && spec.suits.arr === "belowTitle") gapBelow += 18;
+    if (place === "above" && spec.suits && spec.suits.arr === "belowTitle") gapBelow += 4;
+    var p0 = el("div", "panel " + seams[0].upper); p0.style.height = (32 + gapAbove) + "px";
+    var t0 = tilesRow(seams[0].upper === "band" ? 3 : 5, "tail"); t0.style.top = (32 + gapAbove - 60 - gapAbove) + "px"; p0.appendChild(t0); scene.appendChild(p0);
+    var layers = [];
+    seams.forEach(function (s, i) {
+      var lastOne = i === seams.length - 1;
+      var p = el("div", "panel " + s.lower); p.style.height = (lastOne ? gapBelow + 92 : gapBelow + 148 + gapAbove) + "px";
+      var layer = el("div", "seamlayer"), h = null; p.appendChild(layer);
+      if (place === "below") {
+        h = el("div", "head", s.titles.map(function (tt) { return (tt.live ? '<span class="live"></span>' : "") + tt.text; }).join(""));
+        h.style.top = "32px"; p.appendChild(h);
+        if (s.titles.length > 1) { h.innerHTML = ""; s.titles.forEach(function (tt) { var hh = el("span", "", tt.text); hh.style.cssText = "position:absolute;left:" + (tt.left != null ? tt.left : tt.x - 100) + "px;"; h.appendChild(hh); }); h.style.left = "0"; }
+      }
+      layers.push([layer, s, h]);
+      if (s.controls) { var c = el("div", "ctlrow", '<span class="btn lb">All games</span><span class="btn">See all</span>'); c.style.top = (place === "below" ? 38 : (spec.content && spec.content.ctlTop) || 18) + "px"; p.appendChild(c); }
+      var tr = tilesRow(s.lower === "band" ? 4 : 5); tr.style.top = gapBelow + "px"; p.appendChild(tr);
+      scene.appendChild(p);
+    });
+    /* draw after the panels are in the DOM, so the titles can be measured */
+    layers.forEach(function (ls) {
+      if (ls[2] && T.align === "center" && ls[1].titles.length === 1) ls[2].style.left = (CX - ls[2].offsetWidth / 2) + "px";
+      drawSeam(ls[0], spec, Object.assign({ head: ls[2] }, ls[1]));
+    });
+  }
+
+  var root = document.getElementById("labroot"), n = 0, VERDICTS = {}, SCENES = [];
+  function lab(title, desc, spec, opts) {
+    opts = opts || {}; n++;
+    var wrap = el("div", "lab");
+    wrap.innerHTML = '<p class="tag"><b>' + n + ' · ' + title + '</b> · ' + desc + '</p>' + (VERDICTS[title] ? '<p class="verdict">' + VERDICTS[title] + '</p>' : "");
+    var fit = el("div", "fit"), scene = el("div", "scene"); scene.id = "s" + n; scene.dataset.title = title;
+    fit.appendChild(scene); wrap.appendChild(fit); root.appendChild(wrap);
+    buildScene(scene, spec, opts.seams);
+    SCENES.push(scene);
+    return scene;
+  }
+  function h2(text) { root.appendChild(el("h2", "", text)); }
+  function note(html) { root.appendChild(el("p", "note", html)); }
+  function fitAll() {
+    document.querySelectorAll(".fit").forEach(function (f) {
+      var s = f.firstChild, z = Math.min(1, f.clientWidth / 1160);
+      s.style.transform = "scale(" + z + ")"; f.style.height = (s.offsetHeight * z) + "px";
+    });
+  }
+  window.addEventListener("resize", fitAll);
+
+  /* the odd seams of the real page, for the last section */
+  var OPEN = [
+    { titles: [{ text: "Open tables" }], idx: 0, upper: "canvas", lower: "band", controls: true },
+    { titles: [{ text: "Trick-taking games" }], idx: 1, upper: "band", lower: "canvas" }
+  ];
+  var DOUBLE = [
+    { titles: [{ text: "Daily leaderboard", x: 298, left: 24 }, { text: "August challenge", x: 862, left: 588 }], idx: 4, upper: "canvas", lower: "band" },
+    { titles: [{ text: "Live tables", live: true }], idx: 5, upper: "band", lower: "canvas" }
+  ];
+  function centred(seams) { return seams.map(function (s) { return Object.assign({}, s, { titles: s.titles.map(function (t) { var c = Object.assign({}, t); delete c.left; return c; }) }); }); }
+
+  var RECO = '<h3>Take “Fixed stations, own suit” (scene 10) into the mockup</h3>' +
+    '<p>The title moves into the rule at its full size, and the divider keeps its stations. Each section’s seam carries one suit twice, the section’s own, at exactly 144px either side of the title’s centre: today’s outer stations. Down the page the marks line up like folios while the head changes width, and the seams spell the deck in the site’s order (club for Open tables, diamond for Trick-taking, spade for Rummy, heart for Classic, club again for the leaderboard and challenge, diamond for Live tables). It reads as a chapter head between two fleurons, it keeps the menu bar and footer as they are, and the intro can keep fading the suits in at fixed places.</p>' +
+    '<p>The runner-up is “In the rule, the section’s own suit” (scene 8): the same head with the suits tied to the title at a constant 24px tick. It is the more literal printer’s setting, but the marks wander down the page as the titles change width. The safe fallback, if the title is to stay where it is, is “Two stations, title below” (scene 52): nothing moves but the suits.</p>' +
+    '<p>What the study argues against: the title above the rule (scenes 17 to 20, 57) puts the head in the previous section’s paper; the running head sizes (14 to 18px) demote the sections to captions; the swelled rule, the tab and the missing rule (41, 15, 60, 59) fight the tile’s hairline; the four stations parted around the title (6, 11) grow wide and heavy.</p>' +
+    '<h3>Geometry for scene 10</h3>' +
+    '<table><tr><th>Part</th><th>Value</th></tr>' +
+    '<tr><td>Title</td><td>Gelica 500, 24px, ink #141414, line-height 24px, sentence case, centred on the seam’s centre (the content column’s centre; for the double seam, each column’s centre). The live dot stays inside the title box: 8px, 9px before the word, vertical-align .12em.</td></tr>' +
+    '<tr><td>Vertical placement</td><td>The x-height centre sits on the rule. With a 24px line box the box top is 7px above the rule centre (the seam layer’s top), the baseline 6px below it, the cap top 10px above it. Gelica 500 at 24px measures ascent 22, descent 6, x-height 12.16, cap 16.38.</td></tr>' +
+    '<tr><td>Break</td><td>The rule is absent from 14px before the title to 14px after it (pad 14). No tick is fixed; it falls out of the geometry.</td></tr>' +
+    '<tr><td>Suits</td><td>The section’s own suit, glyph centre at 144px left and right of the title’s centre, on the rule with the tile’s own offsets and sizes (club 12.24px, top .88; diamond 12.72px, top .64; spade 11.36px, top 1.32; heart 11.84px, top 1.08, all in the 14px seam layer), grey #262626 at 45%, red #B54A3F at 65%, with the inner rim (stroke 9 in the 80-unit path, clipped to the shape, grey 24%, red 32%). Each suit cuts its own 20px gap (centre ± 10).</td></tr>' +
+    '<tr><td>Resulting ticks</td><td>144 minus 10 minus 14 minus half the title width: Open tables 55px, Trick-taking games 13px, Rummy games 38px, Classic games 43px, Daily leaderboard 22px, August challenge 25px, Live tables 42px (with the dot).</td></tr>' +
+    '<tr><td>Rule</td><td>Full viewport width, 1px #D9D2C4 at y 6.5 in the 14px layer (the tile’s own raster), plain outside the suits.</td></tr>' +
+    '<tr><td>Spacing</td><td>Content begins 40px below the rule centre (the same gap as the rule to the content above), so each section loses the 36px the title used to take.</td></tr>' +
+    '<tr><td>Open tables</td><td>The dropdown and See all sit right-aligned in a row whose top is 18px below the rule centre, or in the first row of tables; the head no longer shares a row with them.</td></tr>' +
+    '<tr><td>Double seam</td><td>Daily leaderboard and August challenge each take a break over their column, each with a club at 144px either side of its own centre (the two inner clubs meet 276px apart on a 1160 column).</td></tr>' +
+    '<tr><td>Intro</td><td>The title is static from square one. The two suits per seam fade in (320ms) at the moments their counterparts land on the menu row, as today; the menu bar and footer keep the full long-deal row.</td></tr>' +
+    '<tr><td>Build sketch</td><td>The suits and their gaps can stay a CSS background: one 384px tile per section with the section’s suit at 48 and 336 (today’s outer stations), plain stretches either side. The title’s break needs the title box painted over the rule: a span with 14px side padding and a background of two papers, the upper colour for the top 7px and the lower colour beneath, or the JS route the intro script already takes for the section suits.</td></tr>' +
+    '</table>' +
+    '<h3>Assumptions and observations</h3><ul>' +
+    '<li>The lab’s strip is 1160px wide with the seam centred at 580; on the mockup at a 1280px viewport the ad rail leaves a 952px column centred at 476. All geometry here is relative to the column centre, so it transfers.</li>' +
+    '<li>Ghost tiles stand in for the real tiles (148px tall); the real sections are taller, so the seams are farther apart than in the scenes.</li>' +
+    '<li>The 40px gap from rule centre to content is kept when the title enters the rule; the descenders then end 12px below the rule centre, 28px above the tiles.</li>' +
+    '<li>Section titles are Gelica 500 at 24px (the mockup’s font-gelicamd default); metrics come from Gelica-Medium.woff2 as Chrome reports them.</li>' +
+    '<li>Red suits are drawn at 65% as the tile (--divorder) draws them. The intro script’s own suit table draws hearts and diamonds at 50%, so the section seams and the swept menu seam on the mockup are lighter than the static tile; the lab follows the tile and the brief.</li>' +
+    '<li>On the mockup the challenge band’s seams (above the leaderboard row and above Live tables) currently render the full suit row plus the four-station overlay, so the suits appear doubled there; the lab assumes the intended four stations.</li>' +
+    '<li>The paper boundary runs through the x-height of any title set into the rule. At 2x it is visible only on close inspection because the two papers differ by a few units; the tab (scenes 15, 60) is the alternative and was judged a shape of its own.</li>' +
+    '<li>Nothing here changes copy, glyph sizes, inks or letterspacing; Gelica 400 (scene 14) and the swelled rule (41) are shown as comparisons outside the brief.</li>' +
+    '</ul>';
+  function build() {
+    /* ===== 0 · control ===== */
+    VERDICTS["Four stations, title below"] = '<span class="yes">The control.</span> The four suits centred on the seam, the title 32px below at the column’s left. Calm and already proven; the title and the ornament do not speak to each other.';
+    h2("0 · Control");
+    lab("Four stations, title below", "Exactly the mockup today: club, diamond, spade, heart 96px apart on the seam, the title in Gelica 500 24px, 32px below.", { title: { place: "below" }, suits: { arr: "fourStations" } });
+
+    /* ===== 1 · the chapter head in the rule ===== */
+    h2("1 · The title set into the rule (a chapter head between fleurons)");
+    note("The rule breaks and the title sits in the break, its x-height centred on the rule. What varies: the size and ink of the title, how many suits flank it, and whether a short piece of rule (the tick) separates the suits from the title.");
+    VERDICTS["In the rule, one spade each side"] = '<span class="yes">The plainest chapter head.</span> Title 24px ink in a 14px break, a spade 10px beyond it either side sharing the opening, the rule plain beyond. The most book-like of the set; the paper edge does run through the letters.';
+    lab("In the rule, one spade each side", "Title 24px ink centred in the rule, pad 14, a spade either side in the same opening (tick 0).", { title: { place: "inrule", size: 24 }, rule: { pad: 14, tick: 0 }, suits: { arr: "flankOne", which: ["spade", "spade"] } });
+    VERDICTS["In the rule, ticks, one spade each side"] = '<span class="yes">Rule, spade, rule, title, rule, spade, rule.</span> A 24px tick between each suit and the title makes the suits read as fleurons on the rule rather than as part of the word.';
+    lab("In the rule, ticks, one spade each side", "As above with a 24px tick of rule between the title and each spade.", { title: { place: "inrule", size: 24 }, rule: { pad: 14, tick: 24 }, suits: { arr: "flankOne", which: ["spade", "spade"] } });
+    VERDICTS["In the rule, 22px muted"] = '<span class="maybe">Softer.</span> Muted ink at 22px sinks the title toward the rule’s tone; the heads lose their rank against the ghost content below.';
+    lab("In the rule, 22px muted", "Title 22px in muted ink #4e4d4c, pad 14, tick 24, a spade either side.", { title: { place: "inrule", size: 22, ink: "muted" }, rule: { pad: 14, tick: 24 }, suits: { arr: "flankOne", which: ["spade", "spade"] } });
+    VERDICTS["In the rule, 20px ink"] = '<span class="maybe">Smaller, still ink.</span> At 20px the head sits closer to the suits’ weight; more running head than chapter head.';
+    lab("In the rule, 20px ink", "Title 20px ink, pad 12, tick 20, a spade either side.", { title: { place: "inrule", size: 20 }, rule: { pad: 12, tick: 20 }, suits: { arr: "flankOne", which: ["spade", "spade"] } });
+    VERDICTS["In the rule, the four stations parted"] = '<span class="maybe">The four stations open for the title.</span> Club and diamond to the left, spade and heart to the right, 96px apart as today. Faithful to the divider, but the outer pair lands far out and the middle grows heavy.';
+    lab("In the rule, the four stations parted", "Title 24px in the rule; club and diamond left, spade and heart right, 96px apart, the inner pair 24px of tick from the title.", { title: { place: "inrule", size: 24 }, rule: { pad: 14, tick: 24 }, suits: { arr: "flankFour", step: 96 } });
+    VERDICTS["In the rule, pairs tight"] = '<span class="maybe">Two fleurons a side.</span> Club-diamond and spade-heart 22px apart flank the title; richer than one suit, and the red glyphs pull the eye.';
+    lab("In the rule, pairs tight", "Title 24px in the rule; club and diamond 22px apart on the left, spade and heart on the right, tick 24.", { title: { place: "inrule", size: 24 }, rule: { pad: 14, tick: 24 }, suits: { arr: "flankPairs", step: 22 } });
+    VERDICTS["In the rule, the section's own suit"] = '<span class="yes">One suit per seam, down the page.</span> Open tables club, Trick-taking diamond, Rummy spade, Classic heart: the four stations dealt one to a section. Each head gets one mark either side and the page keeps the whole deck.';
+    lab("In the rule, the section's own suit", "Each seam takes the next suit in the site’s order (club, diamond, spade, heart): here the diamond for Trick-taking and the spade for Rummy, tick 24.", { title: { place: "inrule", size: 24 }, rule: { pad: 14, tick: 24 }, suits: { arr: "flankOne", which: "perSection" } });
+    VERDICTS["In the rule, 24px muted"] = '<span class="maybe">The brief’s muted head at full size.</span> 24px in #4e4d4c: the head keeps its size but gives up a step of contrast to the tiles below; kinder on the seam, weaker as a signpost.';
+    lab("In the rule, 24px muted", "Title 24px muted ink centred in the rule, pad 14, tick 24, a spade either side.", { title: { place: "inrule", size: 24, ink: "muted" }, rule: { pad: 14, tick: 24 }, suits: { arr: "flankOne", which: ["spade", "spade"] } });
+    VERDICTS["Fixed stations, own suit"] = '<span class="yes">The suits never move.</span> One suit either side at 144px from centre, today’s outer stations, whatever the title’s width; the tick grows and shrinks with the head. Down the page the marks line up like folios.';
+    lab("Fixed stations, own suit", "Title 24px centred in the rule; the section’s own suit at exactly 144px either side of centre (today’s outer stations), so the marks align down the page and only the tick varies.", { title: { place: "inrule", size: 24 }, rule: { pad: 14 }, suits: { arr: "fixedFlank", at: 144, which: "perSection" } });
+    VERDICTS["Fixed stations, the four"] = '<span class="maybe">Four stations, stretched.</span> Inner pair at 144px, outer at 240px, fixed for every seam. The whole deck stays, but the outer pair drifts far from the head and the seam grows wide.';
+    lab("Fixed stations, the four", "Title 24px centred in the rule; diamond and spade at 144px either side, club and heart 96px beyond them, fixed for every seam.", { title: { place: "inrule", size: 24 }, rule: { pad: 14 }, suits: { arr: "fixedFour", at: 144 } });
+    VERDICTS["In the rule, tight"] = '<span class="maybe">A printer’s tight setting.</span> Pad 8 and tick 16 pull the spades close to the words; denser and more bookish, and at this scale the suits begin to crowd the serifs.';
+    lab("In the rule, tight", "Title 24px in the rule, pad 8, tick 16, a spade either side.", { title: { place: "inrule", size: 24 }, rule: { pad: 8, tick: 16 }, suits: { arr: "flankOne", which: ["spade", "spade"] } });
+    VERDICTS["In the rule, airy"] = '<span class="maybe">Air instead of ticks.</span> Pad 24 and no tick: the head and its two spades float in one long opening. Calm, but the opening reads as a hole in the seam.';
+    lab("In the rule, airy", "Title 24px in the rule, pad 24, tick 0, a spade either side in the same opening.", { title: { place: "inrule", size: 24 }, rule: { pad: 24, tick: 0 }, suits: { arr: "flankOne", which: ["spade", "spade"] } });
+    VERDICTS["In the rule, Gelica 400"] = '<span class="maybe">The lighter cut.</span> Gelica Regular at 24px sits closer to the rule’s weight; outside the brief’s 500, shown to see what the weight does on the seam.';
+    lab("In the rule, Gelica 400", "Title 24px in Gelica 400 (not 500), pad 14, tick 24, a spade either side.", { title: { place: "inrule", size: 24, weight: 400 }, rule: { pad: 14, tick: 24 }, suits: { arr: "flankOne", which: ["spade", "spade"] } });
+    VERDICTS["In the rule, tab"] = '<span class="maybe">The paper rises behind the title.</span> A 6px-radius notch of the lower section’s colour lifts behind the head so the boundary no longer crosses the letters. Honest, but the notch is a shape of its own.';
+    lab("In the rule, tab", "Title 24px in the rule with the lower section’s paper rising in a tab behind it; a spade either side, tick 24.", { title: { place: "inrule", size: 24 }, rule: { pad: 14, tick: 24 }, suits: { arr: "flankOne", which: ["spade", "spade"] }, extras: { tab: true } });
+    VERDICTS["In the rule, no suits"] = '<span class="maybe">The bare chapter head.</span> Just the title in the break. Shows what the suits add; without them the seam is a web divider with a label.';
+    lab("In the rule, no suits", "Title 24px in the rule, pad 18, no suits at all.", { title: { place: "inrule", size: 24 }, rule: { pad: 18 }, suits: { arr: "none" } });
+
+    /* ===== 2 · headpiece ===== */
+    h2("2 · The title above the rule (a headpiece over the chapter opening)");
+    note("The title sits just above the rule, inside the previous section’s paper, and the ornament sits on the rule below it. This puts the head on the wrong side of the seam for a reader scanning down.");
+    VERDICTS["Above the rule, four stations below"] = '<span class="maybe">Head over ornament.</span> The title 10px above the rule, the four stations on the rule under it. It reads as a caption to the previous section as much as a head for the next.';
+    lab("Above the rule, four stations below", "Title 24px centred, baseline 10px above the rule, the four stations on the rule below.", { title: { place: "above", size: 24, gapAbove: 10 }, suits: { arr: "fourStations" }, extras: { suitsOnRule: true } });
+    VERDICTS["Above the rule, left"] = '<span class="maybe">The standing head.</span> The title flush left above the rule, the stations centred on the rule; two centres of gravity.';
+    lab("Above the rule, left", "Title 24px at the column’s left, baseline 10px above the rule, four stations centred below.", { title: { place: "above", size: 24, gapAbove: 10, align: "left" }, suits: { arr: "fourStations" }, extras: { suitsOnRule: true } });
+    VERDICTS["Above the rule, suits at its side"] = '<span class="maybe">Suits lift off the rule to flank the head.</span> A spade either side of the title at its own height, the rule unbroken beneath. The suits leave their gaps and lose their place.';
+    lab("Above the rule, suits at its side", "Title 24px centred above the rule, a spade either side at the title’s height, the rule plain.", { title: { place: "above", size: 24, gapAbove: 10 }, suits: { arr: "flankOne", which: ["spade", "spade"], gap: 6 } });
+
+    VERDICTS["Fleuron row over the head"] = '<span class="no">The headpiece proper.</span> The four suits in a row above the title, the title above the rule, the rule plain. Three tiers stacked in the previous section’s paper; the ornament is now far from the seam it belongs to.';
+    lab("Fleuron row over the head", "The four suits 16px apart in a row above the title; title 24px centred above the rule; the rule plain.", { title: { place: "above", size: 24, gapAbove: 10 }, suits: { arr: "aboveTitle", step: 16, gap: 8 } });
+    VERDICTS["Centred under the four stations"] = '<span class="yes">The chapter opening.</span> The four stations stay exactly where they are; only the title moves to the centre, 32px below them. Ornament, then head, as in a book; nothing about the divider changes.';
+    lab("Centred under the four stations", "The control with one change: the title centred under the seam instead of flush left.", { title: { place: "below", align: "center" }, suits: { arr: "fourStations" } });
+    VERDICTS["Centred below, fleurons beside"] = '<span class="maybe">The suits leave the rule for the head.</span> A plain rule, and 32px under it the centred title with a spade either side at its own level. Book-true, but the seam loses its ornament and the head gains one.';
+    lab("Centred below, fleurons beside", "A plain rule; the title 24px centred 32px below it with a spade either side at the title’s level.", { title: { place: "below", align: "center" }, suits: { arr: "flankOne", which: ["spade", "spade"], gap: 4 } });
+    VERDICTS["Centred below, own suit beside"] = '<span class="maybe">As above with the section’s own suit.</span> One suit per section beside a centred head; the seam itself stays plain.';
+    lab("Centred below, own suit beside", "A plain rule; the title 24px centred below it, the section’s own suit either side at the title’s level.", { title: { place: "below", align: "center" }, suits: { arr: "flankOne", which: "perSection", gap: 4 } });
+    /* ===== 3 · left ===== */
+    h2("3 · The title on the rule, left-aligned to the column");
+    note("The head begins the rule at the content column’s left edge and the rule runs out to the right, with the suits on it.");
+    VERDICTS["Left, suits running right"] = '<span class="maybe">The newspaper standing head.</span> Title at x 24 in the rule, suits every 96px to the right cycling through the deck. Strong left anchor, but the run of suits becomes a border again.';
+    lab("Left, suits running right", "Title 24px at the column’s left in the rule (rule from the title), suits every 96px to the right, cycling club, diamond, spade, heart.", { title: { place: "inrule", size: 24, align: "left" }, rule: { pad: 14, tick: 24, from: "title" }, suits: { arr: "rightRun", step: 96 } });
+    VERDICTS["Left, one suit after it"] = '<span class="yes">The head, one mark, the rule.</span> Title left, a single suit 24px of tick after it, the rule plain to the edge. Quiet and editorial; the seam keeps its line.';
+    lab("Left, one suit after it", "Title 24px left in the rule, one spade after a 24px tick, the rule plain to the right edge.", { title: { place: "inrule", size: 24, align: "left" }, rule: { pad: 14, tick: 24, from: "title" }, suits: { arr: "rightRun", count: 1, which: ["spade"] } });
+    VERDICTS["Left, the four stations kept"] = '<span class="maybe">Head left, ornament centre.</span> The title takes the rule’s left end; the four stations stay where they are. Nothing about the divider changes but the title moved up.';
+    lab("Left, the four stations kept", "Title 24px left in the rule, the rule from the title; the four stations untouched at the page centre.", { title: { place: "inrule", size: 24, align: "left" }, rule: { pad: 14, from: "title" }, suits: { arr: "fourStations" } });
+    VERDICTS["Left, rule from the edge"] = '<span class="no">A stub.</span> The rule from the viewport edge to the title leaves a 10px stub; the head does not begin anything.';
+    lab("Left, rule from the edge", "Title 24px left in the rule with the rule also to its left; one spade after it.", { title: { place: "inrule", size: 24, align: "left" }, rule: { pad: 14, tick: 24, from: "edge" }, suits: { arr: "rightRun", count: 1, which: ["spade"] } });
+    VERDICTS["Left, muted, own suit"] = '<span class="maybe">Softer standing head.</span> Muted 22px, the section’s own suit after it. Recedes nicely, maybe too far.';
+    lab("Left, muted, own suit", "Title 22px muted at the left in the rule, the section’s own suit after a 24px tick.", { title: { place: "inrule", size: 22, ink: "muted", align: "left" }, rule: { pad: 14, tick: 24, from: "title" }, suits: { arr: "rightRun", count: 1, which: "perSection" } });
+
+    VERDICTS["Left, rule inside the column"] = '<span class="maybe">The measure’s rule.</span> The title begins the rule and the rule ends at the column’s right edge, one spade after the head. Closer to a book page; the band edge continues past it and shows the rule up as separate.';
+    lab("Left, rule inside the column", "Title 24px left in the rule, one spade after a 24px tick, the rule ending at the column’s right edge instead of the viewport’s.", { title: { place: "inrule", size: 24, align: "left" }, rule: { pad: 14, tick: 24, from: "title", extent: "column" }, suits: { arr: "rightRun", count: 1, which: ["spade"] } });
+    VERDICTS["Left, own suit, short tick"] = '<span class="maybe">The tick shortened to 12.</span> The suit almost touches the head; reads as a mark after the word rather than on the rule.';
+    lab("Left, own suit, short tick", "Title 24px left in the rule, the section’s own suit after a 12px tick, the rule plain to the edge.", { title: { place: "inrule", size: 24, align: "left" }, rule: { pad: 12, tick: 12, from: "title" }, suits: { arr: "rightRun", count: 1, which: "perSection" } });
+    VERDICTS["Left, the pair after it"] = '<span class="maybe">Two suits after the head.</span> Club and diamond 22px apart after a 24px tick; a little brooch at the start of the rule.';
+    lab("Left, the pair after it", "Title 24px left in the rule, club and diamond 22px apart after a 24px tick, the rule plain beyond.", { title: { place: "inrule", size: 24, align: "left" }, rule: { pad: 14, tick: 24, from: "title" }, suits: { arr: "rightRun", count: 2, step: 22, which: ["club", "diamond"] } });
+    /* ===== 4 · running head ===== */
+    h2("4 · The running head (small, centred, a suit either side)");
+    note("The title small and centred on the rule like a running head in a novel, a suit either side, the rest of the rule plain.");
+    VERDICTS["Running head, 16px"] = '<span class="maybe">The novel’s running head.</span> Gelica 500 16px ink centred, a spade 16px of tick each side. Elegant on the seam, but the section heads shrink to the weight of a caption and the page loses its steps.';
+    lab("Running head, 16px", "Title 16px ink centred in the rule, pad 10, tick 16, a spade either side.", { title: { place: "inrule", size: 16 }, rule: { pad: 10, tick: 16 }, suits: { arr: "flankOne", which: ["spade", "spade"] } });
+    VERDICTS["Running head, 18px muted"] = '<span class="maybe">Quieter still.</span> 18px muted; the head almost joins the rule’s colour.';
+    lab("Running head, 18px muted", "Title 18px muted centred, pad 10, tick 16, a spade either side.", { title: { place: "inrule", size: 18, ink: "muted" }, rule: { pad: 10, tick: 16 }, suits: { arr: "flankOne", which: ["spade", "spade"] } });
+    VERDICTS["Running head, own suit, no tick"] = '<span class="maybe">Head and mark in one opening.</span> 16px ink, the section’s suit sharing the break with no tick.';
+    lab("Running head, own suit, no tick", "Title 16px ink centred, pad 10, tick 0, the section’s own suit either side.", { title: { place: "inrule", size: 16 }, rule: { pad: 10, tick: 0 }, suits: { arr: "flankOne", which: "perSection" } });
+    VERDICTS["Running head, dots"] = '<span class="maybe">The dinkus.</span> A dot closes each end of the break outside the suits; print-true and a little fussy.';
+    lab("Running head, dots", "Title 16px centred, a spade either side, a dot closing each end of the break.", { title: { place: "inrule", size: 16 }, rule: { pad: 10, tick: 0 }, suits: { arr: "flankOne", which: ["spade", "spade"] }, extras: { dots: true } });
+
+    VERDICTS["Running head, 14px"] = '<span class="no">Too small for a section head.</span> 14px Gelica on a 1160px seam is a folio, not a title; the sections become unlabelled at reading distance.';
+    lab("Running head, 14px", "Title 14px ink centred in the rule, pad 8, tick 14, a spade either side.", { title: { place: "inrule", size: 14 }, rule: { pad: 8, tick: 14 }, suits: { arr: "flankOne", which: ["spade", "spade"] } });
+    VERDICTS["Running head, fixed stations"] = '<span class="maybe">Small head, fixed marks.</span> 16px centred, the section’s suit at 144px either side as today’s outer stations. The marks line up down the page, the head nearly disappears between them.';
+    lab("Running head, fixed stations", "Title 16px ink centred in the rule; the section’s own suit fixed at 144px either side of centre.", { title: { place: "inrule", size: 16 }, rule: { pad: 10 }, suits: { arr: "fixedFlank", at: 144, which: "perSection" } });
+    /* ===== 5 · other printer's forms ===== */
+    h2("5 · Other printer’s forms");
+    VERDICTS["The yielded middle"] = '<span class="maybe">The rule stops short.</span> The rule ends 60px beyond the suits on each side and the title and its suits own the air; the most classical break, and the widest hole in the seam.';
+    lab("The yielded middle", "Title 24px centred; a spade either side with no tick; the rule stops 60px beyond the outer suits.", { title: { place: "inrule", size: 24 }, rule: { pad: 14, tick: 0, stop: 200 }, suits: { arr: "flankOne", which: ["spade", "spade"] } });
+    VERDICTS["Finials"] = '<span class="maybe">The head in the middle, the suits at the ends.</span> A spade at the rule’s left end and a diamond at the right; the rule with finials, the title alone in its break.';
+    lab("Finials", "Title 24px centred in the rule; a spade at the left end of the rule and a diamond at the right, nothing else.", { title: { place: "inrule", size: 24 }, rule: { pad: 18, extent: "column" }, suits: { arr: "finials", which: ["spade", "diamond"] } });
+    VERDICTS["Clasp under the head"] = '<span class="maybe">The tailpiece.</span> Title in the rule, the four suits in a tight row 16px apart beneath it, not cutting the rule. A colophon under every head; too much repeated seven times.';
+    lab("Clasp under the head", "Title 24px in the rule, the four suits 16px apart in a row under the title.", { title: { place: "inrule", size: 24 }, rule: { pad: 18 }, suits: { arr: "belowTitle", step: 16, gap: 10 } });
+    VERDICTS["Swelled rule"] = '<span class="no">A departure.</span> The rule thickens toward the title like an engraver’s swelled rule. Handsome in print, wrong against the tile’s hairline everywhere else.';
+    lab("Swelled rule", "Title 24px centred; the rule tapers from a hairline at the edges to 3px at the title, a spade either side.", { title: { place: "inrule", size: 24 }, rule: { pad: 18, tick: 0 }, suits: { arr: "flankOne", which: ["spade", "spade"] }, extras: { swelled: true } });
+    VERDICTS["Column rule only"] = '<span class="maybe">The rule inside the column.</span> Everything as scene 2 but the rule stops at the content column’s edges instead of the viewport’s. Book-like measure; the band edge continues past it and shows the rule up as decoration.';
+    lab("Column rule only", "Title 24px in the rule, a spade either side, the rule from column edge to column edge.", { title: { place: "inrule", size: 24 }, rule: { pad: 14, tick: 24, extent: "column" }, suits: { arr: "flankOne", which: ["spade", "spade"] } });
+
+    VERDICTS["Yielded middle, no suits"] = '<span class="maybe">The plainest break.</span> The rule stops 160px short of centre and the title stands alone in the air. Quiet and classical, and the seam has a wide hole with nothing in it.';
+    lab("Yielded middle, no suits", "Title 24px centred; the rule stops 160px either side of centre; no suits.", { title: { place: "inrule", size: 24 }, rule: { stop: 160 }, suits: { arr: "none" } });
+    VERDICTS["Dots only"] = '<span class="maybe">The dinkus without the deck.</span> A dot closes each end of the break, no suits. Print-true and anonymous; the page loses its suits at the seams.';
+    lab("Dots only", "Title 24px in the rule, pad 14, a dot closing each end of the break, no suits.", { title: { place: "inrule", size: 24 }, rule: { pad: 14 }, suits: { arr: "none" }, extras: { dots: true } });
+    /* ===== 6 · the odd seams ===== */
+    h2("6 · The odd seams: controls, the double head, the live dot");
+    note("Open tables carries a dropdown and a See all button; Daily leaderboard and August challenge share one seam as two column heads; Live tables has the green dot.");
+    VERDICTS["Odd seams today"] = '<span class="yes">The control for this section.</span> How the three odd seams look now.';
+    lab("Odd seams today", "The current layout on Open tables (with its controls) and on the double head and Live tables.", { title: { place: "below" }, suits: { arr: "fourStations" } }, { seams: OPEN.concat(DOUBLE) });
+    VERDICTS["Odd seams, in the rule"] = '<span class="maybe">The chapter head meets the real page.</span> Open tables in the rule leaves its controls alone on the right; two heads share the seam over their columns; the live dot rides in the break. Workable, not effortless.';
+    lab("Odd seams, in the rule", "The treatment of “In the rule, the section’s own suit” (own suit, tick 24) on the three odd seams: the controls drop under the rule at the right, the two column heads each take a break over their column.", { title: { place: "inrule", size: 24 }, rule: { pad: 14, tick: 24 }, suits: { arr: "flankOne", which: "perSection" }, content: { ctlTop: 18 } }, { seams: OPEN.concat(centred(DOUBLE)) });
+    VERDICTS["Odd seams, left"] = '<span class="maybe">The standing head meets the real page.</span> Left-aligned heads keep the controls’ row and put the two column heads at their columns’ left; the live dot sits in the rule.';
+    lab("Odd seams, left", "The treatment of “Left, one suit after it” on the three odd seams.", { title: { place: "inrule", size: 24, align: "left" }, rule: { pad: 14, tick: 24, from: "title" }, suits: { arr: "rightRun", count: 1, which: ["spade"] }, content: { ctlTop: 18 } }, { seams: OPEN.concat(DOUBLE) });
+
+    VERDICTS["Odd seams, fixed stations"] = '<span class="yes">The fixed marks meet the real page.</span> On the double seam each column head gets its suit 144px either side of its own centre; Open tables keeps its controls at the right under the rule; the live dot rides in the break.';
+    lab("Odd seams, fixed stations", "The treatment of “Fixed stations, own suit” (own suit fixed at 144px either side of the title’s centre) on the three odd seams.", { title: { place: "inrule", size: 24 }, rule: { pad: 14 }, suits: { arr: "fixedFlank", at: 144, which: "perSection" }, content: { ctlTop: 18 } }, { seams: OPEN.concat(centred(DOUBLE)) });
+
+    /* ===== 7 · more forms ===== */
+    h2("7 · More forms: the fleuron over the head, two stations, asymmetry, colour, no rule");
+    note("Further shapes from the printer’s and card maker’s repertoire, plus the smallest possible changes to today’s divider.");
+    VERDICTS["In the rule, 22px ink"] = '<span class="maybe">The middle size in ink.</span> 22px sits between the 24px head and the 20px running size; a hair lighter than the tiles’ own titles want.';
+    lab("In the rule, 22px ink", "Title 22px ink centred in the rule, pad 14, tick 24, a spade either side.", { title: { place: "inrule", size: 22 }, rule: { pad: 14, tick: 24 }, suits: { arr: "flankOne", which: ["spade", "spade"] } });
+    VERDICTS["Fleuron over the head"] = '<span class="maybe">The chapter head with its flower above.</span> Title in the rule, the section’s own suit centred 8px above the cap height, the rule plain. The oldest form here, and the suit lands in the previous section’s paper.';
+    lab("Fleuron over the head", "Title 24px in the rule, pad 18, no suits on the rule; the section’s own suit centred above the title.", { title: { place: "inrule", size: 24 }, rule: { pad: 18 }, suits: { arr: "aboveTitle", which: "perSection", gap: 8 } });
+    VERDICTS["Fleuron under the head"] = '<span class="maybe">The tailpiece as a single mark.</span> One suit centred under the head, the rule plain. Quiet, but it pushes the content down and the seam itself carries nothing.';
+    lab("Fleuron under the head", "Title 24px in the rule, pad 18, no suits on the rule; the section’s own suit centred under the title.", { title: { place: "inrule", size: 24 }, rule: { pad: 18 }, suits: { arr: "belowTitle", which: "perSection", gap: 8 } });
+    VERDICTS["Two stations, title below"] = '<span class="yes">The smallest change to today.</span> The title stays where it is; the four stations become two, the section’s own suit at 144px either side of centre. Down the page the seams spell club, diamond, spade, heart in pairs.';
+    lab("Two stations, title below", "The control’s layout with the four stations reduced to the section’s own suit at 144px either side of centre.", { title: { place: "below" }, suits: { arr: "fixedFlank", at: 144, which: "perSection" } });
+    VERDICTS["Two stations close, title below"] = '<span class="maybe">The inner pair only.</span> The section’s suit at 48px either side of centre, title below at the left. A tighter mark, closer to a clasp than to stations.';
+    lab("Two stations close, title below", "The control’s layout with the section’s own suit at 48px either side of centre.", { title: { place: "below" }, suits: { arr: "fixedFlank", at: 48, which: "perSection" } });
+    VERDICTS["Asymmetric, pair after"] = '<span class="no">Playful second.</span> Title centred, club and diamond only to its right after a 24px tick. A printer’s asymmetry that reads as a mistake seven times down a page.';
+    lab("Asymmetric, pair after", "Title 24px centred in the rule; club and diamond 22px apart to the right only, after a 24px tick; nothing to the left.", { title: { place: "inrule", size: 24 }, rule: { pad: 14, tick: 24 }, suits: { arr: "rightRun", count: 2, step: 22, which: ["club", "diamond"] } });
+    VERDICTS["In the rule, hearts"] = '<span class="maybe">The red pair.</span> A heart either side in the tile’s red at 65%; warmer and more card-like, and the red pulls harder than the grey spade.';
+    lab("In the rule, hearts", "Title 24px in the rule, pad 14, tick 24, a heart either side.", { title: { place: "inrule", size: 24 }, rule: { pad: 14, tick: 24 }, suits: { arr: "flankOne", which: ["heart", "heart"] } });
+    VERDICTS["In the rule, club and heart"] = '<span class="maybe">The outer pair of the four stations.</span> Club to the left, heart to the right, as today’s outermost suits; one grey, one red, so the head is not quite symmetric in weight.';
+    lab("In the rule, club and heart", "Title 24px in the rule, pad 14, tick 24, a club left and a heart right (today’s outer pair).", { title: { place: "inrule", size: 24 }, rule: { pad: 14, tick: 24 }, suits: { arr: "flankOne", which: ["club", "heart"] } });
+    VERDICTS["Left, above the rule, suits on the rule"] = '<span class="maybe">The standing head over its own rule.</span> Title left above the rule, the suits running on the rule beneath from the title’s right. The rule underlines the head; the head still sits in the previous section.';
+    lab("Left, above the rule, suits on the rule", "Title 24px at the column’s left, baseline 10px above the rule; suits every 96px along the rule to the right of the title.", { title: { place: "above", size: 24, gapAbove: 10, align: "left" }, rule: { pad: 14, tick: 24 }, suits: { arr: "rightRun", step: 96 }, extras: { suitsOnRule: true } });
+    VERDICTS["Running head, left"] = '<span class="maybe">The newspaper’s small standing head.</span> 16px at the column’s left in the rule, one suit after it. Tidy, and too small to head a section of tiles.';
+    lab("Running head, left", "Title 16px ink at the column’s left in the rule, one spade after a 16px tick, the rule plain to the edge.", { title: { place: "inrule", size: 16, align: "left" }, rule: { pad: 10, tick: 16, from: "title" }, suits: { arr: "rightRun", count: 1, which: ["spade"] } });
+    VERDICTS["No rule"] = '<span class="no">A departure.</span> The rule is gone; the paper edge alone divides, with the title and a spade either side sitting on it. Shows how much the hairline does.';
+    lab("No rule", "The rule removed; title 24px and a spade either side on the paper boundary.", { title: { place: "inrule", size: 24 }, rule: { hide: true }, suits: { arr: "flankOne", which: ["spade", "spade"], gap: 6 } });
+    VERDICTS["Tab, own suit fixed"] = '<span class="maybe">The tab with the fixed marks.</span> The lower paper rises behind the head; the section’s suit sits at 144px either side. The notch makes the head a label.';
+    lab("Tab, own suit fixed", "Title 24px in the rule with the lower paper rising behind it; the section’s own suit fixed at 144px either side of centre.", { title: { place: "inrule", size: 24 }, rule: { pad: 14 }, suits: { arr: "fixedFlank", at: 144, which: "perSection" }, extras: { tab: true } });
+    VERDICTS["Odd seams, two stations"] = '<span class="yes">The smallest change meets the real page.</span> Nothing moves but the suits: Open tables keeps its controls, the double head keeps its columns, the live dot keeps its place.';
+    lab("Odd seams, two stations", "The treatment of “Two stations, title below” (title below, the section’s own suit at 144px either side) on the three odd seams.", { title: { place: "below" }, suits: { arr: "fixedFlank", at: 144, which: "perSection" } }, { seams: OPEN.concat(DOUBLE) });
+
+    /* ===== 8 · recommendation ===== */
+    h2("8 · Recommendation");
+    root.appendChild(el("div", "reco", RECO));
+    fitAll();
+  }
+
+  (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(function () {
+    if (document.fonts && document.fonts.load) {
+      Promise.all([document.fonts.load("500 24px Gelica"), document.fonts.load("400 24px Gelica"), document.fonts.load("bold 16px BuloRounded")]).then(build, build);
+    } else build();
+  });
+  window.__titleSeamLab = { SCENES: SCENES };
+})();
+</script>
+</body>
+</html>
