@@ -20,11 +20,12 @@ Good to see you again! Sneak in a hand before anyone notices. We won't say a wor
 ```
 
 Type: headline in the display serif (Gelica Medium 38px in the mockup, line-height 1.15), two lines, no full stops and no
-commas anywhere in the headline. Subtitle 16px body face, ONE paragraph with no forced line break. Its max-width is the
-headline budget from section 3 (the widest of the eight second lines, about 372px in the mockup's font), not the guest
-subtitle's 416px: the guest subtitle is bold-heavy and breaks early on its own, and the regular-weight member subtitle
-needs the narrower box to break in the same place. Opener plus clause run 80 to 95 characters so the paragraph fills about
-two lines. Nothing in the column is ever wider than the widest headline line. Capsule 28px below.
+commas anywhere in the headline. Subtitle 16px body face, ONE paragraph with no forced line break, max-width 320px.
+That box holds about 46 to 48 characters of the regular body face per line, the same count as the guest subtitle's first
+line ("Take tricks, build melds & play classics with", 46 characters, which renders at about 292px because of its bold
+words inside a 416px box). Measured in BuloRounded 16px: "Good to see you again! Have fun. That's the only" is 309px and
+"...the only house" is 352px, so 320px breaks after "only", as intended. Opener plus clause run 80 to 93 characters so the
+paragraph fills two lines and never a third. Capsule 28px below.
 
 Nothing in the hero mentions friends, leaderboards, rank, Elo, the daily challenge or deal, stats, streaks, last night, or
 seats open. Those live in the zones below the hero.
@@ -122,9 +123,9 @@ Each clause is two short sentences, so the subtitle reaches about two lines at 4
 
 Any hour:
 ```
-Pull up a chair and stay a while. The cards are patient, and so are we.
+Pull up a chair and stay a while. The cards are patient, so are we.
 Shoes off, cards up, no rush. Nobody here is watching the clock.
-One quick hand, you say. That's what everyone says, and nobody minds.
+One quick hand, you say. That's what everyone says. Nobody minds.
 Sneak in a hand before anyone notices. We won't say a word.
 Have fun. That's the only house rule, and it's an easy one to keep.
 Any chair you like. They're all comfy, and the good one is free.
@@ -143,7 +144,7 @@ A fresh pot and a fresh deck. Not a bad way to start the day.
 Afternoon:
 ```
 A hand of cards fixes most afternoons. This one looks no different.
-A hand of cards beats a nap. Well, just about, and you can nap after.
+A hand of cards beats a nap. Well, just about, and the nap can wait.
 The afternoon is better with cards in it. Ask anyone at the tables.
 ```
 
@@ -156,9 +157,9 @@ A calm one to close the night. The lamp stays on as long as you like.
 
 Return (see 7):
 ```
-It's been quiet without you. Everything is right where you left it.
-We left the light on. And the kettle, in case you were wondering.
-Sit down, it's like you never left. Nothing here has changed a bit.
+It's been quiet without you. Everything's where you left it.
+We left the light on. And the kettle, just in case.
+Sit down, it's like you never left. Nothing here changed.
 ```
 
 Drawing a clause:
@@ -168,6 +169,7 @@ Drawing a clause:
    "your chair is warm" never sits directly over "Pull up a chair and stay a while." If every candidate is skipped, ignore
    the rule.
 3. Skip the clause shown last time.
+   Tie short phrasal verbs with a non-breaking space so the wrap never splits them ("Go&nbsp;on").
 4. Draw once per page load and keep it for the visit.
 
 ## 7. The return view
