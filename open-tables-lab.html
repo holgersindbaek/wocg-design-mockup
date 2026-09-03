@@ -550,6 +550,58 @@
   box-shadow: inset 0 0 0 1px rgba(0,0,0,.18), 0 1px 3px rgba(0,0,0,.25); }
 #sec-c25 .ltCard.isNew .player.c25-you .playerName { font-weight: normal; }
 </style>
+<style>
+/* ===== concept c26: Bare essentials ===== */
+/* c26 · Bare essentials: a strict 4:3 felt, the seats untouched, no footer and no button. Top left the game's own icon with a mark
+   for a special option, top right the time or Waiting as ghost text, and a green Seat open under it when a player left. */
+#sec-c26 .ltCard { background-color: #327333; }
+#sec-c26 .ltCard:hover { background-color: #327333; }
+#sec-c26 .ltCard .tableListing { padding-top: 75%; }
+#sec-c26 .ltCard .tableListing .header { padding-top: 0; inset: 0; }
+#sec-c26 .ltCard .tableListing .header::before { border-radius: 20px; }
+#sec-c26 .ltCard .tableListing .header::after { border-radius: 20px; }
+#sec-c26 .ltCard .c26-content { display: none; }
+/* the 2 and 3 seat felts start with a face in the top row, so that row drops and the top corners stay free */
+#sec-c26 .players2 .playersContainer > .verticalSpacer:nth-child(1),
+#sec-c26 .players3 .playersContainer > .verticalSpacer:nth-child(1) { height: 16.5%; }
+#sec-c26 .players2 .playersContainer > .verticalSpacer:nth-child(9),
+#sec-c26 .players3 .playersContainer > .verticalSpacer:nth-child(9) { height: 5.7%; }
+
+/* the ghost text recipe from the tiles' playing count: bold white with a soft outline, no plate */
+#sec-c26 .c26-time, #sec-c26 .c26-open { position: absolute; z-index: 3; right: 0; display: inline-flex; align-items: center; gap: 5px; height: 20px; line-height: 20px;
+  font-size: 14px; font-weight: bold; color: #fff; white-space: nowrap; cursor: default; max-width: 34%; font-variant-numeric: tabular-nums;
+  text-shadow: -1px -1px 0 rgba(0,0,0,.32), 1px -1px 0 rgba(0,0,0,.32), -1px 1px 0 rgba(0,0,0,.32), 1px 1px 0 rgba(0,0,0,.32); }
+#sec-c26 .c26-time { top: 6px; }
+#sec-c26 .c26-time.c26-has { cursor: help; }
+#sec-c26 .c26-time svg, #sec-c26 .c26-sw svg { flex: none; width: 14px; height: 14px; filter: drop-shadow(0 0 1px rgba(0,0,0,.55)) drop-shadow(0 1px 1px rgba(0,0,0,.25)); }
+#sec-c26 .c26-open { top: 30px; color: #D8F5A2; cursor: help; }
+#sec-c26 .players2 .c26-time, #sec-c26 .players3 .c26-time { max-width: 62%; }
+
+/* the identity: the game's icon as the tiles draw it, then a mark for ranked or private */
+#sec-c26 .c26-id { position: absolute; z-index: 3; top: 4px; left: 0; display: inline-flex; align-items: center; gap: 7px; }
+#sec-c26 .c26-gi { display: block; height: 28px; width: 28px; border-radius: 7px; corner-shape: squircle; object-fit: cover;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,.45)); cursor: help; }
+#sec-c26 .c26-gi.c26-logo { width: auto; border-radius: 0; height: 30px; }
+#sec-c26 .c26-opt { display: block; width: 18px; height: 18px; cursor: help; filter: drop-shadow(0 0 1px rgba(0,0,0,.6)) drop-shadow(0 1px 1px rgba(0,0,0,.3)); }
+
+/* the placeholders: an empty table with your own chair pulled out, and its plate is the way to host */
+#sec-c26 .ltCard.isNew .player.c26-you { cursor: pointer; }
+#sec-c26 .ltCard.isNew .player.c26-you img { opacity: .9; }
+#sec-c26 .ltCard.isNew .player.c26-you .playerNameContainer { background-color: #66A80F; color: #fff;
+  box-shadow: inset 0 0 0 1px #4F800B, 0 1px 3px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25); }
+#sec-c26 .ltCard.isNew .player.c26-you .playerName { text-shadow: -1px -1px 0 #4F800B, 1px -1px 0 #4F800B, -1px 1px 0 #4F800B, 1px 1px 0 #4F800B; }
+
+/* the switcher: the time icon candidates on felt swatches, and the game icon source */
+#sec-c26 .c26-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: -4px 0 14px; }
+#sec-c26 .c26-bar .c26-lab { font-size: 11.5px; color: #8a857c; margin-right: 2px; }
+#sec-c26 .c26-bar .c26-gap { width: 14px; }
+#sec-c26 .c26-sw { display: inline-flex; align-items: center; justify-content: center; gap: 5px; height: 30px; padding: 0 10px; border: none; cursor: pointer;
+  border-radius: 8px; corner-shape: squircle; background: #327333 url("green-felt.jpg") center / 150px 150px; color: #fff; font-family: inherit; font-size: 13px; font-weight: bold;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.35); text-shadow: -1px -1px 0 rgba(0,0,0,.32), 1px -1px 0 rgba(0,0,0,.32), -1px 1px 0 rgba(0,0,0,.32), 1px 1px 0 rgba(0,0,0,.32); }
+#sec-c26 .c26-sw.on { box-shadow: inset 0 0 0 2px #fff, 0 0 0 1px rgba(0,0,0,.35); }
+#sec-c26 .c26-sw.c26-plain { background: #fff; color: #555; text-shadow: none; box-shadow: inset 0 0 0 1px #ddd; font-weight: bold; font-size: 11.5px; }
+#sec-c26 .c26-sw.c26-plain.on { background: #A5D8FF; color: #1971C2; box-shadow: inset 0 0 0 1px #7AB8EC; }
+</style>
 <!-- CONCEPT STYLES END -->
 </head>
 <body>
@@ -628,6 +680,12 @@ two and three seat games, a table with entry limits, and the placeholders. Three
       <li><b>The clock plate of Four across stays</b> (top right, "10 min"), but in another colour, yellow. Before the deal it says "Waiting", or something better.</li>
       <li><b>What is vital besides the clock and Waiting.</b> Who is seated (the felt). A seat that opened mid game, said loudest. The game, on the mixed grid. Ranked or casual, one word. The rule variant only when it differs. The seats as the way in, and what a bot seat means. Everything else is a tooltip.</li>
       <li><b>Round one and two still hold.</b> No seat counts, no sentences, no game icon, no colour strip, no centre placard, the finish badge on the player, the game name never as a plate in the felt's top corners.</li>
+    </ul></div></div>
+  <div class="brief rulings"><div class="bcol rule"><h3>Round four rulings <span class="tag">Holger, after round three</span></h3><ul>
+      <li><b>Bare essentials.</b> A strict 4:3 felt with no footer. Assume nobody uses the Join button: the seats are the way in.</li>
+      <li><b>The time passed, or Waiting.</b> With a super simple icon, if any; the clock face and the hourglass were too much.</li>
+      <li><b>A mark for a special option</b> such as ranked, which may be an icon alone.</li>
+      <li><b>The game's icon instead of its name</b>, the icon the game tiles use.</li>
     </ul></div></div>
   <p class="desc" style="margin-top:12px"><b>Facts that shape the copy.</b> The open-tables box shows 0 to 5 tables 77% of the time and 1 to 3 tables half the time, so
   each tile has room to speak. Euchre, Spades, Hearts and Double Deck Pinochle carry 80% of listing use, so partnership games and
@@ -1320,7 +1378,7 @@ registerConcept((function () {
   return {
     id: "c17",
     round: 2,
-    open: true,
+    open: false,
     title: "One big table",
     desc: "No white part: the whole tile is the table. The state sits at the top left in a seat nameplate (<b>Waiting</b>, <b>In play</b>, and <b>Seat open</b> in the warmer green), the time in play at the top right, and a rail along the bottom edge carries the quiet words (<b>A player left</b>, <b>Bot seat</b>, <b>Ranked</b>, <b>Private</b>, <b>Starts when you sit</b>), with the quieter facts in a tooltip on the plate. The seats do the joining, and mid game a seat you can take rolls to <b>Take over</b>, so a real table needs no button and only the placeholders host. The game name is the tile's own title under the card on the homepage grid and goes away in the See all box.",
     render: function (t) {
@@ -1382,7 +1440,7 @@ registerConcept((function () {
   function status(t) {
     if (t.started) {
       var time = t.age > 0 ? ageText(t.age) : "";
-      if (emptySeats(t) > 0) return { text: "A player left", short: "Seat open", time: time, open: true };
+      if (emptySeats(t) > 0) return { text: "A player left", short: "Seat open", time: time, open: false };
       return { text: "In play", time: time };
     }
     if (emptySeats(t) === 1) return { text: "Starts when you sit", short: "Last seat" };
@@ -1479,7 +1537,7 @@ registerConcept((function () {
   return {
     id: "c18",
     round: 2,
-    open: true,
+    open: false,
     title: "The nameplate bottom",
     desc: "The felt stays exactly as it is, and the white bottom is one 44px row: the game name at left and, at right, <b>the state as a nameplate</b> in the seat plate grammar that reads Waiting, Starts when you sit, In play · 12 min, and loudest of all the green <b>A player left · 10 min</b> when a seat opened mid game, with the time always at its right end, Ranked or Private as one quiet word before it, and the quieter facts in its tooltip. There is no Join button, the seats join with the shared hover roll and a bot seat says whose hand you take, the placeholders swap the plate for a small Host table button, and in the See all box the game name goes and the left slot carries the quiet facts that fit whole.",
     render: function (t) {
@@ -2326,6 +2384,203 @@ registerConcept((function () {
       });
       fit(sec);
       if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { fit(sec); });
+      armTaps(sec);
+    }
+  };
+})());
+</script>
+<script>
+/* ===== concept c26: Bare essentials ===== */
+registerConcept((function () {
+  var MODELS = {};
+  var OPTS = { time: "ring", icon: "pack" };
+  var ICON_FILE = { threefiveeight: "sgtmajor" };
+  var TIPS = {
+    "Tournament rules": "Cards are passed on every hand",
+    "Dealer may pass": "The dealer may pass instead of naming trump",
+    "No bag penalty": "Extra tricks over the bid cost nothing here",
+    "No bots": "The seats wait for people, no bots fill them",
+    "Experienced only": "Players with ten finished games",
+    "Registered only": "Signed in players only",
+    "Registered and experienced only": "Signed in players with ten finished games"
+  };
+  /* the time icon candidates, all drawn to a 16 unit box, white, super simple */
+  var TIME_ICONS = {
+    none: "",
+    ring: '<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="5.8" fill="none" stroke="#fff" stroke-width="1.9"/></svg>',
+    pie: '<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="5.8" fill="none" stroke="#fff" stroke-width="1.7"/><path d="M8 8V2.9A5.1 5.1 0 0 1 13.1 8z" fill="#fff"/></svg>',
+    clock: '<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.1" fill="none" stroke="#fff" stroke-width="1.8"/><path d="M8 4.7V8l2.3 1.5" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    hourglass: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.2 2.2h7.6M4.2 13.8h7.6M5.3 2.2c0 3 2.7 4 2.7 5.8s-2.7 2.8-2.7 5.8M10.7 2.2c0 3-2.7 4-2.7 5.8s2.7 2.8 2.7 5.8" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    stopwatch: '<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="9" r="5.2" fill="none" stroke="#fff" stroke-width="1.8"/><path d="M6.3 1.8h3.4M8 1.8v2M8 9V6.2" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>'
+  };
+  var TIME_LABELS = { none: "no icon", ring: "ring", pie: "pie", clock: "clock", hourglass: "hourglass", stopwatch: "stopwatch" };
+  var MARKS = {
+    ranked: '<svg class="c26-opt" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 13.5 2 5.5l4 3 3-5 3 5 4-3-1 8z" fill="#FFD166" stroke="#7A4B00" stroke-width="1" stroke-linejoin="round"/><path d="M3.4 15h11.2" stroke="#7A4B00" stroke-width="1.6" stroke-linecap="round"/></svg>',
+    "private": '<svg class="c26-opt" viewBox="0 0 18 18" aria-hidden="true"><rect x="3.5" y="8" width="11" height="8" rx="2" fill="#fff" stroke="#333" stroke-width="1"/><path d="M6 8V5.8a3 3 0 0 1 6 0V8" fill="none" stroke="#fff" stroke-width="2"/><circle cx="9" cy="12" r="1.3" fill="#333"/></svg>'
+  };
+
+  function isBot(name) { return !!(name && PEOPLE[name] && PEOPLE[name].bot); }
+  function botNames(t) { var b = []; for (var i = 0; i < t.n; i++) { if (isBot(t.seats[i])) b.push(t.seats[i]); } return b; }
+  function targetText(t) { return (t.gameid === "hearts" ? "Ends at " : "Plays to ") + fmt(t.target); }
+  function botTake(bots) { return bots.length === 1 ? "You take " + bots[0] + "’s hand and score" : "You take a bot’s hand and score"; }
+  function block(html) { return '<span style="display:block;white-space:normal;max-width:208px">' + html + '</span>'; }
+  function iconSrc(t) { var f = ICON_FILE[t.gameid] || t.gameid; return OPTS.icon === "logo" ? f + "_logo.png" : "icon-pack/" + f + ".png"; }
+
+  /* the model of one tile: the time text and its tooltip, the marks, the facts for the game icon's tooltip */
+  function build(t) {
+    var m = { time: "", timeTip: "", open: false, marks: [], facts: [], host: null };
+    var bots = botNames(t), k = emptySeats(t);
+    if (t.empty) {
+      var r = t.placeholder === "ranked";
+      if (r) m.marks.push({ kind: "ranked", tip: "A new ranked table · counts toward your rating · real players only" });
+      m.host = r ? "Host ranked" : "Host table";
+      m.facts.push(r ? "Real players only" : "Your rules · bots may fill empty seats");
+      return m;
+    }
+    if (t.started) {
+      m.time = t.age > 0 ? ageText(t.age) : "Dealing";
+      m.timeTip = t.age > 0 ? "In play for " + ageText(t.age) : "The deal is seconds away";
+      if (k > 0) { m.open = true; m.timeTip += " · a player left, you take their hand and score"; }
+      if (bots.length) m.facts.push(botTake(bots));
+    } else {
+      m.time = "Waiting";
+      m.timeTip = k === 1 ? "One seat left · the deal starts when you sit" : "Waiting for players";
+    }
+    if (t.ranked) m.marks.push({ kind: "ranked", tip: "Ranked · counts toward your rating · real players only" });
+    if (t.ptn) m.marks.push({ kind: "private", tip: "Private table <b>" + esc(t.ptn) + "</b>" + (t.host ? " · hosted by " + esc(t.host) : "") });
+    (t.variants || []).forEach(function (v) { m.facts.push(v); });
+    if (!t.started && t.bots === false && !t.ranked) m.facts.push("No bots");
+    if (t.regOnly && t.expOnly) m.facts.push("Registered and experienced only");
+    else if (t.expOnly) m.facts.push("Experienced only");
+    else if (t.regOnly && !t.ranked) m.facts.push("Registered only");
+    if (t.target) m.facts.push(targetText(t));
+    return m;
+  }
+  function gameTip(t, m) {
+    var lines = ["<b>" + esc(t.game) + "</b>"];
+    m.facts.forEach(function (f) { lines.push(esc(f) + (TIPS[f] ? " · " + esc(TIPS[f]) : "")); });
+    return block(lines.join("<br>"));
+  }
+
+  function partnerLine(t, idx) {
+    if (!t.team || t.n !== 4) return "";
+    var pn = t.seats[(idx + 2) % 4];
+    if (!pn) return "Your partner’s seat is empty too";
+    if (isBot(pn)) return "Your partner would be <b>" + esc(pn) + "</b> until a person takes that seat";
+    return "Your partner would be <b>" + esc(pn) + "</b>";
+  }
+  function seatTip(t, idx, bot) {
+    var lines = [];
+    if (bot) lines.push(t.started ? "You take <b>" + esc(t.seats[idx]) + "</b>’s hand and score" : "You play <b>" + esc(t.seats[idx]) + "</b>’s hand from the first deal");
+    else if (t.started) lines.push("You take their hand and score");
+    var pn = partnerLine(t, idx);
+    if (pn) lines.push(pn);
+    else if (t.n === 2 && humans(t).length) lines.push("You play <b>" + esc(humans(t)[0]) + "</b>");
+    return lines.join("<br>");
+  }
+  function rollSeat(seat, word) {
+    seat.classList.add("joinable");
+    var plate = seat.querySelector(".playerNameContainer");
+    var you = document.createElement("img");
+    you.className = "seatYou"; you.src = VIEWER_AVATAR; you.alt = ""; you.width = 32; you.height = 32;
+    seat.insertBefore(you, plate);
+    var roll = document.createElement("div");
+    roll.className = "plateRoll";
+    roll.appendChild(seat.querySelector(".playerName"));
+    var pn = document.createElement("p");
+    pn.className = "playerName pnJoin"; pn.textContent = word;
+    roll.appendChild(pn);
+    plate.insertBefore(roll, plate.firstChild);
+  }
+  function armSeatTips(cardEl, t) {
+    cardEl.querySelectorAll(".player.isEmpty, .player.isBot.seatAvailable").forEach(function (seat) {
+      var idx = Number(seat.getAttribute("data-seat"));
+      if (t.started && !seat.classList.contains("joinable")) rollSeat(seat, "Take over");
+      var tip = seatTip(t, idx, seat.classList.contains("isBot"));
+      if (tip && seat.__wtip === undefined) attachTip(seat, block(tip));
+    });
+  }
+  /* the placeholder's near seat is your chair, and its plate is the verb: there is no button anywhere */
+  function armPlaceholder(cardEl, t, m) {
+    var near = cardEl.querySelector(".player.playernumber" + (t.n === 4 ? 3 : t.n === 3 ? 2 : 1));
+    if (!near) return;
+    near.classList.add("c26-you");
+    near.querySelector("img").src = VIEWER_AVATAR;
+    near.querySelector(".playerName").textContent = m.host;
+    attachTip(near, t.placeholder === "ranked" ? "Sit here to host a ranked table · real players fill the rest" : "Sit here to host a table with your rules");
+  }
+  function armTaps(sec) {
+    if (sec.__c26tap) return;
+    sec.__c26tap = true;
+    function close() { var open = sec.__c26open; if (open) { open.dispatchEvent(new Event("mouseleave")); sec.__c26open = null; } }
+    sec.addEventListener("click", function (e) {
+      var el = e.target;
+      while (el && el !== sec && el.__wtip === undefined) el = el.parentElement;
+      if (!el || el === sec || el.classList.contains("player") || el.classList.contains("c26-sw")) return;
+      e.stopPropagation(); e.preventDefault();
+      if (sec.__c26open === el) { close(); return; }
+      close();
+      el.dispatchEvent(new Event("mouseenter"));
+      sec.__c26open = el;
+    });
+    document.addEventListener("click", close);
+  }
+  /* the switcher under the intro: every time icon candidate on a felt swatch, and the game icon source */
+  function buildBar(sec) {
+    if (sec.querySelector(".c26-bar")) return;
+    var bar = document.createElement("div"); bar.className = "c26-bar";
+    var lab = document.createElement("span"); lab.className = "c26-lab"; lab.textContent = "Time icon"; bar.appendChild(lab);
+    Object.keys(TIME_ICONS).forEach(function (key) {
+      var b = document.createElement("button"); b.type = "button"; b.className = "c26-sw" + (OPTS.time === key ? " on" : "");
+      b.innerHTML = TIME_ICONS[key] + "<span>12 min</span>"; b.title = TIME_LABELS[key];
+      b.addEventListener("click", function () { OPTS.time = key; rerender(sec); });
+      bar.appendChild(b);
+    });
+    var gap = document.createElement("span"); gap.className = "c26-gap"; bar.appendChild(gap);
+    var lab2 = document.createElement("span"); lab2.className = "c26-lab"; lab2.textContent = "Game icon"; bar.appendChild(lab2);
+    [["pack", "Icon pack"], ["logo", "Tile logo"]].forEach(function (o) {
+      var b = document.createElement("button"); b.type = "button"; b.className = "c26-sw c26-plain" + (OPTS.icon === o[0] ? " on" : ""); b.textContent = o[1];
+      b.addEventListener("click", function () { OPTS.icon = o[0]; rerender(sec); });
+      bar.appendChild(b);
+    });
+    sec.insertBefore(bar, sec.querySelector(".cgrid"));
+  }
+  function rerender(sec) {
+    var bar = sec.querySelector(".c26-bar"); if (bar) bar.remove();
+    renderSection(conceptById("c26"), sec);
+  }
+
+  return {
+    id: "c26",
+    round: 2,
+    open: true,
+    title: "Bare essentials",
+    desc: "A strict 4:3 felt, the seats untouched, no footer and no button: the seats are the way in and the placeholder's pulled out chair is the way to host. Top left the game's own icon as the tiles draw it, with a small crown for <b>ranked</b> and a lock for <b>private</b>; hover the icon for the rules that differ and the target score. Top right the time in play or <b>Waiting</b> as ghost text, and a green <b>Seat open</b> under it when a player left. The switcher tries the time icon candidates on felt, and the icon pack against the tile logo.",
+    render: function (t) {
+      var m = build(t);
+      MODELS[t.id] = m;
+      var id = (LAB.mode === "home" ? '<img class="c26-gi' + (OPTS.icon === "logo" ? ' c26-logo' : '') + '" src="' + iconSrc(t) + '" alt="' + esc(t.game) + '">' : '') +
+        m.marks.map(function (mk) { return MARKS[mk.kind]; }).join("");
+      var felt = (id ? '<div class="c26-id">' + id + '</div>' : '') +
+        (m.time ? '<div class="c26-time' + (m.facts.length ? ' c26-has' : '') + '">' + TIME_ICONS[OPTS.time] + '<span>' + esc(m.time) + '</span></div>' : '') +
+        (m.open ? '<div class="c26-open"><span>Seat open</span></div>' : '');
+      return card(t, '', { feltExtra: felt, contentClass: 'c26-content' });
+    },
+    afterRender: function (sec) {
+      buildBar(sec);
+      sec.querySelectorAll(".ltCard").forEach(function (cardEl) {
+        var t = tableById(cardEl.getAttribute("data-state")), m = t && MODELS[t.id];
+        if (!m) return;
+        var time = cardEl.querySelector(".c26-time");
+        if (time) attachTip(time, esc(m.timeTip));
+        var open = cardEl.querySelector(".c26-open");
+        if (open) attachTip(open, "A player left mid game · you take their hand and score");
+        var gi = cardEl.querySelector(".c26-gi");
+        if (gi) attachTip(gi, gameTip(t, m));
+        var marks = cardEl.querySelectorAll(".c26-opt");
+        marks.forEach(function (el, i) { if (m.marks[i]) attachTip(el, block(m.marks[i].tip)); });
+        if (t.empty) armPlaceholder(cardEl, t, m); else armSeatTips(cardEl, t);
+      });
       armTaps(sec);
     }
   };
