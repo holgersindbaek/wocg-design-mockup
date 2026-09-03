@@ -20,9 +20,11 @@ Good to see you again! Sneak in a hand before anyone notices. We won't say a wor
 ```
 
 Type: headline in the display serif (Gelica Medium 38px in the mockup, line-height 1.15), two lines, no full stops and no
-commas anywhere in the headline. Subtitle 16px body face, ONE paragraph with no forced line break, max-width 416px, so it
-wraps where the guest subtitle wraps; opener plus clause run 80 to 95 characters so the paragraph fills about two lines
-like the guest subtitle does. Capsule 28px below.
+commas anywhere in the headline. Subtitle 16px body face, ONE paragraph with no forced line break. Its max-width is the
+headline budget from section 3 (the widest of the eight second lines, about 372px in the mockup's font), not the guest
+subtitle's 416px: the guest subtitle is bold-heavy and breaks early on its own, and the regular-weight member subtitle
+needs the narrower box to break in the same place. Opener plus clause run 80 to 95 characters so the paragraph fills about
+two lines. Nothing in the column is ever wider than the widest headline line. Capsule 28px below.
 
 Nothing in the hero mentions friends, leaderboards, rank, Elo, the daily challenge or deal, stats, streaks, last night, or
 seats open. Those live in the zones below the hero.

@@ -68,6 +68,7 @@
   .glyph { display: inline-block; width: 22px; height: 22px; background-size: contain; background-repeat: no-repeat; background-position: center; vertical-align: middle; }
   .muted { color: var(--muted); }
   .col p.meta { font-size: 12px; color: #999488; margin: 18px 0 0; }
+  .col p.sub.narrow { max-width: 372px; }
 
   /* ===== Now: the avatar with the greeting ===== */
   .nameplate { display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
@@ -373,7 +374,7 @@ bronze distance (the calendar card below carries those); avatars uncropped in th
         var pick = cozyPick(rnd, hour.toLowerCase(), st.ret === "yes", line2, st.kind);
         var withName = st.nsub === "always" || (st.nsub === "auto" && g.mode === "noname");
         var meta = "line one " + Math.round(g.width) + "px of " + Math.round(g.budget) + "px, " + (g.mode === "hour" ? "hour word and name" : g.mode === "hi" ? "Hi and name" : "name dropped");
-        return "<h3>" + g.line + "<br>" + line2 + "</h3>" + sub([cozyText(pick, st.nm, withName, st.ret === "yes")]) + stats() +
+        return "<h3>" + g.line + "<br>" + line2 + "</h3>" + '<p class="sub narrow">' + cozyText(pick, st.nm, withName, st.ret === "yes") + '</p>' + stats() +
           '<p class="meta">' + meta + "</p>";
       } }
   ], "final");
