@@ -622,14 +622,14 @@
 #sec-c27 .c27-gi { position: absolute; z-index: 3; top: 0; left: -2px; display: block; height: 44px; width: auto; max-width: 26%; object-fit: contain;
   filter: drop-shadow(0 1px 2px rgba(0,0,0,.45)); cursor: default; }
 /* the lettering differs per game, so a few get more height to read the same */
-#sec-c27 .c27-gi.gi-ginrummy { height: 53px; }
+#sec-c27 .c27-gi.gi-ginrummy { height: 62px; }
 #sec-c27 .c27-gi.gi-pinochle, #sec-c27 .c27-gi.gi-canasta { height: 48px; }
 
 /* the ghost text recipe from the tiles' playing count: bold white with a soft outline, no plate */
 #sec-c27 .c27-time { position: absolute; z-index: 3; left: 0; bottom: 0; display: inline-flex; align-items: center; gap: 5px; height: 20px; line-height: 20px;
   font-size: 14px; font-weight: bold; color: #fff; white-space: nowrap; cursor: default; max-width: 30%; font-variant-numeric: tabular-nums;
   text-shadow: -1px -1px 0 rgba(0,0,0,.32), 1px -1px 0 rgba(0,0,0,.32), -1px 1px 0 rgba(0,0,0,.32), 1px 1px 0 rgba(0,0,0,.32); }
-#sec-c27 .c27-time svg { flex: none; width: 10px; height: 10px; position: relative; top: -1px; filter: drop-shadow(0 0 1px rgba(0,0,0,.55)) drop-shadow(0 1px 1px rgba(0,0,0,.25)); }
+#sec-c27 .c27-time svg { flex: none; width: 10px; height: 10px; position: relative; top: 0; filter: drop-shadow(0 0 1px rgba(0,0,0,.55)) drop-shadow(0 1px 1px rgba(0,0,0,.25)); }
 
 /* the marks: white, bottom right, with the same soft outline */
 #sec-c27 .ltCard.isNew .c27-time { max-width: 60%; }
@@ -2647,8 +2647,10 @@ registerConcept((function () {
 /* ===== concept c27: Bare essentials, second pass ===== */
 registerConcept((function () {
   var MODELS = {};
-  var OPTS = { waiting: "0 min", crown: "jewels" };
+  var OPTS = { waiting: "0 min", crown: "jewels", host: "Host" };
   var WAITING_WORDS = ["0 min", "Not started", "Open", "Waiting"];
+  /* the word in the time slot on a placeholder row, where there is no table yet to time */
+  var HOST_WORDS = { "Host": ["Host", "Host ranked"], "Host a table": ["Host a table", "Host ranked"], "Start a table": ["Start a table", "Start ranked"], "Sit to host": ["Sit to host", "Sit to host ranked"], "New table": ["New table", "New ranked table"] };
   var LOGO_FILE = { threefiveeight: "sgtmajor" };
   var TIPS = {
     "Tournament rules": "Cards are passed on every hand",
@@ -2679,8 +2681,8 @@ registerConcept((function () {
   function logoSrc(t) { return (LOGO_FILE[t.gameid] || t.gameid) + "_logo.png"; }
   /* the pie is an icon, not a timer: an empty ring before the deal, a quarter filled once the game is in play */
   function pie(started) {
-    var wedge = started ? '<path d="M8 8V2.4A5.6 5.6 0 0 1 13.6 8z" fill="#fff"/>' : '';
-    return '<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="5.6" fill="none" stroke="#fff" stroke-width="1.9"/>' + wedge + '</svg>';
+    var wedge = started ? '<path d="M8 8V1A7 7 0 0 1 15 8z" fill="#fff"/>' : '';
+    return '<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="#fff" stroke-width="2"/>' + wedge + '</svg>';
   }
 
   /* the model of one tile: the time and its tooltip, the marks, the facts for the art's tooltip */
@@ -2690,7 +2692,7 @@ registerConcept((function () {
     if (t.empty) {
       var r = t.placeholder === "ranked";
       if (r) m.marks.push({ kind: "ranked", tip: "A new ranked table · counts toward your rating · real players only" });
-      m.time = r ? "New ranked table" : "New table";
+      m.time = HOST_WORDS[OPTS.host][r ? 1 : 0];
       m.timeTip = r ? "Sit at any seat to host a ranked table · real players fill the rest" : "Sit at any seat to host a table with your rules";
       m.facts.push(r ? "Real players only" : "Your rules · bots may fill empty seats");
       return m;
@@ -2793,6 +2795,14 @@ registerConcept((function () {
       bar.appendChild(b);
     });
     var gap = document.createElement("span"); gap.className = "c27-gap"; bar.appendChild(gap);
+    var lab3 = document.createElement("span"); lab3.className = "c27-lab"; lab3.textContent = "Placeholder word"; bar.appendChild(lab3);
+    Object.keys(HOST_WORDS).forEach(function (word) {
+      var b = document.createElement("button"); b.type = "button"; b.className = "c27-sw" + (OPTS.host === word ? " on" : "");
+      b.innerHTML = "<span>" + esc(word) + "</span>";
+      b.addEventListener("click", function () { OPTS.host = word; bar.remove(); renderSection(conceptById("c27"), sec); });
+      bar.appendChild(b);
+    });
+    var gap2 = document.createElement("span"); gap2.className = "c27-gap"; bar.appendChild(gap2);
     var lab2 = document.createElement("span"); lab2.className = "c27-lab"; lab2.textContent = "Ranked mark"; bar.appendChild(lab2);
     Object.keys(CROWNS).forEach(function (key) {
       var b = document.createElement("button"); b.type = "button"; b.className = "c27-sw" + (OPTS.crown === key ? " on" : ""); b.title = CROWN_LABELS[key];
@@ -2808,7 +2818,7 @@ registerConcept((function () {
     round: 2,
     open: true,
     title: "Bare essentials, second pass",
-    desc: "The same strict 4:3 felt with no footer and no button. Top left the game's own tile art, tall enough to read its name. Bottom left the time with a small pie that is an icon, not a timer: an empty ring before the deal, a quarter filled once the game is in play. Bottom right a white mark for <b>ranked</b> or <b>private</b>; the switcher tries three ranked marks. On the 3 seat felt the two top players sit closer together, to the right, so the art has its corner. Nothing says Seat open any more: the empty seat and the running time say it. Hover the art for the rules that differ and the target score. The switcher tries the word for a table that has not started.",
+    desc: "The same strict 4:3 felt with no footer and no button. Top left the game's own tile art, tall enough to read its name. Bottom left the time with a small pie that is an icon, not a timer: an empty ring before the deal, a quarter filled once the game is in play. Bottom right a white mark for <b>ranked</b> or <b>private</b>; the switcher tries three ranked marks and the word a placeholder row shows in the time slot. On the 3 seat felt the two players sit where a 4 seat table's left and right seats sit, so the top row is free for the art. Nothing says Seat open any more: the empty seat and the running time say it. Hover the art for the rules that differ and the target score. The switcher tries the word for a table that has not started.",
     render: function (t) {
       var m = build(t);
       MODELS[t.id] = m;
