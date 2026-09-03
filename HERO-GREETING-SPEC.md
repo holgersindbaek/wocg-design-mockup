@@ -152,7 +152,7 @@ Evening (also late night):
 ```
 One last hand before bed? Go on, the cards won't tell.
 Slippers on, cards out, nowhere to be. The evening is all yours.
-A calm one to close the night. The lamp stays on as long as you like.
+A calm game to close the night. The lamp stays on as long as you like.
 ```
 
 Return (see 7):
