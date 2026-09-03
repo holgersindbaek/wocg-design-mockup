@@ -75,7 +75,7 @@
 </head>
 <body>
 <h1>Title seam lab: the section title set into the rule</h1>
-<p class="note">A static study for the frontpage mockup (<b>index.html</b>): the section title moves onto, above or beside the section seam, the way a book printer sets a chapter head into a rule with a fleuron either side. Every scene shows two seams from the middle of the page, a band-to-canvas seam (<b>Trick-taking games</b>) and a canvas-to-band seam (<b>Rummy games</b>), with ghost tiles above and below so the rhythm can be judged. The rule is the tile's own: 1px #D9D2C4 at a half-pixel offset inside a 14px layer, so it rasterises soft. The suits are the tile's own glyphs, sizes and inks (grey 45%, red 65%, with the inner rim). Nothing moves. Scene 1 changes nothing and is the control.</p>
+<p class="note">A static study for the frontpage mockup (<b>index.html</b>): the section title moves onto, above or beside the section seam, the way a book printer sets a chapter head into a rule with a fleuron either side. Every scene shows two seams from the middle of the page, a band-to-canvas seam (<b>Trick-taking games</b>) and a canvas-to-band seam (<b>Rummy games</b>), with ghost tiles above and below so the rhythm can be judged. The rule is the tile's own: 1px #D9D2C4 at a half-pixel offset inside a 14px layer, so it rasterises soft. The suits are the tile's own glyphs and sizes, in the inks the frontpage renders (grey 45%, red 50%, each with its inner rim). Nothing moves. Scene 1 changes nothing and is the control.</p>
 <p class="note">Reading the numbers: <b>pad</b> is the clear rule either side of the title; <b>tick</b> is a short piece of rule between the title's break and the nearest suit (0 means the suit shares the title's opening); suits cut their own 20px gaps as on the tile. Titles set into the rule have their x-height centred on the rule, so the paper boundary runs through the letters; the two papers are close in tone, and the "tab" variants show the alternative.</p>
 <div id="labroot"></div>
 
@@ -90,7 +90,9 @@
   };
   /* per suit: top offset inside the 14px layer, scale of the 80-unit path (so the glyph is 11.4 to 12.7px) */
   var TILE = { club: [.88, .153], diamond: [.64, .159], spade: [1.32, .142], heart: [1.08, .148] };
-  var INK = { club: ["#262626", .45, .24], spade: ["#262626", .45, .24], heart: ["#B54A3F", .65, .32], diamond: ["#B54A3F", .65, .32] };
+  /* inks as the frontpage renders its seams (the intro script's suit table): grey fill 45% with a 24% rim, red fill 50% with a 32% rim,
+     the rim being the outline stroked in the same colour and clipped to the shape; the static --divorder tile still fills red at 65% */
+  var INK = { club: ["#262626", .45, .24], spade: ["#262626", .45, .24], heart: ["#B54A3F", .5, .32], diamond: ["#B54A3F", .5, .32] };
   var ORDER = ["club", "diamond", "spade", "heart"];
   var GEO = { W: 1160, CX: 580, COL_L: 24, COL_R: 1136 }, GEO952 = { W: 952, CX: 476, COL_L: 24, COL_R: 928 };
   var W = GEO.W, COL_L = GEO.COL_L, COL_R = GEO.COL_R, CX = GEO.CX;
@@ -112,8 +114,11 @@
     var s = el("span", "ln"); s.style.left = x0 + "px"; s.style.width = w + "px"; if (dy) s.style.top = dy + "px";
     if (swell) {
       /* the swelled rule: hairline at the far end, 3px at the end nearest the title (swell = "l" means the title is to the left) */
-      var near = swell === "l" ? 0 : w, far = swell === "l" ? w : 0;
-      s.innerHTML = '<svg viewBox="0 0 ' + w + ' 14" width="' + w + '" height="14"><path d="M' + far + ',6.5 L' + near + ',5.5 L' + near + ',8.5 L' + far + ',7.5 Z" fill="#D9D2C4"/></svg>';
+      /* the thick end is rounded: a 1.5px half-circle cap where the rule stops */
+      var far = swell === "l" ? w : 0, d = swell === "l"
+        ? "M" + far + ",6.5 L1.5,5.5 A1.5,1.5 0 0 0 1.5,8.5 L" + far + ",7.5 Z"
+        : "M" + far + ",6.5 L" + (w - 1.5) + ",5.5 A1.5,1.5 0 0 1 " + (w - 1.5) + ",8.5 L" + far + ",7.5 Z";
+      s.innerHTML = '<svg viewBox="0 0 ' + w + ' 14" width="' + w + '" height="14"><path d="' + d + '" fill="#D9D2C4"/></svg>';
     } else {
       s.innerHTML = '<svg viewBox="0 0 ' + w + ' 14" width="' + w + '" height="14"><rect y="6.5" width="' + w + '" height="1" fill="#D9D2C4"/></svg>';
     }
