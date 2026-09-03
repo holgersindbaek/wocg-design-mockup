@@ -3437,10 +3437,9 @@
     color: #4F800B; font-size: 12px; font-weight: 900; letter-spacing: -1px; padding-right: 1px; padding-top: 1px; }
   #openTablesTop .completionBadge.is100 { background-image: url("highReputationBadge.png"); }
 
-  /* the section is live: seats fill and empty, tables appear and expire on the listing beat */
-  #openTablesTop .ltCard { transition: opacity .3s ease, transform .3s cubic-bezier(.22,1,.36,1); }
+  /* the section is live: seats fill and empty, and a table that stops being listed is replaced in its
+     own slot, so nothing in the grid ever moves */
   #openTablesTop .ltCard.ltLeave { pointer-events: none; }
-  #openTablesTop .ltCard.ltFlip { transition: none; }
   #openTablesTop .player img.ltPop { animation: ltPop .36s cubic-bezier(.22,1,.36,1) both; }
   @keyframes ltPop { 0% { opacity: 0; transform: scale(.78) translateY(5px); } 60% { opacity: 1; } 100% { opacity: 1; transform: none; } }
   #openTablesTop .player img.ltDrop { animation: ltDrop .3s cubic-bezier(.32,0,.67,0) both; }
@@ -6301,25 +6300,6 @@
     /* a table on its way out still holds its place in the grid, so it counts until it is gone */
     function slotCount() { return grid.querySelectorAll(".ltCard:not(.isNew)").length; }
 
-    /* FLIP: the cards that stay put slide to their new places instead of jumping */
-    function flip(mutate) {
-      var cards = [].slice.call(grid.querySelectorAll(".ltCard"));
-      var before = cards.map(function (c) { return c.getBoundingClientRect(); });
-      mutate();
-      cards.forEach(function (c, i) {
-        if (!c.isConnected) return;
-        var now = c.getBoundingClientRect();
-        var dx = before[i].left - now.left, dy = before[i].top - now.top;
-        if (!dx && !dy) return;
-        c.classList.add("ltFlip");
-        c.style.transform = "translate(" + dx + "px," + dy + "px)";
-        requestAnimationFrame(function () {
-          c.classList.remove("ltFlip");
-          c.style.transform = "";
-        });
-      });
-    }
-
     /* a seat takes a player: the silhouette drops out, the face pops in, the plate takes the name */
     function sit(seat, person) {
       var img = seat.querySelector("img:not(.seatYou)");
@@ -6427,29 +6407,22 @@
       }
     }
 
-    /* the table stops being listed: it filled up, or it ended. Its replacement is inserted in the same
-       reflow, so the grid keeps its two full rows and the survivors slide only once */
-    function makeCard() {
-      var card = buildCard(pick(NEW_TABLES));
-      grid.insertBefore(card, grid.firstElementChild);
-      return card;
-    }
+    /* the table stops being listed: it filled up, or it ended. Its replacement takes the very slot it
+       left, so the tables around it never move */
     function appear() {
       if (slotCount() >= LIVE_CARDS) return;
-      var card = null;
-      flip(function () { card = makeCard(); });
-      if (card) { armCard(card); motionIn(card); }
+      var card = buildCard(pick(NEW_TABLES));
+      grid.insertBefore(card, grid.querySelector(".ltCard.isNew"));
+      armCard(card); motionIn(card);
     }
     function expire(card, replace) {
       if (card.classList.contains("ltLeave")) return;
       card.classList.add("ltLeave");
       motionOut(card, function () {
-        var fresh = null;
-        flip(function () {
-          card.remove();
-          if (replace !== false && slotCount() < LIVE_CARDS) fresh = makeCard();
-        });
-        if (fresh) { armCard(fresh); motionIn(fresh); }
+        if (replace === false || slotCount() > LIVE_CARDS) { card.remove(); return; }
+        var fresh = buildCard(pick(NEW_TABLES));
+        grid.replaceChild(fresh, card);
+        armCard(fresh); motionIn(fresh);
       });
     }
 
