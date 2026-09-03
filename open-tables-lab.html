@@ -629,7 +629,7 @@
 #sec-c27 .c27-time { position: absolute; z-index: 3; left: 0; bottom: 0; display: inline-flex; align-items: center; gap: 5px; height: 20px; line-height: 20px;
   font-size: 14px; font-weight: bold; color: #fff; white-space: nowrap; cursor: default; max-width: 30%; font-variant-numeric: tabular-nums;
   text-shadow: -1px -1px 0 rgba(0,0,0,.32), 1px -1px 0 rgba(0,0,0,.32), -1px 1px 0 rgba(0,0,0,.32), 1px 1px 0 rgba(0,0,0,.32); }
-#sec-c27 .c27-time svg { flex: none; width: 10px; height: 10px; position: relative; top: 0; filter: drop-shadow(0 0 1px rgba(0,0,0,.55)) drop-shadow(0 1px 1px rgba(0,0,0,.25)); }
+#sec-c27 .c27-time svg { flex: none; width: 9.5px; height: 9.5px; position: relative; top: -0.5px; filter: drop-shadow(0 0 1px rgba(0,0,0,.55)) drop-shadow(0 1px 1px rgba(0,0,0,.25)); }
 
 /* the marks: white, bottom right, with the same soft outline */
 #sec-c27 .ltCard.isNew .c27-time { max-width: 60%; }
@@ -646,7 +646,7 @@
 #sec-c27 .c27-sw { display: inline-flex; align-items: center; justify-content: center; gap: 5px; height: 30px; padding: 0 10px; border: none; cursor: pointer;
   border-radius: 8px; corner-shape: squircle; background: #327333 url("green-felt.jpg") center / 150px 150px; color: #fff; font-family: inherit; font-size: 13px; font-weight: bold;
   box-shadow: inset 0 0 0 1px rgba(0,0,0,.35); text-shadow: -1px -1px 0 rgba(0,0,0,.32), 1px -1px 0 rgba(0,0,0,.32), -1px 1px 0 rgba(0,0,0,.32), 1px 1px 0 rgba(0,0,0,.32); }
-#sec-c27 .c27-sw svg { width: 10px; height: 10px; position: relative; top: -1px; filter: drop-shadow(0 0 1px rgba(0,0,0,.55)); }
+#sec-c27 .c27-sw svg { width: 9.5px; height: 9.5px; position: relative; top: -0.5px; filter: drop-shadow(0 0 1px rgba(0,0,0,.55)); }
 #sec-c27 .c27-sw svg.c27-opt { width: 18px; height: 18px; }
 #sec-c27 .c27-bar .c27-gap { width: 14px; }
 #sec-c27 .c27-sw.on { box-shadow: inset 0 0 0 2px #fff, 0 0 0 1px rgba(0,0,0,.35); }
@@ -2647,10 +2647,10 @@ registerConcept((function () {
 /* ===== concept c27: Bare essentials, second pass ===== */
 registerConcept((function () {
   var MODELS = {};
-  var OPTS = { waiting: "0 min", crown: "jewels", host: "Host" };
+  var OPTS = { waiting: "0 min", crown: "jewels", host: "Sit to host" };
   var WAITING_WORDS = ["0 min", "Not started", "Open", "Waiting"];
-  /* the word in the time slot on a placeholder row, where there is no table yet to time */
-  var HOST_WORDS = { "Host": ["Host", "Host ranked"], "Host a table": ["Host a table", "Host ranked"], "Start a table": ["Start a table", "Start ranked"], "Sit to host": ["Sit to host", "Sit to host ranked"], "New table": ["New table", "New ranked table"] };
+  /* the word in the time slot on a placeholder row, where there is no table yet to time; the crown says the rest */
+  var HOST_WORDS = ["Sit to host", "Host", "Host a table", "Start a table", "New table"];
   var LOGO_FILE = { threefiveeight: "sgtmajor" };
   var TIPS = {
     "Tournament rules": "Cards are passed on every hand",
@@ -2692,7 +2692,7 @@ registerConcept((function () {
     if (t.empty) {
       var r = t.placeholder === "ranked";
       if (r) m.marks.push({ kind: "ranked", tip: "A new ranked table · counts toward your rating · real players only" });
-      m.time = HOST_WORDS[OPTS.host][r ? 1 : 0];
+      m.time = OPTS.host;
       m.timeTip = r ? "Sit at any seat to host a ranked table · real players fill the rest" : "Sit at any seat to host a table with your rules";
       m.facts.push(r ? "Real players only" : "Your rules · bots may fill empty seats");
       return m;
@@ -2796,7 +2796,7 @@ registerConcept((function () {
     });
     var gap = document.createElement("span"); gap.className = "c27-gap"; bar.appendChild(gap);
     var lab3 = document.createElement("span"); lab3.className = "c27-lab"; lab3.textContent = "Placeholder word"; bar.appendChild(lab3);
-    Object.keys(HOST_WORDS).forEach(function (word) {
+    HOST_WORDS.forEach(function (word) {
       var b = document.createElement("button"); b.type = "button"; b.className = "c27-sw" + (OPTS.host === word ? " on" : "");
       b.innerHTML = "<span>" + esc(word) + "</span>";
       b.addEventListener("click", function () { OPTS.host = word; bar.remove(); renderSection(conceptById("c27"), sec); });
@@ -2818,7 +2818,7 @@ registerConcept((function () {
     round: 2,
     open: true,
     title: "Bare essentials, second pass",
-    desc: "The same strict 4:3 felt with no footer and no button. Top left the game's own tile art, tall enough to read its name. Bottom left the time with a small pie that is an icon, not a timer: an empty ring before the deal, a quarter filled once the game is in play. Bottom right a white mark for <b>ranked</b> or <b>private</b>; the switcher tries three ranked marks and the word a placeholder row shows in the time slot. On the 3 seat felt the two players sit where a 4 seat table's left and right seats sit, so the top row is free for the art. Nothing says Seat open any more: the empty seat and the running time say it. Hover the art for the rules that differ and the target score. The switcher tries the word for a table that has not started.",
+    desc: "The same strict 4:3 felt with no footer and no button. Top left the game's own tile art, tall enough to read its name. Bottom left the time with a small pie that is an icon, not a timer: an empty ring before the deal, a quarter filled once the game is in play. Bottom right a white mark for <b>ranked</b> or <b>private</b>; the switcher tries three ranked marks and the word a placeholder row shows in the time slot, which is the same on a ranked row because the crown already says ranked. On the 3 seat felt the two players sit where a 4 seat table's left and right seats sit, so the top row is free for the art. Nothing says Seat open any more: the empty seat and the running time say it. Hover the art for the rules that differ and the target score. The switcher tries the word for a table that has not started.",
     render: function (t) {
       var m = build(t);
       MODELS[t.id] = m;
