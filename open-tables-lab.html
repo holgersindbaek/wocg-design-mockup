@@ -613,16 +613,14 @@
 #sec-c27 .ltCard .tableListing .header::before { border-radius: 20px; }
 #sec-c27 .ltCard .tableListing .header::after { border-radius: 20px; }
 #sec-c27 .ltCard .c27-content { display: none; }
-/* the 2 and 3 seat felts start with a face in the top row, so that row drops and the top corners stay free */
-#sec-c27 .players2 .playersContainer > .verticalSpacer:nth-child(1),
-#sec-c27 .players3 .playersContainer > .verticalSpacer:nth-child(1) { height: 16.5%; }
-#sec-c27 .players2 .playersContainer > .verticalSpacer:nth-child(9),
-#sec-c27 .players3 .playersContainer > .verticalSpacer:nth-child(9) { height: 5.7%; }
+/* the 3 seat felt: the two top players sit closer together and to the right, so the art has the top left corner to itself */
+#sec-c27 .players3 .playersContainer > .player.playernumber0 { margin-left: 24%; flex-basis: 36%; max-width: 36%; }
+#sec-c27 .players3 .playersContainer > .spacer20 { flex-basis: 4%; max-width: 4%; }
+#sec-c27 .players3 .playersContainer > .player.playernumber1 { flex-basis: 36%; max-width: 36%; }
 
 /* the game's own tile art, top left, tall enough for its lettering to read */
-#sec-c27 .c27-gi { position: absolute; z-index: 3; top: 0; left: 0; display: block; height: 52px; width: auto; max-width: 27%; object-fit: contain;
+#sec-c27 .c27-gi { position: absolute; z-index: 3; top: 0; left: 0; display: block; height: 44px; width: auto; max-width: 23%; object-fit: contain;
   filter: drop-shadow(0 1px 2px rgba(0,0,0,.45)); cursor: help; }
-#sec-c27 .players2 .c27-gi, #sec-c27 .players3 .c27-gi { max-width: 40%; }
 
 /* the ghost text recipe from the tiles' playing count: bold white with a soft outline, no plate */
 #sec-c27 .c27-time { position: absolute; z-index: 3; left: 0; bottom: 0; display: inline-flex; align-items: center; gap: 5px; height: 20px; line-height: 20px;
@@ -649,6 +647,8 @@
   border-radius: 8px; corner-shape: squircle; background: #327333 url("green-felt.jpg") center / 150px 150px; color: #fff; font-family: inherit; font-size: 13px; font-weight: bold;
   box-shadow: inset 0 0 0 1px rgba(0,0,0,.35); text-shadow: -1px -1px 0 rgba(0,0,0,.32), 1px -1px 0 rgba(0,0,0,.32), -1px 1px 0 rgba(0,0,0,.32), 1px 1px 0 rgba(0,0,0,.32); }
 #sec-c27 .c27-sw svg { width: 11px; height: 11px; filter: drop-shadow(0 0 1px rgba(0,0,0,.55)); }
+#sec-c27 .c27-sw svg.c27-opt { width: 18px; height: 18px; }
+#sec-c27 .c27-bar .c27-gap { width: 14px; }
 #sec-c27 .c27-sw.on { box-shadow: inset 0 0 0 2px #fff, 0 0 0 1px rgba(0,0,0,.35); }
 </style>
 <!-- CONCEPT STYLES END -->
@@ -2647,7 +2647,7 @@ registerConcept((function () {
 /* ===== concept c27: Bare essentials, second pass ===== */
 registerConcept((function () {
   var MODELS = {};
-  var OPTS = { waiting: "0 min" };
+  var OPTS = { waiting: "0 min", crown: "jewels" };
   var WAITING_WORDS = ["0 min", "Not started", "Open", "Waiting"];
   var LOGO_FILE = { threefiveeight: "sgtmajor" };
   var TIPS = {
@@ -2659,8 +2659,15 @@ registerConcept((function () {
     "Registered only": "Signed in players only",
     "Registered and experienced only": "Signed in players with ten finished games"
   };
+  /* three ranked marks to choose from: a crown with jewelled points, a softer crown, a small cup */
+  var CROWNS = {
+    jewels: '<svg class="c27-opt" viewBox="0 0 18 18" aria-hidden="true"><path d="M3.2 12.6V6.9l3.2 2.5L9 5l2.6 4.4 3.2-2.5v5.7z" fill="#fff" stroke="#fff" stroke-width="1.2" stroke-linejoin="round"/><rect x="3.2" y="13.6" width="11.6" height="2.2" rx="1.1" fill="#fff"/><circle cx="3.2" cy="6.2" r="1.3" fill="#fff"/><circle cx="9" cy="4.1" r="1.3" fill="#fff"/><circle cx="14.8" cy="6.2" r="1.3" fill="#fff"/></svg>',
+    soft: '<svg class="c27-opt" viewBox="0 0 18 18" aria-hidden="true"><path d="M2.6 14.2 2 6.4c0-.5.6-.8 1-.5l3.1 2.6c.3.2.7.1.9-.2L8.5 4c.2-.4.8-.4 1 0l1.5 4.3c.2.3.6.4.9.2L15 5.9c.4-.3 1 0 1 .5l-.6 7.8c0 .4-.4.7-.8.7H3.4c-.4 0-.8-.3-.8-.7z" fill="#fff"/></svg>',
+    cup: '<svg class="c27-opt" viewBox="0 0 18 18" aria-hidden="true"><path d="M5 3h8v4.2a4 4 0 0 1-8 0z" fill="#fff"/><path d="M5 4.2H2.8v1.6A2.6 2.6 0 0 0 5.4 8.4M13 4.2h2.2v1.6a2.6 2.6 0 0 1-2.6 2.6" fill="none" stroke="#fff" stroke-width="1.5"/><path d="M9 11.2v2.3M6.2 15.4h5.6" stroke="#fff" stroke-width="1.7" stroke-linecap="round"/></svg>'
+  };
+  var CROWN_LABELS = { jewels: "crown, jewelled points", soft: "crown, soft", cup: "cup" };
   var MARKS = {
-    ranked: '<svg class="c27-opt" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 13.5 2 5.5l4 3 3-5 3 5 4-3-1 8z" fill="#fff"/><path d="M3.4 15.6h11.2" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/></svg>',
+    get ranked() { return CROWNS[OPTS.crown]; },
     "private": '<svg class="c27-opt" viewBox="0 0 18 18" aria-hidden="true"><rect x="3.5" y="8" width="11" height="8" rx="2" fill="#fff"/><path d="M6 8V5.8a3 3 0 0 1 6 0V8" fill="none" stroke="#fff" stroke-width="2"/><circle cx="9" cy="12" r="1.3" fill="#327333"/></svg>'
   };
 
@@ -2670,13 +2677,9 @@ registerConcept((function () {
   function botTake(bots) { return bots.length === 1 ? "You take " + bots[0] + "’s hand and score" : "You take a bot’s hand and score"; }
   function block(html) { return '<span style="display:block;white-space:normal;max-width:208px">' + html + '</span>'; }
   function logoSrc(t) { return (LOGO_FILE[t.gameid] || t.gameid) + "_logo.png"; }
-  /* the pie: a ring that fills with the minutes, empty before the deal, full at an hour */
-  function pie(min) {
-    var f = min <= 0 ? 0 : Math.min(1, Math.max(0.08, min / 60));
-    var a = f * Math.PI * 2, r = 5.6, cx = 8, cy = 8;
-    var x = cx + r * Math.sin(a), y = cy - r * Math.cos(a), big = f > 0.5 ? 1 : 0;
-    var wedge = f >= 1 ? '<circle cx="8" cy="8" r="5.6" fill="#fff"/>' :
-      (f > 0 ? '<path d="M8 8V' + (cy - r) + 'A' + r + ' ' + r + ' 0 ' + big + ' 1 ' + x.toFixed(2) + ' ' + y.toFixed(2) + 'z" fill="#fff"/>' : '');
+  /* the pie is an icon, not a timer: an empty ring before the deal, a quarter filled once the game is in play */
+  function pie(started) {
+    var wedge = started ? '<path d="M8 8V2.4A5.6 5.6 0 0 1 13.6 8z" fill="#fff"/>' : '';
     return '<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="5.6" fill="none" stroke="#fff" stroke-width="1.9"/>' + wedge + '</svg>';
   }
 
@@ -2786,8 +2789,16 @@ registerConcept((function () {
     var lab = document.createElement("span"); lab.className = "c27-lab"; lab.textContent = "Before the deal"; bar.appendChild(lab);
     WAITING_WORDS.forEach(function (word) {
       var b = document.createElement("button"); b.type = "button"; b.className = "c27-sw" + (OPTS.waiting === word ? " on" : "");
-      b.innerHTML = pie(0) + "<span>" + esc(word) + "</span>";
+      b.innerHTML = pie(false) + "<span>" + esc(word) + "</span>";
       b.addEventListener("click", function () { OPTS.waiting = word; bar.remove(); renderSection(conceptById("c27"), sec); });
+      bar.appendChild(b);
+    });
+    var gap = document.createElement("span"); gap.className = "c27-gap"; bar.appendChild(gap);
+    var lab2 = document.createElement("span"); lab2.className = "c27-lab"; lab2.textContent = "Ranked mark"; bar.appendChild(lab2);
+    Object.keys(CROWNS).forEach(function (key) {
+      var b = document.createElement("button"); b.type = "button"; b.className = "c27-sw" + (OPTS.crown === key ? " on" : ""); b.title = CROWN_LABELS[key];
+      b.innerHTML = CROWNS[key];
+      b.addEventListener("click", function () { OPTS.crown = key; bar.remove(); renderSection(conceptById("c27"), sec); });
       bar.appendChild(b);
     });
     sec.insertBefore(bar, sec.querySelector(".cgrid"));
@@ -2798,12 +2809,12 @@ registerConcept((function () {
     round: 2,
     open: true,
     title: "Bare essentials, second pass",
-    desc: "The same strict 4:3 felt with no footer and no button. Top left the game's own tile art, tall enough to read its name. Bottom left the time with a small pie that is empty before the deal and fills as the game ages, full at an hour. Bottom right a white mark for <b>ranked</b> or <b>private</b>. Nothing says Seat open any more: the empty seat and the running time say it. Hover the art for the rules that differ and the target score. The switcher tries the word for a table that has not started.",
+    desc: "The same strict 4:3 felt with no footer and no button. Top left the game's own tile art, tall enough to read its name. Bottom left the time with a small pie that is an icon, not a timer: an empty ring before the deal, a quarter filled once the game is in play. Bottom right a white mark for <b>ranked</b> or <b>private</b>; the switcher tries three ranked marks. On the 3 seat felt the two top players sit closer together, to the right, so the art has its corner. Nothing says Seat open any more: the empty seat and the running time say it. Hover the art for the rules that differ and the target score. The switcher tries the word for a table that has not started.",
     render: function (t) {
       var m = build(t);
       MODELS[t.id] = m;
       var felt = (LAB.mode === "home" ? '<img class="c27-gi" src="' + logoSrc(t) + '" alt="' + esc(t.game) + '">' : '') +
-        (m.time ? '<div class="c27-time' + (m.facts.length ? ' c27-has' : '') + '">' + pie(t.started ? Math.max(m.age, 1) : 0) + '<span>' + esc(m.time) + '</span></div>' : '') +
+        (m.time ? '<div class="c27-time' + (m.facts.length ? ' c27-has' : '') + '">' + pie(t.started) + '<span>' + esc(m.time) + '</span></div>' : '') +
         (m.marks.length ? '<div class="c27-marks">' + m.marks.map(function (mk) { return MARKS[mk.kind]; }).join("") + '</div>' : '');
       return card(t, '', { feltExtra: felt, contentClass: 'c27-content' });
     },
