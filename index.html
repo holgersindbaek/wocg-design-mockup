@@ -2479,10 +2479,28 @@
   body:where([class*=" tint-"]:not(.tint-none)) :is(.catgrid, #allgrid) .gtile .gplay:focus-visible { background: var(--tintbtnhover); }
   body:where([class*=" tint-"]:not(.tint-none)) :is(.catgrid, #allgrid) .gtile .gplay .gzarr { background-image: url("arrowDownBigTrim.png");
     filter: brightness(0) invert(1) drop-shadow(1px 0 var(--pring)) drop-shadow(-1px 0 var(--pring)) drop-shadow(0 1px var(--pring)) drop-shadow(0 -1px var(--pring)); }
+  /* the dropup follows the button: Join table / Play solo in the art's color with its ring, the six small actions on white */
+  body:where([class*=" tint-"]:not(.tint-none)) :is(.catgrid, #allgrid) .gtile .gmenu { background: linear-gradient(var(--tintbtnring) 0 50px, #D8D2C7 50px); }
+  body:where([class*=" tint-"]:not(.tint-none)) :is(.catgrid, #allgrid) .gtile .gmenu .gmGrid .gmTop { background: var(--tint); color: #fff; box-shadow: 0 0 0 1px var(--tintbtnring);
+    text-shadow: -1px -1px 0 var(--tintbtnring), 1px -1px 0 var(--tintbtnring), -1px 1px 0 var(--tintbtnring), 1px 1px 0 var(--tintbtnring); }
+  body:where([class*=" tint-"]:not(.tint-none)) :is(.catgrid, #allgrid) .gtile .gmenu .gmGrid .gmTop:hover,
+  body:where([class*=" tint-"]:not(.tint-none)) :is(.catgrid, #allgrid) .gtile .gmenu .gmGrid .gmTop:focus-visible { background: var(--tintbtnhover); }
+  body:where([class*=" tint-"]:not(.tint-none)) :is(.catgrid, #allgrid) .gtile .gmenu .gmGrid .gmTop:active { box-shadow: 0 0 0 1px var(--tintbtnring); }
+  body:where([class*=" tint-"]:not(.tint-none)) :is(.catgrid, #allgrid) .gtile .gmenu .gmGrid button:not(.gmTop) { background: #fff; }
+  body:where([class*=" tint-"]:not(.tint-none)) :is(.catgrid, #allgrid) .gtile .gmenu .gmGrid button:not(.gmTop):hover,
+  body:where([class*=" tint-"]:not(.tint-none)) :is(.catgrid, #allgrid) .gtile .gmenu .gmGrid button:not(.gmTop):focus-visible { background: var(--tintbg); }
   /* lightness ladder: the light-blue button sits at about L .85 (ground) / L .75 (ring); the nameplate shares its ground */
   body.tint-l97 :is(.catgrid, #allgrid) .gtile { --tintbg: oklch(from var(--tint) .97 .03 h); --tintring: oklch(from var(--tint) .87 .09 h); }
   body.tint-l95 :is(.catgrid, #allgrid) .gtile { --tintbg: oklch(from var(--tint) .95 .045 h); --tintring: oklch(from var(--tint) .85 .10 h); }
   body.tint-l95midring :is(.catgrid, #allgrid) .gtile { --tintbg: oklch(from var(--tint) .95 .045 h); --tintring: oklch(from var(--tint) .83 .11 h);
+    --tintink: oklch(from var(--tint) .44 .15 h); --tintsub: oklch(from var(--tint) .52 .10 h); }
+  /* the ring's crispness follows luminance contrast, not OKLab lightness: at L .83 the warm rings (red, orange) clip
+     against sRGB and land darker, and the eye resolves a thin red line better than a thin blue or green one, so the
+     cool hues read soft. Evened: ring L runs from .83 at red-orange (hue 30) down to .79 for hues 120 degrees away. */
+  body.tint-l95ringeven :is(.catgrid, #allgrid) .gtile { --tintbg: oklch(from var(--tint) .95 .045 h);
+    --tintring: oklch(from var(--tint) calc(0.79 + 0.04 * pow(max(0, cos(calc((h - 30) * 1deg))), 2)) .11 h);
+    --tintink: oklch(from var(--tint) .44 .15 h); --tintsub: oklch(from var(--tint) .52 .10 h); }
+  body.tint-l95ringdark :is(.catgrid, #allgrid) .gtile { --tintbg: oklch(from var(--tint) .95 .045 h); --tintring: oklch(from var(--tint) .79 .11 h);
     --tintink: oklch(from var(--tint) .44 .15 h); --tintsub: oklch(from var(--tint) .52 .10 h); }
   body.tint-l93 :is(.catgrid, #allgrid) .gtile { --tintbg: oklch(from var(--tint) .93 .055 h); --tintring: oklch(from var(--tint) .83 .11 h); }
   body.tint-l93inkdeep :is(.catgrid, #allgrid) .gtile { --tintbg: oklch(from var(--tint) .93 .055 h); --tintring: oklch(from var(--tint) .83 .11 h);
@@ -4013,7 +4031,9 @@
     ["none", "White (as before)", "Base"],
     ["l97", "Own hue, whisper (L 97)", "Lightness"],
     ["l95", "Own hue, light (L 95)", "Lightness"],
-    ["l95midring", "Own hue, light (L 95), ring from mid, text from deep", "Lightness"],
+    ["l95midring", "Own hue, light (L 95), ring from mid, text from deep (default)", "Lightness"],
+    ["l95ringeven", "Same, ring evened by hue: cool hues a step darker (L 79 to 83)", "Lightness"],
+    ["l95ringdark", "Same, ring a step darker on every tile (L 79)", "Lightness"],
     ["l93", "Own hue, mid (L 93)", "Lightness"],
     ["l93inkdeep", "Own hue, mid (L 93), text from deep", "Lightness"],
     ["l93inknp", "Own hue, mid (L 93), text from the nameplate level", "Lightness"],
@@ -4038,7 +4058,7 @@
     ["ghostnum", "Ghost: naked number only (big tile keeps its word)"]
   ];
   var curShadow = "capsule", curEdge = "softlight", curTexture = "grainbal", curCatalog = "split", curStats = "capsule2", curMenu = "centerwave", curCounter = "ghostdot", curRail = "suitscool", curPlayBtn = "triogreen", curTileBg = "cardroomcusp", curPinPair = "violet", curSect = "waveband", curDivider = "fourstations", curLhover = "suits";
-  var curTint = "none";
+  var curTint = "l95midring";
   /* every CSS blend mode as an avatar-rim coat: one filter per mode is stamped
      into the SVG defs (same eroded rim, #737373 @ .9 ink, only feBlend's mode
      changes) plus a matching mix-blend ring for the invitee circles */
