@@ -3396,10 +3396,67 @@
 
   <div id="catnav"><span class="catlabel">Jump to</span><a class="catchip" href="#sec-tt">Trick-taking <span class="catcount">&middot; 10</span></a><a class="catchip" href="#sec-rummy">Rummy <span class="catcount">&middot; 4</span></a><a class="catchip" href="#sec-classic">Classics <span class="catcount">&middot; 4</span></a></div>
 
+<style>
+  /* ── the open-table tile (open-tables-lab c27, "bare essentials"): the whole tile is the 4:3 felt.
+     The seats are the way in, so there is no white bottom and no button. Top left the game's own tile
+     art, bottom left the time with a small ring, bottom right a white mark for ranked or private. ── */
+  #openTablesTop .ltCard { background-color: #327333; }
+  #openTablesTop .ltCard:hover { background-color: #327333; }
+  #openTablesTop .ltCard .tableListing { padding-top: 75%; }
+  #openTablesTop .ltCard .tableListing .header { padding-top: 0; inset: 0; }
+  #openTablesTop .ltCard .tableListing .header::before,
+  #openTablesTop .ltCard .tableListing .header::after { border-radius: 20px; }
+  /* a 3 seat felt puts its two players where a 4 seat table's left and right seats sit, so the top row stays free for the art */
+  #openTablesTop .players3 .playersContainer > .verticalSpacer:nth-child(1) { height: 33.3%; }
+  #openTablesTop .players3 .playersContainer > .verticalSpacer:nth-child(5),
+  #openTablesTop .players3 .playersContainer > .verticalSpacer:nth-child(9) { height: 0; }
+
+  /* the game's own tile art, top left; a few games get more height so their lettering reads the same */
+  #openTablesTop .ltArt { position: absolute; z-index: 3; top: 0; left: -2px; display: block; height: 44px; width: auto;
+    max-width: 26%; object-fit: contain; filter: drop-shadow(0 1px 2px rgba(0,0,0,.45)); }
+  #openTablesTop .ltArt.art-ginrummy { height: 62px; }
+  #openTablesTop .ltArt.art-pinochle, #openTablesTop .ltArt.art-canasta { height: 48px; }
+
+  /* the ghost text recipe from the game tiles' playing count: bold white with a soft outline, no plate */
+  #openTablesTop .ltTime { position: absolute; z-index: 3; left: 0; bottom: 0; display: inline-flex; align-items: center; gap: 5px;
+    height: 20px; line-height: 20px; font-size: 14px; font-weight: bold; color: #fff; white-space: nowrap; max-width: 30%;
+    font-variant-numeric: tabular-nums;
+    text-shadow: -1px -1px 0 rgba(0,0,0,.32), 1px -1px 0 rgba(0,0,0,.32), -1px 1px 0 rgba(0,0,0,.32), 1px 1px 0 rgba(0,0,0,.32); }
+  #openTablesTop .ltCard.isNew .ltTime { max-width: 60%; }
+  #openTablesTop .ltTime svg { flex: none; width: 9.5px; height: 9.5px; position: relative; top: -.5px;
+    filter: drop-shadow(0 0 1px rgba(0,0,0,.55)) drop-shadow(0 1px 1px rgba(0,0,0,.25)); }
+
+  /* the marks: white, bottom right, with the same soft outline */
+  #openTablesTop .ltMarks { position: absolute; z-index: 3; right: 0; bottom: 1px; display: inline-flex; align-items: center; gap: 6px; }
+  #openTablesTop .ltMark { display: block; width: 18px; height: 18px;
+    filter: drop-shadow(0 0 1px rgba(0,0,0,.6)) drop-shadow(0 1px 1px rgba(0,0,0,.3)); }
+
+  /* the finish badge, as the production listing draws it: the green badge from 70% with ten finished games, gold at 100% */
+  #openTablesTop .completionBadge { display: flex; align-items: center; justify-content: center; width: 20px; height: 20px;
+    position: absolute; right: -10px; top: -10px; background: url("cleanMeldBadge.png") no-repeat center / 20px 20px;
+    color: #4F800B; font-size: 12px; font-weight: 900; letter-spacing: -1px; padding-right: 1px; padding-top: 1px; }
+  #openTablesTop .completionBadge.is100 { background-image: url("highReputationBadge.png"); }
+
+  /* the section is live: seats fill and empty, tables appear and expire on the listing beat */
+  #openTablesTop .ltCard { transition: opacity .3s ease, transform .3s cubic-bezier(.22,1,.36,1); }
+  #openTablesTop .ltCard.ltEnter { opacity: 0; transform: scale(.93); }
+  #openTablesTop .ltCard.ltLeave { opacity: 0; transform: scale(.94); pointer-events: none; }
+  #openTablesTop .ltCard.ltFlip { transition: none; }
+  #openTablesTop .player img.ltPop { animation: ltPop .36s cubic-bezier(.22,1,.36,1) both; }
+  @keyframes ltPop { 0% { opacity: 0; transform: scale(.78) translateY(5px); } 60% { opacity: 1; } 100% { opacity: 1; transform: none; } }
+  #openTablesTop .player img.ltDrop { animation: ltDrop .3s cubic-bezier(.32,0,.67,0) both; }
+  @keyframes ltDrop { 0% { opacity: 1; transform: none; } 100% { opacity: 0; transform: scale(.8) translateY(4px); } }
+  #openTablesTop .playerNameContainer.ltPlate { animation: ltPlate .34s ease both; }
+  @keyframes ltPlate { 0% { opacity: .15; } 100% { opacity: 1; } }
+  #openTablesTop .ltTime span.ltTick { animation: ltPlate .3s ease both; }
+
+  /* the placeholder is an ordinary waiting table with every seat empty: sitting hosts it */
+  #openTablesTop .ltCard.isNew { cursor: pointer; }
+</style>
   <div class="lobbyscope" id="openTablesTop">
     <div class="lobbyhead"><span class="pophead">Open tables</span><div class="lhctrls"><div class="ltFilterBox"><div class="ldMore"><span class="dropupButton"><span class="dropupButtonText">All games</span></span><ul class="dropupContent"><li>All games</li><li>Hearts</li><li>Spades</li><li>Euchre</li><li>Canasta</li></ul></div></div><button class="button green small ltSeeAll">See all</button></div></div>
     <div class="lobbyTablesPanel" id="lobbyTablesPanel">
-      <div class="ltGrid"><div class="ltCard"><div class="tableListing hearts"><div class="header"><div class="playersContainer"><div class="spacer30"></div><div class="player playernumber1"><img width="32" height="32" src="AnimalGopher.svg" alt=""><div class="playerNameContainer"><p class="playerName">Marge</p></div></div><div class="spacer30"></div><div class="player playernumber0 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty seat</p></div></div><div class="spacer20"></div><div class="player playernumber2"><img width="32" height="32" src="AnimalDragon.svg" alt=""><div class="playerNameContainer"><p class="playerName">carl52</p></div></div><div class="spacer30"></div><div class="player playernumber3 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty seat</p></div></div><div class="spacer30"></div></div></div><div class="content"><div class="contentTop"><span class="tableNumber"><span>Hearts</span></span></div><div class="button blue">Join &middot; 2 seats open</div></div></div></div><div class="ltCard"><div class="tableListing spades isTeamGame"><div class="header"><div class="playersContainer"><div class="spacer30"></div><div class="player playernumber1"><img width="32" height="32" src="AnimalChicken.svg" alt=""><div class="playerNameContainer"><p class="playerName">Vera</p></div></div><div class="spacer30"></div><div class="player playernumber0 playedTogether"><img width="32" height="32" src="AnimalCat.svg" alt=""><div class="playerNameContainer"><p class="playerName">Duckling</p><span class="playerBadge isLiked"></span></div></div><div class="spacer20"></div><div class="player playernumber2 isBot seatAvailable"><img width="32" height="32" src="AlienMartian.svg" alt=""><div class="playerNameContainer"><p class="playerName">Bot Ada</p><span class="playerBadge isBot"></span></div></div><div class="spacer30"></div><div class="player playernumber3 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty seat</p></div></div><div class="spacer30"></div></div></div><div class="content"><div class="contentTop"><span class="tableNumber"><span>Spades &middot; Ranked</span></span></div><div class="button blue">Join &middot; 1 seat left</div></div></div></div><div class="ltCard isFriend"><div class="tableListing euchre isTeamGame"><div class="header"><div class="playersContainer"><div class="spacer30"></div><div class="player playernumber1"><img width="32" height="32" src="AnimalFox.svg" alt=""><div class="playerNameContainer"><p class="playerName">BobK</p><span class="playerBadge isLiked"></span></div></div><div class="spacer30"></div><div class="player playernumber0 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty seat</p></div></div><div class="spacer20"></div><div class="player playernumber2 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty seat</p></div></div><div class="spacer30"></div><div class="player playernumber3 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty seat</p></div></div><div class="spacer30"></div></div></div><div class="content"><div class="contentTop"><span class="tableNumber"><span>BobK&rsquo;s table &middot; Euchre</span></span></div><div class="button blue">Join &middot; 3 seats open</div></div></div></div><div class="ltCard"><div class="tableListing pinochle isTeamGame"><div class="header"><div class="playersContainer"><div class="spacer30"></div><div class="player playernumber1"><img width="32" height="32" src="AnimalButterfly.svg" alt=""><div class="playerNameContainer"><p class="playerName">wendy_h</p></div></div><div class="spacer30"></div><div class="player playernumber0 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty seat</p></div></div><div class="spacer20"></div><div class="player playernumber2"><img width="32" height="32" src="AnimalBeaver.svg" alt=""><div class="playerNameContainer"><p class="playerName">north4th</p></div></div><div class="spacer30"></div><div class="player playernumber3 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty seat</p></div></div><div class="spacer30"></div></div></div><div class="content"><div class="contentTop"><span class="tableNumber"><span>Pinochle</span></span></div><div class="button blue">Join &middot; 2 seats open</div></div></div></div><div class="ltCard"><div class="tableListing rummy"><div class="header"><div class="playersContainer"><div class="spacer30"></div><div class="player playernumber1"><img width="32" height="32" src="AnimalCow.svg" alt=""><div class="playerNameContainer"><p class="playerName">PragueJoe</p></div></div><div class="spacer30"></div><div class="player playernumber0"><img width="32" height="32" src="AnimalBee.svg" alt=""><div class="playerNameContainer"><p class="playerName">mollyb</p></div></div><div class="spacer20"></div><div class="player playernumber2 isBot"><img width="32" height="32" src="AlienMartian.svg" alt=""><div class="playerNameContainer"><p class="playerName">Robot 2</p><span class="playerBadge isBot"></span></div></div><div class="spacer30"></div><div class="player playernumber3 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty seat</p></div></div><div class="spacer30"></div></div></div><div class="content"><div class="contentTop"><span class="tableNumber"><span>Rummy</span></span></div><div class="button blue">Join &middot; 1 seat left</div></div></div></div><div class="ltCard isNew"><div class="tableListing canasta isTeamGame"><div class="header"><div class="playersContainer"><div class="spacer30"></div><div class="player playernumber1 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty seat</p></div></div><div class="spacer30"></div><div class="player playernumber0 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty seat</p></div></div><div class="spacer20"></div><div class="player playernumber2 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty seat</p></div></div><div class="spacer30"></div><div class="player playernumber3 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty seat</p></div></div><div class="spacer30"></div></div></div><div class="content"><div class="contentTop"><span class="tableNumber"><span>New Canasta table</span></span></div></div></div><div class="ltNewBody"><div class="ltNewSub">Invite Duckling, BobK</div><div class="ltInvitees"><span class="ltInviteeAv"><img class="ltAv" width="28" height="28" src="AnimalCat.svg" alt="Duckling"><span class="ltOnDot"></span></span><span class="ltInviteeAv"><img class="ltAv" width="28" height="28" src="AnimalFox.svg" alt="BobK"><span class="ltOnDot"></span></span></div><button class="button small green ltStart">Start &amp; invite</button><button class="ltEditInvitees">Choose who to invite</button></div></div></div>
+      <div class="ltGrid"><div class="ltCard"><div class="tableListing hearts players4"><div class="header"><div class="playersContainer"><div class="spacer30"></div><div class="player playernumber1"><img width="32" height="32" src="AnimalGopher.svg" alt=""><div class="playerNameContainer"><p class="playerName">Marge</p><span class="completionBadge">97</span></div></div><div class="spacer30"></div><div class="player playernumber0 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty seat</p></div></div><div class="spacer20"></div><div class="player playernumber2"><img width="32" height="32" src="AnimalDragon.svg" alt=""><div class="playerNameContainer"><p class="playerName">carl52</p><span class="completionBadge">91</span></div></div><div class="spacer30"></div><div class="player playernumber3 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty seat</p></div></div><div class="spacer30"></div><img class="ltArt art-hearts" src="hearts_logo.png" alt="Hearts" data-tip="<b>Hearts</b><br>Ends at 100"><div class="ltTime" data-tip="Not started yet &middot; waiting for players"><svg class="ltRing" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="#fff" stroke-width="2"/></svg><span>0 min</span></div></div></div></div></div><div class="ltCard"><div class="tableListing spades players4"><div class="header"><div class="playersContainer"><div class="spacer30"></div><div class="player playernumber1"><img width="32" height="32" src="AnimalChicken.svg" alt=""><div class="playerNameContainer"><p class="playerName">Vera</p><span class="completionBadge">99</span></div></div><div class="spacer30"></div><div class="player playernumber0 playedTogether"><img width="32" height="32" src="AnimalCat.svg" alt=""><div class="playerNameContainer"><p class="playerName">Duckling</p><span class="playerBadge isLiked"></span><span class="completionBadge">96</span></div></div><div class="spacer20"></div><div class="player playernumber2 isBot seatAvailable"><img width="32" height="32" src="AlienMartian.svg" alt=""><div class="playerNameContainer"><p class="playerName">Bot Ada</p><span class="playerBadge isBot"></span></div></div><div class="spacer30"></div><div class="player playernumber3"><img width="32" height="32" src="AnimalBeaver.svg" alt=""><div class="playerNameContainer"><p class="playerName">Hank</p><span class="completionBadge">80</span></div></div><div class="spacer30"></div><img class="ltArt art-spades" src="spades_logo.png" alt="Spades" data-tip="<b>Spades</b><br>You take Bot Ada&rsquo;s hand and score<br>Plays to 500"><div class="ltTime" data-tip="In play for 12 min"><svg class="ltRing" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="#fff" stroke-width="2"/><path d="M8 8V1A7 7 0 0 1 15 8z" fill="#fff"/></svg><span>12 min</span></div></div></div></div></div><div class="ltCard isFriend"><div class="tableListing euchre players4"><div class="header"><div class="playersContainer"><div class="spacer30"></div><div class="player playernumber1 playedTogether"><img width="32" height="32" src="AnimalFox.svg" alt=""><div class="playerNameContainer"><p class="playerName">BobK</p><span class="playerBadge isLiked"></span><span class="completionBadge is100"></span></div></div><div class="spacer30"></div><div class="player playernumber0 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty seat</p></div></div><div class="spacer20"></div><div class="player playernumber2 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty seat</p></div></div><div class="spacer30"></div><div class="player playernumber3 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty seat</p></div></div><div class="spacer30"></div><img class="ltArt art-euchre" src="euchre_logo.png" alt="Euchre" data-tip="<b>Euchre</b><br>Dealer may pass<br>No bots<br>Plays to 10"><div class="ltTime" data-tip="Not started yet &middot; waiting for players"><svg class="ltRing" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="#fff" stroke-width="2"/></svg><span>0 min</span></div><div class="ltMarks"><svg class="ltMark" viewBox="0 0 18 18" aria-hidden="true"><rect x="3.5" y="8" width="11" height="8" rx="2" fill="#fff"/><path d="M6 8V5.8a3 3 0 0 1 6 0V8" fill="none" stroke="#fff" stroke-width="2"/><circle cx="9" cy="12" r="1.3" fill="#327333"/></svg></div></div></div></div></div><div class="ltCard"><div class="tableListing pinochle players4"><div class="header"><div class="playersContainer"><div class="spacer30"></div><div class="player playernumber1"><img width="32" height="32" src="AnimalButterfly.svg" alt=""><div class="playerNameContainer"><p class="playerName">wendy_h</p><span class="completionBadge">93</span></div></div><div class="spacer30"></div><div class="player playernumber0"><img width="32" height="32" src="AnimalCow.svg" alt=""><div class="playerNameContainer"><p class="playerName">PragueJoe</p><span class="completionBadge">98</span></div></div><div class="spacer20"></div><div class="player playernumber2"><img width="32" height="32" src="AnimalBeaver.svg" alt=""><div class="playerNameContainer"><p class="playerName">north4th</p><span class="completionBadge">88</span></div></div><div class="spacer30"></div><div class="player playernumber3 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty seat</p></div></div><div class="spacer30"></div><img class="ltArt art-pinochle" src="pinochle_logo.png" alt="Pinochle" data-tip="<b>Pinochle</b><br>Plays to 150"><div class="ltTime" data-tip="Not started yet &middot; one seat left, the deal starts when you sit"><svg class="ltRing" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="#fff" stroke-width="2"/></svg><span>0 min</span></div><div class="ltMarks"><svg class="ltMark" viewBox="0 0 18 18" aria-hidden="true"><path d="M2.6 14.2 2 6.4c0-.5.6-.8 1-.5l3.1 2.6c.3.2.7.1.9-.2L8.5 4c.2-.4.8-.4 1 0l1.5 4.3c.2.3.6.4.9.2L15 5.9c.4-.3 1 0 1 .5l-.6 7.8c0 .4-.4.7-.8.7H3.4c-.4 0-.8-.3-.8-.7z" fill="#fff"/></svg></div></div></div></div></div><div class="ltCard"><div class="tableListing rummy players4"><div class="header"><div class="playersContainer"><div class="spacer30"></div><div class="player playernumber1"><img width="32" height="32" src="AlienBlue.svg" alt=""><div class="playerNameContainer"><p class="playerName">cardShark52</p><span class="completionBadge">99</span></div></div><div class="spacer30"></div><div class="player playernumber0"><img width="32" height="32" src="AnimalBee.svg" alt=""><div class="playerNameContainer"><p class="playerName">mollyb</p><span class="completionBadge is100"></span></div></div><div class="spacer20"></div><div class="player playernumber2 isBot seatAvailable"><img width="32" height="32" src="AlienMartian.svg" alt=""><div class="playerNameContainer"><p class="playerName">Robot 2</p><span class="playerBadge isBot"></span></div></div><div class="spacer30"></div><div class="player playernumber3 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty seat</p></div></div><div class="spacer30"></div><img class="ltArt art-rummy" src="rummy_logo.png" alt="Rummy" data-tip="<b>Rummy</b><br>You take Robot 2&rsquo;s hand and score<br>Plays to 500"><div class="ltTime" data-tip="In play for 10 min &middot; a player left, you take their hand and score"><svg class="ltRing" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="#fff" stroke-width="2"/><path d="M8 8V1A7 7 0 0 1 15 8z" fill="#fff"/></svg><span>10 min</span></div></div></div></div></div><div class="ltCard isNew"><div class="tableListing canasta players4"><div class="header"><div class="playersContainer"><div class="spacer30"></div><div class="player playernumber1 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty seat</p></div></div><div class="spacer30"></div><div class="player playernumber0 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty seat</p></div></div><div class="spacer20"></div><div class="player playernumber2 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty seat</p></div></div><div class="spacer30"></div><div class="player playernumber3 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty seat</p></div></div><div class="spacer30"></div><img class="ltArt art-canasta" src="canasta_logo.png" alt="Canasta" data-tip="<b>Canasta</b><br>Your rules &middot; bots may fill empty seats"><div class="ltTime" data-tip="Sit at any seat to host a table with your rules"><svg class="ltRing" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="#fff" stroke-width="2"/></svg><span>Sit to host</span></div></div></div></div></div></div>
       
     </div>
   </div>
@@ -6146,7 +6203,9 @@
   });
   /* every takeable seat in the open tables gets the join preview: the empty
      seats and the bot seats, since sitting on a bot replaces it */
-  document.querySelectorAll(".lobbyscope .ltCard:not(.isNew) .player.isEmpty, .lobbyscope .ltCard:not(.isNew) .player.isBot").forEach(function (seat) {
+  /* in the open tables a placeholder seat hosts the table, so those seats are armed too and their plate says Host */
+  window.ltArmSeat = function (seat) {
+    if (seat.classList.contains("joinable")) return;
     seat.classList.add("joinable");
     var you = document.createElement("img");
     you.className = "seatYou";
@@ -6168,9 +6227,249 @@
     roll.appendChild(seat.querySelector(".playerName"));
     var join = document.createElement("p");
     join.className = "playerName pnJoin";
-    join.textContent = "Join";
+    join.textContent = seat.closest(".ltCard") && seat.closest(".ltCard").classList.contains("isNew") ? "Host" : "Join";
     roll.appendChild(join);
     plate.insertBefore(roll, plate.firstChild);
+  };
+  document.querySelectorAll(".lobbyscope .ltCard:not(.isNew) .player.isEmpty, .lobbyscope .ltCard:not(.isNew) .player.isBot, #openTablesTop .ltCard.isNew .player.isEmpty").forEach(window.ltArmSeat);
+</script>
+<script>
+  /* the open-table tiles carry their quieter facts in tooltips: the art holds the game and its rules,
+     the time holds the state in words, and each mark explains itself */
+  document.addEventListener("DOMContentLoaded", function () {
+    if (typeof window.wtipAttach !== "function") return;
+    document.querySelectorAll("#openTablesTop [data-tip]").forEach(function (el) {
+      window.wtipAttach(el, '<span style="display:block;white-space:normal;max-width:208px">' + el.getAttribute("data-tip") + "</span>");
+    });
+    document.querySelectorAll("#openTablesTop .ltCard.isNew .player.isEmpty").forEach(function (seat) {
+      window.wtipAttach(seat, "Sit here to host a table with your rules");
+    });
+  });
+</script>
+<script>
+  /* ── the Open tables section is live, as the production Find tables box is: the venue pushes
+     table.listings every 4.5 seconds, so a seat fills, a player leaves, a table appears, and a
+     table that filled up or ended stops being listed. One event per beat, so the eye can follow. ── */
+  document.addEventListener("DOMContentLoaded", function () {
+    var sec = document.getElementById("openTablesTop");
+    if (!sec) return;
+    var grid = sec.querySelector(".ltGrid");
+    if (!grid) return;
+    var TICK = 4500, MAX_CARDS = 5; /* five live tables plus the New table card fills the two rows */
+
+    var PEOPLE = [
+      ["Marge", "AnimalGopher.svg", 97], ["carl52", "AnimalDragon.svg", 91], ["Vera", "AnimalChicken.svg", 99],
+      ["Duckling", "AnimalCat.svg", 96], ["BobK", "AnimalFox.svg", 100], ["wendy_h", "AnimalButterfly.svg", 93],
+      ["north4th", "AnimalBeaver.svg", 88], ["PragueJoe", "AnimalCow.svg", 98], ["mollyb", "AnimalBee.svg", 100],
+      ["GinTonic", "AnimalBird.svg", 95], ["Carol", "AnimalCat.svg", 90], ["Hank", "AnimalBeaver.svg", 80],
+      ["cardShark52", "AlienBlue.svg", 99], ["moonshot", "AnimalGopher.svg", 92], ["Rosie", "AnimalButterfly.svg", 94],
+      ["spadesfan", "AnimalChicken.svg", 89], ["BigDeal", "AnimalCow.svg", 96], ["Marta", "AnimalCow.svg", 91]
+    ];
+    var NEW_TABLES = [
+      ["hearts", "Hearts", "Ends at 100"], ["spades", "Spades", "Plays to 500"], ["euchre", "Euchre", "Plays to 10"],
+      ["pinochle", "Pinochle", "Plays to 150"], ["ginrummy", "Gin Rummy", "Plays to 100"], ["canasta", "Canasta", "Plays to 5,000"],
+      ["rummy", "Rummy", "Plays to 500"]
+    ];
+    var RING = '<svg class="ltRing" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="#fff" stroke-width="2"/></svg>';
+
+    function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+    function seatsOf(card) { return [].slice.call(card.querySelectorAll(".player")); }
+    function emptySeats(card) { return seatsOf(card).filter(function (p) { return p.classList.contains("isEmpty"); }); }
+    function humanSeats(card) {
+      return seatsOf(card).filter(function (p) { return !p.classList.contains("isEmpty") && !p.classList.contains("isBot"); });
+    }
+    function names(card) {
+      return humanSeats(card).map(function (p) { return p.querySelector(".playerName").textContent.trim(); });
+    }
+    function realCards() {
+      return [].slice.call(grid.querySelectorAll(".ltCard:not(.isNew):not(.ltLeave)"));
+    }
+
+    /* FLIP: the cards that stay put slide to their new places instead of jumping */
+    function flip(mutate) {
+      var cards = [].slice.call(grid.querySelectorAll(".ltCard"));
+      var before = cards.map(function (c) { return c.getBoundingClientRect(); });
+      mutate();
+      cards.forEach(function (c, i) {
+        if (!c.isConnected) return;
+        var now = c.getBoundingClientRect();
+        var dx = before[i].left - now.left, dy = before[i].top - now.top;
+        if (!dx && !dy) return;
+        c.classList.add("ltFlip");
+        c.style.transform = "translate(" + dx + "px," + dy + "px)";
+        requestAnimationFrame(function () {
+          c.classList.remove("ltFlip");
+          c.style.transform = "";
+        });
+      });
+    }
+
+    /* a seat takes a player: the silhouette drops out, the face pops in, the plate takes the name */
+    function sit(seat, person) {
+      var img = seat.querySelector("img:not(.seatYou)");
+      var plate = seat.querySelector(".playerNameContainer");
+      var nameEl = plate.querySelector(".playerName:not(.pnJoin)");
+      img.classList.add("ltDrop");
+      setTimeout(function () {
+        seat.classList.remove("isEmpty", "joinable");
+        var roll = plate.querySelector(".plateRoll");
+        if (roll) { plate.insertBefore(nameEl, roll); roll.remove(); }
+        var you = seat.querySelector(".seatYou");
+        if (you) you.remove();
+        img.classList.remove("ltDrop");
+        img.src = person[1];
+        img.classList.add("ltPop");
+        nameEl.textContent = person[0];
+        plate.classList.add("ltPlate");
+        if (person[2] >= 70) {
+          var badge = document.createElement("span");
+          badge.className = "completionBadge" + (person[2] === 100 ? " is100" : "");
+          badge.textContent = person[2] === 100 ? "" : person[2];
+          plate.appendChild(badge);
+        }
+        setTimeout(function () { img.classList.remove("ltPop"); plate.classList.remove("ltPlate"); }, 400);
+      }, 260);
+    }
+
+    /* a player leaves: the face drops out and the seat is open again */
+    function stand(seat) {
+      var img = seat.querySelector("img:not(.seatYou)");
+      var plate = seat.querySelector(".playerNameContainer");
+      var nameEl = plate.querySelector(".playerName:not(.pnJoin)");
+      var badge = plate.querySelector(".completionBadge");
+      img.classList.add("ltDrop");
+      setTimeout(function () {
+        if (badge) badge.remove();
+        img.classList.remove("ltDrop");
+        img.src = "avatarEmpty.png";
+        img.classList.add("ltPop");
+        nameEl.textContent = "Empty";
+        plate.classList.add("ltPlate");
+        seat.classList.add("isEmpty");
+        if (window.ltArmSeat) window.ltArmSeat(seat);
+        setTimeout(function () { img.classList.remove("ltPop"); plate.classList.remove("ltPlate"); }, 400);
+      }, 260);
+    }
+
+    function seatHtmlFor(i, person, bot) {
+      if (!person && !bot) {
+        return '<div class="player playernumber' + i + ' isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt="">' +
+          '<div class="playerNameContainer"><p class="playerName">Empty</p></div></div>';
+      }
+      if (bot) {
+        return '<div class="player playernumber' + i + ' isBot seatAvailable"><img width="32" height="32" src="AlienMartian.svg" alt="">' +
+          '<div class="playerNameContainer"><p class="playerName">Bot Ada</p><span class="playerBadge isBot"></span></div></div>';
+      }
+      var badge = person[2] >= 70 ? '<span class="completionBadge' + (person[2] === 100 ? " is100" : "") + '">' + (person[2] === 100 ? "" : person[2]) + "</span>" : "";
+      return '<div class="player playernumber' + i + '"><img width="32" height="32" src="' + person[1] + '" alt="">' +
+        '<div class="playerNameContainer"><p class="playerName">' + person[0] + "</p>" + badge + "</div></div>";
+    }
+    /* a table arrives the way a real one does: someone opened it a moment ago, or it has been
+       running a while and has a seat free because a player left or a bot holds one */
+    function buildCard(game) {
+      var roll = Math.random();
+      var mins = 0, started = false, bot = -1;
+      if (roll < 0.3) { started = true; mins = 3 + Math.floor(Math.random() * 40); bot = 2; }
+      else if (roll < 0.45) { started = true; mins = 5 + Math.floor(Math.random() * 50); }
+      var howMany = started ? (bot >= 0 ? 3 : 3) : 1 + Math.floor(Math.random() * 2);
+      var chosen = [], pool = PEOPLE.slice();
+      while (chosen.length < howMany && pool.length) chosen.push(pool.splice(Math.floor(Math.random() * pool.length), 1)[0]);
+      var order = [1, 0, 2, 3], fill = {};
+      order.forEach(function (idx, n) {
+        if (bot === idx) { fill[idx] = "bot"; return; }
+        if (chosen.length) fill[idx] = chosen.shift();
+      });
+      function cell(i) { return seatHtmlFor(i, fill[i] === "bot" ? null : fill[i], fill[i] === "bot"); }
+      var seatHtml = '<div class="spacer30"></div>' + cell(1) + '<div class="spacer30"></div>' +
+        cell(0) + '<div class="spacer20"></div>' + cell(2) +
+        '<div class="spacer30"></div>' + cell(3) + '<div class="spacer30"></div>';
+      var timeText = started ? (mins < 60 ? mins + " min" : Math.floor(mins / 60) + "h " + (mins % 60) + "m") : "0 min";
+      var timeTip = started ? "In play for " + timeText + (bot < 0 ? " &middot; a player left, you take their hand and score" : "")
+        : "Not started yet &middot; waiting for players";
+      var card = document.createElement("div");
+      card.className = "ltCard ltEnter";
+      card.innerHTML = '<div class="tableListing ' + game[0] + ' players4"><div class="header"><div class="playersContainer">' +
+        seatHtml +
+        '<img class="ltArt art-' + game[0] + '" src="' + game[0] + '_logo.png" alt="' + game[1] + '" data-tip="<b>' + game[1] + '</b><br>' + game[2] + '">' +
+        '<div class="ltTime" data-tip="' + timeTip + '">' +
+        '<svg class="ltRing" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="#fff" stroke-width="2"/>' +
+        (started ? '<path d="M8 8V1A7 7 0 0 1 15 8z" fill="#fff"/>' : "") + "</svg>" +
+        '<span>' + timeText + "</span></div>" +
+        "</div></div></div>";
+      return card;
+    }
+    function armCard(card) {
+      card.querySelectorAll(".player.isEmpty, .player.isBot").forEach(function (seat) { if (window.ltArmSeat) window.ltArmSeat(seat); });
+      card.querySelectorAll(".player:not(.isEmpty):not(.joinable)").forEach(function (p) {
+        var n = p.querySelector(".playerName");
+        if (n && typeof window.wtipAttach === "function") window.wtipAttach(p, "Elo: <b>1,4" + (10 + n.textContent.length) + "</b><br>Games: <b>" + (60 + n.textContent.length * 7) + "</b><br>Finishes: <b>9" + (n.textContent.length % 10) + "%</b>");
+      });
+      if (typeof window.wtipAttach === "function") {
+        card.querySelectorAll("[data-tip]").forEach(function (el) {
+          window.wtipAttach(el, '<span style="display:block;white-space:normal;max-width:208px">' + el.getAttribute("data-tip") + "</span>");
+        });
+      }
+    }
+
+    /* the table stops being listed: it filled up, or it ended */
+    function expire(card) {
+      card.classList.add("ltLeave");
+      setTimeout(function () { flip(function () { card.remove(); }); }, 300);
+    }
+    function appear() {
+      var game = pick(NEW_TABLES);
+      var card = buildCard(game);
+      flip(function () { grid.insertBefore(card, grid.firstElementChild); });
+      armCard(card);
+      requestAnimationFrame(function () { requestAnimationFrame(function () { card.classList.remove("ltEnter"); }); });
+    }
+
+    /* in-play tables gain a minute on every beat, as the age on the payload does */
+    function tickClocks() {
+      realCards().forEach(function (card) {
+        var t = card.querySelector(".ltTime span");
+        var ring = card.querySelector(".ltRing");
+        if (!t || !ring) return;
+        var started = !!ring.querySelector("path");
+        if (!started) return;
+        var m = /^(\d+)h (\d+)m$/.exec(t.textContent) ;
+        var mins = m ? (+m[1]) * 60 + (+m[2]) : parseInt(t.textContent, 10);
+        if (isNaN(mins)) return;
+        mins += 1;
+        t.textContent = mins < 60 ? mins + " min" : Math.floor(mins / 60) + "h " + (mins % 60) + "m";
+        t.classList.add("ltTick");
+        setTimeout(function () { t.classList.remove("ltTick"); }, 320);
+        card.querySelector(".ltTime").setAttribute("data-tip", "In play for " + t.textContent);
+      });
+    }
+
+    var beat = 0;
+    setInterval(function () {
+      beat++;
+      if (beat % 3 === 0) tickClocks();
+      var cards = realCards();
+      var withEmpty = cards.filter(function (c) { return emptySeats(c).length; });
+      var withPeople = cards.filter(function (c) { return humanSeats(c).length > 1; });
+      var roll = Math.random();
+      /* the beat is weighted the way a real listing feed moves: mostly people sitting down */
+      if (roll < 0.45 && withEmpty.length) {
+        var card = pick(withEmpty);
+        var taken = names(card);
+        var free = PEOPLE.filter(function (p) { return taken.indexOf(p[0]) === -1; });
+        if (!free.length) return;
+        sit(pick(emptySeats(card)), pick(free));
+        /* a table that fills up is no longer open, so the next beat drops it */
+        if (emptySeats(card).length === 1) setTimeout(function () { expire(card); }, TICK - 600);
+      } else if (roll < 0.68 && withPeople.length) {
+        stand(pick(humanSeats(pick(withPeople))));
+      } else if (roll < 0.84 && cards.length < MAX_CARDS) {
+        appear();
+      } else if (cards.length > 3) {
+        expire(pick(cards));
+      } else if (cards.length < MAX_CARDS) {
+        appear();
+      }
+    }, TICK);
   });
 </script>
 <style>
@@ -6251,6 +6550,9 @@
         }
       });
     }
+
+    /* the open-table tiles attach their own tooltips after the page is parsed */
+    window.wtipAttach = attach;
 
     function hashOf(s) { var h = 0; for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0; return h; }
     /* no name line: the nameplate already says who it is (production format) */
