@@ -613,32 +613,32 @@
 #sec-c27 .ltCard .tableListing .header::before { border-radius: 20px; }
 #sec-c27 .ltCard .tableListing .header::after { border-radius: 20px; }
 #sec-c27 .ltCard .c27-content { display: none; }
-/* the 3 seat felt: the two top players sit closer together and to the right, so the art has the top left corner to itself */
-#sec-c27 .players3 .playersContainer > .player.playernumber0 { margin-left: 24%; flex-basis: 36%; max-width: 36%; }
-#sec-c27 .players3 .playersContainer > .spacer20 { flex-basis: 4%; max-width: 4%; }
-#sec-c27 .players3 .playersContainer > .player.playernumber1 { flex-basis: 36%; max-width: 36%; }
+/* the 3 seat felt: the two top players sit where a 4 seat table's left and right seats sit, one row down, so the top row is free for the art */
+#sec-c27 .players3 .playersContainer > .verticalSpacer:nth-child(1) { height: 33.3%; }
+#sec-c27 .players3 .playersContainer > .verticalSpacer:nth-child(5),
+#sec-c27 .players3 .playersContainer > .verticalSpacer:nth-child(9) { height: 0; }
 
 /* the game's own tile art, top left, tall enough for its lettering to read */
-#sec-c27 .c27-gi { position: absolute; z-index: 3; top: 0; left: 0; display: block; height: 44px; width: auto; max-width: 23%; object-fit: contain;
-  filter: drop-shadow(0 1px 2px rgba(0,0,0,.45)); cursor: help; }
+#sec-c27 .c27-gi { position: absolute; z-index: 3; top: 0; left: -2px; display: block; height: 44px; width: auto; max-width: 26%; object-fit: contain;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,.45)); cursor: default; }
+/* the lettering differs per game, so a few get more height to read the same */
+#sec-c27 .c27-gi.gi-ginrummy { height: 53px; }
+#sec-c27 .c27-gi.gi-pinochle, #sec-c27 .c27-gi.gi-canasta { height: 48px; }
 
 /* the ghost text recipe from the tiles' playing count: bold white with a soft outline, no plate */
 #sec-c27 .c27-time { position: absolute; z-index: 3; left: 0; bottom: 0; display: inline-flex; align-items: center; gap: 5px; height: 20px; line-height: 20px;
   font-size: 14px; font-weight: bold; color: #fff; white-space: nowrap; cursor: default; max-width: 30%; font-variant-numeric: tabular-nums;
   text-shadow: -1px -1px 0 rgba(0,0,0,.32), 1px -1px 0 rgba(0,0,0,.32), -1px 1px 0 rgba(0,0,0,.32), 1px 1px 0 rgba(0,0,0,.32); }
-#sec-c27 .c27-time.c27-has { cursor: help; }
-#sec-c27 .c27-time svg { flex: none; width: 11px; height: 11px; filter: drop-shadow(0 0 1px rgba(0,0,0,.55)) drop-shadow(0 1px 1px rgba(0,0,0,.25)); }
+#sec-c27 .c27-time svg { flex: none; width: 10px; height: 10px; position: relative; top: -1px; filter: drop-shadow(0 0 1px rgba(0,0,0,.55)) drop-shadow(0 1px 1px rgba(0,0,0,.25)); }
 
 /* the marks: white, bottom right, with the same soft outline */
+#sec-c27 .ltCard.isNew .c27-time { max-width: 60%; }
 #sec-c27 .c27-marks { position: absolute; z-index: 3; right: 0; bottom: 1px; display: inline-flex; align-items: center; gap: 6px; }
-#sec-c27 .c27-opt { display: block; width: 18px; height: 18px; cursor: help; filter: drop-shadow(0 0 1px rgba(0,0,0,.6)) drop-shadow(0 1px 1px rgba(0,0,0,.3)); }
+#sec-c27 .c27-opt { display: block; width: 18px; height: 18px; cursor: default; filter: drop-shadow(0 0 1px rgba(0,0,0,.6)) drop-shadow(0 1px 1px rgba(0,0,0,.3)); }
 
-/* the placeholders: an empty table with your own chair pulled out, and its plate is the way to host */
-#sec-c27 .ltCard.isNew .player.c27-you { cursor: pointer; }
-#sec-c27 .ltCard.isNew .player.c27-you img { opacity: .9; }
-#sec-c27 .ltCard.isNew .player.c27-you .playerNameContainer { background-color: #66A80F; color: #fff;
-  box-shadow: inset 0 0 0 1px #4F800B, 0 1px 3px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25); }
-#sec-c27 .ltCard.isNew .player.c27-you .playerName { text-shadow: -1px -1px 0 #4F800B, 1px -1px 0 #4F800B, -1px 1px 0 #4F800B, 1px 1px 0 #4F800B; }
+/* the placeholders look like any waiting table with every seat empty; the time slot says New table and a seat click hosts, as production does */
+#sec-c27 .ltCard.isNew { cursor: pointer; }
+#sec-c27 .ltCard.isNew .player.isEmpty { cursor: pointer; }
 
 /* the switcher: the word for a table that has not started */
 #sec-c27 .c27-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: -4px 0 14px; }
@@ -646,7 +646,7 @@
 #sec-c27 .c27-sw { display: inline-flex; align-items: center; justify-content: center; gap: 5px; height: 30px; padding: 0 10px; border: none; cursor: pointer;
   border-radius: 8px; corner-shape: squircle; background: #327333 url("green-felt.jpg") center / 150px 150px; color: #fff; font-family: inherit; font-size: 13px; font-weight: bold;
   box-shadow: inset 0 0 0 1px rgba(0,0,0,.35); text-shadow: -1px -1px 0 rgba(0,0,0,.32), 1px -1px 0 rgba(0,0,0,.32), -1px 1px 0 rgba(0,0,0,.32), 1px 1px 0 rgba(0,0,0,.32); }
-#sec-c27 .c27-sw svg { width: 11px; height: 11px; filter: drop-shadow(0 0 1px rgba(0,0,0,.55)); }
+#sec-c27 .c27-sw svg { width: 10px; height: 10px; position: relative; top: -1px; filter: drop-shadow(0 0 1px rgba(0,0,0,.55)); }
 #sec-c27 .c27-sw svg.c27-opt { width: 18px; height: 18px; }
 #sec-c27 .c27-bar .c27-gap { width: 14px; }
 #sec-c27 .c27-sw.on { box-shadow: inset 0 0 0 2px #fff, 0 0 0 1px rgba(0,0,0,.35); }
@@ -2690,7 +2690,8 @@ registerConcept((function () {
     if (t.empty) {
       var r = t.placeholder === "ranked";
       if (r) m.marks.push({ kind: "ranked", tip: "A new ranked table · counts toward your rating · real players only" });
-      m.host = r ? "Host ranked" : "Host table";
+      m.time = r ? "New ranked table" : "New table";
+      m.timeTip = r ? "Sit at any seat to host a ranked table · real players fill the rest" : "Sit at any seat to host a table with your rules";
       m.facts.push(r ? "Real players only" : "Your rules · bots may fill empty seats");
       return m;
     }
@@ -2758,13 +2759,11 @@ registerConcept((function () {
       if (tip && seat.__wtip === undefined) attachTip(seat, block(tip));
     });
   }
+  /* the placeholder's seats all host: the tooltip says so, and the shared join preview rolls each plate */
   function armPlaceholder(cardEl, t, m) {
-    var near = cardEl.querySelector(".player.playernumber" + (t.n === 4 ? 3 : t.n === 3 ? 2 : 1));
-    if (!near) return;
-    near.classList.add("c27-you");
-    near.querySelector("img").src = VIEWER_AVATAR;
-    near.querySelector(".playerName").textContent = m.host;
-    attachTip(near, t.placeholder === "ranked" ? "Sit here to host a ranked table · real players fill the rest" : "Sit here to host a table with your rules");
+    cardEl.querySelectorAll(".player.isEmpty").forEach(function (seat) {
+      if (seat.__wtip === undefined) attachTip(seat, t.placeholder === "ranked" ? "Sit here to host a ranked table" : "Sit here to host a table with your rules");
+    });
   }
   function armTaps(sec) {
     if (sec.__c27tap) return;
@@ -2813,8 +2812,8 @@ registerConcept((function () {
     render: function (t) {
       var m = build(t);
       MODELS[t.id] = m;
-      var felt = (LAB.mode === "home" ? '<img class="c27-gi" src="' + logoSrc(t) + '" alt="' + esc(t.game) + '">' : '') +
-        (m.time ? '<div class="c27-time' + (m.facts.length ? ' c27-has' : '') + '">' + pie(t.started) + '<span>' + esc(m.time) + '</span></div>' : '') +
+      var felt = (LAB.mode === "home" ? '<img class="c27-gi gi-' + esc(t.gameid) + '" src="' + logoSrc(t) + '" alt="' + esc(t.game) + '">' : '') +
+        (m.time ? '<div class="c27-time' + (m.facts.length ? ' c27-has' : '') + '">' + (t.empty ? '' : pie(t.started)) + '<span>' + esc(m.time) + '</span></div>' : '') +
         (m.marks.length ? '<div class="c27-marks">' + m.marks.map(function (mk) { return MARKS[mk.kind]; }).join("") + '</div>' : '');
       return card(t, '', { feltExtra: felt, contentClass: 'c27-content' });
     },
