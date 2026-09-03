@@ -1058,6 +1058,56 @@
   box-shadow: inset 0 0 0 1px rgba(0,0,0,.18), 0 1px 3px rgba(0,0,0,.25); }
 #sec-c21 .ltCard.isNew .player.c21-you .playerName { font-weight: normal; }
 </style>
+<style>
+/* ===== concept c24: The rail below the felt ===== */
+/* c24 · The rail below the felt: the felt keeps its full 4:3 and the seats stay where production puts them; the card grows by 32px
+   for a dark rail along its bottom, with the tile's own 20px corners. The clock is a ghost chip like the "x playing" count on the game tiles. */
+#sec-c24 .ltCard { background-color: #327333; }
+#sec-c24 .ltCard:hover { background-color: #327333; }
+#sec-c24 .ltCard .tableListing { padding-top: calc(75% + 32px); }
+#sec-c24 .ltCard .c24-content { display: none; }
+
+/* the ghost chips: a white dot and bold white text with a soft dark outline, no plate, like the tiles' playing count */
+#sec-c24 .c24-chip { position: absolute; z-index: 3; top: 6px; right: 0; display: inline-flex; align-items: center; height: 20px; line-height: 20px;
+  font-size: 14px; font-weight: bold; color: #fff; white-space: nowrap; cursor: default; max-width: 30%;
+  text-shadow: -1px -1px 0 rgba(0,0,0,.32), 1px -1px 0 rgba(0,0,0,.32), -1px 1px 0 rgba(0,0,0,.32), 1px 1px 0 rgba(0,0,0,.32); }
+#sec-c24 .c24-chip::before { content: ""; flex: none; width: 6px; height: 6px; border-radius: 50%; margin-right: 5px; background: #fff;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.54); }
+#sec-c24 .c24-chip span { overflow: hidden; text-overflow: ellipsis; }
+#sec-c24 .c24-chip.c24-has { cursor: help; }
+/* the felt's top corners on the 2 and 3 seat felts hold a face, so the chip needs no more room than the 4 seat felt gives it */
+#sec-c24 .players2 .c24-chip, #sec-c24 .players3 .c24-chip { max-width: 62%; }
+#sec-c24 .players2 .playersContainer > .verticalSpacer:nth-child(1),
+#sec-c24 .players3 .playersContainer > .verticalSpacer:nth-child(1) { height: 16.5%; }
+#sec-c24 .players2 .playersContainer > .verticalSpacer:nth-child(9),
+#sec-c24 .players3 .playersContainer > .verticalSpacer:nth-child(9) { height: 5.7%; }
+/* a player left and the seat is open again: the loudest fact, a second chip under the clock with a green dot and green text */
+#sec-c24 .c24-open { top: 30px; color: #D8F5A2; cursor: help; }
+#sec-c24 .c24-open::before { background: #C0EB75; }
+
+/* the rail: 32px below the felt, inside the card, the felt's own shadow over it; white text with a soft shadow */
+#sec-c24 .c24-rail { position: absolute; z-index: 3; left: 0; right: 0; bottom: 0; height: 32px; box-sizing: border-box;
+  display: flex; align-items: center; gap: 10px; padding: 0 12px; background: rgba(0, 0, 0, .34); }
+#sec-c24 .c24-game { flex: 0 1 auto; min-width: 0; font-size: 13px; font-weight: bold; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  text-shadow: 0 1px 1px rgba(0,0,0,.3); }
+#sec-c24 .c24-game.c24-cut { cursor: help; }
+#sec-c24 .c24-fact { flex: 1 1 auto; min-width: 0; font-size: 13px; color: rgba(255,255,255,.88); text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  text-shadow: 0 1px 1px rgba(0,0,0,.3); cursor: help; }
+#sec-c24 .c24-fact.c24-left { text-align: left; }
+#sec-c24 .c24-fact b { color: #D8F5A2; font-weight: bold; }
+#sec-c24 .c24-host { flex: none; margin-left: auto; }
+
+/* the checklist in the rail's tooltip: production's rows with production's ticks */
+#wtip .c24-check { display: block; white-space: nowrap; line-height: 20px; padding-left: 20px; color: #8a857c;
+  background: url("checkmarkDisabled.png") left center / 15px 15px no-repeat; }
+#wtip .c24-check.on { color: #262626; background-image: url("checkmark.png"); }
+
+/* the placeholders: an empty table with your own chair pulled out at the near seat */
+#sec-c24 .ltCard.isNew .player.c24-you img { opacity: .85; }
+#sec-c24 .ltCard.isNew .player.c24-you .playerNameContainer { background-color: #fff; color: #4e4d4c;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.18), 0 1px 3px rgba(0,0,0,.25); }
+#sec-c24 .ltCard.isNew .player.c24-you .playerName { font-weight: normal; }
+</style>
 <!-- CONCEPT STYLES END -->
 </head>
 <body>
@@ -5083,6 +5133,214 @@ registerConcept((function () {
   };
 })());
 </script>
+<script>
+/* ===== concept c24: The rail below the felt ===== */
+registerConcept((function () {
+  var MODELS = {};
+  var TIPS = {
+    "Ranked": "Counts toward your rating · real players only",
+    "Private": "A named table with the host’s saved rules",
+    "Last seat": "Yours is the last seat · the deal starts when you sit",
+    "No bots": "The seats wait for people · no bots fill them",
+    "Tournament rules": "Cards are passed on every hand",
+    "Dealer may pass": "The dealer may pass instead of naming trump",
+    "No bag penalty": "Extra tricks over the bid cost nothing here",
+    "Experienced only": "Players with ten finished games",
+    "Registered only": "Signed in players only",
+    "Registered and experienced only": "Signed in players with ten finished games"
+  };
+  var SHORT = { "Double Deck Pinochle": "DD Pinochle" };
+
+  function isBot(name) { return !!(name && PEOPLE[name] && PEOPLE[name].bot); }
+  function botNames(t) { var b = []; for (var i = 0; i < t.n; i++) { if (isBot(t.seats[i])) b.push(t.seats[i]); } return b; }
+  function targetText(t) { return (t.gameid === "hearts" ? "Ends at " : "Plays to ") + fmt(t.target); }
+  function botTake(bots) { return bots.length === 1 ? "You take " + bots[0] + "’s hand and score" : "You take a bot’s hand and score"; }
+  function block(html) { return '<span style="display:block;white-space:normal;max-width:208px">' + html + '</span>'; }
+  function overflows(el) { return el.scrollWidth > el.clientWidth + 1; }
+  function gameName(t) { return SHORT[t.game] || t.game; }
+
+  /* the model of one tile: the clock plate, the open seat plate, the footer fact, the quieter facts for the tooltip */
+  function build(t) {
+    var m = { clock: "", clockTip: "", open: false, facts: [], name: "", nameTip: "", host: null, people: "" };
+    var bots = botNames(t), k = emptySeats(t);
+    if (t.empty) {
+      var r = t.placeholder === "ranked";
+      m.clock = r ? "Ranked" : "New table";
+      m.clockTip = r ? "A new ranked table · counts toward your rating · real players only" : "A new table with your rules · bots may fill empty seats";
+      m.host = r ? "Host ranked" : "Host";
+      m.name = LAB.mode === "home" ? gameName(t) : "";
+      return m;
+    }
+    if (t.started) {
+      m.clock = t.age > 0 ? ageText(t.age) : "Dealing";
+      m.clockTip = t.age > 0 ? "In play for " + ageText(t.age) : "The deal is seconds away";
+      if (k > 0) { m.open = true; m.facts.push("A player left"); m.clockTip += " · a player left, you take their hand and score"; }
+      if (bots.length) m.facts.push(botTake(bots));
+    } else {
+      m.clock = "Waiting";
+      m.clockTip = k === 1 ? "One seat left · the deal starts when you sit" : "Waiting for players";
+    }
+    var friend = humans(t).filter(function (n) { return PEOPLE[n].liked; })[0];
+    if (friend) m.people = "<b>" + esc(friend) + "</b> is here";
+    else if (t.started && bots.length === 1) m.people = "Take over <b>" + esc(bots[0]) + "</b>";
+    else if (t.started && bots.length > 1) m.people = "Take over a bot";
+    if (t.ranked) m.facts.push("Ranked");
+    if (t.ptn) m.facts.push("Private");
+    if (!t.started && k === 1) m.facts.push("Last seat");
+    (t.variants || []).forEach(function (v) { m.facts.push(v); });
+    if (!t.started && t.bots === false && !t.ranked) m.facts.push("No bots");
+    if (t.regOnly && t.expOnly) m.facts.push("Registered and experienced only");
+    else if (t.expOnly) m.facts.push("Experienced only");
+    else if (t.regOnly && !t.ranked) m.facts.push("Registered only");
+    if (t.target) { m.facts.push(targetText(t)); m.target = targetText(t); }
+    /* the footer left: the game on the mixed grid, the saved name in the See all box */
+    if (LAB.mode === "home") { m.name = gameName(t); m.nameTip = t.ptn ? esc(t.game) + " · " + esc(t.ptn) : esc(t.game); }
+    else if (t.ptn) { m.name = t.ptn; m.nameTip = esc(t.ptn); }
+    return m;
+  }
+  /* the footer right shows the first fact that is a short word; the whole list lives in its tooltip */
+  function footFact(m) {
+    var short = m.facts.filter(function (f) { return f.length <= 16 || TIPS[f]; });
+    var pick = short.filter(function (f) { return f.length <= 16; })[0] || "";
+    return pick;
+  }
+  function checklist(t) {
+    var rows = [["Registered only", !!t.regOnly || !!t.ranked], ["Experienced only", !!t.expOnly], ["Private table", !!t.ptn]];
+    if (t.ranked) rows.push(["Ranked", true]); else rows.push(["Bots allowed", !!t.bots]);
+    (t.options || []).forEach(function (o) { rows.push([o[0], o[1]]); });
+    return '<span id="c24-tip">' + rows.map(function (r) { return '<span class="c24-check' + (r[1] ? ' on' : '') + '">' + esc(r[0]) + '</span>'; }).join("") + '</span>';
+  }
+  function factsTip(m) {
+    if (!m.facts.length) return "";
+    return block(m.facts.map(function (f, i) {
+      var line = esc(f) + (TIPS[f] ? " · " + esc(TIPS[f]) : "");
+      return i === 0 ? "<b>" + esc(f) + "</b>" + (TIPS[f] ? " · " + esc(TIPS[f]) : "") : line;
+    }).join("<br>"));
+  }
+
+  function partnerLine(t, idx) {
+    if (!t.team || t.n !== 4) return "";
+    var pn = t.seats[(idx + 2) % 4];
+    if (!pn) return "Your partner’s seat is empty too";
+    if (isBot(pn)) return "Your partner would be <b>" + esc(pn) + "</b> until a person takes that seat";
+    return "Your partner would be <b>" + esc(pn) + "</b>";
+  }
+  function seatTip(t, idx, bot) {
+    var lines = [];
+    if (bot) lines.push(t.started ? "You take <b>" + esc(t.seats[idx]) + "</b>’s hand and score" : "You play <b>" + esc(t.seats[idx]) + "</b>’s hand from the first deal");
+    else if (t.started) lines.push("You take their hand and score");
+    var pn = partnerLine(t, idx);
+    if (pn) lines.push(pn);
+    else if (t.n === 2 && humans(t).length) lines.push("You play <b>" + esc(humans(t)[0]) + "</b>");
+    return lines.join("<br>");
+  }
+  /* mid game a takeable seat rolls to Take over, before the shared code rolls the waiting seats to Join */
+  function rollSeat(seat, word) {
+    seat.classList.add("joinable");
+    var plate = seat.querySelector(".playerNameContainer");
+    var you = document.createElement("img");
+    you.className = "seatYou"; you.src = VIEWER_AVATAR; you.alt = ""; you.width = 32; you.height = 32;
+    seat.insertBefore(you, plate);
+    var roll = document.createElement("div");
+    roll.className = "plateRoll";
+    roll.appendChild(seat.querySelector(".playerName"));
+    var pn = document.createElement("p");
+    pn.className = "playerName pnJoin"; pn.textContent = word;
+    roll.appendChild(pn);
+    plate.insertBefore(roll, plate.firstChild);
+  }
+  function armSeatTips(cardEl, t) {
+    cardEl.querySelectorAll(".player.isEmpty, .player.isBot.seatAvailable").forEach(function (seat) {
+      var idx = Number(seat.getAttribute("data-seat"));
+      if (t.started && !seat.classList.contains("joinable")) rollSeat(seat, "Take over");
+      var tip = seatTip(t, idx, seat.classList.contains("isBot"));
+      if (tip && seat.__wtip === undefined) attachTip(seat, block(tip));
+    });
+  }
+  function armPlaceholder(cardEl, t) {
+    var near = cardEl.querySelector(".player.playernumber" + (t.n === 4 ? 3 : t.n === 3 ? 2 : 1));
+    if (!near) return;
+    near.classList.add("c24-you");
+    near.querySelector("img").src = VIEWER_AVATAR;
+    near.querySelector(".playerName").textContent = "Your seat";
+    attachTip(near, t.placeholder === "ranked" ? "You sit here and host the table · real players fill the rest" : "You sit here and pick the rules");
+  }
+  /* the touch path: a tap on a plate or a footer word shows its tooltip, a tap elsewhere hides it */
+  function armTaps(sec) {
+    if (sec.__c24tap) return;
+    sec.__c24tap = true;
+    function close() { var open = sec.__c24open; if (open) { open.dispatchEvent(new Event("mouseleave")); sec.__c24open = null; } }
+    sec.addEventListener("click", function (e) {
+      var el = e.target;
+      while (el && el !== sec && el.__wtip === undefined) el = el.parentElement;
+      if (!el || el === sec || el.classList.contains("player") || el.classList.contains("button")) return;
+      e.stopPropagation(); e.preventDefault();
+      if (sec.__c24open === el) { close(); return; }
+      close();
+      el.dispatchEvent(new Event("mouseenter"));
+      sec.__c24open = el;
+    });
+    document.addEventListener("click", close);
+  }
+  /* a game name that runs out of its corner keeps its full name in a tooltip; the footer fact takes the first fact that fits its corner */
+  function fit(sec) {
+    sec.querySelectorAll(".c24-game[data-tip]").forEach(function (el) {
+      if (overflows(el)) { el.classList.add("c24-cut"); if (el.__wtip === undefined) attachTip(el, el.getAttribute("data-tip")); }
+    });
+    sec.querySelectorAll(".ltCard").forEach(function (cardEl) {
+      var fact = cardEl.querySelector(".c24-fact"), m = MODELS[cardEl.getAttribute("data-state")];
+      if (!fact || !m) return;
+      /* the corner shows the first short fact that fits; the sentences and the target score live in the tooltip only */
+      if (m.people) { fact.innerHTML = m.people; return; }
+      var picked = "";
+      var cands = m.facts.filter(function (f) { return !/^(Ends at|Plays to)/.test(f) && f.length <= 40; });
+      for (var i = 0; i < cands.length; i++) {
+        fact.textContent = cands[i];
+        if (!overflows(fact)) { picked = cands[i]; break; }
+      }
+      if (!picked) fact.textContent = cands.slice().sort(function (a, b) { return a.length - b.length; })[0] || "";
+    });
+  }
+
+  return {
+    id: "c24",
+    round: 2,
+    open: true,
+    title: "The rail below the felt",
+    desc: "The felt keeps its full 4:3 and the seats stay exactly where production puts them. The card grows by 32px for a dark rail along its bottom edge, inside the tile's own 20px corners: the game name at the left, and at the right the people first (<b>BobK is here</b>, <b>Take over Bot Ada</b>) or else the facts that apply (<b>Ranked</b>, <b>Tournament rules</b>, <b>No bots</b>). The clock is a ghost chip like the tiles' playing count, <b>● Waiting</b> before the deal and <b>● 12 min</b> in play, with a green <b>● Seat open</b> under it when a player left. Hover the rail's right side for the full checklist as production shows it, ticks and all.",
+    render: function (t) {
+      var m = build(t);
+      MODELS[t.id] = m;
+      var chips = '<div class="c24-chip c24-clock' + (m.facts.length ? ' c24-has' : '') + '"><span>' + esc(m.clock) + '</span></div>' +
+        (m.open ? '<div class="c24-chip c24-open"><span>Seat open</span></div>' : '');
+      var rail = '<div class="c24-rail">' + (m.name ? '<div class="c24-game" data-tip="' + m.nameTip + '">' + esc(m.name) + '</div>' : '') +
+        (m.host ? '<span class="button green small c24-host">' + esc(m.host === "Host" ? "Host table" : "Host ranked table") + '</span>' :
+          ((m.people || m.facts.length) ? '<div class="c24-fact' + (m.name ? '' : ' c24-left') + '">' + m.people + '</div>' : '')) + '</div>';
+      var cls = "ltCard" + (t.empty ? " isNew" : "") + (hasFriend(t) ? " isFriend" : "");
+      /* the rail sits outside the felt header (which clips its overflow), at the bottom of the listing box */
+      return '<div class="' + cls + '" data-state="' + t.id + '"><div class="tableListing ' + t.gameid + (t.team ? ' isTeamGame' : '') + (t.ranked ? ' isRanked' : '') + '">' +
+        feltTop(t, { feltExtra: chips }) + rail + '</div></div>';
+    },
+    afterRender: function (sec) {
+      sec.querySelectorAll(".ltCard").forEach(function (cardEl) {
+        var t = tableById(cardEl.getAttribute("data-state")), m = t && MODELS[t.id];
+        if (!m) return;
+        var clock = cardEl.querySelector(".c24-clock");
+        var tip = factsTip(m);
+        attachTip(clock, tip ? block("<b>" + esc(m.clockTip) + "</b><br>") + tip : esc(m.clockTip));
+        var open = cardEl.querySelector(".c24-open");
+        if (open) attachTip(open, "A player left mid game · you take their hand and score");
+        var fact = cardEl.querySelector(".c24-fact");
+        if (fact) attachTip(fact, checklist(t) + (m.target ? '<span style="display:block;color:#8a857c;line-height:20px">' + esc(m.target) + '</span>' : ''));
+        if (t.empty) armPlaceholder(cardEl, t); else armSeatTips(cardEl, t);
+      });
+      fit(sec);
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { fit(sec); });
+      armTaps(sec);
+    }
+  };
+})());
+</script>
 <!-- CONCEPT SCRIPTS END -->
 <script>
 registerConcept({ id: "c23", round: 2, open: true, compare: ["c20", "c20"],
@@ -5179,11 +5437,13 @@ registerConcept({ id: "cmp", round: 2, open: true, compare: ["c18", "c15"], stat
   <h2>Verdict &middot; round three</h2>
   <p class="desc">Round three built the one big table at a strict 4:3 in three ways, all with the gold clock plate at the top right that reads <b>Waiting</b> before the deal and the minutes in play after it, and a green <b>Seat open</b> plate under it on the table a player left. The judge pass could not run: the subagent service was overloaded on five launches in a row, so the three variants were built by hand and this verdict is the orchestrator's own reading, not a panel's.</p>
   <table class="vtable"><thead><tr><th>Id</th><th>Variant</th><th class="num">Tile height</th><th>What it shows</th></tr></thead><tbody>
-    <tr class="win"><td><b>c21</b></td><td>The thin rail</td><td class="num">218</td><td>The seats lifted 22px, a 28px rail inside the felt with the game name at the left and the people or the facts at the right. The footer has a full line, so Tournament rules, BobK is here and Take over a bot all fit.</td></tr>
+    <tr class="win"><td><b>c24</b></td><td>The rail below the felt</td><td class="num">250</td><td>Holger's pick refined: the felt keeps its full 4:3 with the seats untouched, and the card grows by 32px for the rail, inside the same 20px corners. The clock is a ghost chip like the tiles' playing count, and the rail's right side opens the full production checklist with ticks.</td></tr>
+    <tr><td><b>c21</b></td><td>The thin rail</td><td class="num">218</td><td>The seats lifted 22px, a 28px rail inside the felt with the game name at the left and the people or the facts at the right. The footer has a full line, so Tournament rules, BobK is here and Take over a bot all fit.</td></tr>
     <tr><td><b>c20</b></td><td>The merged plate</td><td class="num">218</td><td>The seats untouched, the game name and one quiet fact in the bottom corners beside the bottom seat. The corners are 80px wide, so a rule variant drops to the tooltip and Sergeant Major truncates.</td></tr>
     <tr><td><b>c23</b></td><td>Four across at the real width</td><td class="num">160 and 200</td><td>c20 four across at 213px (the 902px grid next to the ad rail) and at 266px. At 213px the plates and names clip; at 266px it holds.</td></tr>
   </tbody></table>
-  <p class="desc"><b>The footer.</b> The corners keep the felt exactly as production draws it, but 80px is too little for the facts the brief marks need to have. The rail costs each face about 7px and gives the footer a full line, which is where the game name and the one right hand phrase belong. So c21 is the recommended shape: game name at the left, and at the right the people first (<b>BobK is here</b>, <b>Take over Bot Ada</b>) or else the one quiet fact (<b>Ranked</b>, <b>Tournament rules</b>, <b>Last seat</b>, <b>No bots</b>), with the whole list in the tooltip.</p>
+  <p class="desc"><b>The footer.</b> The corners keep the felt exactly as production draws it, but 80px is too little for the facts the brief marks need to have. The rail gives the footer a full line, which is where the game name and the one right hand phrase belong. c21 pays for it with 7px of each face; c24 pays with 32px of tile height and keeps the felt whole, which is the trade Holger chose. So c24 is the recommended shape: game name at the left, and at the right the people first (<b>BobK is here</b>, <b>Take over Bot Ada</b>) or else the one quiet fact (<b>Ranked</b>, <b>Tournament rules</b>, <b>Last seat</b>, <b>No bots</b>), with the whole list in the tooltip.</p>
+  <p class="desc"><b>The checklist.</b> Production lists Registered only, Experienced only, Private table, Bots allowed and the game's rule options on every tile, ticked or grey. None of it is dropped here, it is sorted. A row that is on and differs from the default is news and goes on the rail (<b>Private</b>, <b>No bots</b>, <b>Tournament rules</b>, <b>Experienced only</b>). A row that is at its default says nothing about this table (Bots allowed is the default on a casual table, Stick the dealer is the default in Euchre, Registered only is forced on every ranked table), so it waits in the rail's tooltip, where c24 shows the whole checklist exactly as production does, ticks and all.</p>
   <p class="desc"><b>What else is vital, besides the clock.</b> From the brief, and unchanged by three rounds: who is seated (the felt carries it), the game name on the mixed homepage grid, what a bot seat means (the seat rolls to <b>Take over</b>), and a way in (the seats). Then the quiet need to haves, one word each and only when they apply: <b>Ranked</b>, <b>Private</b> with the saved name, the rule variant when it differs from the default, <b>Last seat</b> when the deal starts as you sit, <b>No bots</b>, and the entry limit. Everything else, the target score, who may sit, the host, is tooltip material.</p>
   <p class="desc"><b>Four across.</b> Only if the grid can be 1112px wide. At the homepage's 902px next to the ad rail the tile is 213px and the plates and names clip, so three across at 290px stays.</p>
 </div>
