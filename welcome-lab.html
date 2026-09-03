@@ -67,6 +67,7 @@
   .chk.off { background-image: url("checkmarkDisabled.png"); }
   .glyph { display: inline-block; width: 22px; height: 22px; background-size: contain; background-repeat: no-repeat; background-position: center; vertical-align: middle; }
   .muted { color: var(--muted); }
+  .col p.meta { font-size: 12px; color: #999488; margin: 18px 0 0; }
 
   /* ===== Now: the avatar with the greeting ===== */
   .nameplate { display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
@@ -264,8 +265,11 @@ bronze distance (the calendar card below carries those); avatars uncropped in th
       ctrl.appendChild(g);
     });
     paint();
+    REPAINTS.push(paint);
     host.appendChild(card);
   }
+  var REPAINTS = [];
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { REPAINTS.forEach(function (fn) { fn(); }); });
   function section(t, desc, concepts, id) {
     var sec = document.createElement("div");
     sec.className = "vsec"; sec.id = "sec-" + id;
@@ -285,23 +289,81 @@ bronze distance (the calendar card below carries those); avatars uncropped in th
       return title(st) + sub([l1, l2]) + stats();
     } });
 
-  /* ===== Final · the decided headline ===== */
-  var POOL = ["the table is set", "the cards are waiting", "your seat is saved", "the deck is shuffled",
+
+  /* ===== the decided signed-in copy system (2 Sep) =====
+     Headline: hour word + name when it fits the column, else "Hi" + name, else the hour word alone;
+     the budget is the widest of the eight second lines, measured in the title's own font.
+     Subtitle: a rotating opener and a clause; hour clauses only in their hour, return clauses only on
+     the first view after a long absence; the name joins the opener only when the headline had to drop it. */
+  var GREET_POOL = ["the table is set", "the cards are waiting", "your seat is saved", "the deck is shuffled",
     "the table is yours", "the cards are dealt", "your chair is warm", "the game is on"];
-  function finalTitle(st) {
-    var h = st.hour === "auto" ? greetWord() : st.hour;
-    var line2 = st.line !== "random" ? st.line : POOL[(st._seed || 0) % POOL.length];
-    return "<h3>" + h + " " + ME.name + "<br>" + line2 + "</h3>";
+  var COZY = {
+    openers: ["Good to see you again", "Good to see you", "Lovely to have you back", "Glad you came by",
+      "There you are", "Nice to see you again", "Look who's here", "Always good to see you"],
+    retOpeners: ["Good to see you again, stranger", "Well, look who's back", "Good to have you back"],
+    any: ["Pull up a chair and stay a while.", "Shoes off, cards up, no rush.", "One quick hand, you say. That's what everyone says.",
+      "Sneak in a hand before anyone notices.", "Have fun. That's the only house rule.", "Any chair you like. They're all comfy.",
+      "Don't show them your cards.", "No dress code, no clock, no hurry.", "The kettle's on and so is the game."],
+    morning: ["Coffee in one hand, cards in the other.", "Cards before chores. We won't tell.", "A fresh pot and a fresh deck."],
+    afternoon: ["A hand of cards fixes most afternoons.", "A hand of cards beats a nap. Well, just about.", "The afternoon is better with cards in it."],
+    evening: ["One last hand before bed?", "Slippers on, cards out, nowhere to be.", "A calm one to close the night."],
+    ret: ["It's been quiet without you.", "We left the light on. And the kettle.", "Sit down, it's like you never left."]
+  };
+  var NOUNS = ["chair", "cards", "table", "deck", "seat", "game"];
+  function measureText(text, font) {
+    var c = measureText.ctx || (measureText.ctx = document.createElement("canvas").getContext("2d"));
+    c.font = font; return c.measureText(text).width;
   }
-  section("Final &mdash; the decided headline",
-    "Line one is the hour word and the name, no punctuation. Line two is one of eight card-room lines, picked once per visit at random, skipping the line shown last time. Reshuffle draws the next one; the Line select pins one. The subtitle shown here is a placeholder until the subtitle round is settled.", [
-    { cap: "<b>F &middot; Morning, afternoon, evening</b> &mdash; the eight lines: the table is set, the cards are waiting, your seat is saved, the deck is shuffled, the table is yours, the cards are dealt, your chair is warm, the game is on.",
+  function greetBudget(font) { return Math.max.apply(null, GREET_POOL.map(function (l) { return measureText(l, font); })); }
+  /* the ladder: returns the first line and whether the name survived */
+  function greetLine(hour, name, font) {
+    var budget = greetBudget(font), full = hour + " " + name;
+    if (measureText(full, font) <= budget) return { line: full, mode: "hour", width: measureText(full, font), budget: budget };
+    var hi = "Hi " + name;
+    if (measureText(hi, font) <= budget) return { line: hi, mode: "hi", width: measureText(hi, font), budget: budget };
+    return { line: "Good " + hour.toLowerCase(), mode: "noname", width: measureText("Good " + hour.toLowerCase(), font), budget: budget };
+  }
+  function cozyPick(rnd, hourKey, isReturn, line2, kind) {
+    var openers = isReturn ? COZY.retOpeners : COZY.openers;
+    var pool = isReturn ? COZY.ret : (kind === "hour" || (kind === "random" && rnd(2) === 0)) ? COZY[hourKey] : COZY.any;
+    var noun = NOUNS.filter(function (n) { return line2.indexOf(n) > -1; })[0];
+    var clauses = pool.filter(function (c) { return !noun || c.toLowerCase().indexOf(noun) === -1; });
+    if (!clauses.length) clauses = pool;
+    return { opener: openers[rnd(openers.length)], clause: clauses[rnd(clauses.length)], hourClause: pool !== COZY.any && !isReturn };
+  }
+  function cozyText(pick, name, withName, isReturn) {
+    var end = pick.hourClause || isReturn ? "." : "!";
+    var op = pick.opener + (withName ? ", " + name : "") + end;
+    return op + "<br>" + pick.clause;
+  }
+
+  var LAB_FONT = "500 38px Gelica";
+  var LAB_NAMES = ["PiLady10", "HeQ", "Marge", "hootnholler", "SpadeQueen", "cardShark52", "TableTalker", "spades_grandma_62", "WildBillHickok1955"];
+  section("Final &mdash; the decided headline and the cozy subtitle",
+    "Line one is the hour word and the name when that fits the column, else Hi and the name, else the hour word alone (Good afternoon), measured in pixels against the widest of the eight second lines. Line two is one of the eight at random. The subtitle is a rotating opener and a clause: hour clauses only in their hour, return clauses only on the first view after a long absence, and the name joins the opener only when the headline had to drop it (or always, by toggle). Reshuffle redraws everything.", [
+    { cap: "<b>F &middot; The system</b> &mdash; try the long names to see the ladder step down, the hour to see the hour clauses, and Return for the stranger line.",
       ctrls: [["hour", "Hour", [["auto", "Now"], ["Morning", "Morning"], ["Afternoon", "Afternoon"], ["Evening", "Evening"]]],
-        ["shuffle", "Reshuffle", "Next line", "button"],
-        ["line", "Line", [["random", "random"]].concat(POOL.map(function (l) { return [l, l]; })), "select"]],
-      defaults: { hour: "auto", line: "random", _seed: Math.floor(Math.random() * 8) },
-      render: function (st) { return finalTitle(st) + sub(["Spades, Hearts, or Euchre? You call it."]) + stats(); } }
+        ["nm", "Name", LAB_NAMES.map(function (n) { return [n, n]; }), "select"],
+        ["ret", "Return", [["no", "No"], ["yes", "After 3 weeks"]]],
+        ["kind", "Clause", [["random", "Random"], ["any", "Any hour"], ["hour", "This hour"]]],
+        ["nsub", "Name in sub", [["auto", "Only if dropped"], ["always", "Always"], ["never", "Never"]]],
+        ["shuffle", "Reshuffle", "Redraw", "button"],
+        ["line", "Line two", [["random", "random"]].concat(GREET_POOL.map(function (l) { return [l, l]; })), "select"]],
+      defaults: { hour: "auto", nm: "PiLady10", ret: "no", kind: "random", nsub: "auto", line: "random", _seed: Math.floor(Math.random() * 1e6) },
+      render: function (st) {
+        var hour = st.hour === "auto" ? greetWord() : st.hour;
+        var rnd = seededRnd(st._seed || 1);
+        var line2 = st.line !== "random" ? st.line : GREET_POOL[rnd(GREET_POOL.length)];
+        var g = greetLine(hour, st.nm, LAB_FONT);
+        var pick = cozyPick(rnd, hour.toLowerCase(), st.ret === "yes", line2, st.kind);
+        var withName = st.nsub === "always" || (st.nsub === "auto" && g.mode === "noname");
+        var meta = "line one " + Math.round(g.width) + "px of " + Math.round(g.budget) + "px, " + (g.mode === "hour" ? "hour word and name" : g.mode === "hi" ? "Hi and name" : "name dropped");
+        return "<h3>" + g.line + "<br>" + line2 + "</h3>" + sub([cozyText(pick, st.nm, withName, st.ret === "yes")]) + stats() +
+          '<p class="meta">' + meta + "</p>";
+      } }
   ], "final");
+  function seededRnd(seed) { var x = seed; return function (n) { x = (x * 1103515245 + 12345) % 2147483648; return Math.floor(x / 2147483648 * n); }; }
+
 
   /* ===== Text · what the lines can say to a casual regular ===== */
   function hourWord() { var h = new Date().getHours(); return h < 12 ? "morning" : h < 17 ? "afternoon" : h < 22 ? "evening" : "night"; }
