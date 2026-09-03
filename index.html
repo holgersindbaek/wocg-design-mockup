@@ -3440,9 +3440,13 @@
   /* the section is live: seats fill and empty, and a table that stops being listed is replaced in its
      own slot, so nothing in the grid ever moves */
   #openTablesTop .ltCard.ltLeave { pointer-events: none; }
-  #openTablesTop .playerNameContainer.ltPlate { animation: ltPlate .32s cubic-bezier(.22,1,.36,1) both; }
-  @keyframes ltPlate { 0% { opacity: 0; } 100% { opacity: 1; } }
-  #openTablesTop .ltTime span.ltTick { animation: ltPlate .3s ease both; }
+  /* the arriving face sits over the leaving one exactly as the hover preview does */
+  #openTablesTop .player img.ltGhost { position: absolute; left: 50%; top: 0; z-index: 1; }
+  /* the plate rolls its name the way it rolls to Join on hover */
+  #openTablesTop .ltRoll { position: absolute; inset: 0; overflow: hidden; border-radius: inherit; corner-shape: inherit; }
+  #openTablesTop .ltRoll .playerName { position: absolute; inset: 0; padding: 0; }
+  #openTablesTop .ltTime span.ltTick { animation: ltTick .3s ease both; }
+  @keyframes ltTick { 0% { opacity: 0; } 100% { opacity: 1; } }
 
   /* the placeholder is an ordinary waiting table with every seat empty: sitting hosts it */
   #openTablesTop .ltCard.isNew { cursor: pointer; }
@@ -6251,20 +6255,19 @@
     if (!grid) return;
     var TICK = 4500, LIVE_CARDS = 5; /* five live tables plus the New table card: the grid is always two full rows */
     var reduced = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
-    /* a table changes the way the hero title's lines do, but the felt itself never goes: only what sits
-       on it, the seats, the art, the time and the marks, blurs and fades out, then fades back in */
+    /* a table turns over without leaving the page: the whole tile goes soft first, then what sits on the
+       felt fades out and the new table's own seats fade in, and only then does the tile come back into focus */
     function contents(card) { return card.querySelector(".playersContainer"); }
-    function motionOut(card, done) {
-      var box = contents(card);
-      if (reduced || !box || !box.animate) { done(); return; }
-      box.animate([{ opacity: 1, filter: "blur(0px)" }, { opacity: 0, filter: "blur(6px)" }],
-        { duration: 420, easing: "cubic-bezier(.4,0,.6,1)", fill: "forwards" }).onfinish = done;
+    function blurTo(card, from, to, ms, done) {
+      if (reduced || !card.animate) { if (done) done(); return; }
+      card.animate([{ filter: "blur(" + from + "px)" }, { filter: "blur(" + to + "px)" }],
+        { duration: ms, easing: to > from ? "cubic-bezier(.4,0,.6,1)" : "cubic-bezier(.2,.8,.2,1)", fill: "forwards" })
+        .onfinish = function () { if (done) done(); };
     }
-    function motionIn(card) {
-      var box = contents(card);
-      if (reduced || !box || !box.animate) return;
-      box.animate([{ opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)" }],
-        { duration: 520, easing: "cubic-bezier(.2,.8,.2,1)", fill: "backwards" });
+    function fadeTo(box, from, to, ms, done) {
+      if (reduced || !box || !box.animate) { if (done) done(); return; }
+      box.animate([{ opacity: from }, { opacity: to }], { duration: ms, easing: "linear", fill: "forwards" })
+        .onfinish = function () { if (done) done(); };
     }
 
     var PEOPLE = [
@@ -6297,59 +6300,84 @@
     /* a table on its way out still holds its place in the grid, so it counts until it is gone */
     function slotCount() { return grid.querySelectorAll(".ltCard:not(.isNew)").length; }
 
-    /* a face leaves and a face arrives on the seat with the very motion the empty-seat hover uses:
-       the old one shrinks to .88 and goes over 140ms, the new one comes up from .86 over 320ms */
-    function faceOut(img, done) {
-      if (reduced || !img.animate) { done(); return; }
+    /* a face leaves and a face arrives on the seat with the very motion the empty-seat hover uses: the
+       one going shrinks to .88 and fades over 140ms, and the one arriving is laid over it and comes up
+       from .86 over 320ms after the same 200ms the hover waits */
+    function swapFace(seat, src, done) {
+      var img = seat.querySelector("img:not(.seatYou):not(.ltGhost)");
+      if (!img) { if (done) done(); return; }
+      if (reduced || !img.animate) { img.src = src; if (done) done(); return; }
+      /* a face from an earlier change never lingers over this one */
+      seat.querySelectorAll(".ltGhost").forEach(function (g) { g.remove(); });
+      var ghost = document.createElement("img");
+      ghost.className = "ltGhost"; ghost.src = src; ghost.alt = ""; ghost.width = 32; ghost.height = 32;
+      img.parentNode.insertBefore(ghost, img.nextSibling);
       img.animate([{ opacity: 1, transform: "scale(1)" }, { opacity: 0, transform: "scale(.88)" }],
-        { duration: 140, easing: "cubic-bezier(0.32,0,0.67,0)", fill: "forwards" }).onfinish = done;
+        { duration: 140, easing: "cubic-bezier(0.32,0,0.67,0)", fill: "forwards" });
+      var rise = ghost.animate([{ transform: "translateX(-50%) scale(.86)" }, { transform: "translateX(-50%) scale(1)" }],
+        { duration: 320, delay: 200, easing: "cubic-bezier(0.22,1,0.36,1)", fill: "both" });
+      ghost.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 120, delay: 200, easing: "linear", fill: "both" })
+        .onfinish = function () {
+          /* the seat keeps one image: the arriving face becomes it, and every held animation is released */
+          img.getAnimations().forEach(function (an) { an.cancel(); });
+          img.src = src;
+          if (done) done();
+        };
+      /* the stand-in goes when its own rise is over, so nothing is left stacked on the seat */
+      rise.onfinish = function () { ghost.remove(); };
     }
-    function faceIn(img) {
-      if (reduced || !img.animate) return;
-      img.animate([{ transform: "scale(.86)" }, { transform: "scale(1)" }],
-        { duration: 320, easing: "cubic-bezier(0.22,1,0.36,1)", fill: "backwards" });
-      img.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 120, easing: "linear", fill: "backwards" });
+    /* the plate rolls its name the way it rolls to Join when you hover an open seat */
+    function rollName(plate, text, done) {
+      var cur = plate.querySelector(".playerName:not(.pnJoin)");
+      if (!cur) { if (done) done(); return; }
+      if (reduced || !cur.animate) { cur.textContent = text; if (done) done(); return; }
+      var clip = document.createElement("div");
+      clip.className = "ltRoll";
+      var next = document.createElement("p");
+      next.className = "playerName"; next.textContent = text;
+      cur.parentNode.insertBefore(clip, cur);
+      clip.appendChild(cur); clip.appendChild(next);
+      cur.animate([{ transform: "translateY(0)" }, { transform: "translateY(100%)" }],
+        { duration: 220, delay: 120, easing: "cubic-bezier(.22,1,.36,1)", fill: "both" });
+      next.animate([{ transform: "translateY(-100%)" }, { transform: "translateY(0)" }],
+        { duration: 220, delay: 120, easing: "cubic-bezier(.22,1,.36,1)", fill: "both" }).onfinish = function () {
+          cur.getAnimations().forEach(function (an) { an.cancel(); });
+          cur.textContent = text;
+          clip.parentNode.insertBefore(cur, clip);
+          clip.remove();
+          if (done) done();
+        };
     }
-    /* a seat takes a player: the silhouette goes, the face arrives, the plate takes the name */
+
+    /* a seat takes a player: the silhouette goes, the face arrives, the plate rolls to the name */
     function sit(seat, person) {
-      var img = seat.querySelector("img:not(.seatYou)");
       var plate = seat.querySelector(".playerNameContainer");
+      var roll = plate.querySelector(".plateRoll");
       var nameEl = plate.querySelector(".playerName:not(.pnJoin)");
-      faceOut(img, function () {
-        seat.classList.remove("isEmpty", "joinable");
-        var roll = plate.querySelector(".plateRoll");
-        if (roll) { plate.insertBefore(nameEl, roll); roll.remove(); }
-        var you = seat.querySelector(".seatYou");
-        if (you) you.remove();
-        img.src = person[1];
-        nameEl.textContent = person[0];
+      /* the seat is taken, so its join preview is dismantled first */
+      if (roll) { plate.insertBefore(nameEl, roll); roll.remove(); }
+      var you = seat.querySelector(".seatYou");
+      if (you) you.remove();
+      seat.classList.remove("isEmpty", "joinable");
+      swapFace(seat, person[1], function () {
         if (person[2] >= 70) {
           var badge = document.createElement("span");
           badge.className = "completionBadge" + (person[2] === 100 ? " is100" : "");
           badge.textContent = person[2] === 100 ? "" : person[2];
           plate.appendChild(badge);
         }
-        faceIn(img);
-        plate.classList.add("ltPlate");
-        setTimeout(function () { plate.classList.remove("ltPlate"); }, 360);
       });
+      rollName(plate, person[0]);
     }
 
     /* a player leaves: the face goes the same way and the seat is open again */
     function stand(seat) {
-      var img = seat.querySelector("img:not(.seatYou)");
       var plate = seat.querySelector(".playerNameContainer");
-      var nameEl = plate.querySelector(".playerName:not(.pnJoin)");
       var badge = plate.querySelector(".completionBadge");
-      faceOut(img, function () {
-        if (badge) badge.remove();
-        img.src = "avatarEmpty.png";
-        nameEl.textContent = "Empty";
-        seat.classList.add("isEmpty");
+      if (badge) badge.remove();
+      swapFace(seat, "avatarEmpty.png", function () { seat.classList.add("isEmpty"); });
+      rollName(plate, "Empty", function () {
         if (window.ltArmSeat) window.ltArmSeat(seat);
-        faceIn(img);
-        plate.classList.add("ltPlate");
-        setTimeout(function () { plate.classList.remove("ltPlate"); }, 360);
       });
     }
 
@@ -6415,20 +6443,37 @@
 
     /* the table stops being listed: it filled up, or it ended. Its replacement takes the very slot it
        left, so the tables around it never move */
+    /* a table settles into a slot: soft at first, its seats fade up, then it sharpens */
+    function settle(card) {
+      var box = contents(card);
+      card.style.filter = "blur(6px)";
+      if (box) box.style.opacity = "0";
+      armCard(card);
+      fadeTo(box, 0, 1, 240, function () {
+        if (box) box.style.opacity = "";
+        blurTo(card, 6, 0, 260, function () {
+          card.style.filter = "";
+          card.getAnimations().forEach(function (an) { an.cancel(); });
+          if (box) box.getAnimations().forEach(function (an) { an.cancel(); });
+        });
+      });
+    }
     function appear() {
       if (slotCount() >= LIVE_CARDS) return;
       var card = buildCard(pick(NEW_TABLES));
       grid.insertBefore(card, grid.querySelector(".ltCard.isNew"));
-      armCard(card); motionIn(card);
+      settle(card);
     }
     function expire(card, replace) {
       if (card.classList.contains("ltLeave")) return;
       card.classList.add("ltLeave");
-      motionOut(card, function () {
-        if (replace === false || slotCount() > LIVE_CARDS) { card.remove(); return; }
-        var fresh = buildCard(pick(NEW_TABLES));
-        grid.replaceChild(fresh, card);
-        armCard(fresh); motionIn(fresh);
+      blurTo(card, 0, 6, 220, function () {
+        fadeTo(contents(card), 1, 0, 200, function () {
+          if (replace === false || slotCount() > LIVE_CARDS) { card.remove(); return; }
+          var fresh = buildCard(pick(NEW_TABLES));
+          grid.replaceChild(fresh, card);
+          settle(fresh);
+        });
       });
     }
 
