@@ -3441,7 +3441,12 @@
      own slot, so nothing in the grid ever moves */
   #openTablesTop .ltCard.ltLeave { pointer-events: none; }
   /* the arriving face sits over the leaving one exactly as the hover preview does */
-  #openTablesTop .player img.ltGhost { position: absolute; left: 50%; top: 0; z-index: 1; }
+  #openTablesTop .player img.ltGhost { position: absolute; left: 50%; top: 0; z-index: 1; pointer-events: none; }
+  /* while a tile is soft, the avatars drop their SVG edge filter: re-rastering forty filtered faces under a
+     blur every frame is what made the change stutter, and under six pixels of blur the edge cannot be seen */
+  #openTablesTop .ltCard.ltBusy { will-change: filter; }
+  #openTablesTop .ltCard.ltBusy .player img, #openTablesTop .ltCard.ltBusy .ltArt { filter: none; }
+  #openTablesTop .ltCard.ltBusy .playerNameContainer { box-shadow: none; }
   /* the plate rolls its name the way it rolls to Join on hover */
   #openTablesTop .ltRoll { position: absolute; inset: 0; overflow: hidden; border-radius: inherit; corner-shape: inherit; }
   #openTablesTop .ltRoll .playerName { position: absolute; inset: 0; padding: 0; }
@@ -5904,9 +5909,22 @@
     };
     window.rescanTileCounts();
     var beat = 0;
+    /* the counts hold until the headline has settled and the page takes its first live beat: the green
+       dot still rings from the start, but no number moves before the title is done talking */
+    var counting = false;
+    function openCounts() {
+      if (counting) return;
+      counting = true; beat = 0;
+      changeCounts();
+    }
+    window.addEventListener("ltfirstbeat", function (e) {
+      setTimeout(openCounts, Math.max(0, e.detail - Date.now()));
+    });
+    if (window.ltFirstBeat) setTimeout(openCounts, Math.max(0, window.ltFirstBeat - Date.now()));
+    setTimeout(openCounts, 45000); /* only if the intro module never speaks at all */
     setInterval(function () {
       beat++;
-      var change = beat % 6 === 0;
+      var change = counting && beat % 6 === 0;
       dots.forEach(function (dot) {
         fireRing(dot, 2.6, 750, .5);
         if (change) snappySwell(dot);
@@ -5937,6 +5955,9 @@
         }
       }
       if (!change) return;
+      changeCounts();
+    }, 1400);
+    function changeCounts() {
       defs.forEach(function (d) {
         var el = document.getElementById(d.id);
         if (!el) return;
@@ -6316,15 +6337,15 @@
         { duration: 140, easing: "cubic-bezier(0.32,0,0.67,0)", fill: "forwards" });
       var rise = ghost.animate([{ transform: "translateX(-50%) scale(.86)" }, { transform: "translateX(-50%) scale(1)" }],
         { duration: 320, delay: 200, easing: "cubic-bezier(0.22,1,0.36,1)", fill: "both" });
-      ghost.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 120, delay: 200, easing: "linear", fill: "both" })
-        .onfinish = function () {
-          /* the seat keeps one image: the arriving face becomes it, and every held animation is released */
-          img.getAnimations().forEach(function (an) { an.cancel(); });
-          img.src = src;
-          if (done) done();
-        };
-      /* the stand-in goes when its own rise is over, so nothing is left stacked on the seat */
-      rise.onfinish = function () { ghost.remove(); };
+      ghost.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 120, delay: 200, easing: "linear", fill: "both" });
+      /* the hand over waits for the arriving face to finish rising: swapping earlier left the seat's own
+         image at full size under a stand-in still growing, which read as a doubled face */
+      rise.onfinish = function () {
+        img.getAnimations().forEach(function (an) { an.cancel(); });
+        img.src = src;
+        ghost.remove();
+        if (done) done();
+      };
     }
     /* the plate rolls its name the way it rolls to Join when you hover an open seat */
     function rollName(plate, text, done) {
@@ -6446,6 +6467,7 @@
     /* a table settles into a slot: soft at first, its seats fade up, then it sharpens */
     function settle(card) {
       var box = contents(card);
+      card.classList.add("ltBusy");
       card.style.filter = "blur(6px)";
       if (box) box.style.opacity = "0";
       armCard(card);
@@ -6455,6 +6477,7 @@
           card.style.filter = "";
           card.getAnimations().forEach(function (an) { an.cancel(); });
           if (box) box.getAnimations().forEach(function (an) { an.cancel(); });
+          card.classList.remove("ltBusy");
         });
       });
     }
@@ -6466,7 +6489,7 @@
     }
     function expire(card, replace) {
       if (card.classList.contains("ltLeave")) return;
-      card.classList.add("ltLeave");
+      card.classList.add("ltLeave", "ltBusy");
       blurTo(card, 0, 6, 220, function () {
         fadeTo(contents(card), 1, 0, 200, function () {
           if (replace === false || slotCount() > LIVE_CARDS) { card.remove(); return; }
@@ -6532,9 +6555,9 @@
       started = true;
       setTimeout(function () { tick(); setInterval(tick, TICK); }, Math.max(0, at - Date.now()));
     }
-    window.ltOnIntroBeat = startBeat;
+    window.addEventListener("ltfirstbeat", function (e) { startBeat(e.detail); });
     if (window.ltFirstBeat) startBeat(window.ltFirstBeat);
-    setTimeout(function () { startBeat(Date.now()); }, 14000);
+    setTimeout(function () { startBeat(Date.now()); }, 45000); /* only if the intro module never speaks at all */
   });
 </script>
 <style>
@@ -6893,6 +6916,13 @@
     });
   }
 
+  /* the page takes its first live beat one line-beat after the headline settles: the counts and the open
+     tables both wait for this, so nothing moves while the title is still talking */
+  function announceBeat(at) {
+    if (window.ltFirstBeat) return;
+    window.ltFirstBeat = at;
+    window.dispatchEvent(new CustomEvent("ltfirstbeat", { detail: at }));
+  }
   /* the second line rises and settles, line by line, then stays */
   function riseSettle(h, lines, first, period) {
     var br = h.querySelector("br"); if (!br) return;
@@ -6922,13 +6952,15 @@
   function isDefaultTitle(h) { return /^Play card games\s*in good company$/.test(h.textContent.replace(/\s+/g, " ").trim()); }
   function ownsTitle(h) { return h && (isDefaultTitle(h) || h.classList.contains("intro")); } /* not the signed-in preview's headline */
   function squareOne() {
-    timers.forEach(clearTimeout); timers = []; phase = "idle"; settled = null;
+    timers.forEach(clearTimeout); timers = []; rafs.forEach(cancelAnimationFrame); rafs = []; phase = "idle"; settled = null;
     var h = document.getElementById("herotitle");
-    if (ownsTitle(h)) { h.classList.add("intro"); h.innerHTML = "Play card games<br>in good company"; }
-    prepareSeam(); prepareSectionSuits(reduced);
+    /* square one shows the clock's closer; the sequence ends on "in good company", the H1 as written in the HTML */
+    if (ownsTitle(h)) { h.classList.add("intro"); h.innerHTML = "Play card games<br>" + closerNow(); }
+    prepareSeam(); prepareSectionSuits(reduced); prepareSectionHeads(reduced);
   }
   function play() {
-    var h = document.getElementById("herotitle"); if (!ownsTitle(h)) return;
+    /* a headline the intro does not own means no rotation, so the beat is announced straight away */
+    var h = document.getElementById("herotitle"); if (!ownsTitle(h)) { announceBeat(Date.now() + 2000); return; }
     squareOne();
     phase = "playing";
     var cap = document.getElementById("stc2-players"), count = cap ? parseInt(cap.dataset.cur || cap.dataset.v, 10) : 1214;
@@ -6938,8 +6970,7 @@
     riseSettle(h, lines, 1500, 2200);
     /* the Open tables section joins the intro's rhythm: its first listing update lands one line-beat
        after the headline settles, as if the title had one more line to turn to */
-    window.ltFirstBeat = Date.now() + 1500 + lines.length * 2200;
-    if (typeof window.ltOnIntroBeat === "function") window.ltOnIntroBeat(window.ltFirstBeat);
+    announceBeat(Date.now() + 1500 + lines.length * 2200);
   }
   /* keep the settled line and the swept seam if a switcher rebuilds the headline or the bar later */
   if (typeof window.applyBody === "function") {
