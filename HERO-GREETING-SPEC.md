@@ -13,15 +13,16 @@ The guest hero ("Play card games" plus the weekday-and-hour tail) is a separate 
 Evening PiLady10            <- line one: hour word + name (see 3 for the fallback ladder)
 the cards are waiting       <- line two: one of eight card-room lines, drawn per visit (see 4)
 
-Good to see you again!      <- subtitle line one: an opener (see 5)
-Sneak in a hand before anyone notices.   <- subtitle line two: a clause (see 6)
+Good to see you again! Sneak in a hand before anyone notices. We won't say a word.
+                            <- subtitle: an opener (see 5) and a clause (see 6), one paragraph that wraps on its own
 
 [ LIVE · 1,214 playing · 143 tables ]    <- the live capsule, unchanged
 ```
 
 Type: headline in the display serif (Gelica Medium 38px in the mockup, line-height 1.15), two lines, no full stops and no
-commas anywhere in the headline. Subtitle 16px body face, two lines (a `<br>` between opener and clause), max-width 416px.
-Capsule 28px below.
+commas anywhere in the headline. Subtitle 16px body face, ONE paragraph with no forced line break, max-width 416px, so it
+wraps where the guest subtitle wraps; opener plus clause run 80 to 95 characters so the paragraph fills about two lines
+like the guest subtitle does. Capsule 28px below.
 
 Nothing in the hero mentions friends, leaderboards, rank, Elo, the daily challenge or deal, stats, streaks, last night, or
 seats open. Those live in the zones below the hero.
@@ -115,52 +116,55 @@ Good to have you back
 
 Five groups. The lab keeps these lists in `COZY`.
 
+Each clause is two short sentences, so the subtitle reaches about two lines at 416px.
+
 Any hour:
 ```
-Pull up a chair and stay a while.
-Shoes off, cards up, no rush.
-One quick hand, you say. That's what everyone says.
-Sneak in a hand before anyone notices.
-Have fun. That's the only house rule.
-Any chair you like. They're all comfy.
-Don't show them your cards.
-No dress code, no clock, no hurry.
-The kettle's on and so is the game.
+Pull up a chair and stay a while. The cards are patient, and so are we.
+Shoes off, cards up, no rush. Nobody here is watching the clock.
+One quick hand, you say. That's what everyone says, and nobody minds.
+Sneak in a hand before anyone notices. We won't say a word.
+Have fun. That's the only house rule, and it's an easy one to keep.
+Any chair you like. They're all comfy, and the good one is free.
+Don't show them your cards. Everything else is fair game.
+No dress code, no clock, no hurry. Just cards and good company.
+The kettle's on and so is the game. Take whichever you like first.
 ```
 
 Morning:
 ```
-Coffee in one hand, cards in the other.
-Cards before chores. We won't tell.
-A fresh pot and a fresh deck.
+Coffee in one hand, cards in the other. The day can wait a hand.
+Cards before chores. We won't tell, and the chores will keep.
+A fresh pot and a fresh deck. Not a bad way to start the day.
 ```
 
 Afternoon:
 ```
-A hand of cards fixes most afternoons.
-A hand of cards beats a nap. Well, just about.
-The afternoon is better with cards in it.
+A hand of cards fixes most afternoons. This one looks no different.
+A hand of cards beats a nap. Well, just about, and you can nap after.
+The afternoon is better with cards in it. Ask anyone at the tables.
 ```
 
 Evening (also late night):
 ```
-One last hand before bed?
-Slippers on, cards out, nowhere to be.
-A calm one to close the night.
+One last hand before bed? Go on, the cards won't tell.
+Slippers on, cards out, nowhere to be. The evening is all yours.
+A calm one to close the night. The lamp stays on as long as you like.
 ```
 
 Return (see 7):
 ```
-It's been quiet without you.
-We left the light on. And the kettle.
-Sit down, it's like you never left.
+It's been quiet without you. Everything is right where you left it.
+We left the light on. And the kettle, in case you were wondering.
+Sit down, it's like you never left. Nothing here has changed a bit.
 ```
 
 Drawing a clause:
 1. On a return view, draw from the return group. Otherwise flip a coin: heads draws from the current hour's group, tails
    from the any-hour group.
-2. Skip any clause that contains the noun of line two (chair, cards, table, deck, seat, game; whole-word match), so
-   "your chair is warm" never sits over "Pull up a chair and stay a while." If every candidate is skipped, ignore the rule.
+2. Skip any clause whose FIRST sentence contains the noun of line two (chair, cards, table, deck, seat, game), so
+   "your chair is warm" never sits directly over "Pull up a chair and stay a while." If every candidate is skipped, ignore
+   the rule.
 3. Skip the clause shown last time.
 4. Draw once per page load and keep it for the visit.
 

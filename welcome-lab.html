@@ -301,13 +301,27 @@ bronze distance (the calendar card below carries those); avatars uncropped in th
     openers: ["Good to see you again", "Good to see you", "Lovely to have you back", "Glad you came by",
       "There you are", "Nice to see you again", "Look who's here", "Always good to see you"],
     retOpeners: ["Good to see you again, stranger", "Well, look who's back", "Good to have you back"],
-    any: ["Pull up a chair and stay a while.", "Shoes off, cards up, no rush.", "One quick hand, you say. That's what everyone says.",
-      "Sneak in a hand before anyone notices.", "Have fun. That's the only house rule.", "Any chair you like. They're all comfy.",
-      "Don't show them your cards.", "No dress code, no clock, no hurry.", "The kettle's on and so is the game."],
-    morning: ["Coffee in one hand, cards in the other.", "Cards before chores. We won't tell.", "A fresh pot and a fresh deck."],
-    afternoon: ["A hand of cards fixes most afternoons.", "A hand of cards beats a nap. Well, just about.", "The afternoon is better with cards in it."],
-    evening: ["One last hand before bed?", "Slippers on, cards out, nowhere to be.", "A calm one to close the night."],
-    ret: ["It's been quiet without you.", "We left the light on. And the kettle.", "Sit down, it's like you never left."]
+    any: ["Pull up a chair and stay a while. The cards are patient, and so are we.",
+      "Shoes off, cards up, no rush. Nobody here is watching the clock.",
+      "One quick hand, you say. That's what everyone says, and nobody minds.",
+      "Sneak in a hand before anyone notices. We won't say a word.",
+      "Have fun. That's the only house rule, and it's an easy one to keep.",
+      "Any chair you like. They're all comfy, and the good one is free.",
+      "Don't show them your cards. Everything else is fair game.",
+      "No dress code, no clock, no hurry. Just cards and good company.",
+      "The kettle's on and so is the game. Take whichever you like first."],
+    morning: ["Coffee in one hand, cards in the other. The day can wait a hand.",
+      "Cards before chores. We won't tell, and the chores will keep.",
+      "A fresh pot and a fresh deck. Not a bad way to start the day."],
+    afternoon: ["A hand of cards fixes most afternoons. This one looks no different.",
+      "A hand of cards beats a nap. Well, just about, and you can nap after.",
+      "The afternoon is better with cards in it. Ask anyone at the tables."],
+    evening: ["One last hand before bed? Go on, the cards won't tell.",
+      "Slippers on, cards out, nowhere to be. The evening is all yours.",
+      "A calm one to close the night. The lamp stays on as long as you like."],
+    ret: ["It's been quiet without you. Everything is right where you left it.",
+      "We left the light on. And the kettle, in case you were wondering.",
+      "Sit down, it's like you never left. Nothing here has changed a bit."]
   };
   var NOUNS = ["chair", "cards", "table", "deck", "seat", "game"];
   function measureText(text, font) {
@@ -327,14 +341,15 @@ bronze distance (the calendar card below carries those); avatars uncropped in th
     var openers = isReturn ? COZY.retOpeners : COZY.openers;
     var pool = isReturn ? COZY.ret : (kind === "hour" || (kind === "random" && rnd(2) === 0)) ? COZY[hourKey] : COZY.any;
     var noun = NOUNS.filter(function (n) { return line2.indexOf(n) > -1; })[0];
-    var clauses = pool.filter(function (c) { return !noun || c.toLowerCase().indexOf(noun) === -1; });
+    /* the clash check looks at the clause's first sentence only, the one that sits right under the headline */
+    var clauses = pool.filter(function (c) { return !noun || c.split(". ")[0].toLowerCase().indexOf(noun) === -1; });
     if (!clauses.length) clauses = pool;
     return { opener: openers[rnd(openers.length)], clause: clauses[rnd(clauses.length)], hourClause: pool !== COZY.any && !isReturn };
   }
   function cozyText(pick, name, withName, isReturn) {
     var end = pick.hourClause || isReturn ? "." : "!";
     var op = pick.opener + (withName ? ", " + name : "") + end;
-    return op + "<br>" + pick.clause;
+    return op + " " + pick.clause;
   }
 
   var LAB_FONT = "500 38px Gelica";
