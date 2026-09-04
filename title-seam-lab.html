@@ -241,9 +241,13 @@
              border (flush: the glyph's edge on the border; centre: its centre; gap: its 20px opening starting at the border; indent: half
              a station in); fromEnds keeps 96 from each border inward and leaves the remainder in the middle. The order about the centre
              is the menu row's: diamond and spade nearest, club and heart next, so the left end is a club and the right a heart at twelve */
-          var inset = { flush: 6, centre: 0, gap: 10, indent: 50, fromEnds: 6 }[S.fit], span = COL_R - COL_L - 2 * inset, half = [];
+          var inset = { flush: 6, centre: 0, gap: 10, indent: 50, fromEnds: 6, cells: 0 }[S.fit], span = COL_R - COL_L - 2 * inset, half = [];
           var RIGHTN = ["spade", "heart", "club", "diamond"], LEFTN = ["diamond", "club", "heart", "spade"];
           if (S.fit === "fromEnds") { for (var dd = CX - COL_L - inset; dd > 30; dd -= pitch) half.unshift(dd); }
+          else if (S.fit === "cells") { /* the column divided into an even number of equal cells, a suit centred in each: the ends half a pitch inside the border */
+            var bc = null; for (var nc = 2; nc <= 40; nc += 2) { var pc = span / nc; if (!bc || Math.abs(pc - pitch) < Math.abs(bc[1] - pitch)) bc = [nc, pc]; }
+            for (var qc = 0; qc < bc[0] / 2; qc++) half.push((qc + 0.5) * bc[1]);
+          }
           else { var best = null; for (var nn = 2; nn <= 40; nn += 2) { var pp = span / (nn - 1); if (!best || Math.abs(pp - pitch) < Math.abs(best[1] - pitch)) best = [nn, pp]; } for (var qq = 0; qq < best[0] / 2; qq++) half.push(best[1] / 2 + qq * best[1]); }
           half.forEach(function (d, k) { [[CX - d, LEFTN[k % 4]], [CX + d, RIGHTN[k % 4]]].forEach(function (pr) {
             var c = pr[0], hit = tbreaks.some(function (t) { return c + 10 + minTick > t[0] && c - 10 - minTick < t[1]; });
@@ -874,6 +878,10 @@
     lab("Flush at a 1440 window", "Scene 129 at a 1440 window, where the ad rail leaves a 1112px area and a 1064px column.", fitRow("flush"), { width: 1112 });
     VERDICTS["Flush at a 1280 window"] = '<span class="yes">The column 904: ten suits at 99.1.</span> Two fewer suits, the ends still on the border, the nearest pair at 50.';
     lab("Flush at a 1280 window", "Scene 129 at a 1280 window with the ad rail: a 952px area and a 904px column.", fitRow("flush"), { width: 952 });
+    VERDICTS["Half a pitch inside the borders"] = '<span class="maybe">Each suit in the centre of its own cell.</span> The column divided into twelve equal cells of 92.7px with a suit centred in each, so the first and last suit sit 46px inside the border, exactly half the distance between suits, and the paper before the first suit equals the paper between any two. The row reads as a deal laid evenly across the table; the tiles’ edge is no longer marked. Holger’s ask of 4 September; the mockup’s option “toprowcells”.';
+    lab("Half a pitch inside the borders", "The column divided into an even number of equal cells (the count whose cell is nearest 96), a suit centred in each; the row starts and ends half a pitch inside the border: twelve cells of 92.7px at 1112.", fitRow("cells"), { width: 1400 });
+    VERDICTS["Half a pitch inside, 1280 window"] = '<span class="maybe">The same at 904: ten cells of 90.4.</span> The ends 45px inside the border.';
+    lab("Half a pitch inside, 1280 window", "Scene 137 at a 1280 window with the ad rail: a 904px column in ten cells of 90.4px.", fitRow("cells"), { width: 952 });
     fitAll();
   }
 
