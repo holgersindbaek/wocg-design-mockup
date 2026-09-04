@@ -2348,9 +2348,12 @@
   .gamesec { width: 100%; max-width: 1160px; margin: 0 auto; padding: 14px 24px 0; box-sizing: border-box; }
   .gamesec:last-of-type { padding-bottom: 34px; }
   .catgrid { display: grid; gap: 16px; grid-auto-rows: auto; }
-  /* minmax(0, 1fr), not 1fr: a bare 1fr column cannot shrink below its content's minimum, and the nowrap
-     "Double Deck Pinochle" title made its column wider than the others once the page got narrow */
-  .catgrid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  /* four across while a tile can be 205px or wider, then three, then two. 205px is the floor a tile needs to keep
+     its longest title whole ("Double Deck Pinochle" at 20px bold plus the 12px paddings); the Play control needs
+     only 68px and every subtitle holds two lines from 250px, so the title is the width that matters. A bare 1fr
+     column would refuse to shrink below that title and made its column wider than the others instead. The
+     calc(25% - 13px) keeps it to four columns at full width, where auto-fill would otherwise fit five. */
+  .catgrid { grid-template-columns: repeat(auto-fill, minmax(max(205px, calc(25% - 13px)), 1fr)); }
   .gname { z-index: 1; padding: 0 12px; text-align: center; font-size: 21px; font-weight: 900; letter-spacing: 0.01em;
     text-shadow: 0 2px 0 rgba(0,0,0,0.22), 0 0 12px rgba(0,0,0,0.14); }
   /* category tiles: art on top, then the SEO title + subtitle, the two
