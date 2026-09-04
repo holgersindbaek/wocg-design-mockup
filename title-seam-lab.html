@@ -207,6 +207,31 @@
         k = 0; while (xl > limL) { suits.push([ORDER[(1 - k + 8) % 4], xl, suitDy]); xl -= stb; k++; }
         break;
       }
+      case "gridRow": {
+        /* the menu row's own grid: the 384px tile centred on the column centre (club -144, diamond -48, spade +48, heart +144, repeating
+           every 96px across the page); the title takes the centre and any suit whose gap would come within minTick of the title's
+           opening is dropped, so every surviving suit sits exactly where the top row has it */
+        var pitch = S.pitch || 96, minTick = S.minTick == null ? 8 : S.minTick;
+        var lim0 = (R.extent === "column" ? COL_L : 0) + 14, lim1 = (R.extent === "column" ? COL_R : W) - 14;
+        var tbreaks = boxes.map(function (b) { return [b[0] - pad, b[1] + pad]; });
+        if (S.phase === "title" && first) { /* re-phased from the title instead: every pitch outward from each side of the head */
+          var xr = last[1] + pad + tick + 10, kk = 0; while (xr < lim1) { suits.push([ORDER[(2 + kk) % 4], xr, 0]); xr += pitch; kk++; }
+          var xl = first[0] - pad - tick - 10; kk = 0; while (xl > lim0) { suits.push([ORDER[(1 - kk + 8) % 4], xl, 0]); xl -= pitch; kk++; }
+          break;
+        }
+        var names = { 48: "club", 144: "diamond", 240: "spade", 336: "heart" };
+        for (var gx = CX - 192 - 384 * 4; gx < W + 384; gx += 384) [48, 144, 240, 336].forEach(function (o) {
+          var c = gx + o; if (c < lim0 || c > lim1) return;
+          var collides = tbreaks.some(function (t) { return c + 10 + minTick > t[0] && c - 10 - minTick < t[1]; });
+          if (!collides) suits.push([names[o], c, 0]);
+        });
+        if (S.slideNearest && first) { /* the nearest surviving suit each side leaves the grid for a fixed tick from the head */
+          var nl = null, nr = null;
+          suits.forEach(function (q) { if (q[1] < first[0] && (!nl || q[1] > nl[1])) nl = q; if (q[1] > last[1] && (!nr || q[1] < nr[1])) nr = q; });
+          if (nl) nl[1] = first[0] - pad - (S.slideTick || 24) - 10; if (nr) nr[1] = last[1] + pad + (S.slideTick || 24) + 10;
+        }
+        break;
+      }
       case "leftOne": { var wl = which === "perSection" ? per() : (Array.isArray(which) ? which[0] : "spade"); suits.push([wl, COL_L + 6, 0]); break; }
       case "finials": { var wf = w2(["spade", "diamond"]); suits.push([wf[0], COL_L + 6, 0], [wf[1], COL_R - 6, 0]); break; }
       case "centreOnly": { var wc = which === "perSection" ? per() : (Array.isArray(which) ? which[0] : "spade"); suits.push([wc, CX, 0]); break; }
@@ -263,7 +288,7 @@
     var geo = width === 952 ? GEO952 : GEO;
     seams = seams || STD;
     var T = spec.title || {}, place = T.place || "below", size = T.size || 24, drop = T.drop == null ? 32 : T.drop;
-    var gapAbove = 40 + (place === "above" ? size + (T.gapAbove == null ? 10 : T.gapAbove) - 2 : 0);
+    var gapAbove = ((spec.content && spec.content.above) || 40) + (place === "above" ? size + (T.gapAbove == null ? 10 : T.gapAbove) - 2 : 0);
     var gapBelow = place === "below" ? drop + 44 : (spec.content && spec.content.top) || 40;
     if (geo.W < 1160) { var rail = el("div", "rail", '<div class="ad"></div>'); rail.style.cssText = "left:" + geo.W + "px;width:" + (1160 - geo.W) + "px;"; scene.appendChild(rail); }
     if (place === "inrule" && spec.suits && spec.suits.arr === "belowTitle") gapBelow += 18;
@@ -393,7 +418,7 @@
     SCENES.push(scene);
     return scene;
   }
-  function h2(text) { root.appendChild(el("h2", "", text)); }
+  function h2(text) { var e = el("h2", "", text); e.id = "sec-" + text.split(" ")[0]; root.appendChild(e); }
   function note(html) { root.appendChild(el("p", "note", html)); }
   function fitAll() {
     document.querySelectorAll(".fit").forEach(function (f) {
@@ -733,6 +758,29 @@
     lab("Stations parted, even lines at 40", "Title 24px in the rule, pad 4 (the paper a suit keeps beside the rule), tick 20; the four suits 40px apart, two a side, so every piece of rule inside the group is 20px and every paper gap 28px.", { title: { place: "inrule", size: 24 }, rule: { pad: 4, tick: 20 }, suits: { arr: "flankFour", step: 40 } });
     VERDICTS["Stations parted, even lines at 48"] = '<span class="maybe">The same rule with 28px pieces.</span> Suits 48px apart, a 28px tick to the head and the rule 4px from the letters; looser, and the group reaches 340px.';
     lab("Stations parted, even lines at 48", "The same at 48px between suits, pad 4 and a 28px tick, so every piece of rule inside the group is 28px and every paper gap 36px.", { title: { place: "inrule", size: 24 }, rule: { pad: 4, tick: 28 }, suits: { arr: "flankFour", step: 48 } });
+
+    /* ===== 15 · the top row with the title in the centre ===== */
+    h2("15 · The menu row on every seam, with the title in the centre");
+    note("Holger’s ask: the divider from the top of the page (the long-deal row, one suit every 96px in the site’s order, centred on the column) on the section seams too, with the title in the centre. The grid can be kept: the title takes the middle and only the suits that would collide with it are dropped, so every surviving suit sits exactly where the menu row has it. What cannot be fixed is the piece of rule between the title and the nearest suit: it runs from 13px (Trick-taking games) to 55px (Open tables) with today’s titles, and a title wider than about 240px drops the next pair too. The alternatives below trade that away in different ways. Content sits 48px from the rule, as in the mockup.");
+    var GRID = { content: { top: 48, above: 48 } };
+    VERDICTS["Top row kept, title in the centre"] = '<span class="yes">The grid held.</span> The inner pair (diamond and spade at 48px) gives way to the head; club and heart stay at 144px, then the row runs on at 96px to the edges exactly as on the menu bar. The tick to the head is whatever the title leaves: 13px here on Trick-taking games, 38px on Rummy games.';
+    lab("Top row kept, title in the centre", "The menu row’s grid on the seam (club at 144px left of centre, heart at 144px right, then every 96px in the site’s order); the title 24px in the centre with pad 14; suits within 8px of the title’s opening are dropped.", Object.assign({ title: { place: "inrule", size: 24 }, rule: { pad: 14 }, suits: { arr: "gridRow", minTick: 8 } }, GRID));
+    VERDICTS["Top row kept, pad 4"] = '<span class="maybe">The same grid with the head’s paper matched to the suits’.</span> The rule stops 4px from the letters as it does from a glyph; the ticks grow by 10px each and Trick-taking games reads less pinched.';
+    lab("Top row kept, pad 4", "As above with pad 4, the paper a suit keeps beside the rule.", Object.assign({ title: { place: "inrule", size: 24 }, rule: { pad: 4 }, suits: { arr: "gridRow", minTick: 8 } }, GRID));
+    VERDICTS["Top row kept, tick at least 20"] = '<span class="no">The grid held, the crowding refused.</span> Any suit that would leave less than 20px of rule beside the head is dropped too, so Trick-taking games loses its 144px pair and sits in a 480px opening while Rummy games keeps its pair. Honest, and the seams stop matching each other.';
+    lab("Top row kept, tick at least 20", "As the first scene, but a suit is also dropped when it would leave less than 20px of rule beside the head.", Object.assign({ title: { place: "inrule", size: 24 }, rule: { pad: 14 }, suits: { arr: "gridRow", minTick: 20 } }, GRID));
+    VERDICTS["Top row, the nearest pair slides in"] = '<span class="maybe">The grid held except for two suits.</span> The nearest surviving pair leaves its station for a fixed 24px tick beside the head; everything beyond stays on the menu row’s grid. The head always has the same air, and two suits per seam are off the grid by 0 to 40px.';
+    lab("Top row, the nearest pair slides in", "The grid kept, except that the nearest surviving suit on each side moves to a 24px tick from the head.", Object.assign({ title: { place: "inrule", size: 24 }, rule: { pad: 14 }, suits: { arr: "gridRow", minTick: 8, slideNearest: true, slideTick: 24 } }, GRID));
+    VERDICTS["Top row re-phased from the title"] = '<span class="no">The row starts from the head, not from the page.</span> Every suit is 96px from the last, beginning 24px of rule from the title; the head’s air is constant, but the suits no longer line up with the menu row or with the seam above.';
+    lab("Top row re-phased from the title", "Suits every 96px outward from each side of the head (tick 24), so the row’s phase follows the title.", Object.assign({ title: { place: "inrule", size: 24 }, rule: { pad: 14, tick: 24 }, suits: { arr: "gridRow", phase: "title" } }, GRID));
+    VERDICTS["Top row kept, stress titles"] = '<span class="maybe">What the drop rule does at the extremes.</span> A 28-letter head loses the 144px pair too and takes the 240px pair with a 59px tick; a five-letter head keeps the 144px pair with an 86px tick. The grid never moves.';
+    lab("Top row kept, stress titles", "The first scene on a long title and a very short one.", Object.assign({ title: { place: "inrule", size: 24 }, rule: { pad: 14 }, suits: { arr: "gridRow", minTick: 8 } }, GRID), { seams: STRESS });
+    VERDICTS["Top row kept, whole page"] = '<span class="yes">The one row down the whole page.</span> Every seam shows the same grid with a different head in its middle; the double seam keeps the four stations between its two heads. This is the version that matches the menu bar and the footer.';
+    lab("Top row kept, whole page", "The first scene on all six seams; the double head centred over its columns.", Object.assign({ title: { place: "inrule", size: 24 }, rule: { pad: 14 }, suits: { arr: "gridRow", minTick: 8 } }, GRID), { seams: sevenC });
+    VERDICTS["Top row kept, column width"] = '<span class="yes">At the mockup’s width.</span> The row centred on the 952px column, four suits a side, the rule ending at the rail.';
+    lab("Top row kept, column width", "The first scene in a 952px column.", Object.assign({ title: { place: "inrule", size: 24 }, rule: { pad: 14 }, suits: { arr: "gridRow", minTick: 8 } }, GRID), { width: 952 });
+    VERDICTS["Top row kept, swelled to the head"] = '<span class="maybe">Playful second.</span> The grid held and the rule pieces beside the head swelled to 3px with rounded ends; the two pieces are 13 and 38px long here, so the swell barely has room.';
+    lab("Top row kept, swelled to the head", "The first scene with the two pieces of rule beside the head swelled to 3px, rounded.", Object.assign({ title: { place: "inrule", size: 24 }, rule: { pad: 14 }, suits: { arr: "gridRow", minTick: 8 }, extras: { swelled: true } }, GRID));
     fitAll();
   }
 
