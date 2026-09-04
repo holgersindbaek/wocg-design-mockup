@@ -61,6 +61,8 @@
   .seamlayer .tab { position: absolute; border-radius: 6px 6px 0 0; }
   .seamlayer .tab.bordered { border: 1px solid var(--rule); border-bottom: 0; border-radius: 9px 9px 0 0; corner-shape: squircle; box-sizing: border-box; }
   .seamlayer .tab.plate { border-bottom: 1px solid var(--rule); border-radius: 9px; }
+  .seamlayer .ttl.halo { color: transparent; }
+  .seamlayer .wordplate { position: absolute; }
   .seamlayer .tabdown { position: absolute; border-radius: 0 0 6px 6px; }
   .seamlayer .row4 { position: absolute; display: flex; align-items: center; }
   .seamlayer .row4 .su { position: static; }
@@ -159,6 +161,18 @@
         var left = T.align === "left" ? leftBase + (T.dx || 0) : want - tw / 2 + (T.dx || 0) - (tt.live ? 8.5 : 0); /* centre the word, not the box with its live dot */
         var top = place === "inrule" ? titleY - base + m.xh / 2 : titleY - base;
         ttl.style.left = left + "px"; ttl.style.top = top + "px";
+        if (X.halo) { /* the same word stroked in the lower paper, under the ink: the counters and the gaps inside the word take the lower colour */
+          var hal = ttl.cloneNode(true); hal.className = "ttl halo";
+          hal.style.webkitTextStroke = (2 * X.halo) + "px var(--" + sc.lower + ")"; hal.style.color = "var(--" + sc.lower + ")";
+          layer.insertBefore(hal, ttl);
+        }
+        if (X.wordPlates) { /* a square of the lower paper behind each word, from the cap top to the descenders */
+          var node = ttl.firstChild; while (node && node.nodeType !== 3) node = node.nextSibling;
+          if (node) { var text = node.textContent, pos = 0; text.split(/(\s+)/).forEach(function (part) {
+            if (part.trim()) { var rg = document.createRange(); rg.setStart(node, pos); rg.setEnd(node, pos + part.length); var rr = rg.getBoundingClientRect(), lr = layer.getBoundingClientRect();
+              var wp = el("span", "wordplate"); wp.style.cssText = "left:" + (rr.left - lr.left - 2) + "px;width:" + (rr.width + 4) + "px;top:" + (top + base - m.cap - 2) + "px;height:" + (m.cap + m.desc + 4) + "px;background:var(--" + sc.lower + ");"; layer.insertBefore(wp, layer.firstChild); }
+            pos += part.length; }); }
+        }
         boxes.push([left, left + tw, ttl, T.align === "left" ? left + tw / 2 : want]);
         if (place === "inrule") breaks.push([left - pad - (X.dots ? 14 : 0), left + tw + pad + (X.dots ? 14 : 0)]);
       });
@@ -270,6 +284,7 @@
       var tabBottom = X.plate ? Math.max.apply(null, boxes.map(function (b) { return parseFloat(b[2].style.top); })) + base + m.desc + 4 : 7;
       if (X.plate) tab.className += " plate";
       tab.style.cssText = "left:" + (first[0] - pad) + "px;width:" + (last[1] - first[0] + 2 * pad) + "px;top:" + tabTop + "px;height:" + (tabBottom - tabTop) + "px;background:" + (X.plate === "white" ? "#fff" : "var(--" + sc.lower + ")") + ";";
+      if (X.tabRadius != null) tab.style.borderRadius = X.tabRadius + "px " + X.tabRadius + "px 0 0";
       layer.insertBefore(tab, layer.firstChild);
     }
     if (X.dots && first && place === "inrule") {
@@ -781,6 +796,28 @@
     lab("Top row kept, column width", "The first scene in a 952px column.", Object.assign({ title: { place: "inrule", size: 24 }, rule: { pad: 14 }, suits: { arr: "gridRow", minTick: 8 } }, GRID), { width: 952 });
     VERDICTS["Top row kept, swelled to the head"] = '<span class="maybe">Playful second.</span> The grid held and the rule pieces beside the head swelled to 3px with rounded ends; the two pieces are 13 and 38px long here, so the swell barely has room.';
     lab("Top row kept, swelled to the head", "The first scene with the two pieces of rule beside the head swelled to 3px, rounded.", Object.assign({ title: { place: "inrule", size: 24 }, rule: { pad: 14 }, suits: { arr: "gridRow", minTick: 8 }, extras: { swelled: true } }, GRID));
+
+    /* ===== 16 · the split paper behind the head ===== */
+    h2("16 · The split paper behind the head");
+    note("Holger’s question: the head sits on the paper boundary, so its top half is on the band and its bottom half on the canvas. Can the open spaces inside the words take the lower paper’s colour, so the word does not feel split? The counters cannot be filled on their own without the font’s outlines, but a thin halo of the lower paper stroked under the letters fills the counters and the gaps inside a word, and a square of the lower paper behind each word, or behind the whole head, is the blunt version. All on the menu-row setting at pad 4 (scene 111). Look at the zoom crops in title-seam-shots/zoom.");
+    var TOP4 = Object.assign({ title: { place: "inrule", size: 24 }, rule: { pad: 4 }, suits: { arr: "gridRow", minTick: 8 } }, GRID);
+    function withX(base, extras) { var c = JSON.parse(JSON.stringify(base)); c.extras = Object.assign({}, c.extras || {}, extras); return c; }
+    VERDICTS["Split paper, as it is"] = '<span class="maybe">The reference.</span> The boundary crosses the x-height; the two papers differ by a few units, so at reading distance the split is faint, and at 2x it shows in the counters of a, e and g.';
+    lab("Split paper, as it is", "Scene 111 as it is: the head on the boundary, nothing behind it.", TOP4);
+    VERDICTS["Halo 1px of the lower paper"] = '<span class="maybe">The finest halo.</span> Each letter is stroked 1px in the lower paper under the ink: the counters fill, the boundary stops a hair short of every letter, and between the letters the band still shows.';
+    lab("Halo 1px of the lower paper", "The head stroked 1px in the lower paper under the ink.", withX(TOP4, { halo: 1 }));
+    VERDICTS["Halo 2px of the lower paper"] = '<span class="yes">The word takes the lower paper with it.</span> A 2px halo fills the counters and closes the gaps inside a word, so the boundary runs up to each word and stops; between words it shows for a moment. The head reads as sitting on the canvas.';
+    lab("Halo 2px of the lower paper", "The head stroked 2px in the lower paper under the ink.", withX(TOP4, { halo: 2 }));
+    VERDICTS["Halo 4px of the lower paper"] = '<span class="maybe">A visible knock-out.</span> At 4px the halo becomes a soft shape of its own around the word, like a label cut from the canvas.';
+    lab("Halo 4px of the lower paper", "The head stroked 4px in the lower paper under the ink.", withX(TOP4, { halo: 4 }));
+    VERDICTS["Word plates"] = '<span class="maybe">A square of the lower paper behind each word.</span> From the cap top to the descenders, 2px wider than the word: the boundary steps over each word. Honest and a little mechanical; the gap between the words shows the step twice.';
+    lab("Word plates", "A square of the lower paper behind each word, 2px beyond the letters, from the cap top to the descenders.", withX(TOP4, { wordPlates: true }));
+    VERDICTS["Title plate, square"] = '<span class="maybe">One square of the lower paper behind the head.</span> The lower paper rises in a rectangle as wide as the head’s opening, 7px above the caps, with square corners; the step is straight and quiet.';
+    lab("Title plate, square", "The lower paper rises behind the whole head, square corners, as wide as the rule’s break.", withX(TOP4, { tab: true, tabRadius: 0 }));
+    VERDICTS["Title plate, rounded"] = '<span class="maybe">The same with 6px corners.</span> The tab from section 1; the rounded step reads as a shape.';
+    lab("Title plate, rounded", "The lower paper rises behind the whole head with 6px corners.", withX(TOP4, { tab: true, tabRadius: 6 }));
+    VERDICTS["Boundary at the baseline"] = '<span class="maybe">The head lifted onto the band.</span> The baseline sits on the rule, so the letters stand on the band and only descenders cross; nothing is split, and the head belongs to the section above.';
+    lab("Boundary at the baseline", "The head with its baseline on the rule instead of its x-height centre, so only the descenders cross the boundary.", Object.assign({}, TOP4, { title: { place: "inrule", size: 24, valign: "baseline" } }));
     fitAll();
   }
 
