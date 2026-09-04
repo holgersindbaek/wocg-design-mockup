@@ -97,6 +97,9 @@
   var INK = { club: ["#262626", .45, .24], spade: ["#262626", .45, .24], heart: ["#B54A3F", .5, .32], diamond: ["#B54A3F", .5, .32] };
   var ORDER = ["club", "diamond", "spade", "heart"];
   var GEO = { W: 1160, CX: 580, COL_L: 24, COL_R: 1136 }, GEO952 = { W: 952, CX: 476, COL_L: 24, COL_R: 928 };
+  /* the mockup's other widths: a 1728 window (the 1112px column in a 1400px area, 144px of margin each side) and a 1440 window (the area 1112, the column 1064) */
+  var GEO1400 = { W: 1400, CX: 700, COL_L: 144, COL_R: 1256 }, GEO1112 = { W: 1112, CX: 556, COL_L: 24, COL_R: 1088 };
+  function geoFor(width) { return width === 952 ? GEO952 : (width === 1400 ? GEO1400 : (width === 1112 ? GEO1112 : GEO)); }
   var W = GEO.W, COL_L = GEO.COL_L, COL_R = GEO.COL_R, CX = GEO.CX;
   var svgN = 0;
   function el(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; }
@@ -233,9 +236,25 @@
           var xl = first[0] - pad - tick - 10; kk = 0; while (xl > lim0) { suits.push([ORDER[(1 - kk + 8) % 4], xl, 0]); xl -= pitch; kk++; }
           break;
         }
+        if (S.fit) {
+          /* the row set to the column: an even count of suits, the pitch nearest 96 that puts the outermost suit "inset" px inside each
+             border (flush: the glyph's edge on the border; centre: its centre; gap: its 20px opening starting at the border; indent: half
+             a station in); fromEnds keeps 96 from each border inward and leaves the remainder in the middle. The order about the centre
+             is the menu row's: diamond and spade nearest, club and heart next, so the left end is a club and the right a heart at twelve */
+          var inset = { flush: 6, centre: 0, gap: 10, indent: 50, fromEnds: 6 }[S.fit], span = COL_R - COL_L - 2 * inset, half = [];
+          var RIGHTN = ["spade", "heart", "club", "diamond"], LEFTN = ["diamond", "club", "heart", "spade"];
+          if (S.fit === "fromEnds") { for (var dd = CX - COL_L - inset; dd > 30; dd -= pitch) half.unshift(dd); }
+          else { var best = null; for (var nn = 2; nn <= 40; nn += 2) { var pp = span / (nn - 1); if (!best || Math.abs(pp - pitch) < Math.abs(best[1] - pitch)) best = [nn, pp]; } for (var qq = 0; qq < best[0] / 2; qq++) half.push(best[1] / 2 + qq * best[1]); }
+          half.forEach(function (d, k) { [[CX - d, LEFTN[k % 4]], [CX + d, RIGHTN[k % 4]]].forEach(function (pr) {
+            var c = pr[0], hit = tbreaks.some(function (t) { return c + 10 + minTick > t[0] && c - 10 - minTick < t[1]; });
+            if (!hit) suits.push([pr[1], c, 0]);
+          }); });
+          break;
+        }
         var names = { 48: "club", 144: "diamond", 240: "spade", 336: "heart" };
         for (var gx = CX - 192 - 384 * 4; gx < W + 384; gx += 384) [48, 144, 240, 336].forEach(function (o) {
           var c = gx + o; if (c < lim0 || c > lim1) return;
+          if (S.ends === "column" && (c < COL_L + 4 || c > COL_R - 4)) return; /* the grid kept, the suits beyond the column dropped */
           var collides = tbreaks.some(function (t) { return c + 10 + minTick > t[0] && c - 10 - minTick < t[1]; });
           if (!collides) suits.push([names[o], c, 0]);
         });
@@ -298,9 +317,10 @@
     { titles: [{ text: "Trick-taking games" }], idx: 1, upper: "band", lower: "canvas" },
     { titles: [{ text: "Rummy games" }], idx: 2, upper: "canvas", lower: "band" }
   ];
+  function onColumn(row, geo) { row.style.left = geo.COL_L + "px"; row.style.right = (geo.W - geo.COL_R) + "px"; }
   function tilesRow(n, cls) { var r = el("div", cls || "tiles"); for (var i = 0; i < n; i++) r.appendChild(el("div", "tile", cls ? "" : '<div class="im"></div><div class="tx"><i></i><i class="s"></i></div>')); return r; }
   function buildScene(scene, spec, seams, width) {
-    var geo = width === 952 ? GEO952 : GEO;
+    var geo = geoFor(width); scene.style.width = geo.W + "px";
     seams = seams || STD;
     var T = spec.title || {}, place = T.place || "below", size = T.size || 24, drop = T.drop == null ? 32 : T.drop;
     var gapAbove = ((spec.content && spec.content.above) || 40) + (place === "above" ? size + (T.gapAbove == null ? 10 : T.gapAbove) - 2 : 0);
@@ -309,7 +329,7 @@
     if (place === "inrule" && spec.suits && spec.suits.arr === "belowTitle") gapBelow += 18;
     if (place === "above" && spec.suits && spec.suits.arr === "belowTitle") gapBelow += 4;
     var p0 = el("div", "panel " + seams[0].upper); p0.style.height = (32 + gapAbove) + "px"; p0.style.width = geo.W + "px";
-    var t0 = tilesRow(seams[0].upper === "band" ? 3 : 5, "tail"); t0.style.top = (32 + gapAbove - 60 - gapAbove) + "px"; p0.appendChild(t0); scene.appendChild(p0);
+    var t0 = tilesRow(seams[0].upper === "band" ? 3 : 5, "tail"); t0.style.top = (32 + gapAbove - 60 - gapAbove) + "px"; onColumn(t0, geo); p0.appendChild(t0); scene.appendChild(p0);
     var layers = [];
     seams.forEach(function (s, i) {
       var lastOne = i === seams.length - 1;
@@ -318,12 +338,12 @@
       var layer = el("div", "seamlayer"), h = null; p.appendChild(layer);
       if (place === "below") {
         h = el("div", "head", s.titles.map(function (tt) { return (tt.live ? '<span class="live"></span>' : "") + tt.text; }).join(""));
-        h.style.top = drop + "px"; p.appendChild(h);
+        h.style.top = drop + "px"; h.style.left = geo.COL_L + "px"; p.appendChild(h);
         if (s.titles.length > 1) { h.innerHTML = ""; s.titles.forEach(function (tt) { var hh = el("span", "", tt.text); hh.style.cssText = "position:absolute;left:" + (tt.left != null ? tt.left : tt.x - 100) + "px;"; h.appendChild(hh); }); h.style.left = "0"; }
       }
       layers.push([layer, s, h]);
-      if (s.controls) { var c = el("div", "ctlrow", '<span class="btn lb">All games</span><span class="btn">See all</span>'); c.style.top = (place === "below" ? drop + 6 : (spec.content && spec.content.ctlTop) || 12) + "px"; p.appendChild(c); }
-      var tr = tilesRow(s.lower === "band" ? 4 : 5); tr.style.top = (gapBelow + ctlPad) + "px"; p.appendChild(tr);
+      if (s.controls) { var c = el("div", "ctlrow", '<span class="btn lb">All games</span><span class="btn">See all</span>'); c.style.top = (place === "below" ? drop + 6 : (spec.content && spec.content.ctlTop) || 12) + "px"; c.style.right = (geo.W - geo.COL_R) + "px"; p.appendChild(c); }
+      var tr = tilesRow(s.lower === "band" ? 4 : 5); tr.style.top = (gapBelow + ctlPad) + "px"; onColumn(tr, geo); p.appendChild(tr);
       scene.appendChild(p);
     });
     /* draw after the panels are in the DOM, so the titles can be measured */
@@ -421,6 +441,16 @@
     "Whole page, fixed 144": "Centred heads in the rule make a strong spine down the page and the suits sit on the system’s 436 and 724 stations, but the ticks run from 13px on Trick-taking games to 55px on Open tables, the Live tables dot leaves 44 against 61, the double seam gets four clubs and the Open tables controls drop to a line of their own. (4/4/4/2)",
     "Whole page, fixed 168": "Widening the stations to 168 only stretches the ticks to 37 on Trick-taking games and 79 to 85 on the short heads so the suits drift away from their words, the stations leave the menu bar’s 144 grid, and the double seam’s clubs fall unevenly at 130, 466, 694 and 1030. (3/4/3/2)",
     "Whole page, 22px own suit, tick 24": "The tidiest single seam of the in-rule family, 22px cut evenly by the rule (5.5 above, 5 below the x-height) with 14px pads and 24px ticks on every ordinary seam, but as a page the suits wander from 108 to 146px off centre and the double seam loses both inner clubs so each head is bracketed on one side only. (4/4/3/2)",
+    "The row runs on": "The 96 grid runs through the margins, so the suit nearest the tiles’ edge lands 28px inside it here and 4px at a 1440 window, an accident of the window width; the row belongs to the window, not the column. (printer 2/2/3, reader 3/2/2, system 2/2/2)",
+    "The row stops at the column": "Stopping the grid at the column is the right idea, but the outer pair stops 28px short of the tiles’ edge, which reads as a near miss rather than a margin, and the shortfall changes with every window width. (2/3/2, 3/2/2, 3/2/2)",
+    "Pitch 100, the ends flush": "Twelve suits at 100 with the outer ink standing on the tile edge is how a printer justifies fleurons to a measure; the row and the tiles read as one block, and the 4px change of pitch from 96 is invisible. All three judges’ first choice. (5/5/4, 5/5/4, 5/5/5)",
+    "Pitch 101, the ends centred on the border": "With the centre on the border the outer glyph hangs 4 to 6px past the tiles, too much for optical alignment and too little to read as intended; an ornament that overhangs the measure reads as a slip. (3/4/4, 3/4/4, 3/3/4)",
+    "Pitch 99, the opening at the border": "The opening at the border is invisible on paper; what shows is the outer ink 4 to 5px inside the tiles’ edge, nearly flush but with a hair of paper the eye reads as short, and 129 aligns ink to ink at the same pitch. The only runner-up. (4/4/4, 4/4/4, 4/4/4)",
+    "96 from the borders in": "Flush ends at a fixed 96 push the remainder into a 140px middle gap, hidden here by the head but plain on the menu row, the footer and between the double head, and the gap swings from 92 to 140 with the window. Must not ship. (2/2/1, 2/2/1, 2/2/1)",
+    "Indented half a station": "A 50px indent makes the row a second, narrower measure inside the tiles, deliberate but belonging to nothing on the page. (3/2/3, 3/3/3, 3/2/3)",
+    "Flush, whole page": "Flush at 100 holds on all six seams: the controls sit under the right end on Open tables, the double head keeps a full club to heart cycle between its two titles, and the Live tables dot is clear of every station. (5/5/5, 5/5/4, 5/5/5)",
+    "Flush at a 1440 window": "At the 1064 column the same rule gives twelve suits at 95.6, within a pixel of the menu row’s 96, the ends still on the tiles’ edge; nothing tells the eye the pitch moved. (5/5/5, 5/5/4, 5/5/5)",
+    "Flush at a 1280 window": "At 904 the count drops to ten at 99.1 and the ends stay flush; the row now opens on a red diamond and closes on a grey spade, a colour asymmetry that comes with an even count under the four-suit order, not a defect of the setting. (4/5/4, 4/5/4, 5/5/4)",
   };
   /* @JUDGE@ */
   function lab(title, desc, spec, opts) {
@@ -429,7 +459,7 @@
     wrap.innerHTML = '<p class="tag"><b>' + n + ' · ' + title + '</b> · ' + desc + '</p>' + (VERDICTS[title] ? '<p class="verdict">' + VERDICTS[title] + '</p>' : "") + (JUDGE[title] ? '<p class="verdict judge"><b>Panel:</b> ' + JUDGE[title] + '</p>' : "");
     var fit = el("div", "fit"), scene = el("div", "scene"); scene.id = "s" + n; scene.dataset.title = title;
     fit.appendChild(scene); wrap.appendChild(fit); root.appendChild(wrap);
-    buildScene(scene, spec, typeof opts.seams === "function" ? opts.seams(opts.width === 952 ? GEO952 : GEO) : opts.seams, opts.width);
+    buildScene(scene, spec, typeof opts.seams === "function" ? opts.seams(geoFor(opts.width)) : opts.seams, opts.width);
     SCENES.push(scene);
     return scene;
   }
@@ -437,7 +467,7 @@
   function note(html) { root.appendChild(el("p", "note", html)); }
   function fitAll() {
     document.querySelectorAll(".fit").forEach(function (f) {
-      var s = f.firstChild, z = Math.min(1, f.clientWidth / 1160);
+      var s = f.firstChild, z = Math.min(1, f.clientWidth / s.offsetWidth);
       s.style.transform = "scale(" + z + ")"; f.style.height = (s.offsetHeight * z) + "px";
     });
   }
@@ -818,6 +848,32 @@
     lab("Title plate, rounded", "The lower paper rises behind the whole head with 6px corners.", withX(TOP4, { tab: true, tabRadius: 6 }));
     VERDICTS["Boundary at the baseline"] = '<span class="maybe">The head lifted onto the band.</span> The baseline sits on the rule, so the letters stand on the band and only descenders cross; nothing is split, and the head belongs to the section above.';
     lab("Boundary at the baseline", "The head with its baseline on the rule instead of its x-height centre, so only the descenders cross the boundary.", Object.assign({}, TOP4, { title: { place: "inrule", size: 24, valign: "baseline" } }));
+
+    /* ===== 17 · where the row starts and ends ===== */
+    h2("17 · Where the row starts and ends");
+    note("Holger’s question: the row runs on past the column (into the margins at a wide window, under the ad rail at 1280), so where its outer suits fall against the tiles’ edge is an accident of the window: 28px inside the border at the 1160 column, 4px at a 1440 window, 20px at 1280. Can the spacing be worked so the outermost suits sit on the section’s own left and right border, and where should the row start and end? These scenes show the page 1400px wide with the 1112px column in the middle (a 1728 window), so the margins show what the row does beyond the tiles; all on the default (scene 121: pad 4, the 2px halo). A re-pitched row keeps an even count of suits, twelve at 1112px, keeps the menu row’s order about the centre (diamond and spade nearest the head, a club at the left end and a heart at the right), and takes the pitch nearest 96 that lands the ends where asked. The last three scenes take the chosen setting through the page and the other widths. <b>Panel (4 September, printer, reader and system lenses; scores are classic, fit, robustness):</b> all three rank 129 first, then 134, 135, 136, with 131 the only runner-up. Set the row to the measure the way a printer justifies a line of fleurons: the outer ink on the tiles’ edge, the pitch whatever divides the measure evenly for the even count nearest 96, and the rule running on as the paper; never centred on the edge (the glyph overhangs), never indented (the row belongs to nothing), never a fixed 96 with the remainder in the middle (the menu row and the footer would show it). In the mockup this is the Divider option “toprowflush”, on the menu row, every seam and the footer alike.");
+    var DEF = withX(TOP4, { halo: 2 });
+    function fitRow(fit, more) { var c = JSON.parse(JSON.stringify(DEF)); c.suits = Object.assign({}, c.suits, more || {}, { fit: fit }); return c; }
+    VERDICTS["The row runs on"] = '<span class="maybe">As it is.</span> The menu row’s grid straight through: at this window fourteen suits, the outer pair 68px into the margins and the last pair inside the column 28px from the tiles’ edge. The row belongs to the page, not to the section.';
+    lab("The row runs on", "The default (scene 121) at a 1728 window: the grid from the menu row across the whole width, the column 1112px in the middle.", DEF, { width: 1400 });
+    VERDICTS["The row stops at the column"] = '<span class="maybe">The grid kept, the margins cleared.</span> The suits beyond the column are dropped and the rule runs on plain; the outer pair stays 28px inside the border, and at another window that number is whatever the grid leaves.';
+    lab("The row stops at the column", "The same grid with the suits beyond the column dropped; the rule runs on plain into the margins.", Object.assign({}, DEF, { suits: Object.assign({}, DEF.suits, { ends: "column" }) }), { width: 1400 });
+    VERDICTS["Pitch 100, the ends flush"] = '<span class="yes">The row set to the measure; the mockup’s option “toprowflush”.</span> Twelve suits from the left border to the right, the outermost glyph’s edge on the tiles’ edge; the pitch opens from 96 to 100, four pixels a station that nobody counts, and the head still takes the centre between the 150px pair. The deal is laid across the table, not across the room.';
+    lab("Pitch 100, the ends flush", "Twelve suits re-pitched to 100 so the outermost glyph’s outer edge sits on the column’s border (6px in, centre to border); the head in the centre as before.", fitRow("flush"), { width: 1400 });
+    VERDICTS["Pitch 101, the ends centred on the border"] = '<span class="no">The end suits straddle the edge.</span> Centred on the border, each end suit hangs 4px over the tiles’ line; against the tile row above and below it reads as an overshoot.';
+    lab("Pitch 101, the ends centred on the border", "Twelve suits re-pitched to 101.1 so the outermost suit’s centre sits exactly on the column’s border.", fitRow("centre"), { width: 1400 });
+    VERDICTS["Pitch 99, the opening at the border"] = '<span class="maybe">The rule’s break begins where the column begins.</span> The end suit sits 10px in, so its 20px opening starts on the border and the rule outside the column is unbroken; a printer’s logic, but the suit reads as slightly indented rather than flush.';
+    lab("Pitch 99, the opening at the border", "Twelve suits re-pitched to 99.3 so the outermost suit’s 20px opening in the rule starts at the column’s border (the suit’s centre 10px in).", fitRow("gap"), { width: 1400 });
+    VERDICTS["96 from the borders in"] = '<span class="no">The pitch kept, the remainder dumped in the middle.</span> From each border inward at 96, the nearest pair lands at 70 instead of 48 or 50; on a head seam nothing shows, but on the menu row and the footer the middle gap is 140 where every other is 96.';
+    lab("96 from the borders in", "The pitch kept at 96 and counted from each border inward (flush ends), so whatever is left over becomes the middle gap.", fitRow("fromEnds"), { width: 1400 });
+    VERDICTS["Indented half a station"] = '<span class="maybe">The row set inside the measure.</span> The ends 50px in from the border, twelve suits at 92: the row becomes an ornament band with margins of its own, tighter than the menu row and not the same object.';
+    lab("Indented half a station", "The ends a half-station (50px) inside the border, so the row has margins of its own; twelve suits at a 92px pitch.", fitRow("indent"), { width: 1400 });
+    VERDICTS["Flush, whole page"] = '<span class="yes">Scene 129 down the page.</span> Every seam the same twelve stations ending on the column, each head in the centre; the double seam keeps the pair between its heads.';
+    lab("Flush, whole page", "Scene 129 on all six seams at a 1728 window.", fitRow("flush"), { width: 1400, seams: sevenC });
+    VERDICTS["Flush at a 1440 window"] = '<span class="yes">The column 1064: twelve suits at 95.6.</span> The pitch closes instead of opening; the row still ends on the border.';
+    lab("Flush at a 1440 window", "Scene 129 at a 1440 window, where the ad rail leaves a 1112px area and a 1064px column.", fitRow("flush"), { width: 1112 });
+    VERDICTS["Flush at a 1280 window"] = '<span class="yes">The column 904: ten suits at 99.1.</span> Two fewer suits, the ends still on the border, the nearest pair at 50.';
+    lab("Flush at a 1280 window", "Scene 129 at a 1280 window with the ad rail: a 952px area and a 904px column.", fitRow("flush"), { width: 952 });
     fitAll();
   }
 
