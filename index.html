@@ -2056,7 +2056,7 @@
   body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells).sect-waveband #openTablesTop { padding-top: 48px; padding-bottom: 48px; }
   body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) :is(#liveTablesTop, #sec-tt, #sec-rummy, #sec-classic) { padding-top: 48px; padding-bottom: 48px; }
   body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) #lobbyDemo .lobbyTopBand { padding: 46px 0 48px; } /* the 2px under the Open tables band */
-  body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) #lobbyDemo .lobbycol .lobbyhead { margin-top: 0; }
+  body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) #lobbyDemo .lobbycol .lobbyhead { display: none; } /* the head is in the seam and the Show buttons are gone (5 September), so the row would only spend the column's gap */
   body:is(.div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) { --divtile: var(--divrulestretch); }
   body:is(.div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) .seamsweep .ink { background: none; }
   body:is(.div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells):is(.foot-wavyline, .foot-wavybare) .sitefooter::after { display: none; }
@@ -2161,12 +2161,12 @@
 
   .lobbyscope .lobbyTopBand { display: flex; flex-wrap: wrap; gap: 16px; width: 100%; }
   .lobbyscope .lobbyDealCard { width: 100%; flex: 1; box-sizing: border-box; display: flex; flex-direction: column;
-    padding: 16px; background-color: #fff; border-radius: 20px; corner-shape: squircle; box-shadow: var(--btnshadow); }
+    padding: 12px; background-color: #fff; border-radius: 20px; corner-shape: squircle; box-shadow: var(--btnshadow); } /* 12px inside, as the game tiles keep (5 September; 16px before) */
   .lobbyscope .ldHead { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-bottom: 4px; }
   .lobbyscope .ldTitle { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     font-size: 20px; line-height: 28px; font-weight: bold; color: #212529; }
   .lobbyscope .ldShow { flex-shrink: 0; }
-  .lobbyscope .ldChips { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+  .lobbyscope .ldChips { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 0; } /* the chips are the card's first row now that the head sits in the seam */
   .lobbyscope .ldChips .button { flex: 1 1 auto; min-width: 0; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
   .lobbyscope .ldMore { position: relative; flex: 0 0 auto; cursor: pointer; }
   .lobbyscope .ldMore::after { content: ""; position: absolute; top: 100%; left: 0; width: 100%; height: 8px; }
@@ -2409,12 +2409,12 @@
 
   /* board card (dev styling, scoped) */
   .lobbyscope .lobbyBoardCard { width: 100%; flex: 1; box-sizing: border-box; display: flex; flex-direction: column;
-    padding: 16px; background-color: #fff; border-radius: 20px; corner-shape: squircle; box-shadow: var(--btnshadow); }
+    padding: 12px; background-color: #fff; border-radius: 20px; corner-shape: squircle; box-shadow: var(--btnshadow); } /* 12px inside, as the game tiles keep (5 September; 16px before) */
   .lobbyscope .lbHead { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-bottom: 4px; }
   .lobbyscope .lbTitle { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     font-size: 20px; line-height: 28px; font-weight: bold; color: #212529; }
   .lobbyscope .lbShow { flex-shrink: 0; }
-  .lobbyscope .lbGames { margin-top: 8px; }
+  .lobbyscope .lbGames { margin-top: 0; }
   .lobbyscope .lbRows { display: table; width: 100%; margin: 8px 0 6px; background-color: #fff; border: 1px solid var(--panelline);
     border-radius: 6px; overflow: hidden; font-size: 14px; line-height: 20px; font-variant-numeric: tabular-nums; }
   .lobbyscope .lbRow { display: table-row; color: #212529; }
@@ -3259,6 +3259,7 @@
     <label class="ctl"><span>Status state</span><select id="sel-dstate"></select></label>
     <label class="ctl"><span>Status game</span><select id="sel-dgame"></select></label>
     <label class="ctl"><span>Corner buttons</span><select id="sel-cbtn"></select></label>
+    <label class="ctl"><span>Game bar colours</span><select id="sel-otcolor"></select></label>
   </div>
   <details class="swadv">
     <summary>Advanced — settled settings</summary>
@@ -3619,70 +3620,91 @@
   /* ── the game bar over the open tables (open-tables-slide-lab, 5 September): the leaderboard's light blue
      button folded into one tray, the picked game the site's solid blue button sliding along it, a full line
      between the games and none beside the pick, the count in bold after a middle dot, More fused on the end
-     with its wall and triangle, opening on hover as the leaderboard's does. ── */
-  #otFilter { position: relative; margin: 2px 0 8px; font-family: "BuloRounded", "Verdana", "Arial", sans-serif; --thspd: 220ms; --thease: cubic-bezier(.645,.045,.355,1); }
+     with its wall and triangle, opening on hover as the leaderboard's does. The colours are variables so the
+     options panel can recolour the bar: blue is the leaderboard's own. ── */
+  #otFilter { position: relative; margin: 2px 0 8px; font-family: "BuloRounded", "Verdana", "Arial", sans-serif; --thspd: 220ms; --thease: cubic-bezier(.645,.045,.355,1);
+    --ot-tray: var(--triolight); --ot-ring: var(--triolightring); --ot-ink: var(--triolightink); --ot-hover: var(--triolighthover); --ot-line: var(--triolightline);
+    --ot-thumb: var(--trioblue); --ot-thumbring: var(--triobluering); --ot-thumbink: #fff;
+    --ot-thumbshadow: -1px -1px 0 var(--ot-thumbring), 1px -1px 0 var(--ot-thumbring), -1px 1px 0 var(--ot-thumbring), 1px 1px 0 var(--ot-thumbring); }
+  /* the greens the page already plays with: the Play button's own green, and Evernote's */
+  body.otc-green #otFilter { --ot-tray: #dcefc9; --ot-ring: #b6d894; --ot-ink: #4F800B; --ot-hover: #d1e8ba; --ot-line: #a4cf7e; --ot-thumb: var(--triogreen); --ot-thumbring: var(--triogreenring); }
+  body.otc-evergreen #otFilter { --ot-tray: #d4f1dc; --ot-ring: #a3dcb5; --ot-ink: #0d6b2a; --ot-hover: #c6ead0; --ot-line: #8fd2a5; --ot-thumb: #00a82d; --ot-thumbring: #008a25; }
+  /* the game's yellow: the corner buttons' #FFE066 with the pressed #FCC419 as the thumb, dark ink and no outline */
+  body.otc-yellow #otFilter { --ot-tray: #FFF3C2; --ot-ring: #F0DA8A; --ot-ink: #8A5A00; --ot-hover: #FCECA8; --ot-line: #E8CB6A; --ot-thumb: #FFD43B; --ot-thumbring: #E6B92B; --ot-thumbink: #5C3D00; --ot-thumbshadow: none; }
+  /* the Evernote scheme: the page's warm band as the tray, so the bar does not stand out; a white card or the ink as the thumb */
+  body.otc-warm #otFilter { --ot-tray: #f4eee5; --ot-ring: #e4dccf; --ot-ink: #4e4d4c; --ot-hover: #ece4d8; --ot-line: #d8cfbf; --ot-thumb: #fff; --ot-thumbring: #d2cfca; --ot-thumbink: #141414; --ot-thumbshadow: none; }
+  body.otc-warmdark #otFilter { --ot-tray: #f4eee5; --ot-ring: #e4dccf; --ot-ink: #4e4d4c; --ot-hover: #ece4d8; --ot-line: #d8cfbf; --ot-thumb: #3d3d3a; --ot-thumbring: #2a2a28; --ot-thumbink: #fff; --ot-thumbshadow: none; }
+  body.otc-warmgreen #otFilter { --ot-tray: #f4eee5; --ot-ring: #e4dccf; --ot-ink: #4e4d4c; --ot-hover: #ece4d8; --ot-line: #d8cfbf; --ot-thumb: var(--triogreen); --ot-thumbring: var(--triogreenring); }
+
   #otFilter .track { position: relative; display: flex; align-items: center; flex-wrap: nowrap; width: 100%; box-sizing: border-box; gap: 0; padding: 2px;
-    border-radius: calc(var(--radius-md, 6px) + 2px); corner-shape: squircle; background: var(--triolight);
-    box-shadow: inset 0 0 0 1px var(--triolightring); z-index: 5; will-change: transform; }
+    border-radius: calc(var(--radius-md, 6px) + 2px); corner-shape: squircle; background: var(--ot-tray);
+    box-shadow: inset 0 0 0 1px var(--ot-ring); z-index: 5; will-change: transform; }
   /* the bar sits on its own compositor layer: without it every frame of the move re-rastered the avatars below,
      with their edge filter and drop shadows, at 2x (218 ms of GPU work a click; 53 ms with the layer) */
   #otFilter .track > .s { position: relative; z-index: 2; flex: 1 1 auto; display: inline-flex; align-items: center; justify-content: center; height: 24px; padding: 0 10px;
-    border-radius: var(--radius-md, 6px); corner-shape: squircle; font: bold 16px/24px "BuloRounded", "Verdana", "Arial", sans-serif; color: var(--triolightink);
+    border-radius: var(--radius-md, 6px); corner-shape: squircle; font: bold 16px/24px "BuloRounded", "Verdana", "Arial", sans-serif; color: var(--ot-ink);
     cursor: pointer; user-select: none; white-space: nowrap; transition: background-color 24ms ease-out; }
   #otFilter .track > .s > span { display: inline-flex; align-items: baseline; gap: 6px; }
-  #otFilter .track > .s i { font-style: normal; font-size: 12.3px; line-height: 1; font-weight: bold; color: var(--triolightink); }
+  #otFilter .track > .s i { font-style: normal; font-size: 12.3px; line-height: 1; font-weight: bold; color: var(--ot-ink); }
   #otFilter .track > .s i::before { content: "\00B7"; margin-right: 5px; }
   /* the word: a real element whose width grows with the move, kept in step by the script; it shows only in the white copy */
   #otFilter .track > .s i .w { display: inline-block; width: 0; overflow: visible; clip-path: inset(0); white-space: pre; vertical-align: baseline; font-style: normal; opacity: 0;
     transition: width var(--thspd) var(--thease); }
-  #otFilter .track > .s.zero { color: #4e7fb0; }
+  #otFilter .track > .s.zero { opacity: .72; }
   /* hover: the light blue button's own, one shade darker; never on the picked cell */
-  #otFilter .track:not(.tcopy) > .s:not(.on):hover, #otFilter .track:not(.tcopy) .ov:not(.on) .ovbtn:hover { background: var(--triolighthover); }
+  #otFilter .track:not(.tcopy) > .s:not(.on):hover, #otFilter .track:not(.tcopy) .ov:not(.on) .ovbtn:hover { background: var(--ot-hover); }
   /* the lines: one on the left of every cell after the first and on More, the two beside the pick faded on the thumb's clock */
-  #otFilter .track > .s + .s::before, #otFilter .track > .s + .ov::before { content: ""; position: absolute; left: 0; top: -2px; bottom: -2px; width: 1px; background: var(--triolightring); pointer-events: none;
+  #otFilter .track > .s + .s::before, #otFilter .track > .s + .ov::before { content: ""; position: absolute; left: 0; top: -2px; bottom: -2px; width: 1px; background: var(--ot-ring); pointer-events: none;
     transition: opacity var(--thspd) var(--thease); }
   #otFilter .track > .s.on::before, #otFilter .track > .nextpick::before, #otFilter .track > .ov.on::before { opacity: 0; }
-  /* More: the leaderboard's dropdown button, fused on the end. The word sits 3px from the wall, the triangle 2px after it */
+  /* More: the leaderboard's dropdown button, fused on the end. The word sits 3px from the wall, the triangle 2px after it.
+     Its hover bridge reaches down through the tray's padding and the 8px gap, so the pointer can travel to the list. */
   #otFilter .track .ov { position: relative; z-index: 2; flex: 0 0 auto; margin-left: auto; }
+  #otFilter .track .ov::after { content: ""; position: absolute; left: 0; right: -2px; top: 100%; height: 12px; }
   #otFilter .track .ov .ovbtn { display: inline-flex; align-items: center; height: 24px; padding: 0 0 0 10px; border-radius: var(--radius-md, 6px); corner-shape: squircle;
-    font: bold 16px/24px "BuloRounded", "Verdana", "Arial", sans-serif; color: var(--triolightink); cursor: pointer; user-select: none; white-space: nowrap; transition: background-color 24ms ease-out; }
+    font: bold 16px/24px "BuloRounded", "Verdana", "Arial", sans-serif; color: var(--ot-ink); cursor: pointer; user-select: none; white-space: nowrap; transition: background-color 24ms ease-out; }
   #otFilter .track .ov .ovbtn .ovlab { padding-right: 3px; }
   #otFilter .track .ov .ovbtn .wall { width: 1px; align-self: stretch; background: transparent; }
   #otFilter .track .ov .ovbtn .zone { width: 22px; padding-left: 2px; box-sizing: border-box; align-self: stretch; display: flex; align-items: center; justify-content: flex-start; }
   #otFilter .track .ov .ovbtn .zone svg { width: 8px; height: 7px; display: block; }
-  #otFilter .track .ov .ovbtn .zone svg path { fill: var(--triolightink); stroke: var(--triolightink); }
-  /* the list: the leaderboard's, light blue rows on a blue frame, with the tray's corners, 8px under the tray */
-  #otFilter .ovlist { display: none; position: absolute; z-index: 30; top: calc(100% + 10px); right: 0; min-width: 100%; box-sizing: border-box; margin: 0; padding: 0; list-style: none;
-    background: #fff; border: 1px solid var(--triolightline); border-radius: calc(var(--radius-md, 6px) + 2px); corner-shape: squircle; overflow: hidden; }
-  #otFilter .ovlist::before { content: ""; position: absolute; left: 0; right: 0; top: -10px; height: 10px; }
+  #otFilter .track .ov .ovbtn .zone svg path { fill: var(--ot-ink); stroke: var(--ot-ink); }
+  /* the list: the leaderboard's, light blue rows on a blue frame, with the tray's corners, 8px under the tray and flush with its right edge */
+  #otFilter .ovlist { display: none; position: absolute; z-index: 30; top: calc(100% + 10px); right: -2px; min-width: 100%; box-sizing: border-box; margin: 0; padding: 0; list-style: none;
+    background: #fff; border: 1px solid var(--ot-line); border-radius: calc(var(--radius-md, 6px) + 2px); corner-shape: squircle; overflow: hidden; }
   #otFilter .ov:hover .ovlist, #otFilter .ov.open .ovlist { display: block; }
   #otFilter .ov.picked:hover .ovlist { display: none; }
   #otFilter .ovlist .mi { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 0 12px; font-size: 16px; line-height: 24px; font-weight: bold;
-    color: var(--triolightink); background: var(--triolight); border-bottom: 1px solid var(--triolightline); cursor: pointer; white-space: nowrap; }
+    color: var(--ot-ink); background: var(--ot-tray); border-bottom: 1px solid var(--ot-line); cursor: pointer; white-space: nowrap; }
   #otFilter .ovlist .mi:last-child { border-bottom: 0; }
-  #otFilter .ovlist .mi:hover { background: var(--triolighthover); }
+  #otFilter .ovlist .mi:hover { background: var(--ot-hover); }
   #otFilter .ovlist .mi i { font-style: normal; font-size: 13px; opacity: .75; }
   #otFilter .ovlist .mi.dim { opacity: .7; }
   /* the thumb: the site's blue button, sliding. It carries the button's shadow; the tray, being a recess, has only its ring */
   #otFilter .track .thumb { position: absolute; z-index: 1; left: 0; top: 0; width: 0; height: 0; pointer-events: none; opacity: 0;
-    border-radius: var(--radius-md, 6px); corner-shape: squircle; background: var(--trioblue); box-shadow: inset 0 0 0 1px var(--triobluering), 0 2px 4px rgba(0,0,0,.06);
+    border-radius: var(--radius-md, 6px); corner-shape: squircle; background: var(--ot-thumb); box-shadow: inset 0 0 0 1px var(--ot-thumbring), 0 2px 4px rgba(0,0,0,.06);
     transition: left var(--thspd) var(--thease), width var(--thspd) var(--thease), top var(--thspd) var(--thease), height var(--thspd) var(--thease), opacity calc(var(--thspd) / 2) linear; }
   /* the white copy: the whole bar again in white, clipped to the thumb's window, so the text is white exactly where the thumb is */
   #otFilter .tcopy { position: absolute; inset: 0; z-index: 6; margin: 0; pointer-events: none; background: transparent; box-shadow: none;
     clip-path: inset(0 100% 0 0); transition: clip-path var(--thspd) var(--thease), opacity calc(var(--thspd) / 2) linear; }
-  #otFilter .tcopy > .s, #otFilter .tcopy > .s i, #otFilter .tcopy .ov .ovbtn { color: #fff;
-    text-shadow: -1px -1px 0 var(--triobluering), 1px -1px 0 var(--triobluering), -1px 1px 0 var(--triobluering), 1px 1px 0 var(--triobluering); }
+  #otFilter .tcopy > .s, #otFilter .tcopy > .s i, #otFilter .tcopy .ov .ovbtn { color: var(--ot-thumbink); text-shadow: var(--ot-thumbshadow); }
   #otFilter .tcopy > .s + .s::before, #otFilter .tcopy > .s + .ov::before { display: none; }
-  #otFilter .tcopy > .s, #otFilter .tcopy .ov .ovbtn { background: transparent !important; }
-  #otFilter .tcopy .ov .ovbtn .zone svg path { fill: #fff; stroke: #fff; }
+  #otFilter .tcopy > .s, #otFilter .tcopy .ov .ovbtn { background: transparent !important; opacity: 1; }
+  #otFilter .tcopy .ov .ovbtn .zone svg path { fill: var(--ot-thumbink); stroke: var(--ot-thumbink); }
   #otFilter .tcopy > .s i .w { opacity: 1; }
+  /* before the script has placed the thumb, the picked cell paints itself, so the bar is complete on the very first frame */
+  #otFilter:not(.ready) .track > .s.on { background: var(--ot-thumb); color: var(--ot-thumbink); text-shadow: var(--ot-thumbshadow); box-shadow: inset 0 0 0 1px var(--ot-thumbring), 0 2px 4px rgba(0,0,0,.06); }
+  #otFilter:not(.ready) .track > .s.on i { color: var(--ot-thumbink); }
+  #otFilter:not(.ready) .track > .s.on i .w { width: auto !important; opacity: 1; }
+  #otFilter:not(.ready) .track > .s.on + .s::before, #otFilter:not(.ready) .track > .s.on + .ov::before { opacity: 0; }
   #otFilter .track.still, #otFilter .track.still *, #otFilter .thumb.still, #otFilter .tcopy.still, #otFilter .track.nofx, #otFilter .track.nofx *, #otFilter .track.nofx *::before { transition: none !important; }
   #otFilter .track.measuring > .s, #otFilter .track.measuring > .ov { flex: 0 0 auto !important; min-width: 0 !important; transition: none !important; }
   @media (prefers-reduced-motion: reduce) { #otFilter .thumb, #otFilter .tcopy, #otFilter .track > .s i .w, #otFilter .track > .s::before, #otFilter .track > .ov::before { transition: none !important; } }
+  /* the host tile's two verbs stack, Host over Options, as the live tables' Watch and Queue do */
+  #openTablesTop .ltCard.isNew .cbtn { flex-direction: column; align-items: stretch; }
 </style>
   <div class="lobbyscope" id="openTablesTop">
     <div class="lobbyhead"><span class="pophead">Open tables</span></div>
-    <div class="otFilter" id="otFilter" aria-label="Games"></div>
+    <div class="otFilter" id="otFilter" aria-label="Games"><div class="track" data-row><span class="s on" data-g="all"><span>All games<i data-n="46">46<em class="w"> tables</em></i></span></span><span class="s" data-g="hearts"><span>Hearts<i data-n="12">12<em class="w"></em></i></span></span><span class="s" data-g="spades"><span>Spades<i data-n="9">9<em class="w"></em></i></span></span><span class="s" data-g="euchre"><span>Euchre<i data-n="8">8<em class="w"></em></i></span></span><span class="s" data-g="pinochledd"><span>Double Deck Pinochle<i data-n="5">5<em class="w"></em></i></span></span><span class="s" data-g="handfoot"><span>Hand & Foot<i data-n="4">4<em class="w"></em></i></span></span><span class="s" data-g="ginrummy"><span>Gin Rummy<i data-n="3">3<em class="w"></em></i></span></span><span class="s" data-g="twentynine" style="display:none"><span>Twenty-Nine<i data-n="2">2<em class="w"></em></i></span></span><span class="s" data-g="rummy" style="display:none"><span>Rummy<i data-n="1">1<em class="w"></em></i></span></span><span class="s" data-g="canasta" style="display:none"><span>Canasta<i data-n="1">1<em class="w"></em></i></span></span><div class="ov"><span class="ovbtn"><span class="ovlab">More</span><span class="wall"></span><span class="zone"><svg viewBox="0 0 8 7" aria-hidden="true"><path d="M1.2 1h5.6L4 6z" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></svg></span></span><ul class="ovlist"><li class="mi" data-g="hearts" style="display:none">Hearts<i>12</i></li><li class="mi" data-g="spades" style="display:none">Spades<i>9</i></li><li class="mi" data-g="euchre" style="display:none">Euchre<i>8</i></li><li class="mi" data-g="pinochledd" style="display:none">Double Deck Pinochle<i>5</i></li><li class="mi" data-g="handfoot" style="display:none">Hand & Foot<i>4</i></li><li class="mi" data-g="ginrummy" style="display:none">Gin Rummy<i>3</i></li><li class="mi" data-g="twentynine">Twenty-Nine<i>2</i></li><li class="mi" data-g="rummy">Rummy<i>1</i></li><li class="mi" data-g="canasta">Canasta<i>1</i></li><li class="mi" data-g="pinochle">Pinochle<i>1</i></li><li class="mi dim" data-g="cribbage">Cribbage<i>0</i></li><li class="mi dim" data-g="gofish">Go Fish<i>0</i></li><li class="mi dim" data-g="threefiveeight">Sergeant Major<i>0</i></li><li class="mi dim" data-g="whist">Whist<i>0</i></li><li class="mi dim" data-g="crazyeights">Crazy Eights<i>0</i></li><li class="mi dim" data-g="bridge">Bridge<i>0</i></li><li class="mi dim" data-g="oldmaid">Old Maid<i>0</i></li><li class="mi dim" data-g="sheepshead">Sheepshead<i>0</i></li></ul></div><span class="thumb still"></span></div></div>
     <div class="lobbyTablesPanel" id="lobbyTablesPanel">
       <div class="ltGrid"><div class="ltCard"><div class="tableListing hearts players4"><div class="header"><div class="playersContainer"><div class="spacer30"></div><div class="player playernumber1"><img width="32" height="32" src="WomanGirl2.svg" alt=""><div class="playerNameContainer"><p class="playerName">Marge</p><span class="completionBadge">97</span></div></div><div class="spacer30"></div><div class="player playernumber0 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty</p></div></div><div class="spacer20"></div><div class="player playernumber2"><img width="32" height="32" src="ManMan3.svg" alt=""><div class="playerNameContainer"><p class="playerName">carl52</p><span class="completionBadge">91</span></div></div><div class="spacer30"></div><div class="player playernumber3 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty</p></div></div><div class="spacer30"></div><img class="ltArt art-hearts" src="hearts_logo@2x.png" alt="Hearts" data-tip="<b>Hearts</b><br>Ends at 100"><div class="ltTime" data-tip="Not started yet &middot; waiting for players"><svg class="ltRing" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="#fff" stroke-width="2"/></svg><span>0 min</span></div><div class="ltMarks"><svg class="ltMark" viewBox="0 0 18 18" aria-hidden="true" data-tip="Tournament rules"><path d="M9 3.4v11.2M4.15 6.2l9.7 5.6M13.85 6.2l-9.7 5.6" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg></div></div></div></div></div><div class="ltCard"><div class="tableListing spades isTeamGame players4"><div class="header"><div class="playersContainer"><div class="spacer30"></div><div class="player playernumber1"><img width="32" height="32" src="WomanScientist.svg" alt=""><div class="playerNameContainer"><p class="playerName">Vera</p><span class="completionBadge">99</span></div></div><div class="spacer30"></div><div class="player playernumber0 playedTogether"><img width="32" height="32" src="AnimalCat.svg" alt=""><div class="playerNameContainer"><p class="playerName">Duckling</p><span class="playerBadge isLiked"></span><span class="completionBadge">96</span></div></div><div class="spacer20"></div><div class="player playernumber2 isBot seatAvailable"><img width="32" height="32" src="AlienMartian.svg" alt=""><div class="playerNameContainer"><p class="playerName">Bot Ada</p><span class="playerBadge isBot"></span></div></div><div class="spacer30"></div><div class="player playernumber3"><img width="32" height="32" src="AnimalBeaver.svg" alt=""><div class="playerNameContainer"><p class="playerName">Hank</p><span class="completionBadge">80</span></div></div><div class="spacer30"></div><img class="ltArt art-spades" src="spades_logo@2x.png" alt="Spades" data-tip="<b>Spades</b><br>You take Bot Ada&rsquo;s hand and score<br>Plays to 500"><div class="ltTime" data-tip="In play for 12 min"><svg class="ltRing" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="#fff" stroke-width="2"/><path d="M8 8V1A7 7 0 0 1 15 8z" fill="#fff"/></svg><span>12 min</span></div></div></div></div></div><div class="ltCard isFriend"><div class="tableListing euchre isTeamGame players4"><div class="header"><div class="playersContainer"><div class="spacer30"></div><div class="player playernumber1 playedTogether"><img width="32" height="32" src="ManCowboy.svg" alt=""><div class="playerNameContainer"><p class="playerName">BobK</p><span class="playerBadge isLiked"></span><span class="completionBadge is100"></span></div></div><div class="spacer30"></div><div class="player playernumber0 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty</p></div></div><div class="spacer20"></div><div class="player playernumber2 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty</p></div></div><div class="spacer30"></div><div class="player playernumber3 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty</p></div></div><div class="spacer30"></div><img class="ltArt art-euchre" src="euchre_logo@2x.png" alt="Euchre" data-tip="<b>Euchre</b><br>Dealer may pass<br>No bots<br>Plays to 10"><div class="ltTime" data-tip="Not started yet &middot; waiting for players"><svg class="ltRing" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="#fff" stroke-width="2"/></svg><span>0 min</span></div><div class="ltMarks"><svg class="ltMark" viewBox="0 0 18 18" aria-hidden="true" data-tip="No bots &middot; people only"><circle cx="9" cy="5.9" r="2.9" fill="#fff"/><path d="M3.2 15.6c0-3.2 2.6-4.9 5.8-4.9s5.8 1.7 5.8 4.9z" fill="#fff"/></svg><svg class="ltMark" viewBox="0 0 18 18" aria-hidden="true" data-tip="Private table"><rect x="3.5" y="8" width="11" height="8" rx="2" fill="#fff"/><path d="M6 8V5.8a3 3 0 0 1 6 0V8" fill="none" stroke="#fff" stroke-width="2"/><circle cx="9" cy="12" r="1.3" fill="#327333"/></svg></div></div></div></div></div><div class="ltCard"><div class="tableListing pinochle isTeamGame players4"><div class="header"><div class="playersContainer"><div class="spacer30"></div><div class="player playernumber1"><img width="32" height="32" src="WomanBusinesswoman.svg" alt=""><div class="playerNameContainer"><p class="playerName">wendy_h</p><span class="completionBadge">93</span></div></div><div class="spacer30"></div><div class="player playernumber0"><img width="32" height="32" src="AnimalCow.svg" alt=""><div class="playerNameContainer"><p class="playerName">PragueJoe</p><span class="completionBadge">98</span></div></div><div class="spacer20"></div><div class="player playernumber2"><img width="32" height="32" src="ManGeek2.svg" alt=""><div class="playerNameContainer"><p class="playerName">north4th</p><span class="completionBadge">88</span></div></div><div class="spacer30"></div><div class="player playernumber3 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty</p></div></div><div class="spacer30"></div><img class="ltArt art-pinochle" src="pinochle_logo@2x.png" alt="Pinochle" data-tip="<b>Pinochle</b><br>Plays to 150"><div class="ltTime" data-tip="Not started yet &middot; one seat left, the deal starts when you sit"><svg class="ltRing" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="#fff" stroke-width="2"/></svg><span>0 min</span></div><div class="ltMarks"><svg class="ltMark" viewBox="0 0 18 18" aria-hidden="true" data-tip="Ranked table"><path d="M2.6 14.2 2 6.4c0-.5.6-.8 1-.5l3.1 2.6c.3.2.7.1.9-.2L8.5 4c.2-.4.8-.4 1 0l1.5 4.3c.2.3.6.4.9.2L15 5.9c.4-.3 1 0 1 .5l-.6 7.8c0 .4-.4.7-.8.7H3.4c-.4 0-.8-.3-.8-.7z" fill="#fff"/></svg></div></div></div></div></div><div class="ltCard"><div class="tableListing rummy players4"><div class="header"><div class="playersContainer"><div class="spacer30"></div><div class="player playernumber1"><img width="32" height="32" src="AlienBlue.svg" alt=""><div class="playerNameContainer"><p class="playerName">cardShark52</p><span class="completionBadge">99</span></div></div><div class="spacer30"></div><div class="player playernumber0"><img width="32" height="32" src="WomanCowgirl.svg" alt=""><div class="playerNameContainer"><p class="playerName">mollyb</p><span class="completionBadge is100"></span></div></div><div class="spacer20"></div><div class="player playernumber2 isBot seatAvailable"><img width="32" height="32" src="AlienMartian.svg" alt=""><div class="playerNameContainer"><p class="playerName">Robot 2</p><span class="playerBadge isBot"></span></div></div><div class="spacer30"></div><div class="player playernumber3 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty</p></div></div><div class="spacer30"></div><img class="ltArt art-rummy" src="rummy_logo@2x.png" alt="Rummy" data-tip="<b>Rummy</b><br>You take Robot 2&rsquo;s hand and score<br>Plays to 500"><div class="ltTime" data-tip="In play for 10 min &middot; a player left, you take their hand and score"><svg class="ltRing" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="#fff" stroke-width="2"/><path d="M8 8V1A7 7 0 0 1 15 8z" fill="#fff"/></svg><span>10 min</span></div></div></div></div></div><div class="ltCard isNew"><div class="tableListing canasta isTeamGame players4"><div class="header"><div class="playersContainer"><div class="spacer30"></div><div class="player playernumber1 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty</p></div></div><div class="spacer30"></div><div class="player playernumber0 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty</p></div></div><div class="spacer20"></div><div class="player playernumber2 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty</p></div></div><div class="spacer30"></div><div class="player playernumber3 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty</p></div></div><div class="spacer30"></div><img class="ltArt art-canasta" src="canasta_logo@2x.png" alt="Canasta" data-tip="<b>Canasta</b><br>Your table &middot; plays to 5,000"><div class="ltTime" data-tip="Nobody here yet &middot; click to deal a table of your own"><span class="ltPlusWrap"><svg class="ltPlus" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.2v11.6M2.2 8h11.6" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/></svg></span><span>New table</span></div><div class="ltMarks"><svg class="ltMark" viewBox="0 0 18 18" aria-hidden="true" data-tip="Ranked table"><path d="M2.6 14.2 2 6.4c0-.5.6-.8 1-.5l3.1 2.6c.3.2.7.1.9-.2L8.5 4c.2-.4.8-.4 1 0l1.5 4.3c.2.3.6.4.9.2L15 5.9c.4-.3 1 0 1 .5l-.6 7.8c0 .4-.4.7-.8.7H3.4c-.4 0-.8-.3-.8-.7z" fill="#fff"/></svg><svg class="ltMark" viewBox="0 0 18 18" aria-hidden="true" data-tip="No bots &middot; people only"><circle cx="9" cy="5.9" r="2.9" fill="#fff"/><path d="M3.2 15.6c0-3.2 2.6-4.9 5.8-4.9s5.8 1.7 5.8 4.9z" fill="#fff"/></svg></div></div></div></div></div></div>
       
@@ -3693,7 +3715,7 @@
   <div id="lobbyDemo" class="lobbyscope">
     <div class="lobbyTopBand">
       <div class="lobbycol">
-        <div class="lobbyhead"><span class="pophead">Daily leaderboard</span><a class="button green small lbShow">Show</a></div>
+        <div class="lobbyhead"><span class="pophead">Daily leaderboard</span></div>
         <div class="lobbyBoardCard" id="lobbyBoardCard">
         <div class="ldChips lbGames">
           <button type="button" class="button small blue">Hearts</button>
@@ -3723,7 +3745,7 @@
       </div>
       </div>
       <div class="lobbycol">
-        <div class="lobbyhead"><span class="pophead">August challenge</span><button type="button" class="button green small ldShow">Show</button></div>
+        <div class="lobbyhead"><span class="pophead">August challenge</span></div>
         <div class="lobbyDealCard" id="lobbyDealCard">
         <div class="ldChips">
           <button type="button" class="button small blue">Hearts</button>
@@ -4201,6 +4223,17 @@
     ["blue", "Blue (the lobby's blue button)"]
   ];
   var curCbtn = "gameyellow";
+  /* the game bar over the open tables: the leaderboard's blue, the greens the page already plays with, the game's yellow, or the Evernote scheme */
+  var OTCOLORS = [
+    ["blue", "Light blue tray, blue thumb (the leaderboard's)"],
+    ["green", "Light green tray, the Play button's green thumb"],
+    ["evergreen", "Light green tray, Evernote's green thumb"],
+    ["yellow", "Light yellow tray, the game's yellow thumb"],
+    ["warm", "Evernote: the warm band as the tray, a white thumb"],
+    ["warmdark", "Evernote: the warm band as the tray, an ink thumb"],
+    ["warmgreen", "Evernote: the warm band as the tray, the Play green thumb"]
+  ];
+  var curOtColor = "blue";
   var SECTS = [
     ["none", "Sections on the canvas (as today)"],
     ["contained", "Open tables in the Evernote container"],
@@ -5434,7 +5467,7 @@
   }
   function applyBody() {
     var scene = curLayout.indexOf("sc") === 0;
-    document.body.className = curBase + " play-" + curPlay + " layout-" + curLayout + (scene ? " scenehero" : "") + " font-" + curFont + " shadow-" + curShadow + " edge-" + curEdge + " tex-" + curTexture + " cat-" + curCatalog + " stats-" + curStats + " menu-" + curMenu + " counter-" + curCounter + " rail-" + curRail + " playbtn-" + curPlayBtn + " avedge-" + curAvedge + " avsh-" + curAvshadow + " cnav-" + curCnav + " foot-" + curFooter + " viewer-" + curViewer + " sect-" + curSect + " div-" + curDivider + " cbtn-" + curCbtn + " lhover-" + curLhover + " tilebg-" + curTileBg + " pinpair-" + curPinPair + " tint-" + curTint + (palShown ? " show-palette" : "");
+    document.body.className = curBase + " play-" + curPlay + " layout-" + curLayout + (scene ? " scenehero" : "") + " font-" + curFont + " shadow-" + curShadow + " edge-" + curEdge + " tex-" + curTexture + " cat-" + curCatalog + " stats-" + curStats + " menu-" + curMenu + " counter-" + curCounter + " rail-" + curRail + " playbtn-" + curPlayBtn + " avedge-" + curAvedge + " avsh-" + curAvshadow + " cnav-" + curCnav + " foot-" + curFooter + " viewer-" + curViewer + " sect-" + curSect + " div-" + curDivider + " cbtn-" + curCbtn + " otc-" + curOtColor + " lhover-" + curLhover + " tilebg-" + curTileBg + " pinpair-" + curPinPair + " tint-" + curTint + (palShown ? " show-palette" : "");
     applyTints();
     var ht = document.getElementById("herotitle"), hs = document.getElementById("herosub");
     if (scene) {
@@ -5465,6 +5498,7 @@
     document.getElementById("sel-texture").value = curTexture;
     document.getElementById("sel-stats").value = curStats;
     document.getElementById("sel-cbtn").value = curCbtn;
+    if (document.getElementById("sel-otcolor")) document.getElementById("sel-otcolor").value = curOtColor;
     document.getElementById("sel-counter").value = curCounter;
     document.getElementById("sel-rail").value = curRail;
     document.getElementById("sel-pinpair").value = curPinPair;
@@ -5748,6 +5782,7 @@
   buildSel("sel-shadow", SHADOWS, function (v) { curShadow = v; });
   buildSel("sel-edge", EDGES, function (v) { curEdge = v; });
   buildSel("sel-texture", TEXTURES, function (v) { curTexture = v; });
+  buildSel("sel-otcolor", OTCOLORS, function (v) { curOtColor = v; });
   buildSel("sel-stats", STATSLINES, function (v) { curStats = v; });
   buildSel("sel-cbtn", CBTNS, function (v) { curCbtn = v; });
   (function () {
@@ -7962,31 +7997,17 @@
 
 <script>
   /* ── the game bar over the open tables: All games or one game, one at a time. The nine games the hero
-     shows get a cell, the rest live in More. Built from open-tables-slide-lab (5 September). ── */
+     shows get a cell, the rest live in More. The bar is in the markup already, so it paints with the page;
+     this script measures what fits, places the thumb and drives the tables. From open-tables-slide-lab, 5 September. ── */
   document.addEventListener("DOMContentLoaded", function () {
     var host = document.getElementById("otFilter");
     if (!host) return;
-    var GAMES = [
-      ["hearts", "Hearts", 12], ["spades", "Spades", 9], ["euchre", "Euchre", 8], ["pinochledd", "Double Deck Pinochle", 5], ["handfoot", "Hand & Foot", 4],
-      ["ginrummy", "Gin Rummy", 3], ["twentynine", "Twenty-Nine", 2], ["rummy", "Rummy", 1], ["canasta", "Canasta", 1], ["pinochle", "Pinochle", 1],
-      ["cribbage", "Cribbage", 0], ["gofish", "Go Fish", 0], ["threefiveeight", "Sergeant Major", 0], ["whist", "Whist", 0],
-      ["crazyeights", "Crazy Eights", 0], ["bridge", "Bridge", 0], ["oldmaid", "Old Maid", 0], ["sheepshead", "Sheepshead", 0]
-    ];
-    var IN_BAR = ["hearts", "spades", "euchre", "pinochledd", "handfoot", "ginrummy", "twentynine", "rummy", "canasta"];
-    var TOTAL = GAMES.reduce(function (a, g) { return a + g[2]; }, 0);
-    var byId = {}; GAMES.forEach(function (g) { byId[g[0]] = g; });
-    var TRI = '<svg viewBox="0 0 8 7" aria-hidden="true"><path d="M1.2 1h5.6L4 6z" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></svg>';
-    function cell(id, name, n) { return '<span class="s' + (n === 0 && id !== "all" ? " zero" : "") + '" data-g="' + id + '"><span>' + name + '<i data-n="' + n + '">' + n + '<em class="w"></em></i></span></span>'; }
-    var rows = GAMES.map(function (g) { return '<li class="mi' + (g[2] ? "" : " dim") + '" data-g="' + g[0] + '">' + g[1] + "<i>" + g[2] + "</i></li>"; }).join("");
-    host.innerHTML = '<div class="track" data-row>' + cell("all", "All games", TOTAL) +
-      GAMES.filter(function (g) { return IN_BAR.indexOf(g[0]) >= 0; }).map(function (g) { return cell(g[0], g[1], g[2]); }).join("") +
-      '<div class="ov"><span class="ovbtn"><span class="ovlab">More</span><span class="wall"></span><span class="zone">' + TRI + '</span></span><ul class="ovlist">' + rows + "</ul></div>" +
-      '<span class="thumb still"></span></div>';
     var track = host.querySelector(".track"), dd = track.querySelector(".ov"), thumb = track.querySelector(".thumb");
+    var NAMES = {}; track.querySelectorAll(".ovlist .mi").forEach(function (li) { NAMES[li.dataset.g] = li.firstChild.textContent.trim(); });
     var copy = track.cloneNode(true); copy.className = "track tcopy still"; copy.removeAttribute("data-row");
     copy.querySelector(".ovlist").remove(); copy.querySelector(".thumb").remove();
     host.appendChild(copy);
-    var sel = "all", visible = [], gridTimer = null;
+    var sel = (track.querySelector(".s.on") || {}).dataset ? track.querySelector(".s.on").dataset.g : "all", visible = [], gridTimer = null;
     function speed() { var v = getComputedStyle(host).getPropertyValue("--thspd").trim(); return v ? parseFloat(v) : 220; }
     function still(on) { thumb.classList.toggle("still", on); copy.classList.toggle("still", on); }
     function cells(root) { return [].slice.call(root.children).filter(function (c) { return c.classList.contains("s"); }); }
@@ -8003,6 +8024,7 @@
       cs.forEach(function (c) { var cc = copy.querySelector('[data-g="' + c.dataset.g + '"]'); if (cc) cc.style.display = c.style.display; });
       track.querySelectorAll(".ovlist .mi").forEach(function (it) { it.style.display = visible.indexOf(it.dataset.g) >= 0 ? "none" : ""; });
       render(true);
+      host.classList.add("ready");
     }
 
     /* the picked cell's word gets its final width, the others lose theirs, measured with nothing moving,
@@ -8038,7 +8060,7 @@
         var at = -1; seq.forEach(function (el, i) { if (el.classList.contains("on")) at = i; });
         if (at >= 0 && seq[at + 1]) seq[at + 1].classList.add("nextpick");
       });
-      var label = hidden ? byId[sel][1] : "More";
+      var label = hidden ? (NAMES[sel] || "More") : "More";
       track.querySelector(".ovlab").textContent = label; copy.querySelector(".ovlab").textContent = label;
       dd.classList.toggle("on", hidden); copy.querySelector(".ov").classList.toggle("on", hidden);
       var rect = settle();
