@@ -2189,7 +2189,7 @@
   .lobbyscope .dropupContent li:last-child { border-bottom: none; }
   .lobbyscope .dropupContent li:hover { background-color: var(--triolighthover); }
   .lobbyscope .ldChallenge { margin-top: 8px; }
-  .lobbyscope .ldPanel { border-radius: 6px; corner-shape: squircle; background-color: #fff; border: 1px solid var(--panelline); } /* white inside, squircle (5 September; was the warm grey) */
+  .lobbyscope .ldPanel { border-radius: 6px; corner-shape: squircle; background-color: #F8F7F4; border: 1px solid var(--panelline); }
   .lobbyscope .ldAward { position: relative; height: 48px; margin-bottom: 8px; padding: 0 8px; }
   .lobbyscope .ldAwardTitle { font-size: 14px; font-weight: 700; line-height: 40px; color: #212529; }
   .lobbyscope .ldAwardBars { position: absolute; left: 8px; right: 8px; bottom: 4px; display: flex; height: 8px; }
@@ -2217,6 +2217,7 @@
   .lobbyscope .ldCalHead { padding: 4px 0; font-size: 14px; line-height: 24px; color: #868E96; }
   .lobbyscope .ldCalCell { position: relative; height: 32px; line-height: 32px; border-top: 1px solid var(--panelline);
     font-size: 14px; font-weight: 700; color: #212529; }
+  .lobbyscope .ldCalDay { background-color: #fff; } /* the month's own days are white on the panel's grey; the cells before and after the month and the weekday row keep the grey (5 September) */
   .lobbyscope .ldCalDay:not(.isFuture) { cursor: pointer; }
   .lobbyscope .ldCalDay.isFuture { font-weight: normal; color: #495057; }
   .lobbyscope .ldCalDay.isToday { text-decoration: underline; }
@@ -2422,8 +2423,8 @@
     padding: 0 8px; white-space: nowrap; }
   .lobbyscope .lbRow > span + span { border-left: 1px solid var(--panelline); }
   .lobbyscope .lbRow + .lbRow > span { border-top: 1px solid var(--panelline); }
-  .lobbyscope .lbRow.isAlt { background-color: #fff; } /* every row white (5 September; the alternate rows and the header were the warm grey) */
-  .lobbyscope .lbHeaderRow { background-color: #fff; font-weight: bold; }
+  .lobbyscope .lbRow.isAlt { background-color: #F8F7F4; }
+  .lobbyscope .lbHeaderRow { background-color: #F8F7F4; font-weight: bold; }
   .lobbyscope .lbName { width: 100%; max-width: 0; overflow: hidden; text-overflow: ellipsis; }
   .lobbyscope .lbHeart { color: #f03e3e; }
   .lobbyscope .lbUp, .lobbyscope .lbDown { display: inline-block; vertical-align: middle; border-radius: 4px; corner-shape: squircle;
@@ -3636,6 +3637,7 @@
      divider's own colour, #D9D2C4. A white card or the ink as the thumb. Then the same with the tray a shade darker, and a shade lighter. */
   body.otc-warm #otFilter { --ot-tray: var(--band, #f0eee6); --ot-ring: #D9D2C4; --ot-line: #D9D2C4; --ot-ink: #4e4d4c; --ot-hover: color-mix(in srgb, var(--band, #f0eee6) 88%, #D9D2C4); --ot-thumb: #fff; --ot-thumbring: #D9D2C4; --ot-thumbink: #141414; --ot-thumbshadow: none; }
   body.otc-warmdarker #otFilter { --ot-tray: #e4ddd0; --ot-ring: #c9c0ae; --ot-line: #c9c0ae; --ot-ink: #4e4d4c; --ot-hover: #dcd4c5; --ot-thumb: #fff; --ot-thumbring: #c9c0ae; --ot-thumbink: #141414; --ot-thumbshadow: none; }
+  body.otc-warmdarkergreen #otFilter { --ot-tray: #e4ddd0; --ot-ring: #c9c0ae; --ot-line: #c9c0ae; --ot-ink: #4e4d4c; --ot-hover: #dcd4c5; --ot-thumb: var(--triogreen); --ot-thumbring: var(--triogreenring); }
   body.otc-warmlighter #otFilter { --ot-tray: #fff; --ot-ring: #D9D2C4; --ot-line: #D9D2C4; --ot-ink: #4e4d4c; --ot-hover: var(--band, #f0eee6); --ot-thumb: #fff; --ot-thumbring: #D9D2C4; --ot-thumbink: #141414; --ot-thumbshadow: 0 0 0 transparent; }
   body.otc-warmlighter #otFilter .track .thumb { box-shadow: inset 0 0 0 1px var(--ot-thumbring), 0 2px 4px rgba(0,0,0,.1); }
   body.otc-warmdark #otFilter { --ot-tray: var(--band, #f0eee6); --ot-ring: #D9D2C4; --ot-line: #D9D2C4; --ot-ink: #4e4d4c; --ot-hover: color-mix(in srgb, var(--band, #f0eee6) 88%, #D9D2C4); --ot-thumb: #3d3d3a; --ot-thumbring: #2a2a28; --ot-thumbink: #fff; --ot-thumbshadow: none; }
@@ -3708,19 +3710,30 @@
   #openTablesTop .ltCard.isNew .cbtn { flex-direction: column; align-items: stretch; }
 </style>
 <style>
-  /* ── the third row peeks: the grid is cut a little into its third row, a fade in the section's own colour covers
-     the cut, and the light blue button sits on the edge. The peek and the fade come from the options panel, since
-     the fade has to sit well against the space down to the divider. ── */
-  #lobbyTablesPanel { --otrow: 268px; --peek: 40px; --fade: 90px; --fadeext: 0px; --otfadecol: var(--canvas, #f9f6f2); }
+  /* ── the third row peeks: two rows stay whole, the third is cut short and a fade in the section's own colour covers
+     only the cut, and the light blue button sits on the fade's edge. The peek, the button's behaviour and the fade's reach
+     come from the options panel, since the fade has to sit well against the space down to the divider. ── */
+  #lobbyTablesPanel { --otrow: 268px; --peek: 72px; --fadeext: 0px; --otfadecol: var(--canvas, #f9f6f2); --fade: calc(var(--peek) + 16px); }
   body[class*="otpeek-"]:not(.otpeek-off) #lobbyTablesPanel { position: relative; }
-  body.otpeek-b #lobbyTablesPanel { --fade: 130px; }
-  body.otpeek-c #lobbyTablesPanel { --peek: 72px; --fade: 100px; }
-  body.otpeek-d #lobbyTablesPanel { --peek: 72px; --fade: 110px; --fadeext: 34px; }
+  body.otpeek-a #lobbyTablesPanel { --peek: 40px; }
+  body.otpeek-c #lobbyTablesPanel { --peek: 96px; }
+  body.otpeek-d #lobbyTablesPanel { --fadeext: 34px; }
   body[class*="otpeek-"]:not(.otpeek-off) #lobbyTablesPanel:not(.open) .ltGrid { max-height: calc(var(--otrow) * 2 + 16px + var(--peek)); overflow: hidden; }
+  /* the fade begins in the gap under the second row, so the two rows are never touched */
   body[class*="otpeek-"]:not(.otpeek-off) #lobbyTablesPanel:not(.open)::after { content: ""; position: absolute; left: -2px; right: -2px; bottom: calc(-1 * var(--fadeext)); height: calc(var(--fade) + var(--fadeext));
-    pointer-events: none; z-index: 3; background: linear-gradient(to bottom, rgba(255,255,255,0), var(--otfadecol) 86%); }
+    pointer-events: none; z-index: 3; background: linear-gradient(to bottom, rgba(255,255,255,0), var(--otfadecol) 78%); }
   #lobbyTablesPanel .otMore { display: none; }
   body[class*="otpeek-"]:not(.otpeek-off) #lobbyTablesPanel:not(.open) .otMore { display: flex; justify-content: center; position: relative; z-index: 4; margin-top: -12px; }
+  /* e: the button only when the pointer is over the fade */
+  body.otpeek-e #lobbyTablesPanel:not(.open) .otMore { position: absolute; left: 0; right: 0; bottom: calc(-1 * var(--fadeext)); height: calc(var(--fade) + var(--fadeext)); margin: 0; align-items: flex-end; padding-bottom: 6px; box-sizing: border-box; }
+  body.otpeek-e #lobbyTablesPanel .otMore .button { opacity: 0; transition: opacity .15s ease-out; }
+  body.otpeek-e #lobbyTablesPanel .otMore:hover .button { opacity: 1; }
+  /* f: no button, the tables scroll under the fade, and the fade goes when the last row is reached */
+  body.otpeek-f #lobbyTablesPanel .ltGrid { overflow-y: auto; scrollbar-width: none; }
+  body.otpeek-f #lobbyTablesPanel .ltGrid::-webkit-scrollbar { display: none; }
+  body.otpeek-f #lobbyTablesPanel .otMore { display: none !important; }
+  body.otpeek-f #lobbyTablesPanel.atend::after { opacity: 0; }
+  body.otpeek-f #lobbyTablesPanel::after { transition: opacity .2s ease-out; }
 </style>
   <div class="lobbyscope" id="openTablesTop">
     <div class="lobbyhead"><span class="pophead">Open tables</span></div>
@@ -4251,6 +4264,7 @@
     ["yellow", "Light yellow tray, the game's yellow thumb"],
     ["warm", "Evernote: the warm band as the tray, the divider's colour on the lines, a white thumb"],
     ["warmdarker", "Evernote: the tray a shade darker than the band, a white thumb"],
+    ["warmdarkergreen", "Evernote: the tray a shade darker than the band, the Play green thumb"],
     ["warmlighter", "Evernote: the tray a shade lighter, the canvas, a white thumb"],
     ["warmdark", "Evernote: the warm band as the tray, an ink thumb"],
     ["warmgreen", "Evernote: the warm band as the tray, the Play green thumb"]
@@ -4259,12 +4273,14 @@
   /* how the open tables say there is more: the third row peeking under a fade, with the peek and the fade to try against the divider */
   var OTPEEKS = [
     ["off", "Six tiles, nothing more"],
-    ["a", "Third row peeks 40px, fade 90px"],
-    ["b", "Third row peeks 40px, fade 130px"],
-    ["c", "Third row peeks 72px, fade 100px"],
-    ["d", "Third row peeks 72px, fade down to the divider"]
+    ["a", "Third row peeks 40px, the button on the fade's edge"],
+    ["b", "Third row peeks 72px, the button on the fade's edge"],
+    ["c", "Third row peeks 96px, the button on the fade's edge"],
+    ["d", "Third row peeks 72px, the fade runs down to the divider"],
+    ["e", "Third row peeks 72px, the button appears when the pointer is over the fade"],
+    ["f", "Third row peeks 72px, the tables scroll under the fade, no button"]
   ];
-  var curOtPeek = "a";
+  var curOtPeek = "b";
   var SECTS = [
     ["none", "Sections on the canvas (as today)"],
     ["contained", "Open tables in the Evernote container"],
@@ -6835,7 +6851,7 @@
     var TEAM_GAMES = ["spades", "euchre", "twentynine", "pinochledd", "pinochle", "canasta", "handfoot", "whist", "bridge"]; /* C.GAME_TEAMS: the partners' plates go red on these */
     function teamClass(id) { return TEAM_GAMES.indexOf(id) >= 0 ? " isTeamGame" : ""; }
     var TICK = 4500; /* five live tables plus the New table card make two full rows; with the third row peeking, eight */
-    function liveCards() { return /\botpeek-(?!off\b)/.test(document.body.className) ? 8 : 5; }
+    function liveCards() { var c = document.body.className; return /\botpeek-f\b/.test(c) ? 11 : (/\botpeek-(?!off\b)/.test(c) ? 8 : 5); }
     var reduced = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
     /* a table turns over without leaving the page: the whole tile goes soft first, then what sits on the
        felt fades out and the new table's own seats fade in, and only then does the tile come back into focus */
@@ -8141,9 +8157,9 @@
   });
 </script>
 <script>
-  /* ── the third row peeks under a fade, with the button on its edge. The row height comes from the first tile, the fade
-     colour from the nearest painted ancestor, both refreshed when the options change, since the section's background
-     and the tile size follow the panel. ── */
+  /* ── the third row peeks under a fade. The row height comes from the first tile and the fade colour from the nearest painted
+     ancestor, both refreshed when the options change. With the button on the edge or on hover, a click opens the rest; with
+     the scrolling setting the tables scroll under the fade and the fade goes at the end. ── */
   document.addEventListener("DOMContentLoaded", function () {
     var panel = document.getElementById("lobbyTablesPanel");
     if (!panel) return;
@@ -8158,9 +8174,11 @@
       while (el && el !== document.documentElement) { var bg = getComputedStyle(el).backgroundColor; if (bg && bg !== "rgba(0, 0, 0, 0)" && bg !== "transparent") { panel.style.setProperty("--otfadecol", bg); return; } el = el.parentNode; }
       panel.style.setProperty("--otfadecol", getComputedStyle(document.body).backgroundColor);
     }
-    function sync() { if (window.otLive && window.otLive.setPeek) window.otLive.setPeek(); rowH(); fadeColor(); }
+    function atEnd() { panel.classList.toggle("atend", grid.scrollTop + grid.clientHeight >= grid.scrollHeight - 2); }
+    grid.addEventListener("scroll", atEnd);
+    function sync() { if (window.otLive && window.otLive.setPeek) window.otLive.setPeek(); rowH(); fadeColor(); atEnd(); }
     sync();
-    window.addEventListener("resize", rowH);
+    window.addEventListener("resize", function () { rowH(); atEnd(); });
     new MutationObserver(sync).observe(document.body, { attributes: true, attributeFilter: ["class"] });
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(sync);
   });
