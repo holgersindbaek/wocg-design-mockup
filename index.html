@@ -3628,7 +3628,7 @@
      options panel can recolour the bar. The default is the Evernote scheme with the tray a shade darker than the
      band (#e4ddd0, the ring and the lines #c9c0ae) and the Play button's green as the thumb, set here so the first
      paint has it too. ── */
-  .lobbyTopBand > .otFilter { flex: 0 0 100%; width: 100%; margin: 0 0 -8px; } /* the bar over both cards: the full row, the cards 8px under it as the tables are under theirs */
+  .lobbyTopBand > .otFilter { flex: 0 0 100%; width: 100%; margin: 0; } /* the bar over both cards: the full row, the cards 16px under it, the row's own gap, as the tiles are under the open tables' bar */
   .otFilter { --ot-outline: -1px -1px 0 var(--ot-thumbring), 1px -1px 0 var(--ot-thumbring), -1px 1px 0 var(--ot-thumbring), 1px 1px 0 var(--ot-thumbring);
     position: relative; margin: 2px 0 8px; font-family: "BuloRounded", "Verdana", "Arial", sans-serif; --thspd: 220ms; --thease: cubic-bezier(.645,.045,.355,1);
     --ot-tray: #e4ddd0; --ot-ring: #c9c0ae; --ot-line: #c9c0ae; --ot-ink: #4e4d4c; --ot-hover: #dcd4c5;
@@ -3717,34 +3717,73 @@
   #openTablesTop .ltCard.isNew .cbtn { flex-direction: column; align-items: stretch; }
 </style>
 <style>
-  /* ── the third row peeks: two rows stay whole, the third is cut short and a fade in the section's own colour covers only
-     the cut, from the top of the gap under the second row. The script puts the setting on the panel as data-peek, so these
-     rules stay simple; the peek, the button's behaviour and the fade's reach come from the options panel, since the fade has
-     to sit well against the space down to the divider. ── */
-  #lobbyTablesPanel { --otrow: 268px; --peek: 72px; --fadeext: 0px; --otfadecol: var(--canvas, #f9f6f2); --fade: calc(16px + var(--peek)); }
+  /* ── the third row is cut: two rows stay whole, the third is cut at a straight line under the gap, and the cut row is
+     out of reach (no hover, no clicks, no focus: the script makes it inert). Nothing shows at rest; when the pointer is
+     over the cut zone the green Show more tables button comes up on the cut line, and a click opens the rest. The script
+     puts the setting on the panel as data-peek, so these rules stay simple; the settings differ in what the cut looks
+     like. --peek is the height of the third row that shows: 78px is the whole top seat (art, avatar, name and badge end at 74px)
+     and a little felt under it, before the side seats begin at 75px. ── */
+  #lobbyTablesPanel { --otrow: 268px; --peek: 78px; --otfadecol: var(--canvas, #f9f6f2); --cut: calc(var(--otrow) * 2 + 32px + var(--peek)); }
   #lobbyTablesPanel[data-peek] { position: relative; }
-  #lobbyTablesPanel[data-peek="a"] { --peek: 40px; }
-  #lobbyTablesPanel[data-peek="c"] { --peek: 96px; }
-  #lobbyTablesPanel[data-peek="d"] { --fadeext: 34px; }
-  #lobbyTablesPanel[data-peek]:not(.open) .ltGrid { max-height: calc(var(--otrow) * 2 + 16px + var(--peek)); overflow: hidden; }
-  #lobbyTablesPanel[data-peek]:not(.open)::after { content: ""; position: absolute; left: -2px; right: -2px; top: calc(var(--otrow) * 2 + 16px); height: calc(var(--fade) + var(--fadeext));
-    pointer-events: none; z-index: 3; background: linear-gradient(to bottom, rgba(255,255,255,0), var(--otfadecol) 78%); }
+  #lobbyTablesPanel[data-peek]:not(.open) .ltGrid { max-height: var(--cut); overflow: visible; clip-path: inset(-24px -24px 0 -24px); }
+  #lobbyTablesPanel[data-peek]:not(.open) .ltGrid > .ltCard:nth-child(n+7) { pointer-events: none; }
+  /* the hover zone lies over the cut, from the bottom of the second row to 14px past the cut line, and the button straddles the line */
   #lobbyTablesPanel .otMore { display: none; }
-  #lobbyTablesPanel[data-peek]:not(.open) .otMore { display: flex; justify-content: center; position: relative; z-index: 4; margin-top: -12px; }
-  /* e: the button only when the pointer is over the fade */
-  #lobbyTablesPanel[data-peek="e"]:not(.open) .otMore { position: absolute; left: 0; right: 0; top: calc(var(--otrow) * 2 + 16px); height: calc(var(--fade) + var(--fadeext)); margin: 0; align-items: flex-end; padding-bottom: 6px; box-sizing: border-box; }
-  #lobbyTablesPanel[data-peek="e"] .otMore .button { opacity: 0; transition: opacity .15s ease-out; }
-  #lobbyTablesPanel[data-peek="e"] .otMore:hover .button { opacity: 1; }
-  /* f: no button, the tables scroll under the fade, and the fade goes when the last row is reached */
-  #lobbyTablesPanel[data-peek="f"]:not(.open) .ltGrid { overflow-y: auto; scrollbar-width: none; }
-  #lobbyTablesPanel[data-peek="f"] .ltGrid::-webkit-scrollbar { display: none; }
-  #lobbyTablesPanel[data-peek="f"]:not(.open) .otMore { display: none; }
-  #lobbyTablesPanel[data-peek="f"]::after { transition: opacity .2s ease-out; }
-  #lobbyTablesPanel[data-peek="f"].atend::after { opacity: 0; }
-  /* and a fade at the top once the first row has gone under the bar */
-  #lobbyTablesPanel[data-peek="f"]:not(.open)::before { content: ""; position: absolute; left: -2px; right: -2px; top: 0; height: 40px; pointer-events: none; z-index: 3;
+  #lobbyTablesPanel[data-peek]:not(.open) .otMore { display: flex; justify-content: center; align-items: flex-end; position: absolute; left: 0; right: 0;
+    top: calc(var(--otrow) * 2 + 16px); height: calc(16px + var(--peek) + 14px); z-index: 4; box-sizing: border-box; padding-bottom: 2px; }
+  #lobbyTablesPanel .otMore .button { opacity: 0; transition: opacity .15s ease-out; }
+  #lobbyTablesPanel .otMore:hover .button { opacity: 1; }
+  #lobbyTablesPanel .otMore .deck { display: none; }
+  /* sliver: only the top edge of the tiles, felt and corners, nothing on it yet */
+  #lobbyTablesPanel[data-peek="sliver"] { --peek: 6px; }
+  /* sheet: the band lies over the row like a sheet of paper, and its edge throws a shadow onto the tiles, not into the gaps */
+  #lobbyTablesPanel[data-peek="sheet"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) { position: relative; }
+  #lobbyTablesPanel[data-peek="sheet"]:not(.open) .ltGrid > .ltCard:nth-child(n+7)::after { content: ""; position: absolute; left: 0; right: 0; top: calc(var(--peek) - 24px); height: 24px; z-index: 5;
+    background: linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,.36)); }
+  /* feather: the tiles themselves dissolve over the last 22px before the cut, no wash over them and nothing in the gaps */
+  #lobbyTablesPanel[data-peek="feather"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) { -webkit-mask-image: linear-gradient(to bottom, #000 calc(var(--peek) - 22px), transparent var(--peek)); mask-image: linear-gradient(to bottom, #000 calc(var(--peek) - 22px), transparent var(--peek)); }
+  /* dim, ghost, frost, shade: the whole row changed evenly, then cut */
+  #lobbyTablesPanel[data-peek="dim"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) { opacity: .42; }
+  #lobbyTablesPanel[data-peek="ghost"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) { filter: grayscale(1); opacity: .3; }
+  #lobbyTablesPanel[data-peek="frost"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) { position: relative; }
+  #lobbyTablesPanel[data-peek="frost"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) .tableListing { filter: blur(3px); }
+  #lobbyTablesPanel[data-peek="frost"]:not(.open) .ltGrid > .ltCard:nth-child(n+7)::after { content: ""; position: absolute; inset: 0; z-index: 5; background: rgba(255,255,255,.45); }
+  #lobbyTablesPanel[data-peek="shade"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) { filter: brightness(.58) saturate(.8); }
+  /* recede and fold: the row sits further back, or tips away under the page */
+  #lobbyTablesPanel[data-peek="recede"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) { transform: scale(.94); transform-origin: 50% 0; opacity: .7; }
+  #lobbyTablesPanel[data-peek="fold"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) { transform: perspective(800px) rotateX(-42deg); transform-origin: 50% 0; filter: brightness(.78); }
+  /* stack: the third row stays under the second, and two edges show below each tile, the next tables in a stack */
+  #lobbyTablesPanel[data-peek="stack"] { --peek: -32px; }
+  #lobbyTablesPanel[data-peek="stack"]:not(.open) .otMore { top: calc(var(--otrow) * 2 + 16px); height: 44px; align-items: center; padding: 0; }
+  #lobbyTablesPanel[data-peek="stack"]:not(.open) .otMore .deck { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 16px; position: absolute; left: 0; right: 0; top: 0; height: 22px; }
+  #lobbyTablesPanel .otMore .deck i { position: relative; display: block; }
+  #lobbyTablesPanel .otMore .deck i::before, #lobbyTablesPanel .otMore .deck i::after { content: ""; position: absolute; top: 0; background: #327333; corner-shape: squircle;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.35), 0 2px 4px rgba(0,0,0,.06); }
+  #lobbyTablesPanel .otMore .deck i::before { left: 8px; right: 8px; height: 11px; border-radius: 0 0 12px 12px; z-index: 1; }
+  #lobbyTablesPanel .otMore .deck i::after { left: 20px; right: 20px; height: 19px; border-radius: 0 0 11px 11px; opacity: .55; }
+  /* lift: a lip at rest; when the pointer is over it the row rises and the button comes up once it has */
+  #lobbyTablesPanel[data-peek="lift"] { --peek: 14px; }
+  #lobbyTablesPanel[data-peek="lift"]:not(.open):has(.otMore:hover) { --peek: 78px; }
+  #lobbyTablesPanel[data-peek="lift"]:not(.open) .ltGrid { transition: max-height .28s cubic-bezier(.22,1,.36,1); }
+  #lobbyTablesPanel[data-peek="lift"]:not(.open) .otMore { transition: height .28s cubic-bezier(.22,1,.36,1); }
+  #lobbyTablesPanel[data-peek="lift"] .otMore .button { transition: opacity .15s ease-out .14s; }
+  /* fade: the long fade from before, kept to compare against */
+  #lobbyTablesPanel[data-peek="fade"] { --peek: 56px; }
+  #lobbyTablesPanel[data-peek="fade"]:not(.open)::after { content: ""; position: absolute; left: -2px; right: -2px; top: calc(var(--otrow) * 2 + 16px); height: calc(16px + var(--peek));
+    pointer-events: none; z-index: 3; background: linear-gradient(to bottom, rgba(255,255,255,0), var(--otfadecol) 78%); }
+  /* scroll: no button, the tables scroll under the fade, the fade goes when the last row is reached, and a fade at the top once the first row has gone under the bar */
+  #lobbyTablesPanel[data-peek="scroll"] { --peek: 56px; }
+  #lobbyTablesPanel[data-peek="scroll"]:not(.open) .ltGrid { overflow-y: auto; clip-path: none; scrollbar-width: none; }
+  #lobbyTablesPanel[data-peek="scroll"] .ltGrid::-webkit-scrollbar { display: none; }
+  #lobbyTablesPanel[data-peek="scroll"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) { pointer-events: auto; }
+  #lobbyTablesPanel[data-peek="scroll"]:not(.open) .otMore { display: none; }
+  #lobbyTablesPanel[data-peek="scroll"]:not(.open)::after { content: ""; position: absolute; left: -2px; right: -2px; top: calc(var(--otrow) * 2 + 16px); height: calc(16px + var(--peek));
+    pointer-events: none; z-index: 3; background: linear-gradient(to bottom, rgba(255,255,255,0), var(--otfadecol) 78%); transition: opacity .2s ease-out; }
+  #lobbyTablesPanel[data-peek="scroll"].atend::after { opacity: 0; }
+  #lobbyTablesPanel[data-peek="scroll"]:not(.open)::before { content: ""; position: absolute; left: -2px; right: -2px; top: 0; height: 40px; pointer-events: none; z-index: 3;
     background: linear-gradient(to top, rgba(255,255,255,0), var(--otfadecol) 90%); opacity: 0; transition: opacity .2s ease-out; }
-  #lobbyTablesPanel[data-peek="f"].scrolled::before { opacity: 1; }
+  #lobbyTablesPanel[data-peek="scroll"].scrolled::before { opacity: 1; }
+  @media (prefers-reduced-motion: reduce) { #lobbyTablesPanel .ltGrid, #lobbyTablesPanel .otMore, #lobbyTablesPanel .otMore .button { transition: none !important; } }
 </style>
   <div class="lobbyscope" id="openTablesTop">
     <div class="lobbyhead"><span class="pophead">Open tables</span></div>
@@ -4265,16 +4304,25 @@
   ];
   var curOtColor = "warmdarkergreen";
   /* how the open tables say there is more: the third row peeking under a fade, with the peek and the fade to try against the divider */
+  /* every setting but off and scroll: the cut row is out of reach, and the green button comes up only under the pointer */
   var OTPEEKS = [
     ["off", "Six tiles, nothing more"],
-    ["a", "Third row peeks 40px, the button on the fade's edge"],
-    ["b", "Third row peeks 72px, the button on the fade's edge"],
-    ["c", "Third row peeks 96px, the button on the fade's edge"],
-    ["d", "Third row peeks 72px, the fade runs down to the divider"],
-    ["e", "Third row peeks 72px, the button appears when the pointer is over the fade"],
-    ["f", "Third row peeks 72px, the tables scroll under the fade, no button"]
+    ["cut", "Third row cut clean at 78px, the top seat whole"],
+    ["sliver", "Third row cut clean at 6px, only the tile edges"],
+    ["sheet", "Third row cut at 78px under the band, its edge throwing a shadow on the tiles"],
+    ["feather", "Third row cut at 78px with a short soft edge"],
+    ["dim", "Third row cut at 78px, dimmed"],
+    ["ghost", "Third row cut at 78px, grey and faint"],
+    ["frost", "Third row cut at 78px behind frosted glass"],
+    ["shade", "Third row cut at 78px, in shadow"],
+    ["recede", "Third row cut at 78px, smaller and further back"],
+    ["fold", "Third row cut at 78px, tipping away under the page"],
+    ["stack", "Two rows, and the edges of a stack under them"],
+    ["lift", "A 14px lip that rises to 78px under the pointer"],
+    ["fade", "Third row peeks 56px under the long fade from before"],
+    ["scroll", "Third row peeks 56px, the tables scroll under the fade, no button"]
   ];
-  var curOtPeek = "b";
+  var curOtPeek = "sheet";
   var SECTS = [
     ["none", "Sections on the canvas (as today)"],
     ["contained", "Open tables in the Evernote container"],
@@ -6845,7 +6893,7 @@
     var TEAM_GAMES = ["spades", "euchre", "twentynine", "pinochledd", "pinochle", "canasta", "handfoot", "whist", "bridge"]; /* C.GAME_TEAMS: the partners' plates go red on these */
     function teamClass(id) { return TEAM_GAMES.indexOf(id) >= 0 ? " isTeamGame" : ""; }
     var TICK = 4500; /* five live tables plus the New table card make two full rows; with the third row peeking, eight */
-    function liveCards() { var c = document.body.className; return /\botpeek-f\b/.test(c) ? 11 : (/\botpeek-(?!off\b)/.test(c) ? 8 : 5); }
+    function liveCards() { var c = document.body.className; return /\botpeek-scroll\b/.test(c) ? 11 : (/\botpeek-(?!off\b)/.test(c) ? 8 : 5); }
     var reduced = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
     /* a table turns over without leaving the page: the whole tile goes soft first, then what sits on the
        felt fades out and the new table's own seats fade in, and only then does the tile come back into focus */
@@ -7287,6 +7335,7 @@
       var card = buildCard(pick(tablePool()));
       grid.insertBefore(card, grid.querySelector(".ltCard.isNew"));
       armCard(card);
+      placeHost();
       /* a slot that was empty gets the arrival half only: there is nothing to clear */
       var box = contents(card);
       if (box && box.animate && !reduced) {
@@ -7333,10 +7382,18 @@
       hostTo(id === "all" ? "canasta" : id);
     } };
 
+    /* the host tile keeps the sixth slot, the last of the two whole rows, so it never lands in the cut row */
+    function placeHost() {
+      var nc = grid.querySelector(".ltCard.isNew"); if (!nc) return;
+      var others = [].slice.call(grid.querySelectorAll(".ltCard")).filter(function (c) { return c !== nc; });
+      var ref = others[5] || null;
+      if (nc.nextElementSibling !== ref) grid.insertBefore(nc, ref);
+    }
     /* the peek needs a third row from the start: the missing tables are dealt in quietly, and when the peek is switched off the extra ones go */
     window.otLive.setPeek = function () {
       while (slotCount() < liveCards()) { var c = buildCard(pick(tablePool())); grid.insertBefore(c, grid.querySelector(".ltCard.isNew")); armCard(c); }
       while (slotCount() > liveCards()) { var last = [].slice.call(grid.querySelectorAll(".ltCard:not(.isNew)")).pop(); if (!last) break; last.remove(); }
+      placeHost();
     };
     window.otLive.setPeek();
 
@@ -8156,18 +8213,19 @@
   });
 </script>
 <script>
-  /* ── the third row peeks under a fade. The row height comes from the first tile and the fade colour from the nearest painted
-     ancestor, both refreshed when the options change; the setting itself goes on the panel as data-peek. With the button on
-     the edge or on hover, a click opens the rest; with the scrolling setting the tables scroll under the fade and the fade goes
-     at the end. ── */
+  /* ── the third row is cut. The row height comes from the first tile and, for the fade and the scrolling setting, the
+     fade colour from the nearest painted ancestor, both refreshed when the options change; the setting itself goes on
+     the panel as data-peek. While the panel is closed the cut row is inert, so it takes no pointer, no hover and no
+     focus (the engine keeps the host tile in the sixth slot, above the cut). The green button opens the rest; with
+     the scrolling setting the tables scroll under the fade and the fade goes at the end. ── */
   document.addEventListener("DOMContentLoaded", function () {
     var panel = document.getElementById("lobbyTablesPanel");
     if (!panel) return;
     var grid = panel.querySelector(".ltGrid");
     var more = document.createElement("div"); more.className = "otMore";
-    more.innerHTML = '<span class="button small lightblue">Show more tables</span>';
+    more.innerHTML = '<span class="deck"><i></i><i></i><i></i></span><span class="button small green">Show more tables</span>';
     panel.appendChild(more);
-    more.addEventListener("click", function () { panel.classList.add("open"); });
+    more.querySelector(".button").addEventListener("click", function () { panel.classList.add("open"); guard(); });
     function rowH() { var t = grid.querySelector(".ltCard"); if (t) panel.style.setProperty("--otrow", t.getBoundingClientRect().height + "px"); }
     function fadeColor() {
       var el = panel;
@@ -8177,14 +8235,21 @@
     function atEnd() { panel.classList.toggle("atend", grid.scrollTop + grid.clientHeight >= grid.scrollHeight - 2); panel.classList.toggle("scrolled", grid.scrollTop > 2); }
     grid.addEventListener("scroll", atEnd);
     function mode() { var m = document.body.className.match(/\botpeek-(\w+)/); return m && m[1] !== "off" ? m[1] : null; }
+    function guard() {
+      var closed = panel.dataset.peek && panel.dataset.peek !== "scroll" && !panel.classList.contains("open");
+      [].slice.call(grid.children).forEach(function (c, i) { c.inert = !!(closed && i >= 6); });
+    }
+    var last = null;
     function sync() {
       var m = mode(); if (m) panel.dataset.peek = m; else delete panel.dataset.peek;
+      if (m !== last) { panel.classList.remove("open"); last = m; }
       if (window.otLive && window.otLive.setPeek) window.otLive.setPeek();
-      rowH(); fadeColor(); atEnd();
+      rowH(); fadeColor(); atEnd(); guard();
     }
     sync();
     window.addEventListener("resize", function () { rowH(); atEnd(); });
     new MutationObserver(sync).observe(document.body, { attributes: true, attributeFilter: ["class"] });
+    new MutationObserver(guard).observe(grid, { childList: true });
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(sync);
   });
 </script>
