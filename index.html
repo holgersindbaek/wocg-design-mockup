@@ -3767,12 +3767,15 @@
   #lobbyTablesPanel[data-peek="tucked"] { --peek: 30px; }
   #lobbyTablesPanel[data-peek="tucked"]:not(.open) .ltGrid { max-height: calc(var(--otrow) * 2 + 16px + var(--peek)); }
   #lobbyTablesPanel[data-peek="tucked"]:not(.open) .ltGrid > .ltCard:nth-child(-n+6) { position: relative; z-index: 1; }
-  #lobbyTablesPanel[data-peek="tucked"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) { position: relative; z-index: 0; margin: 0 6px; height: var(--otrow); transform: translateY(calc(var(--peek) - 16px - var(--otrow))); background-color: #2d682e; box-shadow: var(--liftshadow); }
+  #lobbyTablesPanel[data-peek="tucked"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) { position: relative; z-index: 0; margin: 0 6px; height: var(--otrow); transform: translateY(calc(var(--peek) - 16px - var(--otrow))); background-color: #2d682e; box-shadow: var(--liftshadow);
+    clip-path: inset(calc(var(--otrow) - var(--peek)) -12px -12px -12px); }
   #lobbyTablesPanel[data-peek="tucked"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) > * { visibility: hidden; }
   #lobbyTablesPanel[data-peek="tucked"]:not(.open) .otMore { height: calc(var(--peek) + 20px); }
   /* stack and fan: the third row stays under the second, and two edges show below each tile, the next tables in a stack; fan spreads them under the pointer */
   #lobbyTablesPanel:is([data-peek="stack"], [data-peek="fan"]) { --peek: -16px; }
   #lobbyTablesPanel:is([data-peek="stack"], [data-peek="fan"]):not(.open) { padding-bottom: 16px; }
+  /* the grid ends on the second row's bottom edge here, so the clip runs 12px further to keep that row's lift shadow; the third row starts 16px down and stays hidden */
+  #lobbyTablesPanel:is([data-peek="stack"], [data-peek="fan"]):not(.open) .ltGrid { clip-path: inset(-24px -24px -12px -24px); }
   #lobbyTablesPanel:is([data-peek="stack"], [data-peek="fan"]):not(.open) .otMore { top: calc(var(--otrow) * 2 + 16px); height: 44px; align-items: center; padding: 0; }
   #lobbyTablesPanel:is([data-peek="stack"], [data-peek="fan"]):not(.open) .otMore .deck { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 16px; position: absolute; left: 0; right: 0; top: 0; height: 22px; }
   #lobbyTablesPanel .otMore .deck i { position: relative; display: block; }
@@ -6890,8 +6893,19 @@
 <script>
   /* the open-table tiles carry their quieter facts in tooltips: the art holds the game and its rules,
      the time holds the state in words, and each mark explains itself */
+  /* The badge is a number with no unit and no label, so on its own it explains nothing. Production
+     shows "97% completion", which only restates it; this says what is being counted. */
+  window.ltBadgeTip = function (pct) {
+    return pct === 100 ? "<b>Every</b> game finished" : "<b>" + pct + "%</b> of games finished";
+  };
   document.addEventListener("DOMContentLoaded", function () {
     if (typeof window.wtipAttach !== "function") return;
+    /* every badge gets its explainer BEFORE the [data-tip] sweep below, or the opening tiles' badges
+       would carry the attribute and never be wired: this script's DOMContentLoaded runs before the
+       live layer's */
+    document.querySelectorAll("#openTablesTop .completionBadge:not([data-tip])").forEach(function (b) {
+      b.setAttribute("data-tip", window.ltBadgeTip(b.classList.contains("is100") ? 100 : +b.textContent));
+    });
     document.querySelectorAll("#openTablesTop [data-tip]").forEach(function (el) {
       window.wtipAttach(el, '<span style="display:block;white-space:normal;max-width:208px">' + el.getAttribute("data-tip") + "</span>");
     });
@@ -6967,12 +6981,21 @@
        the seat is then given the classes the hover's CSS block answers. Writing those keyframes out by
        hand in here is what kept drifting from the real thing. */
     /* the finish badge for a completion percentage, or null when there is none to show */
+    var badgeTip = window.ltBadgeTip;
     function badgeFor(pct) {
       if (!(pct >= 70)) return null;
       var b = document.createElement("span");
       b.className = "completionBadge" + (pct === 100 ? " is100" : "");
       b.textContent = pct === 100 ? "" : pct;
+      b.setAttribute("data-tip", badgeTip(pct));
       return b;
+    }
+    /* the badge overhangs its seat by 10px on two sides, so without a tip of its own the outer corner
+       hovers nothing at all */
+    function armBadges(root) {
+      root.querySelectorAll(".completionBadge:not([data-tip])").forEach(function (b) {
+        b.setAttribute("data-tip", badgeTip(b.classList.contains("is100") ? 100 : +b.textContent));
+      });
     }
     /* Called with the seat muted, so whatever is set here is the resting state and .ltGo animates it.
        Both badges present: the digits roll like the name. Only one: it fades up, or drops and fades. */
@@ -7271,6 +7294,7 @@
        both carry a .ltTime, so the invitation is added the same way for each. The hover machine goes
        on the tile, which survives every turnover, so it is only ever armed once. */
     function armCard(card) {
+      armBadges(card);
       addInvitation(card);
       var tile = card.closest(".ltCard");
       if (tile) armInvite(tile);
@@ -7345,7 +7369,7 @@
       };
       if (last) last.onfinish = finish; else setTimeout(finish, 40);
     }
-    grid.querySelectorAll(".ltCard").forEach(function (c) { addInvitation(c); armInvite(c); });
+    grid.querySelectorAll(".ltCard").forEach(function (c) { armBadges(c); addInvitation(c); armInvite(c); });
 
     function appear() {
       if (slotCount() >= liveCards()) return;
@@ -8252,7 +8276,11 @@
       while (el && el !== document.documentElement) { var bg = getComputedStyle(el).backgroundColor; if (bg && bg !== "rgba(0, 0, 0, 0)" && bg !== "transparent") { panel.style.setProperty("--otfadecol", bg); return; } el = el.parentNode; }
       panel.style.setProperty("--otfadecol", getComputedStyle(document.body).backgroundColor);
     }
-    function atEnd() { panel.classList.toggle("atend", grid.scrollTop + grid.clientHeight >= grid.scrollHeight - 2); panel.classList.toggle("scrolled", grid.scrollTop > 2); }
+    function atEnd() {
+      var scrolls = panel.dataset.peek === "scroll";
+      panel.classList.toggle("atend", scrolls && grid.scrollTop + grid.clientHeight >= grid.scrollHeight - 2);
+      panel.classList.toggle("scrolled", scrolls && grid.scrollTop > 2);
+    }
     grid.addEventListener("scroll", atEnd);
     function mode() { var m = document.body.className.match(/\botpeek-(\w+)/); return m && m[1] !== "off" ? m[1] : null; }
     function guard() {
