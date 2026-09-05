@@ -1123,22 +1123,33 @@
   .mtri { width: 8px; height: 7px; vertical-align: 1px; margin-left: 5px;
     content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 7'%3E%3Cpath d='M1.2 1h5.6L4 6z' fill='%23262626' stroke='%23262626' stroke-width='2' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E"); }
   .mbcenter .mclogo { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
-  .mbcenter .mclogo img { width: auto; display: block; height: 35px; }
+  .mbcenter .mclogo img { width: auto; display: block; height: 32px; }
   .mbcenter .muser { margin-left: auto; flex-shrink: 0; }
   /* live-parity menu hovers: links underline like the site (MenuBar.scss), and
      Games, the icons, and the avatar grow the site's own dropdowns
      (menu_bar.dust) rebuilt in this design's card chrome. */
   .mbcenter .mgames { position: relative; }
-  .mpanel { display: none; position: absolute; top: calc(100% + 16px); left: 0; z-index: 80; text-align: left;
+  /* The panels open --mpgap ABOVE the bar's divider line, in the space between the bottom of the
+     menu label and that line. The divider tile straddles the bar's bottom edge (bottom: -divo,
+     height: 2 * divo), so the line itself is exactly the bar's 100%, and the drop is measured up
+     from there. The label's ink ends 18px above the line, so the panel's top edge lands between
+     the two. */
+  .mbcenter { --mpgap: 12px; }
+  .mpanel { display: none; position: absolute; left: 0; z-index: 80; text-align: left;
+    top: calc(100% + 16px - var(--mpgap, 0px));
     background: var(--surface, #fff); border-radius: 20px; corner-shape: squircle; padding: 12px;
     box-shadow: 0 0 0 1px var(--edge, var(--panelline)), var(--liftshadow); cursor: default; }
-  .mpanel::before { content: ""; position: absolute; left: -8px; right: -8px; top: -16px; height: 16px; }
+  .mbcenter .mgames > .mpanel { --mpbridge: max(0px, calc(16px - var(--mpgap, 0px))); }
+  .mpanel::before { content: ""; position: absolute; left: -8px; right: -8px;
+    top: calc(-1 * var(--mpbridge, 16px)); height: var(--mpbridge, 16px); }
   .mbcenter .mgames:hover .mgdrop { display: flex; gap: 12px; }
   .mbcenter .muser li:hover .mpanel { display: block; }
   /* right items run the bar's full height so their panels drop from the
      same level as the games panel */
   .mbcenter .muser li { height: 56px; }
-  .mbcenter .muser .mpanel { top: 100%; }
+  /* the right-hand triggers run the bar's full height, so a panel that rises above the line
+     already overlaps them and needs no bridge */
+  .mbcenter .muser .mpanel { top: calc(100% - var(--mpgap, 0px)); --mpbridge: 0px; }
   .mbcenter .muser .mpanel { left: auto; right: 0; }
   /* the bell and friends panels center on their icons; the account panel
      right-aligns with the username's end */
@@ -1922,22 +1933,22 @@
   body.div-bracelet { --divh: 10px; --divo: 5px;
     --divbrace: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 10'%3E%3Cg transform='translate(6 1) scale(.1)'%3E%3Cpath d='M39.95,9 C39.95,9 69.97,20.85 70,43.08 C70.01,52.75 62.13,60.61 52.39,60.62 C49.42,60.63 46.62,59.90 44.16,58.61 L48,71.00 L32,71.00 L35.82,58.65 C33.38,59.93 30.60,60.65 27.64,60.66 C17.91,60.67 10.01,52.83 10,43.16 C9.96,20.92 39.95,9 39.95,9 Z' fill='%23262626' fill-opacity='.45'/%3E%3C/g%3E%3Cg transform='translate(42 1) scale(.1)'%3E%3Cpath d='M52.34,13.99 C56.93,13.99 61.08,15.95 64.09,19.13 C67.12,22.32 68.99,26.74 69.00,31.62 C69.02,53.20 43.52,65.35 40.04,66.90 C37.71,65.85 26.39,60.44 18.57,50.99 C14.26,45.79 11.00,39.34 10.99,31.70 C10.99,26.82 12.85,22.40 15.87,19.19 C18.87,16.01 23.02,14.03 27.60,14.03 C32.15,14.02 36.26,15.95 39.26,19.07 C39.51,19.33 39.75,19.60 39.98,19.87 C40.21,19.60 40.46,19.33 40.70,19.07 C43.70,15.94 47.80,14.00 52.34,13.99 Z' fill='%23B54A3F' fill-opacity='.55'/%3E%3C/g%3E%3Cg transform='translate(78 1) scale(.1)'%3E%3Cpath d='M39.99,11 C47.76,11 54.06,17.3 54.06,25.06 C54.06,28.79 52.61,32.18 50.24,34.70 C51.98,33.93 53.90,33.50 55.93,33.50 C63.70,33.50 70,39.80 70,47.57 C70,55.33 63.70,61.63 55.93,61.63 C50.95,61.63 46.57,59.04 44.08,55.13 C44.14,55.40 44.21,55.66 44.27,55.93 L44.44,56.61 C44.47,56.73 44.49,56.84 44.52,56.96 L44.69,57.65 L44.85,58.33 C46.17,63.81 47.36,69 47.36,69 L32.93,69 C32.93,69 33.93,64.19 35.11,58.95 L35.27,58.26 L35.35,57.92 L35.51,57.23 C35.69,56.45 35.87,55.68 36.05,54.91 C33.57,58.94 29.13,61.63 24.06,61.63 C16.29,61.63 10,55.33 10,47.57 C10,39.80 16.29,33.50 24.06,33.50 C26.09,33.50 28.01,33.93 29.76,34.70 C27.38,32.19 25.93,28.80 25.93,25.06 C25.93,17.3 32.23,11 39.99,11 Z' fill='%23262626' fill-opacity='.45'/%3E%3C/g%3E%3Cg transform='translate(114 1) scale(.1)'%3E%3Cpath d='M40,3.68 L66.75,40.00 L40,76.31 L13.24,40.00 L40,3.68 Z' fill='%23B54A3F' fill-opacity='.55'/%3E%3C/g%3E%3C/svg%3E");
     --divline: linear-gradient(90deg, #D9D2C4 0 calc(50% - 61px), transparent calc(50% - 61px) calc(50% - 47px), #D9D2C4 calc(50% - 47px) calc(50% - 25px), transparent calc(50% - 25px) calc(50% - 11px), #D9D2C4 calc(50% - 11px) calc(50% + 11px), transparent calc(50% + 11px) calc(50% + 25px), #D9D2C4 calc(50% + 25px) calc(50% + 47px), transparent calc(50% + 47px) calc(50% + 61px), #D9D2C4 calc(50% + 61px)); }
-  body:is(.div-blushdeck, .div-longdeal, .div-longdealopt, .div-longdealmono, .div-longdealends, .div-plainline, .div-deckmorse, .div-bracelet, .div-fourstations).menu-centerwave .mbcenter::before { display: none; }
-  body:is(.div-blushdeck, .div-longdeal, .div-longdealopt, .div-longdealmono, .div-longdealends, .div-plainline, .div-deckmorse, .div-bracelet, .div-fourstations).menu-centerwave .mbcenter::after {
+  body:is(.div-blushdeck, .div-longdeal, .div-longdealopt, .div-longdealmono, .div-longdealends, .div-plainline, .div-deckmorse, .div-bracelet, .div-fourstations, .div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells).menu-centerwave .mbcenter::before { display: none; }
+  body:is(.div-blushdeck, .div-longdeal, .div-longdealopt, .div-longdealmono, .div-longdealends, .div-plainline, .div-deckmorse, .div-bracelet, .div-fourstations, .div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells).menu-centerwave .mbcenter::after {
     bottom: calc(-1 * var(--divo)); height: var(--divh);
     -webkit-mask: none; mask: none; background-color: transparent;
     background-image: var(--divtile); background-repeat: repeat-x;
     background-position: left top; background-size: var(--divsize); }
-  body:is(.div-blushdeck, .div-longdeal, .div-longdealopt, .div-longdealmono, .div-longdealends, .div-plainline, .div-deckmorse, .div-bracelet, .div-fourstations):is(.foot-wavyline, .foot-wavybare) .sitefooter::before { display: none; }
-  body:is(.div-blushdeck, .div-longdeal, .div-longdealopt, .div-longdealmono, .div-longdealends, .div-plainline, .div-deckmorse, .div-bracelet, .div-fourstations):is(.foot-wavyline, .foot-wavybare) .sitefooter::after {
+  body:is(.div-blushdeck, .div-longdeal, .div-longdealopt, .div-longdealmono, .div-longdealends, .div-plainline, .div-deckmorse, .div-bracelet, .div-fourstations, .div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells):is(.foot-wavyline, .foot-wavybare) .sitefooter::before { display: none; }
+  body:is(.div-blushdeck, .div-longdeal, .div-longdealopt, .div-longdealmono, .div-longdealends, .div-plainline, .div-deckmorse, .div-bracelet, .div-fourstations, .div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells):is(.foot-wavyline, .foot-wavybare) .sitefooter::after {
     top: calc(-1 * var(--divo)); height: var(--divh);
     -webkit-mask: none; mask: none; background-color: transparent;
     background-image: var(--divtile); background-repeat: repeat-x;
     background-position: left top; background-size: var(--divsize); }
-  body:is(.div-blushdeck, .div-longdeal, .div-longdealopt, .div-longdealmono, .div-longdealends, .div-plainline, .div-deckmorse, .div-bracelet, .div-fourstations).sect-waveband #openTablesTop::before {
+  body:is(.div-blushdeck, .div-longdeal, .div-longdealopt, .div-longdealmono, .div-longdealends, .div-plainline, .div-deckmorse, .div-bracelet, .div-fourstations, .div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells).sect-waveband #openTablesTop::before {
     top: calc(-1 * var(--divo)); height: var(--divh);
     background: var(--divtile) left top / var(--divsize) repeat-x; }
-  body:is(.div-blushdeck, .div-longdeal, .div-longdealopt, .div-longdealmono, .div-longdealends, .div-plainline, .div-deckmorse, .div-bracelet, .div-fourstations).sect-waveband #openTablesTop::after {
+  body:is(.div-blushdeck, .div-longdeal, .div-longdealopt, .div-longdealmono, .div-longdealends, .div-plainline, .div-deckmorse, .div-bracelet, .div-fourstations, .div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells).sect-waveband #openTablesTop::after {
     bottom: calc(-1 * var(--divo)); height: var(--divh);
     background: var(--divtile) left top / var(--divsize) repeat-x; }
   body.div-bracelet.menu-centerwave .mbcenter::after,
@@ -1950,76 +1961,107 @@
      like the menu row, with the rule plain either side; the menu bar and the footer keep the full long-deal row */
   body.div-fourstations { --divtile: var(--divorder); --divsize: 384px 14px; --divh: 14px; --divo: 7px;
     --divfourline: linear-gradient(90deg, #D9D2C4 0 calc(50% - 192px), transparent calc(50% - 192px) calc(50% + 192px), #D9D2C4 calc(50% + 192px)); }
-  body.div-fourstations.sect-waveband #openTablesTop::before, body.div-fourstations.sect-waveband #openTablesTop::after,
-  body.div-fourstations #sec-rummy::before, body.div-fourstations #sec-classic::before,
-  body.div-fourstations #lobbyDemo .lobbyTopBand::before,
-  body.div-fourstations #lobbyDemo .lobbyTopBand + .lobbyhead::before {
-    background: var(--divrule) center top / 384px 14px no-repeat,
-      var(--divrulestretch) left top / calc(50% - 192px) 14px no-repeat, var(--divrulestretch) right top / calc(50% - 192px) 14px no-repeat; }
   /* the four suits on those seams are real elements (added by the intro script), so they can fade in with the menu row */
   .divsuits { position: absolute; left: 50%; width: 384px; height: 14px; margin-left: -192px; z-index: 3; pointer-events: none; }
-  .divsuits .su { position: absolute; display: block; }
-  .divsuits .gapln { z-index: 0; }
+  /* the suits and gap pieces keep their compositor layers from the start: promoting forty of them mid-sweep, and dropping them after, re-rasters the page content around every seam and made the menu sweep stutter */
+  .divsuits .su { position: absolute; display: block; will-change: opacity; }
+  .divsuits .gapln { z-index: 0; will-change: opacity; }
   .divsuits .su svg { width: 100%; height: 100%; display: block; }
   body:not(.div-fourstations) .divsuits { display: none; }
-  body.div-fourstations.menu-centerwave .mbcenter::after,
-  body.div-fourstations:is(.foot-wavyline, .foot-wavybare) .sitefooter::after { background-position: center top; }
+  body:is(.div-fourstations, .div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells).menu-centerwave .mbcenter::after,
+  body:is(.div-fourstations, .div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells):is(.foot-wavyline, .foot-wavybare) .sitefooter::after { background-position: center top; }
   /* ends only: the suits greet at the top and sign off at the bottom */
   body.div-longdealends.menu-centerwave .mbcenter::after,
   body.div-longdealends:is(.foot-wavyline, .foot-wavybare) .sitefooter::after {
     background-image: var(--divlongopt); }
   /* the full-bleed section rhythm: a divider straddles every section boundary
      with the suit line's CENTER on the boundary, backgrounds alternate canvas
-     and band down the page (hero canvas, open tables band, trick-taking
-     canvas, rummy band, classics canvas, challenge band, live tables canvas),
-     and every gap measures 40px from the line center to the neighbor's
-     perceived edge. The challenge row and the live tables are their own
-     sections. Dividers span the full viewport like the menu and footer ones. */
-  body:is(.div-blushdeck, .div-longdeal, .div-longdealopt, .div-longdealmono, .div-longdealends, .div-plainline, .div-deckmorse, .div-bracelet, .div-fourstations).sect-waveband #openTablesTop {
+     and band down the page (hero canvas, open tables band, tables in play
+     canvas, trick-taking band, rummy canvas, classics band, challenge canvas,
+     footer band), and every gap measures 40px from the line center to the
+     neighbor's perceived edge. Dividers span the full viewport like the menu
+     and footer ones. */
+  body:is(.div-blushdeck, .div-longdeal, .div-longdealopt, .div-longdealmono, .div-longdealends, .div-plainline, .div-deckmorse, .div-bracelet, .div-fourstations, .div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells).sect-waveband #openTablesTop {
     /* glyph-true spacing: the title's line box hides ~8px above its glyphs */
     padding-top: 32px; padding-bottom: 40px; }
-  body:is(.div-blushdeck, .div-longdeal, .div-longdealopt, .div-longdealmono, .div-longdealends, .div-plainline, .div-deckmorse, .div-bracelet, .div-fourstations).sect-waveband #popsec { padding-bottom: 40px; }
-  body:is(.div-blushdeck, .div-longdeal, .div-longdealopt, .div-longdealmono, .div-longdealends, .div-plainline, .div-deckmorse, .div-bracelet, .div-fourstations) #sec-tt,
-  body:is(.div-blushdeck, .div-longdeal, .div-longdealopt, .div-longdealmono, .div-longdealends, .div-plainline, .div-deckmorse, .div-bracelet, .div-fourstations) #sec-all { padding-top: 4px; padding-bottom: 40px; }
-  body:is(.div-blushdeck, .div-longdeal, .div-longdealopt, .div-longdealmono, .div-longdealends, .div-plainline, .div-deckmorse, .div-bracelet, .div-fourstations) #sec-rummy,
-  body:is(.div-blushdeck, .div-longdeal, .div-longdealopt, .div-longdealmono, .div-longdealends, .div-plainline, .div-deckmorse, .div-bracelet, .div-fourstations) #sec-classic {
+  body:is(.div-blushdeck, .div-longdeal, .div-longdealopt, .div-longdealmono, .div-longdealends, .div-plainline, .div-deckmorse, .div-bracelet, .div-fourstations, .div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells).sect-waveband #popsec { padding-bottom: 40px; }
+  body:is(.div-blushdeck, .div-longdeal, .div-longdealopt, .div-longdealmono, .div-longdealends, .div-plainline, .div-deckmorse, .div-bracelet, .div-fourstations, .div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) #liveTablesTop,
+  body:is(.div-blushdeck, .div-longdeal, .div-longdealopt, .div-longdealmono, .div-longdealends, .div-plainline, .div-deckmorse, .div-bracelet, .div-fourstations, .div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) #sec-all { padding-top: 4px; padding-bottom: 40px; }
+  body:is(.div-blushdeck, .div-longdeal, .div-longdealopt, .div-longdealmono, .div-longdealends, .div-plainline, .div-deckmorse, .div-bracelet, .div-fourstations, .div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) #liveTablesTop .lobbyhead { margin-top: 26px; } /* the band's 2px, 4px of padding, 26px and the line box's 8px put the glyphs 40px under the line, as the game heads' 28px margin does */
+  body:is(.div-blushdeck, .div-longdeal, .div-longdealopt, .div-longdealmono, .div-longdealends, .div-plainline, .div-deckmorse, .div-bracelet, .div-fourstations, .div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) #sec-tt,
+  body:is(.div-blushdeck, .div-longdeal, .div-longdealopt, .div-longdealmono, .div-longdealends, .div-plainline, .div-deckmorse, .div-bracelet, .div-fourstations, .div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) #sec-rummy,
+  body:is(.div-blushdeck, .div-longdeal, .div-longdealopt, .div-longdealmono, .div-longdealends, .div-plainline, .div-deckmorse, .div-bracelet, .div-fourstations, .div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) #sec-classic {
     padding-top: 4px; padding-bottom: 40px; position: relative; z-index: 0; }
-  body:is(.div-blushdeck, .div-longdeal, .div-longdealopt, .div-longdealmono, .div-longdealends, .div-plainline, .div-deckmorse, .div-bracelet, .div-fourstations) #sec-rummy { padding-top: 2px; }
-  body:is(.div-blushdeck, .div-longdeal, .div-longdealopt, .div-longdealmono, .div-longdealends, .div-plainline, .div-deckmorse, .div-bracelet, .div-fourstations) #sec-rummy::after {
+  body:is(.div-blushdeck, .div-longdeal, .div-longdealopt, .div-longdealmono, .div-longdealends, .div-plainline, .div-deckmorse, .div-bracelet, .div-fourstations, .div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) #sec-tt, body:is(.div-blushdeck, .div-longdeal, .div-longdealopt, .div-longdealmono, .div-longdealends, .div-plainline, .div-deckmorse, .div-bracelet, .div-fourstations, .div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) #sec-classic { padding-top: 2px; }
+  body:is(.div-blushdeck, .div-longdeal, .div-longdealopt, .div-longdealmono, .div-longdealends, .div-plainline, .div-deckmorse, .div-bracelet, .div-fourstations, .div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) #sec-tt::after, body:is(.div-blushdeck, .div-longdeal, .div-longdealopt, .div-longdealmono, .div-longdealends, .div-plainline, .div-deckmorse, .div-bracelet, .div-fourstations, .div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) #sec-classic::after {
     content: ""; position: absolute; top: 0; bottom: 0; left: 50%; width: 100vw;
     transform: translateX(-50%); z-index: -1; background: var(--band, #f4eee5); }
-  body:is(.div-blushdeck, .div-longdeal, .div-longdealopt, .div-longdealmono, .div-longdealends, .div-plainline, .div-deckmorse, .div-bracelet, .div-fourstations) #sec-rummy::before,
-  body:is(.div-blushdeck, .div-longdeal, .div-longdealopt, .div-longdealmono, .div-longdealends, .div-plainline, .div-deckmorse, .div-bracelet, .div-fourstations) #sec-classic::before {
+  body:is(.div-blushdeck, .div-longdeal, .div-longdealopt, .div-longdealmono, .div-longdealends, .div-plainline, .div-deckmorse, .div-bracelet, .div-fourstations, .div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) #sec-tt::before,
+  body:is(.div-blushdeck, .div-longdeal, .div-longdealopt, .div-longdealmono, .div-longdealends, .div-plainline, .div-deckmorse, .div-bracelet, .div-fourstations, .div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) #sec-rummy::before,
+  body:is(.div-blushdeck, .div-longdeal, .div-longdealopt, .div-longdealmono, .div-longdealends, .div-plainline, .div-deckmorse, .div-bracelet, .div-fourstations, .div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) #sec-classic::before {
     content: ""; position: absolute; top: calc(-1 * var(--divo, 7px)); left: 50%; width: 100vw;
     transform: translateX(-50%); height: var(--divh, 14px); z-index: 2;
     background: var(--divtile) left top / var(--divsize) repeat-x; }
-  /* the challenge row: band background, dividers above (own ::before) and
-     below (on the live-tables header, whose margin keeps the line's center
-     on the band's edge) */
-  body:is(.div-blushdeck, .div-longdeal, .div-longdealopt, .div-longdealmono, .div-longdealends, .div-plainline, .div-deckmorse, .div-bracelet, .div-fourstations) #lobbyDemo .lobbyTopBand {
+  /* the challenge row: on the canvas, a divider above (own ::before); the
+     footer's band follows it */
+  body:is(.div-blushdeck, .div-longdeal, .div-longdealopt, .div-longdealmono, .div-longdealends, .div-plainline, .div-deckmorse, .div-bracelet, .div-fourstations, .div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) #lobbyDemo .lobbyTopBand {
     position: relative; z-index: 0; padding: 40px 0; }
-  body:is(.div-blushdeck, .div-longdeal, .div-longdealopt, .div-longdealmono, .div-longdealends, .div-plainline, .div-deckmorse, .div-bracelet, .div-fourstations) #lobbyDemo .lobbyTopBand::after {
-    content: ""; position: absolute; top: 0; bottom: 0; left: 50%; width: 100vw;
-    transform: translateX(-50%); z-index: -1; background: var(--band, #f4eee5); }
-  body:is(.div-blushdeck, .div-longdeal, .div-longdealopt, .div-longdealmono, .div-longdealends, .div-plainline, .div-deckmorse, .div-bracelet, .div-fourstations) #lobbyDemo .lobbyTopBand::before {
+  body:is(.div-blushdeck, .div-longdeal, .div-longdealopt, .div-longdealmono, .div-longdealends, .div-plainline, .div-deckmorse, .div-bracelet, .div-fourstations, .div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) #lobbyDemo .lobbyTopBand::before {
     content: ""; position: absolute; top: calc(-1 * var(--divo, 7px)); left: 50%; width: 100vw;
     transform: translateX(-50%); height: var(--divh, 14px); z-index: 2;
     background: var(--divtile) left top / var(--divsize) repeat-x; }
-  /* lobbyDemo is a flex column with an 8px gap: 24px margin + 8px gap puts
-     the line's center on the band's edge, and the header glyphs (8px inside
-     their line box) land a perceived 40px below the line */
-  body:is(.div-blushdeck, .div-longdeal, .div-longdealopt, .div-longdealmono, .div-longdealends, .div-plainline, .div-deckmorse, .div-bracelet, .div-fourstations) #lobbyDemo .lobbyTopBand + .lobbyhead {
-    position: relative; margin-top: 24px; }
-  body:is(.div-blushdeck, .div-longdeal, .div-longdealopt, .div-longdealmono, .div-longdealends, .div-plainline, .div-deckmorse, .div-bracelet, .div-fourstations) #lobbyDemo .lobbyTopBand + .lobbyhead::before {
-    content: ""; position: absolute; top: calc(-32px - var(--divo, 7px)); left: 50%; width: 100vw;
-    transform: translateX(-50%); height: var(--divh, 14px);
-    background: var(--divtile) left top / var(--divsize) repeat-x; }
-  body.div-bracelet #sec-rummy::before, body.div-bracelet #sec-classic::before,
-  body.div-bracelet #lobbyDemo .lobbyTopBand::before,
-  body.div-bracelet #lobbyDemo .lobbyTopBand + .lobbyhead::before {
+  body.div-bracelet #sec-tt::before, body.div-bracelet #sec-rummy::before, body.div-bracelet #sec-classic::before,
+  body.div-bracelet #lobbyDemo .lobbyTopBand::before {
     background: var(--divbrace) center top / 128px 10px no-repeat,
                 var(--divline) 0 4.5px / 100% 1px no-repeat; }
-  body:is(.div-blushdeck, .div-longdeal, .div-longdealopt, .div-longdealmono, .div-longdealends, .div-plainline, .div-deckmorse, .div-bracelet, .div-fourstations) #stage { overflow-x: clip; }
+  /* after the generic seam rules above, which share their specificity: between sections the rule is plain and the four suits are real elements */
+  body.div-fourstations.sect-waveband #openTablesTop::before, body.div-fourstations.sect-waveband #openTablesTop::after,
+  body.div-fourstations #sec-tt::before, body.div-fourstations #sec-rummy::before, body.div-fourstations #sec-classic::before,
+  body.div-fourstations #lobbyDemo .lobbyTopBand::before {
+    background: var(--divrule) center top / 384px 14px no-repeat,
+      var(--divrulestretch) left top / calc(50% - 192px) 14px no-repeat, var(--divrulestretch) right top / calc(50% - 192px) 14px no-repeat; }
+  body:is(.div-blushdeck, .div-longdeal, .div-longdealopt, .div-longdealmono, .div-longdealends, .div-plainline, .div-deckmorse, .div-bracelet, .div-fourstations, .div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) #stage { overflow-x: clip; }
+  /* the head in the rule (Divider options "parted" and "swelled", title seam lab 108 and 107): each section title leaves its row and sits on
+     its seam with the x-height centred on the rule; the rule breaks around it and the suits sit beside it. The seam is drawn by the intro
+     script as real elements (.divhead), like the four stations, so the suits can fade in with the menu row. Parted: pad 4, then 20px of
+     rule, then club and diamond left and spade and heart right, 40px apart, so every piece of rule inside the group is 20px. Swelled: the
+     section's own suit once each side, 20px from the text in a 40px opening, the rule swelling from a hairline to 3px with a rounded end.
+     Toprow: the menu row's own grid (the 384px tile centred on the column, one suit every 96px) with the head in the centre and only
+     the suits that would collide with its opening dropped, at pad 4 (toprow) or pad 14 (toprow14). Toprowflush (title seam lab 129):
+     the same row re-pitched to the column, an even count of suits at the pitch nearest 96 that puts the outermost glyph's edge on the
+     tiles' edge, on the menu row, every seam and the footer alike; the script draws those rows in pieces, so their tiles go plain.
+     Toprowgap (lab 131): the same, the outermost suit's 20px opening starting at the border instead (its centre 10px in). Toprowends
+     (lab 132): the pitch kept at 96 and counted from each border inward, whatever is left over becoming the middle gap. Toprowindent
+     (lab 133): the row indented half a station, its ends 50px inside the border (twelve suits at 92 for the 1112px column). Toprowcells
+     (lab 137): the window (the area left of the ad rail) divided into an even number of equal cells with a suit centred in each, so
+     the row starts and ends half a pitch inside the window's edge (fourteen cells of 100 at a 1728 window, ten of 95.2 at 1280). */
+  body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) { --divtile: var(--divorder); --divsize: 384px 14px; --divh: 14px; --divo: 7px; }
+  .divhead { position: absolute; left: 50%; width: 100vw; margin-left: -50vw; height: 14px; z-index: 3; pointer-events: none; }
+  .divhead .ln, .seamsweep .ln { position: absolute; top: 0; height: 14px; }
+  .divhead .ln svg, .seamsweep .ln svg { display: block; height: 14px; }
+  .divhead .su { position: absolute; display: block; will-change: opacity; }
+  .divhead .su svg { width: 100%; height: 100%; display: block; }
+  .divhead .gapln { z-index: 0; will-change: opacity; }
+  .divhead .ttl { position: absolute; white-space: nowrap; font-size: 26px; line-height: 26px; color: var(--ink); }
+  body:not(.div-parted):not(.div-swelled):not(.div-toprow):not(.div-toprow14):not(.div-toprowflush):not(.div-toprowgap):not(.div-toprowends):not(.div-toprowindent):not(.div-toprowcells) .divhead { display: none; }
+  body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells).sect-waveband #openTablesTop::before, body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells).sect-waveband #openTablesTop::after,
+  body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) #sec-tt::before, body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) #sec-rummy::before, body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) #sec-classic::before,
+  body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) #lobbyDemo .lobbyTopBand::before { background: none; }
+  body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) :is(#openTablesTop .lobbyhead, #liveTablesTop .lobbyhead, #lobbyDemo .lobbyhead) > .pophead,
+  body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) :is(#sec-tt, #sec-rummy, #sec-classic) > .pophead { display: none; }
+  body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) :is(#openTablesTop .lobbyhead, #lobbyDemo .lobbycol .lobbyhead) { justify-content: flex-end; }
+  body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) #liveTablesTop .lobbyhead { display: none; } /* the empty head would still spend its 32px margin and the column's gap */
+  /* with the head on the seam every gap measures 48px from the rule's centre to the neighbour's edge, above and below (40px elsewhere) */
+  body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells).sect-waveband #popsec { padding-bottom: 48px; }
+  body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells).layout-scrab #popsec { padding-top: 40px; } /* the first tile row 48px under the menu seam's rule too (8px bar margin + 40) */
+  body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells).sect-waveband #openTablesTop { padding-top: 48px; padding-bottom: 48px; }
+  body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) #liveTablesTop { padding-top: 46px; padding-bottom: 48px; } /* the 2px under the Open tables band */
+  body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) :is(#sec-tt, #sec-rummy, #sec-classic) { padding-top: 48px; padding-bottom: 48px; }
+  body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) #lobbyDemo .lobbyTopBand { padding: 48px 0; }
+  body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) #lobbyDemo .lobbycol .lobbyhead { margin-top: 0; }
+  body:is(.div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) { --divtile: var(--divrulestretch); }
+  body:is(.div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) .seamsweep .ink { background: none; }
+  body:is(.div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells):is(.foot-wavyline, .foot-wavybare) .sitefooter::after { display: none; }
   .sitefooter footer { max-width: 1160px; margin: 0 auto; padding: 20px 24px 26px;
     display: flex; flex-wrap: wrap; justify-content: space-between; gap: 24px; }
   .sitefooter .footerSection { display: flex; gap: 24px; max-width: 100%; min-width: 0; width: max-content; }
@@ -2190,7 +2232,6 @@
   .lobbyscope .ltHeaderLeft { display: flex; align-items: center; gap: 12px; min-width: 0; }
   .lobbyscope .ltTitle, .lobbyscope .llTitle { font-size: 20px; line-height: 28px; font-weight: bold; color: #212529; }
   .lobbyscope .llTitle { display: flex; align-items: center; gap: 6px; }
-  .lobbyscope .llLiveDot { width: 8px; height: 8px; border-radius: 50%; background-color: #64CD00; }
   .lobbyscope .ltSeeAll { flex-shrink: 0; white-space: nowrap; }
   .lobbyscope .ltFilterBox .ldMore { display: inline-block; }
 
@@ -2284,6 +2325,54 @@
     transform: translateY(-100%); transition: transform 220ms cubic-bezier(.22,1,.36,1) 120ms; }
   .lobbyscope .player.joinable:hover .plateRoll .playerName:not(.pnJoin) { transform: translateY(100%); transition-delay: 200ms; }
   .lobbyscope .player.joinable:hover .pnJoin { transform: translateY(0); transition-delay: 200ms; }
+  /* A seat that changes hands in the live section runs the block above, with the pointer condition
+     replaced by a class: .ltSwap lays the resting state out and .ltGo makes the change, exactly as
+     :hover does. Nothing here restates the motion, so a change to the hover changes both. */
+  .lobbyscope .player.ltSwap img:not(.seatYou) {
+    transition: opacity 140ms cubic-bezier(0.33,1,0.68,1) 140ms, transform 140ms cubic-bezier(0.33,1,0.68,1) 140ms; }
+  .lobbyscope .player.ltSwap.ltGo img:not(.seatYou) { opacity: 0; transform: scale(.88);
+    transition: opacity 140ms cubic-bezier(0.32,0,0.67,0), transform 140ms cubic-bezier(0.32,0,0.67,0); }
+  .lobbyscope .player.ltSwap .seatYou { position: absolute; left: 50%; top: 0; width: auto;
+    transform: translateX(-50%) scale(.86); transform-origin: center bottom; opacity: 0; pointer-events: none;
+    transition: opacity 120ms linear, transform 140ms ease; }
+  .lobbyscope .player.ltSwap.ltGo .seatYou { opacity: 1; transform: translateX(-50%) scale(1);
+    transition: opacity 120ms linear 200ms;
+    animation: seatYouIn 320ms cubic-bezier(0.22, 1, 0.36, 1) 200ms both; }
+  .lobbyscope .player.ltSwap .plateRoll { position: absolute; inset: 0; overflow: hidden;
+    border-radius: inherit; corner-shape: inherit; }
+  .lobbyscope .player.ltSwap .plateRoll .playerName:not(.pnJoin) { position: absolute; inset: 0; padding: 0;
+    transform: translateY(0); transition: transform 220ms cubic-bezier(.22,1,.36,1) 120ms; }
+  .lobbyscope .player.ltSwap .pnJoin { position: absolute; inset: 0; padding: 0;
+    transform: translateY(-100%); transition: transform 220ms cubic-bezier(.22,1,.36,1) 120ms; }
+  /* The one place a swap deliberately differs from the hover, and only in timing. On hover the plate
+     waits 200ms so "Join" appears as your avatar lands: the label follows the avatar, because it is a
+     preview of what clicking would do. On a swap the plate is telling you WHO arrived, so it reads
+     better landing with the face than trailing it. 120ms is where the hand written version had it. */
+  .lobbyscope .player.ltSwap.ltGo .plateRoll .playerName:not(.pnJoin) { transform: translateY(100%); transition-delay: 120ms; }
+  .lobbyscope .player.ltSwap.ltGo .pnJoin { transform: translateY(0); transition-delay: 120ms; }
+  /* The finish badge changes with the plate rather than popping in after it. Its digits roll inside
+     the badge exactly as the name rolls inside the plate, on the same curve and the same delay, and a
+     badge with no successor drops out of the plate and fades instead of simply disappearing. */
+  #openTablesTop .completionBadge .cbRoll { position: absolute; inset: 0; overflow: hidden; border-radius: 50%; }
+  #openTablesTop .completionBadge .cbRoll i { position: absolute; inset: 0; display: flex; font-style: normal;
+    align-items: center; justify-content: center; padding-right: 1px; padding-top: 1px;
+    transition: transform 220ms cubic-bezier(.22,1,.36,1) 120ms; }
+  #openTablesTop .completionBadge .cbRoll i.cbOut { transform: translateY(0); }
+  #openTablesTop .completionBadge .cbRoll i.cbIn { transform: translateY(-100%); }
+  #openTablesTop .player.ltGo .completionBadge .cbRoll i.cbOut { transform: translateY(100%); }
+  #openTablesTop .player.ltGo .completionBadge .cbRoll i.cbIn { transform: translateY(0); }
+  /* a badge arriving where there was none fades up with the digits; one leaving for good drops and fades */
+  #openTablesTop .completionBadge.cbFresh { opacity: 0; transform: scale(.8);
+    transition: opacity 200ms linear 140ms, transform 260ms cubic-bezier(.22,1,.36,1) 140ms; }
+  #openTablesTop .player.ltGo .completionBadge.cbFresh { opacity: 1; transform: scale(1); }
+  #openTablesTop .completionBadge.cbGoing { transition: opacity 190ms linear, transform 190ms cubic-bezier(.32,0,.67,0); }
+  #openTablesTop .player.ltGo .completionBadge.cbGoing { opacity: 0; transform: translateY(8px); }
+
+  /* A seat you are hovering has ALREADY run this animation: its face is faded to nothing and the
+     stand-in is fully risen. A swap starting from there has nothing left to animate, so the arriving
+     face appeared at full size with no fade at all. .ltReset takes the seat back to its resting state
+     for one frame with everything muted, so the change always plays from the top. */
+  .lobbyscope .player.ltReset, .lobbyscope .player.ltReset * { transition: none !important; animation: none !important; }
   .lobbyscope .tableListing .content { display: inline-block; width: 100%; box-sizing: border-box; padding: 75% 12px 12px 12px; }
   .lobbyscope .contentTop { display: flex; justify-content: space-between; white-space: nowrap; overflow: hidden; width: 100%; padding: 6px 0; }
   .lobbyscope .tableNumber { color: #212529; font-size: 16px; font-weight: bold; flex-shrink: 1;
@@ -2306,6 +2395,11 @@
     text-decoration: underline; cursor: pointer; text-align: left; }
 
   .lobbyscope .llGame { font-size: 16px; font-weight: bold; color: #212529; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  /* A live table is the same object as an open table, so it is drawn the same way: the whole tile is
+     the felt, the status sits in the clock's slot, and the button row is gone. Watching is what the
+     tile does, and the tile says so on hover. */
+  #lobbyLiveTables .llCard .content, #lobbyLiveTables .llBtns { display: none; }
+  #lobbyLiveTables .llRow { align-items: start; }
   .lobbyscope .llBtns { display: flex; gap: 8px; margin: auto 12px 12px; }
   .lobbyscope .llBtns .button { flex: 1; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
 
@@ -2739,10 +2833,11 @@
   .sceneTxt > p { color: var(--ink); font-size: 20px; margin: 0; }
   /* long category copies wrap inside the scene's text clearing instead of
      running into the tile mosaic */
-  .sceneTxt #herosub { max-width: 400px; }
+  /* the subtitle measures about 46 characters a line at any size (19.5em): 46 fit, 50 do not, so its two lines break the same way at 16px and 20px */
+  .sceneTxt #herosub { max-width: 20em; } /* 320px at 16px: the chosen subtitle's top line "Join a table or play our robots. Settle in, unwind" is about 310px, so the break before "and" holds with room for another browser's rounding (4 September 2026; was 19.5em) */
   /* category subtitles step down one size in the scene so the three-line
      shape always holds inside the clearing */
-  body[class*="cnav-sub-"] .sceneTxt #herosub { font-size: 16px; max-width: 416px; }
+  body[class*="cnav-sub-"] .sceneTxt #herosub { font-size: 16px; max-width: 20em; }
   /* the signed-in subtitle wraps at 320px: about 46 to 48 characters of the regular body face, the same count as the
      guest subtitle's bold-heavy first line ("Take tricks, build melds & play classics with", which renders at 292px) */
   body.viewer-pilady .sceneTxt #herosub { max-width: 320px; }
@@ -2799,7 +2894,7 @@
     --miw: calc(var(--mw) - 32px); --mih: calc(var(--mh) - 32px); }
   /* 36px puts the topmost tile 40px from the menu wave's perceived center
      (the wave's midline rides 4px below the bar) — the section-band rhythm */
-  body.layout-scrab #popsec { padding-top: 36px; }
+  body.layout-scrab #popsec { padding-top: 32px; } /* the first tile row 40px under the menu seam's rule (the bar keeps an 8px margin) */
   body.layout-scrab .pos-a { left: var(--clx); top: var(--moy); width: calc(var(--miw) * 0.658015 + 16px); height: calc(var(--mih) * 0.663918 + 16px); }
   body.layout-scrab .pos-d { left: calc(var(--clx) + var(--miw) * 0.658015 + 32px); top: var(--moy); width: calc(var(--miw) * 0.341985); height: calc(var(--mih) * 0.331959); }
   body.layout-scrab .pos-b { left: calc(var(--clx) + var(--miw) * 0.658015 + 32px); top: calc(var(--moy) + var(--mih) * 0.331959 + 16px); width: calc(var(--miw) * 0.341985); height: calc(var(--mih) * 0.331959); }
@@ -3155,6 +3250,7 @@
 <div class="switchbar">
   <div class="swgroup">
     <div class="swhead">In play</div>
+    <label class="ctl"><span>Hero subtitle</span><select id="subsel"></select></label>
     <label class="ctl"><span>Viewer</span><select id="sel-viewer"></select></label>
     <label class="ctl"><span>Persona name</span><select id="sel-pname"></select></label>
     <label class="ctl"><span>Daily status</span><select id="sel-dstatus"></select></label>
@@ -3195,7 +3291,6 @@
       <label class="ctl"><span>Category nav</span><select id="sel-cnav"></select></label>
       <label class="ctl"><span>Category copy</span><select id="sel-ccopy"></select></label>
       <label class="ctl"><span>Hero title</span><select id="titlesel"></select></label>
-      <label class="ctl"><span>Hero subtitle</span><select id="subsel"></select></label>
       <label class="ctl"><span>Footer</span><select id="sel-footer"></select></label>
       <label class="ctl"><span>Ad rail</span><select id="sel-rail"></select></label>
       <label class="ctl"><span>Live stats</span><select id="sel-stats"></select></label>
@@ -3334,7 +3429,7 @@
 
   <div class="heroarea">
     <h3 id="herotitle">Play card games in good company</h3>
-    <p id="herosub">Classic card games. Join a table or play solo. Free to play, hard to stop.</p>
+    <p id="herosub">Join a table or play our robots. Settle in, unwind<br>and make friends. Free to play, hard to stop.</p>
     <div class="stats statsBrief">
       <span class="st"><span class="ldot"></span><b class="odo" id="st-players2" data-v="1214"></b> players online</span>
       <span class="sep">·</span>
@@ -3405,67 +3500,108 @@
   /* ── the open-table tile (open-tables-lab c27, "bare essentials"): the whole tile is the 4:3 felt.
      The seats are the way in, so there is no white bottom and no button. Top left the game's own tile
      art, bottom left the time with a small ring, bottom right a white mark for ranked or private. ── */
-  #openTablesTop .ltCard { background-color: #327333; }
-  #openTablesTop .ltCard:hover { background-color: #327333; }
-  #openTablesTop .ltCard .tableListing { padding-top: 75%; }
-  #openTablesTop .ltCard .tableListing .header { padding-top: 0; inset: 0; }
-  #openTablesTop .ltCard .tableListing .header::before,
-  #openTablesTop .ltCard .tableListing .header::after { border-radius: 20px; }
-  /* a 3 seat felt puts its two players where a 4 seat table's left and right seats sit, so the top row stays free for the art */
-  #openTablesTop .players3 .playersContainer > .verticalSpacer:nth-child(1) { height: 33.3%; }
-  #openTablesTop .players3 .playersContainer > .verticalSpacer:nth-child(5),
-  #openTablesTop .players3 .playersContainer > .verticalSpacer:nth-child(9) { height: 0; }
+  /* The section is a column flex with an 8px gap. When the divider draws the section title, the head
+     is left with nothing in it, but it is still a flex item and still takes that gap, so the tiles sat
+     8px lower than the 48px of clear space above the line. Keyed off the divider actually being in the
+     section, so it follows whichever divider style is chosen rather than naming them. */
+  #openTablesTop:has(> .divhead) .lobbyhead { display: none; }
 
-  /* the game's own tile art, top left; a few games get more height so their lettering reads the same */
-  #openTablesTop .ltArt { position: absolute; z-index: 3; top: 0; left: -2px; display: block; height: 44px; width: auto;
+  :is(#openTablesTop, #lobbyLiveTables) .ltCard { background-color: #327333; }
+  :is(#openTablesTop, #lobbyLiveTables) .ltCard:hover { background-color: #327333; }
+  :is(#openTablesTop, #lobbyLiveTables) .ltCard .tableListing { padding-top: 75%; }
+  :is(#openTablesTop, #lobbyLiveTables) .ltCard .tableListing .header { padding-top: 0; inset: 0; }
+  :is(#openTablesTop, #lobbyLiveTables) .ltCard .tableListing .header::before,
+  :is(#openTablesTop, #lobbyLiveTables) .ltCard .tableListing .header::after { border-radius: 20px; }
+  /* a 3 seat felt puts its two players where a 4 seat table's left and right seats sit, so the top row stays free for the art */
+  :is(#openTablesTop, #lobbyLiveTables) .players3 .playersContainer > .verticalSpacer:nth-child(1) { height: 33.3%; }
+  :is(#openTablesTop, #lobbyLiveTables) .players3 .playersContainer > .verticalSpacer:nth-child(5),
+  :is(#openTablesTop, #lobbyLiveTables) .players3 .playersContainer > .verticalSpacer:nth-child(9) { height: 0; }
+
+  /* the game's own tile art, top left, on the open tiles and the live ones; a few games get more height so their lettering reads the same */
+  :is(:is(#openTablesTop, #lobbyLiveTables), #liveTablesTop) .ltArt { position: absolute; z-index: 3; top: 0; left: -2px; display: block; height: 44px; width: auto;
     max-width: 26%; object-fit: contain; filter: drop-shadow(0 1px 2px rgba(0,0,0,.45)); }
-  #openTablesTop .ltArt.art-ginrummy { height: 62px; }
-  #openTablesTop .ltArt.art-pinochle, #openTablesTop .ltArt.art-canasta { height: 48px; }
+  :is(:is(#openTablesTop, #lobbyLiveTables), #liveTablesTop) .ltArt.art-ginrummy { height: 62px; }
+  :is(:is(#openTablesTop, #lobbyLiveTables), #liveTablesTop) .ltArt.art-pinochle, :is(:is(#openTablesTop, #lobbyLiveTables), #liveTablesTop) .ltArt.art-canasta { height: 48px; }
 
   /* the ghost text recipe from the game tiles' playing count: bold white with a soft outline, no plate */
-  #openTablesTop .ltTime { position: absolute; z-index: 3; left: 0; bottom: 0; display: inline-flex; align-items: center; gap: 5px;
+  :is(#openTablesTop, #lobbyLiveTables) .ltTime { position: absolute; z-index: 3; left: 0; bottom: 0; display: inline-flex; align-items: center; gap: 5px;
     height: 20px; line-height: 20px; font-size: 14px; font-weight: bold; color: #fff; white-space: nowrap; max-width: 30%;
     font-variant-numeric: tabular-nums;
     text-shadow: -1px -1px 0 rgba(0,0,0,.32), 1px -1px 0 rgba(0,0,0,.32), -1px 1px 0 rgba(0,0,0,.32), 1px 1px 0 rgba(0,0,0,.32); }
-  #openTablesTop .ltCard.isNew .ltTime { max-width: 60%; }
-  #openTablesTop .ltTime svg { flex: none; width: 9.5px; height: 9.5px; position: relative; top: -.5px;
+  :is(#openTablesTop, #lobbyLiveTables) .ltCard.isNew .ltTime { max-width: 60%; }
+  :is(#openTablesTop, #lobbyLiveTables) .ltTime svg { flex: none; width: 9.5px; height: 9.5px; position: relative; top: -.5px;
     filter: drop-shadow(0 0 1px rgba(0,0,0,.55)) drop-shadow(0 1px 1px rgba(0,0,0,.25)); }
 
+  /* Hovering a tile trades the clock for the invitation. The invitation lives in the clock's OWN
+     parent and carries the clock's box, so the two share one slot exactly; a layer pinned to .header
+     would sit 12px low, because .playersContainer is inset inside it. No max-width: a time needs one
+     and an invitation does not. Neither may carry a transition, because the hand over runs on the Web
+     Animations API and a transition would fight it whenever one is cancelled on reversal. */
+  :is(#openTablesTop, #lobbyLiveTables) .hvClock { position: absolute; z-index: 3; left: 0; bottom: 0;
+    display: inline-flex; align-items: center; height: 20px; line-height: 20px;
+    font-size: 14px; font-weight: bold; color: #fff; white-space: nowrap; opacity: 0;
+    pointer-events: none;
+    text-shadow: -1px -1px 0 rgba(0,0,0,.32), 1px -1px 0 rgba(0,0,0,.32),
+                 -1px 1px 0 rgba(0,0,0,.32), 1px 1px 0 rgba(0,0,0,.32); }
+  :is(#openTablesTop, #lobbyLiveTables) .ltTime, :is(#openTablesTop, #lobbyLiveTables) .hvClock { transition: none !important; }
+
+  /* the options gear, top right, on your own table only. It sits in the one corner every tile
+     leaves empty, and away from the marks, so a row of status marks never looks clickable. */
+  /* The glyph is 16px, under the 18px marks, so the control sits quieter than the facts. The button
+     box stays 24px and centres it, so the glyph still lands flush in the corner but the hit target is
+     bigger than the thing you can see. */
+  :is(#openTablesTop, #lobbyLiveTables) .ltGear { position: absolute; z-index: 4; right: -4px; top: -4px; width: 24px; height: 24px;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0; border: 0; background: none; cursor: pointer; opacity: .88;
+    filter: drop-shadow(0 0 1px rgba(0,0,0,.6)) drop-shadow(0 1px 1px rgba(0,0,0,.3));
+    transition: opacity 140ms linear, transform 180ms cubic-bezier(.22,1,.36,1); }
+  :is(#openTablesTop, #lobbyLiveTables) .ltGear:hover { opacity: 1; transform: rotate(35deg); }
+  :is(#openTablesTop, #lobbyLiveTables) .ltGear svg { display: block; width: 16px; height: 16px; }
+  /* the host tile has no clock to show, so the slot carries what it IS rather than how far along */
+  /* the plus is 1.5px wider than the clock's ring, which pushed "New table" right of every other
+     tile's label; the slot is pulled back so the label starts left of them instead */
+  :is(#openTablesTop, #lobbyLiveTables) .ltCard.isNew .ltTime { left: -2px; gap: 4px; }
+  :is(#openTablesTop, #lobbyLiveTables) .ltCard.isNew .ltPlus { flex: none; width: 11px; height: 11px; position: relative; top: 1.5px;
+    filter: drop-shadow(0 0 1px rgba(0,0,0,.55)) drop-shadow(0 1px 1px rgba(0,0,0,.25)); }
+  /* On a team game the seat you take decides which side you are on, so those seats behave exactly
+     as an open table's do. On a solo-scored game one empty chair is the same as another, so nothing
+     there is a target. */
+  :is(#openTablesTop, #lobbyLiveTables) .ltCard.isNew .tableListing:not(.isTeamGame) .player { cursor: default; }
+
   /* the marks: white, bottom right, with the same soft outline */
-  #openTablesTop .ltMarks { position: absolute; z-index: 3; right: 0; bottom: 1px; display: inline-flex; align-items: center; gap: 6px; }
-  #openTablesTop .ltMark { display: block; width: 18px; height: 18px;
+  :is(:is(#openTablesTop, #lobbyLiveTables), #liveTablesTop) .ltMarks { position: absolute; z-index: 3; right: 0; bottom: 1px; display: inline-flex; align-items: center; gap: 6px; }
+  :is(:is(#openTablesTop, #lobbyLiveTables), #liveTablesTop) .ltMark { display: block; width: 18px; height: 18px;
     filter: drop-shadow(0 0 1px rgba(0,0,0,.6)) drop-shadow(0 1px 1px rgba(0,0,0,.3)); }
 
   /* the finish badge, as the production listing draws it: the green badge from 70% with ten finished games, gold at 100% */
-  #openTablesTop .completionBadge { display: flex; align-items: center; justify-content: center; width: 20px; height: 20px;
+  :is(#openTablesTop, #lobbyLiveTables) .completionBadge { display: flex; align-items: center; justify-content: center; width: 20px; height: 20px;
     position: absolute; right: -10px; top: -10px; background: url("cleanMeldBadge.png") no-repeat center / 20px 20px;
     color: #4F800B; font-size: 12px; font-weight: 900; letter-spacing: -1px; padding-right: 1px; padding-top: 1px; }
-  #openTablesTop .completionBadge.is100 { background-image: url("highReputationBadge.png"); }
+  :is(#openTablesTop, #lobbyLiveTables) .completionBadge.is100 { background-image: url("highReputationBadge.png"); }
 
-  /* the section is live: seats fill and empty, and a table that stops being listed is replaced in its
-     own slot, so nothing in the grid ever moves */
-  #openTablesTop .ltCard.ltLeave { pointer-events: none; }
-  /* the arriving face sits over the leaving one exactly as the hover preview does */
-  #openTablesTop .player img.ltGhost { position: absolute; left: 50%; top: 0; z-index: 1; pointer-events: none; }
-  /* while a tile is soft, the avatars drop their SVG edge filter: re-rastering forty filtered faces under a
-     blur every frame is what made the change stutter, and under six pixels of blur the edge cannot be seen */
-  #openTablesTop .ltCard.ltBusy { will-change: filter; }
-  #openTablesTop .ltCard.ltBusy .player img, #openTablesTop .ltCard.ltBusy .ltArt { filter: none; }
-  #openTablesTop .ltCard.ltBusy .playerNameContainer { box-shadow: none; }
-  /* the plate rolls its name the way it rolls to Join on hover */
-  #openTablesTop .ltRoll { position: absolute; inset: 0; overflow: hidden; border-radius: inherit; corner-shape: inherit; }
-  #openTablesTop .ltRoll .playerName { position: absolute; inset: 0; padding: 0; }
-  #openTablesTop .ltTime span.ltTick { animation: ltTick .3s ease both; }
+  /* The section is live: seats fill and empty, and a table that stops being listed is replaced WITHOUT
+     the tile moving at all. The felt stays exactly where it is and only what sits on it changes, so
+     nothing in the grid can shift and there is no blur on the tile to pay for. */
+  :is(#openTablesTop, #lobbyLiveTables) .ltTime span.ltTick { animation: ltTick .3s ease both; }
   @keyframes ltTick { 0% { opacity: 0; } 100% { opacity: 1; } }
 
   /* the placeholder is an ordinary waiting table with every seat empty: sitting hosts it */
-  #openTablesTop .ltCard.isNew { cursor: pointer; }
+  :is(#openTablesTop, #lobbyLiveTables) .ltCard.isNew { cursor: pointer; }
 </style>
   <div class="lobbyscope" id="openTablesTop">
-    <div class="lobbyhead"><span class="pophead">Open tables</span><div class="lhctrls"><div class="ltFilterBox"><div class="ldMore"><span class="dropupButton"><span class="dropupButtonText">All games</span></span><ul class="dropupContent"><li>All games</li><li>Hearts</li><li>Spades</li><li>Euchre</li><li>Canasta</li></ul></div></div><button class="button green small ltSeeAll">See all</button></div></div>
+    <div class="lobbyhead"><span class="pophead">Open tables</span></div>
     <div class="lobbyTablesPanel" id="lobbyTablesPanel">
-      <div class="ltGrid"><div class="ltCard"><div class="tableListing hearts players4"><div class="header"><div class="playersContainer"><div class="spacer30"></div><div class="player playernumber1"><img width="32" height="32" src="AnimalGopher.svg" alt=""><div class="playerNameContainer"><p class="playerName">Marge</p><span class="completionBadge">97</span></div></div><div class="spacer30"></div><div class="player playernumber0 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty seat</p></div></div><div class="spacer20"></div><div class="player playernumber2"><img width="32" height="32" src="AnimalDragon.svg" alt=""><div class="playerNameContainer"><p class="playerName">carl52</p><span class="completionBadge">91</span></div></div><div class="spacer30"></div><div class="player playernumber3 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty seat</p></div></div><div class="spacer30"></div><img class="ltArt art-hearts" src="hearts_logo.png" alt="Hearts" data-tip="<b>Hearts</b><br>Ends at 100"><div class="ltTime" data-tip="Not started yet &middot; waiting for players"><svg class="ltRing" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="#fff" stroke-width="2"/></svg><span>0 min</span></div></div></div></div></div><div class="ltCard"><div class="tableListing spades players4"><div class="header"><div class="playersContainer"><div class="spacer30"></div><div class="player playernumber1"><img width="32" height="32" src="AnimalChicken.svg" alt=""><div class="playerNameContainer"><p class="playerName">Vera</p><span class="completionBadge">99</span></div></div><div class="spacer30"></div><div class="player playernumber0 playedTogether"><img width="32" height="32" src="AnimalCat.svg" alt=""><div class="playerNameContainer"><p class="playerName">Duckling</p><span class="playerBadge isLiked"></span><span class="completionBadge">96</span></div></div><div class="spacer20"></div><div class="player playernumber2 isBot seatAvailable"><img width="32" height="32" src="AlienMartian.svg" alt=""><div class="playerNameContainer"><p class="playerName">Bot Ada</p><span class="playerBadge isBot"></span></div></div><div class="spacer30"></div><div class="player playernumber3"><img width="32" height="32" src="AnimalBeaver.svg" alt=""><div class="playerNameContainer"><p class="playerName">Hank</p><span class="completionBadge">80</span></div></div><div class="spacer30"></div><img class="ltArt art-spades" src="spades_logo.png" alt="Spades" data-tip="<b>Spades</b><br>You take Bot Ada&rsquo;s hand and score<br>Plays to 500"><div class="ltTime" data-tip="In play for 12 min"><svg class="ltRing" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="#fff" stroke-width="2"/><path d="M8 8V1A7 7 0 0 1 15 8z" fill="#fff"/></svg><span>12 min</span></div></div></div></div></div><div class="ltCard isFriend"><div class="tableListing euchre players4"><div class="header"><div class="playersContainer"><div class="spacer30"></div><div class="player playernumber1 playedTogether"><img width="32" height="32" src="AnimalFox.svg" alt=""><div class="playerNameContainer"><p class="playerName">BobK</p><span class="playerBadge isLiked"></span><span class="completionBadge is100"></span></div></div><div class="spacer30"></div><div class="player playernumber0 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty seat</p></div></div><div class="spacer20"></div><div class="player playernumber2 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty seat</p></div></div><div class="spacer30"></div><div class="player playernumber3 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty seat</p></div></div><div class="spacer30"></div><img class="ltArt art-euchre" src="euchre_logo.png" alt="Euchre" data-tip="<b>Euchre</b><br>Dealer may pass<br>No bots<br>Plays to 10"><div class="ltTime" data-tip="Not started yet &middot; waiting for players"><svg class="ltRing" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="#fff" stroke-width="2"/></svg><span>0 min</span></div><div class="ltMarks"><svg class="ltMark" viewBox="0 0 18 18" aria-hidden="true"><rect x="3.5" y="8" width="11" height="8" rx="2" fill="#fff"/><path d="M6 8V5.8a3 3 0 0 1 6 0V8" fill="none" stroke="#fff" stroke-width="2"/><circle cx="9" cy="12" r="1.3" fill="#327333"/></svg></div></div></div></div></div><div class="ltCard"><div class="tableListing pinochle players4"><div class="header"><div class="playersContainer"><div class="spacer30"></div><div class="player playernumber1"><img width="32" height="32" src="AnimalButterfly.svg" alt=""><div class="playerNameContainer"><p class="playerName">wendy_h</p><span class="completionBadge">93</span></div></div><div class="spacer30"></div><div class="player playernumber0"><img width="32" height="32" src="AnimalCow.svg" alt=""><div class="playerNameContainer"><p class="playerName">PragueJoe</p><span class="completionBadge">98</span></div></div><div class="spacer20"></div><div class="player playernumber2"><img width="32" height="32" src="AnimalBeaver.svg" alt=""><div class="playerNameContainer"><p class="playerName">north4th</p><span class="completionBadge">88</span></div></div><div class="spacer30"></div><div class="player playernumber3 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty seat</p></div></div><div class="spacer30"></div><img class="ltArt art-pinochle" src="pinochle_logo.png" alt="Pinochle" data-tip="<b>Pinochle</b><br>Plays to 150"><div class="ltTime" data-tip="Not started yet &middot; one seat left, the deal starts when you sit"><svg class="ltRing" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="#fff" stroke-width="2"/></svg><span>0 min</span></div><div class="ltMarks"><svg class="ltMark" viewBox="0 0 18 18" aria-hidden="true"><path d="M2.6 14.2 2 6.4c0-.5.6-.8 1-.5l3.1 2.6c.3.2.7.1.9-.2L8.5 4c.2-.4.8-.4 1 0l1.5 4.3c.2.3.6.4.9.2L15 5.9c.4-.3 1 0 1 .5l-.6 7.8c0 .4-.4.7-.8.7H3.4c-.4 0-.8-.3-.8-.7z" fill="#fff"/></svg></div></div></div></div></div><div class="ltCard"><div class="tableListing rummy players4"><div class="header"><div class="playersContainer"><div class="spacer30"></div><div class="player playernumber1"><img width="32" height="32" src="AlienBlue.svg" alt=""><div class="playerNameContainer"><p class="playerName">cardShark52</p><span class="completionBadge">99</span></div></div><div class="spacer30"></div><div class="player playernumber0"><img width="32" height="32" src="AnimalBee.svg" alt=""><div class="playerNameContainer"><p class="playerName">mollyb</p><span class="completionBadge is100"></span></div></div><div class="spacer20"></div><div class="player playernumber2 isBot seatAvailable"><img width="32" height="32" src="AlienMartian.svg" alt=""><div class="playerNameContainer"><p class="playerName">Robot 2</p><span class="playerBadge isBot"></span></div></div><div class="spacer30"></div><div class="player playernumber3 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty seat</p></div></div><div class="spacer30"></div><img class="ltArt art-rummy" src="rummy_logo.png" alt="Rummy" data-tip="<b>Rummy</b><br>You take Robot 2&rsquo;s hand and score<br>Plays to 500"><div class="ltTime" data-tip="In play for 10 min &middot; a player left, you take their hand and score"><svg class="ltRing" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="#fff" stroke-width="2"/><path d="M8 8V1A7 7 0 0 1 15 8z" fill="#fff"/></svg><span>10 min</span></div></div></div></div></div><div class="ltCard isNew"><div class="tableListing canasta players4"><div class="header"><div class="playersContainer"><div class="spacer30"></div><div class="player playernumber1 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty seat</p></div></div><div class="spacer30"></div><div class="player playernumber0 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty seat</p></div></div><div class="spacer20"></div><div class="player playernumber2 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty seat</p></div></div><div class="spacer30"></div><div class="player playernumber3 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty seat</p></div></div><div class="spacer30"></div><img class="ltArt art-canasta" src="canasta_logo.png" alt="Canasta" data-tip="<b>Canasta</b><br>Your rules &middot; bots may fill empty seats"><div class="ltTime" data-tip="Sit at any seat to host a table with your rules"><svg class="ltRing" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="#fff" stroke-width="2"/></svg><span>Sit to host</span></div></div></div></div></div></div>
+      <div class="ltGrid"><div class="ltCard"><div class="tableListing hearts players4"><div class="header"><div class="playersContainer"><div class="spacer30"></div><div class="player playernumber1"><img width="32" height="32" src="WomanGirl2.svg" alt=""><div class="playerNameContainer"><p class="playerName">Marge</p><span class="completionBadge">97</span></div></div><div class="spacer30"></div><div class="player playernumber0 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty</p></div></div><div class="spacer20"></div><div class="player playernumber2"><img width="32" height="32" src="ManMan3.svg" alt=""><div class="playerNameContainer"><p class="playerName">carl52</p><span class="completionBadge">91</span></div></div><div class="spacer30"></div><div class="player playernumber3 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty</p></div></div><div class="spacer30"></div><img class="ltArt art-hearts" src="hearts_logo@2x.png" alt="Hearts" data-tip="<b>Hearts</b><br>Ends at 100"><div class="ltTime" data-tip="Not started yet &middot; waiting for players"><svg class="ltRing" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="#fff" stroke-width="2"/></svg><span>0 min</span></div><div class="ltMarks"><svg class="ltMark" viewBox="0 0 18 18" aria-hidden="true" data-tip="Tournament rules"><path d="M9 3.4v11.2M4.15 6.2l9.7 5.6M13.85 6.2l-9.7 5.6" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg></div></div></div></div></div><div class="ltCard"><div class="tableListing spades isTeamGame players4"><div class="header"><div class="playersContainer"><div class="spacer30"></div><div class="player playernumber1"><img width="32" height="32" src="WomanScientist.svg" alt=""><div class="playerNameContainer"><p class="playerName">Vera</p><span class="completionBadge">99</span></div></div><div class="spacer30"></div><div class="player playernumber0 playedTogether"><img width="32" height="32" src="AnimalCat.svg" alt=""><div class="playerNameContainer"><p class="playerName">Duckling</p><span class="playerBadge isLiked"></span><span class="completionBadge">96</span></div></div><div class="spacer20"></div><div class="player playernumber2 isBot seatAvailable"><img width="32" height="32" src="AlienMartian.svg" alt=""><div class="playerNameContainer"><p class="playerName">Bot Ada</p><span class="playerBadge isBot"></span></div></div><div class="spacer30"></div><div class="player playernumber3"><img width="32" height="32" src="AnimalBeaver.svg" alt=""><div class="playerNameContainer"><p class="playerName">Hank</p><span class="completionBadge">80</span></div></div><div class="spacer30"></div><img class="ltArt art-spades" src="spades_logo@2x.png" alt="Spades" data-tip="<b>Spades</b><br>You take Bot Ada&rsquo;s hand and score<br>Plays to 500"><div class="ltTime" data-tip="In play for 12 min"><svg class="ltRing" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="#fff" stroke-width="2"/><path d="M8 8V1A7 7 0 0 1 15 8z" fill="#fff"/></svg><span>12 min</span></div></div></div></div></div><div class="ltCard isFriend"><div class="tableListing euchre isTeamGame players4"><div class="header"><div class="playersContainer"><div class="spacer30"></div><div class="player playernumber1 playedTogether"><img width="32" height="32" src="ManCowboy.svg" alt=""><div class="playerNameContainer"><p class="playerName">BobK</p><span class="playerBadge isLiked"></span><span class="completionBadge is100"></span></div></div><div class="spacer30"></div><div class="player playernumber0 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty</p></div></div><div class="spacer20"></div><div class="player playernumber2 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty</p></div></div><div class="spacer30"></div><div class="player playernumber3 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty</p></div></div><div class="spacer30"></div><img class="ltArt art-euchre" src="euchre_logo@2x.png" alt="Euchre" data-tip="<b>Euchre</b><br>Dealer may pass<br>No bots<br>Plays to 10"><div class="ltTime" data-tip="Not started yet &middot; waiting for players"><svg class="ltRing" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="#fff" stroke-width="2"/></svg><span>0 min</span></div><div class="ltMarks"><svg class="ltMark" viewBox="0 0 18 18" aria-hidden="true" data-tip="No bots &middot; people only"><circle cx="9" cy="5.9" r="2.9" fill="#fff"/><path d="M3.2 15.6c0-3.2 2.6-4.9 5.8-4.9s5.8 1.7 5.8 4.9z" fill="#fff"/></svg><svg class="ltMark" viewBox="0 0 18 18" aria-hidden="true" data-tip="Private table"><rect x="3.5" y="8" width="11" height="8" rx="2" fill="#fff"/><path d="M6 8V5.8a3 3 0 0 1 6 0V8" fill="none" stroke="#fff" stroke-width="2"/><circle cx="9" cy="12" r="1.3" fill="#327333"/></svg></div></div></div></div></div><div class="ltCard"><div class="tableListing pinochle isTeamGame players4"><div class="header"><div class="playersContainer"><div class="spacer30"></div><div class="player playernumber1"><img width="32" height="32" src="WomanBusinesswoman.svg" alt=""><div class="playerNameContainer"><p class="playerName">wendy_h</p><span class="completionBadge">93</span></div></div><div class="spacer30"></div><div class="player playernumber0"><img width="32" height="32" src="AnimalCow.svg" alt=""><div class="playerNameContainer"><p class="playerName">PragueJoe</p><span class="completionBadge">98</span></div></div><div class="spacer20"></div><div class="player playernumber2"><img width="32" height="32" src="ManGeek2.svg" alt=""><div class="playerNameContainer"><p class="playerName">north4th</p><span class="completionBadge">88</span></div></div><div class="spacer30"></div><div class="player playernumber3 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty</p></div></div><div class="spacer30"></div><img class="ltArt art-pinochle" src="pinochle_logo@2x.png" alt="Pinochle" data-tip="<b>Pinochle</b><br>Plays to 150"><div class="ltTime" data-tip="Not started yet &middot; one seat left, the deal starts when you sit"><svg class="ltRing" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="#fff" stroke-width="2"/></svg><span>0 min</span></div><div class="ltMarks"><svg class="ltMark" viewBox="0 0 18 18" aria-hidden="true" data-tip="Ranked table"><path d="M2.6 14.2 2 6.4c0-.5.6-.8 1-.5l3.1 2.6c.3.2.7.1.9-.2L8.5 4c.2-.4.8-.4 1 0l1.5 4.3c.2.3.6.4.9.2L15 5.9c.4-.3 1 0 1 .5l-.6 7.8c0 .4-.4.7-.8.7H3.4c-.4 0-.8-.3-.8-.7z" fill="#fff"/></svg></div></div></div></div></div><div class="ltCard"><div class="tableListing rummy players4"><div class="header"><div class="playersContainer"><div class="spacer30"></div><div class="player playernumber1"><img width="32" height="32" src="AlienBlue.svg" alt=""><div class="playerNameContainer"><p class="playerName">cardShark52</p><span class="completionBadge">99</span></div></div><div class="spacer30"></div><div class="player playernumber0"><img width="32" height="32" src="WomanCowgirl.svg" alt=""><div class="playerNameContainer"><p class="playerName">mollyb</p><span class="completionBadge is100"></span></div></div><div class="spacer20"></div><div class="player playernumber2 isBot seatAvailable"><img width="32" height="32" src="AlienMartian.svg" alt=""><div class="playerNameContainer"><p class="playerName">Robot 2</p><span class="playerBadge isBot"></span></div></div><div class="spacer30"></div><div class="player playernumber3 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty</p></div></div><div class="spacer30"></div><img class="ltArt art-rummy" src="rummy_logo@2x.png" alt="Rummy" data-tip="<b>Rummy</b><br>You take Robot 2&rsquo;s hand and score<br>Plays to 500"><div class="ltTime" data-tip="In play for 10 min &middot; a player left, you take their hand and score"><svg class="ltRing" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="#fff" stroke-width="2"/><path d="M8 8V1A7 7 0 0 1 15 8z" fill="#fff"/></svg><span>10 min</span></div></div></div></div></div><div class="ltCard isNew"><div class="tableListing canasta isTeamGame players4"><div class="header"><div class="playersContainer"><div class="spacer30"></div><div class="player playernumber1 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty</p></div></div><div class="spacer30"></div><div class="player playernumber0 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty</p></div></div><div class="spacer20"></div><div class="player playernumber2 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty</p></div></div><div class="spacer30"></div><div class="player playernumber3 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty</p></div></div><div class="spacer30"></div><img class="ltArt art-canasta" src="canasta_logo@2x.png" alt="Canasta" data-tip="<b>Canasta</b><br>Your table &middot; plays to 5,000"><div class="ltTime" data-tip="Nobody here yet &middot; click to deal a table of your own"><span class="ltPlusWrap"><svg class="ltPlus" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.2v11.6M2.2 8h11.6" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/></svg></span><span>New table</span></div><div class="ltMarks"><svg class="ltMark" viewBox="0 0 18 18" aria-hidden="true" data-tip="Ranked table"><path d="M2.6 14.2 2 6.4c0-.5.6-.8 1-.5l3.1 2.6c.3.2.7.1.9-.2L8.5 4c.2-.4.8-.4 1 0l1.5 4.3c.2.3.6.4.9.2L15 5.9c.4-.3 1 0 1 .5l-.6 7.8c0 .4-.4.7-.8.7H3.4c-.4 0-.8-.3-.8-.7z" fill="#fff"/></svg><svg class="ltMark" viewBox="0 0 18 18" aria-hidden="true" data-tip="No bots &middot; people only"><circle cx="9" cy="5.9" r="2.9" fill="#fff"/><path d="M3.2 15.6c0-3.2 2.6-4.9 5.8-4.9s5.8 1.7 5.8 4.9z" fill="#fff"/></svg></div><button type="button" class="ltGear" data-tip="Change what this table is" aria-label="Table options"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M15.1 9.9c.03-.3.05-.6.05-.9s-.02-.6-.06-.9l1.44-1.1a.35.35 0 0 0 .08-.44l-1.36-2.36a.34.34 0 0 0-.42-.15l-1.7.68a5 5 0 0 0-1.55-.9l-.26-1.8a.34.34 0 0 0-.34-.29H8.02a.34.34 0 0 0-.34.29l-.26 1.8c-.56.23-1.08.54-1.55.9l-1.7-.68a.34.34 0 0 0-.42.15L2.39 6.56a.34.34 0 0 0 .08.44l1.44 1.1c-.04.3-.07.6-.07.9s.02.6.06.9l-1.43 1.1a.34.34 0 0 0-.08.44l1.36 2.36c.08.15.26.2.42.15l1.7-.68c.47.36.98.67 1.55.9l.26 1.8c.03.17.17.29.34.29h2.72c.17 0 .31-.12.34-.29l.26-1.8c.56-.23 1.08-.54 1.55-.9l1.7.68c.16.06.34 0 .42-.15l1.36-2.36a.34.34 0 0 0-.08-.44zM9 11.9A2.9 2.9 0 1 1 9 6.1a2.9 2.9 0 0 1 0 5.8z" fill="#fff"/></svg></button></div></div></div></div></div>
       
+    </div>
+  </div>
+
+  <div class="lobbyscope" id="liveTablesTop">
+    <div class="lobbyhead"><span class="pophead">Live tables</span></div>
+    <div class="lobbyLiveTables" id="lobbyLiveTables">
+      <div class="lsBody">
+        <div class="llRow"><div data-hand="3" class="llCard ltCard isFriend"><div class="tableListing handfoot isTeamGame"><div class="header"><div class="playersContainer"><div class="spacer30"></div><div class="player playernumber1"><img width="32" height="32" src="AnimalBee.svg" alt=""><div class="playerNameContainer"><p class="playerName">GinTonic</p></div></div><div class="spacer30"></div><div class="player playernumber0"><img width="32" height="32" src="AnimalCat.svg" alt=""><div class="playerNameContainer"><p class="playerName">Carol</p><span class="playerBadge isLiked"></span></div></div><div class="spacer20"></div><div class="player playernumber2"><img width="32" height="32" src="AnimalCow.svg" alt=""><div class="playerNameContainer"><p class="playerName">Marta</p></div></div><div class="spacer30"></div><div class="player playernumber3"><img width="32" height="32" src="AlienBlue.svg" alt=""><div class="playerNameContainer"><p class="playerName">cardShark52</p></div></div><div class="spacer30"></div><img class="ltArt art-handfoot" src="handfoot_logo@2x.png" alt="Hand &amp; Foot" data-tip="<b>Hand &amp; Foot</b><br>Four hands, then the highest score wins"></div></div><div class="content"><div class="contentTop"><span class="tableNumber"><span class="llGame">Carol&rsquo;s table &middot; Hand &amp; Foot</span></span><span class="tableAge">hand 3 of 4</span></div></div></div><div class="llBtns"><button class="button small blue llWatch">Watch</button></div></div><div data-score="78" class="llCard ltCard"><div class="tableListing hearts"><div class="header"><div class="playersContainer"><div class="spacer30"></div><div class="player playernumber1"><img width="32" height="32" src="AnimalButterfly.svg" alt=""><div class="playerNameContainer"><p class="playerName">Rosie</p></div></div><div class="spacer30"></div><div class="player playernumber0"><img width="32" height="32" src="AnimalDragon.svg" alt=""><div class="playerNameContainer"><p class="playerName">HeartsAce</p></div></div><div class="spacer20"></div><div class="player playernumber2"><img width="32" height="32" src="AnimalBird.svg" alt=""><div class="playerNameContainer"><p class="playerName">Guest #4821</p></div></div><div class="spacer30"></div><div class="player playernumber3"><img width="32" height="32" src="AnimalGopher.svg" alt=""><div class="playerNameContainer"><p class="playerName">moonshot</p></div></div><div class="spacer30"></div><img class="ltArt art-hearts" src="hearts_logo@2x.png" alt="Hearts" data-tip="<b>Hearts</b><br>Ends at 100"><div class="ltMarks"><svg class="ltMark" viewBox="0 0 18 18" aria-hidden="true" data-tip="Ranked table"><path d="M2.6 14.2 2 6.4c0-.5.6-.8 1-.5l3.1 2.6c.3.2.7.1.9-.2L8.5 4c.2-.4.8-.4 1 0l1.5 4.3c.2.3.6.4.9.2L15 5.9c.4-.3 1 0 1 .5l-.6 7.8c0 .4-.4.7-.8.7H3.4c-.4 0-.8-.3-.8-.7z" fill="#fff"/></svg><svg class="ltMark" viewBox="0 0 18 18" aria-hidden="true" data-tip="Tournament rules"><path d="M9 3.4v11.2M4.15 6.2l9.7 5.6M13.85 6.2l-9.7 5.6" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg></div></div></div><div class="content"><div class="contentTop"><span class="tableNumber"><span class="llGame">Hearts</span></span><span class="tableAge">hand 5 &middot; to 100</span></div></div></div><div class="llBtns"><button class="button small blue llWatch">Watch</button></div></div><div data-mins="34" class="llCard ltCard"><div class="tableListing bridge isTeamGame"><div class="header"><div class="playersContainer"><div class="spacer30"></div><div class="player playernumber1"><img width="32" height="32" src="AnimalChicken.svg" alt=""><div class="playerNameContainer"><p class="playerName">spadesfan</p></div></div><div class="spacer30"></div><div class="player playernumber0"><img width="32" height="32" src="AnimalCow.svg" alt=""><div class="playerNameContainer"><p class="playerName">BigDeal</p></div></div><div class="spacer20"></div><div class="player playernumber2 isBot"><img width="32" height="32" src="AlienMartian.svg" alt=""><div class="playerNameContainer"><p class="playerName">Robot 3</p><span class="playerBadge isBot"></span></div></div><div class="spacer30"></div><div class="player playernumber3"><img width="32" height="32" src="AnimalBeaver.svg" alt=""><div class="playerNameContainer"><p class="playerName">Hank</p></div></div><div class="spacer30"></div><img class="ltArt art-bridge" src="bridge_logo@2x.png" alt="Bridge" data-tip="<b>Bridge</b><br>Rubber scoring, no target"></div></div><div class="content"><div class="contentTop"><span class="tableNumber"><span class="llGame">Bridge</span></span><span class="tableAge">in play for 34 min</span></div></div></div><div class="llBtns"><button class="button small blue llWatch">Watch</button></div></div></div>
+      </div>
     </div>
   </div>
 
@@ -3593,13 +3729,6 @@
       </div>
       </div>
     
-    </div>
-
-    <div class="lobbyhead"><span class="pophead"><span class="llLiveDot"></span>Live tables</span></div>
-    <div class="lobbyLiveTables" id="lobbyLiveTables">
-      <div class="lsBody">
-        <div class="llRow"><div class="llCard isFriend"><div class="tableListing canasta isTeamGame"><div class="header"><div class="playersContainer"><div class="spacer30"></div><div class="player playernumber1"><img width="32" height="32" src="AnimalBee.svg" alt=""><div class="playerNameContainer"><p class="playerName">GinTonic</p></div></div><div class="spacer30"></div><div class="player playernumber0"><img width="32" height="32" src="AnimalCat.svg" alt=""><div class="playerNameContainer"><p class="playerName">Carol</p><span class="playerBadge isLiked"></span></div></div><div class="spacer20"></div><div class="player playernumber2"><img width="32" height="32" src="AnimalCow.svg" alt=""><div class="playerNameContainer"><p class="playerName">Marta</p></div></div><div class="spacer30"></div><div class="player playernumber3"><img width="32" height="32" src="AlienBlue.svg" alt=""><div class="playerNameContainer"><p class="playerName">cardShark52</p></div></div><div class="spacer30"></div></div></div><div class="content"><div class="contentTop"><span class="tableNumber"><span class="llGame">Carol&rsquo;s table &middot; Canasta</span></span><span class="tableAge">hand 3 &middot; to 5,000</span></div></div></div><div class="llBtns"><button class="button small blue llWatch">Watch</button><button class="button small lightblue llQueue">Join next game</button></div></div><div class="llCard"><div class="tableListing hearts"><div class="header"><div class="playersContainer"><div class="spacer30"></div><div class="player playernumber1"><img width="32" height="32" src="AnimalButterfly.svg" alt=""><div class="playerNameContainer"><p class="playerName">Rosie</p></div></div><div class="spacer30"></div><div class="player playernumber0"><img width="32" height="32" src="AnimalDragon.svg" alt=""><div class="playerNameContainer"><p class="playerName">HeartsAce</p></div></div><div class="spacer20"></div><div class="player playernumber2"><img width="32" height="32" src="AnimalBird.svg" alt=""><div class="playerNameContainer"><p class="playerName">Guest #4821</p></div></div><div class="spacer30"></div><div class="player playernumber3"><img width="32" height="32" src="AnimalGopher.svg" alt=""><div class="playerNameContainer"><p class="playerName">moonshot</p></div></div><div class="spacer30"></div></div></div><div class="content"><div class="contentTop"><span class="tableNumber"><span class="llGame">Hearts &middot; Ranked</span></span><span class="tableAge">hand 5 &middot; to 100</span></div></div></div><div class="llBtns"><button class="button small blue llWatch">Watch</button></div></div><div class="llCard"><div class="tableListing spades isTeamGame"><div class="header"><div class="playersContainer"><div class="spacer30"></div><div class="player playernumber1"><img width="32" height="32" src="AnimalChicken.svg" alt=""><div class="playerNameContainer"><p class="playerName">spadesfan</p></div></div><div class="spacer30"></div><div class="player playernumber0"><img width="32" height="32" src="AnimalCow.svg" alt=""><div class="playerNameContainer"><p class="playerName">BigDeal</p></div></div><div class="spacer20"></div><div class="player playernumber2 isBot"><img width="32" height="32" src="AlienMartian.svg" alt=""><div class="playerNameContainer"><p class="playerName">Robot 3</p><span class="playerBadge isBot"></span></div></div><div class="spacer30"></div><div class="player playernumber3"><img width="32" height="32" src="AnimalBeaver.svg" alt=""><div class="playerNameContainer"><p class="playerName">Hank</p></div></div><div class="spacer30"></div></div></div><div class="content"><div class="contentTop"><span class="tableNumber"><span class="llGame">Spades</span></span></div></div></div><div class="llBtns"><button class="button small blue llWatch">Watch</button><button class="button small lightblue llQueue">Join next game</button></div></div></div>
-      </div>
     </div>
   </div>
 
@@ -4007,10 +4136,10 @@
     ["brief", "One line: players & open tables"]
   ];
   var LHOVERS = [
-    ["suits", "Suit thread (default)"],
+    ["suits", "Suit thread"],
     ["wave", "The fine wave, wiping in (the old hover)"],
     ["line", "Just a line, same flow-in"],
-    ["lineplain", "Plain 2px underline, no animation"],
+    ["lineplain", "Plain 2px underline, no animation (default)"],
     ["dots", "Hero: glossary dots at rest; all links: plain underline on hover"]
   ];
   var DIVIDERS = [
@@ -4023,7 +4152,16 @@
     ["plainline", "Just the line, no suits anywhere"],
     ["deckmorse", "True deck morse — dotted line, suits on the beat (lab 83)"],
     ["bracelet", "Bracelet — the four suits clasped at center (lab 85)"],
-    ["fourstations", "Four stations between sections — long deal at the menu and the footer (default)"]
+    ["fourstations", "Four stations between sections — long deal at the menu and the footer"],
+    ["parted", "Head in the rule — the four stations parted evenly around it (title seam lab 108)"],
+    ["swelled", "Head in the rule — a swelled rule with the section's own suit either side (title seam lab 107)"],
+    ["toprow", "Head in the rule — the menu row's grid on every seam, pad 4 (title seam lab 111)"],
+    ["toprow14", "Head in the rule — the menu row's grid on every seam, pad 14 (title seam lab 110, 116)"],
+    ["toprowflush", "Head in the rule — the row re-pitched so its ends sit on the column's border, menu row and footer too (title seam lab 129)"],
+    ["toprowgap", "Head in the rule — the row re-pitched so the end suits' openings start at the column's border (title seam lab 131)"],
+    ["toprowends", "Head in the rule — 96px from each border inward, the remainder in the middle (title seam lab 132)"],
+    ["toprowindent", "Head in the rule — the row indented half a station, its ends 50px inside the column's border (title seam lab 133)"],
+    ["toprowcells", "Head in the rule — the window in equal cells, a suit centred in each, so the row starts half a pitch inside the window's edge (title seam lab 137, default)"]
   ];
   var RAILS = [
     ["dark", "Theater black, ruled"],
@@ -4122,7 +4260,7 @@
     ["ghostdot", "Ghost: still dot + naked number"],
     ["ghostnum", "Ghost: naked number only (big tile keeps its word)"]
   ];
-  var curShadow = "capsule", curEdge = "softlight", curTexture = "grainbal", curCatalog = "split", curStats = "capsule2", curMenu = "centerwave", curCounter = "ghostdot", curRail = "suitscool", curPlayBtn = "triogreen", curTileBg = "cardroomcusp", curPinPair = "violet", curSect = "waveband", curDivider = "fourstations", curLhover = "suits";
+  var curShadow = "capsule", curEdge = "softlight", curTexture = "grainbal", curCatalog = "split", curStats = "capsule2", curMenu = "centerwave", curCounter = "ghostdot", curRail = "suitscool", curPlayBtn = "triogreen", curTileBg = "cardroomcusp", curPinPair = "violet", curSect = "waveband", curDivider = "toprowcells", curLhover = "lineplain";
   var curTint = "l95ringeven";
   /* every CSS blend mode as an avatar-rim coat: one filter per mode is stamped
      into the SVG defs (same eroded rim, #737373 @ .9 ink, only feBlend's mode
@@ -4295,7 +4433,7 @@
     ["boldpatient", "Trick-taking for the bold, Rummy for the patient\u2026", "[tt]Trick-taking[/tt] for the bold, [ru]Rummy[/ru] for the patient &amp; [cl]the Classics[/cl] for everyone.|Join a table or play solo."],
     ["dealyouin", "Pick from Trick-taking, Rummy & Classic games. We\u2019ll deal you in.", "Pick from [tt]Trick-taking[/tt], [ru]Rummy[/ru] &amp; [cl]Classic games[/cl].|We\u2019ll deal you in."],
     ["tables", "Trick-taking, rummy or the classics. Join a table or play solo.", "[tt]Trick-taking[/tt], [ru]rummy[/ru] or [cl]the classics[/cl].|Join a table or play solo."],
-    ["hard", "Trick-taking, rummy or the classics. Free to play, hard to stop.", "[tt]Trick-taking[/tt], [ru]rummy[/ru] or [cl]the classics[/cl].|Free to play, hard to stop."],
+    ["hard", "Trick-taking, rummy or the classics.|Free to play, hard to stop.", "[tt]Trick-taking[/tt], [ru]rummy[/ru] or [cl]the classics[/cl]. Free to play, hard to stop."],
     ["seat", "Trick-taking, rummy or the classics. There\u2019s always a seat open.", "[tt]Trick-taking[/tt], [ru]rummy[/ru] or [cl]the classics[/cl].|There\u2019s always a seat open."],
     ["join", "Join a table for trick-taking, rummy or the classics.", "Join a table for [tt]trick-taking[/tt], [ru]rummy[/ru] or [cl]the classics[/cl]."],
     ["bare", "Trick-taking, rummy or the classics. (nothing else)", "[tt]Trick-taking[/tt], [ru]rummy[/ru] or [cl]the classics[/cl]."]
@@ -4923,12 +5061,18 @@
     .observe(document.getElementById("herosub"), { childList: true, subtree: true });
   window.addEventListener("load", applySuitSub);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { requestAnimationFrame(applySuitSub); });
+  /* an explicit pick in the Hero subtitle switcher wins over the category copy and the layout defaults; "Per title" leaves them in charge.
+     The pick is used as written and the browser wraps it: a forced break before the ending gave three lines at 20px in a 400px column */
+  function pickedSub() {
+    if (typeof subsel === "undefined" || !subsel || !(+subsel.value > 0)) return null;
+    return SUBS[+subsel.value][0];
+  }
   function applyCnavSub() {
     if (curCnav.indexOf("sub-") !== 0) return;
     var scene = curLayout.indexOf("sc") === 0 && curLayout !== "scpyr";
     var tpl = curViewer === "pilady"
       ? piladyCopy().sub
-      : CCOPIES.filter(function (c) { return c[0] === curCcopy; })[0][2];
+      : (pickedSub() || CCOPIES.filter(function (c) { return c[0] === curCcopy; })[0][2]);
     document.getElementById("herosub").innerHTML = tpl
       .replace(/\[tt\]([^\[]+)\[\/tt\]/g, '<a class="cjw c1" href="#sec-tt">$1</a>')
       .replace(/\[ru\]([^\[]+)\[\/ru\]/g, '<a class="cjw c2" href="#sec-rummy">$1</a>')
@@ -5197,10 +5341,10 @@
       var picked = pickedSub();
       if (curLayout === "scpyr") {
         ht.innerHTML = curViewer === "pilady" ? piladyTitleFlat() : "Play card games in good company";
-        hs.innerHTML = curViewer === "pilady" ? piladyPlain().replace("|", " ") : (picked || "Classic card games. Join a table or play solo. Free to play, hard to stop.");
+        hs.innerHTML = curViewer === "pilady" ? piladyPlain().replace("|", " ") : (picked ? picked.replace("|", " ") : "Join a table or play our robots. Settle in, unwind and make friends. Free to play, hard to stop.");
       } else {
         ht.innerHTML = curViewer === "pilady" ? piladyTitleHTML() : "Play card games<br>in good company";
-        hs.innerHTML = curViewer === "pilady" ? piladyPlain().replace("|", "<br>") : (picked || "Classic card games. Join a table or play solo.<br>Free to play, hard to stop.");
+        hs.innerHTML = curViewer === "pilady" ? piladyPlain().replace("|", "<br>") : (picked ? picked.replace("|", "<br>") : "Join a table or play our robots. Settle in, unwind<br>and make friends. Free to play, hard to stop.");
       }
     } else if (typeof titlesel !== "undefined" && titlesel && titlesel.options && titlesel.options.length) {
       applyCopy();
@@ -5623,7 +5767,7 @@
 
 
   // ===== title options (optional subtitle per title) =====
-  var DEFAULT_SUB = "Classic card games. Join a table or play solo. Free to play, hard to stop.";
+  var DEFAULT_SUB = "Join a table or play our robots. Settle in, unwind and make friends. Free to play, hard to stop.";
   var TITLES = {
     "Take a seat": [
       { t: "Take a seat. Let's play cards." },
@@ -5740,12 +5884,140 @@
     ["No download, no fuss. Pick a game and you're playing in seconds.", "Ease"],
     ["Real people at every table, day and night.", "Social"],
     ["The games you learned around the kitchen table, ready when you are.", "Nostalgia"],
-    ["Play against real people or the computer, at your own pace.", "Flexibility"]
+    ["Play against real people or the computer, at your own pace.", "Flexibility"],
+    ["Free online card games with real people. Join a table or play our robots. No download, no sign-up.", "Panel pick: no download, no sign-up (recommended)"],
+    ["18 free card games, no download, no sign-up. Join a table or play our robots.", "Panel pick: the count first"],
+    ["Free card games with real people, day and night. Pull up a chair or play our robots.", "Panel pick: the host\u2019s voice"],
+    ["Classic card games. Real people or our robots, no sign-up needed. Free to play, hard to stop.", "New: no sign-up needed (recommended)"],
+    ["Classic card games. Real people or our robots, guests welcome. Free to play, hard to stop.", "New: guests welcome (recommended)"],
+    ["Card games with real people or our robots, no sign-up needed. Free to play, hard to stop.", "New: no sign-up, one sentence"],
+    ["Classic card games with real people or our robots, as a guest. Free to play, hard to stop.", "New: as a guest"],
+    ["Classic card games. Join a table or play our robots, no sign-up needed. Free to play, hard to stop.", "New: join a table, no sign-up"],
+    ["Classic card games in your browser, with real people or our robots. Free to play, hard to stop.", "New: in your browser"],
+    ["Classic card games with real people or our robots. Free to play, hard to stop.", "New: four facts, tightest"],
+    ["Classic card games with real people, or solo against our robots. Free to play, hard to stop.", "New: or solo against our robots"],
+    ["Classic card games. Real people at the tables, robots on call. Free to play, hard to stop.", "New: robots on call"],
+    ["Sit down as a guest beside real people or the robots. Free to play, hard to stop.", "Fresh opener 1 (recommended)"],
+    ["Come sit as a guest with real people or our robots. Free to play, hard to stop.", "Fresh opener 2 (recommended)"],
+    ["Eighteen old favorites, real people or our robots, guests welcome. Free to play, hard to stop.", "Fresh opener 3"],
+    ["Eighteen games with real people or the robots, no account needed. Free to play, hard to stop.", "Fresh opener 4"],
+    ["Kitchen table games with real people or our robots. Guests welcome. Free to play, hard to stop.", "Fresh opener 5"],
+    ["Guests welcome. Take a seat with real people or our robots. Free to play, hard to stop.", "Fresh opener 6"],
+    ["Someone is always dealing, real people or our robots, guests welcome. Free to play, hard to stop.", "Fresh opener 7"],
+    ["Always a table going, real people or the robots, guests welcome. Free to play, hard to stop.", "Fresh opener 8"],
+    ["Real people for company, our robots for quiet. Free to play, hard to stop.", "Shaped 1 (recommended)"],
+    ["Some nights call for real people, some for our robots. Free to play, hard to stop.", "Shaped 2 (recommended)"],
+    ["Real people at all hours, our robots at yours. Free to play, hard to stop.", "Shaped 3"],
+    ["Real people at every hour, our robots at your pace. Free to play, hard to stop.", "Shaped 4"],
+    ["Real people when you want company, robots when you don't. Free to play, hard to stop.", "Shaped 5"],
+    ["Company when you want it, robots when you don't. Free to play, hard to stop.", "Shaped 6"],
+    ["Real people if you like, our robots if you'd rather. Free to play, hard to stop.", "Shaped 7"],
+    ["Come for the robots, stay for the company. Free to play, hard to stop.", "Shaped 8"],
+    ["Good company at all hours. Make friends or play our robots. Free to play, hard to stop.", "Earlier pick: good company at all hours"],
+    ["Company at all hours. Make friends or play our robots. Free to play, hard to stop.", "Holger direction: company at all hours"],
+    ["Good company at every table. Make friends or play our robots. Free to play, hard to stop.", "Earlier alternate: at every table"],
+    ["Good company, day and night. Make friends or play our robots. Free to play, hard to stop.", "Holger direction: day and night"],
+    ["Friendly tables at all hours. Make friends or play our robots. Free to play, hard to stop.", "Holger direction: friendly tables"],
+    ["People to play with at all hours. Make friends or play our robots. Free to play, hard to stop.", "Holger direction: people to play with"],
+    ["Good company at all hours. Make a friend or play our robots. Free to play, hard to stop.", "Holger direction: make a friend"],
+    ["Good company at all hours, friends to make, robots to beat. Free to play, hard to stop.", "Holger direction: friends to make, robots to beat"],
+    ["Real people, day and night. Make friends, beat our robots. Free to play, hard to stop.", "Earlier pick: real people, day and night"],
+    ["Real people, day and night. Make friends or play our robots. Free to play, hard to stop.", "Earlier alternate: the same with or"],
+    ["Real people at any hour. Make friends, beat our robots. Free to play, hard to stop.", "No company: at any hour"],
+    ["There is always someone here. Make friends, beat our robots. Free to play, hard to stop.", "No company: always someone here"],
+    ["Real people, whenever you sit down. Make friends, beat our robots. Free to play, hard to stop.", "No company: whenever you sit down"],
+    ["Real people around the clock. Make friends, beat our robots. Free to play, hard to stop.", "No company: around the clock"],
+    ["We saved you a seat with real people and our robots. Free to play, hard to stop.", "Invitation 1 (panel top three)"],
+    ["Grab a chair with real people. The robots never go home. Free to play, hard to stop.", "Invitation 2 (panel top three)"],
+    ["We'll deal you in with real people. Our robots are patient. Free to play, hard to stop.", "Invitation 3 (panel top three)"],
+    ["Take a seat with real people. Our robots take the rest. Free to play, hard to stop.", "Invitation 4"],
+    ["We'll deal you in with real people and our robots. Free to play, hard to stop.", "Invitation 5"],
+    ["Guests welcome. Take a seat with real people and our robots. Free to play, hard to stop.", "Invitation 6"],
+    ["Pull up a chair. Real people, our robots, and you. Free to play, hard to stop.", "Invitation 7"],
+    ["Have a seat, real people are here, our robots never sleep. Free to play, hard to stop.", "Invitation 8"],
+    ["A friendly table is waiting. The robots never go home. Free to play, hard to stop.", "Friendly table 1 (pick)"],
+    ["There is always a friendly table. The robots never go home. Free to play, hard to stop.", "Friendly table 2"],
+    ["Take a seat at a friendly table. Our robots are patient. Free to play, hard to stop.", "Friendly table 3"],
+    ["A friendly table, day and night. The robots never go home. Free to play, hard to stop.", "Friendly table 4"],
+    ["A seat at a friendly table, and the robots never go home. Free to play, hard to stop.", "Friendly table 5"],
+    ["Grab a chair among kindred spirits. The robots never go home. Free to play, hard to stop.", "Kindred spirits 1 (pick)"],
+    ["Kindred spirits at every table. The robots never go home. Free to play, hard to stop.", "Kindred spirits 2"],
+    ["A seat among kindred spirits. Our robots are patient. Free to play, hard to stop.", "Kindred spirits 3"],
+    ["You're among friends here. The robots never go home. Free to play, hard to stop.", "Among friends 1 (pick)"],
+    ["Grab a chair among friends. The robots never go home. Free to play, hard to stop.", "Among friends 2"],
+    ["Pull up a chair among friends. Our robots are patient. Free to play, hard to stop.", "Among friends 3"],
+    ["Among friends, day and night. Our robots are patient. Free to play, hard to stop.", "Among friends 4"],
+    ["A chair among fellow card players. The robots never go home. Free to play, hard to stop.", "Fellow card players 1"],
+    ["Sit with fellow card players. The robots never go home. Free to play, hard to stop.", "Fellow card players 2"],
+    ["Fellow card players, day and night. The robots never go home. Free to play, hard to stop.", "Fellow card players 3"],
+    ["We'll deal you in with fellow card players. Our robots are patient. Free to play, hard to stop.", "Fellow card players 4"],
+    ["Join a friendly table or play our robots. Free to play, hard to stop.", "Earlier pick 4 Sep: join a friendly table"],
+    ["Guests welcome. Join a friendly table or play our robots. Free to play, hard to stop.", "Extended: guests welcome (pick)"],
+    ["Come as a guest. Join a friendly table or play our robots. Free to play, hard to stop.", "Extended: come as a guest"],
+    ["Join a friendly table or play our robots, straight from your browser. Free to play, hard to stop.", "Extended: from your browser"],
+    ["Friendly players at every hour. Join a table or play our robots. Free to play, hard to stop.", "Extended: friendly players at every hour"],
+    ["Join a friendly table or play our robots, in any of 18 games. Free to play, hard to stop.", "Extended: 18 games"],
+    ["Join a friendly table or play our robots, on any screen. Free to play, hard to stop.", "Extended: on any screen"],
+    ["Join a table or play our robots. Invite friends or make new ones. Free to play, hard to stop.", "Holger: invite friends or make new ones"],
+    ["Join a table or play our robots. Bring a friend or make one. Free to play, hard to stop.", "Friends: bring a friend or make one"],
+    ["Join a table or play our robots. Bring friends, make friends. Free to play, hard to stop.", "Friends: bring friends, make friends"],
+    ["Join a table or play our robots. Invite a friend or make one. Free to play, hard to stop.", "Friends: invite a friend or make one"],
+    ["Join a table or play our robots. Come with friends, leave with more. Free to play, hard to stop.", "Friends: come with friends, leave with more"],
+    ["Join a table or play our robots. Friends old and new welcome. Free to play, hard to stop.", "Friends: old and new welcome"],
+    ["Join a table or play our robots. Have fun and make friends. Free to play, hard to stop.", "Holger: have fun and make friends"],
+    ["Join a table or play our robots. Invite friends or make some. Free to play, hard to stop.", "Holger: invite friends or make some"],
+    ["Join a table or play our robots. Come as you are, make friends. Free to play, hard to stop.", "Casual: come as you are"],
+    ["Join a table or play our robots. Keep it light, make friends. Free to play, hard to stop.", "Casual: keep it light"],
+    ["Join a table or play our robots. Good fun, new friends. Free to play, hard to stop.", "Casual: good fun, new friends"],
+    ["Join a table or play our robots. Good fun, good friends. Free to play, hard to stop.", "Casual: good fun, good friends"],
+    ["Join a table or play our robots. Low stakes, high spirits. Free to play, hard to stop.", "Casual: low stakes, high spirits"],
+    ["Join a table or play our robots. Bragging rights and new friends. Free to play, hard to stop.", "Casual: bragging rights"],
+    ["Join a table or play our robots. Laugh a little, make friends. Free to play, hard to stop.", "Casual: laugh a little"],
+    ["Join a table or play our robots. Fun for now, friends for keeps. Free to play, hard to stop.", "Casual: friends for keeps"],
+    ["Join a table or play our robots. Your own pace, new friends. Free to play, hard to stop.", "Casual: your own pace"],
+    ["Join a table or play our robots. Slippers welcome, make friends. Free to play, hard to stop.", "Casual: slippers welcome"],
+    ["Join a table or play our robots. Classic games, friendly atmosphere. Free to play, hard to stop.", "Holger: classic games, friendly atmosphere"],
+    ["Join a table or play our robots. Classic games, friendly tables. Free to play, hard to stop.", "Cozy: classic games, friendly tables"],
+    ["Join a table or play our robots. Settle in, unwind, make friends. Free to play, hard to stop.", "Cozy: settle in, unwind, make friends"],
+    ["Join a table or play our robots. Settle in, unwind|and make friends. Free to play, hard to stop.", "Chosen 4 Sep: settle in, unwind / and make friends"],
+    ["Join a table or play our robots. Sit back, relax, make friends. Free to play, hard to stop.", "Cozy: sit back, relax, make friends"],
+    ["Join a table or play our robots. Cozy tables, friendly faces. Free to play, hard to stop.", "Cozy: cozy tables, friendly faces"],
+    ["Join a table or play our robots. Classic games, cozy tables. Free to play, hard to stop.", "Cozy: classic games, cozy tables"],
+    ["Join a table or play our robots. Old favorites, warm welcome. Free to play, hard to stop.", "Cozy: old favorites, warm welcome"],
+    ["Join a table or play our robots. Cozy tables, new friends. Free to play, hard to stop.", "Cozy: cozy tables, new friends"],
+    ["Join a table or play our robots. Easygoing tables, new friends. Free to play, hard to stop.", "Cozy: easygoing tables, new friends"],
+    ["Join a table or play our robots. Settle in, stay a while, make friends. Free to play, hard to stop.", "Cozy: settle in, stay a while"],
+    ["Join a table or play our robots. Old games, new friends. Free to play, hard to stop.", "Old/new: old games, new friends"],
+    ["Join a table or play our robots. Familiar games, new friends. Free to play, hard to stop.", "Old/new: familiar games, new friends"],
+    ["Join a table or play our robots. Familiar games, new players. Free to play, hard to stop.", "Old/new: familiar games, new players"],
+    ["Join a table or play our robots. Old favorites, new friends. Free to play, hard to stop.", "Old/new: old favorites, new friends"],
+    ["Join a table or play our robots. Familiar games, fresh faces. Free to play, hard to stop.", "Old/new: familiar games, fresh faces"],
+    ["Join a table or play our robots. Old games, new faces. Free to play, hard to stop.", "Old/new: old games, new faces"],
+    ["Join a table or play our robots. Games you know, friends you don't yet. Free to play, hard to stop.", "Old/new: games you know, friends you don't yet"],
+    ["Join a table or play our robots. Old games, new friends, cozy tables. Free to play, hard to stop.", "Old/new: old games, new friends, cozy tables"],
+    ["Join a table or play our robots. Old games, new friends, cozy evenings. Free to play, hard to stop.", "Triad: cozy evenings"],
+    ["Join a table or play our robots. Old games, new friends, warm welcome. Free to play, hard to stop.", "Triad: warm welcome"],
+    ["Join a table or play our robots. Old games, new friends, slippers on. Free to play, hard to stop.", "Triad: slippers on"],
+    ["Join a table or play our robots. Old games, new friends, easy chairs. Free to play, hard to stop.", "Triad: easy chairs"],
+    ["Join a table or play our robots. Old games, new friends, cozy corners. Free to play, hard to stop.", "Triad: cozy corners"],
+    ["Join a table or play our robots. Old games, new friends, cozy hours. Free to play, hard to stop.", "Triad: cozy hours"],
+    ["Join a table or play our robots. Old games, new friends, a warm seat. Free to play, hard to stop.", "Triad: a warm seat"],
+    ["Join a table or play our robots. Old games, new friends, good cheer. Free to play, hard to stop.", "Triad: good cheer"],
+    ["Join a table or play our robots. Old games, new friends, easy pace. Free to play, hard to stop.", "Triad: easy pace"],
+    ["Join a table or play our robots. Old games, new friends, your own pace. Free to play, hard to stop.", "Triad: your own pace"],
+    ["Join a table or play our robots. Old games, new friends, cozy play. Free to play, hard to stop.", "Triad: cozy play"],
+    ["Join a table or play our robots. Old games, new friends, gentle pace. Free to play, hard to stop.", "Triad: gentle pace"],
+    ["Join a table or play our robots. Old games, new friends, cozy rounds. Free to play, hard to stop.", "Triad: cozy rounds"],
+    ["Join a table or play our robots. Old games, new friends, easygoing play. Free to play, hard to stop.", "Triad: easygoing play"],
+    ["Join a table or play our robots. Old games, new friends, cozy gameplay. Free to play, hard to stop.", "Holger: cozy gameplay"]
   ];
+  function subLabel(i) { return SUBS[i][1] + (i > 0 ? " — " + SUBS[i][0] : ""); }
+  function subIndex(text) { for (var i = 0; i < SUBS.length; i++) if (SUBS[i][0] === text) return i; return 0; }
+  var CHOSEN_SUB = subIndex("Join a table or play our robots. Settle in, unwind|and make friends. Free to play, hard to stop."), ALT_SUB = subIndex("Join a friendly table or play our robots. Free to play, hard to stop.");
   var subsel = document.getElementById("subsel");
   SUBS.forEach(function (x, i) {
     var o = document.createElement("option");
-    o.value = i; o.textContent = x[1] + (i > 0 ? " — " + x[0] : "");
+    o.value = i; o.textContent = subLabel(i);
     subsel.appendChild(o);
   });
   /* favorites on top of the copy dropdowns too: current default + the settled picks */
@@ -5760,10 +6032,12 @@
     titlesel.insertBefore(og, titlesel.firstChild);
     var ogs = document.createElement("optgroup");
     ogs.label = "Favorites";
-    [0, 8, 18].forEach(function (i) {
-      if (SUBS[i]) ogs.appendChild(new Option(SUBS[i][1] + (i > 0 ? " — " + SUBS[i][0] : ""), i));
+    [CHOSEN_SUB, ALT_SUB, subIndex("Come as a guest. Join a friendly table or play our robots. Free to play, hard to stop."), subIndex("Join a friendly table or play our robots, straight from your browser. Free to play, hard to stop."), subIndex("Friendly players at every hour. Join a table or play our robots. Free to play, hard to stop."), 0, 8].forEach(function (i) {
+      if (SUBS[i]) ogs.appendChild(new Option(subLabel(i), i));
     });
     subsel.insertBefore(ogs, subsel.firstChild);
+    /* select the Favorites copy, not the one deep in the list: the native popup opens scrolled to the selected option */
+    ogs.firstChild.selected = true;
   })();
   function applyCopy() {
     if (curLayout.indexOf("sc") === 0) { applyBody(); return; }
@@ -5772,7 +6046,7 @@
     var si = +subsel.value;
     document.getElementById("herosub").textContent = curViewer === "pilady"
       ? piladyPlain().replace("|", " ")
-      : (si === 0 ? (item.sub || DEFAULT_SUB) : SUBS[si][0]);
+      : (si === 0 ? (item.sub || DEFAULT_SUB) : SUBS[si][0].replace("|", " "));
     applyCnavSub();
     requestAnimationFrame(applySuitSub);
   }
@@ -6251,11 +6525,112 @@
     roll.appendChild(seat.querySelector(".playerName"));
     var join = document.createElement("p");
     join.className = "playerName pnJoin";
-    join.textContent = seat.closest(".ltCard") && seat.closest(".ltCard").classList.contains("isNew") ? "Host" : "Join";
+    join.textContent = "Join";
     roll.appendChild(join);
     plate.insertBefore(roll, plate.firstChild);
   };
-  document.querySelectorAll(".lobbyscope .ltCard:not(.isNew) .player.isEmpty, .lobbyscope .ltCard:not(.isNew) .player.isBot, #openTablesTop .ltCard.isNew .player.isEmpty").forEach(window.ltArmSeat);
+  /* The host tile's seats are deliberately NOT armed. You are the first person to sit, so one
+     seat is no different from another and a per-seat preview would promise a choice that is not
+     there. The whole tile is the click. */
+  /* ── how far along a live game is ──
+     Points say what a hand number cannot: 320 of 500 is two thirds of the way through. The score shown
+     is the HIGHEST one, because that is what ends the game; true for Hearts and Crazy Eights too, where
+     points are bad but the game still ends when someone reaches the number. Targets are
+     END_GAME_SCORE_HIGH from shared/C.js. Numbers print raw, with no thousands separator, exactly as
+     the in-game scoreboard prints them (Table.js:1188 setContent(this.teamScores[i])). */
+  var SCORE_TARGET = { hearts: 100, spades: 500, euchre: 10, ginrummy: 100, cribbage: 121,
+    pinochle: 150, ddpinochle: 500, canasta: 5000, rummy: 500, whist: 7, twentynine: 6,
+    sgtmajor: 12, crazyeights: 100 };
+  /* Hand & Foot has no score target - its END_GAME_SCORE_HIGH is 999999, a placeholder - because it
+     plays a fixed number of hands, so there the hand number IS the progress */
+  var HAND_TARGET = { handfoot: 4 };
+  /* Bridge scores rubbers, and Go Fish, Old Maid and Sheepshead have no target at all, so those four
+     fall through to the clock */
+
+  /* a pie wedge from twelve o'clock, clockwise, filling the ring's own r=7 circle */
+  function ringWedge(f) {
+    if (!(f > 0)) return "";
+    if (f >= 1) return '<circle cx="8" cy="8" r="7" fill="#fff"/>';
+    var th = 2 * Math.PI * f;
+    var x = (8 + 7 * Math.sin(th)).toFixed(2), y = (8 - 7 * Math.cos(th)).toFixed(2);
+    /* rx ry rotation large-arc sweep x y - one flag each, no spare */
+    return '<path d="M8 8V1A7 7 0 ' + (f > 0.5 ? 1 : 0) + ' 1 ' + x + " " + y + 'z" fill="#fff"/>';
+  }
+  function gameOf(card) {
+    var l = card.querySelector(".tableListing");
+    if (!l) return null;
+    var ids = Object.keys(SCORE_TARGET).concat(Object.keys(HAND_TARGET));
+    for (var i = 0; i < ids.length; i++) if (l.classList.contains(ids[i])) return ids[i];
+    return null;
+  }
+  function progressOf(card) {
+    var gid = gameOf(card), age = card.querySelector(".tableAge");
+    var full = age ? age.textContent.trim() : "";
+    if (gid && HAND_TARGET[gid]) {
+      var hands = HAND_TARGET[gid];
+      var hand = +(card.getAttribute("data-hand") || (full.match(/hand (\d+)/i) || [])[1] || 1);
+      return { text: "Hand " + hand + "/" + hands, fraction: hand / hands,
+        tip: "Hand " + hand + " of " + hands };
+    }
+    var target = gid && SCORE_TARGET[gid];
+    if (target && card.hasAttribute("data-score")) {
+      var score = +card.getAttribute("data-score");
+      return { text: score + "/" + target, fraction: Math.max(0, Math.min(1, score / target)),
+        tip: "Leading " + score + " of " + target + (full ? " \u00b7 " + full : "") };
+    }
+    var mins = +(card.getAttribute("data-mins") || 0);
+    return { text: mins ? mins + " min" : "In play", fraction: 0.25, tip: full || "In play" };
+  }
+
+  /* the live tables carry their state where an open table carries its clock */
+  document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll("#lobbyLiveTables .llCard").forEach(function (card) {
+      var box = card.querySelector(".playersContainer");
+      var age = card.querySelector(".tableAge");
+      if (!box || box.querySelector(".ltTime")) return;
+      var pr = progressOf(card);
+      var t = document.createElement("div");
+      t.className = "ltTime";
+      /* the slot carries the short form; the fuller sentence stays in the tooltip */
+      t.setAttribute("data-tip", pr.tip);
+      /* the ring is no longer a fixed quarter: it fills to how far the game has actually gone */
+      t.innerHTML = '<svg class="ltRing" viewBox="0 0 16 16" aria-hidden="true">' +
+        '<circle cx="8" cy="8" r="7" fill="none" stroke="#fff" stroke-width="2"/>' +
+        ringWedge(pr.fraction) + '</svg><span>' + pr.text + "</span>";
+      box.appendChild(t);
+      var inv = document.createElement("span");
+      inv.className = "hvClock";
+      inv.textContent = "Watch";
+      box.appendChild(inv);
+      if (typeof window.wtipAttach === "function") window.wtipAttach(t, t.getAttribute("data-tip"));
+    });
+    /* the same hand over the open tables run, on the same recipe */
+    var OUT_KF = [{ opacity: 1, transform: "scale(1)" }, { opacity: 0, transform: "scale(.97)" }];
+    var IN_KF = [{ opacity: 0, transform: "translateY(10px) scale(.94)" },
+                 { opacity: 1, transform: "translateY(0) scale(1)" }];
+    var OUT = { duration: 190, easing: "cubic-bezier(.32,0,.67,0)", fill: "both" };
+    var IN = { duration: 260, delay: 150, easing: "cubic-bezier(.22,1,.36,1)", fill: "both" };
+    document.querySelectorAll("#lobbyLiveTables .llCard").forEach(function (card) {
+      var on = false;
+      var want = function (v) {
+        if (on === v) return;
+        on = v;
+        var a = card.querySelector(".ltTime"), b = card.querySelector(".hvClock");
+        if (!a || !b || !a.animate) return;
+        var leaving = v ? a : b, arriving = v ? b : a;
+        leaving.getAnimations().forEach(function (x) { x.cancel(); });
+        arriving.getAnimations().forEach(function (x) { x.cancel(); });
+        leaving.animate(OUT_KF, OUT);
+        arriving.animate(IN_KF, IN);
+      };
+      card.addEventListener("mouseover", function () { want(true); });
+      card.addEventListener("mouseout", function (e) { if (!card.contains(e.relatedTarget)) want(false); });
+    });
+  });
+  /* A live table is watched, not joined, so nothing there is armed even though its cards now wear
+     the tile class. Keyed off .llCard rather than the section id, because the live tables sit in
+     #liveTablesTop while the lobby demo has its own copy. */
+  document.querySelectorAll(".lobbyscope .ltCard:not(.isNew):not(.llCard) .player.isEmpty, .lobbyscope .ltCard:not(.isNew):not(.llCard) .player.isBot, #openTablesTop .ltCard.isNew .isTeamGame .player.isEmpty").forEach(window.ltArmSeat);
 </script>
 <script>
   /* the open-table tiles carry their quieter facts in tooltips: the art holds the game and its rules,
@@ -6265,9 +6640,7 @@
     document.querySelectorAll("#openTablesTop [data-tip]").forEach(function (el) {
       window.wtipAttach(el, '<span style="display:block;white-space:normal;max-width:208px">' + el.getAttribute("data-tip") + "</span>");
     });
-    document.querySelectorAll("#openTablesTop .ltCard.isNew .player.isEmpty").forEach(function (seat) {
-      window.wtipAttach(seat, "Sit here to host a table with your rules");
-    });
+
   });
 </script>
 <script>
@@ -6279,30 +6652,23 @@
     if (!sec) return;
     var grid = sec.querySelector(".ltGrid");
     if (!grid) return;
+    var TEAM_GAMES = ["spades", "euchre", "twentynine", "pinochledd", "pinochle", "canasta", "handfoot", "whist", "bridge"]; /* C.GAME_TEAMS: the partners' plates go red on these */
+    function teamClass(id) { return TEAM_GAMES.indexOf(id) >= 0 ? " isTeamGame" : ""; }
     var TICK = 4500, LIVE_CARDS = 5; /* five live tables plus the New table card: the grid is always two full rows */
     var reduced = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
     /* a table turns over without leaving the page: the whole tile goes soft first, then what sits on the
        felt fades out and the new table's own seats fade in, and only then does the tile come back into focus */
     function contents(card) { return card.querySelector(".playersContainer"); }
-    function blurTo(card, from, to, ms, done) {
-      if (reduced || !card.animate) { if (done) done(); return; }
-      card.animate([{ filter: "blur(" + from + "px)" }, { filter: "blur(" + to + "px)" }],
-        { duration: ms, easing: to > from ? "cubic-bezier(.4,0,.6,1)" : "cubic-bezier(.2,.8,.2,1)", fill: "forwards" })
-        .onfinish = function () { if (done) done(); };
-    }
-    function fadeTo(box, from, to, ms, done) {
-      if (reduced || !box || !box.animate) { if (done) done(); return; }
-      box.animate([{ opacity: from }, { opacity: to }], { duration: ms, easing: "linear", fill: "forwards" })
-        .onfinish = function () { if (done) done(); };
-    }
 
+    /* the pool a signed-in player draws from is mostly people, as the avatar picker is, with the
+       animals and aliens mixed through it the way a real table looks */
     var PEOPLE = [
-      ["Marge", "AnimalGopher.svg", 97], ["carl52", "AnimalDragon.svg", 91], ["Vera", "AnimalChicken.svg", 99],
-      ["Duckling", "AnimalCat.svg", 96], ["BobK", "AnimalFox.svg", 100], ["wendy_h", "AnimalButterfly.svg", 93],
-      ["north4th", "AnimalBeaver.svg", 88], ["PragueJoe", "AnimalCow.svg", 98], ["mollyb", "AnimalBee.svg", 100],
-      ["GinTonic", "AnimalBird.svg", 95], ["Carol", "AnimalCat.svg", 90], ["Hank", "AnimalBeaver.svg", 80],
-      ["cardShark52", "AlienBlue.svg", 99], ["moonshot", "AnimalGopher.svg", 92], ["Rosie", "AnimalButterfly.svg", 94],
-      ["spadesfan", "AnimalChicken.svg", 89], ["BigDeal", "AnimalCow.svg", 96], ["Marta", "AnimalCow.svg", 91]
+      ["Marge", "WomanGirl2.svg", 97], ["carl52", "ManMan3.svg", 91], ["Vera", "WomanScientist.svg", 99],
+      ["Duckling", "AnimalCat.svg", 96], ["BobK", "ManCowboy.svg", 100], ["wendy_h", "WomanBusinesswoman.svg", 93],
+      ["north4th", "ManGeek2.svg", 88], ["PragueJoe", "AnimalCow.svg", 98], ["mollyb", "WomanCowgirl.svg", 100],
+      ["GinTonic", "ManChef.svg", 95], ["Carol", "WomanSuperGirl2.svg", 90], ["Hank", "AnimalBeaver.svg", 80],
+      ["cardShark52", "AlienBlue.svg", 99], ["moonshot", "ManMan3.svg", 92], ["Rosie", "WomanGirl2.svg", 94],
+      ["spadesfan", "WomanCowgirl.svg", 89], ["BigDeal", "ManGeek2.svg", 96], ["Marta", "AnimalCow.svg", 91]
     ];
     var NEW_TABLES = [
       ["hearts", "Hearts", "Ends at 100"], ["spades", "Spades", "Plays to 500"], ["euchre", "Euchre", "Plays to 10"],
@@ -6321,90 +6687,211 @@
       return humanSeats(card).map(function (p) { return p.querySelector(".playerName").textContent.trim(); });
     }
     function realCards() {
-      return [].slice.call(grid.querySelectorAll(".ltCard:not(.isNew):not(.ltLeave)"));
+      return [].slice.call(grid.querySelectorAll(".ltCard:not(.isNew):not([data-busy])"));
     }
     /* a table on its way out still holds its place in the grid, so it counts until it is gone */
     function slotCount() { return grid.querySelectorAll(".ltCard:not(.isNew)").length; }
 
-    /* a face leaves and a face arrives on the seat with the very motion the empty-seat hover uses: the
-       one going shrinks to .88 and fades over 140ms, and the one arriving is laid over it and comes up
-       from .86 over 320ms after the same 200ms the hover waits */
-    function swapFace(seat, src, done) {
-      var img = seat.querySelector("img:not(.seatYou):not(.ltGhost)");
-      if (!img) { if (done) done(); return; }
-      if (reduced || !img.animate) { img.src = src; if (done) done(); return; }
-      /* a face from an earlier change never lingers over this one */
-      seat.querySelectorAll(".ltGhost").forEach(function (g) { g.remove(); });
-      var ghost = document.createElement("img");
-      ghost.className = "ltGhost"; ghost.src = src; ghost.alt = ""; ghost.width = 32; ghost.height = 32;
-      img.parentNode.insertBefore(ghost, img.nextSibling);
-      img.animate([{ opacity: 1, transform: "scale(1)" }, { opacity: 0, transform: "scale(.88)" }],
-        { duration: 140, easing: "cubic-bezier(0.32,0,0.67,0)", fill: "forwards" });
-      var rise = ghost.animate([{ transform: "translateX(-50%) scale(.86)" }, { transform: "translateX(-50%) scale(1)" }],
-        { duration: 320, delay: 200, easing: "cubic-bezier(0.22,1,0.36,1)", fill: "both" });
-      ghost.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 120, delay: 200, easing: "linear", fill: "both" });
-      /* the hand over waits for the arriving face to finish rising: swapping earlier left the seat's own
-         image at full size under a stand-in still growing, which read as a doubled face */
-      rise.onfinish = function () {
-        img.getAnimations().forEach(function (an) { an.cancel(); });
-        img.src = src;
-        ghost.remove();
-        if (done) done();
-      };
+    /* A seat changes hands with the empty-seat hover's animation. Not a copy of it: the arriving face
+       is put where the hover puts your own avatar, the arriving name where the hover rolls "Join", and
+       the seat is then given the classes the hover's CSS block answers. Writing those keyframes out by
+       hand in here is what kept drifting from the real thing. */
+    /* the finish badge for a completion percentage, or null when there is none to show */
+    function badgeFor(pct) {
+      if (!(pct >= 70)) return null;
+      var b = document.createElement("span");
+      b.className = "completionBadge" + (pct === 100 ? " is100" : "");
+      b.textContent = pct === 100 ? "" : pct;
+      return b;
     }
-    /* the plate rolls its name the way it rolls to Join when you hover an open seat */
-    function rollName(plate, text, done) {
+    /* Called with the seat muted, so whatever is set here is the resting state and .ltGo animates it.
+       Both badges present: the digits roll like the name. Only one: it fades up, or drops and fades. */
+    function swapBadge(plate, pct) {
+      var old = plate.querySelector(".completionBadge");
+      var fresh = badgeFor(pct);
+      if (!old && !fresh) return;
+      if (old && !fresh) { old.classList.add("cbGoing"); return; }
+      if (!old && fresh) {
+        /* the ring fades up, and its digits drop into it from above on the name's own curve and delay,
+           so the badge reads as part of the same sentence rather than something switched on afterwards */
+        fresh.classList.add("cbFresh");
+        var t = fresh.textContent;
+        if (t) {
+          fresh.textContent = "";
+          var r = document.createElement("div");
+          r.className = "cbRoll";
+          var i = document.createElement("i");
+          i.className = "cbIn"; i.textContent = t;
+          r.appendChild(i);
+          fresh.appendChild(r);
+        }
+        plate.appendChild(fresh);
+        return;
+      }
+      /* both: keep the old element so its ring never blinks, and roll the digits inside it */
+      var outText = old.textContent, inText = fresh.textContent;
+      var roll = document.createElement("div");
+      roll.className = "cbRoll";
+      var a = document.createElement("i"); a.className = "cbOut"; a.textContent = outText;
+      var b = document.createElement("i"); b.className = "cbIn"; b.textContent = inText;
+      roll.appendChild(a); roll.appendChild(b);
+      old.textContent = "";
+      old.appendChild(roll);
+      old.setAttribute("data-to", fresh.className);
+    }
+    /* once the change has landed, the badge becomes a plain one again */
+    function settleBadge(plate) {
+      var b = plate.querySelector(".completionBadge");
+      if (!b) return;
+      if (b.classList.contains("cbGoing")) { b.remove(); return; }
+      b.classList.remove("cbFresh");
+      var roll = b.querySelector(".cbRoll");
+      if (roll) {
+        var inText = roll.querySelector(".cbIn").textContent;
+        var cls = b.getAttribute("data-to");
+        b.removeAttribute("data-to");
+        b.className = cls || b.className;
+        b.textContent = inText;
+      }
+    }
+
+    function swapSeat(seat, src, name, pct, done) {
+      var plate = seat.querySelector(".playerNameContainer");
+      var face = seat.querySelector("img:not(.seatYou)");
       var cur = plate.querySelector(".playerName:not(.pnJoin)");
-      if (!cur) { if (done) done(); return; }
-      if (reduced || !cur.animate) { cur.textContent = text; if (done) done(); return; }
-      var clip = document.createElement("div");
-      clip.className = "ltRoll";
-      var next = document.createElement("p");
-      next.className = "playerName"; next.textContent = text;
-      cur.parentNode.insertBefore(clip, cur);
-      clip.appendChild(cur); clip.appendChild(next);
-      cur.animate([{ transform: "translateY(0)" }, { transform: "translateY(100%)" }],
-        { duration: 220, delay: 120, easing: "cubic-bezier(.22,1,.36,1)", fill: "both" });
-      next.animate([{ transform: "translateY(-100%)" }, { transform: "translateY(0)" }],
-        { duration: 220, delay: 120, easing: "cubic-bezier(.22,1,.36,1)", fill: "both" }).onfinish = function () {
-          cur.getAnimations().forEach(function (an) { an.cancel(); });
-          cur.textContent = text;
-          clip.parentNode.insertBefore(cur, clip);
-          clip.remove();
+      if (!face || reduced) {
+        if (face) face.src = src;
+        if (cur) cur.textContent = name;
+        var oldB = plate.querySelector(".completionBadge");
+        if (oldB) oldB.remove();
+        var newB = badgeFor(pct);
+        if (newB) plate.appendChild(newB);
+        if (done) done();
+        return;
+      }
+      /* Everything up to .ltGo happens with the seat MUTED. Two reasons, both of which showed as a
+         broken change. A hovered seat has already played this animation, so starting from where it
+         left off leaves nothing to animate. And the resting state itself must arrive without a
+         transition: unmuted, adding .ltSwap sent the incoming name from 0 to translateY(-100%) as a
+         220ms transition, so .ltGo only reversed a journey that had barely begun and the new name
+         simply sat in the plate while the old one slid down through it. */
+      var stale = seat.querySelector("img.seatYou");
+      seat.classList.add("ltReset");
+      if (stale) stale.remove();
+      seat.classList.remove("joinable", "ltSwap", "ltGo");
+
+      /* a fresh stand-in every time, so no half-finished hover state can ride along */
+      var inc = document.createElement("img");
+      inc.className = "seatYou"; inc.alt = ""; inc.width = 32; inc.height = 32;
+      inc.src = src;
+      seat.insertBefore(inc, plate);
+      var roll = plate.querySelector(".plateRoll");
+      if (!roll) {
+        roll = document.createElement("div");
+        roll.className = "plateRoll";
+        plate.insertBefore(roll, plate.firstChild);
+        roll.appendChild(cur);
+      }
+      var nxt = roll.querySelector(".pnJoin");
+      if (!nxt) { nxt = document.createElement("p"); nxt.className = "playerName pnJoin"; roll.appendChild(nxt); }
+      nxt.textContent = name;
+      swapBadge(plate, pct);
+
+      /* .ltSwap carries the same resting rules .joinable does. It is painted while still muted, then
+         the muting comes off with nothing changed, and only then does .ltGo make the change, which is
+         exactly the sequence the pointer produces on hover. */
+      seat.classList.add("ltSwap");
+      void seat.offsetWidth;
+      seat.classList.remove("ltReset");
+      void seat.offsetWidth;
+      seat.classList.add("ltGo");
+
+      /* the arriving face's rise is the last leg, so the hand over waits for that animation by name */
+      inc.addEventListener("animationend", function onEnd(e) {
+        if (e.animationName !== "seatYouIn") return;
+        inc.removeEventListener("animationend", onEnd);
+        face.src = src;
+        /* the seat's own image only takes over once the new face can be drawn, or it shows the old one */
+        var ready = face.decode ? face.decode()["catch"](function () {}) : Promise.resolve();
+        ready.then(function () {
+          cur.textContent = name;
+          /* .lobbyscope .player img carries transition: transform 80ms ease-in-out. Dropping .ltGo
+             releases the real face from scale(.88), and that base transition then springs it back to
+             scale(1) over 80ms just as the stand-in vanishes at scale(1), which reads as a bounce.
+             Mute it for the one frame the hand over takes. */
+          face.style.transition = "none";
+          seat.classList.remove("ltSwap", "ltGo");
+          /* the unwind happens before the flush, so the one forced layout measures the DOM that will
+             actually be painted rather than a half-dismantled plate that never appears */
+          if (roll.parentNode) { roll.parentNode.insertBefore(cur, roll); roll.remove(); }
+          inc.remove();
+          settleBadge(plate);
+          void face.offsetWidth;
+          face.style.transition = "";
           if (done) done();
-        };
+        });
+      });
     }
 
     /* a seat takes a player: the silhouette goes, the face arrives, the plate rolls to the name */
     function sit(seat, person) {
       var plate = seat.querySelector(".playerNameContainer");
-      var roll = plate.querySelector(".plateRoll");
-      var nameEl = plate.querySelector(".playerName:not(.pnJoin)");
-      /* the seat is taken, so its join preview is dismantled first */
-      if (roll) { plate.insertBefore(nameEl, roll); roll.remove(); }
-      var you = seat.querySelector(".seatYou");
-      if (you) you.remove();
-      seat.classList.remove("isEmpty", "joinable");
-      swapFace(seat, person[1], function () {
-        if (person[2] >= 70) {
-          var badge = document.createElement("span");
-          badge.className = "completionBadge" + (person[2] === 100 ? " is100" : "");
-          badge.textContent = person[2] === 100 ? "" : person[2];
-          plate.appendChild(badge);
-        }
-      });
-      rollName(plate, person[0]);
+      /* a seat a bot was holding loses the bot's mark with it */
+      var botBadge = plate.querySelector(".playerBadge.isBot");
+      if (botBadge) botBadge.remove();
+      seat.classList.remove("isEmpty", "isBot", "seatAvailable");
+      swapSeat(seat, person[1], person[0], person[2]);
     }
 
     /* a player leaves: the face goes the same way and the seat is open again */
     function stand(seat) {
-      var plate = seat.querySelector(".playerNameContainer");
-      var badge = plate.querySelector(".completionBadge");
-      if (badge) badge.remove();
-      swapFace(seat, "avatarEmpty.png", function () { seat.classList.add("isEmpty"); });
-      rollName(plate, "Empty", function () {
+      swapSeat(seat, "avatarEmpty.png", "Empty", 0, function () {
+        seat.classList.add("isEmpty");
         if (window.ltArmSeat) window.ltArmSeat(seat);
       });
+    }
+
+    /* ── the marks say what is DIFFERENT about a table, never what is normal ──
+       The vocabulary is production's own listing vocabulary (TableListingBuilder.buildTableOptionsLabels):
+       Ranked, Private table, Registered only, Experienced only, No bots, and the game's own rule.
+       Defaults draw nothing. That is the whole point: measured over 1,572 real multiplayer searches,
+       only 37% set any option at all, so a mark stays rare enough to be worth reading. */
+    var MARKS = {
+      ranked: ["Ranked table",
+        '<path d="M2.6 14.2 2 6.4c0-.5.6-.8 1-.5l3.1 2.6c.3.2.7.1.9-.2L8.5 4c.2-.4.8-.4 1 0l1.5 4.3c.2.3.6.4.9.2L15 5.9c.4-.3 1 0 1 .5l-.6 7.8c0 .4-.4.7-.8.7H3.4c-.4 0-.8-.3-.8-.7z" fill="#fff"/>'],
+      privateT: ["Private table",
+        '<rect x="3.5" y="8" width="11" height="8" rx="2" fill="#fff"/><path d="M6 8V5.8a3 3 0 0 1 6 0V8" fill="none" stroke="#fff" stroke-width="2"/><circle cx="9" cy="12" r="1.3" fill="#327333"/>'],
+      limited: ["", '<circle cx="9" cy="5.9" r="2.9" fill="#fff"/><path d="M3.2 15.6c0-3.2 2.6-4.9 5.8-4.9s5.8 1.7 5.8 4.9z" fill="#fff"/>'],
+      rule: ["",
+        '<path d="M9 3.4v11.2M4.15 6.2l9.7 5.6M13.85 6.2l-9.7 5.6" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>']
+    };
+    /* the one rule each game can deviate on, named exactly as the production listing names it */
+    var GAME_RULE = { hearts: "Tournament rules", spades: "No bag penalty", euchre: "Stick the dealer",
+      pinochle: "Bidder out", ddpinochle: "Bidder out", twentynine: "Seventh card" };
+
+    function marksHtml(list) {
+      if (!list || !list.length) return "";
+      return '<div class="ltMarks">' + list.map(function (m) {
+        var k = m instanceof Array ? m[0] : m, tip = m instanceof Array ? m[1] : MARKS[k][0];
+        return '<svg class="ltMark" viewBox="0 0 18 18" aria-hidden="true" data-tip="' + tip + '">' +
+          MARKS[k][1] + '</svg>';
+      }).join("") + "</div>";
+    }
+    /* the mix a real listing shows. The rates ARE the production ones, measured over 24h of
+       "Find table": ranked 13.5%, private 6.7%, registered only 4.8%, experienced only 3.4%,
+       no bots 3.6%. So most tiles carry nothing, a few carry one, and two is rare. */
+    function rollMarks(gameid) {
+      var m = [];
+      if (Math.random() < 0.135) m.push("ranked");
+      if (Math.random() < 0.067) m.push("privateT");
+      /* the three limits share one mark, so the tooltip has to name the ones that are on */
+      var limits = [];
+      if (Math.random() < 0.048) limits.push("Registered players only");
+      if (Math.random() < 0.034) limits.push("Experienced players only");
+      if (Math.random() < 0.036) limits.push("No bots &middot; people only");
+      if (limits.length) m.push(["limited", limits.join("<br>")]);
+      if (GAME_RULE[gameid] && Math.random() < 0.09) m.push(["rule", GAME_RULE[gameid]]);
+      return m;
     }
 
     function seatHtmlFor(i, person, bot) {
@@ -6443,18 +6930,88 @@
       var timeTip = started ? "In play for " + timeText + (bot < 0 ? " &middot; a player left, you take their hand and score" : "")
         : "Not started yet &middot; waiting for players";
       var card = document.createElement("div");
-      card.className = "ltCard ltEnter";
-      card.innerHTML = '<div class="tableListing ' + game[0] + ' players4"><div class="header"><div class="playersContainer">' +
+      card.className = "ltCard";
+      card.innerHTML = '<div class="tableListing ' + game[0] + teamClass(game[0]) + ' players4"><div class="header"><div class="playersContainer">' +
         seatHtml +
-        '<img class="ltArt art-' + game[0] + '" src="' + game[0] + '_logo.png" alt="' + game[1] + '" data-tip="<b>' + game[1] + '</b><br>' + game[2] + '">' +
+        /* the @2x source is the logo resampled offline to twice the size it is drawn at. The originals
+           are about 1080x770, which the browser had to shrink seventeen times over on the fly, and its
+           cheap filter broke up the white keyline and ragged the edges. */
+        '<img class="ltArt art-' + game[0] + '" src="' + game[0] + '_logo@2x.png" alt="' + game[1] + '" data-tip="<b>' + game[1] + '</b><br>' + game[2] + '">' +
         '<div class="ltTime" data-tip="' + timeTip + '">' +
         '<svg class="ltRing" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="#fff" stroke-width="2"/>' +
         (started ? '<path d="M8 8V1A7 7 0 0 1 15 8z" fill="#fff"/>' : "") + "</svg>" +
         '<span>' + timeText + "</span></div>" +
+        marksHtml(rollMarks(game[0])) +
         "</div></div></div>";
       return card;
     }
+    /* ── the clock hands over to the invitation, on the table change's own recipe ──
+       dealtInto's two keyframe sets and both curves, with the four-seat stagger collapsed to the one
+       element: 190ms out on the leaving curve, then after 150ms 260ms in on the arriving curve. */
+    var INV_OUT_KF = [{ opacity: 1, transform: "scale(1)" }, { opacity: 0, transform: "scale(.97)" }];
+    var INV_IN_KF = [{ opacity: 0, transform: "translateY(10px) scale(.94)" },
+                     { opacity: 1, transform: "translateY(0) scale(1)" }];
+    var INV_OUT = { duration: 190, easing: "cubic-bezier(.32,0,.67,0)", fill: "both" };
+    var INV_IN = { duration: 260, delay: 150, easing: "cubic-bezier(.22,1,.36,1)", fill: "both" };
+    /* cancelling happens ONLY on reversal, never at rest: a held fill from the other direction would
+       otherwise win, and cancelling at rest drops the element out of the composited path for a frame */
+    function invHandOver(leaving, arriving) {
+      if (!leaving || !arriving) return;
+      leaving.getAnimations().forEach(function (a) { a.cancel(); });
+      arriving.getAnimations().forEach(function (a) { a.cancel(); });
+      leaving.animate(INV_OUT_KF, INV_OUT);
+      arriving.animate(INV_IN_KF, INV_IN);
+    }
+    function addInvitation(box) {
+      if (box.querySelector(".hvClock")) return;
+      var clock = box.querySelector(".ltTime");
+      if (!clock) return;
+      var card = box.closest(".ltCard");
+      var txt = document.createElement("span");
+      txt.className = "hvClock";
+      /* the host tile is the only one where clicking is not a join */
+      txt.textContent = card && card.classList.contains("isNew") ? "Host table" : "Join table";
+      clock.parentNode.insertBefore(txt, clock.nextSibling);
+    }
+    /* A turnover builds a fresh .playersContainer, so the clock and the invitation the pointer was
+       over are gone and the new pair starts at rest. Without this, a table that turns over under a
+       resting mouse loses its invitation until you leave the tile and come back. Both legs are seeked
+       to their end so the state lands with no motion of its own: the arriving content already has
+       plenty. It has to run AFTER the deal-in animations exist, or theirs would be the later fill and
+       would win. */
+    function syncInvite(tile) {
+      if (!tile || !tile._inv) return;
+      var clock = tile.querySelector(".ltTime"), txt = tile.querySelector(".hvClock");
+      if (!clock || !txt || !clock.animate) return;
+      var a = clock.animate(INV_OUT_KF, INV_OUT); a.currentTime = INV_OUT.duration;
+      var b = txt.animate(INV_IN_KF, INV_IN); b.currentTime = INV_IN.delay + INV_IN.duration;
+    }
+
+    /* The invitation is about the whole tile, so it stays up wherever the pointer is inside it,
+       seats included. A seat still answers for itself in its own nameplate at the same time: the two
+       say different things, one about the table and one about that chair. */
+    function armInvite(card) {
+      if (card._inv !== undefined) return;
+      card._inv = false;
+      var want = function (on) {
+        if (card._inv === on) return;
+        card._inv = on;
+        var clock = card.querySelector(".ltTime"), txt = card.querySelector(".hvClock");
+        invHandOver(on ? clock : txt, on ? txt : clock);
+      };
+      card.addEventListener("mouseover", function () { want(true); });
+      card.addEventListener("mouseout", function (e) {
+        if (!card.contains(e.relatedTarget)) want(false);
+      });
+    }
+
+    /* armCard is handed either a whole tile or just a fresh .playersContainer after a turnover, and
+       both carry a .ltTime, so the invitation is added the same way for each. The hover machine goes
+       on the tile, which survives every turnover, so it is only ever armed once. */
     function armCard(card) {
+      addInvitation(card);
+      var tile = card.closest(".ltCard");
+      if (tile) armInvite(tile);
       card.querySelectorAll(".player.isEmpty, .player.isBot").forEach(function (seat) { if (window.ltArmSeat) window.ltArmSeat(seat); });
       card.querySelectorAll(".player:not(.isEmpty):not(.joinable)").forEach(function (p) {
         var n = p.querySelector(".playerName");
@@ -6467,42 +7024,84 @@
       }
     }
 
-    /* the table stops being listed: it filled up, or it ended. Its replacement takes the very slot it
-       left, so the tables around it never move */
-    /* a table settles into a slot: soft at first, its seats fade up, then it sharpens */
-    function settle(card) {
-      var box = contents(card);
-      card.classList.add("ltBusy");
-      card.style.filter = "blur(6px)";
-      if (box) box.style.opacity = "0";
-      armCard(card);
-      fadeTo(box, 0, 1, 240, function () {
-        if (box) box.style.opacity = "";
-        blurTo(card, 6, 0, 260, function () {
-          card.style.filter = "";
-          card.getAnimations().forEach(function (an) { an.cancel(); });
-          if (box) box.getAnimations().forEach(function (an) { an.cancel(); });
-          card.classList.remove("ltBusy");
-        });
+    /* The table stops being listed: it filled up, or it ended. The FELT NEVER MOVES. The tile stays
+       exactly where it is and only what sits on it changes, so it reads as this table's players
+       leaving and new ones sitting down rather than one tile being swapped for another, and there is
+       nothing to blur, nothing to reserve and nothing that can shift.
+       "One clears, four dealt": the old table goes in a single quiet beat, then the new game's art
+       comes up and the players are dealt into their seats one at a time. All the movement is spent on
+       the arrival, which is the half that is actually news. */
+    var DEAL_STEP = 38;
+    function dealtInto(card, game) {
+      var header = card.querySelector(".header");
+      var oldBox = header.querySelector(".playersContainer");
+      var listing = card.querySelector(".tableListing");
+      var fresh = buildCard(game);
+      var newBox = fresh.querySelector(".playersContainer");
+      header.appendChild(newBox);
+      armCard(newBox);
+      /* neither set is touchable while it runs: the arriving one paints on top and hit-tests from the
+         first frame, and an element at opacity 0 still takes the pointer */
+      oldBox.style.pointerEvents = "none";
+      newBox.style.pointerEvents = "none";
+
+      if (reduced || !newBox.animate) {
+        oldBox.remove();
+        listing.className = "tableListing " + game[0] + teamClass(game[0]) + " players4";
+        newBox.style.pointerEvents = "";
+        card.removeAttribute("data-busy");
+        return;
+      }
+      oldBox.animate([{ opacity: 1, transform: "scale(1)" }, { opacity: 0, transform: "scale(.97)" }],
+        { duration: 190, easing: "cubic-bezier(.32,0,.67,0)", fill: "both" });
+      var arriving = [].slice.call(newBox.querySelectorAll(".player, .ltArt, .ltTime, .ltMarks"));
+      var last = null;
+      arriving.forEach(function (el, i) {
+        last = el.animate([{ opacity: 0, transform: "translateY(10px) scale(.94)" },
+                           { opacity: 1, transform: "translateY(0) scale(1)" }],
+          { duration: 260, delay: 150 + i * DEAL_STEP, easing: "cubic-bezier(.22,1,.36,1)", fill: "both" });
       });
+      var finish = function () {
+        oldBox.remove();
+        syncInvite(card);
+        /* the game class waits until the old contents are gone: .tableListing.isTeamGame recolours the
+           playernumber1 and playernumber3 plates, and setting it early would recolour the leaving ones */
+        listing.className = "tableListing " + game[0] + teamClass(game[0]) + " players4";
+        /* The arriving animations are deliberately NOT cancelled. Their fill holds exactly the values
+           the base style already has, so cancelling changes nothing about the layout, but it does drop
+           every element out of the composited rendering path in one frame, and edges and text are
+           rasterised slightly differently on the two sides of that switch. Measured on a whole tile:
+           cancelling moves 1903 pixels by more than 24/255, which reads as everything tightening up a
+           hair the instant the change ends. Left held, the tile is pixel for pixel identical. They cost
+           nothing: this container is built fresh for each turnover and taken away with the next one, so
+           each element carries exactly one finished animation and never more. */
+        newBox.style.pointerEvents = "";
+        card.removeAttribute("data-busy");
+      };
+      if (last) last.onfinish = finish; else setTimeout(finish, 40);
     }
+    grid.querySelectorAll(".ltCard").forEach(function (c) { addInvitation(c); armInvite(c); });
+
     function appear() {
       if (slotCount() >= LIVE_CARDS) return;
       var card = buildCard(pick(NEW_TABLES));
       grid.insertBefore(card, grid.querySelector(".ltCard.isNew"));
-      settle(card);
+      armCard(card);
+      /* a slot that was empty gets the arrival half only: there is nothing to clear */
+      var box = contents(card);
+      if (box && box.animate && !reduced) {
+        [].slice.call(box.querySelectorAll(".player, .ltArt, .ltTime, .ltMarks")).forEach(function (el, i) {
+          el.animate([{ opacity: 0, transform: "translateY(10px) scale(.94)" },
+                      { opacity: 1, transform: "translateY(0) scale(1)" }],
+            { duration: 260, delay: i * DEAL_STEP, easing: "cubic-bezier(.22,1,.36,1)", fill: "both" });
+        });
+      }
     }
     function expire(card, replace) {
-      if (card.classList.contains("ltLeave")) return;
-      card.classList.add("ltLeave", "ltBusy");
-      blurTo(card, 0, 6, 220, function () {
-        fadeTo(contents(card), 1, 0, 200, function () {
-          if (replace === false || slotCount() > LIVE_CARDS) { card.remove(); return; }
-          var fresh = buildCard(pick(NEW_TABLES));
-          grid.replaceChild(fresh, card);
-          settle(fresh);
-        });
-      });
+      if (card.getAttribute("data-busy")) return;
+      if (replace === false || slotCount() > LIVE_CARDS) { card.remove(); return; }
+      card.setAttribute("data-busy", "1");
+      dealtInto(card, pick(NEW_TABLES));
     }
 
     /* in-play tables gain a minute on every beat, as the age on the payload does */
@@ -6563,6 +7162,36 @@
     window.addEventListener("ltfirstbeat", function (e) { startBeat(e.detail); });
     if (window.ltFirstBeat) startBeat(window.ltFirstBeat);
     setTimeout(function () { startBeat(Date.now()); }, 45000); /* only if the intro module never speaks at all */
+
+    /* click to try a beat on demand, instead of waiting for the feed to choose one: the felt turns the
+       table over for a new one, a nameplate changes that seat, and the game art always changes the seat
+       at the top of the felt, which is the easy way to watch one seat change over and over without a
+       pointer sitting on it running the hover first. */
+    /* the top seat, by where it actually sits rather than by its number */
+    function topSeat(card) {
+      return seatsOf(card).slice().sort(function (a, b) {
+        return a.getBoundingClientRect().top - b.getBoundingClientRect().top;
+      })[0];
+    }
+    function changeSeat(card, seat) {
+      if (!seat) return;
+      if (seat.classList.contains("isEmpty") || seat.classList.contains("isBot")) {
+        var taken = names(card);
+        var free = PEOPLE.filter(function (p) { return taken.indexOf(p[0]) === -1; });
+        if (free.length) sit(seat, pick(free));
+      } else {
+        stand(seat);
+      }
+    }
+    grid.addEventListener("click", function (e) {
+      var card = e.target.closest && e.target.closest(".ltCard");
+      if (!card || card.classList.contains("isNew") || card.getAttribute("data-busy")) return;
+      var plate = e.target.closest(".playerNameContainer");
+      if (plate) { changeSeat(card, plate.closest(".player")); return; }
+      if (e.target.closest(".ltArt")) { changeSeat(card, topSeat(card)); return; }
+      if (e.target.closest(".player") || e.target.closest("[data-tip]")) return;
+      expire(card);
+    });
   });
 </script>
 <style>
@@ -6705,9 +7334,10 @@
 <!-- =====================================================================================================
      HERO INTRO NOTES (so we remember this when the real frontpage is rebuilt; prototyped in signature-lab.html, scene 85)
 
-     What plays, once, after load. The clock starts when the hero fonts are in (the same promise that gates the fluid
-     mosaic layout, heroFontsReady). The page rests at square one for 640 ms: plain headline "Play card games / in good
-     company", a faint rule under the menu bar, the live capsule as it is. Then:
+     What plays, once, after load. The clock starts when the fonts are in (the hero fonts' promise, heroFontsReady, which also
+     gates the fluid mosaic layout, and document.fonts.ready). The page then rests at square one for 640 ms (REST; until
+     4 September 2026 the rest also waited for eight on-time frames first): plain headline "Play card games / <closer>"
+     (the clock-chosen line, see below), a faint rule under the menu bar, the live capsule as it is. Then:
        1. The seam sweeps out from under the wordmark (400 ms, ease-out) over the faint rule, unbroken. The suits drop onto
           it from the centre outward (one every 20 ms, a 14 px drop, landing with a small squash, no bounce), and the piece
           of rule beneath each suit fades away as it lands (signature-lab scene 104, "Dampened"). Glyphs are the divider's
@@ -6715,27 +7345,40 @@
           fall back to the static divider if no message arrives within 2.5 s.
        2. The second line of the headline rises and settles four times (2.2 s apart, done inside ten seconds), then never
           moves again:
-            in good company            (at rest; this is also what the H1 in the HTML always says)
+            <closer>                   (at rest, chosen by the visitor's local clock, see below)
             with 1214 people           (the live headcount, no thousands separator; the last three digits spin and lock
                                         in from the left, the hundreds locking as the line lands)
-            just with friends
             against our robots
-            <closer>                   (the line that stays, chosen by the visitor's local clock, see below)
+            just with friends
+            in good company            (the line that stays; this is also what the H1 in the HTML always says)
 
      The closers. Hour bands: morning 5-10, midday 10-14, afternoon 14-17, evening 17-22, late 22-5.
                  morning               midday                  afternoon               evening                late
-       Mon       to break the week in  to get the week going   to lift the afternoon   after a long day       to put the day to bed
-       Tue       as the coffee brews   to break up the day     in the afternoon lull   as evening settles     to close the night
-       Wed       as the coffee brews   to shorten the week     for a midweek lift      to brighten the week   to close the night
-       Thu       as the coffee brews   to shorten the week     in the afternoon lull   after a long day       to close the night
-       Fri       over a cup of coffee  to cap off the week     to put the week down    to open the weekend    to open the weekend
-       Sat/Sun   to start the day off  for a lazy weekend      for a quiet weekend     for a cozy weekend     to put the day to bed
+       Mon       to open the week      to get things going     to lift the day         after a long day       to see the day out
+       Tue       as the coffee brews   to break up the day     in the slow hours       as evening settles     to close the night
+       Wed       as the coffee brews   to hurry the week       for a midweek lift      to lighten the week    to close the night
+       Thu       as the coffee brews   to hurry the week       in the slow hours       after a long day       to close the night
+       Fri       over a cup of coffee  to cap off the week     to let the week go      into the weekend       into the weekend
+       Sat/Sun   to start the day off  for a lazy weekend      for a quiet day         for a cozy weekend     to see the day out
      Rules: pick once per page load (never change under the reader); where a slot has two lines alternate by date, not at
-     random; if the clock is unavailable fall back to "in good company". Every line must complete "Play card games ..." as
-     one sentence, no comma, at most 21 characters (about 400 px at 38 px Gelica), no leading "and".
+     random; if the clock is unavailable rest on "in good company" and skip nothing else. Every line must complete "Play card games ..." as
+     one sentence, no comma, no leading "and", and set no wider than about 330 px at 38 px Gelica (19 characters or so; the widest
+     kept line is "over a cup of coffee" at 333). On 4 September 2026 the ten lines from 338 to 371 px were replaced by shorter ones.
 
-     Divider default: "Four stations" (the four suits 96px apart, centred, on every section seam; the full long-deal row on the
-     menu bar and above the footer). The section suits are hidden at square one and fade in (320 ms) at the same moments
+     Divider default: "Head in the rule, the window in equal cells" (title seam lab 137, "toprowcells"): each section head sits on its seam
+     with the rule broken 4px from its letters, and one row runs across the menu seam, every section seam and the footer alike: the
+     window (the area left of the ad rail) divided into an even number of equal cells, the count whose cell is nearest 96px, with a suit
+     centred in each in the site's order (diamond and spade nearest the centre), so the row starts and ends half a pitch inside the
+     window's edge (fourteen cells of 100 at a 1728 window, ten of 95 at 1280, eight of 99 at 794); only the suits that would collide
+     with a head are dropped (built by prepareSeam and prepareSectionHeads below). Each head is stroked 3px in the paper below the seam
+     under its ink (lab 121, 3px since 4 September 2026), so the counters and the gaps inside a word take the lower paper. "Toprow" (lab 111, the menu row's fixed
+     96px grid across the window) was the default until 4 September 2026. "Parted" (lab 108), "swelled" (lab 107) and "Four stations" (the four suits 96px apart,
+     centred, on every section seam; the full long-deal row on the menu bar and above the footer) stay options, as does "toprowflush" (lab 129):
+     the same row re-pitched to the column, an even count of suits at the pitch nearest 96 that puts the outermost glyph on the tiles' edge
+     (twelve at 100 for the 1112px column), on the menu row, every seam and the footer alike, so the row belongs to the column, not the window;
+     "toprowgap" (lab 131, the end suits' openings starting at the border), "toprowends" (lab 132, 96 from each border inward, the
+     remainder in the middle), "toprowindent" (lab 133, the ends 50px inside the border) and "toprowcells" (lab 137, the window in
+     equal cells with a suit centred in each, the ends half a pitch inside the window's edge) are the same row's other endings. The section suits are hidden at square one and fade in (320 ms) at the same moments
      their counterparts land on the menu row: the inner pair first, then the outer pair, and the piece of rule under each
      suit fades away as it arrives, so the section rules are unbroken at square one.
 
@@ -6777,13 +7420,13 @@
   /* one long-deal tile in the site's suit order (utils.SUITS): club, diamond, spade, heart, at the stations 48 / 144 / 240 / 336 */
   var TILE = [["club", 41.88, .88, .153], ["diamond", 137.64, .64, .159], ["spade", 234.32, 1.32, .142], ["heart", 330.08, 1.08, .148]];
   var CLOSERS = {
-    mon: { morning: "to break the week in", midday: "to get the week going", afternoon: "to lift the afternoon", evening: "after a long day", late: "to put the day to bed" },
-    tue: { morning: "as the coffee brews", midday: "to break up the day", afternoon: "in the afternoon lull", evening: "as evening settles", late: "to close the night" },
-    wed: { morning: "as the coffee brews", midday: "to shorten the week", afternoon: "for a midweek lift", evening: "to brighten the week", late: "to close the night" },
-    thu: { morning: "as the coffee brews", midday: "to shorten the week", afternoon: "in the afternoon lull", evening: "after a long day", late: "to close the night" },
-    fri: { morning: "over a cup of coffee", midday: "to cap off the week", afternoon: "to put the week down", evening: "to open the weekend", late: "to open the weekend" },
-    sat: { morning: "to start the day off", midday: "for a lazy weekend", afternoon: "for a quiet weekend", evening: "for a cozy weekend", late: "to put the day to bed" },
-    sun: { morning: "to start the day off", midday: "for a lazy weekend", afternoon: "for a quiet weekend", evening: "for a cozy weekend", late: "to put the day to bed" }
+    mon: { morning: "to open the week", midday: "to get things going", afternoon: "to lift the day", evening: "after a long day", late: "to see the day out" },
+    tue: { morning: "as the coffee brews", midday: "to break up the day", afternoon: "in the slow hours", evening: "as evening settles", late: "to close the night" },
+    wed: { morning: "as the coffee brews", midday: "to hurry the week", afternoon: "for a midweek lift", evening: "to lighten the week", late: "to close the night" },
+    thu: { morning: "as the coffee brews", midday: "to hurry the week", afternoon: "in the slow hours", evening: "after a long day", late: "to close the night" },
+    fri: { morning: "over a cup of coffee", midday: "to cap off the week", afternoon: "to let the week go", evening: "into the weekend", late: "into the weekend" },
+    sat: { morning: "to start the day off", midday: "for a lazy weekend", afternoon: "for a quiet day", evening: "for a cozy weekend", late: "to see the day out" },
+    sun: { morning: "to start the day off", midday: "for a lazy weekend", afternoon: "for a quiet day", evening: "for a cozy weekend", late: "to see the day out" }
   };
   var DAYKEYS = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
   function band(h) { return h < 5 ? "late" : h < 10 ? "morning" : h < 14 ? "midday" : h < 17 ? "afternoon" : h < 22 ? "evening" : "late"; }
@@ -6793,7 +7436,8 @@
     return (CLOSERS[day] && CLOSERS[day][b]) || "in good company";
   }
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  var timers = [], phase = "idle", settled = null; /* phase: idle, playing, done */
+  var timers = [], rafs = [], phase = "idle", settled = null; /* phase: idle, playing, done */
+  var REST = 640; /* the rest at square one before the intro plays, after the fonts arrive (Holger, 4 September: 0.64 s) */
   function el(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; }
   var GAPSVG = '<svg viewBox="0 0 20 14"><rect y="6.5" width="20" height="1" fill="#D9D2C4"/></svg>'; /* a piece of rule, drawn like the tile */
   var svgN = 0;
@@ -6814,9 +7458,14 @@
     ink.style.clipPath = "inset(0 50% 0 50%)";
     var suits = [];
     /* tiles centred on the wordmark, so the middle four read club, diamond, spade, heart, like the section dividers */
-    var base = ((cx - 192) % 384 + 384) % 384 - 384, spots = [];
+    var fit = rowFit(), base = ((cx - 192) % 384 + 384) % 384 - 384, spots = [];
     ink.style.backgroundPosition = base + "px 0"; /* the rule's gaps follow the same offset as the tiles, so each gap sits under its suit */
-    for (var g = base; g < W; g += 384) TILE.forEach(function (t) { var xx = g + t[1]; if (xx + 80 * t[3] > 0 && xx < W) spots.push([t, xx]); });
+    if (fit) {
+      /* the row set to the column (the fitted Divider options): the rule in pieces between the openings, the suits on the fitted stations */
+      var edges = fit === "cells" ? [0, W] : columnEdges(mb.getBoundingClientRect().left), st = fittedStations(cx, edges[0], edges[1], fit).sort(function (a, b) { return a[1] - b[1]; }), prev = 0;
+      st.forEach(function (q) { headRule(ink, prev, q[1] - 10); prev = q[1] + 10; }); headRule(ink, prev, W);
+      st.forEach(function (q) { var tt = TILEBY[q[0]]; spots.push([[q[0], 0, tt[0], tt[1]], q[1] - 40 * tt[1]]); });
+    } else for (var g = base; g < W; g += 384) TILE.forEach(function (t) { var xx = g + t[1]; if (xx + 80 * t[3] > 0 && xx < W) spots.push([t, xx]); });
     for (var k = 0; k < spots.length; k++) {
       var t = spots[k][0], size = 80 * t[3], x = spots[k][1];
       var su = el("span", "su", suitSVG(t[0]));
@@ -6827,11 +7476,11 @@
       suits.push({ el: su, gap: gap, d: Math.abs(x + size / 2 - cx) });
     }
     suits.sort(function (a, b) { return a.d - b.d; }); /* landing order: from the wordmark outward */
-    seamParts = { fl: fl, fr: fr, ink: ink, suits: suits, cx: cx };
+    seamParts = { fl: fl, fr: fr, ink: ink, suits: suits, cx: cx, fit: fit };
     return seamParts;
   }
   /* the four suits on every section seam: one span per seam, placed where that seam's pseudo-element draws its rule */
-  var SECTION_SEAMS = [["#openTablesTop", "top:-7px"], ["#openTablesTop", "bottom:-7px"], ["#sec-rummy", "top:-7px"], ["#sec-classic", "top:-7px"], ["#lobbyDemo .lobbyTopBand", "top:-7px"], ["#lobbyDemo .lobbyTopBand + .lobbyhead", "top:-39px"]];
+  var SECTION_SEAMS = [["#openTablesTop", "top:-7px"], ["#openTablesTop", "bottom:-7px"], ["#sec-tt", "top:-7px"], ["#sec-rummy", "top:-7px"], ["#sec-classic", "top:-7px"], ["#lobbyDemo .lobbyTopBand", "top:-7px"]];
   var sectionSuits = [];
   function prepareSectionSuits(visible) {
     document.querySelectorAll(".divsuits").forEach(function (e) { e.remove(); }); sectionSuits = [];
@@ -6852,15 +7501,160 @@
       var when = 30 + (s.station * 2 + s.side) * 20;
       timers.push(setTimeout(function () {
         s.el.style.opacity = "1"; s.el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 320, easing: "ease-out" });
-        s.gap.style.opacity = "0"; s.gap.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 320, easing: "ease-out" }); /* the rule under it fades away */
+        if (s.gap) { s.gap.style.opacity = "0"; s.gap.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 320, easing: "ease-out" }); } /* the rule under it fades away */
       }, when));
+    });
+  }
+  /* the head in the rule (Divider options "parted" and "swelled", title seam lab 108 and 107): each seam's title is drawn on the seam in a
+     .divhead overlay, the rule broken around it, the suits beside it (real elements, so they fade in like the four stations); the row's
+     own .pophead is hidden by CSS. Each entry: host and offset (as SECTION_SEAMS), the title(s) that belong to the seam, the seam's index
+     down the page (the section's own suit is club, diamond, spade, heart in turn). */
+  var HEAD_SEAMS = [
+    ["#openTablesTop", "top:-7px", "#openTablesTop .lobbyhead .pophead", 0, "band"],
+    ["#openTablesTop", "bottom:-7px", "#liveTablesTop .lobbyhead .pophead", 1, "canvas"],
+    ["#sec-tt", "top:-7px", "#sec-tt > .pophead", 2, "band"],
+    ["#sec-rummy", "top:-7px", "#sec-rummy > .pophead", 3, "canvas"],
+    ["#sec-classic", "top:-7px", "#sec-classic > .pophead", 4, "band"],
+    ["#lobbyDemo .lobbyTopBand", "top:-7px", "#lobbyDemo .lobbycol .lobbyhead .pophead", 5, "canvas"],
+    [".sitefooter", "top:-7px", null, 6, "band"] /* no head: the footer's row, drawn here only in the fitted modes */
+  ];
+  /* the halo (title seam lab 121): the head is stroked 3px in the paper below the seam, under the ink, so the counters and the gaps inside
+     each word take the lower paper and the boundary stops at the word instead of running through it (2px until 4 September 2026) */
+  var HEAD_HALO = 3;
+  var SUIT_ORDER = ["club", "diamond", "spade", "heart"], TILEBY = {};
+  TILE.forEach(function (t) { TILEBY[t[0]] = [t[2], t[3]]; });
+  function headMode() { var c = document.body.classList; return c.contains("div-parted") ? "parted" : (c.contains("div-swelled") ? "swelled" : (c.contains("div-toprowflush") ? "toprowflush" : (c.contains("div-toprowgap") ? "toprowgap" : (c.contains("div-toprowends") ? "toprowends" : (c.contains("div-toprowindent") ? "toprowindent" : (c.contains("div-toprowcells") ? "toprowcells" : (c.contains("div-toprow14") ? "toprow14" : (c.contains("div-toprow") ? "toprow" : null)))))))); }
+  /* the modes whose row is set to the column rather than the window, and how (title seam lab 129, 131, 132, 133, 137) */
+  var ROW_FITS = { toprowflush: "flush", toprowgap: "gap", toprowends: "fromEnds", toprowindent: "indent", toprowcells: "cells" };
+  function rowFit(mode) { return ROW_FITS[mode || headMode()] || null; }
+  /* the window's edges (the area left of the ad rail, which the menu bar spans), relative to a seam box whose left edge is at viewport x = bx */
+  function areaEdges(bx) { var mb = document.querySelector(".mbcenter"), r = mb ? mb.getBoundingClientRect() : { left: 0, right: window.innerWidth }; return [r.left - bx, r.right - bx]; }
+  /* the column's inner edges (the tiles' left and right), relative to a seam box whose left edge is at viewport x = bx */
+  function columnEdges(bx) {
+    var ref = document.querySelector("#sec-tt") || document.querySelector(".popular"), r = ref.getBoundingClientRect(), cs = getComputedStyle(ref);
+    return [r.left + parseFloat(cs.paddingLeft) - bx, r.right - parseFloat(cs.paddingRight) - bx];
+  }
+  /* the row set to the column (title seam lab 129, 131, 132, 133, 137). "flush": an even count of suits at the pitch nearest 96 that puts the
+     outermost glyph's edge on the column's border (its centre 6px in): twelve at 100 for the 1112px column, twelve at 95.6 for 1064, ten
+     at 99.1 for 904. "gap": the same with the outermost suit's 20px opening starting at the border (its centre 10px in). "fromEnds": the
+     pitch kept at 96 and counted from each border inward (flush ends), the remainder left as the middle gap. "indent": as flush with the
+     ends 50px inside the border (twelve at 92 for 1112). "cells": the window (colL and colR are then the area's edges) in an even number
+     of equal cells (the count whose cell is nearest 96), a suit centred in each, so the ends are half a pitch inside the window's edge
+     (fourteen cells of 100 for a 1400 area). Diamond and spade sit
+     nearest the centre as on the menu row's tile. Each entry: name, centre x, station (0 nearest the centre), side */
+  function fittedStations(cx, colL, colR, kind) {
+    var inset = kind === "gap" ? 10 : (kind === "indent" ? 50 : 6), half = [];
+    if (kind === "fromEnds") { for (var d0 = cx - colL - inset; d0 > 30; d0 -= 96) half.unshift(d0); }
+    else if (kind === "cells") {
+      var cell = null; for (var nc = 2; nc <= 40; nc += 2) { var pc = (colR - colL) / nc; if (!cell || Math.abs(pc - 96) < Math.abs(cell[1] - 96)) cell = [nc, pc]; }
+      for (var qc = 0; qc < cell[0] / 2; qc++) half.push((qc + 0.5) * cell[1]);
+    }
+    else {
+      var span = colR - colL - 2 * inset, best = null;
+      for (var n = 2; n <= 40; n += 2) { var p = span / (n - 1); if (!best || Math.abs(p - 96) < Math.abs(best[1] - 96)) best = [n, p]; }
+      for (var q = 0; q < best[0] / 2; q++) half.push(best[1] / 2 + q * best[1]);
+    }
+    var out = [], R = ["spade", "heart", "club", "diamond"], L = ["diamond", "club", "heart", "spade"];
+    half.forEach(function (d, k) { out.push([L[k % 4], cx - d, k, 0], [R[k % 4], cx + d, k, 1]); });
+    return out;
+  }
+  var headMetricsCache = {};
+  function headMetrics(font) { /* ascent, descent, x-height and cap height of the head's font at 26px, from a canvas */
+    if (headMetricsCache[font]) return headMetricsCache[font];
+    var c = document.createElement("canvas").getContext("2d"); c.font = font;
+    var g = c.measureText("Hg"), x = c.measureText("x"), H = c.measureText("H");
+    return (headMetricsCache[font] = { asc: g.fontBoundingBoxAscent, desc: g.fontBoundingBoxDescent, xh: x.actualBoundingBoxAscent, cap: H.actualBoundingBoxAscent });
+  }
+  /* a piece of rule from x0 to x1, drawn like the tile (rect y 6.5, height 1, in a 14px SVG); swell "r"/"l"/"both" tapers it from a hairline
+     to 3px with a rounded end at the side(s) nearest the head */
+  function headRule(box, x0, x1, swell) {
+    x0 = Math.round(x0); x1 = Math.round(x1); var w = x1 - x0; if (w < 10) return;
+    var seg = el("span", "ln"), d;
+    if (swell === "r") d = "M0,6.5 L" + (w - 1.5) + ",5.5 A1.5,1.5 0 0 1 " + (w - 1.5) + ",8.5 L0,7.5 Z";
+    else if (swell === "l") d = "M" + w + ",6.5 L1.5,5.5 A1.5,1.5 0 0 0 1.5,8.5 L" + w + ",7.5 Z";
+    else if (swell === "both") d = "M1.5,5.5 A1.5,1.5 0 0 0 1.5,8.5 L" + (w / 2) + ",7.5 L" + (w - 1.5) + ",8.5 A1.5,1.5 0 0 0 " + (w - 1.5) + ",5.5 L" + (w / 2) + ",6.5 Z";
+    seg.style.cssText = "left:" + x0 + "px;width:" + w + "px;";
+    seg.innerHTML = '<svg viewBox="0 0 ' + w + ' 14" width="' + w + '" height="14">' + (d ? '<path d="' + d + '" fill="#D9D2C4"/>' : '<rect y="6.5" width="' + w + '" height="1" fill="#D9D2C4"/>') + '</svg>';
+    box.appendChild(seg);
+  }
+  var builtHeadMode = null;
+  function prepareSectionHeads(visible) {
+    document.querySelectorAll(".divhead").forEach(function (e) { e.remove(); });
+    var mode = headMode(); builtHeadMode = mode; if (!mode) return;
+    HEAD_SEAMS.forEach(function (def) {
+      var host = document.querySelector(def[0]); if (!host) return;
+      var heads = def[2] ? Array.prototype.slice.call(document.querySelectorAll(def[2])) : [];
+      if (def[2] ? !heads.length : !rowFit(mode)) return;
+      var box = el("div", "divhead"); box.style.cssText = def[1] + ";"; host.appendChild(box);
+      var W = box.clientWidth, bx = box.getBoundingClientRect().left, breaks = [], suits = [], groups = [], tbreaks = [];
+      heads.forEach(function (h) {
+        /* the head sits on the centre of its column: the host's for single heads, its .lobbycol's on the double seam */
+        var col = h.closest(".lobbycol") || host, cr = col.getBoundingClientRect(), cx = cr.left + cr.width / 2 - bx;
+        var cs = getComputedStyle(h), ttl = el("span", "ttl", h.innerHTML);
+        ttl.style.fontFamily = cs.fontFamily; ttl.style.fontWeight = cs.fontWeight; ttl.style.color = cs.color; box.appendChild(ttl);
+        var m = headMetrics(cs.fontWeight + " 26px " + cs.fontFamily), base = (26 - (m.asc + m.desc)) / 2 + m.asc;
+        var tw = ttl.offsetWidth, left = cx - tw / 2;
+        ttl.style.left = left + "px"; ttl.style.top = (7 - base + m.xh / 2) + "px"; /* the x-height centred on the rule */
+        if (HEAD_HALO) {
+          var halo = ttl.cloneNode(true), paper = "var(--" + (def[4] || "canvas") + ", " + (def[4] === "band" ? "#f4eee5" : "#f9f6f2") + ")";
+          halo.className = "ttl halo"; halo.style.color = paper; halo.style.webkitTextStroke = (2 * HEAD_HALO) + "px " + paper;
+          box.insertBefore(halo, ttl);
+        }
+        var right = left + tw, own = SUIT_ORDER[def[3] % 4];
+        if (mode === "parted") {
+          breaks.push([left - 4, right + 4]);
+          /* suit centres 34px from the text (4px of paper, 20px of rule, 10px of gap), then 40px apart: every piece of rule is 20px */
+          [["diamond", left - 34, 0, 0], ["club", left - 74, 1, 0], ["spade", right + 34, 0, 1], ["heart", right + 74, 1, 1]].forEach(function (q) { suits.push(q); breaks.push([q[1] - 10, q[1] + 10]); });
+        } else if (mode === "swelled") {
+          breaks.push([left - 40, right + 40]);
+          suits.push([own, left - 20, 0, 0], [own, right + 20, 0, 1]);
+        } else {
+          var pad = mode === "toprow14" ? 14 : 4; breaks.push([left - pad, right + pad]); tbreaks.push([left - pad, right + pad]);
+        }
+        groups.push([left - 200, right + 200]);
+      });
+      if (rowFit(mode)) {
+        var edges = rowFit(mode) === "cells" ? areaEdges(bx) : columnEdges(bx), fr = host.getBoundingClientRect(), fcx = (edges[0] + edges[1]) / 2;
+        fittedStations(fcx, edges[0], edges[1], rowFit(mode)).forEach(function (q) {
+          if (tbreaks.some(function (t) { return q[1] + 18 > t[0] && q[1] - 18 < t[1]; })) return;
+          suits.push(q); breaks.push([q[1] - 10, q[1] + 10]);
+        });
+      } else if (mode === "toprow" || mode === "toprow14") {
+        /* the menu row's grid centred on the column: club at 144px left of centre, diamond at 48, spade at 48 right, heart at 144, repeating
+           every 384px; a suit whose 20px gap would come within 8px of a head's opening is dropped, the rest keep their stations */
+        var hr = host.getBoundingClientRect(), gcx = hr.left + hr.width / 2 - bx, names = { 48: "club", 144: "diamond", 240: "spade", 336: "heart" };
+        for (var gx = gcx - 192 - 384 * 6; gx < W + 384; gx += 384) [48, 144, 240, 336].forEach(function (o) {
+          var c = gx + o; if (c < 14 || c > W - 14) return;
+          if (tbreaks.some(function (t) { return c + 18 > t[0] && c - 18 < t[1]; })) return;
+          var station = Math.min(3, Math.round((Math.abs(c - gcx) - 48) / 96));
+          suits.push([names[o], c, station, c < gcx ? 0 : 1]); breaks.push([c - 10, c + 10]);
+        });
+      }
+      breaks.sort(function (a, b) { return a[0] - b[0]; });
+      var merged = [];
+      breaks.forEach(function (b) { var l = merged[merged.length - 1]; if (l && b[0] <= l[1]) l[1] = Math.max(l[1], b[1]); else merged.push([b[0], b[1]]); });
+      /* the rule: plain pieces between the openings; in swelled mode the pieces that meet a head's opening taper toward it */
+      var prev = 0;
+      function swellFor(a, b) { /* a piece from a to b: which of its ends touches a group */
+        if (mode !== "swelled") return null;
+        var l = groups.some(function (g) { return a >= g[0] - 1 && a <= g[1]; }), r = groups.some(function (g) { return b >= g[0] && b <= g[1] + 1; });
+        return l && r ? "both" : (l ? "l" : (r ? "r" : null));
+      }
+      merged.forEach(function (b) { if (b[0] > prev) headRule(box, prev, b[0], swellFor(prev, b[0])); prev = Math.max(prev, b[1]); });
+      if (prev < W) headRule(box, prev, W, swellFor(prev, W));
+      suits.forEach(function (q) {
+        var t = TILEBY[q[0]], size = 80 * t[1], su = el("span", "su", suitSVG(q[0])), gap = null;
+        if (mode !== "swelled") { gap = el("span", "gapln", GAPSVG); gap.style.cssText = "left:" + (q[1] - 10) + "px;opacity:" + (visible ? 0 : 1) + ";"; box.appendChild(gap); }
+        su.style.cssText = "left:" + (q[1] - size / 2) + "px;top:" + t[0] + "px;width:" + size + "px;height:" + size + "px;opacity:" + (visible ? 1 : 0) + ";";
+        box.appendChild(su); sectionSuits.push({ el: su, gap: gap, station: q[2], side: q[3] });
+      });
     });
   }
   function finishSeam() {
     var s = seamParts || prepareSeam(); if (!s) return;
     s.fl.style.display = "none"; s.fr.style.display = "none"; s.ink.style.clipPath = "none";
     s.suits.forEach(function (x) { x.el.style.opacity = "1"; x.gap.style.opacity = "0"; });
-    sectionSuits.forEach(function (x) { x.el.style.opacity = "1"; x.gap.style.opacity = "0"; });
+    sectionSuits.forEach(function (x) { x.el.style.opacity = "1"; if (x.gap) x.gap.style.opacity = "0"; });
   }
   /* the seam, dampened (signature-lab scene 104): the rule sweeps out from under the wordmark in 400 ms; the suits drop onto it from
      the centre outward, one every 20 ms, each landing with a small squash and no bounce, while the piece of rule beneath it fades */
@@ -6988,18 +7782,29 @@
         if (!document.querySelector(".mbcenter .seamsweep")) { prepareSeam(); finishSeam(); }
         if (!document.querySelector(".divsuits")) prepareSectionSuits(true);
       }
+      if (seamParts && seamParts.fit !== rowFit()) { prepareSeam(); finishSeam(); } /* the menu row follows the Divider option's row */
+      if (headMode() !== builtHeadMode || (headMode() && !document.querySelector(".divhead"))) prepareSectionHeads(true); /* the Divider switcher changed the mode */
       return r;
     };
   }
-  window.replayIntro = function () { squareOne(); timers.push(setTimeout(play, 640)); };
+  window.replayIntro = function () { squareOne(); timers.push(setTimeout(play, REST)); };
+  /* the head seams measure their titles and columns, so they follow the viewport */
+  var headResize = null;
+  window.addEventListener("resize", function () { clearTimeout(headResize); headResize = setTimeout(function () {
+    if (headMode()) prepareSectionHeads(true);
+    if (rowFit() && phase === "done") { prepareSeam(); finishSeam(); } /* the fitted row is measured from the column */
+  }, 120); });
   var firstCtl = document.querySelector("label.ctl");
   if (firstCtl) {
     var lab = el("label", "ctl", "<span>Intro</span>"), btn = el("button", "introbtn", "Replay intro"); btn.type = "button";
     btn.addEventListener("click", window.replayIntro); lab.appendChild(btn); firstCtl.parentNode.insertBefore(lab, firstCtl);
   }
-  /* square one at once (the faint rule instead of the static tile), then 640 ms of rest, then play */
+  /* square one at once (the faint rule instead of the static tile), then REST ms after the fonts arrive, then play */
   squareOne();
-  Promise.all([window.heroFontsReady ? window.heroFontsReady() : null, document.fonts && document.fonts.ready ? document.fonts.ready : null]).then(function () { timers.push(setTimeout(play, 640)); });
+  Promise.all([window.heroFontsReady ? window.heroFontsReady() : null, document.fonts && document.fonts.ready ? document.fonts.ready : null]).then(function () {
+    if (!ownsTitle(document.getElementById("herotitle")) && headMode()) prepareSectionHeads(true); /* no intro: the heads were measured before the fonts came */
+    timers.push(setTimeout(play, REST));
+  });
 })();
 </script>
 
