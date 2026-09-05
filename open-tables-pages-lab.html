@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Open tables &middot; for the few who want more</title>
+<title>Open tables &middot; how many, inside More</title>
 <style>html.pending body { visibility: hidden; }</style>
 <style>
   @font-face {
@@ -3813,103 +3813,59 @@
   .pglab .barrow { margin-bottom: 16px; }
   .pglab .barrow .trackwrap { flex: 1 1 auto; min-width: 0; margin-bottom: 0; }
 
-  /* ── the controls ── */
-  .pglab .pgctl { font: 14px/20px "BuloRounded", Verdana, sans-serif; color: #4e4d4c; }
-  .pglab .pgctl b { color: #212529; }
-  .pglab .pgctl .pgbtn { cursor: pointer; user-select: none; }
-  .pglab .pgctl .pgbtn.off { opacity: .32; pointer-events: none; }
-  .pglab .pgctl .pgarrow { width: 28px; height: 28px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; color: #212529; }
-  .pglab .pgctl .pgarrow svg { width: 16px; height: 16px; }
-  .pglab .pgctl .pgarrow:hover { background: #ece6db; }
-
-  /* ── One: dots under the grid ── */
-  .pglab .pgctl.dotrow { display: flex; justify-content: center; align-items: center; gap: 9px; margin-top: 16px; min-height: 12px; }
-  .pglab .pgctl .dot { position: relative; width: 8px; height: 8px; border-radius: 50%; background: #c9c0ae; transition: background .15s, transform .15s, width .22s cubic-bezier(.22,1,.36,1); }
-  .pglab .pgctl .dot:hover { background: #8f8676; }
-  .pglab .pgctl .dot.on { background: #212529; transform: scale(1.3); cursor: default; }
-  /* 1b arrows either side */
-  .pglab .pgctl.dotsarrows .pgarrow { width: 24px; height: 24px; }
-  .pglab .pgctl.dotsarrows .pgarrow.l { margin-right: 6px; } .pglab .pgctl.dotsarrows .pgarrow.r { margin-left: 6px; }
-  /* 1c the current dot stretches to a pill */
-  .pglab .pgctl.dotspill .dot.on { width: 24px; border-radius: 4px; transform: none; }
-  /* 1d dashes, as a story's progress */
-  .pglab .pgctl.dashes { gap: 6px; }
-  .pglab .pgctl.dashes .dot { width: 26px; height: 3px; border-radius: 2px; }
-  .pglab .pgctl.dashes .dot.on { transform: none; }
-  /* 1e one line, the filled part is where you are */
-  .pglab .pgctl.line .track { position: relative; width: 240px; height: 4px; border-radius: 2px; background: #d9d2c4; cursor: pointer; }
-  .pglab .pgctl.line .track .fill { position: absolute; top: 0; bottom: 0; border-radius: 2px; background: #212529; transition: left .3s cubic-bezier(.22,1,.36,1); }
-  .pglab .pgctl.line .track:hover { height: 6px; margin: -1px 0; }
-  /* 1f dots and the count */
-  .pglab .pgctl.dotscount .count { margin-left: 8px; font-weight: bold; color: #4e4d4c; font-size: 13px; }
-  /* 1g a dot says its tables under the pointer */
-  .pglab .pgctl.dotstip .dot::after { content: attr(data-lab); position: absolute; left: 50%; bottom: calc(100% + 7px); transform: translateX(-50%); white-space: nowrap; font: bold 12px/20px "BuloRounded", Verdana, sans-serif; color: #fff; background: #212529; padding: 0 8px; border-radius: 6px; corner-shape: squircle; opacity: 0; pointer-events: none; transition: opacity .12s; }
-  .pglab .pgctl.dotstip .dot:hover::after { opacity: 1; }
-  /* 1h little tables */
-  .pglab .pgctl.felts { gap: 7px; }
-  .pglab .pgctl.felts .dot { width: 16px; height: 12px; border-radius: 4px; corner-shape: squircle; background: #b7c9ae; box-shadow: inset 0 0 0 1px rgba(0,0,0,.08); }
-  .pglab .pgctl.felts .dot:hover { background: #8fb082; }
-  .pglab .pgctl.felts .dot.on { transform: none; background: #327333; box-shadow: inset 0 0 0 1px rgba(255,255,255,.35), 0 1px 2px rgba(0,0,0,.15); }
-
-  /* ── Two: the games bar's tray at the bottom ── */
-  .pglab .pgctl.tray { display: flex; position: relative; margin: 14px auto 0; width: max-content; max-width: 100%; background: #e4ddd0; box-shadow: inset 0 0 0 1px #c9c0ae; border-radius: 9px; corner-shape: squircle; padding: 3px; }
-  .pglab .pgctl.tray .cell { position: relative; z-index: 1; min-width: 38px; height: 26px; line-height: 26px; padding: 0 10px; text-align: center; font-weight: bold; font-size: 15px; color: #4e4d4c; border-radius: 6px; corner-shape: squircle; transition: color .18s; display: inline-flex; align-items: center; justify-content: center; gap: 5px; box-sizing: border-box; }
-  .pglab .pgctl.tray .cell + .cell::before { content: ""; position: absolute; left: 0; top: 4px; bottom: 4px; width: 1px; background: #c9c0ae; transition: opacity .18s; }
-  .pglab .pgctl.tray .cell.on { color: #fff; cursor: default; text-shadow: -1px -1px 0 var(--triogreenring), 1px -1px 0 var(--triogreenring), -1px 1px 0 var(--triogreenring), 1px 1px 0 var(--triogreenring); }
-  .pglab .pgctl.tray .cell.on::before, .pglab .pgctl.tray .cell.on + .cell::before { opacity: 0; }
-  .pglab .pgctl.tray .cell.pgbtn:not(.on):hover { background: #dcd4c5; }
-  .pglab .pgctl.tray .thumb { position: absolute; top: 3px; height: 26px; background: var(--triogreen); box-shadow: inset 0 0 0 1px var(--triogreenring); border-radius: 6px; corner-shape: squircle; transition: left .26s cubic-bezier(.22,1,.36,1), width .26s cubic-bezier(.22,1,.36,1); }
-  .pglab .pgctl.tray .cell svg { width: 14px; height: 14px; }
-  /* 2b dots in the tray */
-  .pglab .pgctl.traydots .cell { min-width: 30px; padding: 0 8px; }
-  .pglab .pgctl.traydots .cell i { display: block; width: 8px; height: 8px; border-radius: 50%; background: #8f8676; transition: background .18s; }
-  .pglab .pgctl.traydots .cell:hover i { background: #4e4d4c; }
-  .pglab .pgctl.traydots .cell.on i { background: #fff; }
-  /* 2c the stepper: the middle cell is a label, the arrows are the buttons */
-  .pglab .pgctl.stepper .cell.lab { cursor: default; padding: 0 14px; color: #212529; }
-  .pglab .pgctl.stepper .cell.lab b { color: #212529; }
-  .pglab .pgctl.stepper .cell.pgarrow { border-radius: 6px; width: auto; min-width: 34px; }
-  /* 2e the games on each page, as their art */
-  .pglab .pgctl.trayicons .cell { padding: 0 8px; gap: 3px; }
-  .pglab .pgctl.trayicons .cell img { height: 15px; width: auto; filter: drop-shadow(0 1px 1px rgba(0,0,0,.25)); }
-  .pglab .pgctl.trayicons .cell .more { font-size: 11px; margin-left: 2px; }
-
-  /* ── Three: See all beside the games bar, the button in a dark Evernote colour. Built as the site's green button is:
-     the fill, a 1px inset ring a shade darker, the 2px drop shadow, and white text outlined in the ring colour ── */
-  .pglab .pgctl.seebtn .button { white-space: nowrap; color: #fff; }
-  .pglab .pgctl.seebtn .button.dk { background-color: var(--dk); box-shadow: inset 0 0 0 1px var(--dkring), 0 2px 4px rgba(0,0,0,.06);
-    text-shadow: -1px -1px 0 var(--dkring), 1px -1px 0 var(--dkring), -1px 1px 0 var(--dkring), 1px 1px 0 var(--dkring); }
-  .pglab .pgctl.seebtn .button.dk:hover { background-color: var(--dkhover); }
-  .pglab .pgctl.seebtn .button.dk-ink { --dk: #3d3d3a; --dkring: #2a2a28; --dkhover: #333330; }
-  .pglab .pgctl.seebtn .button.dk-text { --dk: #212529; --dkring: #0f1214; --dkhover: #2c3136; }
-  .pglab .pgctl.seebtn .button.dk-warm { --dk: #4a4438; --dkring: #332f26; --dkhover: #403a2f; }
-  .pglab .pgctl.seebtn .button.dk-forest { --dk: #1e5631; --dkring: #143d22; --dkhover: #1a4c2b; }
-  .pglab .pgctl.seebtn .button.dk-felt { --dk: #275c28; --dkring: #1c4420; --dkhover: #22512a; }
-  .pglab .pgctl.seebtn .button.dk-slate { --dk: #3a4a44; --dkring: #28352f; --dkhover: #33413c; }
-  .pglab .pgctl.seebtn .button.dk-play { --dk: var(--triogreen); --dkring: var(--triogreenring); --dkhover: var(--triogreenhover); }
-  /* the chooser's own colours at the chooser's height: tray, ring, ink and hover, 28px like the bar */
-  .pglab .pgctl.seebtn .button.dk-tray { height: 28px; line-height: 28px; background-color: #e4ddd0; box-shadow: inset 0 0 0 1px #c9c0ae; color: #4e4d4c; text-shadow: none; }
-  .pglab .pgctl.seebtn .button.dk-tray:hover { background-color: #dcd4c5; }
-
-  /* ── Four: the More list also picks how many tables to show. A group at the foot of the list: a small heading and a
-     segmented choice in the bar's own clothes, 6, 12, 24 or all, the current one on the green thumb ── */
-  .pglab.moremenu .ovlist { min-width: 220px; }
-  .pglab .ovlist .mlab { display: block; font: bold 11.5px/14px "BuloRounded", Verdana, sans-serif; letter-spacing: .04em; text-transform: uppercase; color: #8a857c; padding: 8px 10px 4px; background: #fff; }
-  .pglab .ovlist .mlab.top { border-bottom: 1px solid #e9e4db; }
-  .pglab .ovlist .mgroup { padding: 4px 10px 10px; background: #fff; }
-  .pglab .ovlist .mseg { display: flex; background: #e4ddd0; box-shadow: inset 0 0 0 1px #c9c0ae; border-radius: 7px; corner-shape: squircle; padding: 2px; }
-  .pglab .ovlist .mseg i { flex: 1 1 0; text-align: center; font-style: normal; font-weight: bold; font-size: 14px; line-height: 22px; border-radius: 5px; corner-shape: squircle; cursor: pointer; color: #4e4d4c; }
-  .pglab .ovlist .mseg i:not(.on):hover { background: #dcd4c5; }
-  .pglab .ovlist .mseg i.on { background: var(--triogreen); color: #fff; box-shadow: inset 0 0 0 1px var(--triogreenring); cursor: default; }
+  /* ── the More list holds the amount. No headings: the amounts sit in the list like another game, after the list's own
+     line, or the list takes a shape that is not one long column. The chosen amount is marked the way the bar marks the
+     picked game, on the Play green thumb. ── */
+  .pglab .pgctl { display: none; }
+  .pglab .pinlab { display: none; }
+  .pglab.pin .ov .ovlist { display: block; }
+  .pglab.list-site .ovlist .mi.amt { color: #4e4d4c; }
+  .pglab.list-site .ovlist .mi.amt i { font-size: 12.3px; opacity: 1; color: #8a857c; }
+  .pglab.list-site .ovlist .mi.amt.on { background: var(--triogreen); color: #fff; box-shadow: inset 0 0 0 1px var(--triogreenring); border-bottom-color: var(--triogreenring);
+    text-shadow: -1px -1px 0 var(--triogreenring), 1px -1px 0 var(--triogreenring), -1px 1px 0 var(--triogreenring), 1px 1px 0 var(--triogreenring); }
+  .pglab.list-site .ovlist .mi.amt.on i { color: #fff; }
+  .pglab .ovlist.rows { min-width: 200px; }
+  /* 1b: the chosen row keeps the tray and gets a tick */
+  .pglab.list-site .ovlist.tick .mi.amt { position: relative; padding-right: 32px; }
+  .pglab.list-site .ovlist.tick .mi.amt.on { background: #e4ddd0; color: #212529; box-shadow: none; text-shadow: none; border-bottom-color: #c9c0ae; }
+  .pglab.list-site .ovlist.tick .mi.amt.on::after { content: ""; position: absolute; right: 10px; top: 50%; width: 14px; height: 14px; transform: translateY(-50%);
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='M2.5 7.5 5.5 10.5 11.5 4' fill='none' stroke='%2343a038' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat; }
+  /* 1d: one row at the foot, the numbers side by side */
+  .pglab .ovlist .foot { display: flex; gap: 2px; padding: 5px 5px; background: #e4ddd0; border-top: 1px solid #c9c0ae; }
+  .pglab .ovlist .mhr + .foot { border-top: 0; }
+  .pglab .ovlist .foot i { flex: 1 1 0; text-align: center; font-style: normal; font-weight: bold; font-size: 15px; line-height: 24px; border-radius: 5px; corner-shape: squircle; color: #4e4d4c; cursor: pointer; }
+  .pglab .ovlist .foot i:not(.on):hover { background: #dcd4c5; }
+  .pglab .ovlist .foot i.on { color: #fff; background: var(--triogreen); box-shadow: inset 0 0 0 1px var(--triogreenring); cursor: default;
+    text-shadow: -1px -1px 0 var(--triogreenring), 1px -1px 0 var(--triogreenring), -1px 1px 0 var(--triogreenring), 1px 1px 0 var(--triogreenring); }
+  /* 2a, 2d: the games in columns */
+  .pglab .ovlist.cols .mgames { display: grid; grid-template-columns: repeat(var(--cols, 2), minmax(0, 1fr)); overflow: hidden; margin-right: -1px; }
+  .pglab.list-site .ovlist.cols .mgames .mi { border-right: 1px solid #c9c0ae; }
+  .pglab .ovlist.cols2 { --cols: 2; min-width: 380px; }
+  .pglab .ovlist.cols3 { --cols: 3; min-width: 560px; }
+  .pglab.list-site .ovlist.cols3 .mgames .mi { font-size: 15px; line-height: 22px; padding-left: 12px; padding-right: 10px; }
+  /* 2b: games on the left, the amounts on the right */
+  .pglab .ovlist.side { min-width: 340px; }
+  .pglab .ovlist.side .msplit { display: flex; align-items: stretch; }
+  .pglab .ovlist.side .mgames { flex: 1 1 auto; }
+  .pglab .ovlist.side .mamts { flex: 0 0 132px; border-left: 1px solid #c9c0ae; background: #e4ddd0; }
+  .pglab.list-site .ovlist.side .mamts .mi.amt { justify-content: center; }
+  .pglab.list-site .ovlist.side .mgames .mi:last-child, .pglab.list-site .ovlist.side .mamts .mi:last-child { border-bottom: 0; }
+  /* 2c: a panel of cells, the bar's own cells wrapped in a card */
+  .pglab .ovlist.panel { min-width: 440px; padding: 10px; background: #fff; }
+  .pglab .ovlist.panel .mgames, .pglab .ovlist.panel .mamts { display: flex; flex-wrap: wrap; gap: 6px; }
+  .pglab .ovlist.panel .mamts { margin-top: 10px; padding-top: 10px; border-top: 1px solid #e9e4db; }
+  .pglab.list-site .ovlist.panel .mi { border: 0; border-radius: 6px; corner-shape: squircle; background: #e4ddd0; box-shadow: inset 0 0 0 1px #c9c0ae; padding: 0 10px; line-height: 26px; font-size: 15px; gap: 6px; }
+  .pglab.list-site .ovlist.panel .mi:hover { background: #dcd4c5; }
+  .pglab.list-site .ovlist.panel .mi.amt.on { background: var(--triogreen); box-shadow: inset 0 0 0 1px var(--triogreenring); }
+  .pglab.list-site .ovlist.panel .mi.dim { opacity: .55; }
 </style>
-<h1>Open tables &middot; for the few who want more</h1>
+<h1>Open tables &middot; how many, inside More</h1>
 <p class="note">
-  Round nine, second pass. The premise: most players find a game among the first six tables, and few ever want the
-  rest. So the way to the rest should cost the many nothing and still be found by the few. Of the fourteen concepts
-  in the first pass, Holger kept two and asked for one more: the dots under the grid, in their different forms; the
-  games bar's own tray at the bottom, showing something other than page numbers; and a See all beside the games bar
-  itself. The rest is in git history up to 9fbe278. Every card is a working control on the same six-table grid,
-  with 48 tables behind it, and the games bar is styled as the mockup has it by default.
+  Round nine, third pass. The See all button is out. What stays is the thought behind 4a: the bar's More list is the
+  one place the page already has for "the rest", so how many tables to show at a time can live there too, without
+  a second category and without a heading. Two ways in: the amounts as rows in the list, like another game after the
+  list's own line, with the chosen one marked as the bar marks the picked game; and lists that are not one long
+  column. The More lists are held open here so they can be compared; untick the box to have them on hover only.
 </p>
 
 <div class="asec">
@@ -3922,7 +3878,8 @@
         <li><b>The rest is a picture, not a place</b>, until it is asked for. No half-tables to click on.</li>
         <li><b>Nothing loud at rest.</b> Green only under the pointer, if at all.</li>
         <li><b>Dots, the tray, and a See all by the bar go on</b> <span class="tag">5 Sep, late</span>. Pages, rails, hands, handles and hover controls are out.</li>
-        <li><b>The button beside the bar wins</b> <span class="tag">5 Sep, night</span>. It says See all, in a dark Evernote colour, 8px from the bar. 3a the ink thumb is in the mockup, with the Play green twin as its other setting.</li>
+        <li><b>The button beside the bar wins</b> <span class="tag">5 Sep, night</span>. It says See all, in a dark Evernote colour, 8px from the bar.</li>
+        <li><b>See all is out again</b> <span class="tag">6 Sep</span>. The amount goes into the More list, as 4a had it, but not as a second category with a heading. Either like another game, or a list that is not one long column.</li>
       </ul>
     </div>
     <div class="dcard data"><h3>What this costs <span class="tag">measured</span></h3>
@@ -3933,21 +3890,18 @@
         <li><b>A hover control</b> takes nothing at rest, and is found by the pointer or the wheel.</li>
       </ul>
     </div>
-    <div class="dcard rule"><h3>How to read the cards <span class="tag">three families</span></h3>
+    <div class="dcard rule"><h3>How to read the cards <span class="tag">two families</span></h3>
       <ul>
-        <li><b>Dots under the grid.</b> Plain, with arrows, the current one a pill, dashes, one line, with the count, with a tip, as little tables.</li>
-        <li><b>The tray at the bottom.</b> The games bar's own tray, its cells saying the tables, a dot, a step, an amount, or the games on the page.</li>
-        <li><b>See all, the button beside the games bar.</b> The pick. Six dark colours, the Play green, and the chooser's own colours at its height.</li>
-        <li><b>The More list picks how many, too.</b> The amount inside the bar's own list, under three names for the cell.</li>
+        <li><b>Like another game.</b> The amounts as rows after the list's line: on the green, with a tick, worded as Show, or as one row of numbers.</li>
+        <li><b>Not one long list.</b> The games in two or three columns, the amounts beside the games, or the whole thing as a panel of cells.</li>
       </ul>
     </div>
   </div>
 </div>
 
-<div class="asec" id="secDots"><h2>One &middot; dots under the grid</h2><p class="desc">A slide deck's dots, one per page of six, centred under the grid. Eight forms of the same idea.</p><div id="dotVariants"></div></div>
-<div class="asec" id="secTray"><h2>Two &middot; the games bar's tray, at the bottom</h2><p class="desc">The same tray and green thumb the games bar uses, centred under the grid, but its cells say something other than 1 to 8.</p><div id="trayVariants"></div></div>
-<div class="asec" id="secSee"><h2>Three &middot; See all, the button beside the games bar</h2><p class="desc">The pick: the site's small button at the right of the games bar, 8px from it, saying See all. Six dark colours, the Play green, and the chooser's own colours at its height. One click opens all 48 below.</p><div id="seeVariants"></div></div>
-<div class="asec" id="secMore"><h2>Four &middot; the More list picks how many, too</h2><p class="desc">The bar's More list already holds the other games. Here it also holds how many tables to show at a time, 6, 12, 24 or all, and the question is what the cell is then called.</p><div id="moreVariants"></div></div>
+<p class="note" style="margin-top:-10px"><label><input type="checkbox" id="pinLists" checked> Keep the More lists open</label></p>
+<div class="asec" id="secRows"><h2>One &middot; like another game</h2><p class="desc">The other games, the list's own line, then the amounts as rows. No heading: the rows say what they are.</p><div id="rowVariants"></div></div>
+<div class="asec" id="secShapes"><h2>Two &middot; not one long list</h2><p class="desc">The same content in a shape that is wider than it is tall.</p><div id="shapeVariants"></div></div>
 <script>
 /* the avatar edge filter and shadow the homepage wears by default, rebuilt here as the anim lab does */
 (function () {
@@ -4376,100 +4330,56 @@ window.LAB = (function () {
   function arrows(ctl, S) { var m = ctl.querySelector('[data-go="-"]'), p = ctl.querySelector('[data-go="+"]'); if (m) m.classList.toggle("off", S.page === 0); if (p) p.classList.toggle("off", S.page >= S.pages() - 1); }
   function nums(ctl, S, cls) { var want = S.pages(); if (ctl.querySelectorAll("." + cls).length !== want) return false; ctl.querySelectorAll("." + cls).forEach(function (el, i) { el.classList.toggle("on", i === S.page); }); return true; }
 
-  function dotsHtml(S, extra) { return range(S.pages()).map(function (i) { var a = i * S.per + 1, b = Math.min(S.tiles().length, (i + 1) * S.per); return '<span class="dot pgbtn" data-go="' + i + '" data-lab="Tables ' + a + '–' + b + '"' + (extra || "") + "></span>"; }).join(""); }
-  function thumbTo(ctl) { var on = ctl.querySelector(".cell.on"), th = ctl.querySelector(".thumb"); if (on && th) { th.style.left = on.offsetLeft + "px"; th.style.width = on.offsetWidth + "px"; } }
-  function cells(ctl, S, cls) { return nums(ctl, S, cls || "cell"); }
-  function pageGames(S, i) { var seen = [], out = []; S.tiles().slice(i * S.per, (i + 1) * S.per).forEach(function (t) { var g = t.dataset.g; if (seen.indexOf(g) < 0) { seen.push(g); out.push(g); } }); return out; }
-
-  /* ═══════════ One: dots under the grid ═══════════ */
-  pageCard("dotVariants", { key: "dots", cls: "", title: "1a &middot; Dots", tag: "base", tagCls: "base", wrapCls: "",
-    note: "Eight dots, 8px, the current one ink and a third larger. A dot is a click and a picture at once: eight pages, you are on the first. The grid slides a page at a time.",
-    init: function (ctl, S) { ctl.classList.add("dotrow"); ctl.innerHTML = dotsHtml(S); },
-    update: function (ctl, S) { nums(ctl, S, "dot"); } });
-  pageCard("dotVariants", { key: "dotsarrows", title: "1b &middot; Dots with arrows",
-    note: "The same dots with a small arrow either side, so the next page is one click without aiming at a dot. The arrows dim at the ends.",
-    init: function (ctl, S) { ctl.classList.add("dotrow"); ctl.innerHTML = '<span class="pgarrow pgbtn l" data-go="-">' + AL + "</span>" + dotsHtml(S) + '<span class="pgarrow pgbtn r" data-go="+">' + AR + "</span>"; },
-    update: function (ctl, S) { nums(ctl, S, "dot"); arrows(ctl, S); } });
-  pageCard("dotVariants", { key: "dotspill", title: "1c &middot; The current dot is a pill",
-    note: "The current dot stretches to a 24px pill and the others stay round, the way a phone's home screen and a story do it. The pill slides along the row as you page.",
-    init: function (ctl, S) { ctl.classList.add("dotrow"); ctl.innerHTML = dotsHtml(S); },
-    update: function (ctl, S) { nums(ctl, S, "dot"); } });
-  pageCard("dotVariants", { key: "dashes", title: "1d &middot; Dashes",
-    note: "Eight short dashes instead of dots, 26px by 3px, the current one ink. Quieter than dots and easier to hit, and together they read as a track.",
-    init: function (ctl, S) { ctl.classList.add("dotrow"); ctl.innerHTML = dotsHtml(S); },
-    update: function (ctl, S) { nums(ctl, S, "dot"); } });
-  pageCard("dotVariants", { key: "line", title: "1e &middot; One line",
-    note: "The dots merged into one 240px line, and the filled eighth of it is where you are. A click anywhere on the line goes there. The least furniture that still says how much there is and where you stand.",
-    init: function (ctl, S) { if (ctl.children.length) return; ctl.classList.add("dotrow"); ctl.innerHTML = '<span class="track"><span class="fill"></span></span>';
-      ctl.querySelector(".track").addEventListener("click", function (e) { var r = e.currentTarget.getBoundingClientRect(); S.go(String(Math.floor((e.clientX - r.left) / r.width * S.pages()))); }); },
-    update: function (ctl, S) { var f = ctl.querySelector(".fill"), n = S.pages(); f.style.width = (100 / n) + "%"; f.style.left = (100 * S.page / n) + "%"; } });
-  pageCard("dotVariants", { key: "dotscount", title: "1f &middot; Dots and the count",
-    note: "The dots, and a small 1 / 8 to their right, so the position is also a number. For anyone who does not count dots.",
-    init: function (ctl, S) { ctl.classList.add("dotrow"); ctl.innerHTML = dotsHtml(S) + '<span class="count"></span>'; },
-    update: function (ctl, S) { nums(ctl, S, "dot"); ctl.querySelector(".count").textContent = (S.page + 1) + " / " + S.pages(); } });
-  pageCard("dotVariants", { key: "dotstip", title: "1g &middot; A dot says its tables",
-    note: "The plain dots, and under the pointer a dot says which tables it holds, Tables 7 to 12, in a small ink tip above it. Nothing at rest, the meaning on hover.",
-    init: function (ctl, S) { ctl.classList.add("dotrow"); ctl.innerHTML = dotsHtml(S); },
-    update: function (ctl, S) { nums(ctl, S, "dot"); } });
-  pageCard("dotVariants", { key: "felts", title: "1h &middot; Little tables",
-    note: "The dots as little felt tables, 16px by 12px with the tiles' corners, pale for the other pages and the true felt green for the one you are on. The control is a picture of what it pages.",
-    init: function (ctl, S) { ctl.classList.add("dotrow"); ctl.innerHTML = dotsHtml(S); },
-    update: function (ctl, S) { nums(ctl, S, "dot"); } });
-
-  /* ═══════════ Two: the games bar's tray, at the bottom ═══════════ */
-  pageCard("trayVariants", { key: "ranges", title: "2a &middot; The tables each page holds", tag: "tray base", tagCls: "base",
-    note: "The tray and the green thumb, and the cells say the tables rather than the page: 1 to 6, 7 to 12, and so on. The same control as the games bar, saying what it will show.",
-    init: function (ctl, S) { ctl.classList.add("tray"); ctl.innerHTML = '<span class="thumb"></span>' + range(S.pages()).map(function (i) { var a = i * S.per + 1, b = Math.min(S.tiles().length, (i + 1) * S.per); return '<span class="cell pgbtn" data-go="' + i + '">' + a + "–" + b + "</span>"; }).join(""); },
-    update: function (ctl, S) { cells(ctl, S); thumbTo(ctl); } });
-  pageCard("trayVariants", { key: "traydots", title: "2b &middot; Dots in the tray",
-    note: "The tray holds dots instead of words, one per page, and the green thumb sits on the current one with its dot turned white. The deck's dots in the games bar's clothes.",
-    init: function (ctl, S) { ctl.classList.add("tray"); ctl.innerHTML = '<span class="thumb"></span>' + range(S.pages()).map(function (i) { return '<span class="cell pgbtn" data-go="' + i + '"><i></i></span>'; }).join(""); },
-    update: function (ctl, S) { cells(ctl, S); thumbTo(ctl); } });
-  pageCard("trayVariants", { key: "stepper", title: "2c &middot; A step at a time",
-    note: "Three cells and no thumb: an arrow, Tables 1 to 6 of 48, an arrow. The tray is the frame and the middle cell is the readout. Small, and it never grows with the count.",
-    init: function (ctl, S) { ctl.classList.add("tray"); ctl.innerHTML = '<span class="cell pgarrow pgbtn" data-go="-">' + AL + '</span><span class="cell lab"></span><span class="cell pgarrow pgbtn" data-go="+">' + AR + "</span>"; },
-    update: function (ctl, S) { var r = S.range(); ctl.querySelector(".lab").innerHTML = "Tables <b>" + r.a + "–" + r.b + "</b> of " + r.n; arrows(ctl, S); } });
-  pageCard("trayVariants", { key: "amount", mode: "swap", title: "2d &middot; How many, not which",
-    note: "The cells are amounts, 6, 12, 24, All 48, and the thumb on 6. The grid grows to what you pick instead of turning pages: the games bar's pattern applied to how much you want to see.",
-    init: function (ctl, S) { if (ctl.children.length) return; ctl.classList.add("tray"); ctl.innerHTML = '<span class="thumb"></span>' + [6, 12, 24, 0].map(function (v) { return '<span class="cell pgbtn" data-perv="' + v + '">' + (v ? "Show " + v : "All " + S.tiles().length) + "</span>"; }).join("");
-      ctl.addEventListener("click", function (e) { var c = e.target.closest("[data-perv]"); if (!c) return; var v = +c.dataset.perv; S.expanded = v === 0; S.per = v || 6; S.page = 0; S.apply(); }); },
-    update: function (ctl, S) { ctl.querySelectorAll(".cell").forEach(function (c) { c.classList.toggle("on", S.expanded ? c.dataset.perv === "0" : +c.dataset.perv === S.per); }); thumbTo(ctl); } });
-  pageCard("trayVariants", { key: "trayicons", title: "2e &middot; The games on each page",
-    note: "Each cell shows the art of the games on that page, so the tray is a map of what is where: a Hearts and a Spades on the first, a Canasta on the third. The thumb slides over the pictures.",
-    init: function (ctl, S) { ctl.classList.add("tray"); ctl.innerHTML = '<span class="thumb"></span>' + range(S.pages()).map(function (i) { var gs = pageGames(S, i); return '<span class="cell pgbtn" data-go="' + i + '">' + gs.slice(0, 3).map(function (g) { return '<img src="' + L.art(g) + '" alt="' + L.byId[g][1] + '">'; }).join("") + (gs.length > 3 ? '<span class="more">+' + (gs.length - 3) + "</span>" : "") + "</span>"; }).join(""); },
-    update: function (ctl, S) { cells(ctl, S); thumbTo(ctl); } });
-
-  /* ═══════════ Three: See all, the button beside the games bar ═══════════ */
-  function seeCard(key, cls, title, note, tag) {
-    pageCard("seeVariants", { key: key, mode: "swap", inBar: true, title: title, tag: tag, tagCls: "base",
-      note: note,
-      init: function (ctl, S) { ctl.classList.add("seebtn"); ctl.innerHTML = '<span class="button small dk ' + cls + ' pgbtn" data-expand><span class="lab"></span></span>'; },
-      update: function (ctl, S) { ctl.querySelector(".lab").textContent = S.expanded ? "Show fewer" : "See all"; } });
-  }
-  seeCard("seeink", "dk-ink", "3a &middot; The ink thumb", "The dark from the mockup's own Evernote scheme, the ink thumb the games bar can wear: #3d3d3a, ring #2a2a28. Warm-black, a shade lighter than the page's text. In the mockup now.", "the pick");
-
-  /* ═══════════ Four: the More list picks how many, too ═══════════ */
   var AMOUNTS = [6, 12, 24, 0];
-  function moreCard(key, label, title, note, gamesHead) {
-    pageCard("moreVariants", { key: key, mode: "swap", cls: "moremenu", title: title, note: note, bar: label ? { moreLabel: function () { return label; } } : {},
+  function gameRows() { return L.GAMES.map(function (g) { return '<span class="mi' + (g[2] ? "" : " dim") + '" data-g="' + g[0] + '">' + g[1] + "<i>" + g[2] + "</i></span>"; }).join(""); }
+  function amtRows(word, n) { return AMOUNTS.map(function (v) { return '<span class="mi amt" data-perv="' + v + '">' + word(v, n) + "</span>"; }).join(""); }
+  function footRow() { return '<span class="foot">' + AMOUNTS.map(function (v) { return '<i data-perv="' + v + '">' + (v || "All") + "</i>"; }).join("") + "</span>"; }
+  var TABLES_WORD = function (v, n) { return v ? v + " tables" : "All " + n + " tables"; };
+  var SHOW_WORD = function (v) { return v ? "Show " + v : "Show all"; };
+  var AT_A_TIME = function (v, n) { return v ? v + '<i>at a time</i>' : "All " + n; };
+  /* a card: the six-table grid and the bar, and the More list rebuilt by the card; the amount sets how many the grid shows */
+  function moreCard(host, spec) {
+    pageCard(host, { key: spec.key, mode: "swap", cls: "pin", title: spec.title, tag: spec.tag, note: spec.note,
       init: function (ctl, S) {
-        var list = S.st.querySelector(".ovlist"); if (!list || list.querySelector(".mgroup")) return;
-        if (gamesHead) list.insertAdjacentHTML("afterbegin", '<span class="mlab top">Games</span>');
-        list.insertAdjacentHTML("beforeend", '<span class="mlab">Tables at a time</span><div class="mgroup"><span class="mseg">' + AMOUNTS.map(function (v) { return '<i data-perv="' + v + '">' + (v || "All") + "</i>"; }).join("") + "</span></div>");
+        var list = S.st.querySelector(".ovlist"); if (!list || list.dataset.built) return;
+        list.dataset.built = "1"; list.className = "ovlist " + spec.list; list.innerHTML = spec.html(S.tiles().length);
         S.st.addEventListener("click", function (e) { var c = e.target.closest("[data-perv]"); if (!c) return; var v = +c.dataset.perv; S.expanded = v === 0; S.per = v || 6; S.page = 0; S.apply(); });
+        S.st.fit();
       },
       update: function (ctl, S) { S.st.querySelectorAll("[data-perv]").forEach(function (c) { c.classList.toggle("on", S.expanded ? c.dataset.perv === "0" : +c.dataset.perv === S.per); }); } });
   }
-  moreCard("morekeep", null, "4a &middot; Still called More", "The list as it is, the other games, and under a line a small heading, Tables at a time, with 6, 12, 24 and All on the bar's own tray. More still fits: more games, more tables.", false);
-  moreCard("moreshow", "Show", "4b &middot; Called Show", "The same list under a cell called Show, with a Games heading over the games, since the cell no longer says what the list is. Show reads as both: show a game, show more tables.", true);
-  moreCard("moreview", "View", "4c &middot; Called View", "The same list under View, the word a data table uses for its columns and its page size. Truer to what the list does, and further from how the site talks.", true);
-  seeCard("seetext", "dk-text", "3b &middot; The page's text ink", "The colour the page's text is set in, #212529, ring #0f1214. The darkest of the set, and it belongs to the page already.");
-  seeCard("seewarm", "dk-warm", "3c &middot; Warm charcoal", "The divider's warm grey taken all the way down: #4a4438, ring #332f26. It is the band's own hue, dark, so it sits in the section rather than on it.");
-  seeCard("seeforest", "dk-forest", "3d &middot; Evernote's forest green", "Evernote's green taken dark, the forest their marks sit on: #1e5631, ring #143d22. Green, but far from the Play button's green, so it does not read as Play.");
-  seeCard("seefelt", "dk-felt", "3e &middot; The felt, dark", "The tables' own felt, #327333, darkened to #275c28, ring #1c4420. The button is made of the thing it opens more of.");
-  seeCard("seeslate", "dk-slate", "3f &middot; Dark slate", "A cool dark with a hint of green, #3a4a44, ring #28352f. Between the ink and the greens: dark first, green second.");
-  seeCard("seeplay", "dk-play", "3g &middot; The Play green, as the active cell", "The same button in the Play button's green, the colour the bar's active cell wears, so the See all and the picked game are one colour. In the mockup as the other setting.", "twin");
-  seeCard("seetray", "dk-tray", "3h &middot; The chooser's colours, at its height", "The button in the bar's own clothes: the tray, its ring, its ink, its hover, and 28px tall so it stands level with the bar. It reads as part of the chooser rather than a button beside it. In the mockup as the third setting.", "twin");
+  document.getElementById("pinLists").addEventListener("change", function (e) { document.querySelectorAll(".pglab").forEach(function (st) { st.classList.toggle("pin", e.target.checked); }); });
+
+  /* ═══════════ One: like another game ═══════════ */
+  moreCard("rowVariants", { key: "rowsgreen", list: "rows", title: "1a &middot; Rows, the chosen one on the green", tag: "base",
+    note: "After the games and the list's own line, four more rows: 6 tables, 12 tables, 24 tables, All 48 tables. The chosen row wears the Play green, as the picked game does in the bar. Nothing says what the rows are; the rows do.",
+    html: function (n) { return gameRows() + '<span class="mhr"></span>' + amtRows(TABLES_WORD, n); } });
+  moreCard("rowVariants", { key: "rowstick", list: "rows tick", title: "1b &middot; Rows, the chosen one ticked",
+    note: "The same rows, but the chosen one keeps the tray and gets a green tick at the right. Quieter than a green row, and it reads as a setting rather than a place to go.",
+    html: function (n) { return gameRows() + '<span class="mhr"></span>' + amtRows(TABLES_WORD, n); } });
+  moreCard("rowVariants", { key: "rowsshow", list: "rows", title: "1c &middot; Rows worded as Show",
+    note: "Show 6, Show 12, Show 24, Show all. The verb makes the rows read as actions, like the games above them, which are also things you do.",
+    html: function (n) { return gameRows() + '<span class="mhr"></span>' + amtRows(SHOW_WORD, n); } });
+  moreCard("rowVariants", { key: "rowsatatime", list: "rows", title: "1d &middot; Rows with the small word",
+    note: "The number big and at a time small beside it, in the count's place: 6 at a time, 12 at a time. The rows borrow the games' own shape, a name and a small number.",
+    html: function (n) { return gameRows() + '<span class="mhr"></span>' + amtRows(AT_A_TIME, n); } });
+  moreCard("rowVariants", { key: "rowsfoot", list: "rows", title: "1e &middot; One row at the foot",
+    note: "Instead of four rows, one: 6, 12, 24, All side by side at the foot of the list, the chosen number on the green. The list stays as long as it was, plus one line.",
+    html: function (n) { return gameRows() + '<span class="mhr"></span>' + footRow(); } });
+
+  /* ═══════════ Two: not one long list ═══════════ */
+  moreCard("shapeVariants", { key: "twocols", list: "cols cols2", title: "2a &middot; The games in two columns",
+    note: "The other games in two columns, half as tall, and the amounts as the one row at the foot across both. The list becomes a card.",
+    html: function (n) { return '<span class="mgames">' + gameRows() + "</span>" + footRow(); } });
+  moreCard("shapeVariants", { key: "sidebyside", list: "side", title: "2b &middot; The amounts beside the games",
+    note: "The games on the left, a line, and the four amounts on the right on the tray, the chosen one green. Two things side by side, without naming either.",
+    html: function (n) { return '<span class="msplit"><span class="mgames">' + gameRows() + '</span><span class="mamts">' + amtRows(TABLES_WORD, n) + "</span></span>"; } });
+  moreCard("shapeVariants", { key: "panel", list: "panel", title: "2c &middot; A panel of cells",
+    note: "The list as a white panel holding the bar's own cells: the games as chips that wrap, a faint line, and the amounts as chips under them. The More list looks like more of the bar.",
+    html: function (n) { return '<span class="mgames">' + gameRows() + '</span><span class="mamts">' + amtRows(TABLES_WORD, n) + "</span>"; } });
+  moreCard("shapeVariants", { key: "threecols", list: "cols cols3", title: "2d &middot; Three columns, the row at the foot",
+    note: "Three columns of games at a smaller size, three rows tall, and the numbers at the foot. The widest and the shortest of the set.",
+    html: function (n) { return '<span class="mgames">' + gameRows() + "</span>" + footRow(); } });
 })(window.LAB);
 </script>
 <script>
