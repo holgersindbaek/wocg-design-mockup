@@ -2223,11 +2223,15 @@
     font-size: 14px; font-weight: 700; color: #212529; }
   .lobbyscope .ldCalDay:not(.isFuture) { cursor: pointer; }
   .lobbyscope .ldCalDay.isFuture { font-weight: normal; color: #495057; }
-  .lobbyscope .ldCalDay.isToday { text-decoration: underline; }
+  .lobbyscope .ldCalDay.isToday { text-decoration: none; font-weight: bold; }
   /* the check in the button's own green (5 September): the SVG is a mask, so the colour is the page's trio green and follows the palette; the file's own fill was #469E00, a green of nobody's. No shadow, and the cell stays white. */
-  .lobbyscope .ldCalDay.isDealDone { text-indent: -9999px; }
-  .lobbyscope .ldCalDay.isDealDone::after { content: ""; position: absolute; inset: 0; background-color: var(--triogreen);
-    -webkit-mask: url("dealDayCheck.svg") center / 32px 32px no-repeat; mask: url("dealDayCheck.svg") center / 32px 32px no-repeat; }
+  .lobbyscope .ldCalDay.isDealDone { text-indent: -9999px; background: url("dealDayCheck-green.svg") center / 32px 32px no-repeat; } /* a copy of the check filled with the Play button's green, #43A038, as a plain image so every browser draws it (the mask did not show for Holger) */
+  /* today: the number in bold inside a ring of the same green, in place of the underline (5 September) */
+  .lobbyscope .ldCalDay.isToday::after { content: ""; position: absolute; left: 50%; top: 50%; width: 26px; height: 26px; margin: -13px 0 0 -13px; border-radius: 50%;
+    box-shadow: inset 0 0 0 2px var(--triogreen); pointer-events: none; }
+  .lobbyscope .ldInfo { padding: 12px; font-size: 14px; line-height: 20px; color: var(--muted, #4e4d4c); } /* two lines, 64px with its padding: what ten leaderboard rows add to the other tile (5 September) */
+  .lobbyscope .ldInfo p { margin: 0; }
+  .lobbyscope .ldInfo b { color: #212529; font-weight: bold; }
   .lobbyscope .ldFoot { margin-top: auto; padding: 12px; background-color: var(--canvas, #F8F7F4); } /* the button's foot on the grey, under the calendar's line, as the leaderboard's foot (5 September) */
   .lobbyscope .ldPlay { width: 100%; margin: 0; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
 
@@ -3867,6 +3871,7 @@
             <div class="ldCal"><span class="ldCalHead">Mo</span><span class="ldCalHead">Tu</span><span class="ldCalHead">We</span><span class="ldCalHead">Th</span><span class="ldCalHead">Fr</span><span class="ldCalHead">Sa</span><span class="ldCalHead">Su</span><span class="ldCalCell"></span><span class="ldCalCell"></span><span class="ldCalCell"></span><span class="ldCalCell"></span><span class="ldCalCell"></span><span class="ldCalCell ldCalDay isDealDone">1</span><span class="ldCalCell ldCalDay">2</span><span class="ldCalCell ldCalDay isDealDone">3</span><span class="ldCalCell ldCalDay isToday">4</span><span class="ldCalCell ldCalDay isFuture">5</span><span class="ldCalCell ldCalDay isFuture">6</span><span class="ldCalCell ldCalDay isFuture">7</span><span class="ldCalCell ldCalDay isFuture">8</span><span class="ldCalCell ldCalDay isFuture">9</span><span class="ldCalCell ldCalDay isFuture">10</span><span class="ldCalCell ldCalDay isFuture">11</span><span class="ldCalCell ldCalDay isFuture">12</span><span class="ldCalCell ldCalDay isFuture">13</span><span class="ldCalCell ldCalDay isFuture">14</span><span class="ldCalCell ldCalDay isFuture">15</span><span class="ldCalCell ldCalDay isFuture">16</span><span class="ldCalCell ldCalDay isFuture">17</span><span class="ldCalCell ldCalDay isFuture">18</span><span class="ldCalCell ldCalDay isFuture">19</span><span class="ldCalCell ldCalDay isFuture">20</span><span class="ldCalCell ldCalDay isFuture">21</span><span class="ldCalCell ldCalDay isFuture">22</span><span class="ldCalCell ldCalDay isFuture">23</span><span class="ldCalCell ldCalDay isFuture">24</span><span class="ldCalCell ldCalDay isFuture">25</span><span class="ldCalCell ldCalDay isFuture">26</span><span class="ldCalCell ldCalDay isFuture">27</span><span class="ldCalCell ldCalDay isFuture">28</span><span class="ldCalCell ldCalDay isFuture">29</span><span class="ldCalCell ldCalDay isFuture">30</span><span class="ldCalCell ldCalDay isFuture">31</span><span class="ldCalCell"></span><span class="ldCalCell"></span><span class="ldCalCell"></span><span class="ldCalCell"></span><span class="ldCalCell"></span><span class="ldCalCell"></span></div>
           </div>
         </div>
+        <div class="ldInfo"><p><span class="ldNum">Deal 248</span> &middot; <span class="ldPlayed">1,204 played today</span></p><p>Your best today: <b class="ldBest">3rd, top 8%</b></p></div>
         <div class="ldFoot"><button type="button" class="button green ldPlay">Play daily challenge</button></div>
       </div>
       </div>
@@ -7660,13 +7665,16 @@
         : (up ? "Gained " + n + " Elo today" : "Lost " + n + " Elo today"));
     });
     document.querySelectorAll("#railBoard .lbHeart").forEach(function (h2) { attach(h2, "You liked this player"); });
-    /* the leaderboard tile's chips and hearts say the same (5 September) */
-    document.querySelectorAll("#lobbyDemo .lbUp, #lobbyDemo .lbDown").forEach(function (chip) {
-      var n = chip.textContent.trim(), up = chip.classList.contains("lbUp"), isRank = !!chip.closest(".lbRank");
-      var pl = n === "1" ? " place" : " places";
-      attach(chip, isRank ? (up ? "Up " + n + pl + " since yesterday" : "Down " + n + pl + " since yesterday") : (up ? "Gained " + n + " Elo today" : "Lost " + n + " Elo today"));
-    });
-    document.querySelectorAll("#lobbyDemo .lbHeart").forEach(function (h2) { attach(h2, "You liked this player"); });
+    /* the leaderboard tile's chips and hearts say the same (5 September); the renderer calls this again after a game change */
+    window.tipBoard = function () {
+      document.querySelectorAll("#lobbyDemo .lbUp, #lobbyDemo .lbDown").forEach(function (chip) {
+        var n = chip.textContent.trim(), up = chip.classList.contains("lbUp"), isRank = !!chip.closest(".lbRank");
+        var pl = n === "1" ? " place" : " places";
+        attach(chip, isRank ? (up ? "Up " + n + pl + " since yesterday" : "Down " + n + pl + " since yesterday") : (up ? "Gained " + n + " Elo today" : "Lost " + n + " Elo today"));
+      });
+      document.querySelectorAll("#lobbyDemo .lbHeart").forEach(function (h2) { attach(h2, "You liked this player"); });
+    };
+    window.tipBoard();
     /* the refresh countdown, ticking as the leaderboards page's does */
     (function () {
       var el = document.querySelector("#lobbyDemo .lbCount"); if (!el) return;
@@ -8265,7 +8273,7 @@
   document.addEventListener("DOMContentLoaded", function () {
     buildGameBar(document.getElementById("otFilter"), function (id) { if (window.otLive) window.otLive.setGame(id); });
     /* the same bar over the leaderboard and the deal (5 September): one game for both cards, no counts, no All games */
-    buildGameBar(document.getElementById("ldFilter"), function () {});
+    buildGameBar(document.getElementById("ldFilter"), function (id) { if (window.renderClub) window.renderClub(id); });
   });
 </script>
 <script>
@@ -8315,6 +8323,56 @@
     new MutationObserver(guard).observe(grid, { childList: true });
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(sync);
   });
+</script>
+<script>
+  /* ── the leaderboard and the deal follow the game bar (5 September). Hearts is the hand-drawn set; every other
+     game is dealt from a seed of its id, so a game always shows the same made-up numbers: ten ranks around you,
+     a few moves since yesterday, your Elo change today, and the deal's wins, completed days, deal number,
+     players today and your best. ── */
+  (function () {
+    var NAMES = ["SpadeQueen", "mollyb", "TableTalker", "cardShark52", "PragueJoe", "wendy_h", "GinTonic", "north4th", "Beatrix", "Marge", "carl52", "Vera",
+      "Duckling", "Hank", "BobK", "Rosie", "HeartsAce", "moonshot", "spadesfan", "BigDeal", "Carol", "Marta", "El_Che", "Joy_", "hootnholler", "jen11099", "Gaz001", "nomore35"];
+    var HEARTS = { rows: [[41, "SpadeQueen", 1512, 0, false], [42, "mollyb", 1506, 2, false], [43, "TableTalker", 1498, 0, true], [44, "cardShark52", 1493, -1, false], [45, "PragueJoe", 1487, 0, false],
+      [46, "Holger", 1481, 3, false, 12], [47, "wendy_h", 1476, 0, false], [48, "GinTonic", 1470, -2, false], [49, "north4th", 1465, 0, false], [50, "Beatrix", 1459, 0, true]],
+      deal: { done: [1, 3], number: 248, played: 1204, best: "3rd, top 8%" } };
+    function seed(str) { var h = 2166136261; for (var i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); } return function () { h += 0x6D2B79F5; var t = Math.imul(h ^ (h >>> 15), 1 | h); t ^= t + Math.imul(t ^ (t >>> 7), 61 | t); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+    function ordinal(n) { var s = ["th", "st", "nd", "rd"], v = n % 100; return n + (s[(v - 20) % 10] || s[v] || s[0]); }
+    function dataFor(id) {
+      if (id === "hearts") return HEARTS;
+      var r = seed(id), me = 6 + Math.floor(r() * 180), elo = 1640 - me * 3 - Math.floor(r() * 40), pool = NAMES.slice(), rows = [];
+      for (var i = 0; i < 10; i++) {
+        var rank = me - 5 + i, mine = rank === me, name = mine ? "Holger" : pool.splice(Math.floor(r() * pool.length), 1)[0];
+        elo -= 3 + Math.floor(r() * 8);
+        var move = r() < 0.4 ? (r() < 0.55 ? 1 : -1) * (1 + Math.floor(r() * 4)) : 0;
+        if (mine) move = (r() < 0.6 ? 1 : -1) * (1 + Math.floor(r() * 5));
+        rows.push([rank, name, elo, move, !mine && r() < 0.2, mine ? (move > 0 ? 1 : -1) * (6 + Math.floor(r() * 20)) : 0]);
+      }
+      var done = [1, 2, 3].filter(function () { return r() < 0.55; });
+      return { rows: rows, deal: { done: done, number: 200 + Math.floor(r() * 99), played: 250 + Math.floor(r() * 2200), best: ordinal(1 + Math.floor(r() * 40)) + ", top " + (2 + Math.floor(r() * 30)) + "%" } };
+    }
+    function fmt(n) { return n.toLocaleString("en-US"); }
+    function chip(n) { return n ? ' <span class="' + (n > 0 ? "lbUp" : "lbDown") + '">' + Math.abs(n) + "</span>" : ""; }
+    window.renderClub = function (id) {
+      var d = dataFor(id), rows = document.querySelector("#lobbyBoardCard .lbRows"), head = rows && rows.querySelector(".lbHeaderRow");
+      if (rows && head) {
+        var html = head.outerHTML;
+        d.rows.forEach(function (row, i) {
+          var mine = row[1] === "Holger", b = function (t) { return mine ? "<b>" + t + "</b>" : t; };
+          html += '<div class="lbRow' + (i % 2 ? " isAlt" : "") + '"><span class="lbRank">' + b(row[0]) + chip(row[3]) + '</span><span class="lbName">' + b(row[1]) + (row[4] ? ' <span class="lbHeart">&hearts;</span>' : "") + '</span><span class="lbRating">' + b(fmt(row[2])) + chip(row[5] || 0) + "</span></div>";
+        });
+        rows.innerHTML = html;
+        if (window.tipBoard) window.tipBoard();
+      }
+      var deal = d.deal, wins = deal.done.length, card = document.getElementById("lobbyDealCard");
+      if (!card) return;
+      card.querySelector(".ldAwardTitle").textContent = wins + (wins === 1 ? " win" : " wins");
+      var fills = card.querySelectorAll(".ldAwardFill"), pct = function (v) { return Math.max(0, Math.min(1, v)) * 100 + "%"; };
+      if (fills[0]) fills[0].style.width = pct(wins / 10); if (fills[1]) fills[1].style.width = pct((wins - 10) / 10); if (fills[2]) fills[2].style.width = pct((wins - 20) / 11);
+      card.querySelectorAll(".ldCalDay").forEach(function (c) { var day = parseInt(c.textContent, 10); c.classList.toggle("isDealDone", deal.done.indexOf(day) >= 0); });
+      card.querySelector(".ldNum").textContent = "Deal " + deal.number; card.querySelector(".ldPlayed").textContent = fmt(deal.played) + " played today"; card.querySelector(".ldBest").textContent = deal.best;
+    };
+    document.addEventListener("DOMContentLoaded", function () { window.renderClub("hearts"); });
+  })();
 </script>
 </body>
 </html>
