@@ -3299,6 +3299,7 @@
     <label class="ctl"><span>Today's cell</span><select id="sel-today"></select></label>
     <label class="ctl"><span>Game bar colours</span><select id="sel-otcolor"></select></label>
     <label class="ctl"><span>Section spacing</span><select id="sel-sgap"></select></label>
+    <label class="ctl"><span>Game bar hover</span><select id="sel-othover"></select></label>
   </div>
   <details class="swadv">
     <summary>Advanced — settled settings</summary>
@@ -3720,9 +3721,17 @@
   /* the word: a real element whose width grows with the move, kept in step by the script; it shows only in the white copy */
   .otFilter .track > .s i .w { display: inline-block; width: 0; overflow: visible; clip-path: inset(0); white-space: pre; vertical-align: baseline; font-style: normal; opacity: 0;
     transition: width var(--thspd) var(--thease); }
-  .otFilter .track > .s.zero { opacity: .72; }
-  /* hover: the light blue button's own, one shade darker; never on the picked cell */
-  .otFilter .track:not(.tcopy) > .s:not(.on):hover, .otFilter .track:not(.tcopy) .ov:not(.on) .ovbtn:hover { background: var(--ot-hover); }
+  /* hover: the whole segment, not the button's shape. A pseudo behind the text fills the cell edge to edge and reaches 1px
+     above and below it into the tray's padding, up to the ring, with square corners; the two end segments, All games and
+     More, follow the tray's inner corner. Never on the picked cell. A game with no tables is not dimmed: it can be picked. */
+  .otFilter .track:not(.tcopy) > .s:not(.on):hover::after, .otFilter .track:not(.tcopy) .ov:not(.on) .ovbtn:hover::after { content: ""; position: absolute; left: 0; right: 0; top: -1px; bottom: -1px; z-index: -1; background: var(--ot-hover); }
+  .otFilter .track:not(.tcopy) > .s:first-child:not(.on):hover::after { border-radius: calc(var(--radius-md, 6px) + 1px) 0 0 calc(var(--radius-md, 6px) + 1px); corner-shape: squircle; }
+  .otFilter .track:not(.tcopy) .ov:not(.on) .ovbtn:hover::after { border-radius: 0 calc(var(--radius-md, 6px) + 1px) calc(var(--radius-md, 6px) + 1px) 0; corner-shape: squircle; }
+  /* the other hover, from the Game bar hover option: no fill at all, only the ink going to the page's dark, the count and the triangle with it */
+  body.othover-ink .otFilter .track:not(.tcopy) > .s:not(.on):hover::after, body.othover-ink .otFilter .track:not(.tcopy) .ov:not(.on) .ovbtn:hover::after { display: none; }
+  body.othover-ink .otFilter .track:not(.tcopy) > .s:not(.on):hover, body.othover-ink .otFilter .track:not(.tcopy) > .s:not(.on):hover i,
+  body.othover-ink .otFilter .track:not(.tcopy) .ov:not(.on) .ovbtn:hover, body.othover-ink .otFilter .track:not(.tcopy) .ov:not(.on) .ovbtn:hover .ovlab i { color: #141414; }
+  body.othover-ink .otFilter .track:not(.tcopy) .ov:not(.on) .ovbtn:hover .zone svg path { fill: #141414; stroke: #141414; }
   /* the lines: one on the left of every cell after the first and on More, the two beside the pick faded on the thumb's clock */
   .otFilter .track > .s + .s::before, .otFilter .track > .s + .ov::before { content: ""; position: absolute; left: 0; top: -2px; bottom: -2px; width: 1px; background: var(--ot-ring); pointer-events: none;
     transition: opacity var(--thspd) var(--thease); }
@@ -3731,7 +3740,7 @@
      Its hover bridge reaches down through the tray's padding and the 8px gap, so the pointer can travel to the list. */
   .otFilter .track .ov { position: relative; z-index: 2; flex: 0 0 auto; margin-left: auto; }
   .otFilter .track .ov::after { content: ""; position: absolute; left: 0; right: -2px; top: 100%; height: 12px; }
-  .otFilter .track .ov .ovbtn { display: inline-flex; align-items: center; height: 24px; padding: 0 0 0 10px; border-radius: var(--radius-md, 6px); corner-shape: squircle;
+  .otFilter .track .ov .ovbtn { position: relative; display: inline-flex; align-items: center; height: 24px; padding: 0 0 0 10px; border-radius: var(--radius-md, 6px); corner-shape: squircle;
     font: bold 16px/24px "BuloRounded", "Verdana", "Arial", sans-serif; color: var(--ot-ink); cursor: pointer; user-select: none; white-space: nowrap; transition: background-color 24ms ease-out; }
   .otFilter .track .ov .ovbtn .ovlab { padding-right: 3px; }
   .otFilter .track .ov .ovbtn .wall { width: 1px; align-self: stretch; background: transparent; }
@@ -3748,7 +3757,6 @@
   .otFilter .ovlist .mi:last-child { border-bottom: 0; }
   .otFilter .ovlist .mi:hover { background: var(--ot-hover); }
   .otFilter .ovlist .mi i { font-style: normal; font-size: 13px; opacity: .75; }
-  .otFilter .ovlist .mi.dim { opacity: .7; }
   /* the thumb: the site's blue button, sliding. It carries the button's shadow; the tray, being a recess, has only its ring */
   .otFilter .track .thumb { position: absolute; z-index: 1; left: 0; top: 0; width: 0; height: 0; pointer-events: none; opacity: 0;
     border-radius: var(--radius-md, 6px); corner-shape: squircle; background: var(--ot-thumb); box-shadow: inset 0 0 0 1px var(--ot-thumbring), 0 2px 4px rgba(0,0,0,.06);
@@ -4296,6 +4304,9 @@
   /* the air between the sections: the padding above and below each band, measured from the seam's rule */
   var SGAPS = [["48", "48px, as settled"], ["56", "56px"], ["64", "64px"], ["72", "72px"], ["80", "80px"], ["96", "96px"]];
   var curSgap = "48";
+  /* what a cell of the games bar does under the pointer */
+  var OTHOVERS = [["fill", "The whole segment fills, a shade darker than the tray"], ["ink", "Only the ink darkens, no fill"]];
+  var curOtHover = "fill";
   var SECTS = [
     ["none", "Sections on the canvas (as today)"],
     ["contained", "Open tables in the Evernote container"],
@@ -5529,7 +5540,7 @@
   }
   function applyBody() {
     var scene = curLayout.indexOf("sc") === 0;
-    document.body.className = curBase + " play-" + curPlay + " layout-" + curLayout + (scene ? " scenehero" : "") + " font-" + curFont + " shadow-" + curShadow + " edge-" + curEdge + " tex-" + curTexture + " cat-" + curCatalog + " stats-" + curStats + " menu-" + curMenu + " counter-" + curCounter + " rail-" + curRail + " playbtn-" + curPlayBtn + " avedge-" + curAvedge + " avsh-" + curAvshadow + " cnav-" + curCnav + " foot-" + curFooter + " viewer-" + curViewer + " sect-" + curSect + " div-" + curDivider + " cbtn-" + curCbtn + " today-" + curToday + " otc-" + curOtColor + " sgap-" + curSgap + " lhover-" + curLhover + " tilebg-" + curTileBg + " pinpair-" + curPinPair + " tint-" + curTint + (palShown ? " show-palette" : "");
+    document.body.className = curBase + " play-" + curPlay + " layout-" + curLayout + (scene ? " scenehero" : "") + " font-" + curFont + " shadow-" + curShadow + " edge-" + curEdge + " tex-" + curTexture + " cat-" + curCatalog + " stats-" + curStats + " menu-" + curMenu + " counter-" + curCounter + " rail-" + curRail + " playbtn-" + curPlayBtn + " avedge-" + curAvedge + " avsh-" + curAvshadow + " cnav-" + curCnav + " foot-" + curFooter + " viewer-" + curViewer + " sect-" + curSect + " div-" + curDivider + " cbtn-" + curCbtn + " today-" + curToday + " otc-" + curOtColor + " sgap-" + curSgap + " othover-" + curOtHover + " lhover-" + curLhover + " tilebg-" + curTileBg + " pinpair-" + curPinPair + " tint-" + curTint + (palShown ? " show-palette" : "");
     applyTints();
     var ht = document.getElementById("herotitle"), hs = document.getElementById("herosub");
     if (scene) {
@@ -5563,6 +5574,7 @@
     document.getElementById("sel-today").value = curToday;
     if (document.getElementById("sel-otcolor")) document.getElementById("sel-otcolor").value = curOtColor;
     if (document.getElementById("sel-sgap")) document.getElementById("sel-sgap").value = curSgap;
+    if (document.getElementById("sel-othover")) document.getElementById("sel-othover").value = curOtHover;
     document.getElementById("sel-counter").value = curCounter;
     document.getElementById("sel-rail").value = curRail;
     document.getElementById("sel-pinpair").value = curPinPair;
@@ -5848,6 +5860,7 @@
   buildSel("sel-texture", TEXTURES, function (v) { curTexture = v; });
   buildSel("sel-otcolor", OTCOLORS, function (v) { curOtColor = v; });
   buildSel("sel-sgap", SGAPS, function (v) { curSgap = v; });
+  buildSel("sel-othover", OTHOVERS, function (v) { curOtHover = v; });
   buildSel("sel-stats", STATSLINES, function (v) { curStats = v; });
   buildSel("sel-cbtn", CBTNS, function (v) { curCbtn = v; });
   buildSel("sel-today", TODAYS, function (v) { curToday = v; });
