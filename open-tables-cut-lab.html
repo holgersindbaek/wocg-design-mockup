@@ -3790,7 +3790,7 @@
   .cutlab .gridwrap[data-peek] { position: relative; }
   .cutlab .gridwrap[data-peek]:not(.open) .ltGrid { max-height: var(--cut); overflow: visible; clip-path: inset(-24px -24px 0 -24px); }
   .cutlab .gridwrap[data-peek]:not(.open) .ltGrid > .ltCard:nth-child(n+7) { pointer-events: none; }
-  .cutlab .gridwrap[data-peek]:not([data-peek="scroll"]):not(.open) .ltGrid > .ltCard:nth-child(n+7) .player:not(.playernumber1) { visibility: hidden; }
+  .cutlab .gridwrap[data-peek]:not(.open) .ltGrid > .ltCard:nth-child(n+7) .player:not(.playernumber1) { visibility: hidden; }
   /* the hover zone lies over the cut, from the bottom of the second row to 20px past the cut line; the button's top sits 4px
      over the felt, so it hangs from the edge with felt between it and the middle tile's name */
   .cutlab .gridwrap .otMore { display: none; }
@@ -3800,37 +3800,11 @@
   .cutlab .gridwrap .otMore:hover .button, .cutlab .gridwrap .otMore .button:focus-visible { opacity: 1; }
   .cutlab .gridwrap .otMore .button:focus-visible { box-shadow: inset 0 0 0 1px var(--triogreenring), 0 0 0 3px rgba(67,160,56,.35); }
   .cutlab .gridwrap .otMore .deck { display: none; }
-  /* seam: the bare cut with a scored seam right under it, a hairline in the divider's colour and a lit line below, the page's own rule */
-  .cutlab .gridwrap[data-peek="seam"]:not(.open)::after { content: ""; position: absolute; left: 0; right: 0; top: var(--cut); height: 2px; z-index: 3; pointer-events: none;
-    background: linear-gradient(to bottom, #D9D2C4 0 1px, rgba(255,255,255,.7) 1px 2px); }
-  /* sheet: the band lies over the row like a sheet of paper, and its edge throws a short shadow onto the felt under the name, not into the gaps */
-  .cutlab .gridwrap[data-peek="sheet"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) { position: relative; }
-  .cutlab .gridwrap[data-peek="sheet"]:not(.open) .ltGrid > .ltCard:nth-child(n+7)::after { content: ""; position: absolute; left: 0; right: 0; top: calc(var(--peek) - 8px); height: 8px; z-index: 5;
-    background: linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,.34)); }
-  /* crease: the felt darkens in two hard steps at the cut, a fold rather than a shadow */
-  .cutlab .gridwrap[data-peek="crease"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) { position: relative; }
-  .cutlab .gridwrap[data-peek="crease"]:not(.open) .ltGrid > .ltCard:nth-child(n+7)::after { content: ""; position: absolute; left: 0; right: 0; top: calc(var(--peek) - 5px); height: 5px; z-index: 5;
-    background: linear-gradient(to bottom, rgba(0,0,0,.14) 0 3px, rgba(0,0,0,.34) 3px 5px); }
-  /* short: the third row is not clipped at all, its tiles are simply short boxes that finish their own corners, and the felt's ring turns the foot corners too */
-  .cutlab .gridwrap[data-peek="short"]:not(.open) .ltGrid { max-height: none; clip-path: none; }
-  .cutlab .gridwrap[data-peek="short"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) { height: var(--peek); }
-  .cutlab .gridwrap[data-peek="short"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) .tableListing .header::after { bottom: auto; height: var(--peek); border-radius: 20px; }
-  /* lip: 20px of bare felt, the corner radius exactly, so the corners finish before the cut; the art and seats stay out of it */
-  .cutlab .gridwrap[data-peek="lip"] { --peek: 20px; }
-  .cutlab .gridwrap[data-peek="lip"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) .header > * { visibility: hidden; }
-  /* tucked: the third row slides up under the second, like cards in a hand, and only a plain felt sliver shows below each tile */
-  .cutlab .gridwrap[data-peek="tucked"] { --peek: 30px; }
-  .cutlab .gridwrap[data-peek="tucked"]:not(.open) .ltGrid { max-height: calc(var(--otrow) * 2 + 16px + var(--peek)); }
-  .cutlab .gridwrap[data-peek="tucked"]:not(.open) .ltGrid > .ltCard:nth-child(-n+6) { position: relative; z-index: 1; }
-  .cutlab .gridwrap[data-peek="tucked"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) { position: relative; z-index: 0; margin: 0 6px; height: var(--otrow); transform: translateY(calc(var(--peek) - 16px - var(--otrow))); background-color: #2d682e; box-shadow: var(--liftshadow);
-    clip-path: inset(calc(var(--otrow) - var(--peek)) -12px -12px -12px); }
-  .cutlab .gridwrap[data-peek="tucked"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) > * { visibility: hidden; }
-  .cutlab .gridwrap[data-peek="tucked"]:not(.open) .otMore { height: calc(var(--peek) + 20px); }
   /* stack and fan: the third row stays under the second, and two edges show below each tile, the next tables in a stack; fan spreads them under the pointer */
   .cutlab .gridwrap:is([data-peek="stack"], [data-peek="fan"]) { --peek: -16px; }
   .cutlab .gridwrap:is([data-peek="stack"], [data-peek="fan"]):not(.open) { padding-bottom: 16px; }
   /* the grid ends on the second row's bottom edge here, so the clip runs 12px further to keep that row's lift shadow; the third row starts 16px down and stays hidden */
-  .cutlab .gridwrap:is([data-peek="stack"], [data-peek="fan"], [data-peek="stack3"], [data-peek="stackfan"], [data-peek="stackdark"], [data-peek="stackcount"]):not(.open) .ltGrid { clip-path: inset(-24px -24px -12px -24px); }
+  .cutlab .gridwrap:is([data-peek="stack"], [data-peek="fan"]):not(.open) .ltGrid { clip-path: inset(-24px -24px -12px -24px); }
   .cutlab .gridwrap:is([data-peek="stack"], [data-peek="fan"]):not(.open) .otMore { top: calc(var(--otrow) * 2 + 16px); height: 44px; align-items: center; padding: 0; }
   .cutlab .gridwrap:is([data-peek="stack"], [data-peek="fan"]):not(.open) .otMore .deck { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 16px; position: absolute; left: 0; right: 0; top: 0; height: 22px; }
   .cutlab .gridwrap .otMore .deck i { position: relative; display: block; }
@@ -3841,90 +3815,36 @@
   .cutlab .gridwrap[data-peek="fan"] .otMore .deck i::before, .cutlab .gridwrap[data-peek="fan"] .otMore .deck i::after { transition: height .22s cubic-bezier(.22,1,.36,1), left .22s cubic-bezier(.22,1,.36,1), right .22s cubic-bezier(.22,1,.36,1); }
   .cutlab .gridwrap[data-peek="fan"] .otMore:hover .deck i::before { height: 13px; left: 4px; right: 4px; }
   .cutlab .gridwrap[data-peek="fan"] .otMore:hover .deck i::after { height: 22px; left: 14px; right: 14px; }
-  /* cover: a sheet in the band's colour lies over the row, leaving a 10px lip of bare felt; under the pointer it slides down past the cut line and merges with the band, and the seats are there under it */
-  .cutlab .gridwrap[data-peek="cover"]:not(.open) .otMore { clip-path: inset(0 -24px 0 -24px); }
-  .cutlab .gridwrap[data-peek="cover"]:not(.open) .otMore::before { content: ""; position: absolute; left: -24px; right: -24px; top: 26px; height: calc(var(--peek) - 8px);
-    background: var(--otfadecol); transition: transform .18s ease-in; }
-  .cutlab .gridwrap[data-peek="cover"]:not(.open) .otMore:hover::before { transform: translateY(calc(var(--peek) - 10px)); transition: transform .26s cubic-bezier(.22,1,.36,1); }
-  .cutlab .gridwrap[data-peek="cover"]:not(.open):not(:has(.otMore:hover)) .ltGrid > .ltCard:nth-child(n+7) .header > * { visibility: hidden; }
-  .cutlab .gridwrap[data-peek="cover"] .otMore:hover .button { transition: opacity .16s ease-out .16s; }
-  /* fade: the long fade from before, kept to compare against */
-  .cutlab .gridwrap[data-peek="fade"] { --peek: 56px; }
-  .cutlab .gridwrap[data-peek="fade"]:not(.open)::after { content: ""; position: absolute; left: -2px; right: -2px; top: calc(var(--otrow) * 2 + 16px); height: calc(16px + var(--peek) + 1px);
-    pointer-events: none; z-index: 3; background: linear-gradient(to bottom, rgba(255,255,255,0), var(--otfadecol) 78%); }
-  /* scroll: no button, the tables scroll under the fade, the fade goes when the last row is reached, and a fade at the top once the first row has gone under the bar */
-  .cutlab .gridwrap[data-peek="scroll"] { --peek: 56px; }
-  .cutlab .gridwrap[data-peek="scroll"]:not(.open) .ltGrid { overflow-y: auto; clip-path: none; scrollbar-width: none; }
-  .cutlab .gridwrap[data-peek="scroll"] .ltGrid::-webkit-scrollbar { display: none; }
-  .cutlab .gridwrap[data-peek="scroll"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) { pointer-events: auto; }
-  .cutlab .gridwrap[data-peek="scroll"]:not(.open) .otMore { display: none; }
-  .cutlab .gridwrap[data-peek="scroll"]:not(.open)::after { content: ""; position: absolute; left: -2px; right: -2px; top: calc(var(--otrow) * 2 + 16px); height: calc(16px + var(--peek) + 1px);
-    pointer-events: none; z-index: 3; background: linear-gradient(to bottom, rgba(255,255,255,0), var(--otfadecol) 78%); transition: opacity .2s ease-out; }
-  .cutlab .gridwrap[data-peek="scroll"].atend::after { opacity: 0; }
-  .cutlab .gridwrap[data-peek="scroll"]:not(.open)::before { content: ""; position: absolute; left: -2px; right: -2px; top: 0; height: 40px; pointer-events: none; z-index: 3;
-    background: linear-gradient(to top, rgba(255,255,255,0), var(--otfadecol) 90%); opacity: 0; transition: opacity .2s ease-out; }
-  .cutlab .gridwrap[data-peek="scroll"].scrolled::before { opacity: 1; }
   @media (prefers-reduced-motion: reduce) { .cutlab .gridwrap .ltGrid, .cutlab .gridwrap .otMore, .cutlab .gridwrap .otMore .button, .cutlab .gridwrap .otMore::before,
     .cutlab .gridwrap .otMore .deck i::before, .cutlab .gridwrap .otMore .deck i::after { transition: none !important; } }
 
-  /* ── lab only: more stacks ── */
-  .cutlab .gridwrap:is([data-peek="stack3"], [data-peek="stackfan"], [data-peek="stackdark"], [data-peek="stackcount"]) { --peek: -16px; }
-  .cutlab .gridwrap:is([data-peek="stack3"], [data-peek="stackfan"], [data-peek="stackdark"], [data-peek="stackcount"]):not(.open) { padding-bottom: 16px; }
-  .cutlab .gridwrap:is([data-peek="stack3"], [data-peek="stackfan"], [data-peek="stackdark"], [data-peek="stackcount"]):not(.open) .otMore { top: calc(var(--otrow) * 2 + 16px); height: 44px; align-items: center; padding: 0; }
-  .cutlab .gridwrap:is([data-peek="stack3"], [data-peek="stackfan"], [data-peek="stackdark"], [data-peek="stackcount"]):not(.open) .otMore .deck { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 16px; position: absolute; left: 0; right: 0; top: 0; height: 30px; }
-  .cutlab .gridwrap .otMore .deck i b { display: none; position: absolute; top: 0; left: 32px; right: 32px; height: 27px; background: #327333; corner-shape: squircle; border-radius: 0 0 10px 10px; opacity: .32;
-    box-shadow: inset 0 0 0 1px rgba(255,255,255,.35), 0 2px 4px rgba(0,0,0,.06); }
-  .cutlab .gridwrap:is([data-peek="stack3"], [data-peek="stackfan"]) .otMore .deck i b { display: block; }
-  .cutlab .gridwrap[data-peek="stackfan"] .otMore .deck i::before { left: 8px; right: 8px; }
-  .cutlab .gridwrap[data-peek="stackfan"] .otMore .deck i::after { left: 26px; right: 14px; }
-  .cutlab .gridwrap[data-peek="stackfan"] .otMore .deck i b { left: 44px; right: 20px; }
-  .cutlab .gridwrap[data-peek="stackdark"] .otMore .deck i::before { background: #2a642b; }
-  .cutlab .gridwrap[data-peek="stackdark"] .otMore .deck i::after { background: #1f5020; opacity: 1; }
-  .cutlab .gridwrap[data-peek="stackcount"] .otMore .deck i::before { height: 16px; font: bold 12px/16px "BuloRounded", "Verdana", "Arial", sans-serif; color: #fff; text-align: center;
-    text-shadow: -1px -1px 0 rgba(0,0,0,.28), 1px -1px 0 rgba(0,0,0,.28), -1px 1px 0 rgba(0,0,0,.28), 1px 1px 0 rgba(0,0,0,.28); }
-  .cutlab .gridwrap[data-peek="stackcount"] .otMore .deck i:nth-child(2)::before { content: attr(data-more); }
-  .cutlab .gridwrap[data-peek="stackcount"] .otMore .deck i::after { height: 24px; }
-  /* ── lab only: fades reworked ── */
-  .cutlab .gridwrap[data-peek="fadedark"]:not(.open) .ltGrid > .ltCard:nth-child(n+7), .cutlab .gridwrap[data-peek="fadewhite"]:not(.open) .ltGrid > .ltCard:nth-child(n+7), .cutlab .gridwrap[data-peek="fadesteps"]:not(.open) .ltGrid > .ltCard:nth-child(n+7), .cutlab .gridwrap[data-peek="shadowunder"]:not(.open) .ltGrid > .ltCard:nth-child(n+7), .cutlab .gridwrap[data-peek="underlap"]:not(.open) .ltGrid > .ltCard:nth-child(n+7), .cutlab .gridwrap[data-peek="blursheet"]:not(.open) .ltGrid > .ltCard:nth-child(n+7), .cutlab .gridwrap[data-peek="frost"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) { position: relative; }
-  .cutlab .gridwrap[data-peek="fadedark"]:not(.open) .ltGrid > .ltCard:nth-child(n+7)::after { content: ""; position: absolute; left: 0; right: 0; top: calc(var(--peek) - 48px); height: 48px; z-index: 5; background: linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,.78)); }
-  .cutlab .gridwrap[data-peek="fadewhite"]:not(.open) .ltGrid > .ltCard:nth-child(n+7)::after { content: ""; position: absolute; inset: 0; z-index: 5; background: linear-gradient(to bottom, rgba(255,255,255,0) 8px, rgba(255,255,255,.92) var(--peek)); }
-  .cutlab .gridwrap[data-peek="fadesteps"]:not(.open) .ltGrid > .ltCard:nth-child(n+7)::after { content: ""; position: absolute; left: 0; right: 0; top: calc(var(--peek) - 40px); height: 40px; z-index: 5;
-    background: linear-gradient(to bottom, rgba(244,238,229,.2) 0 10px, rgba(244,238,229,.42) 10px 20px, rgba(244,238,229,.66) 20px 30px, rgba(244,238,229,.9) 30px 40px); }
-  .cutlab .gridwrap[data-peek="fadeseats"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) .player { visibility: visible; }
-  .cutlab .gridwrap[data-peek="fadeseats"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) .playersContainer { -webkit-mask-image: linear-gradient(to bottom, #000 calc(var(--peek) - 70px), transparent calc(var(--peek) - 16px)); mask-image: linear-gradient(to bottom, #000 calc(var(--peek) - 70px), transparent calc(var(--peek) - 16px)); }
-  .cutlab .gridwrap[data-peek="fadesoft"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) { -webkit-mask-image: linear-gradient(to bottom, #000 calc(var(--peek) - 12px), transparent var(--peek)); mask-image: linear-gradient(to bottom, #000 calc(var(--peek) - 12px), transparent var(--peek)); }
-  .cutlab .gridwrap[data-peek="fadedither"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) { -webkit-mask-image: linear-gradient(#000, #000), repeating-conic-gradient(#000 0 25%, transparent 0 50%), repeating-conic-gradient(#000 0 25%, transparent 0 50%), radial-gradient(circle, #000 .8px, transparent 1.3px), radial-gradient(circle, #000 .8px, transparent 1.3px);
-    mask-image: linear-gradient(#000, #000), repeating-conic-gradient(#000 0 25%, transparent 0 50%), repeating-conic-gradient(#000 0 25%, transparent 0 50%), radial-gradient(circle, #000 .8px, transparent 1.3px), radial-gradient(circle, #000 .8px, transparent 1.3px);
-    -webkit-mask-size: 100% calc(var(--peek) - 16px), 4px 4px, 4px 4px, 4px 4px, 4px 4px; mask-size: 100% calc(var(--peek) - 16px), 4px 4px, 4px 4px, 4px 4px, 4px 4px;
-    -webkit-mask-position: 0 0, 0 calc(var(--peek) - 16px), 0 calc(var(--peek) - 12px), 0 calc(var(--peek) - 8px), 0 calc(var(--peek) - 4px); mask-position: 0 0, 0 calc(var(--peek) - 16px), 0 calc(var(--peek) - 12px), 0 calc(var(--peek) - 8px), 0 calc(var(--peek) - 4px);
-    -webkit-mask-repeat: no-repeat, repeat-x, repeat-x, repeat-x, repeat-x; mask-repeat: no-repeat, repeat-x, repeat-x, repeat-x, repeat-x; }
-  /* ── lab only: blur ── */
-  .cutlab .gridwrap[data-peek="blur"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) .tableListing, .cutlab .gridwrap[data-peek="blurdim"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) .tableListing, .cutlab .gridwrap[data-peek="blursheet"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) .tableListing, .cutlab .gridwrap[data-peek="frost"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) .tableListing { filter: blur(3px); }
-  .cutlab .gridwrap[data-peek="blurdim"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) .tableListing { filter: blur(3px) brightness(.8); }
-  .cutlab .gridwrap[data-peek="blursheet"]:not(.open) .ltGrid > .ltCard:nth-child(n+7)::after { content: ""; position: absolute; left: 0; right: 0; top: calc(var(--peek) - 8px); height: 8px; z-index: 5; background: linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,.34)); }
-  .cutlab .gridwrap[data-peek="frost"]:not(.open) .ltGrid > .ltCard:nth-child(n+7)::after { content: ""; position: absolute; inset: 0; z-index: 5; background: rgba(255,255,255,.45); }
-  /* the growing blur lives inside each tile, two layers of glass masked to the lower part, so nothing smears into the gaps */
-  .cutlab .gridwrap[data-peek="blurgrow"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) { position: relative; }
-  .cutlab .gridwrap[data-peek="blurgrow"]:not(.open) .ltGrid > .ltCard:nth-child(n+7)::before, .cutlab .gridwrap[data-peek="blurgrow"]:not(.open) .ltGrid > .ltCard:nth-child(n+7)::after { content: ""; position: absolute; inset: 0; z-index: 5; pointer-events: none; }
-  .cutlab .gridwrap[data-peek="blurgrow"]:not(.open) .ltGrid > .ltCard:nth-child(n+7)::before { backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); -webkit-mask-image: linear-gradient(to bottom, transparent calc(var(--peek) * .4), #000 calc(var(--peek) * .8)); mask-image: linear-gradient(to bottom, transparent calc(var(--peek) * .4), #000 calc(var(--peek) * .8)); }
-  .cutlab .gridwrap[data-peek="blurgrow"]:not(.open) .ltGrid > .ltCard:nth-child(n+7)::after { backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); -webkit-mask-image: linear-gradient(to bottom, transparent calc(var(--peek) * .7), #000 var(--peek)); mask-image: linear-gradient(to bottom, transparent calc(var(--peek) * .7), #000 var(--peek)); }
-  /* ── lab only: others ── */
-  .cutlab .gridwrap[data-peek="shadowunder"]:not(.open) .ltGrid > .ltCard:nth-child(n+7)::after { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 20px; z-index: 5; background: linear-gradient(to bottom, rgba(0,0,0,.3), rgba(0,0,0,0)); }
-  .cutlab .gridwrap[data-peek="underlap"]:not(.open) .ltGrid { max-height: calc(var(--cut) - 24px); }
-  .cutlab .gridwrap[data-peek="underlap"]:not(.open) .ltGrid > .ltCard:nth-child(-n+6) { position: relative; z-index: 1; }
-  .cutlab .gridwrap[data-peek="underlap"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) { z-index: 0; transform: translateY(-24px); clip-path: inset(8px -12px -12px -12px); }
-  .cutlab .gridwrap[data-peek="underlap"]:not(.open) .ltGrid > .ltCard:nth-child(n+7)::after { content: ""; position: absolute; left: 0; right: 0; top: 24px; height: 18px; z-index: 5; background: linear-gradient(to bottom, rgba(0,0,0,.3), rgba(0,0,0,0)); }
-  .cutlab .gridwrap[data-peek="underlap"]:not(.open) .otMore { height: calc(var(--peek) + 12px); }
-  .cutlab .gridwrap[data-peek="tall"] { --peek: round(calc(var(--otrow) * 0.665), 1px); }
-  .cutlab .gridwrap[data-peek="tall"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) .player:not(.playernumber3) { visibility: visible; }
+
+  /* ── lab only: the row fades out. The mask is on the tile itself, so the felt, its ring and its corners all go to nothing
+     4px before the cut line; there is no edge left to see at any width. The earlier fades laid the band colour over a tile
+     that was still cut straight underneath, which is why their corners stayed sharp. ── */
+  .cutlab .gridwrap[data-peek^="dissolve"]:not(.open) .ltGrid > .ltCard:nth-child(n+7), .cutlab .gridwrap[data-peek="growfade"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) { --fadefrom: calc(var(--peek) - 56px); position: relative;
+    -webkit-mask-image: linear-gradient(to bottom, #000 var(--fadefrom), transparent calc(var(--peek) - 4px)); mask-image: linear-gradient(to bottom, #000 var(--fadefrom), transparent calc(var(--peek) - 4px)); }
+  .cutlab .gridwrap[data-peek="dissolveshort"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) { --fadefrom: calc(var(--peek) - 28px); }
+  .cutlab .gridwrap:is([data-peek="dissolvelong"], [data-peek="dissolveblurlong"]):not(.open) .ltGrid > .ltCard:nth-child(n+7) { --fadefrom: 8px; }
+  .cutlab .gridwrap[data-peek="growfade"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) { --fadefrom: calc(var(--peek) - 20px); }
+  /* the blur sits on the table inside the tile, as the blur cards had it */
+  .cutlab .gridwrap:is([data-peek="dissolveblur"], [data-peek="dissolveblurlong"], [data-peek="dissolvesharp"]):not(.open) .ltGrid > .ltCard:nth-child(n+7) .tableListing { filter: blur(3px); }
+  /* the growing blur: two layers of glass inside the tile, masked to its lower part, 3px then 8px toward the cut */
+  .cutlab .gridwrap:is([data-peek="dissolvegrow"], [data-peek="growfade"]):not(.open) .ltGrid > .ltCard:nth-child(n+7)::before, .cutlab .gridwrap:is([data-peek="dissolvegrow"], [data-peek="growfade"]):not(.open) .ltGrid > .ltCard:nth-child(n+7)::after { content: ""; position: absolute; inset: 0; z-index: 5; pointer-events: none; }
+  .cutlab .gridwrap:is([data-peek="dissolvegrow"], [data-peek="growfade"]):not(.open) .ltGrid > .ltCard:nth-child(n+7)::before { backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); -webkit-mask-image: linear-gradient(to bottom, transparent calc(var(--peek) * .3), #000 calc(var(--peek) * .7)); mask-image: linear-gradient(to bottom, transparent calc(var(--peek) * .3), #000 calc(var(--peek) * .7)); }
+  .cutlab .gridwrap:is([data-peek="dissolvegrow"], [data-peek="growfade"]):not(.open) .ltGrid > .ltCard:nth-child(n+7)::after { backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); -webkit-mask-image: linear-gradient(to bottom, transparent calc(var(--peek) * .6), #000 var(--peek)); mask-image: linear-gradient(to bottom, transparent calc(var(--peek) * .6), #000 var(--peek)); }
+  /* sharp under the pointer: the blur clears while the pointer is over the cut zone, the fade stays */
+  .cutlab .gridwrap[data-peek="dissolvesharp"] .ltGrid > .ltCard:nth-child(n+7) .tableListing { transition: filter .22s ease-out; }
+  .cutlab .gridwrap[data-peek="dissolvesharp"]:not(.open):has(.otMore:hover) .ltGrid > .ltCard:nth-child(n+7) .tableListing { filter: blur(0); }
+
 </style>
 <h1>Open tables &middot; how the third row is cut</h1>
 <p class="note">
-  Round eight. Two rows of tables stay whole. A third row is cut, and the cut row cannot be used: no hover, no click,
-  no focus. Nothing shows at rest. When the pointer is over the cut zone the site's green Show more tables button comes
-  up, hanging from the cut line, and a click opens the rest. The tables here are fixed: nothing deals, nothing turns
-  over, so the cut itself can be judged. Every card differs only in what the cut looks like. The mockup has the first
-  five sections' picks under Open tables, more in its options panel.
+  Round eight, third pass. Two rows of tables stay whole. A third row is cut, and the cut row cannot be used: no hover,
+  no click, no focus. Nothing shows at rest. When the pointer is over the cut zone the site's green Show more tables button
+  comes up, and a click opens the rest. The tables here are fixed: nothing deals, nothing turns over, so the cut itself
+  can be judged. Of the 31 cards before, the stack that spreads stays; the fades are redone so the row itself fades out,
+  with and without blur; the rest is gone (it is in git history up to 54b62d8).
 </p>
 
 <div class="asec">
@@ -3936,6 +3856,7 @@
         <li><b>The cut row is out of reach.</b> It is a picture of more tables, not a place to click.</li>
         <li><b>No button at rest.</b> Green, and only under the pointer.</li>
         <li><b>The long fade is out.</b> Felt dissolving into beige reads muddy.</li>
+        <li><b>The stack that spreads, the fade and the blur go on</b> <span class="tag">5 Sep, evening</span>. The cuts, the shapes, the sheets and the depth cues are out.</li>
       </ul>
     </div>
     <div class="dcard data"><h3>Where the cut sits <span class="tag">measured</span></h3>
@@ -3943,27 +3864,20 @@
         <li><b>The top seat ends at a third of the tile plus 1px</b>, and the side seats' heads start 2px later, so a cut with the top seat whole sits at a third plus 9px with the side seats hidden.</li>
         <li><b>A fixed pixel cut only works at one width.</b> The tile is 218px tall at 1280 and 270px on the full column.</li>
         <li><b>The button hangs 4px over the felt</b>, so there is felt between it and the middle tile's name.</li>
+        <li><b>Why the old fades had sharp corners:</b> they laid the band colour over a tile that was still cut straight underneath, so the felt's ring and corners stayed under the beige. Now the mask is on the tile itself, and it is gone 4px before the cut.</li>
       </ul>
     </div>
-    <div class="dcard rule"><h3>How to read the cards <span class="tag">six families</span></h3>
+    <div class="dcard rule"><h3>How to read the cards <span class="tag">two families</span></h3>
       <ul>
-        <li><b>Cuts.</b> A straight edge, and what the edge is made of.</li>
-        <li><b>Shapes and stacks.</b> The row as finished objects, or as the edges of a stack.</li>
-        <li><b>Fades, again.</b> Fades that never mix felt with beige.</li>
-        <li><b>Blur.</b> The row behind glass, in four strengths.</li>
-        <li><b>Hover.</b> The cut moves under the pointer.</li>
-        <li><b>Other.</b> Depth cues and a bigger peek.</li>
+        <li><b>The stack.</b> No third row: two rows, and the edges of the next tables under them, spreading under the pointer.</li>
+        <li><b>The row fades out.</b> The third row is there and goes to nothing before the cut, in three lengths, then with blur that is flat, that grows, that clears under the pointer.</li>
       </ul>
     </div>
   </div>
 </div>
 
-<div class="asec" id="secCut"><h2>One &middot; cuts</h2><p class="desc">A straight cut under the top seat, and what the edge is made of.</p><div id="cutVariants"></div></div>
-<div class="asec" id="secShape"><h2>Two &middot; shapes and stacks</h2><p class="desc">The third row as finished objects, or as the edges of a stack under the second row.</p><div id="shapeVariants"></div></div>
-<div class="asec" id="secFade"><h2>Three &middot; fades, again</h2><p class="desc">Fades that keep the felt green: into shadow, into white, in steps, in dots, or only the seats.</p><div id="fadeVariants"></div></div>
-<div class="asec" id="secBlur"><h2>Four &middot; blur</h2><p class="desc">The row behind glass.</p><div id="blurVariants"></div></div>
-<div class="asec" id="secHover"><h2>Five &middot; hover</h2><p class="desc">The cut itself moves under the pointer.</p><div id="hoverVariants"></div></div>
-<div class="asec" id="secOther"><h2>Six &middot; other</h2><p class="desc">Depth cues, a bigger peek, and the button's words.</p><div id="otherVariants"></div></div>
+<div class="asec" id="secStack"><h2>One &middot; the stack</h2><p class="desc">Two whole rows, and the edges of the next tables under them.</p><div id="stackVariants"></div></div>
+<div class="asec" id="secFade"><h2>Two &middot; the row fades out</h2><p class="desc">The third row goes to nothing before the cut, so there is no edge and no corner. With and without blur.</p><div id="fadeVariants"></div></div>
 <script>
 /* the avatar edge filter and shadow the homepage wears by default, rebuilt here as the anim lab does */
 (function () {
@@ -4338,79 +4252,27 @@ window.LAB = (function () {
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(syncAll);
   setTimeout(syncAll, 700);
 
-  /* ═══════════ One: cuts ═══════════ */
-  cutCard("cutVariants", { key: "cut", title: "1a &middot; Cut clean under the top seat", tag: "base", tagCls: "base",
-    note: "The plainest cut. The third row shows its game art, the top seat and its name, then a straight edge with 8px of felt under the name. Nothing is drawn on the edge. The side seats are hidden so no heads peek over the cut." });
-  cutCard("cutVariants", { key: "seam", title: "1b &middot; A scored seam under the cut", tag: "mockup default", tagCls: "base",
-    note: "The same cut, with a 2px seam right under it: a hairline in the divider's own colour and a lit line below, the rule the page already draws. The edge reads as a fold in the paper." });
-  cutCard("cutVariants", { key: "sheet", title: "1c &middot; The band as a sheet with a short shadow",
-    note: "The band lies over the row like a sheet of paper, and its edge throws an 8px shadow onto the felt under the name. The shadow stays inside the tiles, so the gaps stay clean." });
-  cutCard("cutVariants", { key: "crease", title: "1d &middot; A crease",
-    note: "The felt darkens in two hard steps at the cut, 3px light and 2px deep, like a fold. No gradient anywhere." });
-  cutCard("cutVariants", { key: "short", title: "1e &middot; Short tiles with their own feet",
-    note: "The third row is not clipped at all. Its tiles are short boxes that finish their own rounded corners, and the felt's ring turns the foot corners too. Three finished objects, not a slice." });
+  /* ═══════════ One: the stack ═══════════ */
+  cutCard("stackVariants", { key: "fan", title: "1a &middot; The stack that spreads", tag: "kept", tagCls: "pick",
+    note: "Two rows, and under each tile two edges of the next tables in a stack. When the pointer is over the stack the edges spread a little, the stack being thumbed, and the button comes up on it." });
 
-  /* ═══════════ Two: shapes and stacks ═══════════ */
-  cutCard("shapeVariants", { key: "lip", title: "2a &middot; A lip of bare felt",
-    note: "20px of felt, the corner radius exactly, so the corners finish before the cut. No art and no seats: the heads of the next tiles under the page. The quietest cut." });
-  cutCard("shapeVariants", { key: "tucked", title: "2b &middot; Tucked under the second row",
-    note: "The third row slides up under the second like cards in a hand, and a 30px sliver of darker felt shows under each tile with the second row's own shadow on it." });
-  cutCard("shapeVariants", { key: "stack", title: "2c &middot; The edges of a stack", tag: "stack base", tagCls: "base",
-    note: "Two rows only, and under each tile two thin felt edges, each narrower than the last: the next tables in a stack. It shows no table, only that there are more." });
-  cutCard("shapeVariants", { key: "stack3", title: "2d &middot; A deeper stack",
-    note: "Three edges under each tile, each narrower and fainter. A taller stack, more tables in it." });
-  cutCard("shapeVariants", { key: "stackfan", title: "2e &middot; A fanned stack",
-    note: "Three edges that step to the right as they go down, the way a stack fans when it is set down at an angle." });
-  cutCard("shapeVariants", { key: "stackdark", title: "2f &middot; A stack in shadow",
-    note: "The two edges in darker, solid felt, as if in the second row's shadow. No transparency, so nothing mixes with the beige." });
-  cutCard("shapeVariants", { key: "stackcount", title: "2g &middot; The count on the stack",
-    note: "The first edge is 16px tall and the middle one says how many are under it. A number at rest, not a button." });
-  cutCard("shapeVariants", { key: "fan", title: "2h &middot; The stack spreads under the pointer",
-    note: "The stack, and when the pointer is over it the edges spread a little, the stack being thumbed, and the button comes up on it." });
-
-  /* ═══════════ Three: fades, again ═══════════ */
-  cutCard("fadeVariants", { key: "fade", title: "3a &middot; The long fade from before", tag: "rejected", tagCls: "",
-    note: "The fade the earlier rounds had, for comparison: the tiles dissolve into the band colour. This is the muddy one." });
-  cutCard("fadeVariants", { key: "fadedark", title: "3b &middot; Into shadow",
-    note: "The last 48px of each tile darken to a deep felt shadow, then a clean cut. Green going to black never goes muddy, and the row reads as sinking under the page." });
-  cutCard("fadeVariants", { key: "fadewhite", title: "3c &middot; Into white",
-    note: "A white mist over the tiles, clear at the top and near solid at the cut, then a clean cut onto the band. Felt going to white stays cool and clean rather than khaki." });
-  cutCard("fadeVariants", { key: "fadesteps", title: "3d &middot; In four steps",
-    note: "The fade into the band colour, but in four flat 10px steps instead of a gradient. Reads as printed, like a screened edge." });
-  cutCard("fadeVariants", { key: "fadedither", title: "3e &middot; In dots",
-    note: "The last 16px of each tile break up into a dither of 2px squares and dots, the way a print screens an edge. No colour mixing at all: every pixel is felt or band." });
-  cutCard("fadeVariants", { key: "fadeseats", title: "3f &middot; Only the seats fade",
-    note: "The felt stays whole and full green to a clean cut. Only the seats and the art dissolve into it, so the mix is content into felt, never felt into beige." });
-  cutCard("fadeVariants", { key: "fadesoft", title: "3g &middot; A 12px soft edge",
-    note: "The cut with a 12px feather, the least fade that still softens the edge. Whether 12px reads as soft or as blurry is the question." });
-
-  /* ═══════════ Four: blur ═══════════ */
-  cutCard("blurVariants", { key: "blur", title: "4a &middot; Blur only",
-    note: "The third row blurred by 3px and nothing else: the felt stays green, the seats become soft shapes, and the cut is clean." });
-  cutCard("blurVariants", { key: "blurdim", title: "4b &middot; Blur and a little darker",
-    note: "The same blur with the row a fifth darker, so it sits back from the two sharp rows." });
-  cutCard("blurVariants", { key: "blurgrow", title: "4c &middot; Blur that grows toward the cut",
-    note: "Sharp at the top of the row and 8px of blur at the cut, in three layers of glass. The row goes out of focus as it goes under." });
-  cutCard("blurVariants", { key: "blursheet", title: "4d &middot; Blur under a sheet",
-    note: "The blur with the sheet's 8px shadow at the cut, so the edge is a real edge and the blur says the row is behind glass under it." });
-  cutCard("blurVariants", { key: "frost", title: "4e &middot; Frosted glass", tag: "from before", tagCls: "",
-    note: "The blur with a white veil at 45 percent, the frosted look from the earlier round, for comparison." });
-
-  /* ═══════════ Five: hover ═══════════ */
-  cutCard("hoverVariants", { key: "cover", title: "5a &middot; A sheet that slides down",
-    note: "A sheet in the band's colour over the row, leaving a 10px lip of felt. Under the pointer it slides down past the cut line and the seats are there under it; the button lands as it settles." });
-  cutCard("hoverVariants", { key: "fan", title: "5b &middot; The stack that spreads",
-    note: "As 2h: the stack, and the edges spread under the pointer." });
-
-  /* ═══════════ Six: other ═══════════ */
-  cutCard("otherVariants", { key: "shadowunder", title: "6a &middot; In the second row's shadow",
-    note: "The clean cut, and the top 20px of the third row darkened as if the second row lies over it. The depth cue is at the top of the row, not at the cut." });
-  cutCard("otherVariants", { key: "underlap", title: "6b &middot; Under the second row",
-    note: "The third row starts under the second row's bottom edge, with the second row's shadow on it, and is cut under the top seat. The rows overlap like dealt cards." });
-  cutCard("otherVariants", { key: "tall", title: "6c &middot; A taller peek",
-    note: "The cut two thirds down the tile, so the side seats show whole too. More of each table, and more height." });
-  cutCard("otherVariants", { key: "cut", label: "Show 7 more tables", title: "6d &middot; The count on the button",
-    note: "The clean cut, and the button says how many: Show 7 more tables." });
+  /* ═══════════ Two: the row fades out ═══════════ */
+  cutCard("fadeVariants", { key: "dissolve", title: "2a &middot; Fades out", tag: "fade base", tagCls: "base",
+    note: "The third row is whole to 56px above the cut, then the tile itself, felt, ring and all, fades to nothing over those 56px. It is gone 4px before the cut line, so no edge and no corner is ever seen." });
+  cutCard("fadeVariants", { key: "dissolveshort", title: "2b &middot; A short fade",
+    note: "The same, over the last 28px only. The row is mostly whole, and the end is more a soft edge than a fade." });
+  cutCard("fadeVariants", { key: "dissolvelong", title: "2c &middot; Fades from the top",
+    note: "The fade starts 8px into the row, so the whole peek is a fade: full felt at the gap, nothing at the cut. The most fade the rules allow." });
+  cutCard("fadeVariants", { key: "dissolveblur", title: "2d &middot; Fades out and blurs",
+    note: "2a with the row blurred by 3px. The seats become soft shapes and the fade takes them away; out of focus and out of reach at once." });
+  cutCard("fadeVariants", { key: "dissolveblurlong", title: "2e &middot; Fades from the top, blurred",
+    note: "2c with the 3px blur. The whole row is a soft green mist that thins to nothing." });
+  cutCard("fadeVariants", { key: "dissolvegrow", title: "2f &middot; Fades out, and the blur grows",
+    note: "2a, and the blur grows toward the cut: sharp at the top of the row, 3px in the middle, 8px where the fade takes over. The row goes out of focus as it goes." });
+  cutCard("fadeVariants", { key: "growfade", title: "2g &middot; Mostly blur, a short fade",
+    note: "The growing blur does the work, and the fade is only the last 20px, so the row is a blurred picture with a soft end rather than a fade." });
+  cutCard("fadeVariants", { key: "dissolvesharp", title: "2h &middot; Blurred, sharp under the pointer",
+    note: "2d, and while the pointer is over the cut zone the blur clears, so the row comes into focus as the button comes up. The fade stays." });
 })(window.LAB);
 </script>
 <script>
