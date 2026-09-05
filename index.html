@@ -2189,7 +2189,8 @@
   .lobbyscope .dropupContent li:last-child { border-bottom: none; }
   .lobbyscope .dropupContent li:hover { background-color: var(--triolighthover); }
   .lobbyscope .ldChallenge { margin-top: 8px; }
-  .lobbyscope .ldPanel { border-radius: 6px; corner-shape: squircle; background-color: #F8F7F4; border: 1px solid var(--panelline); }
+  /* the cards take the scheme's own tokens (5 September): the fill is the scheme's canvas and the lines its edge, the same edge the tiles' rings wear; before, a hardcoded #F8F7F4 and the 15% brown line */
+  .lobbyscope .ldPanel { border-radius: 6px; corner-shape: squircle; background-color: var(--canvas, #F8F7F4); border: 1px solid var(--edge, var(--panelline)); }
   .lobbyscope .ldAward { position: relative; height: 48px; margin-bottom: 8px; padding: 0 8px; }
   .lobbyscope .ldAwardTitle { font-size: 14px; font-weight: 700; line-height: 40px; color: #212529; }
   .lobbyscope .ldAwardBars { position: absolute; left: 8px; right: 8px; bottom: 4px; display: flex; height: 8px; }
@@ -2210,18 +2211,17 @@
   .lobbyscope .ldAwardBar.isGold .ldAwardBadge { background: url("dailyChallengeGoldSmall.svg") center / 34px 32px no-repeat;
     text-shadow: -1px 0 #F59E02, 0 1px #F59E02, 1px 0 #F59E02, 0 -1px #F59E02; }
   .lobbyscope .ldAwardBar.isSpacer { flex: 0 0 17px; box-shadow: none; }
-  .lobbyscope .ldCal { display: grid; grid-template-columns: repeat(7, 1fr); border-top: 1px solid var(--panelline);
+  .lobbyscope .ldCal { display: grid; grid-template-columns: repeat(7, 1fr); border-top: 1px solid var(--edge, var(--panelline));
     text-align: center; font-variant-numeric: tabular-nums; }
-  .lobbyscope .ldCal > span { border-right: 1px solid var(--panelline); }
+  .lobbyscope .ldCal > span { border-right: 1px solid var(--edge, var(--panelline)); }
   .lobbyscope .ldCal > span:nth-child(7n) { border-right: none; }
   .lobbyscope .ldCalHead { padding: 4px 0; font-size: 14px; line-height: 24px; color: #868E96; }
-  .lobbyscope .ldCalCell { position: relative; height: 32px; line-height: 32px; border-top: 1px solid var(--panelline);
+  .lobbyscope .ldCalCell { position: relative; height: 32px; line-height: 32px; border-top: 1px solid var(--edge, var(--panelline)); background-color: #fff; /* every row with a day in it is white edge to edge, the weekday row keeps the panel's grey (5 September) */
     font-size: 14px; font-weight: 700; color: #212529; }
-  .lobbyscope .ldCalDay { background-color: #fff; } /* the month's own days are white on the panel's grey; the cells before and after the month and the weekday row keep the grey (5 September) */
   .lobbyscope .ldCalDay:not(.isFuture) { cursor: pointer; }
   .lobbyscope .ldCalDay.isFuture { font-weight: normal; color: #495057; }
   .lobbyscope .ldCalDay.isToday { text-decoration: underline; }
-  .lobbyscope .ldCalDay.isDealDone { text-indent: -9999px; background: url("dealDayCheck.svg") center center no-repeat; } /* no shadow on the check (5 September) */
+  .lobbyscope .ldCalDay.isDealDone { text-indent: -9999px; background-image: url("dealDayCheck.svg"); background-position: center; background-repeat: no-repeat; } /* no shadow on the check, and the cell stays white (5 September) */
   .lobbyscope .ldPlay { width: 100%; margin-top: 8px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
 
   .lobbyscope .lobbyTablesPanel, .lobbyscope .lobbyLiveTables { width: 100%; }
@@ -2415,16 +2415,16 @@
     font-size: 20px; line-height: 28px; font-weight: bold; color: #212529; }
   .lobbyscope .lbShow { flex-shrink: 0; }
   .lobbyscope .lbGames { margin-top: 0; }
-  .lobbyscope .lbRows { display: table; width: 100%; margin: 8px 0 6px; background-color: #fff; border: 1px solid var(--panelline);
+  .lobbyscope .lbRows { display: table; width: 100%; margin: 8px 0 6px; background-color: #fff; border: 1px solid var(--edge, var(--panelline));
     border-radius: 6px; corner-shape: squircle; overflow: hidden; font-size: 14px; line-height: 20px; font-variant-numeric: tabular-nums; }
   .lobbyscope .lbRow { display: table-row; color: #212529; }
   .lobbyscope .lbRow b { font-weight: bold; }
   .lobbyscope .lbRow > span { display: table-cell; vertical-align: middle; box-sizing: border-box; height: 32px;
     padding: 0 8px; white-space: nowrap; }
-  .lobbyscope .lbRow > span + span { border-left: 1px solid var(--panelline); }
-  .lobbyscope .lbRow + .lbRow > span { border-top: 1px solid var(--panelline); }
-  .lobbyscope .lbRow.isAlt { background-color: #F8F7F4; }
-  .lobbyscope .lbHeaderRow { background-color: #F8F7F4; font-weight: bold; }
+  .lobbyscope .lbRow > span + span { border-left: 1px solid var(--edge, var(--panelline)); }
+  .lobbyscope .lbRow + .lbRow > span { border-top: 1px solid var(--edge, var(--panelline)); }
+  .lobbyscope .lbRow.isAlt { background-color: var(--canvas, #F8F7F4); }
+  .lobbyscope .lbHeaderRow { background-color: var(--canvas, #F8F7F4); font-weight: bold; }
   .lobbyscope .lbName { width: 100%; max-width: 0; overflow: hidden; text-overflow: ellipsis; }
   .lobbyscope .lbHeart { color: #f03e3e; }
   .lobbyscope .lbUp, .lobbyscope .lbDown { display: inline-block; vertical-align: middle; border-radius: 4px; corner-shape: squircle;
