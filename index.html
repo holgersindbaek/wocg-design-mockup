@@ -2050,13 +2050,15 @@
   body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) :is(#sec-tt, #sec-rummy, #sec-classic) > .pophead { display: none; }
   body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) #openTablesTop .lobbyhead { justify-content: flex-end; }
   body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) #liveTablesTop .lobbyhead { display: none; } /* the empty head would still spend its 32px margin and the column's gap */
-  /* with the head on the seam every gap measures 48px from the rule's centre to the neighbour's edge, above and below (40px elsewhere) */
-  body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells).sect-waveband #popsec { padding-bottom: 48px; }
-  body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells).layout-scrab #popsec { padding-top: 40px; } /* the first tile row 48px under the menu seam's rule too (8px bar margin + 40) */
-  body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells).sect-waveband #openTablesTop { padding-top: 48px; padding-bottom: 48px; }
-  body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) #liveTablesTop { padding-top: 46px; padding-bottom: 48px; } /* the 2px under the Open tables band */
-  body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) :is(#sec-tt, #sec-rummy, #sec-classic) { padding-top: 48px; padding-bottom: 48px; }
-  body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) #lobbyDemo .lobbyTopBand { padding: 48px 0; }
+  /* with the head on the seam every gap measures --sectgap (48px as settled) from the rule's centre to the neighbour's edge, above and below; the Section spacing option sets it to try more air */
+  body { --sectgap: 48px; }
+  body.sgap-56 { --sectgap: 56px; } body.sgap-64 { --sectgap: 64px; } body.sgap-72 { --sectgap: 72px; } body.sgap-80 { --sectgap: 80px; } body.sgap-96 { --sectgap: 96px; }
+  body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells).sect-waveband #popsec { padding-bottom: var(--sectgap); }
+  body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells).layout-scrab #popsec { padding-top: calc(var(--sectgap) - 8px); } /* the first tile row 48px under the menu seam's rule too (8px bar margin + 40) */
+  body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells).sect-waveband #openTablesTop { padding-top: var(--sectgap); padding-bottom: var(--sectgap); }
+  body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) #liveTablesTop { padding-top: calc(var(--sectgap) - 2px); padding-bottom: var(--sectgap); } /* the 2px under the Open tables band */
+  body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) :is(#sec-tt, #sec-rummy, #sec-classic) { padding-top: var(--sectgap); padding-bottom: var(--sectgap); }
+  body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) #lobbyDemo .lobbyTopBand { padding: var(--sectgap) 0; }
   body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) #lobbyDemo > .lobbyhead { display: none; } /* the head is in the seam and the Show buttons are gone (5 September), so the row would only spend the column's gap */
   body:is(.div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) { --divtile: var(--divrulestretch); }
   body:is(.div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) .seamsweep .ink { background: none; }
@@ -3297,6 +3299,7 @@
     <label class="ctl"><span>Today's cell</span><select id="sel-today"></select></label>
     <label class="ctl"><span>Game bar colours</span><select id="sel-otcolor"></select></label>
     <label class="ctl"><span>Open tables, more</span><select id="sel-otpeek"></select></label>
+    <label class="ctl"><span>Section spacing</span><select id="sel-sgap"></select></label>
   </div>
   <details class="swadv">
     <summary>Advanced — settled settings</summary>
@@ -4316,6 +4319,9 @@
     ["seealltray", "See all: the chooser's own colours, at the chooser's height"]
   ];
   var curOtPeek = "seeallink";
+  /* the air between the sections: the padding above and below each band, measured from the seam's rule */
+  var SGAPS = [["48", "48px, as settled"], ["56", "56px"], ["64", "64px"], ["72", "72px"], ["80", "80px"], ["96", "96px"]];
+  var curSgap = "48";
   var SECTS = [
     ["none", "Sections on the canvas (as today)"],
     ["contained", "Open tables in the Evernote container"],
@@ -5549,7 +5555,7 @@
   }
   function applyBody() {
     var scene = curLayout.indexOf("sc") === 0;
-    document.body.className = curBase + " play-" + curPlay + " layout-" + curLayout + (scene ? " scenehero" : "") + " font-" + curFont + " shadow-" + curShadow + " edge-" + curEdge + " tex-" + curTexture + " cat-" + curCatalog + " stats-" + curStats + " menu-" + curMenu + " counter-" + curCounter + " rail-" + curRail + " playbtn-" + curPlayBtn + " avedge-" + curAvedge + " avsh-" + curAvshadow + " cnav-" + curCnav + " foot-" + curFooter + " viewer-" + curViewer + " sect-" + curSect + " div-" + curDivider + " cbtn-" + curCbtn + " today-" + curToday + " otc-" + curOtColor + " otpeek-" + curOtPeek + " lhover-" + curLhover + " tilebg-" + curTileBg + " pinpair-" + curPinPair + " tint-" + curTint + (palShown ? " show-palette" : "");
+    document.body.className = curBase + " play-" + curPlay + " layout-" + curLayout + (scene ? " scenehero" : "") + " font-" + curFont + " shadow-" + curShadow + " edge-" + curEdge + " tex-" + curTexture + " cat-" + curCatalog + " stats-" + curStats + " menu-" + curMenu + " counter-" + curCounter + " rail-" + curRail + " playbtn-" + curPlayBtn + " avedge-" + curAvedge + " avsh-" + curAvshadow + " cnav-" + curCnav + " foot-" + curFooter + " viewer-" + curViewer + " sect-" + curSect + " div-" + curDivider + " cbtn-" + curCbtn + " today-" + curToday + " otc-" + curOtColor + " otpeek-" + curOtPeek + " sgap-" + curSgap + " lhover-" + curLhover + " tilebg-" + curTileBg + " pinpair-" + curPinPair + " tint-" + curTint + (palShown ? " show-palette" : "");
     applyTints();
     var ht = document.getElementById("herotitle"), hs = document.getElementById("herosub");
     if (scene) {
@@ -5583,6 +5589,7 @@
     document.getElementById("sel-today").value = curToday;
     if (document.getElementById("sel-otcolor")) document.getElementById("sel-otcolor").value = curOtColor;
     if (document.getElementById("sel-otpeek")) document.getElementById("sel-otpeek").value = curOtPeek;
+    if (document.getElementById("sel-sgap")) document.getElementById("sel-sgap").value = curSgap;
     document.getElementById("sel-counter").value = curCounter;
     document.getElementById("sel-rail").value = curRail;
     document.getElementById("sel-pinpair").value = curPinPair;
@@ -5868,6 +5875,7 @@
   buildSel("sel-texture", TEXTURES, function (v) { curTexture = v; });
   buildSel("sel-otcolor", OTCOLORS, function (v) { curOtColor = v; });
   buildSel("sel-otpeek", OTPEEKS, function (v) { curOtPeek = v; });
+  buildSel("sel-sgap", SGAPS, function (v) { curSgap = v; });
   buildSel("sel-stats", STATSLINES, function (v) { curStats = v; });
   buildSel("sel-cbtn", CBTNS, function (v) { curCbtn = v; });
   buildSel("sel-today", TODAYS, function (v) { curToday = v; });
@@ -5967,7 +5975,17 @@
   }
 
   applyBody();
-  heroFontsReady().then(function () { document.documentElement.classList.remove("pending"); });
+  /* The veil lifts only when the games bars can paint in their final state. The bars are fitted on DOMContentLoaded
+     (what does not fit goes into More, and the thumb is placed), so a lift before that, which cached hero fonts allow,
+     let the first paint show the raw markup, all eighteen cells squeezed into the tray, and the bar then jumped. The
+     bar's own font is awaited too, since the fit measures the cells, and the bars are fitted once more right before
+     the lift in case the font came in after DOMContentLoaded. */
+  var domReady = document.readyState === "loading" ? new Promise(function (r) { document.addEventListener("DOMContentLoaded", r); }) : Promise.resolve();
+  var barFontReady = document.fonts && document.fonts.load ? Promise.race([Promise.all([document.fonts.load("bold 16px BuloRounded"), document.fonts.load("16px BuloRounded")]).catch(function () {}), new Promise(function (r) { setTimeout(r, 3000); })]) : Promise.resolve();
+  Promise.all([heroFontsReady(), barFontReady, domReady]).then(function () {
+    (window.gameBarFits || []).forEach(function (fit) { fit(); });
+    document.documentElement.classList.remove("pending");
+  });
   /* baseline for the Cmd+Z flipper: without this, a select's first change
      has no recorded previous value and cannot flip */
   Array.prototype.forEach.call(document.querySelectorAll(".ctl select"), function (s) { s._prev = s.value; });
@@ -8301,6 +8319,7 @@
     document.addEventListener("click", function (e) { var ov = e.target.closest(".otFilter .ov"); if (!ov || !host.contains(ov)) dd.classList.remove("open"); });
     var rt; window.addEventListener("resize", function () { clearTimeout(rt); rt = setTimeout(fit, 60); });
     fit();
+    (window.gameBarFits = window.gameBarFits || []).push(fit);
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
   }
   document.addEventListener("DOMContentLoaded", function () {
