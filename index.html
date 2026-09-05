@@ -2223,7 +2223,10 @@
   .lobbyscope .ldCalDay:not(.isFuture) { cursor: pointer; }
   .lobbyscope .ldCalDay.isFuture { font-weight: normal; color: #495057; }
   .lobbyscope .ldCalDay.isToday { text-decoration: underline; }
-  .lobbyscope .ldCalDay.isDealDone { text-indent: -9999px; background-image: url("dealDayCheck.svg"); background-position: center; background-repeat: no-repeat; } /* no shadow on the check, and the cell stays white (5 September) */
+  /* the check in the button's own green (5 September): the SVG is a mask, so the colour is the page's trio green and follows the palette; the file's own fill was #469E00, a green of nobody's. No shadow, and the cell stays white. */
+  .lobbyscope .ldCalDay.isDealDone { text-indent: -9999px; }
+  .lobbyscope .ldCalDay.isDealDone::after { content: ""; position: absolute; inset: 0; background-color: var(--triogreen);
+    -webkit-mask: url("dealDayCheck.svg") center / 32px 32px no-repeat; mask: url("dealDayCheck.svg") center / 32px 32px no-repeat; }
   .lobbyscope .ldPlay { width: 100%; margin-top: 8px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
 
   .lobbyscope .lobbyTablesPanel, .lobbyscope .lobbyLiveTables { width: 100%; }
