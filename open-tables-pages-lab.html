@@ -3837,6 +3837,22 @@
   .pglab .ovlist .foot i:not(.on):hover { background: #dcd4c5; }
   .pglab .ovlist .foot i.on { color: #fff; background: var(--triogreen); box-shadow: inset 0 0 0 1px var(--triogreenring); cursor: default;
     text-shadow: -1px -1px 0 var(--triogreenring), 1px -1px 0 var(--triogreenring), -1px 1px 0 var(--triogreenring), 1px 1px 0 var(--triogreenring); }
+  /* headers: a small word on a white strip, and the labelled line: the list's own line with the word sitting in it */
+  .pglab .ovlist .mlab { display: block; font: bold 11.5px/14px "BuloRounded", Verdana, sans-serif; letter-spacing: .04em; text-transform: uppercase; color: #8a857c; padding: 7px 12px 3px; background: #fff; border-bottom: 1px solid #e9e4db; }
+  .pglab .ovlist .mlab.mid { border-top: 1px solid #c9c0ae; }
+  .pglab .ovlist .mline { display: flex; align-items: center; gap: 8px; padding: 3px 10px; background: #fff; font: bold 11px/14px "BuloRounded", Verdana, sans-serif; letter-spacing: .04em; text-transform: uppercase; color: #8a857c; }
+  .pglab .ovlist .mline::before, .pglab .ovlist .mline::after { content: ""; flex: 1 1 auto; height: 1px; background: #c9c0ae; }
+  .pglab.list-site .ovlist .mgames .mi:last-child { border-bottom: 0; }
+  .pglab.list-site .ovlist .mgames + .mi.amt, .pglab.list-site .ovlist .mgames + .mhr + .mi.amt { border-top: 1px solid #c9c0ae; }
+  /* the clean foot: built as the bar is. A 28px strip, 2px of tray around 24px cells with the 6px squircle, the bar's 1px lines
+     between the cells that step aside next to the thumb, and the list's own line colour on top */
+  .pglab .ovlist .foot.clean { padding: 2px; gap: 0; background: #e4ddd0; border-top: 1px solid #c9c0ae; }
+  .pglab .ovlist .foot.clean i { position: relative; height: 24px; line-height: 24px; font-size: 16px; border-radius: var(--radius-md, 6px); corner-shape: squircle; }
+  .pglab .ovlist .foot.clean i + i::before { content: ""; position: absolute; left: 0; top: -2px; bottom: -2px; width: 1px; background: #c9c0ae; }
+  .pglab .ovlist .foot.clean i.on::before, .pglab .ovlist .foot.clean i.on + i::before { opacity: 0; }
+  .pglab .ovlist .foot.clean i.on { box-shadow: inset 0 0 0 1px var(--triogreenring), 0 2px 4px rgba(0,0,0,.06); }
+  .pglab .ovlist .foot.clean .lab { flex: 0 0 auto; padding: 0 10px; font-size: 14px; color: #8a857c; cursor: default; }
+  .pglab .ovlist .foot.clean .lab + i::before { display: none; }
   /* 2a, 2d: the games in columns */
   .pglab .ovlist.cols .mgames { display: grid; grid-template-columns: repeat(var(--cols, 2), minmax(0, 1fr)); overflow: hidden; margin-right: -1px; }
   .pglab.list-site .ovlist.cols .mgames .mi { border-right: 1px solid #c9c0ae; }
@@ -3880,6 +3896,7 @@
         <li><b>Dots, the tray, and a See all by the bar go on</b> <span class="tag">5 Sep, late</span>. Pages, rails, hands, handles and hover controls are out.</li>
         <li><b>The button beside the bar wins</b> <span class="tag">5 Sep, night</span>. It says See all, in a dark Evernote colour, 8px from the bar.</li>
         <li><b>See all is out again</b> <span class="tag">6 Sep</span>. The amount goes into the More list, as 4a had it, but not as a second category with a heading. Either like another game, or a list that is not one long column.</li>
+        <li><b>1b and 1e go on</b> <span class="tag">6 Sep, later</span>. But 6 tables is not obvious on its own; maybe headers after all. 1e to be built cleanly: 24px rows, a 28px strip, 24px cells, the right radius and line colour.</li>
       </ul>
     </div>
     <div class="dcard data"><h3>What this costs <span class="tag">measured</span></h3>
@@ -3892,16 +3909,18 @@
     </div>
     <div class="dcard rule"><h3>How to read the cards <span class="tag">two families</span></h3>
       <ul>
-        <li><b>Like another game.</b> The amounts as rows after the list's line: on the green, with a tick, worded as Show, or as one row of numbers.</li>
-        <li><b>Not one long list.</b> The games in two or three columns, the amounts beside the games, or the whole thing as a panel of cells.</li>
+        <li><b>The ticked rows.</b> 1b, with two headers, one header, rows that say Show, or the word on the line.</li>
+        <li><b>The foot, cleaned.</b> 1e as the bar is built, bare, with Show in the strip, under a header, or under the word on the line.</li>
+        <li><b>Not one long list.</b> The shapes from the last pass, for comparison.</li>
       </ul>
     </div>
   </div>
 </div>
 
 <p class="note" style="margin-top:-10px"><label><input type="checkbox" id="pinLists" checked> Keep the More lists open</label></p>
-<div class="asec" id="secRows"><h2>One &middot; like another game</h2><p class="desc">The other games, the list's own line, then the amounts as rows. No heading: the rows say what they are.</p><div id="rowVariants"></div></div>
-<div class="asec" id="secShapes"><h2>Two &middot; not one long list</h2><p class="desc">The same content in a shape that is wider than it is tall.</p><div id="shapeVariants"></div></div>
+<div class="asec" id="secRows"><h2>One &middot; the ticked rows, and what says what they are</h2><p class="desc">1b as it was: the amounts as rows after the games, the chosen one ticked. Four ways to make 6 tables mean something: two headers, one header, the rows say it, or the word on the line.</p><div id="rowVariants"></div></div>
+<div class="asec" id="secFoot"><h2>Two &middot; the row at the foot, cleaned up</h2><p class="desc">1e built as the bar is: a 28px strip, 24px cells with the bar's squircle and its lines, on the list's line. Then the same question: bare numbers, the word Show in the strip, a header over it, or the word on the line.</p><div id="footVariants"></div></div>
+<div class="asec" id="secShapes"><h2>Three &middot; not one long list</h2><p class="desc">Kept from the last pass for comparison.</p><div id="shapeVariants"></div></div>
 <script>
 /* the avatar edge filter and shadow the homepage wears by default, rebuilt here as the anim lab does */
 (function () {
@@ -4350,24 +4369,39 @@ window.LAB = (function () {
   }
   document.getElementById("pinLists").addEventListener("change", function (e) { document.querySelectorAll(".pglab").forEach(function (st) { st.classList.toggle("pin", e.target.checked); }); });
 
-  /* ═══════════ One: like another game ═══════════ */
-  moreCard("rowVariants", { key: "rowsgreen", list: "rows", title: "1a &middot; Rows, the chosen one on the green", tag: "base",
-    note: "After the games and the list's own line, four more rows: 6 tables, 12 tables, 24 tables, All 48 tables. The chosen row wears the Play green, as the picked game does in the bar. Nothing says what the rows are; the rows do.",
-    html: function (n) { return gameRows() + '<span class="mhr"></span>' + amtRows(TABLES_WORD, n); } });
-  moreCard("rowVariants", { key: "rowstick", list: "rows tick", title: "1b &middot; Rows, the chosen one ticked",
-    note: "The same rows, but the chosen one keeps the tray and gets a green tick at the right. Quieter than a green row, and it reads as a setting rather than a place to go.",
-    html: function (n) { return gameRows() + '<span class="mhr"></span>' + amtRows(TABLES_WORD, n); } });
-  moreCard("rowVariants", { key: "rowsshow", list: "rows", title: "1c &middot; Rows worded as Show",
-    note: "Show 6, Show 12, Show 24, Show all. The verb makes the rows read as actions, like the games above them, which are also things you do.",
-    html: function (n) { return gameRows() + '<span class="mhr"></span>' + amtRows(SHOW_WORD, n); } });
-  moreCard("rowVariants", { key: "rowsatatime", list: "rows", title: "1d &middot; Rows with the small word",
-    note: "The number big and at a time small beside it, in the count's place: 6 at a time, 12 at a time. The rows borrow the games' own shape, a name and a small number.",
-    html: function (n) { return gameRows() + '<span class="mhr"></span>' + amtRows(AT_A_TIME, n); } });
-  moreCard("rowVariants", { key: "rowsfoot", list: "rows", title: "1e &middot; One row at the foot",
-    note: "Instead of four rows, one: 6, 12, 24, All side by side at the foot of the list, the chosen number on the green. The list stays as long as it was, plus one line.",
-    html: function (n) { return gameRows() + '<span class="mhr"></span>' + footRow(); } });
+  var SHOW_TABLES = function (v, n) { return v ? "Show " + v + " tables" : "Show all " + n + " tables"; };
+  function games() { return '<span class="mgames">' + gameRows() + "</span>"; }
+  function cleanFoot(label) { return '<span class="foot clean">' + (label ? '<span class="lab">' + label + "</span>" : "") + AMOUNTS.map(function (v) { return '<i data-perv="' + v + '">' + (v || "All") + "</i>"; }).join("") + "</span>"; }
 
-  /* ═══════════ Two: not one long list ═══════════ */
+  /* ═══════════ One: the ticked rows, and what says what they are ═══════════ */
+  moreCard("rowVariants", { key: "hdrtwo", list: "rows tick", title: "1a &middot; Two headers", tag: "from 1b",
+    note: "A small word over each group: Other games over the games, How many at a time over the amounts. The list becomes two named things, which is what the first pass had and you did not like; here with the headers as small as they can be.",
+    html: function (n) { return '<span class="mlab">Other games</span>' + games() + '<span class="mlab mid">How many at a time</span>' + amtRows(TABLES_WORD, n); } });
+  moreCard("rowVariants", { key: "hdrone", list: "rows tick", title: "1b &middot; One header, over the amounts only",
+    note: "The games need no word; they are games. Only the amounts get one, Show, on a white strip after the games. One small word makes 6 tables read as show 6 tables.",
+    html: function (n) { return games() + '<span class="mlab mid">Show</span>' + amtRows(TABLES_WORD, n); } });
+  moreCard("rowVariants", { key: "rowsay", list: "rows tick", title: "1c &middot; No header, the rows say it",
+    note: "Show 6 tables, Show 12 tables, Show 24 tables, Show all 48 tables, ticked. The verb is in every row, so no header is needed, at the cost of a longer word in each.",
+    html: function (n) { return games() + '<span class="mhr"></span>' + amtRows(SHOW_TABLES, n); } });
+  moreCard("rowVariants", { key: "rowline", list: "rows tick", title: "1d &middot; The word on the line",
+    note: "The list's own line between the games and the amounts, with the word Show sitting in it, small. Not a header and not a strip: the separator says what comes after it.",
+    html: function (n) { return games() + '<span class="mline">Show</span>' + amtRows(TABLES_WORD, n); } });
+
+  /* ═══════════ Two: the row at the foot, cleaned up ═══════════ */
+  moreCard("footVariants", { key: "footclean", list: "rows", title: "2a &middot; The foot, bare", tag: "from 1e",
+    note: "The games in 24px rows, then a 28px strip built as the bar is: 2px of tray around 24px cells with the bar's own squircle, the bar's lines between them stepping aside next to the green thumb, and the list's line colour on top. 6, 12, 24, All, and nothing to say what they are.",
+    html: function (n) { return games() + cleanFoot(); } });
+  moreCard("footVariants", { key: "footshow", list: "rows", title: "2b &middot; The foot, with Show in the strip",
+    note: "The same strip with the word Show at its left, small and grey, before the numbers. The strip explains itself in one word and stays one line.",
+    html: function (n) { return games() + cleanFoot("Show"); } });
+  moreCard("footVariants", { key: "foothdr", list: "rows", title: "2c &middot; The foot, under a header",
+    note: "A small white header strip, Show, over the foot, the same header 1b uses. The foot stays bare numbers.",
+    html: function (n) { return games() + '<span class="mlab mid">Show</span>' + cleanFoot(); } });
+  moreCard("footVariants", { key: "footline", list: "rows", title: "2d &middot; The foot, under the word on the line",
+    note: "The word Show on the list's line, then the strip. The line does the naming and the strip does the choosing.",
+    html: function (n) { return games() + '<span class="mline">Show</span>' + cleanFoot(); } });
+
+  /* ═══════════ Three: not one long list ═══════════ */
   moreCard("shapeVariants", { key: "twocols", list: "cols cols2", title: "2a &middot; The games in two columns",
     note: "The other games in two columns, half as tall, and the amounts as the one row at the foot across both. The list becomes a card.",
     html: function (n) { return '<span class="mgames">' + gameRows() + "</span>" + footRow(); } });
