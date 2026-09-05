@@ -1,0 +1,1613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Signature lab — the one small thing</title>
+<style>
+  @font-face { font-family: 'BuloRounded'; src: url("BuloRounded-Regular.woff2") format('woff2'); font-weight: normal; font-display: swap; }
+  @font-face { font-family: 'BuloRounded'; src: url("BuloRounded-Bold.woff2") format('woff2'); font-weight: bold; font-display: swap; }
+  @font-face { font-family: 'BuloRounded'; src: url("BuloRounded-Italic.otf") format('opentype'); font-style: italic; font-weight: normal; font-display: swap; }
+  @font-face { font-family: "Gelica"; src: url("Gelica-Regular.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+  @font-face { font-family: "Gelica"; src: url("Gelica-Medium.woff2") format("woff2"); font-weight: 500; font-display: swap; }
+  @font-face { font-family: "Gelica"; src: url("Gelica-SemiBold.woff2") format("woff2"); font-weight: 600; font-display: swap; }
+
+  :root { --canvas:#f9f6f2; --band:#f4eee5; --surface:#fff; --ink:#141414; --ink-soft:#262626; --muted:#4e4d4c;
+    --hairline:#e7e7e7; --edge:#d2cfca; --accent:#00a82d; --second:#4d64ff; --pfg:#fff;
+    --liftshadow: 0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09);
+    --liftshadow-lg: 0 2px 5px rgba(60,45,25,.07), 0 8px 18px rgba(60,45,25,.10);
+    --divtile: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 384 14'%3E%3Cg fill='%23D9D2C4'%3E%3Crect y='6.5' width='38' height='1'/%3E%3Crect x='58' y='6.5' width='76' height='1'/%3E%3Crect x='154' y='6.5' width='76' height='1'/%3E%3Crect x='250' y='6.5' width='76' height='1'/%3E%3Crect x='346' y='6.5' width='38' height='1'/%3E%3C/g%3E%3Cg transform='translate(42.32 1.32) scale(.142)'%3E%3Cpath d='M39.95,9 C39.95,9 69.97,20.85 70,43.08 C70.01,52.75 62.13,60.61 52.39,60.62 C49.42,60.63 46.62,59.90 44.16,58.61 L48,71.00 L32,71.00 L35.82,58.65 C33.38,59.93 30.60,60.65 27.64,60.66 C17.91,60.67 10.01,52.83 10,43.16 C9.96,20.92 39.95,9 39.95,9 Z' fill='%23262626' fill-opacity='.45'/%3E%3C/g%3E%3Cg transform='translate(138.08 1.08) scale(.148)'%3E%3Cpath d='M52.34,13.99 C56.93,13.99 61.08,15.95 64.09,19.13 C67.12,22.32 68.99,26.74 69.00,31.62 C69.02,53.20 43.52,65.35 40.04,66.90 C37.71,65.85 26.39,60.44 18.57,50.99 C14.26,45.79 11.00,39.34 10.99,31.70 C10.99,26.82 12.85,22.40 15.87,19.19 C18.87,16.01 23.02,14.03 27.60,14.03 C32.15,14.02 36.26,15.95 39.26,19.07 C39.51,19.33 39.75,19.60 39.98,19.87 C40.21,19.60 40.46,19.33 40.70,19.07 C43.70,15.94 47.80,14.00 52.34,13.99 Z' fill='%23B54A3F' fill-opacity='.5'/%3E%3C/g%3E%3Cg transform='translate(233.88 .88) scale(.153)'%3E%3Cpath d='M39.99,11 C47.76,11 54.06,17.3 54.06,25.06 C54.06,28.79 52.61,32.18 50.24,34.70 C51.98,33.93 53.90,33.50 55.93,33.50 C63.70,33.50 70,39.80 70,47.57 C70,55.33 63.70,61.63 55.93,61.63 C50.95,61.63 46.57,59.04 44.08,55.13 C44.14,55.40 44.21,55.66 44.27,55.93 L44.44,56.61 C44.47,56.73 44.49,56.84 44.52,56.96 L44.69,57.65 L44.85,58.33 C46.17,63.81 47.36,69 47.36,69 L32.93,69 C32.93,69 33.93,64.19 35.11,58.95 L35.27,58.26 L35.35,57.92 L35.51,57.23 C35.69,56.45 35.87,55.68 36.05,54.91 C33.57,58.94 29.13,61.63 24.06,61.63 C16.29,61.63 10,55.33 10,47.57 C10,39.80 16.29,33.50 24.06,33.50 C26.09,33.50 28.01,33.93 29.76,34.70 C27.38,32.19 25.93,28.80 25.93,25.06 C25.93,17.3 32.23,11 39.99,11 Z' fill='%23262626' fill-opacity='.45'/%3E%3C/g%3E%3Cg transform='translate(329.64 .64) scale(.159)'%3E%3Cpath d='M40,3.68 L66.75,40.00 L40,76.31 L13.24,40.00 L40,3.68 Z' fill='%23B54A3F' fill-opacity='.5'/%3E%3C/g%3E%3C/svg%3E"); --divnight: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 384 14'%3E%3Cg fill='%2333453b'%3E%3Crect y='6.5' width='38' height='1'/%3E%3Crect x='58' y='6.5' width='76' height='1'/%3E%3Crect x='154' y='6.5' width='76' height='1'/%3E%3Crect x='250' y='6.5' width='76' height='1'/%3E%3Crect x='346' y='6.5' width='38' height='1'/%3E%3C/g%3E%3Cg transform='translate(42.32 1.32) scale(.142)'%3E%3Cpath d='M39.95,9 C39.95,9 69.97,20.85 70,43.08 C70.01,52.75 62.13,60.61 52.39,60.62 C49.42,60.63 46.62,59.90 44.16,58.61 L48,71.00 L32,71.00 L35.82,58.65 C33.38,59.93 30.60,60.65 27.64,60.66 C17.91,60.67 10.01,52.83 10,43.16 C9.96,20.92 39.95,9 39.95,9 Z' fill='%23e9e2d3' fill-opacity='.45'/%3E%3C/g%3E%3Cg transform='translate(138.08 1.08) scale(.148)'%3E%3Cpath d='M52.34,13.99 C56.93,13.99 61.08,15.95 64.09,19.13 C67.12,22.32 68.99,26.74 69.00,31.62 C69.02,53.20 43.52,65.35 40.04,66.90 C37.71,65.85 26.39,60.44 18.57,50.99 C14.26,45.79 11.00,39.34 10.99,31.70 C10.99,26.82 12.85,22.40 15.87,19.19 C18.87,16.01 23.02,14.03 27.60,14.03 C32.15,14.02 36.26,15.95 39.26,19.07 C39.51,19.33 39.75,19.60 39.98,19.87 C40.21,19.60 40.46,19.33 40.70,19.07 C43.70,15.94 47.80,14.00 52.34,13.99 Z' fill='%23e08b7c' fill-opacity='.5'/%3E%3C/g%3E%3Cg transform='translate(233.88 .88) scale(.153)'%3E%3Cpath d='M39.99,11 C47.76,11 54.06,17.3 54.06,25.06 C54.06,28.79 52.61,32.18 50.24,34.70 C51.98,33.93 53.90,33.50 55.93,33.50 C63.70,33.50 70,39.80 70,47.57 C70,55.33 63.70,61.63 55.93,61.63 C50.95,61.63 46.57,59.04 44.08,55.13 C44.14,55.40 44.21,55.66 44.27,55.93 L44.44,56.61 C44.47,56.73 44.49,56.84 44.52,56.96 L44.69,57.65 L44.85,58.33 C46.17,63.81 47.36,69 47.36,69 L32.93,69 C32.93,69 33.93,64.19 35.11,58.95 L35.27,58.26 L35.35,57.92 L35.51,57.23 C35.69,56.45 35.87,55.68 36.05,54.91 C33.57,58.94 29.13,61.63 24.06,61.63 C16.29,61.63 10,55.33 10,47.57 C10,39.80 16.29,33.50 24.06,33.50 C26.09,33.50 28.01,33.93 29.76,34.70 C27.38,32.19 25.93,28.80 25.93,25.06 C25.93,17.3 32.23,11 39.99,11 Z' fill='%23e9e2d3' fill-opacity='.45'/%3E%3C/g%3E%3Cg transform='translate(329.64 .64) scale(.159)'%3E%3Cpath d='M40,3.68 L66.75,40.00 L40,76.31 L13.24,40.00 L40,3.68 Z' fill='%23e08b7c' fill-opacity='.5'/%3E%3C/g%3E%3C/svg%3E"); --wall: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='72' height='72'><g fill='white' fill-opacity='1'><path transform='translate(1,2) scale(0.3)' d='M52.34,13.99 C56.93,13.99 61.08,15.95 64.09,19.13 C67.12,22.32 68.99,26.74 69.00,31.62 C69.02,53.20 43.52,65.35 40.04,66.90 C37.71,65.85 26.39,60.44 18.57,50.99 C14.26,45.79 11.00,39.34 10.99,31.70 C10.99,26.82 12.85,22.40 15.87,19.19 C18.87,16.01 23.02,14.03 27.60,14.03 C32.15,14.02 36.26,15.95 39.26,19.07 C39.51,19.33 39.75,19.60 39.98,19.87 C40.21,19.60 40.46,19.33 40.70,19.07 C43.70,15.94 47.80,14.00 52.34,13.99 Z'/><path transform='translate(37,2) scale(0.3)' d='M39.95,9 C39.95,9 69.97,20.85 70,43.08 C70.01,52.75 62.13,60.61 52.39,60.62 C49.42,60.63 46.62,59.90 44.16,58.61 L48,71.00 L32,71.00 L35.82,58.65 C33.38,59.93 30.60,60.65 27.64,60.66 C17.91,60.67 10.01,52.83 10,43.16 C9.96,20.92 39.95,9 39.95,9 Z'/><path transform='translate(19,38) scale(0.3)' d='M40,3.68 L66.75,40.00 L40,76.31 L13.24,40.00 L40,3.68 Z'/><path transform='translate(55,38) scale(0.3)' d='M39.99,11 C47.76,11 54.06,17.3 54.06,25.06 C54.06,28.79 52.61,32.18 50.24,34.70 C51.98,33.93 53.90,33.50 55.93,33.50 C63.70,33.50 70,39.80 70,47.57 C70,55.33 63.70,61.63 55.93,61.63 C50.95,61.63 46.57,59.04 44.08,55.13 C44.14,55.40 44.21,55.66 44.27,55.93 L44.44,56.61 C44.47,56.73 44.49,56.84 44.52,56.96 L44.69,57.65 L44.85,58.33 C46.17,63.81 47.36,69 47.36,69 L32.93,69 C32.93,69 33.93,64.19 35.11,58.95 L35.27,58.26 L35.35,57.92 L35.51,57.23 C35.69,56.45 35.87,55.68 36.05,54.91 C33.57,58.94 29.13,61.63 24.06,61.63 C16.29,61.63 10,55.33 10,47.57 C10,39.80 16.29,33.50 24.06,33.50 C26.09,33.50 28.01,33.93 29.76,34.70 C27.38,32.19 25.93,28.80 25.93,25.06 C25.93,17.3 32.23,11 39.99,11 Z'/><path transform='translate(-17,38) scale(0.3)' d='M39.99,11 C47.76,11 54.06,17.3 54.06,25.06 C54.06,28.79 52.61,32.18 50.24,34.70 C51.98,33.93 53.90,33.50 55.93,33.50 C63.70,33.50 70,39.80 70,47.57 C70,55.33 63.70,61.63 55.93,61.63 C50.95,61.63 46.57,59.04 44.08,55.13 C44.14,55.40 44.21,55.66 44.27,55.93 L44.44,56.61 C44.47,56.73 44.49,56.84 44.52,56.96 L44.69,57.65 L44.85,58.33 C46.17,63.81 47.36,69 47.36,69 L32.93,69 C32.93,69 33.93,64.19 35.11,58.95 L35.27,58.26 L35.35,57.92 L35.51,57.23 C35.69,56.45 35.87,55.68 36.05,54.91 C33.57,58.94 29.13,61.63 24.06,61.63 C16.29,61.63 10,55.33 10,47.57 C10,39.80 16.29,33.50 24.06,33.50 C26.09,33.50 28.01,33.93 29.76,34.70 C27.38,32.19 25.93,28.80 25.93,25.06 C25.93,17.3 32.23,11 39.99,11 Z'/></g></svg>"); --divsize: 384px 14px; --divh: 14px; --divo: 7px; }
+
+  body { margin: 0; padding: 28px 24px 80px; background: var(--canvas); color: #2b2722; font-family: "BuloRounded", -apple-system, "Helvetica Neue", Arial, sans-serif; }
+  h1 { font-size: 22px; margin: 0 0 4px; font-family: "Gelica", serif; font-weight: 500; }
+  h2 { font-size: 17px; margin: 44px 0 12px; padding-bottom: 6px; border-bottom: 1px solid var(--edge); }
+  p.note { font-size: 13px; color: #8a857c; margin: 0 0 18px; max-width: 760px; line-height: 1.45; }
+  .lab { margin: 0 0 34px; }
+  .lab .tag { font-size: 12.5px; color: #8a857c; margin: 0 0 8px; max-width: 900px; line-height: 1.45; }
+  .lab .tag b { color: #2b2722; }
+  .lab .tag em { color: #6f6a60; font-style: normal; }
+  .fit { width: 100%; }
+  .scene { width: 1160px; position: relative; background: var(--canvas); border: 1px solid rgba(9,15,21,.08); border-radius: 10px; overflow: hidden;
+    box-shadow: 0 1px 2px rgba(60,45,25,.04); transform-origin: top left; }
+  .scene.tall { min-height: 660px; }
+  .scene .replay { position: absolute; right: 16px; bottom: 26px; z-index: 30; font: bold 12px "BuloRounded", sans-serif; color: var(--muted);
+    background: #fff; border: 1px solid var(--edge); border-radius: 14px; padding: 4px 10px; cursor: pointer; opacity: .85; }
+  .scene .replay:hover { opacity: 1; }
+
+  /* ===== menu bar (centered mark on the sand band, suit hairline on the seam) ===== */
+  .mb { position: relative; height: 56px; background: var(--band); display: flex; align-items: center; padding: 0 24px; z-index: 5; }
+  .mb .ml { display: flex; gap: 18px; flex: 1; font-size: 16px; font-weight: bold; color: var(--ink-soft); }
+  .mb .ml .tri { display: inline-block; width: 0; height: 0; border-left: 4px solid transparent; border-right: 4px solid transparent; border-top: 6px solid #262626; margin-left: 5px; vertical-align: 1px; }
+  .mb .logo { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
+  .mb .logo img { height: 40px; width: auto; display: block; }
+  .mb .mu { display: flex; align-items: center; gap: 22px; margin-left: auto; font-size: 16px; font-weight: bold; color: var(--ink-soft); }
+  .mb .mu img.ic { width: 22px; height: 22px; }
+  .mb .mu .av { display: flex; align-items: center; gap: 8px; }
+  .mb .mu .av img { width: 30px; height: 30px; }
+  .seam { position: absolute; left: 0; right: 0; top: 49px; height: var(--divh); z-index: 6; pointer-events: none;
+    background: var(--divtile) left top / var(--divsize) repeat-x; }
+
+  /* ===== hero ===== */
+  .hero { position: relative; height: 517px; margin: 36px 24px 40px; }
+  .txt { position: absolute; left: 0; top: 138px; width: 400px; z-index: 5; }
+  .txt h3 { font-family: "Gelica", serif; font-weight: 500; font-size: 38px; letter-spacing: -0.01em; line-height: 1.15; margin: 0 0 4px; color: var(--ink); }
+  .txt p { font-size: 16px; line-height: 1.45; margin: 0; max-width: 300px; color: var(--ink); }
+  .txt p b { font-weight: bold; }
+  .txt .cap { margin-top: 28px; display: inline-flex; align-items: center; height: 32px; font-size: 16px; background: var(--surface); border-radius: 20px;
+    box-shadow: inset 0 0 0 1px var(--edge), var(--liftshadow); padding: 0 4px; }
+  .txt .cap .st { display: inline-flex; align-items: center; gap: 4px; padding: 0 11px; align-self: stretch; white-space: nowrap; }
+  .txt .cap .st + .st { border-left: 1px solid var(--edge); }
+  .txt .cap .stlive { padding: 0 9px; gap: 6px; }
+  .txt .cap .greencap { font-size: 14px; font-weight: bold; letter-spacing: .06em; color: #2f9e44; }
+  .txt .cap b { color: var(--ink); font-weight: bold; font-variant-numeric: tabular-nums; }
+  .ldot { position: relative; width: 8px; height: 8px; border-radius: 50%; background: #2f9e44; flex-shrink: 0; }
+  .ldot::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: #2f9e44; animation: ping 2.6s ease-out infinite; }
+  @keyframes ping { 0% { transform: scale(1); opacity: .55; } 70%, 100% { transform: scale(2.6); opacity: 0; } }
+
+  .games { position: absolute; inset: 0; --clx: 425px; --miw: 655px; --mih: 485px; }
+  .gtile { position: absolute; display: flex; flex-direction: column; background: var(--surface); border-radius: 20px; corner-shape: squircle;
+    box-shadow: var(--liftshadow-lg); z-index: 0; cursor: pointer; transition: transform .18s ease, box-shadow .18s ease; }
+  .gtile:hover { z-index: 2; box-shadow: 0 2px 4px rgba(60,45,25,.08), 0 6px 12px rgba(60,45,25,.10), 0 14px 26px rgba(60,45,25,.12); }
+  .gimg { position: relative; overflow: hidden; border-radius: 20px; corner-shape: squircle; display: flex; align-items: center; justify-content: center;
+    width: 100%; height: 100%; flex: 1; color: var(--pfg); background-color: var(--tile);
+    background-image: url("noise-balanced.png"); background-size: 256px 256px; background-repeat: repeat; background-blend-mode: soft-light; image-rendering: pixelated; }
+  @media (min-resolution: 2dppx) { .gimg { background-size: 128px 128px; } }
+  .gimg::before { content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none; image-rendering: auto;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='72' height='72'><g fill='black' fill-opacity='0.08'><path transform='translate(1,2) scale(0.3)' d='M52.34,13.99 C56.93,13.99 61.08,15.95 64.09,19.13 C67.12,22.32 68.99,26.74 69.00,31.62 C69.02,53.20 43.52,65.35 40.04,66.90 C37.71,65.85 26.39,60.44 18.57,50.99 C14.26,45.79 11.00,39.34 10.99,31.70 C10.99,26.82 12.85,22.40 15.87,19.19 C18.87,16.01 23.02,14.03 27.60,14.03 C32.15,14.02 36.26,15.95 39.26,19.07 C39.51,19.33 39.75,19.60 39.98,19.87 C40.21,19.60 40.46,19.33 40.70,19.07 C43.70,15.94 47.80,14.00 52.34,13.99 Z'/><path transform='translate(37,2) scale(0.3)' d='M39.95,9 C39.95,9 69.97,20.85 70,43.08 C70.01,52.75 62.13,60.61 52.39,60.62 C49.42,60.63 46.62,59.90 44.16,58.61 L48,71.00 L32,71.00 L35.82,58.65 C33.38,59.93 30.60,60.65 27.64,60.66 C17.91,60.67 10.01,52.83 10,43.16 C9.96,20.92 39.95,9 39.95,9 Z'/><path transform='translate(19,38) scale(0.3)' d='M40,3.68 L66.75,40.00 L40,76.31 L13.24,40.00 L40,3.68 Z'/><path transform='translate(55,38) scale(0.3)' d='M39.99,11 C47.76,11 54.06,17.3 54.06,25.06 C54.06,28.79 52.61,32.18 50.24,34.70 C51.98,33.93 53.90,33.50 55.93,33.50 C63.70,33.50 70,39.80 70,47.57 C70,55.33 63.70,61.63 55.93,61.63 C50.95,61.63 46.57,59.04 44.08,55.13 C44.14,55.40 44.21,55.66 44.27,55.93 L44.44,56.61 C44.47,56.73 44.49,56.84 44.52,56.96 L44.69,57.65 L44.85,58.33 C46.17,63.81 47.36,69 47.36,69 L32.93,69 C32.93,69 33.93,64.19 35.11,58.95 L35.27,58.26 L35.35,57.92 L35.51,57.23 C35.69,56.45 35.87,55.68 36.05,54.91 C33.57,58.94 29.13,61.63 24.06,61.63 C16.29,61.63 10,55.33 10,47.57 C10,39.80 16.29,33.50 24.06,33.50 C26.09,33.50 28.01,33.93 29.76,34.70 C27.38,32.19 25.93,28.80 25.93,25.06 C25.93,17.3 32.23,11 39.99,11 Z'/><path transform='translate(-17,38) scale(0.3)' d='M39.99,11 C47.76,11 54.06,17.3 54.06,25.06 C54.06,28.79 52.61,32.18 50.24,34.70 C51.98,33.93 53.90,33.50 55.93,33.50 C63.70,33.50 70,39.80 70,47.57 C70,55.33 63.70,61.63 55.93,61.63 C50.95,61.63 46.57,59.04 44.08,55.13 C44.14,55.40 44.21,55.66 44.27,55.93 L44.44,56.61 C44.47,56.73 44.49,56.84 44.52,56.96 L44.69,57.65 L44.85,58.33 C46.17,63.81 47.36,69 47.36,69 L32.93,69 C32.93,69 33.93,64.19 35.11,58.95 L35.27,58.26 L35.35,57.92 L35.51,57.23 C35.69,56.45 35.87,55.68 36.05,54.91 C33.57,58.94 29.13,61.63 24.06,61.63 C16.29,61.63 10,55.33 10,47.57 C10,39.80 16.29,33.50 24.06,33.50 C26.09,33.50 28.01,33.93 29.76,34.70 C27.38,32.19 25.93,28.80 25.93,25.06 C25.93,17.3 32.23,11 39.99,11 Z'/></g></svg>"); background-size: 72px 72px; }
+  .gimg::after { content: ""; position: absolute; inset: 0; border-radius: 20px; corner-shape: squircle; box-shadow: inset 0 0 0 1px rgba(0,0,0,.75); mix-blend-mode: soft-light; pointer-events: none; z-index: 3; }
+  .gimg img.glogo { position: relative; max-width: 64%; max-height: 72%; width: auto; height: auto; z-index: 1; image-rendering: auto; }
+  .pos-a .glogo, .pos-d .glogo { max-width: 48%; max-height: 80%; }
+  .gchip { position: absolute; left: 12px; bottom: 10px; z-index: 4; display: inline-flex; align-items: center; line-height: 1; font-size: 0; font-weight: bold; color: #fff; }
+  .gchip::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: #fff; margin-right: 4px; }
+  .gchip b { font-size: 14px; font-variant-numeric: tabular-nums; }
+  .pos-a .gchip { font-size: 14px; }
+  .pos-a { left: var(--clx); top: 0; width: calc(var(--miw) * 0.658015 + 16px); height: calc(var(--mih) * 0.663918 + 16px); }
+  .pos-d { left: calc(var(--clx) + var(--miw) * 0.658015 + 32px); top: 0; width: calc(var(--miw) * 0.341985); height: calc(var(--mih) * 0.331959); }
+  .pos-b { left: calc(var(--clx) + var(--miw) * 0.658015 + 32px); top: calc(var(--mih) * 0.331959 + 16px); width: calc(var(--miw) * 0.341985); height: calc(var(--mih) * 0.331959); }
+  .pos-h { left: var(--clx); top: calc(var(--mih) * 0.663918 + 32px); width: calc(var(--miw) * 0.328244); height: calc(var(--mih) * 0.336082); }
+  .pos-f { left: calc(var(--clx) + var(--miw) * 0.328244 + 16px); top: calc(var(--mih) * 0.663918 + 32px); width: calc(var(--miw) * 0.329771); height: calc(var(--mih) * 0.336082); }
+  .pos-e { left: calc(var(--clx) + var(--miw) * 0.658015 + 32px); top: calc(var(--mih) * 0.663918 + 32px); width: calc(var(--miw) * 0.341985); height: calc(var(--mih) * 0.336082); }
+
+  /* the section seam below the hero (Open tables band begins) */
+  .below { position: relative; height: 80px; background: var(--band); }
+  .below .seam2 { position: absolute; left: 0; right: 0; top: -7px; height: var(--divh); background: var(--divtile) left top / var(--divsize) repeat-x; z-index: 6; }
+  .below .head { position: absolute; left: 24px; top: 34px; font-family: "Gelica", serif; font-weight: 500; font-size: 24px; color: var(--ink); }
+
+  @media (prefers-reduced-motion: reduce) { .ldot::after { animation: none; } }
+
+  /* ===== the second line: a rotating tail, three transitions ===== */
+  .tail { display: inline-block; position: relative; white-space: nowrap; vertical-align: top; }
+  .tail .tw { display: inline-block; will-change: transform, opacity, filter; }
+  .tail .tw.out { position: absolute; left: 0; top: 0; pointer-events: none; }
+  .tail .tw .num { font-variant-numeric: tabular-nums; }
+  .tailmark { display: inline-block; width: .42em; height: .42em; margin-left: .18em; vertical-align: .06em; border-radius: 50%; background: #B54A3F; opacity: 0; }
+
+  /* ===== load choreography: the seam draws, the deal, the aces fan ===== */
+  .seam.dom { background: none; }
+  .seam.dom .ln { position: absolute; top: 6.5px; height: 1px; background: #D9D2C4; transform-origin: center; }
+  .seam.dom .su { position: absolute; top: 0; width: 14px; height: 14px; display: block; transform-origin: center; }
+  .seam.dom .su svg { width: 14px; height: 14px; display: block; }
+  .acesfan { position: absolute; left: 0; top: 0; width: 44px; height: 40px; }
+  .acesfan .cv { position: absolute; left: 0; top: 0; width: 44px; height: 40px; background: var(--band); }
+  .acesfan svg { position: absolute; left: 0; top: 0; width: 44px; height: 40px; overflow: visible; }
+  .acesfan .card { transform-box: view-box; transform-origin: 27px 36px; }
+
+  /* ===== Once: suits appear exactly once, as a clasp under the wordmark ===== */
+  .seam.plain { background: linear-gradient(transparent 6.5px, #D9D2C4 6.5px 7.5px, transparent 7.5px); }
+  .seam.plain.clasp { -webkit-mask: linear-gradient(#000 0 0) left / calc(50% - 34px) 100% no-repeat, linear-gradient(#000 0 0) right / calc(50% - 34px) 100% no-repeat;
+    mask: linear-gradient(#000 0 0) left / calc(50% - 34px) 100% no-repeat, linear-gradient(#000 0 0) right / calc(50% - 34px) 100% no-repeat; }
+  .clasp4 { position: absolute; left: 50%; top: 49px; height: 14px; transform: translateX(-50%); display: flex; gap: 6px; align-items: center; z-index: 7; pointer-events: none; }
+  .clasp4 svg { width: 12px; height: 12px; display: block; }
+  .clasp4 svg path { fill-opacity: .62; }
+  .clasp4 { gap: 5px; }
+  .below .seam2.plain { background: linear-gradient(transparent 6.5px, #D9D2C4 6.5px 7.5px, transparent 7.5px); }
+
+  /* ===== One more hand: the tagline as a live line ===== */
+  .omh { margin-top: 14px; display: flex; align-items: center; gap: 12px; white-space: nowrap; }
+  .omh .tg { font-family: "Gelica", serif; font-weight: 500; font-size: 18px; color: var(--muted); }
+  .omh .ct { font-size: 14px; color: var(--ink); font-variant-numeric: tabular-nums; display: inline-flex; align-items: center; gap: .3em; }
+  .omh .ct .reel { display: inline-flex; vertical-align: bottom; }
+  .omh .ct .dc { display: block; width: .6em; height: 1.35em; overflow: hidden; }
+  .omh .ct .dr { display: block; transition: transform .75s cubic-bezier(.22,1.1,.34,1); }
+  .omh .ct .dr span { display: block; height: 1.35em; line-height: 1.35em; text-align: center; }
+
+  /* ===== Call the suit: the subtitle verbs lift their family ===== */
+  .txt p .verb { font-weight: bold; cursor: pointer; text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 3px; transition: text-decoration-color .2s; }
+  .txt p .verb:hover { text-decoration-color: var(--edge); }
+  .gtile.lift { transform: translateY(-3px); box-shadow: 0 2px 4px rgba(60,45,25,.08), 0 6px 12px rgba(60,45,25,.10), 0 14px 26px rgba(60,45,25,.12); }
+  .gtile { transition: transform .2s cubic-bezier(.22,1,.36,1), box-shadow .2s cubic-bezier(.22,1,.36,1); }
+
+  /* ===== Dealt from the wordmark ===== */
+  .seam.dealt { background: none; }
+  .seam.dealt .ln { position: absolute; top: 6.5px; height: 1px; background: #D9D2C4; }
+  .seam.dealt .su { position: absolute; top: 0; width: 14px; height: 14px; }
+  .seam.dealt .su svg { width: 14px; height: 14px; display: block; }
+
+  /* ===== The proof line ===== */
+  .seam.proof { background: none; }
+  .seam.proof .ln { position: absolute; top: 6.5px; height: 1px; background: #D9D2C4; }
+  .seam.proof .lbl { position: absolute; left: 50%; top: -2px; transform: translateX(-50%); display: inline-flex; align-items: center; gap: 7px; white-space: nowrap;
+    font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .seam.proof .lbl .pd { width: 6px; height: 6px; border-radius: 50%; background: #00a82d; }
+  .seam.proof .lbl b { color: var(--ink); font-weight: bold; }
+
+  /* ===== Under the lamp ===== */
+  .scene.lamp .hero::before { content: ""; position: absolute; inset: -36px -24px -40px; z-index: 0; pointer-events: none;
+    background: radial-gradient(140% 110% at 58% 42%, transparent 35%, rgba(60,45,25,.06) 100%); }
+  .scene.lamp .below { box-shadow: inset 0 14px 18px -14px rgba(60,45,25,.10); }
+
+  /* ===== Lights down (dark mode as night felt) ===== */
+  .scene.night { --canvas: #1b2922; --band: #141f19; --surface: #22312a; --ink: #f1ece2; --ink-soft: #e2dccf; --muted: #b3ad9f; --edge: #33453b;
+    --liftshadow: 0 1px 2px rgba(0,0,0,.25), 0 3px 8px rgba(0,0,0,.30); --liftshadow-lg: 0 2px 5px rgba(0,0,0,.30), 0 10px 22px rgba(0,0,0,.40);
+    background: var(--canvas); border-color: rgba(255,255,255,.06); color: var(--ink); }
+  .scene.night::before { content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: .035;
+    background-image: var(--wall); background-size: 72px 72px; }
+  .scene.night .hero::before { content: ""; position: absolute; inset: -36px -24px -40px; z-index: 0; pointer-events: none;
+    background: radial-gradient(120% 100% at 58% 42%, rgba(74,118,86,.28), rgba(0,0,0,0) 70%); }
+  .scene.night .mb, .scene.night .below { position: relative; z-index: 1; }
+  .scene.night .mb .logo img { filter: brightness(0) invert(.92); }
+  .scene.night .mb .ml .tri { border-top-color: #e2dccf; }
+  .scene.night .seam, .scene.night .below .seam2 { background-image: var(--divnight); }
+  .scene.night .txt .cap { box-shadow: inset 0 0 0 1px var(--edge), var(--liftshadow); }
+  .scene.night .txt .cap .greencap { color: #4fc46a; }
+  .scene.night .ldot, .scene.night .ldot::after { background: #4fc46a; }
+  .scene.night .gchip { color: #fff; }
+  .scene.night .replay { background: var(--surface); color: var(--ink); border-color: var(--edge); }
+
+  /* ===== the words themselves ===== */
+  .txt h3 .tail .tw { font-variant-numeric: oldstyle-nums; }
+  .txt h3 .red { color: #B54A3F; }
+  .txt h3 .stop { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #2B8A3E; margin-left: 5px; vertical-align: 0; position: relative; }
+  .txt h3 .stop::after { content: ""; position: absolute; inset: 0; border-radius: 50%; border: 1px solid #2B8A3E; animation: stopring 1.4s cubic-bezier(0,0,.2,1) infinite; }
+  @keyframes stopring { 0% { transform: scale(1); opacity: .35; } 100% { transform: scale(2.6); opacity: 0; } }
+  .txt h3.handset { font-feature-settings: "ss01", "ss02"; }
+  .txt h3 .w { transition: color .32s cubic-bezier(.25,.1,.25,1); }
+  .txt p.inking { transition: color .3s; }
+  .lastcard { display: inline-block; width: 12px; height: 17px; border-radius: 2px; background: #fff; border: .75px solid #141414; box-sizing: border-box;
+    font: bold 8px/15px "BuloRounded", sans-serif; text-align: center; letter-spacing: -.5px; margin-right: 2px; will-change: transform; }
+  .lastcard.r { color: #c8102e; }
+  @media (prefers-reduced-motion: reduce) { .txt h3 .stop::after { animation: none; } }
+
+  /* ===== The forming table ===== */
+  .forming { margin-top: 18px; display: flex; align-items: center; gap: 14px; width: 320px; }
+  .forming .felt { position: relative; width: 96px; height: 64px; border-radius: 12px; corner-shape: squircle; background: #327333 url("noise-balanced.png"); background-size: 128px; background-blend-mode: soft-light; flex: none;
+    box-shadow: inset 0 0 0 1px rgba(52,58,64,.4), var(--liftshadow); }
+  .forming .felt .seat { position: absolute; width: 22px; height: 22px; border-radius: 50%; transform: translate(-50%, -50%); }
+  .forming .felt .seat img { width: 22px; height: 22px; display: block; }
+  .forming .felt .seat.empty { width: 18px; height: 18px; background: rgba(255,255,255,.14); box-shadow: inset 0 0 0 1px rgba(255,255,255,.28); }
+  .forming .felt .seat.n { left: 50%; top: 14px; } .forming .felt .seat.s { left: 50%; top: 50px; } .forming .felt .seat.w { left: 16px; top: 32px; } .forming .felt .seat.e { left: 80px; top: 32px; }
+  .forming .info { line-height: 1.35; }
+  .forming .info .t { font-size: 14px; font-weight: bold; color: var(--ink); }
+  .forming .info .who { font-size: 13px; color: var(--muted); }
+  .forming .info .go { font-size: 13px; color: var(--second); font-weight: bold; margin-top: 2px; display: inline-block; }
+  .gtile.air { box-shadow: 0 6px 10px rgba(60,45,25,.08), 0 22px 40px rgba(60,45,25,.16); }
+
+  /* ===== lab chrome: the judges' verdict under each tag ===== */
+  .lab .verdict { font-size: 12.5px; color: #6f6a60; margin: -4px 0 10px; max-width: 900px; line-height: 1.45; }
+  .lab .verdict b { color: #2b2722; }
+  .lab .verdict .yes { color: #2B8A3E; font-weight: bold; }
+  .lab .verdict .maybe { color: #b98520; font-weight: bold; }
+  .lab .verdict .no { color: #B52626; font-weight: bold; }
+  h2 small { font-weight: normal; color: #8a857c; font-size: 13px; margin-left: 8px; }
+  .lab .tag .again { font: bold 12px "BuloRounded", sans-serif; color: var(--muted); background: #fff; border: 1px solid var(--edge);
+    border-radius: 14px; padding: 3px 10px; margin: 0 6px 0 4px; vertical-align: 1px; cursor: pointer; }
+  .lab .tag .again:hover, .scene .replay:hover { color: var(--ink); border-color: #bdb8ae; opacity: 1; }
+  .lab .tag .days { display: inline-flex; gap: 4px; margin-left: 8px; vertical-align: 1px; align-items: center; }
+  .lab .tag .days .sep { color: #bdb8ae; margin: 0 2px; }
+  .lab .tag .days .day { font: bold 11px "BuloRounded", sans-serif; color: var(--muted); background: #fff; border: 1px solid var(--edge); border-radius: 10px; padding: 2px 7px; cursor: pointer; }
+  .lab .tag .days .day.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .lab .tag .days + .days { margin-left: 10px; }
+  .txt h3 .u { display: inline-block; will-change: transform, opacity; }
+  p.note b { color: #2b2722; }
+
+  /* ===== the seam drawn true: one rule with the tile's own gaps, suits at the tile's own size ===== */
+  .seam.drawn { background: none; }
+  .seam.drawn .rule { position: absolute; left: 0; right: 0; top: 6.5px; height: 1px;
+    background: repeating-linear-gradient(90deg, #D9D2C4 0 38px, transparent 38px 58px, #D9D2C4 58px 96px); }
+  .seam.drawn .su { position: absolute; display: block; transform-origin: center; }
+  .seam.drawn .su svg { width: 100%; height: 100%; display: block; }
+
+  /* ===== the seam swept: a faint rule from the first frame, an opaque inked layer revealed over it ===== */
+  .seam.swept { background: none; }
+  .seam.swept .faint { position: absolute; left: 0; right: 0; top: 6.5px; height: 1px; background: rgba(217,210,196,.55); }
+  .seam.swept .ink { position: absolute; inset: 0;
+    background: repeating-linear-gradient(90deg, #D9D2C4 0 38px, transparent 38px 58px, #D9D2C4 58px 96px) 0 6.5px / 100% 1px no-repeat,
+      linear-gradient(#f4eee5 0 7px, #f9f6f2 7px); }
+  .seam.swept .su { position: absolute; display: block; transform-origin: center; z-index: 1; }
+  .seam.swept .ink .gapln { position: absolute; top: 6.5px; height: 1px; width: 20px; background: #D9D2C4; }
+  .seam.swept .su svg { width: 100%; height: 100%; display: block; }
+
+  /* a counting number keeps its width while it counts */
+  .txt h3 .num[data-count] { font-variant-numeric: oldstyle-nums tabular-nums; }
+  /* odometer reels inside the headline: one cell per digit, the line box's own height, digits stacked and rolled */
+  /* lining figures on the reels: every digit the same height, so no descending 4 or 9 looks bigger than its neighbours */
+  .txt h3 .reelnum { display: inline-block; vertical-align: top; white-space: nowrap; font-variant-numeric: lining-nums; }
+  .txt h3 .reelnum .rc { display: inline-block; vertical-align: top; height: 1.15em; overflow: hidden; text-align: center;
+    -webkit-mask-image: linear-gradient(transparent, #000 16%, #000 84%, transparent); mask-image: linear-gradient(transparent, #000 16%, #000 84%, transparent); }
+  .txt h3 .reelnum .rr { display: block; transition: transform .38s cubic-bezier(.22,1.1,.34,1); will-change: transform; }
+  .txt h3 .reelnum .rr span { display: block; height: 1.15em; line-height: 1.15em; }
+  .txt h3 .reelnum .still { display: inline-block; vertical-align: top; height: 1.15em; line-height: 1.15em; }
+
+  /* ===== the live dot before the first live message: unlit, still ===== */
+  .ldot.unlit { background: #cfd6cf; }
+  .ldot.unlit::after { animation: none; opacity: 0; }
+  .ldot .ring1 { position: absolute; inset: 0; border-radius: 50%; background: #2f9e44; pointer-events: none; }
+
+  /* ===== picked up, not hovered: a tile rises from its bottom edge like a card lifted by its top ===== */
+  .scene.pick .games { perspective: 1100px; }
+  .scene.pick .gtile { transform-origin: 50% 100%; transition: transform .3s cubic-bezier(.2,.8,.2,1), box-shadow .3s cubic-bezier(.2,.8,.2,1); }
+  .scene.pick .gtile:hover { transform: translateY(-3px) rotateX(2.2deg); transition-duration: .16s;
+    box-shadow: 0 3px 6px rgba(60,45,25,.10), 0 14px 26px rgba(60,45,25,.16); }
+  .scene.pick .gtile:active { transform: translateY(-1px) rotateX(1deg) scale(.995); }
+
+  /* ===== the aces fan, rebuilt: the PNG keeps the wordmark text, four SVG cards replace its icon ===== */
+  .aces2 { position: absolute; left: -3px; top: -3px; width: 48px; height: 46px; pointer-events: none; }
+  .aces2 svg { width: 48px; height: 46px; overflow: visible; display: block; }
+  .aces2 .ac { transform-box: view-box; transform-origin: 24px 42px; }
+
+  /* ===== open tables row (the mockup's table cards, simplified) ===== */
+  .below.tables { height: auto; padding: 32px 24px 40px; }
+  .below.tables .head { position: static; margin-bottom: 18px; }
+  .otgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .otcard { background: #fff; border-radius: 20px; corner-shape: squircle; box-shadow: var(--liftshadow-lg); overflow: hidden; }
+  .otfelt { position: relative; height: 0; padding-top: 75%; background: #327333 url("green-felt.jpg") repeat; background-size: 300px 300px; }
+  .otfelt::before { content: ""; position: absolute; inset: 0; mix-blend-mode: overlay;
+    background: radial-gradient(circle farthest-corner at 50% 50%, rgba(255,255,255,.32) 0%, rgba(255,255,255,0) 100%),
+      radial-gradient(circle closest-side at 50% 50%, rgba(255,255,255,.16) 0%, rgba(255,255,255,0) 100%); }
+  .otfelt::after { content: ""; position: absolute; inset: 0; z-index: 3; pointer-events: none; border-radius: 20px 20px 0 0; corner-shape: squircle;
+    box-shadow: inset 0 0 0 1px rgba(52,58,64,.4); }
+  .otseats { position: absolute; top: 8px; left: 12px; right: 12px; bottom: 12px; display: flex; flex-wrap: wrap; z-index: 2; }
+  .otseats .sp30 { flex-basis: 30%; max-width: 30%; }
+  .otseats .sp20 { flex-basis: 20%; max-width: 20%; }
+  .seat { position: relative; flex-basis: 40%; max-width: 40%; height: 33.3%; text-align: center; }
+  .seat .av { position: absolute; left: 0; right: 0; top: 1px; bottom: 20px; display: flex; justify-content: center; align-items: flex-end; }
+  .seat .av img { height: 100%; width: auto; filter: drop-shadow(0 1px 1px rgba(0,0,0,.35)); transform-origin: center bottom; }
+  .seat .plate { position: absolute; left: 0; right: 0; bottom: 0; height: 20px; border-radius: 6px; corner-shape: squircle; overflow: hidden;
+    background: #b0d5ff; color: #1665AD; font-size: 14px; font-weight: bold; line-height: 20px; white-space: nowrap;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 0 0 1px rgba(0,0,0,.30), 0 1px 3px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25); }
+  .seat .plate.red { background: #fdc0b9; color: #B52626; }
+  .seat .plate span { position: absolute; inset: 0; padding: 0 6px; overflow: hidden; text-overflow: ellipsis; }
+  .seat .bot { position: absolute; left: calc(50% - 30px); top: 6px; width: 16px; height: 16px; background: url("botBadge.png") center / 16px 16px no-repeat; z-index: 3; }
+  .otbody { padding: 6px 12px 12px; }
+  .otname { font-size: 16px; font-weight: bold; color: #212529; padding: 6px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .otbtn { display: block; width: 100%; box-sizing: border-box; text-align: center; border-radius: 6px; corner-shape: squircle; color: #fff; font-weight: bold;
+    font-size: 20px; line-height: 32px; height: 32px; background: #298ae9; text-shadow: 0 1px 1px rgba(0,0,0,.2); cursor: pointer;
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, #298ae9 78%, black), 0 2px 4px rgba(0,0,0,.06); transition: background-color .3s, color .3s; }
+  .otbtn.muted { background: #ece8e0; color: #6f6a60; text-shadow: none; box-shadow: inset 0 0 0 1px #d2cfca; }
+
+  /* dots that close a break in the rule (the dinkus) */
+  .seam.dealt .dot { position: absolute; top: 5.5px; width: 3px; height: 3px; border-radius: 50%; background: #262626; opacity: .45; }
+  .foot .colo.inrule::before { -webkit-mask: linear-gradient(#000 0 0) left / calc(50% - var(--colo-gap, 120px)) 100% no-repeat, linear-gradient(#000 0 0) right / calc(50% - var(--colo-gap, 120px)) 100% no-repeat;
+    mask: linear-gradient(#000 0 0) left / calc(50% - var(--colo-gap, 120px)) 100% no-repeat, linear-gradient(#000 0 0) right / calc(50% - var(--colo-gap, 120px)) 100% no-repeat; }
+
+  /* ===== the colophon: the sign-off above the footer band ===== */
+  .foot { position: relative; }
+  .foot .colo { position: relative; height: 104px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; }
+  .foot .colo::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: #D9D2C4;
+    -webkit-mask: linear-gradient(#000 0 0) left / calc(50% - 120px) 100% no-repeat, linear-gradient(#000 0 0) right / calc(50% - 120px) 100% no-repeat;
+    mask: linear-gradient(#000 0 0) left / calc(50% - 120px) 100% no-repeat, linear-gradient(#000 0 0) right / calc(50% - 120px) 100% no-repeat; }
+  .foot .colo .tg { font-family: "Gelica", serif; font-weight: 500; font-size: 22px; color: var(--ink); line-height: 1; }
+  .foot .colo .dk { display: flex; gap: 24px; align-items: center; }
+  .foot .colo .dk svg { width: 10px; height: 10px; display: block; }
+  .foot .band { background: var(--band); height: 76px; box-sizing: border-box; padding: 22px 24px; display: flex; gap: 48px; font-size: 13px; color: var(--muted); }
+  .foot .band b { color: var(--ink); margin-right: 8px; }
+
+  /* ===== IDEA STYLES BELOW ===== */
+</style>
+</head>
+<body>
+
+<h1>Signature lab</h1>
+<p class="note">One small thing that takes the first impression up a notch. Every scene is the mockup's own hero (menu, seam, headline, capsule, six tiles) at real size, with one idea added and nothing else changed. Each scene in sections 1 and 2 starts at square one when it scrolls into view, rests there for 640 ms, then plays. Press <b>Play again</b> (next to the title, or bottom right in the scene) to see it from the start. Sections 3 and 4 keep their own timing and play on load. <b>Section 1</b> is the recommendation: four small parts that work as one system. <b>Section 2</b> shows each part alone. <b>Section 3</b> holds the runners-up. <b>Section 4</b> holds the ideas the judges set aside, with the reason. The grey line under each title is the verdict from two judge passes (taste and craft). Where a scene says <b>simulated</b>, the live data is faked here and would be real on the site.</p>
+
+<div id="labroot"></div>
+
+<script>
+  var TILES = [
+    ["pos-a", "hearts_logo.png", "Hearts", "#971f3e", 341],
+    ["pos-d", "spades_logo.png", "Spades", "#0065c3", 212],
+    ["pos-b", "euchre_logo.png", "Euchre", "#3a8132", 173],
+    ["pos-h", "ginrummy_logo.png", "Gin Rummy", "#9c33d4", 45],
+    ["pos-f", "handfoot_logo.png", "Hand & Foot", "#008091", 128],
+    ["pos-e", "ddpinochle_logo.png", "Double Deck Pinochle", "#9c6238", 96]
+  ];
+  function el(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; }
+
+  /* the three open tables of the mockup's first row, as data */
+  var TABLES0 = [
+    { name: "Hearts", team: false, seats: { n: ["Marge", "AnimalGopher.svg"], w: null, e: ["carl52", "AnimalChicken.svg"], s: null } },
+    { name: "Spades · Ranked", team: true, seats: { n: ["Vera", "AnimalGopher.svg"], w: ["Duckling", "AnimalBeaver.svg"], e: ["Bot Ada", "AlienMartian.svg", true], s: null } },
+    { name: "BobK’s table · Euchre", team: true, seats: { n: ["BobK", "AnimalFox.svg"], w: null, e: null, s: null } }
+  ];
+  var FRESH = [
+    { name: "Gin Rummy", team: false, seats: { n: ["mollyb", "AnimalBee.svg"], w: null, e: null, s: null } },
+    { name: "Canasta", team: true, seats: { n: ["Rosie", "AnimalButterfly.svg"], w: null, e: ["Hank", "AnimalDragon.svg"], s: null } },
+    { name: "Pinochle", team: true, seats: { n: ["north4th", "AnimalBird.svg"], w: ["PragueJoe", "AnimalCat.svg"], e: null, s: null } }
+  ];
+  function seatHTML(k, seat, team) {
+    var red = team && (k === "n" || k === "s");
+    return '<div class="seat ' + k + (seat ? "" : " empty") + '" data-k="' + k + '">' + (seat && seat[2] ? '<span class="bot"></span>' : "") +
+      '<div class="av"><img src="' + (seat ? seat[1] : "avatarEmpty.png") + '" alt=""></div>' +
+      '<div class="plate' + (red ? " red" : "") + '"><span>' + (seat ? seat[0] : "Empty") + '</span></div></div>';
+  }
+  function joinLabel(open) { return open === 0 ? "Started" : (open === 1 ? "Join · 1 seat left" : "Join · " + open + " seats open"); }
+  function tableHTML(t) {
+    var open = ["n", "e", "s", "w"].filter(function (k) { return !t.seats[k]; }).length;
+    return '<div class="otcard" data-team="' + (t.team ? 1 : 0) + '"><div class="otfelt"><div class="otseats">' +
+      '<span class="sp30"></span>' + seatHTML("n", t.seats.n, t.team) + '<span class="sp30"></span>' +
+      seatHTML("w", t.seats.w, t.team) + '<span class="sp20"></span>' + seatHTML("e", t.seats.e, t.team) +
+      '<span class="sp30"></span>' + seatHTML("s", t.seats.s, t.team) + '<span class="sp30"></span>' +
+      '</div></div><div class="otbody"><div class="otname">' + t.name + '</div><a class="otbtn' + (open ? "" : " muted") + '">' + joinLabel(open) + '</a></div></div>';
+  }
+  function sceneHTML(opts) {
+    opts = opts || {};
+    var tiles = TILES.map(function (t) {
+      return '<div class="gtile ' + t[0] + '" data-game="' + t[2] + '"><div class="gimg" style="--tile:' + t[3] + '">' +
+        '<span class="gchip"><b>' + t[4] + '</b>&nbsp;playing</span><img class="glogo" src="' + t[1] + '" alt="' + t[2] + '"></div></div>';
+    }).join("");
+    var below = opts.tables
+      ? '<div class="below tables"><div class="seam2"></div><div class="head">Open tables</div><div class="otgrid">' + TABLES0.map(tableHTML).join("") + '</div></div>'
+      : '<div class="below"><div class="seam2"></div><div class="head">Open tables</div></div>';
+    var foot = opts.foot
+      ? '<div class="foot"><div class="colo"><span class="tg">One more hand.</span><span class="dk">' +
+        suitSVG("spade", "#4e4d4c", .6) + suitSVG("heart", "#4e4d4c", .6) + suitSVG("club", "#4e4d4c", .6) + suitSVG("diamond", "#4e4d4c", .6) +
+        '</span></div><div class="band"><span><b>Games</b> Hearts · Spades · Euchre · Gin Rummy · Cribbage · Pinochle</span><span><b>Resources</b> About · Leaderboards · Rules &amp; Guides · Blog · Contact</span></div></div>'
+      : "";
+    return '<div class="mb"><div class="ml"><span>Games<span class="tri"></span></span><span>Rules</span><span>Leaderboards</span></div>' +
+      '<a class="logo"><img src="wocg-logo.png" alt="World of Card Games"></a>' +
+      '<div class="mu"><img class="ic" src="menuActivity.svg" alt=""><img class="ic" src="menuFriends.svg" alt=""><span class="av"><img src="AnimalFox.svg" alt="">Guest #12</span></div></div>' +
+      '<div class="seam"></div>' +
+      '<div class="hero"><div class="txt"><h3>Play card games<br>in good company</h3>' +
+      '<p><b>Take tricks</b>, <b>build melds</b> &amp; <b>play classics</b> with real people or solo. Free to play, hard to stop.</p>' +
+      '<div class="cap"><span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>' +
+      '<span class="st"><b class="n-playing">1214</b> playing</span><span class="st"><b class="n-tables">143</b> tables</span></div></div>' +
+      '<div class="games">' + tiles + '</div></div>' + below + foot;
+  }
+  var root = document.getElementById("labroot"), n = 0;
+  var VERDICTS = {};
+  var HOLD = 640; /* every scene rests at square one for 640 ms before it plays */
+  function lab(title, desc, setup, opts) {
+    opts = opts || {};
+    n++;
+    var wrap = el("div", "lab" + (opts.cls ? " " + opts.cls : ""));
+    wrap.innerHTML = '<p class="tag"><b>' + n + ' · ' + title + '</b> <button type="button" class="again">Play again</button> — ' + desc + '</p>' + (VERDICTS[title] ? '<p class="verdict">' + VERDICTS[title] + '</p>' : "");
+    var fit = el("div", "fit");
+    var scene = el("div", "scene" + (opts.tall ? " tall" : "")); scene.id = "s" + n;
+    fit.appendChild(scene); wrap.appendChild(fit); root.appendChild(wrap);
+    var cleanup = null, timers = [], observer = null;
+    var btn = el("button", "replay", "Play again");
+    /* motion scheduled through scene.__at waits until the scene is in view (or, on replay, at once), then the one-second hold */
+    function arm(waitForView) {
+      var go = null, started = new Promise(function (r) { go = r; });
+      scene.__at = function (ms, fn) { started.then(function () { timers.push(setTimeout(fn, ms)); }); };
+      if (waitForView && "IntersectionObserver" in window) {
+        /* watch the headline block, not the whole (tall) scene: play once most of the headline is on screen */
+        var watch = scene.querySelector(".txt") || scene;
+        observer = new IntersectionObserver(function (entries) {
+          if (entries.some(function (e) { return e.isIntersecting; })) { observer.disconnect(); observer = null; timers.push(setTimeout(go, HOLD)); }
+        }, { threshold: .6 });
+        observer.observe(watch);
+      } else { timers.push(setTimeout(go, HOLD)); }
+    }
+    function run(waitForView) {
+      if (cleanup) { try { cleanup(); } catch (e) {} }
+      timers.forEach(clearTimeout); timers = [];
+      if (observer) { observer.disconnect(); observer = null; }
+      scene.innerHTML = sceneHTML(opts); scene.appendChild(btn);
+      arm(waitForView);
+      var r = setup(scene, wrap);
+      cleanup = (typeof r === "function") ? r : null;
+      fitAll();
+    }
+    function again() { run(false); }
+    btn.addEventListener("click", again);
+    wrap.querySelector(".again").addEventListener("click", again);
+    run(true);
+    return scene;
+  }
+  function h2(text) { root.appendChild(el("h2", "", text)); }
+  function fitAll() {
+    document.querySelectorAll(".fit").forEach(function (f) {
+      var s = f.firstChild, z = Math.min(1, f.clientWidth / 1160);
+      s.style.transform = "scale(" + z + ")"; f.style.height = (s.offsetHeight * z) + "px";
+    });
+  }
+  window.addEventListener("resize", fitAll);
+  var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+</script>
+
+<!-- ===== IDEAS ===== -->
+<script>
+  var SUITS = {
+    spade: ["M39.95,9 C39.95,9 69.97,20.85 70,43.08 C70.01,52.75 62.13,60.61 52.39,60.62 C49.42,60.63 46.62,59.90 44.16,58.61 L48,71.00 L32,71.00 L35.82,58.65 C33.38,59.93 30.60,60.65 27.64,60.66 C17.91,60.67 10.01,52.83 10,43.16 C9.96,20.92 39.95,9 39.95,9 Z", "#262626", .45, .142],
+    heart: ["M52.34,13.99 C56.93,13.99 61.08,15.95 64.09,19.13 C67.12,22.32 68.99,26.74 69.00,31.62 C69.02,53.20 43.52,65.35 40.04,66.90 C37.71,65.85 26.39,60.44 18.57,50.99 C14.26,45.79 11.00,39.34 10.99,31.70 C10.99,26.82 12.85,22.40 15.87,19.19 C18.87,16.01 23.02,14.03 27.60,14.03 C32.15,14.02 36.26,15.95 39.26,19.07 C39.51,19.33 39.75,19.60 39.98,19.87 C40.21,19.60 40.46,19.33 40.70,19.07 C43.70,15.94 47.80,14.00 52.34,13.99 Z", "#B54A3F", .5, .148],
+    club: ["M39.99,11 C47.76,11 54.06,17.3 54.06,25.06 C54.06,28.79 52.61,32.18 50.24,34.70 C51.98,33.93 53.90,33.50 55.93,33.50 C63.70,33.50 70,39.80 70,47.57 C70,55.33 63.70,61.63 55.93,61.63 C50.95,61.63 46.57,59.04 44.08,55.13 C44.14,55.40 44.21,55.66 44.27,55.93 L44.44,56.61 C44.47,56.73 44.49,56.84 44.52,56.96 L44.69,57.65 L44.85,58.33 C46.17,63.81 47.36,69 47.36,69 L32.93,69 C32.93,69 33.93,64.19 35.11,58.95 L35.27,58.26 L35.35,57.92 L35.51,57.23 C35.69,56.45 35.87,55.68 36.05,54.91 C33.57,58.94 29.13,61.63 24.06,61.63 C16.29,61.63 10,55.33 10,47.57 C10,39.80 16.29,33.50 24.06,33.50 C26.09,33.50 28.01,33.93 29.76,34.70 C27.38,32.19 25.93,28.80 25.93,25.06 C25.93,17.3 32.23,11 39.99,11 Z", "#262626", .45, .153],
+    diamond: ["M40,3.68 L66.75,40.00 L40,76.31 L13.24,40.00 L40,3.68 Z", "#B54A3F", .5, .159]
+  };
+  function suitSVG(name, color, opacity, size) {
+    var s = SUITS[name];
+    return '<svg viewBox="0 0 80 80"' + (size ? ' style="width:' + size + 'px;height:' + size + 'px"' : '') + '><path d="' + s[0] + '" fill="' + (color || s[1]) + '" fill-opacity="' + (opacity == null ? s[2] : opacity) + '"/></svg>';
+  }
+  /* rebuild a seam element from DOM parts (line segments + suit spans) so each part can move */
+  function domSeam(seam, width) {
+    seam.classList.add("dom"); seam.innerHTML = "";
+    var order = ["spade", "heart", "club", "diamond"], parts = [];
+    var x = 0, k = 0, first = 42;
+    var segs = [], suits = [];
+    var suitX = []; for (var sx = first; sx < width; sx += 96) suitX.push(sx);
+    var prev = 0;
+    suitX.forEach(function (sx, i) { segs.push([prev, sx - 4]); prev = sx + 18; suits.push([sx, order[i % 4]]); });
+    segs.push([prev, width]);
+    segs.forEach(function (sg) { var d = el("span", "ln"); d.style.left = sg[0] + "px"; d.style.width = (sg[1] - sg[0]) + "px"; seam.appendChild(d); parts.push({ el: d, x: (sg[0] + sg[1]) / 2, kind: "ln" }); });
+    suits.forEach(function (su) { var d = el("span", "su"); d.style.left = su[0] + "px"; d.innerHTML = suitSVG(su[1]); d.querySelector("svg").style.transform = "scale(" + (SUITS[su[1]][3] / .15) + ")"; seam.appendChild(d); parts.push({ el: d, x: su[0] + 7, kind: "su" }); });
+    return parts;
+  }
+
+  var TAILS = ["in good company", "with friends", "with real people", "at your own pace", "with <span class='num'>1,214</span> people"];
+  function tailRotor(scene, mode, period) {
+    var h = scene.querySelector(".txt h3");
+    h.innerHTML = 'Play card games<br><span class="tail"><span class="tw">' + TAILS[0] + '</span></span>';
+    var tail = h.querySelector(".tail"), i = 0, timer;
+    function swap() {
+      i = (i + 1) % TAILS.length;
+      var old = tail.querySelector(".tw:not(.out)");
+      var nw = document.createElement("span"); nw.className = "tw"; nw.innerHTML = TAILS[i];
+      old.classList.add("out");
+      tail.appendChild(nw);
+      if (reduced) { old.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 400, fill: "forwards" }).onfinish = function () { old.remove(); }; nw.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 400, fill: "forwards" }); return; }
+      if (mode === "rise") {
+        old.animate([{ transform: "translateY(0)", opacity: 1, filter: "blur(0)" }, { transform: "translateY(-14px)", opacity: 0, filter: "blur(4px)" }], { duration: 520, easing: "cubic-bezier(.4,0,.6,1)", fill: "forwards" }).onfinish = function () { old.remove(); };
+        nw.animate([{ transform: "translateY(16px)", opacity: 0, filter: "blur(4px)" }, { transform: "translateY(0)", opacity: 1, filter: "blur(0)" }], { duration: 640, delay: 120, easing: "cubic-bezier(.2,.8,.2,1)", fill: "backwards" });
+      } else if (mode === "deal") {
+        old.style.transformOrigin = "left bottom";
+        old.animate([{ transform: "translate(0,0) rotate(0deg)", opacity: 1 }, { transform: "translate(10px,12px) rotate(2deg)", opacity: 0 }], { duration: 420, easing: "cubic-bezier(.5,0,.8,.4)", fill: "forwards" }).onfinish = function () { old.remove(); };
+        nw.style.transformOrigin = "left bottom";
+        nw.animate([{ transform: "translate(34px,-6px) rotate(-2.5deg)", opacity: 0 }, { transform: "translate(-3px,1px) rotate(.4deg)", opacity: 1, offset: .7 }, { transform: "translate(0,0) rotate(0deg)", opacity: 1 }], { duration: 720, delay: 160, easing: "cubic-bezier(.2,.9,.25,1)", fill: "backwards" });
+      } else if (mode === "wipe") {
+        old.animate([{ clipPath: "inset(-10% 0 -10% 0)" }, { clipPath: "inset(-10% 0 -10% 100%)" }], { duration: 560, easing: "cubic-bezier(.65,0,.35,1)", fill: "forwards" }).onfinish = function () { old.remove(); };
+        nw.animate([{ clipPath: "inset(-10% 100% -10% 0)" }, { clipPath: "inset(-10% 0 -10% 0)" }], { duration: 560, easing: "cubic-bezier(.65,0,.35,1)", fill: "backwards" });
+      }
+    }
+    timer = setInterval(swap, period || 4200);
+    return function () { clearInterval(timer); };
+  }
+
+
+  /* ===== the parts, as functions, so the stack can run them together ===== */
+  function plainSeams(scene) {
+    var s = scene.querySelector(".seam"); s.className = "seam plain"; s.innerHTML = "";
+    var s2 = scene.querySelector(".seam2"); if (s2) s2.classList.add("plain");
+  }
+  /* Once: the four suits as a 44px clasp under the wordmark, every other seam plain (the print lens) */
+  function onceClasp(scene) {
+    var seam = scene.querySelector(".seam"); seam.className = "seam plain clasp"; seam.innerHTML = "";
+    var c = el("div", "clasp4", suitSVG("spade", null, .62) + suitSVG("heart", null, .66) + suitSVG("club", null, .62) + suitSVG("diamond", null, .66));
+    seam.parentNode.insertBefore(c, seam.nextSibling);
+    var s2 = scene.querySelector(".seam2"); if (s2) s2.classList.add("plain");
+  }
+  /* Dealt from the wordmark: the four suits are dealt from under the logo onto the rule, once, on the first live message */
+  function dealtFromWordmark(scene, delay, animate) {
+    var seam = scene.querySelector(".seam"); seam.className = "seam dealt"; seam.innerHTML = "";
+    var s2 = scene.querySelector(".seam2"); if (s2) s2.classList.add("plain");
+    var cx = 580, spots = [["heart", -48], ["club", 48], ["spade", -144], ["diamond", 144]];
+    var xs = spots.map(function (s) { return cx + s[1]; }).sort(function (a, b) { return a - b; });
+    /* the rule is unbroken at first paint; each gap opens (120 ms) as its suit lands */
+    var segByX = {}, prev = 0;
+    xs.forEach(function (x) { var d = el("span", "ln"); d.style.left = prev + "px"; d.dataset.w = (x - 11 - prev); d.style.width = (x + 11 - prev) + "px"; seam.appendChild(d); segByX[x] = d; prev = x + 11; });
+    var d2 = el("span", "ln"); d2.style.left = prev + "px"; d2.style.width = (1160 - prev) + "px"; seam.appendChild(d2);
+    var moving = animate && !reduced;
+    spots.forEach(function (s, i) {
+      /* red at .65 so both inks weigh the same (the red at .5 runs about 8 L* lighter than the grey at .45) */
+      var su = el("span", "su", suitSVG(s[0], null, (s[0] === "heart" || s[0] === "diamond") ? .65 : .45)); su.style.left = (cx + s[1] - 7) + "px"; seam.appendChild(su);
+      var seg = segByX[cx + s[1]];
+      if (!moving) { seg.style.width = seg.dataset.w + "px"; return; }
+      var from = "translate(" + (-s[1]) + "px,-10px) scale(.7)";
+      su.style.opacity = "0"; su.style.transform = from;
+      scene.__at(delay + i * 90, function () {
+        su.animate([{ transform: from, opacity: 0 }, { opacity: 1, offset: .35 }, { transform: "translate(0,0) scale(1)", opacity: 1 }],
+          { duration: 420, easing: "cubic-bezier(.2,.7,.2,1)", fill: "forwards" });
+      });
+      scene.__at(delay + i * 90 + 300, function () { seg.style.transition = "width 120ms ease-out"; seg.style.width = seg.dataset.w + "px"; });
+    });
+  }
+  /* Fresh ink: the headline stands blind-embossed at first paint and takes ink word by word; colour only */
+  function freshInk(scene, delay) {
+    var h = scene.querySelector(".txt h3"), p = scene.querySelector(".txt p");
+    h.innerHTML = h.innerHTML.split("<br>").map(function (line) { return line.split(" ").map(function (w) { return '<span class="w">' + w + "</span>"; }).join(" "); }).join("<br>");
+    var words = h.querySelectorAll(".w");
+    if (reduced) return;
+    words.forEach(function (w) { w.style.color = "#d2cfca"; });
+    p.classList.add("inking"); p.style.color = "#d2cfca"; p.querySelectorAll("b").forEach(function (b) { b.style.color = "inherit"; });
+    words.forEach(function (w, i) { scene.__at(delay + i * 90, function () { w.style.color = "#141414"; }); });
+    scene.__at(delay + 680, function () { p.style.color = "#141414"; });
+  }
+  /* The turn: the second line turns once, from the promise to the proof, and (optionally) back */
+  function theTurn(scene, delay, turnBack) {
+    /* wrap the nodes after the <br> in place, so Fresh ink's word spans (and their pending timers) survive */
+    var h = scene.querySelector(".txt h3"), br = h.querySelector("br");
+    var tail = el("span", "tail"), tw = el("span", "tw");
+    while (br.nextSibling) tw.appendChild(br.nextSibling);
+    tail.appendChild(tw); h.appendChild(tail);
+    function turn(toHTML) {
+      var old = tail.querySelector(".tw:not(.out)"), nw = document.createElement("span"); nw.className = "tw"; nw.innerHTML = toHTML;
+      old.classList.add("out"); tail.appendChild(nw);
+      if (reduced) { old.remove(); return; }
+      old.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 220, easing: "ease-in", fill: "forwards" }).onfinish = function () { old.remove(); };
+      nw.animate([{ opacity: 0, transform: "translateY(2px)" }, { opacity: 1, transform: "translateY(0)" }], { duration: 460, delay: 200, easing: "cubic-bezier(.2,.8,.2,1)", fill: "backwards" });
+    }
+    scene.__at(delay, function () { turn('with <span class="num">1214</span> people'); });
+    if (turnBack) scene.__at(delay + 7700, function () { turn("in good company"); });
+  }
+  /* The nod: the live dot is unlit until the first live message, then lights once and rings once */
+  function lightDot(scene, delay) {
+    var d = scene.querySelector(".ldot"); if (!d) return;
+    d.classList.add("unlit");
+    scene.__at(delay, function () {
+      d.classList.remove("unlit");
+      if (reduced) return;
+      var r = el("span", "ring1"); d.appendChild(r);
+      r.animate([{ transform: "scale(1)", opacity: .5 }, { transform: "scale(3)", opacity: 0 }], { duration: 750, easing: "cubic-bezier(0,0,.2,1)" }).onfinish = function () { r.remove(); };
+    });
+  }
+  /* Picked up, not hovered: the tiles weigh like cards under the pointer */
+  function pickUp(scene) { scene.classList.add("pick"); }
+  /* Pull up a chair: real seat joins in the Open tables row, with the game's own join choreography (simulated feed here) */
+  function pullUpAChair(scene, startDelay) {
+    var pool = [["wendy_h", "AnimalCow.svg"], ["north4th", "AnimalBird.svg"], ["PragueJoe", "AnimalCat.svg"], ["mollyb", "AnimalBee.svg"], ["Rosie", "AnimalButterfly.svg"], ["Hank", "AnimalDragon.svg"], ["GinTonic", "AnimalBee.svg"], ["Carol", "AnimalCow.svg"]];
+    var pi = 0, fi = 0, timers = [], alive = true;
+    function cards() { return Array.from(scene.querySelectorAll(".otcard")); }
+    function label(card) { var open = card.querySelectorAll(".seat.empty").length, b = card.querySelector(".otbtn"); b.textContent = joinLabel(open); b.classList.toggle("muted", open === 0); }
+    function join(card, seat, who) {
+      var img = seat.querySelector(".av img"), plate = seat.querySelector(".plate"), old = plate.querySelector("span");
+      seat.classList.remove("empty");
+      if (!reduced) img.animate([{ opacity: 1, transform: "scale(1)" }, { opacity: 0, transform: "scale(.88)" }], { duration: 140, easing: "cubic-bezier(.32,0,.67,0)", fill: "forwards" });
+      timers.push(setTimeout(function () {
+        img.src = who[1];
+        if (!reduced) img.animate([{ opacity: 0, transform: "scale(.86)" }, { opacity: 1, transform: "scale(1)" }], { duration: 320, easing: "cubic-bezier(.22,1,.36,1)", fill: "forwards" });
+        var nw = el("span", "", who[0]);
+        if (reduced) { old.replaceWith(nw); } else {
+          nw.style.transform = "translateY(-100%)"; plate.appendChild(nw);
+          old.animate([{ transform: "translateY(0)" }, { transform: "translateY(100%)" }], { duration: 220, easing: "cubic-bezier(.22,1,.36,1)", fill: "forwards" }).onfinish = function () { old.remove(); };
+          nw.animate([{ transform: "translateY(-100%)" }, { transform: "translateY(0)" }], { duration: 220, easing: "cubic-bezier(.22,1,.36,1)", fill: "forwards" });
+        }
+        label(card);
+        if (!card.querySelectorAll(".seat.empty").length) timers.push(setTimeout(function () { renew(card); }, 1800));
+      }, reduced ? 0 : 200));
+    }
+    function renew(card) {
+      var fresh = FRESH[fi++ % FRESH.length];
+      var fade = card.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 240, fill: "forwards" });
+      fade.onfinish = function () {
+        var tmp = el("div", "", tableHTML(fresh)), nc = tmp.firstChild;
+        card.replaceWith(nc);
+        nc.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 320, easing: "ease-out" });
+      };
+    }
+    function tick() {
+      if (!alive) return;
+      var cs = cards().filter(function (c) { return c.querySelectorAll(".seat.empty").length > 0; });
+      if (cs.length) {
+        cs.sort(function (a, b) { return a.querySelectorAll(".seat.empty").length - b.querySelectorAll(".seat.empty").length; });
+        var card = (Math.random() < .6) ? cs[0] : cs[Math.floor(Math.random() * cs.length)];
+        var empties = card.querySelectorAll(".seat.empty"), seat = empties[Math.floor(Math.random() * empties.length)];
+        join(card, seat, pool[pi++ % pool.length]);
+      }
+      timers.push(setTimeout(tick, 4200 + Math.random() * 2600));
+    }
+    scene.__at(startDelay || 3600, tick);
+    return function () { alive = false; timers.forEach(clearTimeout); };
+  }
+  /* The aces fan open: four SVG cards replace the wordmark's icon and fan open once from a squared deck */
+  function acesFan(scene, delay, hoverReplay) {
+    var logo = scene.querySelector(".mb .logo"), img = logo.querySelector("img");
+    img.style.clipPath = "inset(0 0 0 46px)";
+    var box = el("div", "aces2"), angles = [-36, -25, -14, 5];
+    box.innerHTML = '<svg viewBox="0 0 48 46">' + angles.map(function (a, i) {
+      var red = (i === 1 || i === 3);
+      return '<g class="ac" data-a="' + a + '"><rect x="13.5" y="9" width="21" height="29" rx="3.4" fill="#fff" stroke="#231f20" stroke-width="2.1"/>' +
+        '<text x="16.4" y="18.2" font-family="BuloRounded, Arial, sans-serif" font-weight="bold" font-size="8" fill="' + (red ? "#e3222b" : "#231f20") + '">A</text>' +
+        (i === 3 ? '<path transform="translate(18.6 20.5) scale(.15)" d="' + SUITS.heart[0] + '" fill="#e3222b"/>' : "") + '</g>';
+    }).join("") + '</svg>';
+    logo.appendChild(box);
+    var cards = box.querySelectorAll(".ac");
+    function rest() { cards.forEach(function (c) { c.style.transform = "rotate(" + c.dataset.a + "deg)"; }); }
+    function play() {
+      cards.forEach(function (c, i) {
+        c.getAnimations().forEach(function (a) { a.cancel(); });
+        if (i === 3) { c.style.transform = "rotate(" + c.dataset.a + "deg)"; return; }
+        c.style.transform = "rotate(5deg)"; /* squared behind the front ace until the fan */
+        scene.__at(delay + i * 60, function () {
+          c.animate([{ transform: "rotate(5deg)" }, { transform: "rotate(" + c.dataset.a + "deg)" }], { duration: 520, easing: "cubic-bezier(.22,1,.36,1)", fill: "forwards" });
+        });
+      });
+    }
+    if (reduced) rest(); else play();
+    if (hoverReplay && !reduced) logo.addEventListener("mouseenter", function () { play(); });
+  }
+
+  /* ===== verdicts: two judge passes (taste, craft) plus the design lead's read ===== */
+  VERDICTS["The stack"] = '<span class="yes">Recommended.</span> Four small parts with one cause: the first live message from the room. The suits are dealt from the name and stay as the mark (the divider question answered), the headline takes ink, the dot lights, and real people keep arriving at real seats below. Hover a tile: it lifts like a card. Nothing loops, nothing is fake, and on a return visit only the dot lights. <b>Feasibility:</b> about 20 hours in all (the nod 3 h, Once 1 h, Fresh ink 2 h, Dealt from the wordmark 5 h, Pull up a chair 7 h, Picked up 2 h, colophon 1 h). Checked in the repo: the stats push arrives every 30 s and the table listings every 4.5 s, so the “first live message” is a real event and costs nothing new.';
+  VERDICTS["The stack, with the turn"] = '<span class="maybe">The bolder variant.</span> Same stack, but the second line of the headline turns once to the true count. The taste judge scored the turn 8 (the one idea that gives the headline a true second sentence); the craft judge scored it 5 (a headline that changes its mind). Turning once and staying removes the second beat; the copy still needs Holger’s ear. <b>Feasibility 5:</b> the worded count (“with twelve hundred people”) wraps at 38 px in the 300 px column, so the digits version shown here is the one that fits; about 8 h with the gating.';
+  VERDICTS["Once"] = '<span class="yes">Taste 7, craft 7.5.</span> The cleanest visual decision in the pool: the suits become a mark under the name and the gift-wrap rhythm disappears. A decision, not a moment. <b>Feasibility 8, about 1 h:</b> the mockup already has the plain-line variant; this is one centered span with four glyphs.';
+  VERDICTS["Dealt from the wordmark"] = '<span class="yes">Taste 6.5, craft 7.</span> One 780 ms gesture on real data that leaves the mark behind and explains it: the suits were dealt there, not printed there. Peripheral by nature, which is also why it never tires. <b>Feasibility 7, about 5 h:</b> four positioned spans on transform and opacity; needs a requestIdleCallback fallback for Safari; if it fails, nothing happens, which is the safest failure in the pool.';
+  VERDICTS["Fresh ink"] = '<span class="yes">Taste 7.5, craft 7.</span> The closest honest answer to the Wispr ask: colour only, under a second, in the text column so it never fights the tiles. The deboss colour must stay this dark or it reads as a skeleton loader; once per session. <b>Feasibility 7, about 2 h:</b> word spans with a CSS colour animation, no JavaScript, no layout shift.';
+  VERDICTS["The turn"] = '<span class="maybe">Taste 8, craft 5.</span> The judges disagree. For: a true second sentence in the headline’s own serif voice. Against: a headline that changes its mind reads as a tic by the tenth visit. This version turns once and stays; the tag explains the turn-back option.';
+  VERDICTS["Pull up a chair"] = '<span class="yes">Taste 7.5, craft 8. The highest score in the pool.</span> The game’s own join animation on real seats, viewport-gated and rate-limited (one change per 4 s). The only motion in the pool that gets better the fiftieth time, because it is never the same twice, and the only way touch users ever see the seat choreography. <b>Feasibility 7, about 7 h:</b> reuses the mockup’s seat preview CSS and rides the listings subscription the Open tables section needs anyway.';
+  VERDICTS["Picked up, not hovered"] = '<span class="yes">6 and 6.5, as polish.</span> Rauno-grade quality of touch: a 2.2° lift and a slower lay-down make the tiles weigh like cards. Not a signature; it is what makes the signature feel expensive. Keep rotateX under 3° or it becomes the 3D-card tell. <b>Feasibility 8, about 2 h:</b> pure CSS, no bytes, no mobile story to break.';
+  VERDICTS["The colophon"] = '<span class="yes">Taste 7.5, craft 6.5.</span> The ace-of-spades logic applied to the page: a deck shows its maker’s mark once, a book keeps its colophon at the end. Answers the tagline note and the divider question in one S-effort move. Last impression, not first. <b>Feasibility 8, about 1 h.</b>';
+  VERDICTS["The aces fan open"] = '<span class="maybe">6 to 6.5 from both judges.</span> Holger’s own note, answered in its most restrained form: once per session, no hover replay, no overshoot, the wordmark text never moves. Both judges warn that a logo that animates on load is an app-splash tell and that at 40 px it happens where the eye is not. Needs the logo redrawn as SVG (this is a rough redraw). <b>Feasibility 5, about 7 h:</b> the logo is a flat PNG in both the repo and the mockup, so any logo motion starts with an asset rebuild, for a 40 px gesture in the periphery.';
+  VERDICTS["The nod"] = '<span class="yes">Craft 7.</span> Not an idea to score on its own but the correct return-visit rule: nothing decorative moves, and the dot only lights when it is true. Should exist whichever signature wins. <b>Feasibility 8, about 3 h:</b> the honest baseline every other entrance needs; it also covers back-forward cache restores and quiet nights for free.';
+  VERDICTS["Last card"] = '<span class="maybe">Taste 7, craft 5.5.</span> The smallest true thing the room makes, and no competitor has it. The worry: a turn every four seconds beside the headline is a loop that never rests, and the site plays cards far faster than any throttle. Test it; if it distracts, slow it to one turn per ten seconds or drop it. <b>Feasibility 4, about 15 h:</b> the stats push is every 30 s, so a four-second turn needs a new broadcast and a hook in every game’s play path.';
+  VERDICTS["The proof line"] = '<span class="maybe">Taste 5.5, craft 6.5.</span> Typographically lovely as a running head, but it demotes the site’s most expensive fact to 12 px and deletes the capsule Holger just built. One or the other, never both.';
+  VERDICTS["One more hand."] = '<span class="maybe">Honest and warm, but it needs a new server counter</span> (hands dealt since midnight) and it fights the capsule for the same slot. A better home is the colophon at the foot, where the count can sit under the tagline.';
+  VERDICTS["Under the lamp"] = '<span class="maybe">5 and 5.5.</span> Subtractive and warm, but invisible at 5% and an Instagram vignette at 10%. A base coat at best.';
+  VERDICTS["Lights down"] = '<span class="maybe">5 and 6.</span> A theme, not a moment, and L effort. The night shot holds up better than expected; the glossy gold logos on green felt are the Vegas risk to test first. Worth doing later for the 24% on dark devices. <b>Feasibility 3:</b> a whole theme, 30 h or more, and double visual QA from then on.';
+  VERDICTS["Call the suit"] = '<span class="maybe">6 and 6.5.</span> A considered index gesture, but almost nobody hovers a verb in a subtitle, and “play classics” answers with nothing.';
+  VERDICTS["Second ink"] = '<span class="maybe">Taste 7, craft 5.</span> Two inks is the deck’s own truth, but a red clause beside the huge red Hearts tile is one red too many, and the 22-to-100% fade reads as colour loading late.';
+  VERDICTS["Hand-set"] = '<span class="maybe">4 and 5.</span> Real font features (verified in Gelica-Medium.woff2), but a single-story a and g can drift toward primer type, and nobody feels it as a moment. Compare with the baseline.';
+  VERDICTS["The forming table"] = '<span class="maybe">5.5 and 6.</span> The right material (real seats, real avatars) but a 96×64 felt with cartoon animals under the capsule reads as a lobby widget, and the Open tables row below shows the same thing bigger.';
+  VERDICTS["Dealt from the band"] = '<span class="maybe">5.5 and 6.5.</span> The most disciplined load deal in the pool (no fade, Hearts static), but five tiles sliding in with a stagger is still the template’s own entrance. If a deal is wanted, this is the one.';
+  VERDICTS["Rise and settle"] = '<span class="no">Set aside.</span> A looping word rotator in the H1; the blur-and-rise entrance is the most common AI text reveal.';
+  VERDICTS["Dealt tail"] = '<span class="no">Set aside.</span> Same rotator with fake card physics on words; the lean and settle make it busier, not truer.';
+  VERDICTS["The dealer's wipe"] = '<span class="no">Set aside.</span> Calmer than the other two, but still a loop that never rests in the headline.';
+  VERDICTS["The seam draws itself"] = '<span class="no">Set aside.</span> Motion on ornament at 7 px, with pops and overshoot; the weakest kind by the brief’s own rule.';
+  VERDICTS["The deal"] = '<span class="no">Set aside.</span> Tiles flying out of the logo with a scale-from-zero is the app-store entrance; and it animates the Hearts tile, which is the page’s LCP element.';
+  VERDICTS["The live full stop"] = '<span class="no">Set aside (6 and 4).</span> Witty on paper, but a green disc after a serif sentence reads as a notification badge, and it pulses forever inside the H1.';
+
+  /* ===== 1 · the recommendation ===== */
+  h2("1 · The recommendation — one system, four small parts");
+  lab("The stack", "Everything below runs together as it would on the site. First paint: plain hairline under the menu, the headline blind-embossed in the paper, the live dot unlit. The headline takes ink word by word (120 ms in, 90 ms apart). At 1.1 s, after the ink has dried and never before, the first live message arrives: the four suits are dealt from under the wordmark onto the rule (one every 90 ms, 420 ms each, no overshoot) and the dot lights with one ring on the same frame. The page does one thing at a time, and is quiet by two seconds. Then nothing moves again in the hero. Below, real players keep sitting down at real open tables with the game’s own join choreography (simulated feed here, one change every 4 to 7 s). Hover a tile: it rises from its bottom edge like a card picked up by its top. At the foot, the sign-off: “One more hand.” with the four suits once more, and every seam between is a plain line.", function (scene) {
+    freshInk(scene, 120);
+    plainSeams(scene);
+    dealtFromWordmark(scene, 1100, true);
+    lightDot(scene, 1100);
+    pickUp(scene);
+    return pullUpAChair(scene, 3600);
+  }, { tables: true, foot: true });
+  lab("The stack, with the turn", "The same system, plus the bolder headline: 2.4 s after the ink has dried, “in good company” lightens into the paper and “with 1214 people” comes up in its place, opacity only with a 2 px settle, true to the live count, and stays. (On the site: rounded down and never over-claimed; under 200 people it shows the exact figure; for a signed-in regular it could read “One more hand, Marge?”.) The H1 in the HTML never changes, so search engines see the real headline.", function (scene) {
+    freshInk(scene, 120);
+    plainSeams(scene);
+    dealtFromWordmark(scene, 1100, true);
+    lightDot(scene, 1100);
+    pickUp(scene);
+    theTurn(scene, 2600, false);
+    return pullUpAChair(scene, 3600);
+  }, { tables: true, foot: true });
+
+  /* ===== 2 · the parts ===== */
+  h2("2 · The parts, one at a time");
+  lab("Once", "The direct answer to the divider question, static: the four suits appear on the page exactly once, as a 44 px clasp under the wordmark, and every other seam is a plain hairline. The suits stop being wallpaper and become the house mark. (Today the long deal repeats on eight seams, about 100 suits per page, next to three other suit registers: the logo’s aces, the tile felts, the ad rail wallpaper. No single glyph is cheap; the eighth seam is.)", function (scene) { onceClasp(scene); });
+  lab("Dealt from the wordmark", "The same mark, spread wider and given a cause. The menu seam is a plain hairline until the first live message arrives (never on a timer); then the four suits are dealt out from under the wordmark onto the rule, one every 90 ms: heart and club to 48 px either side of center, spade and diamond to 144 px. Fast off the deck, soft on the felt, no overshoot, 780 ms in all, once per session. Below 860 px and under reduced motion the end state simply renders. Honesty rule: if no live message has arrived by 2.5 s, the mark appears without the deal, because the mark is print and must exist even when the socket fails; only the deal waits for the room.", function (scene) { dealtFromWordmark(scene, 600, true); });
+  lab("Fresh ink", "Nothing moves: the headline is already set in its final place at first paint, in the sand edge colour, like a blind deboss in the stock. It takes ink word by word, left to right, 90 ms apart, 320 ms each; the subtitle takes ink as one block at 800 ms. Colour only, under a second, zero layout shift, pure CSS on the site. Reduced motion: ink from the first frame.", function (scene) { freshInk(scene, 120); });
+  lab("The turn", "The second line of the headline turns exactly once, from the promise to the proof: at 2.4 s “in good company” lightens into the paper (220 ms) and “with 1214 people” comes up in its place (460 ms, opacity and a 2 px settle, oldstyle figures so the number keeps the serif voice). Here it stays; the original spec turns it back after 7 s, which the craft judge called a second beat too many. The line box has a fixed height so nothing shifts.", function (scene) { theTurn(scene, 2400, false); });
+  lab("Pull up a chair", "When a real player sits down at a listed open table, the empty chair shrinks to 88% and fades in 140 ms, then the newcomer’s avatar comes in over 320 ms while the nameplate rolls from “Empty” to their name, and the button counts down (“2 seats open” to “1 seat left”). When the last seat fills the card reads “Started”, then leaves for Live tables and a fresh open table takes its place. This is the game’s own join animation and the mockup’s own seat preview, with the trigger changed from hover to real data. At most one animated change per 4 s inside the viewport; offscreen cards never animate. Simulated feed here.", function (scene) { return pullUpAChair(scene, 2200); }, { tables: true });
+  lab("Picked up, not hovered", "Hover a tile. Instead of the generic lift, the tile rises from its bottom edge like a card lifted by its top: translateY(-3px) rotateX(2.2°) in 160 ms, the shadow lengthening downward; on leave it lays back down slower, 300 ms, the small click of a card meeting felt. Mousedown keeps the press. No sheen, nothing follows the cursor. Touch keeps the press only.", function (scene) { pickUp(scene); });
+  lab("The colophon", "Every seam becomes the plain hairline, so above the fold the only suits are the logo’s aces and the tile felts. Above the footer band the rule retires 120 px each side of center and in the gap sits the sign-off: “One more hand.” in Gelica 500 at 22 px, and 10 px below it the four suits at 10 px, 24 px apart, in one ink at 60%, no red. The tagline the site already uses and the deck’s four marks, placed where a deck keeps its maker’s mark and a book keeps its colophon. Nothing animates. (Holger’s existing “Long deal at the ends only” switcher option is the head-and-foot cousin of this.)", function (scene) { plainSeams(scene); }, { foot: true });
+  lab("The aces fan open", "Holger’s note: “maybe the WoCG icon could do something right after the page loads.” The most restrained true answer: at first paint the wordmark’s four aces sit squared as one deck; 350 ms later the back card swings out to its resting angle, then the next, then the next, 60 ms apart, 520 ms each on the mockup’s own no-overshoot curve, pivoting at the bottom of the fan like a thumb. The wordmark text never moves. Once per session, never on hover. The four cards here are a rough SVG redraw of the icon; the real one would be traced from the logo.", function (scene) { acesFan(scene, 350, false); });
+  lab("The nod", "The return visit. Anyone who already saw the deal this session (sessionStorage) or arrives from a game table gets the page at rest: suits on the rule, ink on the headline, tiles still. The only motion is the room acknowledging you: at 400 ms the live dot goes from unlit to green and rings once, and if the live count differs from the rendered number, only the changed digits step. A doorman’s nod.", function (scene) { dealtFromWordmark(scene, 0, false); lightDot(scene, 400); pickUp(scene); });
+
+  /* ===== 3 · runners-up ===== */
+  h2("3 · Worth a look, not in the stack");
+  lab("Last card", "A 12 px miniature card in the live capsule shows the real last card played anywhere on the site, turning over about every four seconds (flat turn, no perspective). No name, no table, just the room's pulse in a card. Simulated feed here.", function (scene) {
+    var live = scene.querySelector(".cap .stlive");
+    var c = el("span", "lastcard", "Q♠"); live.insertBefore(c, live.firstChild);
+    var deck = ["9♥", "K♣", "3♦", "A♠", "7♥", "J♦", "10♣", "Q♥"], i = 0;
+    var t = setInterval(function () {
+      var nx = deck[i++ % deck.length];
+      if (reduced) { c.textContent = nx; c.className = "lastcard" + (/[♥♦]/.test(nx) ? " r" : ""); return; }
+      c.animate([{ transform: "scaleX(1)" }, { transform: "scaleX(0)" }], { duration: 120, easing: "ease-in", fill: "forwards" }).onfinish = function () {
+        c.textContent = nx; c.className = "lastcard" + (/[♥♦]/.test(nx) ? " r" : "");
+        c.animate([{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }], { duration: 120, easing: "ease-out", fill: "forwards" });
+      };
+    }, 4000);
+    return function () { clearInterval(t); };
+  });
+
+  lab("The proof line", "The seam carries the site's one true ornament: the live headcount set on the rule like a running head in a book. A 6 px green dot, then '1,214 playing · 143 tables' in 12 px, digits on reels. No pill, no LIVE word. The capsule leaves the hero, the suits leave the seams.", function (scene) {
+    var seam = scene.querySelector(".seam"); seam.className = "seam proof"; seam.innerHTML = "";
+    scene.querySelector(".seam2").classList.add("plain");
+    var lbl = el("span", "lbl", '<span class="pd"></span><span><b>1,214</b> playing &middot; <b>143</b> tables</span>');
+    seam.appendChild(lbl);
+    requestAnimationFrame(function () {
+      var w = lbl.getBoundingClientRect().width / (scene.getBoundingClientRect().width / 1160), gap = w + 24;
+      var a = el("span", "ln"); a.style.left = "0"; a.style.width = (580 - gap / 2) + "px";
+      var b = el("span", "ln"); b.style.left = (580 + gap / 2) + "px"; b.style.width = (580 - gap / 2) + "px";
+      seam.appendChild(a); seam.appendChild(b);
+    });
+    scene.querySelector(".cap").remove();
+  });
+
+  lab("One more hand.", "The tagline becomes a true line under the capsule: 'One more hand.' in the serif, then a count of hands dealt today that rolls up on its reels each time real hands start (simulated feed here, every few seconds). Small, unboxed, no icon.", function (scene) {
+    var cap = scene.querySelector(".cap");
+    var line = el("div", "omh", '<span class="tg">One more hand.</span><span class="ct"><span class="reel"></span> hands dealt today</span>');
+    cap.parentNode.appendChild(line);
+    var reel = line.querySelector(".reel"), v = 41208, cells = [];
+    function build(str) { reel.innerHTML = ""; cells = []; str.split("").forEach(function (ch) { if (ch === ",") { reel.appendChild(el("span", "", ",")); return; } var dc = el("span", "dc"); var dr = el("span", "dr"); for (var d = 0; d < 10; d++) dr.appendChild(el("span", "", d)); dc.appendChild(dr); reel.appendChild(dc); cells.push(dr); }); }
+    function set(n, animate) { var s = n.toLocaleString("en-US"); if (s.replace(/\d/g, "0") !== (reel.dataset.shape || "")) { build(s); reel.dataset.shape = s.replace(/\d/g, "0"); } var digs = s.replace(/,/g, "").split(""); digs.forEach(function (d, i) { var dr = cells[i]; if (!animate) dr.style.transition = "none"; dr.style.transform = "translateY(" + (-1.35 * d) + "em)"; if (!animate) { void dr.offsetHeight; dr.style.transition = ""; } }); }
+    set(v, false);
+    var t = setInterval(function () { v += 1 + Math.floor(Math.random() * 6); set(v, !reduced); }, 2600);
+    return function () { clearInterval(t); };
+  });
+
+  lab("Under the lamp", "Nothing moves. The paper sits in the pool of one lamp: the hero stays cream at its center and shades by at most 6% toward the corners with the site's own warm shadow color, so the page reads as a sheet on a table rather than a flat white screen.", function (scene) { scene.classList.add("lamp"); });
+
+  lab("Lights down", "Dark mode does not invert the paper; it turns the lights down and lets the table show. Night felt #1b2922 with the tiles' own suit wallpaper in cream at 5% and a warm-green lamp pool over the hero. The tiles are untouched; the question it answers is whether the glossy gold logos read as a card room or as Vegas.", function (scene) { scene.classList.add("night"); });
+
+  lab("Call the suit", "Hover a verb in the subtitle and the games of that family rise 3 px together (30 ms apart, left to right), so the words and the tiles become one map. 'Take tricks' lifts Hearts, Spades, Euchre and Double Deck Pinochle; 'build melds' lifts Gin Rummy and Hand &amp; Foot. Nothing dims, nothing glows.", function (scene) {
+    var p = scene.querySelector(".txt p");
+    p.innerHTML = '<span class="verb" data-fam="tt">Take tricks</span>, <span class="verb" data-fam="rummy">build melds</span> &amp; <span class="verb" data-fam="classic">play classics</span> with real people or solo. Free to play, hard to stop.';
+    var fam = { tt: ["Hearts", "Spades", "Euchre", "Double Deck Pinochle"], rummy: ["Gin Rummy", "Hand & Foot"], classic: [] };
+    p.querySelectorAll(".verb").forEach(function (vb) {
+      vb.addEventListener("mouseenter", function () {
+        var names = fam[vb.dataset.fam]; var tiles = Array.from(scene.querySelectorAll(".gtile")).filter(function (t) { return names.indexOf(t.dataset.game) > -1; });
+        tiles.sort(function (a, b) { return a.getBoundingClientRect().left - b.getBoundingClientRect().left; });
+        tiles.forEach(function (t, i) { setTimeout(function () { t.classList.add("lift"); }, i * 30); });
+      });
+      vb.addEventListener("mouseleave", function () { scene.querySelectorAll(".gtile.lift").forEach(function (t) { t.classList.remove("lift"); }); });
+    });
+  });
+
+  lab("Second ink", "The headline printed in two inks like a card face: 'Play card games' in ink, 'in good company' in the dusty red the divider's hearts already use. At first paint the red clause is a pale underprint (22%); from 600 ms it comes up to full over 900 ms, like the second pass through the press. Then it rests forever.", function (scene) {
+    var h = scene.querySelector(".txt h3");
+    h.innerHTML = 'Play card games<br><span class="red">in good company</span>';
+    var r = h.querySelector(".red");
+    if (reduced) return;
+    r.animate([{ opacity: .22 }, { opacity: 1 }], { duration: 900, delay: 600, easing: "cubic-bezier(.2,.6,.2,1)", fill: "backwards" });
+  });
+
+  lab("Hand-set", "Static. Gelica's own alternates on the headline only: single-story g and a (ss01, ss02), so the line looks lettered rather than typed. The nearest thing in the folder to Wispr's italic voice without buying an italic cut. Compare with the baseline above.", function (scene) { scene.querySelector(".txt h3").classList.add("handset"); });
+
+  lab("The forming table", "Under the capsule, the one real public table closest to starting: a small felt with four seats, real avatars in the seats people have taken, empty chairs for the rest, and one line of true words: 'Hearts · 1 seat left', then who is there. When someone sits down, their avatar drops into the chair. When the table fills it starts and the next forming table takes its place. Simulated feed here.", function (scene) {
+    var cap = scene.querySelector(".cap");
+    var box = el("div", "forming", '<div class="felt"><span class="seat n"></span><span class="seat e"></span><span class="seat s"></span><span class="seat w"></span></div><div class="info"><div class="t"></div><div class="who"></div><span class="go">Take the seat</span></div>');
+    cap.parentNode.appendChild(box);
+    var seats = { n: box.querySelector(".seat.n"), e: box.querySelector(".seat.e"), s: box.querySelector(".seat.s"), w: box.querySelector(".seat.w") };
+    var tables = [
+      { game: "Hearts", seats: [["n", "Marge", "AnimalGopher.svg"], ["e", "carl52", "AnimalChicken.svg"]], joins: [["w", "Bot Ada", "AlienMartian.svg"], ["s", "Duckling", "AnimalBeaver.svg"]] },
+      { game: "Spades", seats: [["n", "Vera", "AnimalBee.svg"]], joins: [["s", "BobK", "AnimalCat.svg"], ["e", "wendy_h", "AnimalCow.svg"], ["w", "PragueJoe", "AnimalFox.svg"]] }
+    ];
+    var timers = [];
+    function fill(seat, name, img, animate) {
+      seat.className = "seat " + seat.className.split(" ")[1]; seat.innerHTML = '<img src="' + img + '" alt="">';
+      if (animate && !reduced) seat.firstChild.animate([{ transform: "translateY(-6px)", opacity: 0 }, { transform: "translateY(0)", opacity: 1 }], { duration: 260, easing: "cubic-bezier(.2,.8,.2,1)" });
+    }
+    function show(tb) {
+      var taken = tb.seats.slice(); ["n", "e", "s", "w"].forEach(function (k) { seats[k].className = "seat " + k + " empty"; seats[k].innerHTML = ""; });
+      taken.forEach(function (s) { fill(seats[s[0]], s[1], s[2], false); });
+      function text() { var left = 4 - taken.length; box.querySelector(".t").textContent = tb.game + " · " + (left === 1 ? "1 seat left" : left + " seats open"); box.querySelector(".who").textContent = taken.map(function (s) { return s[1]; }).join(", "); }
+      text();
+      tb.joins.forEach(function (j, i) {
+        timers.push(setTimeout(function () {
+          taken.push(j); fill(seats[j[0]], j[1], j[2], true); text();
+          if (taken.length === 4) {
+            box.querySelector(".t").textContent = tb.game + " · starting";
+            box.querySelector(".felt").animate([{ boxShadow: "inset 0 0 0 1px rgba(52,58,64,.4), 0 0 0 0 rgba(0,168,45,0)" }, { boxShadow: "inset 0 0 0 1px rgba(52,58,64,.4), 0 0 0 6px rgba(0,168,45,.18)", offset: .4 }, { boxShadow: "inset 0 0 0 1px rgba(52,58,64,.4), 0 0 0 0 rgba(0,168,45,0)" }], { duration: 1200, easing: "ease-out" });
+            timers.push(setTimeout(function () {
+              var fo = box.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 300, fill: "forwards" }); fo.onfinish = function () { fo.cancel(); show(tables[(tables.indexOf(tb) + 1) % tables.length]); box.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 300 }); };
+            }, 1800));
+          }
+        }, 2600 + i * 2600));
+      });
+    }
+    show(tables[0]);
+    return function () { timers.forEach(clearTimeout); };
+  });
+
+  lab("Dealt from the band", "Hearts is already on the table and never moves. The five small tiles start 28 px higher with a wide soft shadow, as if held just above the felt, and slide straight down into their cells in dealing order, 420 ms each, 70 ms apart, on the hero-scenes deal curve. No fade: cards do not fade, they land. The shadow tightens on contact.", function (scene) {
+    if (reduced) return;
+    ["pos-d", "pos-b", "pos-h", "pos-f", "pos-e"].forEach(function (cls, i) {
+      var t = scene.querySelector("." + cls); t.classList.add("air");
+      var a = t.animate([{ transform: "translateY(-28px)" }, { transform: "translateY(0)" }], { duration: 420, delay: 160 + i * 70, easing: "cubic-bezier(.05,.7,.1,1)", fill: "backwards" });
+      a.onfinish = function () { t.classList.remove("air"); };
+    });
+  });
+
+
+  /* ===== 4 · set aside ===== */
+  h2("4 · Considered and set aside, with the reason");
+  lab("Rise and settle", "Only the second line changes, every 4.2 s: the old tail lifts 14 px and softens away, the new one rises into the baseline. The Wispr Flow move, in Gelica, nothing else on the page moves. The fifth tail is true data from the capsule.", function (s) { return tailRotor(s, "rise"); });
+
+  lab("Dealt tail", "The same rotation, but the words behave like a card: the old tail is tucked away down-right, the new one is dealt in from the right with a 2.5° lean and a soft settle.", function (s) { return tailRotor(s, "deal"); });
+
+  lab("The dealer's wipe", "No lift at all: the new line is revealed left to right along the baseline while the old one leaves the same way, like one card sliding over another. Calm, almost typographic.", function (s) { return tailRotor(s, "wipe", 4600); });
+
+  lab("The seam draws itself", "Once per visit, in the first second: the hairline under the menu draws outward from the center in 600 ms, and each suit pops onto the line as the line reaches it, a 220 ms scale with a small overshoot, timed by distance from the center. The rest of the page is simply there. Reduced motion: nothing moves.", function (scene) {
+    var seam = scene.querySelector(".seam"), parts = domSeam(seam, 1160), cx = 580;
+    if (reduced) return;
+    parts.forEach(function (p) {
+      var d = Math.abs(p.x - cx), delay = 120 + d / 580 * 620;
+      if (p.kind === "ln") {
+        p.el.animate([{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }], { duration: 420, delay: delay - 160, easing: "cubic-bezier(.2,.8,.2,1)", fill: "backwards" });
+        p.el.style.transformOrigin = (p.x < cx ? "right" : "left") + " center";
+      } else {
+        p.el.animate([{ transform: "scale(0)", opacity: 0 }, { transform: "scale(1.35)", opacity: 1, offset: .6 }, { transform: "scale(1)", opacity: 1 }], { duration: 300, delay: delay, easing: "cubic-bezier(.2,.8,.2,1)", fill: "backwards" });
+      }
+    });
+  });
+
+  lab("The deal", "The six tiles are dealt from the wordmark's deck in the first 1.3 s: Hearts first, then Spades, Euchre, Gin Rummy, Hand &amp; Foot, Double Deck Pinochle, 90 ms apart, each 620 ms on an expo-out with a 3° lean that settles. The headline is already there. The capsule arrives last and its live dot pings once. Return visitors (sessionStorage) skip it.", function (scene) {
+    if (reduced) return;
+    var logo = scene.querySelector(".mb .logo").getBoundingClientRect(), sc = scene.getBoundingClientRect();
+    var ox = logo.left - sc.left + 22, oy = logo.top - sc.top + 20;
+    var order = ["pos-a", "pos-d", "pos-b", "pos-h", "pos-f", "pos-e"];
+    order.forEach(function (cls, i) {
+      var t = scene.querySelector("." + cls), r = t.getBoundingClientRect();
+      var dx = ox - (r.left - sc.left + r.width / 2), dy = oy - (r.top - sc.top + r.height / 2);
+      t.style.transformOrigin = "center";
+      t.animate([
+        { transform: "translate(" + dx + "px," + dy + "px) scale(.18) rotate(-6deg)", opacity: 0, boxShadow: "0 0 0 rgba(60,45,25,0)" },
+        { opacity: 1, offset: .25 },
+        { transform: "translate(0,0) scale(1) rotate(" + (i % 2 ? 1.2 : -1.2) + "deg)", opacity: 1, offset: .82 },
+        { transform: "translate(0,0) scale(1) rotate(0deg)", opacity: 1 }
+      ], { duration: 640, delay: 140 + i * 90, easing: "cubic-bezier(.2,.85,.25,1)", fill: "backwards" });
+    });
+    var cap = scene.querySelector(".cap");
+    cap.animate([{ opacity: 0, transform: "translateY(6px)" }, { opacity: 1, transform: "translateY(0)" }], { duration: 420, delay: 140 + 6 * 90 + 320, easing: "cubic-bezier(.2,.8,.2,1)", fill: "backwards" });
+  });
+
+  lab("The live full stop", "The headline gets its period, and the period is the room's live dot: a 8 px disc in the capsule's green after 'company', ringing on the capsule's own beat while the socket is connected. The LIVE chip could then leave the capsule, so there is one dot on the page, not two.", function (scene) {
+    var h = scene.querySelector(".txt h3");
+    h.innerHTML = 'Play card games<br>in good company<span class="stop"></span>';
+    var live = scene.querySelector(".cap .stlive"); if (live) live.remove();
+  });
+
+
+  /* ===== 5 · round two: Rise and settle, but it settles for good ===== */
+  function riseSettle(scene, lines, o) {
+    o = o || {};
+    var h = scene.querySelector(".txt h3"), br = h.querySelector("br");
+    var tail = el("span", "tail"), tw = el("span", "tw");
+    while (br.nextSibling) tw.appendChild(br.nextSibling);
+    tail.appendChild(tw); h.appendChild(tail);
+    if (o.start) tw.innerHTML = o.start; /* the line at rest, when it is not the H1's own */
+    var period = o.period || 2000, first = o.first || 1600, blur = (o.blur == null) ? 4 : o.blur;
+    function swap(html, slow) {
+      var old = tail.querySelector(".tw:not(.out)"), nw = el("span", "tw", html);
+      old.classList.add("out"); tail.appendChild(nw);
+      if (o.mode && o.mode !== "rise") { startCounts(nw); if (reduced) { old.remove(); return; } animateSwap(old, nw, o.mode, slow ? 1.2 : 1); return; }
+      /* a number marked data-count counts up once its line has arrived */
+      nw.querySelectorAll("[data-count]").forEach(function (c) {
+        var to = +c.dataset.count, from = +(c.dataset.from || 0), dur = +(c.dataset.dur || 1100), mode = c.dataset.mode || "ease";
+        if (reduced) { c.textContent = to; return; }
+        if (mode === "reel") { reelCount(c, from, to, dur, h); return; } /* reels start at once, while the line is still rising */
+        if (mode === "spin") { spinCount(c, to, { spin: +(c.dataset.spin || 640), lead: +(c.dataset.lead || 500), stagger: +(c.dataset.stagger || 240), digits: +(c.dataset.digits || 0) }, h); return; }
+        c.textContent = from;
+        setTimeout(function () { (mode === "ticks" ? tickUp : countUp)(c, from, to, dur); }, 380);
+      });
+      if (reduced) { old.remove(); return; }
+      var k = slow ? 1.25 : 1;
+      old.animate([{ transform: "translateY(0)", opacity: 1, filter: "blur(0)" }, { transform: "translateY(-14px)", opacity: 0, filter: "blur(" + blur + "px)" }],
+        { duration: 520 * k, easing: "cubic-bezier(.4,0,.6,1)", fill: "forwards" }).onfinish = function () { old.remove(); };
+      nw.animate([{ transform: "translateY(16px)", opacity: 0, filter: "blur(" + blur + "px)" }, { transform: "translateY(0)", opacity: 1, filter: "blur(0)" }],
+        { duration: 640 * k, delay: 120, easing: "cubic-bezier(.2,.8,.2,1)", fill: "backwards" });
+    }
+    lines.forEach(function (line, i) { scene.__at(first + i * period, function () { swap(line, i === lines.length - 1); }); });
+  }
+  var L_COMPANY = ["with real people", "or on your own", "the rules you know", "in good company"];
+  var L_INVITE = ["on your own", "with friends", "with real people", "in good company"];
+  var L_ROOM = ['with <span class="num">1214</span> people', 'at <span class="num">143</span> tables', "day or night", "in good company"];
+  var L_PROMISE = ["the rules you know", "with gentle hints", "and never a wait", "in good company"];
+
+  VERDICTS["What good company means"] = '<span class="yes">Recommended storyline.</span> The headline defines its own last line. The three lines answer a newcomer’s three doubts in order: is anyone here (real people), must I play with strangers (or on your own), is it my game (the rules you know). Then the promise returns and stays. Every line is a claim the site can prove: the live count, the 95% of hands played solo, the per-game options. Not judged by the workshop; round two.';
+  VERDICTS["The invitation"] = '<span class="maybe">Alternative.</span> Who you play with, from alone to everyone. Warm and simple, but “with friends” is the weakest true claim on the site (most players arrive alone), and the three lines say the same thing three times.';
+  VERDICTS["The room right now"] = '<span class="maybe">Alternative.</span> The proof lines from the live capsule, in the headline’s voice. Strongest at a busy hour and honest at night (“with 23 people” still reads true), but it repeats the capsule two lines below, and “day or night” is the only line without a number, so it reads as filler.';
+  VERDICTS["The old promises"] = '<span class="maybe">Alternative.</span> The Tier 1 feature claims (rules you grew up with, hints, bots fill the seats). True and ownable, but three features in the headline turn the promise into a list, and each needs a sentence of explanation the headline cannot give.';
+  VERDICTS["What good company means, no blur"] = '<span class="maybe">Motion variant.</span> Same lines, same rise, no blur. The craft judge called blur-and-rise the most common AI text reveal; the rise alone reads more like print. Compare with the scene above and pick by eye.';
+  VERDICTS["The stack, with the settled line"] = '<span class="yes">The system with the settled line in it.</span> Ink first, then the suits and the dot on the first live message, then the second line explains itself three times and settles by nine seconds. After that only real events move. If this is the choice, drop “The turn” (scene 2): one headline gesture, not two.';
+
+  h2("5 · Round two — the second line rises, and then settles for good");
+  lab("What good company means", "The second line rises and settles four times, then never moves again. It starts on the real headline, “in good company”. After the hold it says “with real people”, then “or on your own”, then “the rules you know”, and returns to “in good company” a little slower, and stays. One change every two seconds, all done inside nine seconds. The H1 in the HTML always says “in good company”.", function (scene) { riseSettle(scene, L_COMPANY); });
+  lab("The invitation", "Same motion, a different storyline: who you can play with, from alone to everyone. “on your own”, “with friends”, “with real people”, then “in good company” for good.", function (scene) { riseSettle(scene, L_INVITE); });
+  lab("The room right now", "Same motion, the live room as the story: “with 1214 people”, “at 143 tables”, “day or night”, then “in good company”. The numbers are the capsule’s real numbers, oldstyle figures so they keep the serif voice.", function (scene) { riseSettle(scene, L_ROOM); });
+  lab("The old promises", "Same motion, the site’s ownable claims as the story: “the rules you know”, “with gentle hints”, “and never a wait”, then “in good company”.", function (scene) { riseSettle(scene, L_PROMISE); });
+  lab("What good company means, no blur", "The recommended lines with the blur removed: the old line lifts and fades, the new one rises into the baseline, nothing softens. A quieter, more printed version of the same motion.", function (scene) { riseSettle(scene, L_COMPANY, { blur: 0 }); });
+  lab("The stack, with the settled line", "The whole system, with the settled second line instead of the turn. Ink from the hold, the suits and the dot on the first live message at 1.1 s, then the line rises at 2.4 s, 4.4 s, 6.4 s and settles at 8.4 s. Below, real people keep sitting down. Hover a tile: it lifts like a card.", function (scene) {
+    freshInk(scene, 120);
+    plainSeams(scene);
+    dealtFromWordmark(scene, 1100, true);
+    lightDot(scene, 1100);
+    pickUp(scene);
+    riseSettle(scene, L_COMPANY, { first: 2400 });
+    return pullUpAChair(scene, 3600);
+  }, { tables: true, foot: true });
+
+  /* ===== 6 · round two: the seam draws itself, quickly and true ===== */
+  /* The long deal rebuilt from the mockup's own tile geometry (384 x 14: rule segments 0-38, 58-134, 154-230, 250-326, 346-384;
+     glyph boxes at x 42.32 / 138.08 / 233.88 / 329.64, y 1.32 / 1.08 / .88 / .64, scales .142 / .148 / .153 / .159 of an 80-unit path),
+     so every suit is exactly the size and place it has in the static divider. The rule is one element revealed from the centre
+     outward by a clip-path at constant speed; each suit pops the moment the drawing edge reaches it. */
+  var TILE = [["spade", 42.32, 1.32, .142], ["heart", 138.08, 1.08, .148], ["club", 233.88, .88, .153], ["diamond", 329.64, .64, .159]];
+  function drawSeam(scene, T, at) {
+    var seam = scene.querySelector(".seam"); seam.className = "seam drawn"; seam.innerHTML = "";
+    var W = 1160, cx = W / 2;
+    var rule = el("span", "rule"); seam.appendChild(rule);
+    var suits = [];
+    for (var k = 0; k * 96 < W; k++) {
+      var t = TILE[k % 4], size = 80 * t[3], x = t[1] + 384 * Math.floor(k / 4); /* the tile repeats every 384px */
+      var su = el("span", "su", '<svg viewBox="0 0 80 80"><path d="' + SUITS[t[0]][0] + '" fill="' + SUITS[t[0]][1] + '" fill-opacity="' + SUITS[t[0]][2] + '"/></svg>');
+      su.style.cssText = "left:" + x + "px;top:" + t[2] + "px;width:" + size + "px;height:" + size + "px;";
+      seam.appendChild(su); suits.push({ el: su, cxs: x + size / 2 });
+    }
+    if (reduced) return;
+    rule.style.clipPath = "inset(0 50% 0 50%)";
+    suits.forEach(function (s) { s.el.style.opacity = "0"; });
+    scene.__at(at || 0, function () {
+      rule.animate([{ clipPath: "inset(0 50% 0 50%)" }, { clipPath: "inset(0 0 0 0)" }], { duration: T, easing: "linear", fill: "forwards" });
+      suits.forEach(function (s) {
+        var when = Math.abs(s.cxs - cx) / cx * T;
+        setTimeout(function () {
+          s.el.style.opacity = "1";
+          s.el.animate([{ transform: "scale(0)" }, { transform: "scale(1.25)", offset: .6 }, { transform: "scale(1)" }], { duration: 220, easing: "cubic-bezier(.2,.8,.2,1)" });
+        }, when);
+      });
+    });
+  }
+  VERDICTS["The seam draws itself, quickly and true"] = '<span class="maybe">Round two, on Holger’s note.</span> Scene 25 with three fixes: the rule is one element drawn from the centre at constant speed (420 ms edge to edge instead of about a second), each suit pops the instant the edge reaches it, and every glyph is the divider’s own size and place (the earlier version drew them about a sixth too large). The concept stays: the row is dealt, not printed. It keeps the full row on the menu seam; the other seams could stay as today or go plain.';
+  VERDICTS["The seam, then the line settles"] = '<span class="yes">The combination Holger asked for.</span> The seam draws in under half a second, the suits popping as the edge passes, and one second later the second line explains itself three times and settles for good. Two gestures, one after the other, both done inside nine seconds. The headline is inked from the start, so the seam is the first thing that moves.';
+  h2("6 · Round two — the seam draws itself, quickly and true, then the line settles");
+  lab("The seam draws itself, quickly and true", "After the hold, the hairline under the menu draws outward from under the wordmark at constant speed, 420 ms edge to edge. Each suit pops onto the line the moment the drawing edge reaches it (220 ms, a small overshoot), at exactly the size and place it has in the static divider. Nothing else moves.", function (scene) { drawSeam(scene, 420, 0); });
+  lab("The seam, then the line settles", "The seam draws first (420 ms), then the second line of the headline rises and settles: “with real people” at 1.5 s, “or on your own” at 3.5 s, “the rules you know” at 5.5 s, and back to “in good company” at 7.5 s, where it stays.", function (scene) { drawSeam(scene, 420, 0); riseSettle(scene, L_COMPANY, { first: 1500 }); });
+  lab("The seam, then the line settles, no blur", "The same pair with the rise-and-settle stripped of its blur: the old line lifts and fades, the new one rises into the baseline.", function (scene) { drawSeam(scene, 420, 0); riseSettle(scene, L_COMPANY, { first: 1500, blur: 0 }); });
+
+  /* count-ups for a live number inside a headline line */
+  function countUp(elm, from, to, dur) { /* one sweep with an ease-out: fast at first, the last few counts tick one by one */
+    var t0 = performance.now();
+    (function frame(now) {
+      var p = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - p, 3);
+      elm.textContent = Math.round(from + (to - from) * e);
+      if (p < 1) requestAnimationFrame(frame);
+    })(t0);
+  }
+  function tickUp(elm, from, to, dur) { /* arrivals: the number climbs in ones and twos at an uneven pace, like people sitting down */
+    var v = from, steps = to - from, gap = steps > 0 ? dur / steps : 0;
+    (function tick() {
+      if (v >= to) { elm.textContent = to; return; }
+      v = Math.min(to, v + (Math.random() < .3 ? 2 : 1)); elm.textContent = v;
+      setTimeout(tick, gap * (0.5 + Math.random()));
+    })();
+  }
+
+  /* odometer: one fixed-width reel per digit, rolling on the capsule's own curve; the word after the number never moves */
+  function reelCount(elm, from, to, dur, h) {
+    var probe = el("span", "", "0"); probe.style.cssText = "position:absolute;visibility:hidden;white-space:nowrap;display:inline-block;font:inherit";
+    h.appendChild(probe); var dw = [];
+    for (var d = 0; d < 10; d++) { probe.textContent = String(d); dw.push(probe.offsetWidth); }
+    probe.remove();
+    var digits = String(to).length, cells = [];
+    /* each cell is as wide as the widest digit it will actually show between from and to, so a leading "1" stays narrow */
+    var shown = []; for (var i0 = 0; i0 < digits; i0++) shown.push({});
+    for (var v0 = from; v0 <= to; v0++) { var s0 = String(v0); while (s0.length < digits) s0 = "0" + s0; for (var j = 0; j < digits; j++) shown[j][s0[j]] = true; }
+    elm.classList.add("reelnum"); elm.textContent = "";
+    for (var i = 0; i < digits; i++) {
+      var rc = el("span", "rc"), rr = el("span", "rr");
+      var cw = 0; Object.keys(shown[i]).forEach(function (ch) { cw = Math.max(cw, dw[+ch]); });
+      rc.style.width = cw + "px";
+      for (var k = 0; k < 20; k++) rr.appendChild(el("span", "", String(k % 10)));
+      rc.appendChild(rr); elm.appendChild(rc);
+      var cell = { rr: rr, cur: 0, idx: 0 };
+      /* after any roll that ended in the second set of digits, snap back to the first set without motion */
+      rr.addEventListener("transitionend", function () { if (cell.idx >= 10) setIdx(cell, cell.idx - 10, false); });
+      cells.push(cell);
+    }
+    function setIdx(c, idx, animate, ms, curve) {
+      if (!animate) c.rr.style.transition = "none";
+      else c.rr.style.transition = "transform " + ms + "ms " + curve;
+      c.rr.style.transform = "translateY(" + (-idx * 1.15) + "em)";
+      if (!animate) { void c.rr.offsetHeight; c.rr.style.transition = ""; }
+      c.idx = idx; c.cur = idx % 10;
+    }
+    /* every reel that turns on a tick rolls for the same time, and that time follows the tick pace:
+       fast ticks give quick crisp rolls, the slow final ticks give soft ones, and the last count settles */
+    function show(v, animate, ms, curve) {
+      var s = String(v); while (s.length < digits) s = "0" + s;
+      cells.forEach(function (c, i) {
+        var d = +s[i]; if (d === c.cur) return;
+        if (!animate) { setIdx(c, d, false); return; }
+        var base = c.idx >= 10 ? 10 : 0;
+        if (d > c.cur) { setIdx(c, base + d, true, ms, curve); return; }
+        /* wrapping (9 to 0): roll forward into the second set; if already there, snap to the first set first */
+        if (base === 10) setIdx(c, c.idx - 10, false);
+        setIdx(c, 10 + d, true, ms, curve);
+      });
+    }
+    show(from, false);
+    var v = from, steps = Math.max(1, to - from), base = dur / steps, gap = base * .55;
+    (function tick() {
+      if (v >= to) return;
+      v = Math.min(to, v + (Math.random() < .25 ? 2 : 1));
+      var last = v >= to;
+      show(v, true, last ? 360 : Math.max(90, Math.min(260, gap * 1.6)), last ? "cubic-bezier(.22,1.1,.34,1)" : "cubic-bezier(.25,.7,.25,1)");
+      var p = (v - from) / steps;                 /* quick off the mark, slowing as it settles */
+      gap = base * (0.55 + 1.3 * p * p) * (0.7 + Math.random() * .6);
+      setTimeout(tick, gap);
+    })();
+  }
+
+  /* spin and lock: every reel spins through all ten digits from the moment the line starts to rise, then they lock in
+     one after another from the left, each one decelerating onto its digit; the cells share one width, like a real counter */
+  function spinCount(elm, to, o, h) {
+    var probe = el("span", "", "0"); probe.style.cssText = "position:absolute;visibility:hidden;white-space:nowrap;display:inline-block;font:inherit";
+    h.appendChild(probe); var cw = 0, s = String(to), own = [];
+    for (var d = 0; d < 10; d++) { probe.textContent = String(d); cw = Math.max(cw, probe.offsetWidth); }
+    for (var j = 0; j < s.length; j++) { probe.textContent = s[j]; own.push(probe.getBoundingClientRect().width); }
+    probe.textContent = s; var run = probe.getBoundingClientRect(), rg = document.createRange(), pos = [];
+    for (var j2 = 0; j2 < s.length; j2++) { rg.setStart(probe.firstChild, j2); rg.setEnd(probe.firstChild, j2 + 1); pos.push(rg.getBoundingClientRect().left - run.left); }
+    pos.push(run.width);
+    probe.remove();
+    /* every digit sits where the set text would put it (kerning included), so the number is as wide as plain text from the first frame; a spinning cell stays a full digit wide and overlaps its neighbours by the difference; once the last reel locks the cells give way to the plain text */
+    var cells = [], spinN = Math.min(s.length, o.digits || s.length), firstSpin = s.length - spinN, locked = 0;
+    function settle() { if (++locked === cells.length) { elm.classList.remove("reelnum"); elm.textContent = s; } }
+    elm.classList.add("reelnum"); elm.textContent = "";
+    for (var i = 0; i < s.length; i++) {
+      var occ = pos[i + 1] - pos[i], wd = own[i];
+      if (i < firstSpin) { var st = el("span", "still", s[i]); st.style.width = occ + "px"; elm.appendChild(st); continue; } /* leading digits stand still */
+      var rc = el("span", "rc"), rr = el("span", "rr");
+      rc.style.width = cw + "px"; rc.style.marginLeft = (-(cw - wd) / 2) + "px"; rc.style.marginRight = (occ - wd - (cw - wd) / 2) + "px";
+      rr.style.transition = "none"; /* spinning reels move by animation only; the stepping odometer's CSS transition must not replay the last move */
+      for (var k = 0; k < 20; k++) rr.appendChild(el("span", "", String(k % 10)));
+      rc.appendChild(rr); elm.appendChild(rc);
+      var anim = rr.animate([{ transform: "translateY(0)" }, { transform: "translateY(-11.5em)" }], { duration: o.spin, iterations: Infinity, easing: "linear" });
+      anim.currentTime = Math.floor(Math.random() * o.spin); /* reels out of phase with each other */
+      cells.push({ rr: rr, anim: anim, d: +s[i] });
+    }
+    cells.forEach(function (c, i) {
+      setTimeout(function () {
+        var frac = (c.anim.currentTime % o.spin) / o.spin, pos = frac * 10; /* where the reel is right now, in rows */
+        c.anim.cancel();
+        var target = 10 + c.d, rows = target - pos;              /* always ahead, so the reel keeps turning the same way */
+        c.rr.style.transform = "translateY(" + (-pos * 1.15) + "em)";
+        var a = c.rr.animate([{ transform: "translateY(" + (-pos * 1.15) + "em)" }, { transform: "translateY(" + (-target * 1.15) + "em)" }],
+          { duration: 200 + rows * 18, easing: "cubic-bezier(.2,.75,.2,1)", fill: "forwards" });
+        a.onfinish = function () { c.rr.style.transform = "translateY(" + (-c.d * 1.15) + "em)"; a.cancel(); settle(); };
+      }, o.lead + i * o.stagger);
+    });
+  }
+
+  /* the counts inside a freshly swapped line (shared by every swap style) */
+  function startCounts(nw) {
+    nw.querySelectorAll("[data-count]").forEach(function (c) {
+      var to = +c.dataset.count, from = +(c.dataset.from || 0), dur = +(c.dataset.dur || 1100), mode = c.dataset.mode || "ease", h = c.closest("h3");
+      if (reduced) { c.textContent = to; return; }
+      if (mode === "reel") { reelCount(c, from, to, dur, h); return; }
+      if (mode === "spin") { spinCount(c, to, { spin: +(c.dataset.spin || 640), lead: +(c.dataset.lead || 500), stagger: +(c.dataset.stagger || 240), digits: +(c.dataset.digits || 0) }, h); return; }
+      c.textContent = from; setTimeout(function () { (mode === "ticks" ? tickUp : countUp)(c, from, to, dur); }, 380);
+    });
+  }
+  /* split a line into word or letter units; element children (the spinning number) stay whole */
+  function splitUnits(node, by) {
+    var frag = document.createDocumentFragment();
+    Array.from(node.childNodes).forEach(function (n) {
+      if (n.nodeType === 3) {
+        var parts = by === "letters" ? n.textContent.split("") : n.textContent.split(/(\s+)/);
+        parts.forEach(function (t) { if (!t) return; if (/^\s+$/.test(t)) { frag.appendChild(document.createTextNode(t)); return; } var s = el("span", "u"); s.textContent = t; frag.appendChild(s); });
+      } else { if (n.classList) n.classList.add("u"); frag.appendChild(n); }
+    });
+    node.textContent = ""; node.appendChild(frag);
+    return Array.from(node.querySelectorAll(".u"));
+  }
+  /* the swap styles: how the old line leaves and the new one arrives */
+  function animateSwap(old, nw, mode, k) {
+    var out = "cubic-bezier(.4,0,.7,.2)", ease = "cubic-bezier(.2,.8,.2,1)", gone = function () { old.remove(); };
+    if (mode === "spring") {
+      old.animate([{ transform: "translateY(0)", opacity: 1 }, { transform: "translateY(-10px)", opacity: 0 }], { duration: 260 * k, easing: out, fill: "forwards" }).onfinish = gone;
+      nw.animate([{ transform: "translateY(22px)", opacity: 0 }, { transform: "translateY(0)", opacity: 1 }], { duration: 720 * k, delay: 60, easing: "cubic-bezier(.34,1.45,.64,1)", fill: "backwards" });
+    } else if (mode === "words" || mode === "letters") {
+      var ou = splitUnits(old, mode), nu = splitUnits(nw, mode), st = mode === "words" ? 70 : 16, sto = mode === "words" ? 40 : 8;
+      ou.forEach(function (u, i) { u.animate([{ transform: "translateY(0)", opacity: 1 }, { transform: "translateY(-12px)", opacity: 0 }], { duration: 300 * k, delay: i * sto, easing: out, fill: "forwards" }); });
+      setTimeout(gone, 300 * k + ou.length * sto + 30);
+      nu.forEach(function (u, i) { u.animate([{ transform: "translateY(18px)", opacity: 0 }, { transform: "translateY(0)", opacity: 1 }], { duration: 520 * k, delay: 80 + i * st, easing: ease, fill: "backwards" }); });
+    } else if (mode === "roll") {
+      old.style.transformOrigin = "50% 0"; nw.style.transformOrigin = "50% 100%";
+      old.animate([{ transform: "perspective(600px) rotateX(0deg)", opacity: 1 }, { transform: "perspective(600px) rotateX(-75deg) translateY(-30%)", opacity: 0 }], { duration: 380 * k, easing: out, fill: "forwards" }).onfinish = gone;
+      nw.animate([{ transform: "perspective(600px) rotateX(75deg) translateY(30%)", opacity: 0 }, { transform: "perspective(600px) rotateX(0deg) translateY(0)", opacity: 1 }], { duration: 560 * k, delay: 120, easing: ease, fill: "backwards" });
+    } else if (mode === "dealt") {
+      old.animate([{ transform: "translateX(0)", opacity: 1 }, { transform: "translateX(-24px)", opacity: 0 }], { duration: 340 * k, easing: out, fill: "forwards" }).onfinish = gone;
+      nw.animate([{ transform: "translateX(36px)", opacity: 0 }, { transform: "translateX(0)", opacity: 1 }], { duration: 560 * k, delay: 80, easing: ease, fill: "backwards" });
+    } else if (mode === "landing") {
+      old.animate([{ transform: "translateY(0)", opacity: 1 }, { transform: "translateY(-12px)", opacity: 0 }], { duration: 300 * k, easing: out, fill: "forwards" }).onfinish = gone;
+      nw.animate([{ transform: "translateY(26px) scale(.98)", opacity: 0 }, { transform: "translateY(-3px) scale(1)", opacity: 1, offset: .7 }, { transform: "translateY(0) scale(1)", opacity: 1 }], { duration: 640 * k, delay: 60, easing: ease, fill: "backwards" });
+    } else if (mode === "quick") {
+      old.animate([{ transform: "translateY(0)", opacity: 1 }, { transform: "translateY(-16px)", opacity: 0 }], { duration: 220 * k, easing: out, fill: "forwards" }).onfinish = gone;
+      nw.animate([{ transform: "translateY(28px)", opacity: 0 }, { transform: "translateY(0)", opacity: 1 }], { duration: 420 * k, delay: 40, easing: "cubic-bezier(.16,1,.3,1)", fill: "backwards" });
+    }
+  }
+
+  /* ===== 7 · round three: three lines that complete the sentence ===== */
+  function threeLines(scene, set, o) { o = o || {}; riseSettle(scene, [set[1], set[2]], { start: set[0], first: o.first || 1800, period: 2200, blur: o.blur }); }
+  var C_SENTENCE = ["you grew up with", "at your own pace", "in good company"];
+  var C_HOUR = ["over morning coffee", "on a rainy afternoon", "whenever you like"];
+  var C_NOFUSS = ["without a download", "without an account", "right now"];
+  var C_FUN = ["for a quick hand", "for a whole evening", "for the fun of it"];
+  var C_PEOPLE = ['with <span class="num">1214</span> people', 'at <span class="num">143</span> tables', "with real people"];
+  var C_GAMES = ["from Hearts to Whist", "from Gin to Canasta", "and a few you forgot"];
+  var C_COMPANY = ["with real people", "or on your own", "in good company"];
+
+  VERDICTS["One sentence"] = '<span class="yes">Recommended.</span> Read the three lines in a row and they are one sentence: “Play card games you grew up with, at your own pace, in good company.” Memory, ease, people: the whole site in three beats, each one a claim the site can prove (the rules options, solo play and hints, the live room). The H1 in the HTML stays “in good company”.';
+  VERDICTS["Any hour"] = '<span class="maybe">Warm and true.</span> The room is always open, told as moments of a day rather than as a feature. On the site the first line could follow the visitor’s clock (“long past bedtime” at 1 am), which makes it real data. The close, “whenever you like”, is soft; it invites rather than promises.';
+  VERDICTS["No fuss"] = '<span class="maybe">The newcomer’s objections, removed one by one,</span> ending on the call to action. Strong for people arriving from a search, but it puts hygiene claims in the headline, where the subtitle already carries them, and “right now” is the only close that is an instruction rather than a feeling.';
+  VERDICTS["For the fun of it"] = '<span class="maybe">The spirit of the place.</span> Pleasure, not grind: a quick hand, a whole evening, and the reason for both. The line the site already whispers with “One more hand”. Its risk is that it says nothing about people or rules; it is mood alone.';
+  VERDICTS["Real people"] = '<span class="maybe">The proof, in the headline’s voice.</span> Two live numbers and then the claim they support. Strongest at a busy hour; at night “with 23 people” is still honest but quieter. It repeats the capsule two lines below, so one of the two should go.';
+  VERDICTS["From Hearts to Whist"] = '<span class="maybe">The games as the story, with a smile at the end.</span> Names are the words people searched for, so the first two lines meet them where they came from, and “a few you forgot” is the one line in the lab with wit. Ends on charm rather than on a promise.';
+  VERDICTS["Good company"] = '<span class="maybe">The earlier storyline trimmed to three.</span> People, permission, promise. Still sound; “One sentence” says the same with the games added and reads as one line of prose.';
+
+  h2("7 · Round three — three lines that each complete “Play card games”");
+  lab("One sentence", "The line at rest is “you grew up with”. It rises to “at your own pace”, then to “in good company”, and stays. Two changes, done inside five seconds, and the three lines read as one sentence.", function (scene) { threeLines(scene, C_SENTENCE); });
+  lab("Any hour", "“over morning coffee”, “on a rainy afternoon”, then “whenever you like”.", function (scene) { threeLines(scene, C_HOUR); });
+  lab("No fuss", "“without a download”, “without an account”, then “right now”.", function (scene) { threeLines(scene, C_NOFUSS); });
+  lab("For the fun of it", "“for a quick hand”, “for a whole evening”, then “for the fun of it”.", function (scene) { threeLines(scene, C_FUN); });
+  lab("Real people", "“with 1214 people”, “at 143 tables”, then “with real people”. The numbers are the capsule’s live numbers.", function (scene) { threeLines(scene, C_PEOPLE); });
+  lab("From Hearts to Whist", "“from Hearts to Whist”, “from Gin to Canasta”, then “and a few you forgot”.", function (scene) { threeLines(scene, C_GAMES); });
+  lab("Good company", "“with real people”, “or on your own”, then “in good company”.", function (scene) { threeLines(scene, C_COMPANY); });
+
+  /* ===== 8 · round three: the seam, swept ===== */
+  /* A faint rule is on the page from the first frame, so the band and the paper are always separated. After the hold, the full
+     rule sweeps over it from under the wordmark with an ease-out (fast off the mark, gentle at the edges); its gaps open as it
+     passes and each suit pops the moment the sweep reaches it, timed by inverting the same curve. */
+  function sweepSeam(scene, T, at) {
+    var seam = scene.querySelector(".seam"); seam.className = "seam swept"; seam.innerHTML = "";
+    var W = 1160, cx = W / 2;
+    seam.appendChild(el("span", "faint"));
+    var ink = el("span", "ink"); seam.appendChild(ink);
+    var suits = [];
+    for (var k = 0; k * 96 < W; k++) {
+      var t = TILE[k % 4], size = 80 * t[3], x = t[1] + 384 * Math.floor(k / 4);
+      var su = el("span", "su", '<svg viewBox="0 0 80 80"><path d="' + SUITS[t[0]][0] + '" fill="' + SUITS[t[0]][1] + '" fill-opacity="' + SUITS[t[0]][2] + '"/></svg>');
+      su.style.cssText = "left:" + x + "px;top:" + t[2] + "px;width:" + size + "px;height:" + size + "px;";
+      seam.appendChild(su); suits.push({ el: su, d: Math.abs(x + size / 2 - cx) });
+    }
+    if (reduced) return;
+    ink.style.clipPath = "inset(0 50% 0 50%)";
+    suits.forEach(function (s) { s.el.style.opacity = "0"; });
+    scene.__at(at || 0, function () {
+      ink.animate([{ clipPath: "inset(0 50% 0 50%)" }, { clipPath: "inset(0 0 0 0)" }], { duration: T, easing: "cubic-bezier(.25,.46,.45,.94)", fill: "forwards" });
+      suits.forEach(function (s) {
+        var p = Math.min(1, s.d / cx), when = T * (1 - Math.sqrt(1 - p)); /* inverse of the ease-out */
+        setTimeout(function () {
+          s.el.style.opacity = "1";
+          s.el.animate([{ transform: "scale(.5)", opacity: 0 }, { transform: "scale(1.12)", opacity: 1, offset: .55 }, { transform: "scale(1)", opacity: 1 }], { duration: 200, easing: "cubic-bezier(.2,.8,.2,1)" });
+        }, when);
+      });
+    });
+  }
+  VERDICTS["The seam, swept"] = '<span class="yes">Second take on Holger’s two notes.</span> A faint rule sits on the seam from the first frame, so the band and the paper never run into each other. The sweep is 340 ms with an ease-out, so it leaves the wordmark fast and lands at the edges gently, and the suits ripple outward on the same curve instead of marching. Every glyph is the divider’s own size.';
+  VERDICTS["The seam, then one sentence"] = '<span class="yes">The pair.</span> The sweep first, and one second later the headline reads itself out in three beats. Two gestures, nine seconds, then still.';
+  h2("8 · Round three — the seam, swept");
+  lab("The seam, swept", "At rest a faint rule already separates the band from the page. After the hold the full rule sweeps outward from under the wordmark, 340 ms with an ease-out, its gaps opening as it passes, and each suit pops the moment the sweep reaches it.", function (scene) { sweepSeam(scene, 340, 0); });
+  lab("The seam, then one sentence", "The sweep, then “you grew up with” rises to “at your own pace” and to “in good company”, and stays.", function (scene) { sweepSeam(scene, 340, 0); threeLines(scene, C_SENTENCE, { first: 1500 }); });
+
+  /* ===== 9 · round four: the room, then you, then a wink ===== */
+  function lineSet(scene, set, o) { o = o || {}; riseSettle(scene, set.slice(1), { start: set[0], first: o.first || 1800, period: o.period || 2200, blur: o.blur }); }
+  var N_PEOPLE = 'with <span class="num">1214</span> people', N_TABLES = 'at <span class="num">143</span> tables';
+  var N_COUNT = 'with <span class="num" data-count="1214" data-from="0" data-dur="1100">1214</span> people';
+  var N_ARRIVE = 'with <span class="num" data-count="1214" data-from="1168" data-dur="2400" data-mode="ticks">1214</span> people';
+  var W_SLIPPERS = ["in good company", N_PEOPLE, N_TABLES, "in your slippers"];
+  var W_SHUFFLE = ["in good company", N_PEOPLE, N_TABLES, "and skip the shuffle"];
+  var W_BEDTIME = ["in good company", N_PEOPLE, N_TABLES, "long past bedtime"];
+  var W_DEAL = ["in good company", N_PEOPLE, N_TABLES, "and blame the deal"];
+  var W_SOLO_SLIPPERS = [N_PEOPLE, "solo at your own pace", "in your slippers"];
+  var W_SOLO_FOURTH = [N_PEOPLE, "solo at your own pace", "even without a fourth"];
+  var W_SOLO_DECK = [N_PEOPLE, "solo at your own pace", "with the whole deck"];
+
+  VERDICTS["The room, then you"] = '<span class="yes">Recommended.</span> The story is scale, then intimacy: a promise, a crowd, a hundred tables, and then you, at home, in your slippers. The last line is the joke and the point at once: all of that company, and no need to get dressed. It stands alone as a headline for the rest of the visit, it is true, and it is the warmest line in the lab.';
+  VERDICTS["The room, then the shuffle"] = '<span class="maybe">The product wink.</span> Same arc, ending on the one chore online cards remove. Clever and true, but as the headline people read for a minute, “and skip the shuffle” is smaller than “in your slippers”; it is about the deck, not about you.';
+  VERDICTS["The room, then bedtime"] = '<span class="maybe">The night owl.</span> Warm and a little naughty; it says the room never closes. Reads best after dark, which is when a quarter of the visits arrive, and slightly odd at nine in the morning.';
+  VERDICTS["The room, then the deal"] = '<span class="maybe">The card-table joke.</span> Every player has said it. It shows the site knows its people, but a permanent headline that blames the deal can read as sour to a newcomer who does not yet get the wink.';
+  VERDICTS["Solo, then slippers"] = '<span class="yes">Holger’s second structure, three lines.</span> The crowd, then permission to play alone at your own speed, then the wink. “solo at your own pace” reads as one natural clause after “Play card games”, and it carries the fact that most hands here are played solo without apologising for it.';
+  VERDICTS["Solo, then no fourth"] = '<span class="maybe">The wink for card players.</span> “even without a fourth” is the oldest problem in Euchre, Spades and Bridge, solved by the bots that fill the seats. Insiders smile; a newcomer to partnership games may not get it.';
+  VERDICTS["Solo, then the whole deck"] = '<span class="maybe">The quiet joke.</span> Every kitchen drawer deck is missing a card; this one never is. Subtle to the point of being missed, and it says nothing about people.';
+
+  h2("9 · Round four — the room, then you, then a wink");
+  root.appendChild(el("p", "note", "Closers that complete “Play card games” and stand alone as the final headline, with their width at 38 px in the 400 px column: <b>in your slippers</b>, <b>and skip the shuffle</b>, <b>long past bedtime</b>, <b>and blame the deal</b>, <b>even without a fourth</b>, <b>with the whole deck</b>, <b>one hand at a time</b>, <b>in your pajamas</b>, <b>with a cat on your lap</b>. Two more were tried and do not fit on one line: “till the cows come home” and “and never shuffle again”. Sequences below use the strongest four."));
+  lab("The room, then you", "“in good company” at rest, then “with 1214 people”, “at 143 tables”, and finally “in your slippers”, which stays. Three changes, done inside eight seconds.", function (scene) { lineSet(scene, W_SLIPPERS); });
+  lab("The room, then the shuffle", "The same arc, closing on “and skip the shuffle”.", function (scene) { lineSet(scene, W_SHUFFLE); });
+  lab("The room, then bedtime", "The same arc, closing on “long past bedtime”.", function (scene) { lineSet(scene, W_BEDTIME); });
+  lab("The room, then the deal", "The same arc, closing on “and blame the deal”.", function (scene) { lineSet(scene, W_DEAL); });
+  lab("Solo, then slippers", "Three lines: “with 1214 people” at rest, then “solo at your own pace”, then “in your slippers”, which stays.", function (scene) { lineSet(scene, W_SOLO_SLIPPERS); });
+  lab("Solo, then no fourth", "“with 1214 people”, “solo at your own pace”, then “even without a fourth”.", function (scene) { lineSet(scene, W_SOLO_FOURTH); });
+  lab("Solo, then the whole deck", "“with 1214 people”, “solo at your own pace”, then “with the whole deck”.", function (scene) { lineSet(scene, W_SOLO_DECK); });
+  VERDICTS["The seam, then the room, then you"] = '<span class="yes">The pair, with the seam Holger chose.</span> The swept seam from scene 45, then the room-then-you sequence. One sweep, three changes, still by eight seconds.';
+  lab("The seam, then the room, then you", "The swept seam first (340 ms), then “in good company” rises to “with 1214 people”, “at 143 tables” and “in your slippers”, which stays.", function (scene) { sweepSeam(scene, 340, 0); lineSet(scene, W_SLIPPERS, { first: 1500 }); });
+
+  /* ===== 10 · round five: lines mined from the hero title list ===== */
+  var M_ANYTIME = ["in good company", N_PEOPLE, N_TABLES, "any time you like"];
+  var M_FULLTABLE = ["in good company", N_PEOPLE, "at a full table", "any time you like"];
+  var M_STAY = ["in good company", N_PEOPLE, N_TABLES, "and stay awhile"];
+  var M_USEDTO = [N_PEOPLE, "like you used to", "and stay awhile"];
+  var M_AGAIN = ["like you used to", "with people again", "any time you like"];
+  var M_TONIGHT = ["in good company", N_PEOPLE, N_TABLES, "tonight"];
+  var M_READY = [N_PEOPLE, "solo at your own pace", "whenever you’re ready"];
+
+  VERDICTS["Any time you like"] = '<span class="yes">Holger’s closer.</span> From “A full table, any time you like” in the hero title list. It is true at 4 am, it stands alone as a headline, and it says the one thing the crowd and the tables imply: the room never closes. Less of a wink than “in your slippers”, more of a promise.';
+  VERDICTS["A full table, any time you like"] = '<span class="yes">The banger from the list, split into two lines.</span> “at a full table” is the site’s quietest strong claim (the seats are always filled, so you never wait), and “any time you like” finishes it. Together they are the original line from the switcher, told in two beats.';
+  VERDICTS["Stay awhile"] = '<span class="maybe">From “Play cards, stay awhile.”</span> An invitation instead of a promise: warm, unhurried, and it echoes “one more hand”. Slightly soft as the line people read for a minute.';
+  VERDICTS["Like you used to"] = '<span class="maybe">From “Play card games like you used to.”</span> Nostalgia as the middle beat between the crowd and the invitation. Strong for this audience; “like you used to” can also close on its own.';
+  VERDICTS["With people again"] = '<span class="maybe">From “Play cards with people again.”</span> The most moving line in the list, and the riskiest: for some visitors it names exactly why they came, for others it reads as a little sad. Placed in the middle, not at the end, so the sequence ends on the open door.';
+  VERDICTS["Tonight"] = '<span class="maybe">From “Play cards tonight.”</span> The shortest close in the lab and the most direct. On the site it could follow the clock: “this morning”, “this afternoon”, “tonight”, so it is always true and always now.';
+  VERDICTS["Whenever you’re ready"] = '<span class="maybe">From “ready when you are”.</span> The solo structure with a patient close: no pressure, no clock. Fits the audience that plays at its own speed.';
+
+  h2("10 · Round five — lines mined from the hero title list");
+  root.appendChild(el("p", "note", "Second lines taken or adapted from the mockup’s hero title and subtitle options: <b>any time you like</b>, <b>at a full table</b>, <b>and stay awhile</b>, <b>like you used to</b>, <b>with people again</b>, <b>tonight</b>, <b>whenever you’re ready</b>, <b>together or solo</b>, <b>day or night</b>."));
+  lab("Any time you like", "“in good company”, “with 1214 people”, “at 143 tables”, then “any time you like”, which stays.", function (scene) { lineSet(scene, M_ANYTIME); });
+  lab("A full table, any time you like", "“in good company”, “with 1214 people”, “at a full table”, then “any time you like”.", function (scene) { lineSet(scene, M_FULLTABLE); });
+  lab("Stay awhile", "“in good company”, “with 1214 people”, “at 143 tables”, then “and stay awhile”.", function (scene) { lineSet(scene, M_STAY); });
+  lab("Like you used to", "“with 1214 people”, “like you used to”, then “and stay awhile”.", function (scene) { lineSet(scene, M_USEDTO); });
+  lab("With people again", "“like you used to”, “with people again”, then “any time you like”.", function (scene) { lineSet(scene, M_AGAIN); });
+  lab("Tonight", "“in good company”, “with 1214 people”, “at 143 tables”, then “tonight”.", function (scene) { lineSet(scene, M_TONIGHT); });
+  lab("Whenever you’re ready", "“with 1214 people”, “solo at your own pace”, then “whenever you’re ready”.", function (scene) { lineSet(scene, M_READY); });
+
+  /* ===== 11 · round six: saying solo, short and plain ===== */
+  var S_OWN_SLIPPERS = [N_PEOPLE, "on your own", "in your slippers"];
+  var S_OWN_ANYTIME = [N_PEOPLE, "on your own", "any time you like"];
+  var S_YOURSELF = [N_PEOPLE, "by yourself", "any time you like"];
+  var S_COMPUTER = [N_PEOPLE, "against the computer", "in your slippers"];
+  var S_NOBODY = [N_PEOPLE, "when nobody’s around", "in your slippers"];
+  var S_FOUR = ["in good company", N_PEOPLE, "on your own", "any time you like"];
+
+  VERDICTS["On your own, then slippers"] = '<span class="yes">Recommended solo line.</span> “on your own” is eleven characters, plain, and it can only mean one thing. After “with 1214 people” the contrast does the work: the crowd, then you, then the wink. “at your own pace” goes back to being a tempo claim for the subtitle, where it belongs.';
+  VERDICTS["On your own, then any time"] = '<span class="yes">The same solo line with the promise as the close.</span> Crowd, alone, always open.';
+  VERDICTS["By yourself"] = '<span class="maybe">Equally clear, one shade cooler.</span> “by yourself” can carry a hint of “nobody came”, where “on your own” carries a hint of choice.';
+  VERDICTS["Against the computer"] = '<span class="maybe">Solo said through the opponent,</span> in the words Holger’s own subtitle already uses. Clear for an older audience, a little technical for a headline, and it fills most of the column.';
+  VERDICTS["When nobody’s around"] = '<span class="maybe">The witty solo line.</span> It says alone and says odd hours in one stroke, and it sets up the slippers. The risk is that two winks in a row make the headline a comedian.';
+  VERDICTS["Four beats, on your own"] = '<span class="maybe">The room-then-you arc with the solo beat inside it.</span> Promise, crowd, alone, always open. Four lines is the most the headline should ever do.';
+
+  h2("11 · Round six — saying solo, short and plain");
+  root.appendChild(el("p", "note", "Solo lines that complete “Play card games” without an “or” and fit easily: <b>on your own</b>, <b>by yourself</b>, <b>solo</b>, <b>against the computer</b>, <b>when nobody’s around</b>, <b>with no one watching</b>. “at your own pace” is a tempo line, not a solo line, and is retired from this slot."));
+  lab("On your own, then slippers", "“with 1214 people”, “on your own”, then “in your slippers”.", function (scene) { lineSet(scene, S_OWN_SLIPPERS); });
+  lab("On your own, then any time", "“with 1214 people”, “on your own”, then “any time you like”.", function (scene) { lineSet(scene, S_OWN_ANYTIME); });
+  lab("By yourself", "“with 1214 people”, “by yourself”, then “any time you like”.", function (scene) { lineSet(scene, S_YOURSELF); });
+  lab("Against the computer", "“with 1214 people”, “against the computer”, then “in your slippers”.", function (scene) { lineSet(scene, S_COMPUTER); });
+  lab("When nobody’s around", "“with 1214 people”, “when nobody’s around”, then “in your slippers”.", function (scene) { lineSet(scene, S_NOBODY); });
+  lab("Four beats, on your own", "“in good company”, “with 1214 people”, “on your own”, then “any time you like”.", function (scene) { lineSet(scene, S_FOUR); });
+
+  /* ===== 12 · the judge panel's own sequences ===== */
+  var P_TRUE = ["you grew up with", "with real people", "at a full table", "any time you like"];
+  var P_OFFER = ["and skip the shuffle", "at a full table", "any time you like"];
+  var P_INVITE = ["you grew up with", "at a full table", "with people again", "in good company"];
+
+  VERDICTS["One true sentence"] = '<span class="yes">The truth judge’s sequence.</span> Read in a row it is one sentence: “Play card games you grew up with, with real people, at a full table, any time you like.” The rules, the people, the seat, the hour. Every line is provable at 4 am, and the settled line is Holger’s own, earned by the three before it.';
+  VERDICTS["The offer"] = '<span class="maybe">The wit judge’s way to let “any time you like” settle.</span> Three practical promises: no shuffling, no waiting, no schedule. It gives the closing line the context it lacks alone; it says nothing about people.';
+  VERDICTS["The invitation, panel cut"] = '<span class="maybe">The wit judge’s four beats.</span> What the games are, the promise of a seat, the return to people, and the line the site can own for good. “with people again” is the moving beat, kept in the middle.';
+
+  h2("12 · The judge panel’s own sequences");
+  root.appendChild(el("p", "note", "Three judges (warmth, wit, truth) ranked the hero title list. All three put <b>in good company</b>, <b>you grew up with</b> and <b>at a full table</b> at the top of the closers. On “any time you like”: true and safe, but not ownable on its own, so it should follow lines that make the specific claims. On “in your slippers”: the most memorable, and the one visitors would repeat, with a risk of reading twee or as “we think you are old”. The truth judge dropped “at your own pace” because multiplayer tables have turn timers."));
+  lab("One true sentence", "“you grew up with”, “with real people”, “at a full table”, then “any time you like”.", function (scene) { lineSet(scene, P_TRUE); });
+  lab("The offer", "“and skip the shuffle”, “at a full table”, then “any time you like”.", function (scene) { lineSet(scene, P_OFFER); });
+  lab("The invitation, panel cut", "“you grew up with”, “at a full table”, “with people again”, then “in good company”.", function (scene) { lineSet(scene, P_INVITE); });
+
+  /* ===== 13 · Holger's sequence ===== */
+  var H_PACE = ["in good company", N_PEOPLE, "on your own", "at your own pace"];
+  VERDICTS["Holger’s four"] = '<span class="yes">Holger’s sequence.</span> Promise, crowd, alone, and then the pace line as the close, where it no longer has to mean solo: after “on your own” it reads as “and nobody hurries you”. One caution from the truth judge: multiplayer tables have turn timers, so the line is fully true for solo play and softly true at a table.';
+  VERDICTS["Holger’s four, with the seam"] = '<span class="yes">The same four after the swept seam</span> from scene 45. One sweep, three changes, still by eight seconds.';
+  h2("13 · Holger’s sequence");
+  lab("Holger’s four", "“in good company”, “with 1214 people”, “on your own”, then “at your own pace”, which stays.", function (scene) { lineSet(scene, H_PACE); });
+  lab("Holger’s four, with the seam", "The swept seam first, then the same four lines.", function (scene) { sweepSeam(scene, 340, 0); lineSet(scene, H_PACE, { first: 1500 }); });
+
+  /* ===== 14 · saying "also": the solo line as an addition ===== */
+  var A_EVEN = ["in good company", N_PEOPLE, "even on your own", "at your own pace"];
+  var A_TOO = ["in good company", N_PEOPLE, "on your own, too", "at your own pace"];
+  var A_NOBODY = ["in good company", N_PEOPLE, "with nobody at all", "at your own pace"];
+  var A_ALONE = ["in good company", N_PEOPLE, "alone, if you like", "at your own pace"];
+  var A_JUSTYOU = ["in good company", N_PEOPLE, "when it’s just you", "at your own pace"];
+
+  VERDICTS["Even on your own"] = '<span class="yes">Recommended.</span> “even” carries the “also” inside the line: you can play here, and you can play here even when nobody else is around. It reads as one sentence, it is permission rather than a fallback, and it sets up “at your own pace” cleanly.';
+  VERDICTS["On your own, too"] = '<span class="maybe">The plainest “also”.</span> One comma, but the sentence still stands alone. A touch chatty next to the serif.';
+  VERDICTS["With nobody at all"] = '<span class="maybe">The witty parallel.</span> After “with 1214 people”, “with nobody at all” repeats the shape and flips it, which is the joke. Alone it could read as “no one is here”, so it only works in the sequence.';
+  VERDICTS["Alone, if you like"] = '<span class="maybe">The softest “also”.</span> “if you like” makes solo a choice, not a consolation. Two commas of tone in three words.';
+  VERDICTS["When it’s just you"] = '<span class="maybe">The quiet one.</span> Says alone as a moment rather than a mode: some evenings it is just you. Warm, a little wistful.';
+
+  h2("14 · Saying “also” — the solo line as an addition");
+  root.appendChild(el("p", "note", "Solo lines that carry the “also” inside them and still complete “Play card games” as one sentence: <b>even on your own</b>, <b>on your own, too</b>, <b>with nobody at all</b>, <b>alone, if you like</b>, <b>when it’s just you</b>. “or on your own” and “or by yourself” are out, because “Play card games or by yourself” is not a sentence."));
+  lab("Even on your own", "“in good company”, “with 1214 people”, “even on your own”, then “at your own pace”.", function (scene) { lineSet(scene, A_EVEN); });
+  lab("On your own, too", "“in good company”, “with 1214 people”, “on your own, too”, then “at your own pace”.", function (scene) { lineSet(scene, A_TOO); });
+  lab("With nobody at all", "“in good company”, “with 1214 people”, “with nobody at all”, then “at your own pace”.", function (scene) { lineSet(scene, A_NOBODY); });
+  lab("Alone, if you like", "“in good company”, “with 1214 people”, “alone, if you like”, then “at your own pace”.", function (scene) { lineSet(scene, A_ALONE); });
+  lab("When it’s just you", "“in good company”, “with 1214 people”, “when it’s just you”, then “at your own pace”.", function (scene) { lineSet(scene, A_JUSTYOU); });
+
+  /* ===== 15 · Holger's pick, with the count ===== */
+  var K_SWEEP = ["in good company", N_COUNT, "even on your own", "at your own pace"];
+  var K_ARRIVE = ["in good company", N_ARRIVE, "even on your own", "at your own pace"];
+
+  VERDICTS["Counting up"] = '<span class="yes">Holger’s pick with the count-up.</span> The people line rises in with the number at zero and sweeps up to the live count in about a second, fast at first, then the last counts tick one by one. No thousands separator, here or in the capsule. On the site the number would keep stepping on every live push after it settles.';
+  VERDICTS["Counting in"] = '<span class="maybe">The other way to say live.</span> The line arrives a few dozen short and climbs in ones and twos at an uneven pace, like people sitting down, and lands on the live count. Quieter than the sweep and closer to what the number actually does; the trade is that nobody sees a big motion.';
+  VERDICTS["Counting up, with the seam"] = '<span class="yes">The pair.</span> The swept seam, then the four lines with the count-up on the second.';
+
+  h2("15 · Holger’s pick, with the count");
+  root.appendChild(el("p", "note", "The live number now reads <b>1214</b> everywhere, without the thousands separator, in the headline and in the capsule. Two ways to count: a sweep from zero with an ease-out, or a climb from a few dozen below in uneven ones and twos."));
+  lab("Counting up", "“in good company”, then “with 1214 people” with the number sweeping up from zero as the line arrives, then “even on your own”, then “at your own pace”.", function (scene) { lineSet(scene, K_SWEEP, { period: 2600 }); });
+  lab("Counting in", "The same four, but the number arrives at 1168 and climbs to 1214 in ones and twos.", function (scene) { lineSet(scene, K_ARRIVE, { period: 3400 }); });
+  lab("Counting up, with the seam", "The swept seam, then the four lines with the sweep count.", function (scene) { sweepSeam(scene, 340, 0); lineSet(scene, K_SWEEP, { first: 1500, period: 2600 }); });
+
+  var N_REEL = 'with <span class="num" data-count="1214" data-from="1178" data-dur="1900" data-mode="reel">1214</span> people';
+  var K_REEL = ["in good company", N_REEL, "even on your own", "at your own pace"];
+  VERDICTS["Counting in, on reels"] = '<span class="yes">The counter, done properly.</span> Three things make it look right: every digit sits in a fixed-width cell, so “people” never moves; the digits roll like an odometer on the capsule’s own curve instead of blinking; and the number is already climbing while the line rises, quick off the mark and slowing as it settles, so the last few people arrive one by one. It starts a few dozen short and lands on the live count. On the site the start value could be the count one minute earlier, so the climb shows real arrivals.';
+  VERDICTS["Counting in, on reels, with the seam"] = '<span class="yes">The pair.</span> The swept seam, then the four lines with the reels on the second.';
+  lab("Counting in, on reels", "“in good company”, then “with 1178 people” rising in with the digits already rolling up to 1214, then “even on your own”, then “at your own pace”. Fixed-width digits, odometer rolls, ticks that slow as the count settles.", function (scene) { lineSet(scene, K_REEL, { period: 3400 }); });
+  lab("Counting in, on reels, with the seam", "The swept seam, then the same four lines.", function (scene) { sweepSeam(scene, 340, 0); lineSet(scene, K_REEL, { first: 1500, period: 3400 }); });
+
+  var N_SPIN = 'with <span class="num" data-count="1214" data-mode="spin" data-digits="3" data-lead="220" data-stagger="170" data-spin="520">1214</span> people';
+  var K_SPIN = ["in good company", N_SPIN, "even on your own", "at your own pace"];
+  VERDICTS["Spin and lock"] = '<span class="yes">Holger’s note on the drag, answered.</span> No reel ever steps: every unsettled digit spins through all ten, out of phase with its neighbours, from the moment the line starts to rise. Then they lock in from the left, half a beat apart, each one decelerating onto its digit. All cells share one width, like a real counter, so “people” never moves; the price is a little air around the two 1s, because the headline font has no tabular figures.';
+  VERDICTS["Spin and lock, with the seam"] = '<span class="yes">The pair.</span> The swept seam, then the four lines with the spinning number on the second.';
+  lab("Spin and lock", "“in good company”, then “with 1214 people” rising in with all four digits spinning, locking in from the left, then “even on your own”, then “at your own pace”.", function (scene) { lineSet(scene, K_SPIN, { period: 3400 }); });
+  lab("Spin and lock, with the seam", "The swept seam, then the same four lines.", function (scene) { sweepSeam(scene, 340, 0); lineSet(scene, K_SPIN, { first: 1500, period: 3400 }); });
+
+  /* ===== 16 · Holger's five, with the day as the close ===== */
+  var DAYS = [["sun", "for a cozy Sunday"], ["mon", "to soften a Monday"], ["tue", "to brighten a Tuesday"], ["wed", "to get over the hump"], ["thu", "to warm up for Friday"], ["fri", "to start the weekend"], ["sat", "for a slow Saturday"]];
+  var TIMES = [["morning", "to ease into the day"], ["lunch", "on your lunch break"], ["afternoon", "to save the afternoon"], ["evening", "to round off the day"], ["night", "long past bedtime"]];
+  function closerFor(key) { var all = DAYS.concat(TIMES); for (var i = 0; i < all.length; i++) if (all[i][0] === key) return all[i][1]; return DAYS[new Date().getDay()][1]; }
+  function dayPicker(scene, wrap, run) {
+    var tag = wrap.querySelector(".tag"); if (tag.querySelector(".days")) return;
+    var box = el("span", "days");
+    DAYS.concat([["|", ""]]).concat(TIMES).forEach(function (d) {
+      if (d[0] === "|") { box.appendChild(el("span", "sep", "·")); return; }
+      var b = el("button", "day", d[0]); b.type = "button"; b.title = d[1];
+      b.addEventListener("click", function () { wrap.dataset.day = d[0]; wrap.querySelector(".again").click(); });
+      box.appendChild(b);
+    });
+    tag.appendChild(box);
+  }
+  function fiveByDay(scene, wrap, o) {
+    dayPicker(scene, wrap);
+    var key = wrap.dataset.day || DAYS[new Date().getDay()][0];
+    wrap.querySelectorAll(".days .day").forEach(function (b) { b.classList.toggle("on", b.textContent === key); });
+    var lines = ["in good company", N_SPIN, "privately with friends", "against our robots", closerFor(key)];
+    lineSet(scene, lines, { first: (o && o.first) || 1800, period: 2200 });
+  }
+  VERDICTS["Holger’s five, by the day"] = '<span class="yes">The sequence as chosen, with the close picked by the visitor’s clock.</span> Promise, crowd, private table, robots, and then the day. The buttons after the description preview each day’s line and the time-of-day set; on the site the clock decides. Five beats run about eleven seconds, the ceiling for a headline.';
+  VERDICTS["Holger’s five, by the day, with the seam"] = '<span class="yes">The pair.</span> The swept seam, then the five lines.';
+  h2("16 · Holger’s five, with the day as the close");
+  root.appendChild(el("p", "note", "Weekday closers in the spirit of “for a cozy Sunday” and “to soften a Monday”, where the cards do something for the day: <b>to brighten a Tuesday</b>, <b>to get over the hump</b>, <b>to warm up for Friday</b>, <b>to start the weekend</b>, <b>for a slow Saturday</b>. Time-of-day closers in the same spirit: <b>to ease into the day</b>, <b>on your lunch break</b>, <b>to save the afternoon</b>, <b>to round off the day</b>, <b>long past bedtime</b>. Use the small buttons after each description to preview them."));
+  lab("Holger’s five, by the day", "“in good company”, then “with 1214 people” spinning and locking, then “privately with friends”, then “against our robots”, then today’s closer, which stays.", function (scene, wrap) { fiveByDay(scene, wrap); });
+  lab("Holger’s five, by the day, with the seam", "The swept seam, then the same five lines.", function (scene, wrap) { sweepSeam(scene, 340, 0); fiveByDay(scene, wrap, { first: 1500 }); });
+
+  /* ===== 17 · the line animation, made livelier, on Holger's five ===== */
+  var CLOSERS = {
+    mon: { morning: "to break the week in", midday: "to get the week going", afternoon: "to lift the afternoon", evening: "after a long day", late: "to put the day to bed" },
+    tue: { morning: "as the coffee brews", midday: "to break up the day", afternoon: "in the afternoon lull", evening: "as evening settles", late: "to close the night" },
+    wed: { morning: "as the coffee brews", midday: "to shorten the week", afternoon: "for a midweek lift", evening: "to brighten the week", late: "to close the night" },
+    thu: { morning: "as the coffee brews", midday: "to shorten the week", afternoon: "in the afternoon lull", evening: "after a long day", late: "to close the night" },
+    fri: { morning: "over a cup of coffee", midday: "to cap off the week", afternoon: "to put the week down", evening: "to open the weekend", late: "to open the weekend" },
+    sat: { morning: "to start the day off", midday: "for a lazy weekend", afternoon: "for a quiet weekend", evening: "for a cozy weekend", late: "to put the day to bed" },
+    sun: { morning: "to start the day off", midday: "for a lazy weekend", afternoon: "for a quiet weekend", evening: "for a cozy weekend", late: "to put the day to bed" }
+  };
+  var DAYKEYS = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"], BANDS = ["morning", "midday", "afternoon", "evening", "late"];
+  function bandNow() { var h = new Date().getHours(); return h < 5 ? "late" : h < 10 ? "morning" : h < 14 ? "midday" : h < 17 ? "afternoon" : h < 22 ? "evening" : "late"; }
+  var THIRDS = ["privately with friends", "among friends", "at your own table", "with your people", "just with friends", "with old friends", "at your table", "with the family", "by invitation only"];
+  /* a row of small buttons after the description; clicking one stores the pick on the card and replays */
+  function picker(wrap, name, options, current) {
+    var tag = wrap.querySelector(".tag"), box = tag.querySelector(".days[data-name='" + name + "']");
+    if (!box) {
+      box = el("span", "days"); box.dataset.name = name;
+      options.forEach(function (opt) {
+        var b = el("button", "day", opt[0]); b.type = "button"; b.title = opt[1] || opt[0];
+        b.addEventListener("click", function () { wrap.dataset[name] = opt[0]; wrap.querySelector(".again").click(); });
+        box.appendChild(b);
+      });
+      tag.appendChild(box);
+    }
+    box.querySelectorAll(".day").forEach(function (b) { b.classList.toggle("on", b.textContent === current); });
+  }
+  function fiveBy(scene, wrap, o) {
+    o = o || {};
+    var day = wrap.dataset.day || DAYKEYS[new Date().getDay()], band = wrap.dataset.band || bandNow(), third = wrap.dataset.third || o.third || "privately with friends";
+    picker(wrap, "day", DAYKEYS.map(function (d) { return [d]; }), day);
+    picker(wrap, "band", BANDS.map(function (b) { return [b]; }), band);
+    if (o.thirds) picker(wrap, "third", THIRDS.map(function (t) { return [t]; }), third);
+    var lines = ["in good company", N_SPIN, third, "against our robots", CLOSERS[day][band]];
+    riseSettle(scene, lines.slice(1), { start: lines[0], first: o.first || 1800, period: o.period || 2200, mode: o.mode || "rise" });
+  }
+  VERDICTS["Spring"] = '<span class="maybe">Livelier by overshoot.</span> The new line rises past its mark and settles back, like a card flicked onto the table; the old one just lifts away. No blur.';
+  VERDICTS["Words, one by one"] = '<span class="yes">Livelier by rhythm.</span> The old line’s words drop away in turn and the new line’s words rise in turn, 70 ms apart, so the sentence reads itself in. The spinning number stays one piece. The most alive of the set without becoming a trick.';
+  VERDICTS["Roll"] = '<span class="maybe">Livelier by the reels’ own move.</span> The old line tips up and away, the new one tips in from below, like a line on a flip board. It matches the spinning digits, and it is the most mechanical of the set.';
+  VERDICTS["Dealt across"] = '<span class="maybe">Livelier by direction.</span> The new line is dealt in from the right and the old one slides off to the left. Reads as a card passed across the table; sideways motion under a fixed first line can feel like a carousel.';
+  VERDICTS["Letters"] = '<span class="maybe">The Wispr Flow move.</span> Every letter rises on its own, 16 ms apart, so the line pours in. Delightful once, busy by the fifth line; keep the stagger tight.';
+  VERDICTS["Card landing"] = '<span class="maybe">Livelier by weight.</span> The new line comes up from further below, settles 3 px past its mark and lands. One bounce, no blur.';
+  VERDICTS["Quick"] = '<span class="maybe">Livelier by pace.</span> The same rise with no blur, a longer travel and half the time on a sharp ease-out. Alive because it is brisk.';
+  h2("17 · The line animation, made livelier (on Holger’s five, with the clock)");
+  root.appendChild(el("p", "note", "Each scene runs the chosen five lines with a different way of changing line. The day and band buttons pick the closer; the clock picks by default. Section 5’s “rise and settle” is the reference."));
+  lab("Spring", "Overshoot on the way in, no blur.", function (scene, wrap) { fiveBy(scene, wrap, { mode: "spring" }); });
+  lab("Words, one by one", "Words leave and arrive in turn.", function (scene, wrap) { fiveBy(scene, wrap, { mode: "words" }); });
+  lab("Roll", "The line tips away and the next tips in, like a flip board.", function (scene, wrap) { fiveBy(scene, wrap, { mode: "roll" }); });
+  lab("Dealt across", "The new line comes in from the right, the old slides off left.", function (scene, wrap) { fiveBy(scene, wrap, { mode: "dealt" }); });
+  lab("Letters", "Every letter rises on its own, tightly staggered.", function (scene, wrap) { fiveBy(scene, wrap, { mode: "letters" }); });
+  lab("Card landing", "A longer rise with a 3 px settle at the end.", function (scene, wrap) { fiveBy(scene, wrap, { mode: "landing" }); });
+  lab("Quick", "The plain rise, no blur, twice as brisk.", function (scene, wrap) { fiveBy(scene, wrap, { mode: "quick" }); });
+
+  /* ===== 18 · the third line, shorter ===== */
+  VERDICTS["The third line"] = '<span class="yes">Alternatives to “privately with friends”.</span> Use the third row of buttons to try each one in place. “among friends” and “with your people” say a closed circle in the fewest words; “at your own table” says the table is yours; “just with friends” says nobody else gets in.';
+  h2("18 · The third line, shorter than “privately with friends”");
+  lab("The third line", "Holger’s five with a picker for the third line: privately with friends, among friends, at your own table, with your people, just with friends, with old friends, at your table, with the family, by invitation only.", function (scene, wrap) { fiveBy(scene, wrap, { mode: "words", thirds: true }); });
+
+  /* ===== 19 · the suits divider, livelier ===== */
+  /* the swept seam with a choice of how the suits arrive: pop (as before), deal (they travel out from under the wordmark),
+     flip (they turn face up), bounce (they drop onto the line), shuffle (each station riffles through the four suits and
+     locks), wave (a ripple runs along the row after they land), big (a faster sweep with a bigger, turning pop) */
+  var SUITORDER = ["spade", "heart", "club", "diamond"];
+  function seamStyled(scene, T, style, at) {
+    var seam = scene.querySelector(".seam"); seam.className = "seam swept"; seam.innerHTML = "";
+    var W = 1160, cx = W / 2;
+    seam.appendChild(el("span", "faint"));
+    var ink = el("span", "ink"); seam.appendChild(ink);
+    var suits = [];
+    for (var k = 0; k * 96 < W; k++) {
+      var t = TILE[k % 4], size = 80 * t[3], x = t[1] + 384 * Math.floor(k / 4);
+      var su = el("span", "su", suitSVGSized(t[0]));
+      su.style.cssText = "left:" + x + "px;top:" + t[2] + "px;width:" + size + "px;height:" + size + "px;";
+      seam.appendChild(su); suits.push({ el: su, d: Math.abs(x + size / 2 - cx), dx: cx - (x + size / 2), name: t[0], size: size });
+    }
+    /* the fading styles: the rule is unbroken as it sweeps out, and the piece under each suit fades away as that suit lands */
+    var FADING = { b1fast: [400, 20], damp: [400, 20], dampq: [300, 14], riseup: [400, 20] }, fading = FADING[style];
+    if (fading) suits.forEach(function (s) { var g = el("span", "gapln"); g.style.left = (cx - s.dx - 10) + "px"; ink.appendChild(g); s.gap = g; });
+    if (reduced) return;
+    ink.style.clipPath = "inset(0 50% 0 50%)";
+    suits.forEach(function (s) { s.el.style.opacity = "0"; });
+    var order = suits.slice().sort(function (a, b) { return a.d - b.d; });
+    scene.__at(at || 0, function () {
+      var ease = "cubic-bezier(.25,.46,.45,.94)", sweepT = (style === "big" || style === "flipbig") ? 240 : (style === "bouncy" || style === "bounce1") ? 520 : fading ? fading[0] : T;
+      ink.animate([{ clipPath: "inset(0 50% 0 50%)" }, { clipPath: "inset(0 0 0 0)" }], { duration: sweepT, easing: ease, fill: "forwards" });
+      suits.forEach(function (s, i) {
+        var p = Math.min(1, s.d / cx), when = sweepT * (1 - Math.sqrt(1 - p));
+        if (style === "deal") when = 40 + order.indexOf(s) * 18; /* dealt in pairs from the centre, one pair every 36 ms */
+        if (style === "bouncy" || style === "bounce1") when = 30 + order.indexOf(s) * 26; /* the landings ripple outward at a steady pace, like a wave breaking */
+        if (fading) when = 30 + order.indexOf(s) * fading[1];
+        setTimeout(function () {
+          s.el.style.opacity = "1";
+          if (s.gap) s.gap.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 320, easing: "ease-out", fill: "forwards" }); /* the line under the suit fades as it lands */
+          if (style === "b1fast") s.el.animate([{ transform: "translateY(-16px) scale(.85)", opacity: 0 }, { transform: "translateY(3px) scale(1.06)", opacity: 1, offset: .5 }, { transform: "translateY(-2px) scale(1)", opacity: 1, offset: .75 }, { transform: "translateY(0) scale(1)", opacity: 1 }], { duration: 380, easing: "ease-out" });
+          else if (style === "damp") s.el.animate([{ transform: "translateY(-14px) scale(.9)", opacity: 0 }, { transform: "translateY(0) scale(1.06, .94)", opacity: 1, offset: .7 }, { transform: "translateY(0) scale(1)", opacity: 1 }], { duration: 320, easing: "ease-out" });
+          else if (style === "dampq") s.el.animate([{ transform: "translateY(-10px) scale(.9)", opacity: 0 }, { transform: "translateY(0) scale(1)", opacity: 1 }], { duration: 240, easing: "cubic-bezier(.2,.8,.2,1)" });
+          else if (style === "riseup") s.el.animate([{ transform: "translateY(8px) scale(.8)", opacity: 0 }, { transform: "translateY(-1px) scale(1.03)", opacity: 1, offset: .7 }, { transform: "translateY(0) scale(1)", opacity: 1 }], { duration: 300, easing: "cubic-bezier(.2,.8,.2,1)" });
+          if (style === "pop") s.el.animate([{ transform: "scale(.5)", opacity: 0 }, { transform: "scale(1.12)", opacity: 1, offset: .55 }, { transform: "scale(1)", opacity: 1 }], { duration: 200, easing: "cubic-bezier(.2,.8,.2,1)" });
+          else if (style === "deal") s.el.animate([{ transform: "translateX(" + s.dx + "px) scale(.6)", opacity: 0 }, { opacity: 1, offset: .3 }, { transform: "translateX(" + (-s.dx * .04) + "px) scale(1.06)", opacity: 1, offset: .8 }, { transform: "translateX(0) scale(1)", opacity: 1 }], { duration: 380 + s.d * .25, easing: "cubic-bezier(.2,.75,.2,1)" });
+          else if (style === "flip") s.el.animate([{ transform: "perspective(120px) rotateY(90deg) scale(.8)", opacity: 0 }, { transform: "perspective(120px) rotateY(0deg) scale(1.1)", opacity: 1, offset: .7 }, { transform: "perspective(120px) rotateY(0deg) scale(1)", opacity: 1 }], { duration: 300, easing: "cubic-bezier(.2,.8,.2,1)" });
+          else if (style === "bounce") s.el.animate([{ transform: "translateY(-12px) scale(.9)", opacity: 0 }, { transform: "translateY(2px) scale(1.05)", opacity: 1, offset: .6 }, { transform: "translateY(-1px) scale(1)", opacity: 1, offset: .82 }, { transform: "translateY(0) scale(1)", opacity: 1 }], { duration: 360, easing: "cubic-bezier(.2,.8,.2,1)" });
+          else if (style === "shuffle") {
+            var others = SUITORDER.filter(function (n) { return n !== s.name; }), step = 0;
+            (function riffle() {
+              if (step < 3) { s.el.innerHTML = suitSVGSized(others[step % 3]); s.el.animate([{ transform: "scale(.85)" }, { transform: "scale(1)" }], { duration: 55 }); step++; setTimeout(riffle, 60); return; }
+              s.el.innerHTML = suitSVGSized(s.name);
+              s.el.animate([{ transform: "scale(.8)" }, { transform: "scale(1.18)", offset: .6 }, { transform: "scale(1)" }], { duration: 220, easing: "cubic-bezier(.2,.8,.2,1)" });
+            })();
+          }
+          else if (style === "wave") {
+            s.el.animate([{ transform: "scale(.5)", opacity: 0 }, { transform: "scale(1.12)", opacity: 1, offset: .55 }, { transform: "scale(1)", opacity: 1 }], { duration: 200, easing: "cubic-bezier(.2,.8,.2,1)" });
+            setTimeout(function () { s.el.animate([{ transform: "translateY(0)" }, { transform: "translateY(-4px)", offset: .45 }, { transform: "translateY(0)" }], { duration: 260, easing: "ease-in-out" }); }, 420 + order.indexOf(s) * 28);
+          }
+          else if (style === "big") s.el.animate([{ transform: "scale(0) rotate(-50deg)", opacity: 0 }, { transform: "scale(1.45) rotate(8deg)", opacity: 1, offset: .5 }, { transform: "scale(.96) rotate(-2deg)", opacity: 1, offset: .78 }, { transform: "scale(1) rotate(0deg)", opacity: 1 }], { duration: 300, easing: "cubic-bezier(.2,.8,.2,1)" });
+          else if (style === "bouncy") {
+            /* a higher drop, two bounces, and then a ripple that rolls out along the row after everything has landed */
+            s.el.animate([{ transform: "translateY(-18px) scale(.85)", opacity: 0 }, { transform: "translateY(3px) scale(1.1)", opacity: 1, offset: .36 }, { transform: "translateY(-7px) scale(1)", opacity: 1, offset: .56 }, { transform: "translateY(2px) scale(1.02)", opacity: 1, offset: .74 }, { transform: "translateY(-2px) scale(1)", opacity: 1, offset: .87 }, { transform: "translateY(0) scale(1)", opacity: 1 }], { duration: 640, easing: "ease-out" });
+            setTimeout(function () { s.el.animate([{ transform: "translateY(0)" }, { transform: "translateY(-6px)", offset: .4 }, { transform: "translateY(1px)", offset: .8 }, { transform: "translateY(0)" }], { duration: 300, easing: "ease-in-out" }); }, 30 + order.length * 26 + 560 - when + order.indexOf(s) * 24);
+          }
+          else if (style === "bounce1") s.el.animate([{ transform: "translateY(-18px) scale(.85)", opacity: 0 }, { transform: "translateY(3px) scale(1.08)", opacity: 1, offset: .5 }, { transform: "translateY(-3px) scale(1)", opacity: 1, offset: .74 }, { transform: "translateY(0) scale(1)", opacity: 1 }], { duration: 460, easing: "ease-out" });
+          else if (style === "flipbig") s.el.animate([{ transform: "perspective(120px) rotateY(90deg) scale(.6)", opacity: 0 }, { transform: "perspective(120px) rotateY(-12deg) scale(1.4)", opacity: 1, offset: .55 }, { transform: "perspective(120px) rotateY(4deg) scale(.96)", opacity: 1, offset: .8 }, { transform: "perspective(120px) rotateY(0deg) scale(1)", opacity: 1 }], { duration: 320, easing: "cubic-bezier(.2,.8,.2,1)" });
+        }, when);
+      });
+    });
+  }
+  function suitSVGSized(name) { var s = SUITS[name]; return '<svg viewBox="0 0 80 80"><path d="' + s[0] + '" fill="' + s[1] + '" fill-opacity="' + s[2] + '"/></svg>'; }
+  function fiveSeam(scene, wrap, style) {
+    seamStyled(scene, 340, style, 0);
+    fiveBy(scene, wrap, { mode: "rise", third: "just with friends", first: 1500 });
+  }
+  VERDICTS["Dealt from the wordmark, all of them"] = '<span class="yes">The liveliest true one.</span> Every suit starts under the wordmark and is dealt out along the rule to its place, the near ones first, with a small overshoot as it lands; the rule sweeps out beneath them. It reads as a hand being dealt round the table, which is what the row is.';
+  VERDICTS["Flip onto the line"] = '<span class="maybe">Cards turning face up.</span> Each suit turns in on its vertical axis as the sweep passes, with a small over-scale. Closer to the deck than a pop, a little more mechanical.';
+  VERDICTS["Bounce onto the line"] = '<span class="maybe">Pips dropped on the table.</span> Each suit falls a few pixels onto the rule and settles with one small bounce. Playful; the bounce must stay tiny or it turns into a game-store tell.';
+  VERDICTS["Shuffle and lock"] = '<span class="maybe">The digits’ own trick, on the suits.</span> Each station riffles through the other three suits and locks on its own, from the centre outward. Lively and consistent with the spinning count; the risk is two shuffles on one screen.';
+  VERDICTS["The wave"] = '<span class="maybe">A ripple after landing.</span> The suits pop as before, then a wave runs out along the row, each suit lifting 4 px and settling. A second beat that says “done”.';
+  VERDICTS["Faster and bigger"] = '<span class="maybe">Same idea, more of it.</span> A 240 ms sweep and a bigger pop with a quarter turn and a settle. Lively by force rather than by story.';
+  h2("19 · The suits divider, livelier (on Holger’s five with “just with friends”)");
+  root.appendChild(el("p", "note", "The line change stays as it is (rise and settle). What varies is how the suits arrive on the seam. Section 8’s “The seam, swept” is the reference."));
+  lab("Dealt from the wordmark, all of them", "Every suit travels out from under the wordmark to its place along the rule, nearest first, with a small overshoot; the rule sweeps out beneath.", function (scene, wrap) { fiveSeam(scene, wrap, "deal"); });
+  lab("Flip onto the line", "Each suit turns face up as the sweep passes.", function (scene, wrap) { fiveSeam(scene, wrap, "flip"); });
+  lab("Bounce onto the line", "Each suit drops onto the rule with one small bounce.", function (scene, wrap) { fiveSeam(scene, wrap, "bounce"); });
+  lab("Shuffle and lock", "Each station riffles through the four suits and locks on its own, centre outward.", function (scene, wrap) { fiveSeam(scene, wrap, "shuffle"); });
+  lab("The wave", "The suits pop, then a ripple runs along the row.", function (scene, wrap) { fiveSeam(scene, wrap, "wave"); });
+  lab("Faster and bigger", "A quicker sweep and a bigger, turning pop.", function (scene, wrap) { fiveSeam(scene, wrap, "big"); });
+  VERDICTS["Bounce, bouncier and wavier"] = '<span class="maybe">Scene 96 with more spring.</span> A higher drop and two bounces per suit, the landings rippling outward at a steady pace so the row reads as a wave breaking from the wordmark, and once everything is down a second ripple rolls out along the row. The rule sweeps a little slower to keep pace with the wave.';
+  VERDICTS["Flip, faster and bigger"] = '<span class="yes">95 and 99 in one.</span> The 240 ms sweep from 99 with the face-up turn from 95, over-scaled as it lands and settling back. The two things Holger liked, combined.';
+  lab("Bounce, bouncier and wavier", "A higher drop, two bounces, landings that ripple outward, and a second wave along the row once all have landed.", function (scene, wrap) { fiveSeam(scene, wrap, "bouncy"); });
+  lab("Flip, faster and bigger", "The quick sweep of 99 with the face-up turn of 95, bigger on landing.", function (scene, wrap) { fiveSeam(scene, wrap, "flipbig"); });
+  VERDICTS["Bounce, once"] = '<span class="yes">Scene 100 as Holger asked.</span> The same high drop and the same outward ripple of landings, but each suit bounces once and rests, and nothing moves after the row is down.';
+  lab("Bounce, once", "A high drop, one bounce, landings rippling outward from the wordmark, then stillness.", function (scene, wrap) { fiveSeam(scene, wrap, "bounce1"); });
+  VERDICTS["Bounce once, faster, line fading"] = '<span class="yes">102 with the two fixes.</span> The rule sweeps out unbroken; the piece under each suit fades away as that suit lands, so nothing is cut ahead of time. The drop is quicker, one bounce, the ripple tighter.';
+  VERDICTS["Dampened"] = '<span class="yes">No bounce.</span> Each suit drops and lands with a small squash, like a pip pressed onto the felt, and the line beneath it fades. Calmer than the bounce, still alive.';
+  VERDICTS["Dampened, quicker"] = '<span class="maybe">The briskest.</span> A shorter drop, no squash, a faster sweep and a tighter ripple. Done in well under a second.';
+  VERDICTS["Rising into place"] = '<span class="maybe">The opposite direction.</span> The suits come up from just below the rule and settle, as if pushed up out of the felt; the line under each fades as it arrives.';
+  lab("Bounce once, faster, line fading", "The 102 bounce, quicker and tighter, with the rule fading under each suit as it lands.", function (scene, wrap) { fiveSeam(scene, wrap, "b1fast"); });
+  lab("Dampened", "A drop with a small squash on landing, no bounce, the rule fading beneath.", function (scene, wrap) { fiveSeam(scene, wrap, "damp"); });
+  lab("Dampened, quicker", "A shorter drop, no squash, faster sweep and ripple.", function (scene, wrap) { fiveSeam(scene, wrap, "dampq"); });
+  lab("Rising into place", "The suits come up from below the rule and settle.", function (scene, wrap) { fiveSeam(scene, wrap, "riseup"); });
+
+  /* ===== 20 · the suits as a mark, not a border (static) ===== */
+  /* seamMark draws the menu seam from a spec: items are suits placed relative to the wordmark's centre (x is the glyph's
+     centre), each cutting its own gap in the rule, or the rule stops short of the centre altogether (ruleStop) */
+  var INK2 = { spade: ["#262626", .45], heart: ["#B54A3F", .65], club: ["#262626", .45], diamond: ["#B54A3F", .65] };
+  var TILEY = { spade: [1.32, .142], heart: [1.08, .148], club: [.88, .153], diamond: [.64, .159] };
+  function seamMark(scene, spec) {
+    var seam = scene.querySelector(".seam"); seam.className = "seam dealt"; seam.innerHTML = "";
+    var W = 1160, cx = W / 2, k = spec.size || 1, gap = spec.gap == null ? 11 : spec.gap;
+    var breaks = [];
+    if (spec.ruleStop != null) breaks.push([cx - spec.ruleStop, cx + spec.ruleStop]);
+    else spec.items.forEach(function (it) { if (it.dot) return; breaks.push([cx + it.x - gap, cx + it.x + gap]); });
+    breaks.sort(function (a, b) { return a[0] - b[0]; });
+    var prev = 0;
+    breaks.forEach(function (br) { var d = el("span", "ln"); d.style.left = prev + "px"; d.style.width = Math.max(0, br[0] - prev) + "px"; seam.appendChild(d); prev = br[1]; });
+    var last = el("span", "ln"); last.style.left = prev + "px"; last.style.width = (W - prev) + "px"; seam.appendChild(last);
+    spec.items.forEach(function (it) {
+      if (it.dot) { var dot = el("span", "dot"); dot.style.left = (cx + it.x - 1.5) + "px"; seam.appendChild(dot); return; }
+      var t = TILEY[it.name], size = 80 * t[1] * k, col = spec.ink === "one" ? ["#262626", .45] : INK2[it.name];
+      var su = el("span", "su", '<svg viewBox="0 0 80 80" style="width:100%;height:100%;display:block"><path d="' + SUITS[it.name][0] + '" fill="' + col[0] + '" fill-opacity="' + col[1] + '"/></svg>');
+      su.style.cssText = "left:" + (cx + it.x - size / 2) + "px;top:" + (7 - size / 2 + (t[0] - (7 - 80 * t[1] / 2)) * k) + "px;width:" + size + "px;height:" + size + "px;";
+      seam.appendChild(su);
+    });
+    var s2 = scene.querySelector(".seam2"); if (s2) s2.classList.add("plain");
+  }
+  function four(step, order) { order = order || ["spade", "heart", "club", "diamond"]; return order.map(function (n, i) { return { name: n, x: (i - 1.5) * step }; }); }
+  function footShape(scene, kind) {
+    var colo = scene.querySelector(".foot .colo"); if (!colo) return;
+    var tg = colo.querySelector(".tg"), dk = colo.querySelector(".dk");
+    if (kind === "above") { colo.insertBefore(dk, tg); }
+    else if (kind === "flank") { colo.style.flexDirection = "row"; colo.style.gap = "22px"; var dk2 = dk.cloneNode(true); dk.innerHTML = suitSVGSized("spade") + suitSVGSized("heart"); dk2.innerHTML = suitSVGSized("club") + suitSVGSized("diamond"); colo.insertBefore(dk, tg); colo.appendChild(dk2); colo.querySelectorAll(".dk").forEach(function (d) { d.style.gap = "14px"; }); }
+    else if (kind === "inrule") { colo.style.flexDirection = "row"; colo.style.gap = "18px"; colo.style.height = "72px"; var d2 = dk.cloneNode(true); dk.innerHTML = suitSVGSized("spade") + suitSVGSized("heart"); d2.innerHTML = suitSVGSized("club") + suitSVGSized("diamond"); colo.insertBefore(dk, tg); colo.appendChild(d2); colo.querySelectorAll(".dk").forEach(function (d) { d.style.gap = "12px"; }); colo.style.setProperty("--colo-gap", "200px"); colo.classList.add("inrule"); }
+    else if (kind === "onesuit") { dk.innerHTML = suitSVGSized("spade"); }
+  }
+  VERDICTS["Clasp, tight"] = '<span class="yes">The maker’s mark.</span> Four suits 6 px apart under the name, the rule parting 34 px each side. Reads as one ornament, the way a printer sets a fleuron on a title page.';
+  VERDICTS["Clasp, tight, one ink"] = '<span class="maybe">The same clasp in a single ink.</span> More like a printer’s ornament, less like a deck; calmer, and the heart and diamond lose their identity at this size.';
+  VERDICTS["Clasp, loose"] = '<span class="maybe">The same four with air between them,</span> 18 px apart, the rule parting wider. Reads as four small marks rather than one; a touch more decorative.';
+  VERDICTS["Four stations"] = '<span class="yes">Scene 4’s end state, still.</span> Heart and club 48 px either side of centre, spade and diamond at 144 px, each in its own small gap. The suits look dealt to four seats around the name.';
+  VERDICTS["Four stations, wide"] = '<span class="maybe">The stations pushed to 64 and 192 px.</span> Airier, and the outer pair begins to feel detached from the wordmark.';
+  VERDICTS["Two pairs"] = '<span class="maybe">Spade and heart to the left, club and diamond to the right,</span> like two small brooches flanking the name, nothing in the centre.';
+  VERDICTS["Finials"] = '<span class="maybe">Suits only at the ends of the rule,</span> a spade at the left and a diamond at the right, the whole measure plain between. The classic rule with finials; the mark is far from the name.';
+  VERDICTS["Finials, pairs"] = '<span class="maybe">Spade and heart at the left end, club and diamond at the right.</span> Symmetric and quiet; the deck is present without touching the wordmark.';
+  VERDICTS["The yielded middle"] = '<span class="yes">The rule stops 70 px short of centre on both sides and the four suits own the air.</span> The most classical shape here: an ornament in a break, nothing cut around it.';
+  VERDICTS["Dinkus with dots"] = '<span class="maybe">The four suits with a dot at each end of the break,</span> the way a dinkus closes a section. Print-true; the dots add a little fuss.';
+  VERDICTS["One spade"] = '<span class="maybe">A single spade at centre, the rule parting 14 px each side.</span> The solitaire: the quietest mark possible, and the ace of spades is where every deck signs its name.';
+  VERDICTS["Colophon, suits below"] = '<span class="yes">Scene 9 as it was:</span> “One more hand.” with the four suits beneath, the rule retiring at the sides. Tight clasp at the top, so the suits appear twice on the page and both times with meaning.';
+  VERDICTS["Colophon, suits above"] = '<span class="maybe">The ornament first, then the line,</span> the way a chapter head sits above its title.';
+  VERDICTS["Colophon, flanking"] = '<span class="maybe">Two suits each side of the tagline on one line.</span> Compact and symmetric; the tagline becomes part of the ornament.';
+  VERDICTS["Colophon, one spade"] = '<span class="maybe">The tagline with a single spade beneath.</span> The maker’s ace as the colophon.';
+  h2("20 · The suits as a mark, not a border (static, no animation)");
+  root.appendChild(el("p", "note", "Every seam between sections is a plain line in these scenes. What varies is the mark under the wordmark, and in the last four the colophon at the foot. Red suits sit at 65% so the two inks weigh the same; sizes are the divider’s own."));
+  lab("Clasp, tight", "Four suits 6 px apart, centred under the wordmark, the rule parting 34 px each side.", function (scene) { seamMark(scene, { items: four(15.5), ruleStop: 34 }); });
+  lab("Clasp, tight, one ink", "The same clasp with all four suits in the grey ink.", function (scene) { seamMark(scene, { items: four(15.5), ruleStop: 34, ink: "one" }); });
+  lab("Clasp, loose", "Four suits 18 px apart, the rule parting 60 px each side.", function (scene) { seamMark(scene, { items: four(27), ruleStop: 60 }); });
+  lab("Four stations", "The four suits 96 px apart, centred, in the site’s own order: club, diamond, spade, heart (utils.SUITS), each in its own gap.", function (scene) { seamMark(scene, { items: [{ name: "club", x: -144 }, { name: "diamond", x: -48 }, { name: "spade", x: 48 }, { name: "heart", x: 144 }] }); });
+  lab("Four stations, wide", "The stations at 64 and 192 px.", function (scene) { seamMark(scene, { items: [{ name: "spade", x: -192 }, { name: "heart", x: -64 }, { name: "club", x: 64 }, { name: "diamond", x: 192 }] }); });
+  lab("Two pairs", "Spade and heart at 120 and 96 px left, club and diamond at 96 and 120 px right.", function (scene) { seamMark(scene, { items: [{ name: "spade", x: -120 }, { name: "heart", x: -96 }, { name: "club", x: 96 }, { name: "diamond", x: 120 }], gap: 8 }); });
+  lab("Finials", "A spade at the left end of the rule, a diamond at the right end, plain between.", function (scene) { seamMark(scene, { items: [{ name: "spade", x: -556 }, { name: "diamond", x: 556 }] }); });
+  lab("Finials, pairs", "Spade and heart at the left end, club and diamond at the right end.", function (scene) { seamMark(scene, { items: [{ name: "spade", x: -556 }, { name: "heart", x: -536 }, { name: "club", x: 536 }, { name: "diamond", x: 556 }], gap: 8 }); });
+  lab("The yielded middle", "The rule stops 70 px short of centre on each side; the four suits sit in the open, 20 px apart, one size up.", function (scene) { seamMark(scene, { items: four(30), ruleStop: 70, size: 1.15 }); });
+  lab("Dinkus with dots", "The four suits with a dot closing each end of the break.", function (scene) { seamMark(scene, { items: [{ dot: true, x: -62 }].concat(four(16)).concat([{ dot: true, x: 62 }]), ruleStop: 76 }); });
+  lab("One spade", "A single spade at centre, the rule parting 14 px each side.", function (scene) { seamMark(scene, { items: [{ name: "spade", x: 0 }], gap: 14, size: 1.2 }); });
+  lab("Colophon, suits below", "Tight clasp at the top; at the foot, “One more hand.” with the four suits beneath.", function (scene) { seamMark(scene, { items: four(15.5), ruleStop: 34 }); }, { foot: true });
+  lab("Colophon, suits above", "The four suits above the tagline.", function (scene) { seamMark(scene, { items: four(15.5), ruleStop: 34 }); footShape(scene, "above"); }, { foot: true });
+  lab("Colophon, flanking", "Two suits each side of the tagline, on one line.", function (scene) { seamMark(scene, { items: four(15.5), ruleStop: 34 }); footShape(scene, "flank"); }, { foot: true });
+  lab("Colophon, one spade", "The tagline with a single spade beneath.", function (scene) { seamMark(scene, { items: [{ name: "spade", x: 0 }], gap: 14, size: 1.2 }); footShape(scene, "onesuit"); }, { foot: true });
+
+  fitAll();
+  document.fonts && document.fonts.ready.then(fitAll);
+</script>
+
+</body>
+</html>
