@@ -2048,7 +2048,7 @@
   body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) #sec-classic::before { background: none; }
   body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) :is(#openTablesTop .lobbyhead, #liveTablesTop .lobbyhead, #lobbyDemo .lobbyhead) > .pophead,
   body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) :is(#sec-tt, #sec-rummy, #sec-classic) > .pophead { display: none; }
-  body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) :is(#openTablesTop .lobbyhead, #lobbyDemo .lobbycol .lobbyhead) { justify-content: flex-end; }
+  body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) #openTablesTop .lobbyhead { justify-content: flex-end; }
   body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) #liveTablesTop .lobbyhead { display: none; } /* the empty head would still spend its 32px margin and the column's gap */
   /* with the head on the seam every gap measures 48px from the rule's centre to the neighbour's edge, above and below (40px elsewhere) */
   body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells).sect-waveband #popsec { padding-bottom: 48px; }
@@ -2056,7 +2056,7 @@
   body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells).sect-waveband #openTablesTop { padding-top: 48px; padding-bottom: 48px; }
   body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) :is(#liveTablesTop, #sec-tt, #sec-rummy, #sec-classic) { padding-top: 48px; padding-bottom: 48px; }
   body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) #lobbyDemo .lobbyTopBand { padding: 46px 0 48px; } /* the 2px under the Open tables band */
-  body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) #lobbyDemo .lobbycol .lobbyhead { display: none; } /* the head is in the seam and the Show buttons are gone (5 September), so the row would only spend the column's gap */
+  body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) #lobbyDemo > .lobbyhead { display: none; } /* the head is in the seam and the Show buttons are gone (5 September), so the row would only spend the column's gap */
   body:is(.div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) { --divtile: var(--divrulestretch); }
   body:is(.div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) .seamsweep .ink { background: none; }
   body:is(.div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells):is(.foot-wavyline, .foot-wavybare) .sitefooter::after { display: none; }
@@ -2161,7 +2161,7 @@
 
   .lobbyscope .lobbyTopBand { display: flex; flex-wrap: wrap; gap: 16px; width: 100%; }
   .lobbyscope .lobbyDealCard { width: 100%; flex: 1; box-sizing: border-box; display: flex; flex-direction: column;
-    padding: 12px; background-color: #fff; border-radius: 20px; corner-shape: squircle; box-shadow: var(--btnshadow); } /* 12px inside, as the game tiles keep (5 September; 16px before) */
+    padding: 0; overflow: hidden; background-color: #fff; border-radius: 20px; corner-shape: squircle; box-shadow: var(--btnshadow); } /* a tile, not a card (5 September, leaderboard-deal-lab 3): the shell with its ring all round, and the table or the deal filling it edge to edge */
   .lobbyscope .ldHead { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-bottom: 4px; }
   .lobbyscope .ldTitle { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     font-size: 20px; line-height: 28px; font-weight: bold; color: #212529; }
@@ -2190,10 +2190,10 @@
   .lobbyscope .dropupContent li:hover { background-color: var(--triolighthover); }
   .lobbyscope .ldChallenge { margin-top: 0; }
   /* the cards take the scheme's own tokens (5 September): the fill is the scheme's canvas and the lines its edge, the same edge the tiles' rings wear; before, a hardcoded #F8F7F4 and the 15% brown line */
-  .lobbyscope .ldPanel { border-radius: var(--radius-md, 6px); corner-shape: squircle; /* the Play button's own radius, 12px here (5 September; 6px before) */ background-color: var(--canvas, #F8F7F4); border: 1px solid var(--edge, var(--panelline)); }
-  .lobbyscope .ldAward { position: relative; height: 48px; margin-bottom: 8px; padding: 0 8px; }
+  .lobbyscope .ldPanel { border: 0; border-radius: 0; background-color: #fff; } /* inside the tile the panel is the tile: the trophy strip and the weekday row take the canvas grey, the days are white */
+  .lobbyscope .ldAward { position: relative; height: 56px; margin: 0; padding: 4px 12px 0; background-color: var(--canvas, #F8F7F4); }
   .lobbyscope .ldAwardTitle { font-size: 14px; font-weight: 700; line-height: 40px; color: #212529; }
-  .lobbyscope .ldAwardBars { position: absolute; left: 8px; right: 8px; bottom: 4px; display: flex; height: 8px; }
+  .lobbyscope .ldAwardBars { position: absolute; left: 12px; right: 12px; bottom: 8px; display: flex; height: 8px; }
   .lobbyscope .ldAwardBar { position: relative; flex: 1 1 0; height: 8px; }
   .lobbyscope .ldAwardFill { position: absolute; left: 0; bottom: 0; height: 100%; }
   .lobbyscope .ldAwardBadge { position: absolute; right: -17px; bottom: 0; width: 34px; line-height: 18px; padding-bottom: 14px;
@@ -2213,11 +2213,11 @@
   .lobbyscope .ldAwardBar.isSpacer { flex: 0 0 17px; box-shadow: none; }
   /* the calendar's white cells are clipped to the panel's bottom corners, inside its 1px line, so the squircle's line shows all the way round (5 September) */
   .lobbyscope .ldCal { display: grid; grid-template-columns: repeat(7, 1fr); border-top: 1px solid var(--edge, var(--panelline));
-    border-radius: 0 0 calc(var(--radius-md, 6px) - 1px) calc(var(--radius-md, 6px) - 1px); corner-shape: squircle; overflow: hidden;
+    border-radius: 0; overflow: hidden;
     text-align: center; font-variant-numeric: tabular-nums; }
   .lobbyscope .ldCal > span { border-right: 1px solid var(--edge, var(--panelline)); }
   .lobbyscope .ldCal > span:nth-child(7n) { border-right: none; }
-  .lobbyscope .ldCalHead { padding: 4px 0; font-size: 14px; line-height: 24px; color: #868E96; }
+  .lobbyscope .ldCalHead { padding: 4px 0; font-size: 14px; line-height: 24px; color: #868E96; background-color: var(--canvas, #F8F7F4); }
   .lobbyscope .ldCalCell { position: relative; height: 32px; line-height: 32px; border-top: 1px solid var(--edge, var(--panelline)); background-color: #fff; /* every row with a day in it is white edge to edge, the weekday row keeps the panel's grey (5 September) */
     font-size: 14px; font-weight: 700; color: #212529; }
   .lobbyscope .ldCalDay:not(.isFuture) { cursor: pointer; }
@@ -2227,7 +2227,7 @@
   .lobbyscope .ldCalDay.isDealDone { text-indent: -9999px; }
   .lobbyscope .ldCalDay.isDealDone::after { content: ""; position: absolute; inset: 0; background-color: var(--triogreen);
     -webkit-mask: url("dealDayCheck.svg") center / 32px 32px no-repeat; mask: url("dealDayCheck.svg") center / 32px 32px no-repeat; }
-  .lobbyscope .ldPlay { width: 100%; margin-top: 8px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
+  .lobbyscope .ldPlay { width: calc(100% - 24px); margin: auto 12px 12px; /* at the tile's foot, where the leaderboard keeps its footer row */ text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
 
   .lobbyscope .lobbyTablesPanel, .lobbyscope .lobbyLiveTables { width: 100%; }
   .lobbyscope .ltHeader, .lobbyscope .lsHeader { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 12px; }
@@ -2414,14 +2414,14 @@
 
   /* board card (dev styling, scoped) */
   .lobbyscope .lobbyBoardCard { width: 100%; flex: 1; box-sizing: border-box; display: flex; flex-direction: column;
-    padding: 12px; background-color: #fff; border-radius: 20px; corner-shape: squircle; box-shadow: var(--btnshadow); } /* 12px inside, as the game tiles keep (5 September; 16px before) */
+    padding: 0; overflow: hidden; background-color: #fff; border-radius: 20px; corner-shape: squircle; box-shadow: var(--btnshadow); } /* a tile, not a card (5 September, leaderboard-deal-lab 3): the shell with its ring all round, and the table or the deal filling it edge to edge */
   .lobbyscope .lbHead { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-bottom: 4px; }
   .lobbyscope .lbTitle { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     font-size: 20px; line-height: 28px; font-weight: bold; color: #212529; }
   .lobbyscope .lbShow { flex-shrink: 0; }
   .lobbyscope .lbGames { margin-top: 0; }
-  .lobbyscope .lbRows { display: table; width: 100%; margin: 0 0 6px; background-color: #fff; border: 1px solid var(--edge, var(--panelline));
-    border-radius: var(--radius-md, 6px); corner-shape: squircle; overflow: hidden; font-size: 14px; line-height: 20px; font-variant-numeric: tabular-nums; }
+  .lobbyscope .lbRows { display: table; width: 100%; margin: 0; background-color: #fff; border: 0;
+    border-radius: 0; overflow: hidden; font-size: 14px; line-height: 20px; font-variant-numeric: tabular-nums; }
   .lobbyscope .lbRow { display: table-row; color: #212529; }
   .lobbyscope .lbRow b { font-weight: bold; }
   .lobbyscope .lbRow > span { display: table-cell; vertical-align: middle; box-sizing: border-box; height: 32px;
@@ -2438,7 +2438,7 @@
   /* the site's own pairs: bg-success with text-success, bg-error-light with text-error; the arrows in the same inks as the numbers beside them (they were the action colours, #66A80F and #F03E3E) */
   .lobbyscope .lbUp { color: #4F800B; background-color: #C0EB75; background-image: url("arrowUpGreenSmall-ink.png"); }
   .lobbyscope .lbDown { color: #B52626; background-color: #FFDBD9; background-image: url("arrowDownRedSmall-ink.png"); }
-  .lobbyscope .lbFoot { margin: auto 0 0; padding-top: 4px; font-size: 12px; line-height: 20px; color: #868E96; font-variant-numeric: tabular-nums; }
+  .lobbyscope .lbFoot { margin: auto 0 0; padding: 8px 12px 10px; font-size: 12px; line-height: 20px; color: #868E96; font-variant-numeric: tabular-nums; }
   .lobbyscope .lbPager { float: right; display: inline-flex; align-items: center; gap: 4px; }
   .lobbyscope .lbPageBtn { box-sizing: border-box; width: 20px; height: 20px; padding: 0; border: none; border-radius: 4px;
     corner-shape: squircle; background-color: #EEEBE5; background-repeat: no-repeat; background-position: center; background-size: 12px 12px;
@@ -3722,57 +3722,74 @@
 <style>
   /* ── the third row is cut: two rows stay whole, the third is cut at a straight line under the gap, and the cut row is
      out of reach (no hover, no clicks, no focus: the script makes it inert). Nothing shows at rest; when the pointer is
-     over the cut zone the green Show more tables button comes up on the cut line, and a click opens the rest. The script
-     puts the setting on the panel as data-peek, so these rules stay simple; the settings differ in what the cut looks
-     like. --peek is the height of the third row that shows: 78px is the whole top seat (art, avatar, name and badge end at 74px)
-     and a little felt under it, before the side seats begin at 75px. ── */
-  #lobbyTablesPanel { --otrow: 268px; --peek: 78px; --otfadecol: var(--canvas, #f9f6f2); --cut: calc(var(--otrow) * 2 + 32px + var(--peek)); }
+     over the cut zone the green Show more tables button comes up, hanging from the cut line, and a click opens the rest.
+     The script puts the setting on the panel as data-peek, so these rules stay simple; the settings differ in what the
+     cut looks like. --peek is the height of the third row that shows. The tile's top seat (art, avatar, name and badge)
+     ends at a third of the tile height plus 1px and the side seats' heads begin 2px later, so the cut sits at a third
+     plus 9px, rounded to a whole pixel: the top seat whole, the side seats hidden, and 8px of felt under the name at
+     every width. ── */
+  #lobbyTablesPanel { --otrow: 268px; --peek: round(calc(var(--otrow) / 3 + 9px), 1px); --otfadecol: var(--canvas, #f9f6f2); --cut: calc(var(--otrow) * 2 + 32px + var(--peek)); }
   #lobbyTablesPanel[data-peek] { position: relative; }
   #lobbyTablesPanel[data-peek]:not(.open) .ltGrid { max-height: var(--cut); overflow: visible; clip-path: inset(-24px -24px 0 -24px); }
   #lobbyTablesPanel[data-peek]:not(.open) .ltGrid > .ltCard:nth-child(n+7) { pointer-events: none; }
-  /* the hover zone lies over the cut, from the bottom of the second row to 14px past the cut line, and the button straddles the line */
+  #lobbyTablesPanel[data-peek]:not([data-peek="scroll"]):not(.open) .ltGrid > .ltCard:nth-child(n+7) .player:not(.playernumber1) { visibility: hidden; }
+  /* the hover zone lies over the cut, from the bottom of the second row to 20px past the cut line; the button's top sits 4px
+     over the felt, so it hangs from the edge with felt between it and the middle tile's name */
   #lobbyTablesPanel .otMore { display: none; }
   #lobbyTablesPanel[data-peek]:not(.open) .otMore { display: flex; justify-content: center; align-items: flex-end; position: absolute; left: 0; right: 0;
-    top: calc(var(--otrow) * 2 + 16px); height: calc(16px + var(--peek) + 14px); z-index: 4; box-sizing: border-box; padding-bottom: 2px; }
-  #lobbyTablesPanel .otMore .button { opacity: 0; transition: opacity .15s ease-out; }
-  #lobbyTablesPanel .otMore:hover .button { opacity: 1; }
+    top: calc(var(--otrow) * 2 + 16px); height: calc(16px + var(--peek) + 20px); z-index: 4; box-sizing: border-box; }
+  #lobbyTablesPanel .otMore .button { opacity: 0; transition: opacity .15s ease-out; position: relative; z-index: 1; outline: none; }
+  #lobbyTablesPanel .otMore:hover .button, #lobbyTablesPanel .otMore .button:focus-visible { opacity: 1; }
+  #lobbyTablesPanel .otMore .button:focus-visible { box-shadow: inset 0 0 0 1px var(--triogreenring), 0 0 0 3px rgba(67,160,56,.35); }
   #lobbyTablesPanel .otMore .deck { display: none; }
-  /* sliver: only the top edge of the tiles, felt and corners, nothing on it yet */
-  #lobbyTablesPanel[data-peek="sliver"] { --peek: 6px; }
-  /* sheet: the band lies over the row like a sheet of paper, and its edge throws a shadow onto the tiles, not into the gaps */
+  /* seam: the bare cut with a scored seam right under it, a hairline in the divider's colour and a lit line below, the page's own rule */
+  #lobbyTablesPanel[data-peek="seam"]:not(.open)::after { content: ""; position: absolute; left: 0; right: 0; top: var(--cut); height: 2px; z-index: 3; pointer-events: none;
+    background: linear-gradient(to bottom, #D9D2C4 0 1px, rgba(255,255,255,.7) 1px 2px); }
+  /* sheet: the band lies over the row like a sheet of paper, and its edge throws a short shadow onto the felt under the name, not into the gaps */
   #lobbyTablesPanel[data-peek="sheet"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) { position: relative; }
-  #lobbyTablesPanel[data-peek="sheet"]:not(.open) .ltGrid > .ltCard:nth-child(n+7)::after { content: ""; position: absolute; left: 0; right: 0; top: calc(var(--peek) - 24px); height: 24px; z-index: 5;
-    background: linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,.36)); }
-  /* feather: the tiles themselves dissolve over the last 22px before the cut, no wash over them and nothing in the gaps */
-  #lobbyTablesPanel[data-peek="feather"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) { -webkit-mask-image: linear-gradient(to bottom, #000 calc(var(--peek) - 22px), transparent var(--peek)); mask-image: linear-gradient(to bottom, #000 calc(var(--peek) - 22px), transparent var(--peek)); }
-  /* dim, ghost, frost, shade: the whole row changed evenly, then cut */
-  #lobbyTablesPanel[data-peek="dim"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) { opacity: .42; }
-  #lobbyTablesPanel[data-peek="ghost"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) { filter: grayscale(1); opacity: .3; }
-  #lobbyTablesPanel[data-peek="frost"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) { position: relative; }
-  #lobbyTablesPanel[data-peek="frost"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) .tableListing { filter: blur(3px); }
-  #lobbyTablesPanel[data-peek="frost"]:not(.open) .ltGrid > .ltCard:nth-child(n+7)::after { content: ""; position: absolute; inset: 0; z-index: 5; background: rgba(255,255,255,.45); }
-  #lobbyTablesPanel[data-peek="shade"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) { filter: brightness(.58) saturate(.8); }
-  /* recede and fold: the row sits further back, or tips away under the page */
-  #lobbyTablesPanel[data-peek="recede"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) { transform: scale(.94); transform-origin: 50% 0; opacity: .7; }
-  #lobbyTablesPanel[data-peek="fold"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) { transform: perspective(800px) rotateX(-42deg); transform-origin: 50% 0; filter: brightness(.78); }
-  /* stack: the third row stays under the second, and two edges show below each tile, the next tables in a stack */
-  #lobbyTablesPanel[data-peek="stack"] { --peek: -32px; }
-  #lobbyTablesPanel[data-peek="stack"]:not(.open) .otMore { top: calc(var(--otrow) * 2 + 16px); height: 44px; align-items: center; padding: 0; }
-  #lobbyTablesPanel[data-peek="stack"]:not(.open) .otMore .deck { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 16px; position: absolute; left: 0; right: 0; top: 0; height: 22px; }
+  #lobbyTablesPanel[data-peek="sheet"]:not(.open) .ltGrid > .ltCard:nth-child(n+7)::after { content: ""; position: absolute; left: 0; right: 0; top: calc(var(--peek) - 8px); height: 8px; z-index: 5;
+    background: linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,.34)); }
+  /* crease: the felt darkens in two hard steps at the cut, a fold rather than a shadow */
+  #lobbyTablesPanel[data-peek="crease"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) { position: relative; }
+  #lobbyTablesPanel[data-peek="crease"]:not(.open) .ltGrid > .ltCard:nth-child(n+7)::after { content: ""; position: absolute; left: 0; right: 0; top: calc(var(--peek) - 5px); height: 5px; z-index: 5;
+    background: linear-gradient(to bottom, rgba(0,0,0,.14) 0 3px, rgba(0,0,0,.34) 3px 5px); }
+  /* short: the third row is not clipped at all, its tiles are simply short boxes that finish their own corners, and the felt's ring turns the foot corners too */
+  #lobbyTablesPanel[data-peek="short"]:not(.open) .ltGrid { max-height: none; clip-path: none; }
+  #lobbyTablesPanel[data-peek="short"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) { height: var(--peek); }
+  #lobbyTablesPanel[data-peek="short"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) .tableListing .header::after { bottom: auto; height: var(--peek); border-radius: 20px; }
+  /* lip: 20px of bare felt, the corner radius exactly, so the corners finish before the cut; the art and seats stay out of it */
+  #lobbyTablesPanel[data-peek="lip"] { --peek: 20px; }
+  #lobbyTablesPanel[data-peek="lip"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) .header > * { visibility: hidden; }
+  /* tucked: the third row slides up under the second, like cards in a hand, and only a plain felt sliver shows below each tile */
+  #lobbyTablesPanel[data-peek="tucked"] { --peek: 30px; }
+  #lobbyTablesPanel[data-peek="tucked"]:not(.open) .ltGrid { max-height: calc(var(--otrow) * 2 + 16px + var(--peek)); }
+  #lobbyTablesPanel[data-peek="tucked"]:not(.open) .ltGrid > .ltCard:nth-child(-n+6) { position: relative; z-index: 1; }
+  #lobbyTablesPanel[data-peek="tucked"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) { position: relative; z-index: 0; margin: 0 6px; height: var(--otrow); transform: translateY(calc(var(--peek) - 16px - var(--otrow))); background-color: #2d682e; box-shadow: var(--liftshadow); }
+  #lobbyTablesPanel[data-peek="tucked"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) > * { visibility: hidden; }
+  #lobbyTablesPanel[data-peek="tucked"]:not(.open) .otMore { height: calc(var(--peek) + 20px); }
+  /* stack and fan: the third row stays under the second, and two edges show below each tile, the next tables in a stack; fan spreads them under the pointer */
+  #lobbyTablesPanel:is([data-peek="stack"], [data-peek="fan"]) { --peek: -16px; }
+  #lobbyTablesPanel:is([data-peek="stack"], [data-peek="fan"]):not(.open) { padding-bottom: 16px; }
+  #lobbyTablesPanel:is([data-peek="stack"], [data-peek="fan"]):not(.open) .otMore { top: calc(var(--otrow) * 2 + 16px); height: 44px; align-items: center; padding: 0; }
+  #lobbyTablesPanel:is([data-peek="stack"], [data-peek="fan"]):not(.open) .otMore .deck { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 16px; position: absolute; left: 0; right: 0; top: 0; height: 22px; }
   #lobbyTablesPanel .otMore .deck i { position: relative; display: block; }
   #lobbyTablesPanel .otMore .deck i::before, #lobbyTablesPanel .otMore .deck i::after { content: ""; position: absolute; top: 0; background: #327333; corner-shape: squircle;
     box-shadow: inset 0 0 0 1px rgba(255,255,255,.35), 0 2px 4px rgba(0,0,0,.06); }
   #lobbyTablesPanel .otMore .deck i::before { left: 8px; right: 8px; height: 11px; border-radius: 0 0 12px 12px; z-index: 1; }
   #lobbyTablesPanel .otMore .deck i::after { left: 20px; right: 20px; height: 19px; border-radius: 0 0 11px 11px; opacity: .55; }
-  /* lift: a lip at rest; when the pointer is over it the row rises and the button comes up once it has */
-  #lobbyTablesPanel[data-peek="lift"] { --peek: 14px; }
-  #lobbyTablesPanel[data-peek="lift"]:not(.open):has(.otMore:hover) { --peek: 78px; }
-  #lobbyTablesPanel[data-peek="lift"]:not(.open) .ltGrid { transition: max-height .28s cubic-bezier(.22,1,.36,1); }
-  #lobbyTablesPanel[data-peek="lift"]:not(.open) .otMore { transition: height .28s cubic-bezier(.22,1,.36,1); }
-  #lobbyTablesPanel[data-peek="lift"] .otMore .button { transition: opacity .15s ease-out .14s; }
+  #lobbyTablesPanel[data-peek="fan"] .otMore .deck i::before, #lobbyTablesPanel[data-peek="fan"] .otMore .deck i::after { transition: height .22s cubic-bezier(.22,1,.36,1), left .22s cubic-bezier(.22,1,.36,1), right .22s cubic-bezier(.22,1,.36,1); }
+  #lobbyTablesPanel[data-peek="fan"] .otMore:hover .deck i::before { height: 13px; left: 4px; right: 4px; }
+  #lobbyTablesPanel[data-peek="fan"] .otMore:hover .deck i::after { height: 22px; left: 14px; right: 14px; }
+  /* cover: a sheet in the band's colour lies over the row, leaving a 10px lip of bare felt; under the pointer it slides down past the cut line and merges with the band, and the seats are there under it */
+  #lobbyTablesPanel[data-peek="cover"]:not(.open) .otMore { clip-path: inset(0 -24px 0 -24px); }
+  #lobbyTablesPanel[data-peek="cover"]:not(.open) .otMore::before { content: ""; position: absolute; left: -24px; right: -24px; top: 26px; height: calc(var(--peek) - 8px);
+    background: var(--otfadecol); transition: transform .18s ease-in; }
+  #lobbyTablesPanel[data-peek="cover"]:not(.open) .otMore:hover::before { transform: translateY(calc(var(--peek) - 10px)); transition: transform .26s cubic-bezier(.22,1,.36,1); }
+  #lobbyTablesPanel[data-peek="cover"]:not(.open):not(:has(.otMore:hover)) .ltGrid > .ltCard:nth-child(n+7) .header > * { visibility: hidden; }
+  #lobbyTablesPanel[data-peek="cover"] .otMore:hover .button { transition: opacity .16s ease-out .16s; }
   /* fade: the long fade from before, kept to compare against */
   #lobbyTablesPanel[data-peek="fade"] { --peek: 56px; }
-  #lobbyTablesPanel[data-peek="fade"]:not(.open)::after { content: ""; position: absolute; left: -2px; right: -2px; top: calc(var(--otrow) * 2 + 16px); height: calc(16px + var(--peek));
+  #lobbyTablesPanel[data-peek="fade"]:not(.open)::after { content: ""; position: absolute; left: -2px; right: -2px; top: calc(var(--otrow) * 2 + 16px); height: calc(16px + var(--peek) + 1px);
     pointer-events: none; z-index: 3; background: linear-gradient(to bottom, rgba(255,255,255,0), var(--otfadecol) 78%); }
   /* scroll: no button, the tables scroll under the fade, the fade goes when the last row is reached, and a fade at the top once the first row has gone under the bar */
   #lobbyTablesPanel[data-peek="scroll"] { --peek: 56px; }
@@ -3780,13 +3797,14 @@
   #lobbyTablesPanel[data-peek="scroll"] .ltGrid::-webkit-scrollbar { display: none; }
   #lobbyTablesPanel[data-peek="scroll"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) { pointer-events: auto; }
   #lobbyTablesPanel[data-peek="scroll"]:not(.open) .otMore { display: none; }
-  #lobbyTablesPanel[data-peek="scroll"]:not(.open)::after { content: ""; position: absolute; left: -2px; right: -2px; top: calc(var(--otrow) * 2 + 16px); height: calc(16px + var(--peek));
+  #lobbyTablesPanel[data-peek="scroll"]:not(.open)::after { content: ""; position: absolute; left: -2px; right: -2px; top: calc(var(--otrow) * 2 + 16px); height: calc(16px + var(--peek) + 1px);
     pointer-events: none; z-index: 3; background: linear-gradient(to bottom, rgba(255,255,255,0), var(--otfadecol) 78%); transition: opacity .2s ease-out; }
   #lobbyTablesPanel[data-peek="scroll"].atend::after { opacity: 0; }
   #lobbyTablesPanel[data-peek="scroll"]:not(.open)::before { content: ""; position: absolute; left: -2px; right: -2px; top: 0; height: 40px; pointer-events: none; z-index: 3;
     background: linear-gradient(to top, rgba(255,255,255,0), var(--otfadecol) 90%); opacity: 0; transition: opacity .2s ease-out; }
   #lobbyTablesPanel[data-peek="scroll"].scrolled::before { opacity: 1; }
-  @media (prefers-reduced-motion: reduce) { #lobbyTablesPanel .ltGrid, #lobbyTablesPanel .otMore, #lobbyTablesPanel .otMore .button { transition: none !important; } }
+  @media (prefers-reduced-motion: reduce) { #lobbyTablesPanel .ltGrid, #lobbyTablesPanel .otMore, #lobbyTablesPanel .otMore .button, #lobbyTablesPanel .otMore::before,
+    #lobbyTablesPanel .otMore .deck i::before, #lobbyTablesPanel .otMore .deck i::after { transition: none !important; } }
 </style>
   <div class="lobbyscope" id="openTablesTop">
     <div class="lobbyhead"><span class="pophead">Open tables</span></div>
@@ -3799,10 +3817,10 @@
 
   <div id="lobby-slot-top"></div>
   <div id="lobbyDemo" class="lobbyscope">
+    <div class="lobbyhead"><span class="pophead">Leaderboard &amp; daily deal</span></div>
     <div class="lobbyTopBand">
       <div class="otFilter" id="ldFilter" aria-label="Game for the leaderboard and the deal"><div class="track" data-row><span class="s on" data-g="hearts"><span>Hearts</span></span><span class="s" data-g="spades"><span>Spades</span></span><span class="s" data-g="euchre"><span>Euchre</span></span><span class="s" data-g="pinochledd"><span>Double Deck Pinochle</span></span><span class="s" data-g="handfoot"><span>Hand & Foot</span></span><span class="s" data-g="ginrummy"><span>Gin Rummy</span></span><span class="s" data-g="twentynine"><span>Twenty-Nine</span></span><span class="s" data-g="rummy"><span>Rummy</span></span><span class="s" data-g="canasta"><span>Canasta</span></span><span class="s" data-g="pinochle"><span>Pinochle</span></span><span class="s" data-g="cribbage"><span>Cribbage</span></span><span class="s" data-g="gofish"><span>Go Fish</span></span><span class="s" data-g="threefiveeight"><span>Sergeant Major</span></span><span class="s" data-g="whist"><span>Whist</span></span><span class="s" data-g="crazyeights"><span>Crazy Eights</span></span><span class="s" data-g="bridge"><span>Bridge</span></span><span class="s" data-g="oldmaid"><span>Old Maid</span></span><span class="s" data-g="sheepshead"><span>Sheepshead</span></span><div class="ov"><span class="ovbtn"><span class="ovlab">More</span><span class="wall"></span><span class="zone"><svg viewBox="0 0 8 7" aria-hidden="true"><path d="M1.2 1h5.6L4 6z" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></svg></span></span><ul class="ovlist"><li class="mi" data-g="hearts">Hearts</li><li class="mi" data-g="spades">Spades</li><li class="mi" data-g="euchre">Euchre</li><li class="mi" data-g="pinochledd">Double Deck Pinochle</li><li class="mi" data-g="handfoot">Hand & Foot</li><li class="mi" data-g="ginrummy">Gin Rummy</li><li class="mi" data-g="twentynine">Twenty-Nine</li><li class="mi" data-g="rummy">Rummy</li><li class="mi" data-g="canasta">Canasta</li><li class="mi" data-g="pinochle">Pinochle</li><li class="mi" data-g="cribbage">Cribbage</li><li class="mi" data-g="gofish">Go Fish</li><li class="mi" data-g="threefiveeight">Sergeant Major</li><li class="mi" data-g="whist">Whist</li><li class="mi" data-g="crazyeights">Crazy Eights</li><li class="mi" data-g="bridge">Bridge</li><li class="mi" data-g="oldmaid">Old Maid</li><li class="mi" data-g="sheepshead">Sheepshead</li></ul></div><span class="thumb still"></span></div></div>
       <div class="lobbycol">
-        <div class="lobbyhead"><span class="pophead">Leaderboard</span></div>
         <div class="lobbyBoardCard" id="lobbyBoardCard">
         <div class="lbRows">
           <div class="lbRow lbHeaderRow"><span class="lbRank">Rank</span><span class="lbName">Player</span><span class="lbRating">Elo</span></div>
@@ -3823,7 +3841,6 @@
       </div>
       </div>
       <div class="lobbycol">
-        <div class="lobbyhead"><span class="pophead">Daily deal</span></div>
         <div class="lobbyDealCard" id="lobbyDealCard">
         <div class="ldChallenge">
           <div class="ldPanel">
@@ -4310,22 +4327,20 @@
   /* every setting but off and scroll: the cut row is out of reach, and the green button comes up only under the pointer */
   var OTPEEKS = [
     ["off", "Six tiles, nothing more"],
-    ["cut", "Third row cut clean at 78px, the top seat whole"],
-    ["sliver", "Third row cut clean at 6px, only the tile edges"],
-    ["sheet", "Third row cut at 78px under the band, its edge throwing a shadow on the tiles"],
-    ["feather", "Third row cut at 78px with a short soft edge"],
-    ["dim", "Third row cut at 78px, dimmed"],
-    ["ghost", "Third row cut at 78px, grey and faint"],
-    ["frost", "Third row cut at 78px behind frosted glass"],
-    ["shade", "Third row cut at 78px, in shadow"],
-    ["recede", "Third row cut at 78px, smaller and further back"],
-    ["fold", "Third row cut at 78px, tipping away under the page"],
-    ["stack", "Two rows, and the edges of a stack under them"],
-    ["lift", "A 14px lip that rises to 78px under the pointer"],
-    ["fade", "Third row peeks 56px under the long fade from before"],
-    ["scroll", "Third row peeks 56px, the tables scroll under the fade, no button"]
+    ["cut", "Cut: the third row cut clean under its top seat"],
+    ["seam", "Cut: the same, with a scored seam under the cut"],
+    ["sheet", "Cut: the band lies over the row like a sheet, its edge throwing a short shadow on the felt"],
+    ["crease", "Cut: the felt darkens in two hard steps at the cut, a crease"],
+    ["short", "Shape: the third row as short tiles with their own rounded feet"],
+    ["lip", "Shape: a 20px lip of bare felt, the tops of the next tiles"],
+    ["tucked", "Shape: the third row tucked under the second, a felt sliver under each tile"],
+    ["stack", "Shape: two rows, and the edges of a stack under them"],
+    ["fan", "Hover: the stack, its edges spread under the pointer"],
+    ["cover", "Hover: a sheet over the row leaving a lip, it slides down under the pointer"],
+    ["fade", "Before: the long fade"],
+    ["scroll", "Before: the tables scroll under the fade, no button"]
   ];
-  var curOtPeek = "sheet";
+  var curOtPeek = "seam";
   var SECTS = [
     ["none", "Sections on the canvas (as today)"],
     ["contained", "Open tables in the Evernote container"],
@@ -7809,7 +7824,7 @@
      down the page (the section's own suit is club, diamond, spade, heart in turn). */
   var HEAD_SEAMS = [
     ["#openTablesTop", "top:-7px", "#openTablesTop .lobbyhead .pophead", 0, "band"],
-    ["#openTablesTop", "bottom:-7px", "#lobbyDemo .lobbycol .lobbyhead .pophead", 1, "canvas"],
+    ["#openTablesTop", "bottom:-7px", "#lobbyDemo > .lobbyhead .pophead", 1, "canvas"], /* one head for the leaderboard and the deal (5 September; two column heads before) */
     ["#liveTablesTop", "top:-7px", "#liveTablesTop .lobbyhead .pophead", 2, "band"],
     ["#sec-tt", "top:-7px", "#sec-tt > .pophead", 3, "canvas"],
     ["#sec-rummy", "top:-7px", "#sec-rummy > .pophead", 4, "band"],
@@ -8226,10 +8241,13 @@
     if (!panel) return;
     var grid = panel.querySelector(".ltGrid");
     var more = document.createElement("div"); more.className = "otMore";
-    more.innerHTML = '<span class="deck"><i></i><i></i><i></i></span><span class="button small green">Show more tables</span>';
+    more.innerHTML = '<span class="deck"><i></i><i></i><i></i></span><span class="button small green" role="button" tabindex="0">Show more tables</span>';
     panel.appendChild(more);
-    more.querySelector(".button").addEventListener("click", function () { panel.classList.add("open"); guard(); });
-    function rowH() { var t = grid.querySelector(".ltCard"); if (t) panel.style.setProperty("--otrow", t.getBoundingClientRect().height + "px"); }
+    var btn = more.querySelector(".button");
+    function open() { panel.classList.add("open"); guard(); }
+    btn.addEventListener("click", open);
+    btn.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(); } });
+    function rowH() { var t = grid.querySelector(".ltCard"); if (t) panel.style.setProperty("--otrow", Math.round(t.getBoundingClientRect().height) + "px"); }
     function fadeColor() {
       var el = panel;
       while (el && el !== document.documentElement) { var bg = getComputedStyle(el).backgroundColor; if (bg && bg !== "rgba(0, 0, 0, 0)" && bg !== "transparent") { panel.style.setProperty("--otfadecol", bg); return; } el = el.parentNode; }
