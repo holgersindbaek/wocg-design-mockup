@@ -2236,9 +2236,16 @@
   body.today-bluefill .lobbyscope .ldCalDay.isToday { background-color: var(--triolight); color: var(--triolightink); }
   body.today-pill .lobbyscope .ldCalDay.isToday { color: #fff; background: radial-gradient(circle at center, var(--triogreen) 13px, transparent 13.5px) #fff; }
   body.today-dot .lobbyscope .ldCalDay.isToday { background: radial-gradient(circle at 50% 82%, var(--triogreen) 2.5px, transparent 3px) #fff; }
-  .lobbyscope .ldInfo { padding: 12px; font-size: 14px; line-height: 20px; color: var(--muted, #4e4d4c); } /* two lines, 64px with its padding: what ten leaderboard rows add to the other tile (5 September) */
-  .lobbyscope .ldInfo p { margin: 0; }
-  .lobbyscope .ldInfo b { color: #212529; font-weight: bold; }
+  body.today-ring .lobbyscope .ldCalDay.isToday::after, body.today-ringink .lobbyscope .ldCalDay.isToday::after { content: ""; position: absolute; left: 50%; top: 50%; width: 26px; height: 26px; margin: -13px 0 0 -13px; border-radius: 50%; pointer-events: none; }
+  body.today-ring .lobbyscope .ldCalDay.isToday { color: var(--triogreen); }
+  body.today-ring .lobbyscope .ldCalDay.isToday::after { box-shadow: inset 0 0 0 2px var(--triogreen); }
+  body.today-ringink .lobbyscope .ldCalDay.isToday::after { box-shadow: inset 0 0 0 2px #212529; }
+  body.today-underline .lobbyscope .ldCalDay.isToday { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; text-decoration-color: var(--triogreen); }
+  /* the deal's facts as three cells under the calendar, in its grammar: a muted caption over a bold value, the calendar's lines between them; 64px, what ten leaderboard rows add to the other tile (5 September) */
+  .lobbyscope .ldInfo { display: grid; grid-template-columns: 1fr 1fr 1.2fr; font-size: 14px; line-height: 20px; color: var(--muted, #4e4d4c); }
+  .lobbyscope .ldFact { display: flex; flex-direction: column; padding: 12px; border-right: 1px solid var(--edge, var(--panelline)); }
+  .lobbyscope .ldFact:last-child { border-right: 0; }
+  .lobbyscope .ldFact b { color: #212529; font-weight: bold; font-variant-numeric: tabular-nums; }
   .lobbyscope .ldFoot { margin-top: auto; padding: 12px; background-color: var(--canvas, #F8F7F4); } /* the button's foot on the grey, under the calendar's line, as the leaderboard's foot (5 September) */
   .lobbyscope .ldPlay { width: 100%; margin: 0; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
 
@@ -2445,9 +2452,9 @@
   .lobbyscope .lbHeaderRow { background-color: var(--canvas, #F8F7F4); font-weight: bold; }
   .lobbyscope .lbName { width: 100%; max-width: 0; overflow: hidden; text-overflow: ellipsis; }
   .lobbyscope .lbHeart { color: #f03e3e; }
-  .lobbyscope .lbUp, .lobbyscope .lbDown { display: inline-block; vertical-align: middle; border-radius: 6px; corner-shape: squircle;
-    font-size: 12px; line-height: 16px; font-weight: bold; padding: 0 4px 0 16px; background-repeat: no-repeat;
-    background-position: 4px center; background-size: 10px 10px; box-shadow: inset 0 0 0 1px rgba(0,0,0,.16); } /* the game buttons' own line, 16% black: 8% read paler than the badge, 30% too heavy (5 September) */
+  .lobbyscope .lbUp, .lobbyscope .lbDown { display: inline-block; vertical-align: middle; margin-left: 6px; border-radius: 8px; corner-shape: squircle;
+    font-size: 12px; line-height: 16px; font-weight: bold; padding: 0 6px 0 15px; background-repeat: no-repeat;
+    background-position: 3px center; background-size: 10px 10px; /* 6px off the number, 8px corners, the arrow 3px in and 6px after the figure (5 September) */ box-shadow: inset 0 0 0 1px rgba(0,0,0,.16); } /* the game buttons' own line, 16% black: 8% read paler than the badge, 30% too heavy (5 September) */
   /* the site's own pairs: bg-success with text-success, bg-error-light with text-error; the arrows in the same inks as the numbers beside them (they were the action colours, #66A80F and #F03E3E) */
   .lobbyscope .lbUp { color: #4F800B; background-color: #C0EB75; background-image: url("arrowUpGreenSmall-ink.png"); }
   .lobbyscope .lbDown { color: #B52626; background-color: #FFDBD9; background-image: url("arrowDownRedSmall-ink.png"); }
@@ -3612,6 +3619,16 @@
   /* On a team game the seat you take decides which side you are on, so those seats behave exactly
      as an open table's do. On a solo-scored game one empty chair is the same as another, so nothing
      there is a target. */
+  /* A slot with no table to put in it holds BARE FELT: the same green, the same rounded box, and
+     nothing on it at all. It keeps the section's shape and texture where an empty cell would leave a
+     hole, and it says a table could be here without pretending one is. Nothing on it is clickable.
+     The opacity transition is what lets a table fade out into felt, and felt fade up into a table, on
+     the same 260ms the deal uses. */
+  #openTablesTop .ltCard { transition: opacity 260ms cubic-bezier(.22,1,.36,1); }
+  #openTablesTop .ltCard.ltBlank { opacity: .72; cursor: default; }
+  #openTablesTop .ltCard.ltBlank .tableListing .header::before,
+  #openTablesTop .ltCard.ltBlank .tableListing .header::after { box-shadow: none; }
+
   :is(#openTablesTop, #lobbyLiveTables) .ltCard.isNew .tableListing:not(.isTeamGame) .player { cursor: default; }
 
   /* the marks: white, bottom right, with the same soft outline */
@@ -3879,7 +3896,7 @@
             <div class="ldCal"><span class="ldCalHead">Mo</span><span class="ldCalHead">Tu</span><span class="ldCalHead">We</span><span class="ldCalHead">Th</span><span class="ldCalHead">Fr</span><span class="ldCalHead">Sa</span><span class="ldCalHead">Su</span><span class="ldCalCell"></span><span class="ldCalCell"></span><span class="ldCalCell"></span><span class="ldCalCell"></span><span class="ldCalCell"></span><span class="ldCalCell ldCalDay isDealDone">1</span><span class="ldCalCell ldCalDay">2</span><span class="ldCalCell ldCalDay isDealDone">3</span><span class="ldCalCell ldCalDay isToday">4</span><span class="ldCalCell ldCalDay isFuture">5</span><span class="ldCalCell ldCalDay isFuture">6</span><span class="ldCalCell ldCalDay isFuture">7</span><span class="ldCalCell ldCalDay isFuture">8</span><span class="ldCalCell ldCalDay isFuture">9</span><span class="ldCalCell ldCalDay isFuture">10</span><span class="ldCalCell ldCalDay isFuture">11</span><span class="ldCalCell ldCalDay isFuture">12</span><span class="ldCalCell ldCalDay isFuture">13</span><span class="ldCalCell ldCalDay isFuture">14</span><span class="ldCalCell ldCalDay isFuture">15</span><span class="ldCalCell ldCalDay isFuture">16</span><span class="ldCalCell ldCalDay isFuture">17</span><span class="ldCalCell ldCalDay isFuture">18</span><span class="ldCalCell ldCalDay isFuture">19</span><span class="ldCalCell ldCalDay isFuture">20</span><span class="ldCalCell ldCalDay isFuture">21</span><span class="ldCalCell ldCalDay isFuture">22</span><span class="ldCalCell ldCalDay isFuture">23</span><span class="ldCalCell ldCalDay isFuture">24</span><span class="ldCalCell ldCalDay isFuture">25</span><span class="ldCalCell ldCalDay isFuture">26</span><span class="ldCalCell ldCalDay isFuture">27</span><span class="ldCalCell ldCalDay isFuture">28</span><span class="ldCalCell ldCalDay isFuture">29</span><span class="ldCalCell ldCalDay isFuture">30</span><span class="ldCalCell ldCalDay isFuture">31</span><span class="ldCalCell"></span><span class="ldCalCell"></span><span class="ldCalCell"></span><span class="ldCalCell"></span><span class="ldCalCell"></span><span class="ldCalCell"></span></div>
           </div>
         </div>
-        <div class="ldInfo"><p><span class="ldNum">Deal 248</span> &middot; about <span class="ldTime">8</span> minutes</p><p>Won by <b class="ldWon">312 of 1,204</b> who played it today</p></div>
+        <div class="ldInfo"><div class="ldFact"><span class="ldCap">Deal</span><b class="ldNum">248</b></div><div class="ldFact"><span class="ldCap">Takes about</span><b><span class="ldTime">8</span> minutes</b></div><div class="ldFact"><span class="ldCap">Won today by</span><b class="ldWon">312 of 1,204</b></div></div>
         <div class="ldFoot"><button type="button" class="button green ldPlay">Play daily challenge</button></div>
       </div>
       </div>
@@ -4325,7 +4342,8 @@
   ];
   var curCbtn = "gameyellow";
   var TODAYS = [["frame", "Green number in a 2px green frame"], ["lime", "Lime fill, dark green number (the badge's pair)"], ["everframe", "Evernote green number in a 2px Evernote frame"], ["everfill", "Evernote green fill, white number"],
-    ["blueframe", "Blue number in a 2px blue frame"], ["bluefill", "The nameplate's light blue, blue number"], ["pill", "A green disc behind a white number"], ["dot", "A green dot under the number"]];
+    ["blueframe", "Blue number in a 2px blue frame"], ["bluefill", "The nameplate's light blue, blue number"], ["pill", "A green disc behind a white number (Apple, Google)"], ["dot", "A green dot under the number"],
+    ["ring", "A green outlined circle, green number (Material's today)"], ["ringink", "An ink outlined circle"], ["underline", "A green underline under the number"]];
   var curToday = "frame";
   /* the game bar over the open tables: the leaderboard's blue, the greens the page already plays with, the game's yellow, or the Evernote scheme */
   var OTCOLORS = [
@@ -4358,7 +4376,7 @@
     ["fade", "Before: the long fade"],
     ["scroll", "Before: the tables scroll under the fade, no button"]
   ];
-  var curOtPeek = "seam";
+  var curOtPeek = "off";
   var SECTS = [
     ["none", "Sections on the canvas (as today)"],
     ["contained", "Open tables in the Evernote container"],
@@ -6988,9 +7006,29 @@
     function names(card) {
       return humanSeats(card).map(function (p) { return p.querySelector(".playerName").textContent.trim(); });
     }
+    /* A blank is a slot, not a table: it never expires, never seats anyone and is never picked by the
+       beat. It still counts towards slotCount, because it holds its place in the grid. */
     function realCards() {
-      return [].slice.call(grid.querySelectorAll(".ltCard:not(.isNew):not([data-busy])"));
+      return [].slice.call(grid.querySelectorAll(".ltCard:not(.isNew):not(.ltBlank):not([data-busy])"));
     }
+    function blankCards() {
+      return [].slice.call(grid.querySelectorAll(".ltCard.ltBlank:not([data-busy])"));
+    }
+    /* realCards() drops the busy ones, because the beat must not pick a tile that is mid-turnover.
+       Counting how many tables the section is SHOWING is a different question and must include them,
+       or a turnover reads as a missing table and one gets dealt into the felt to make up for it.
+       dealtInto stamps .ltBlank from the first frame, so a tile on its way to felt already counts as
+       felt here. */
+    function realCount() {
+      return grid.querySelectorAll(".ltCard:not(.isNew):not(.ltBlank)").length;
+    }
+    /* the number of tables the chosen game actually has, read from the filter's own count so the grid
+       and the chip can never disagree */
+    function availableFor(id) {
+      var n = document.querySelector('#otFilter [data-g="' + id + '"] i[data-n]');
+      return n ? +n.getAttribute("data-n") : 99;
+    }
+    function wantReal() { return Math.max(0, Math.min(liveCards(), availableFor(activeGame))); }
     /* a table on its way out still holds its place in the grid, so it counts until it is gone */
     function slotCount() { return grid.querySelectorAll(".ltCard:not(.isNew)").length; }
 
@@ -7336,14 +7374,25 @@
        comes up and the players are dealt into their seats one at a time. All the movement is spent on
        the arrival, which is the half that is actually news. */
     var DEAL_STEP = 38;
+    /* the empty container a blank wears, built the same way a real one is so the deal can swap either
+       for either */
+    function blankBox() {
+      var b = document.createElement("div");
+      b.className = "playersContainer";
+      return b;
+    }
     function dealtInto(card, game) {
       var header = card.querySelector(".header");
       var oldBox = header.querySelector(".playersContainer");
       var listing = card.querySelector(".tableListing");
-      var fresh = buildCard(game);
-      var newBox = fresh.querySelector(".playersContainer");
+      /* game === null deals the tile into bare felt: the contents clear and nothing arrives */
+      var toBlank = !game;
+      var newBox = toBlank ? blankBox() : buildCard(game).querySelector(".playersContainer");
       header.appendChild(newBox);
-      armCard(newBox);
+      if (!toBlank) armCard(newBox);
+      /* the fade runs on the tile, on its own transition, alongside the deal */
+      card.classList.toggle("ltBlank", toBlank);
+      if (toBlank) game = [gameOf(card) || "canasta", "", ""];
       /* The listing wears the NEXT game's class from the first frame, so the arriving plates are dealt in
          in their own colour; the leaving set is frozen in the colour it arrived with (teamSeats / soloSeats
          on the old container). Before this the class waited for the old contents to go, and a team game's
@@ -7389,7 +7438,16 @@
     }
     grid.querySelectorAll(".ltCard").forEach(function (c) { armBadges(c); addInvitation(c); armInvite(c); });
 
+    /* A table opening does not add a tile any more: the grid is a fixed six. It turns a piece of felt
+       back into a table, which is the same event told in the space that is already there. */
     function appear() {
+      if (realCount() >= wantReal()) return;
+      var blank = blankCards()[0];
+      if (blank) {
+        blank.setAttribute("data-busy", "1");
+        dealtInto(blank, pick(tablePool()));
+        return;
+      }
       if (slotCount() >= liveCards()) return;
       var card = buildCard(pick(tablePool()));
       grid.insertBefore(card, grid.querySelector(".ltCard.isNew"));
@@ -7405,11 +7463,14 @@
         });
       }
     }
+    /* A table stops being listed. If the game has another to show, one is dealt into its place; if it
+       has not, the tile clears to felt on the same recipe, so the shortfall arrives as an event rather
+       than appearing out of nowhere on the next filter change. */
     function expire(card, replace) {
       if (card.getAttribute("data-busy")) return;
       if (replace === false || slotCount() > liveCards()) { card.remove(); return; }
       card.setAttribute("data-busy", "1");
-      dealtInto(card, pick(tablePool()));
+      dealtInto(card, realCount() > wantReal() ? null : pick(tablePool()));
     }
 
     /* ── the game bar picks a game: every tile that does not show it turns over to one that does, one after
@@ -7428,15 +7489,29 @@
       if (id === "all") {
         var seen = {};
         cards.forEach(function (c) { var g = gameOf(c); if (seen[g]) todo.push(c); else seen[g] = true; });
+        /* felt left over from a thin game becomes a table again */
+        blankCards().forEach(function (c) { todo.push(c); });
         todo.forEach(function (c, i) {
           var choices = NEW_TABLES.filter(function (g) { return !seen[g[0]]; });
           var g = choices.length ? pick(choices) : pick(NEW_TABLES); seen[g[0]] = true;
           setTimeout(function () { if (c.getAttribute("data-busy")) return; c.setAttribute("data-busy", "1"); dealtInto(c, g); }, i * 70);
         });
       } else {
+        /* Only as many tiles become tables as the game actually has, read from the filter's own count.
+           The rest clear to felt on the same recipe, so picking a thin game reads as the tables being
+           dealt away rather than the section quietly shrinking. */
         var entry = tablePool()[0];
-        cards.forEach(function (c) { if (gameOf(c) !== id) todo.push(c); });
-        todo.forEach(function (c, i) { setTimeout(function () { if (c.getAttribute("data-busy")) return; c.setAttribute("data-busy", "1"); dealtInto(c, entry); }, i * 70); });
+        var want = Math.max(0, Math.min(liveCards(), availableFor(id)));
+        [].slice.call(grid.querySelectorAll(".ltCard:not(.isNew)")).forEach(function (c, i) {
+          var wantsTable = i < want, isBlank = c.classList.contains("ltBlank");
+          if (wantsTable && !isBlank && gameOf(c) === id) return;
+          if (!wantsTable && isBlank) return;
+          setTimeout(function () {
+            if (c.getAttribute("data-busy")) return;
+            c.setAttribute("data-busy", "1");
+            dealtInto(c, wantsTable ? entry : null);
+          }, i * 70);
+        });
       }
       hostTo(id === "all" ? "canasta" : id);
     } };
@@ -7480,8 +7555,9 @@
       beat++;
       if (beat % 3 === 0) tickClocks();
       var cards = realCards();
-      /* the grid is never short: if a table is missing, one arrives before anything else happens */
-      if (slotCount() < liveCards()) { appear(); return; }
+      /* the grid is never short: a missing tile is filled, and a piece of felt becomes a table again
+         as soon as the game has one to put there */
+      if (slotCount() < liveCards() || realCount() < wantReal()) { appear(); return; }
       if (!cards.length) return;
       var withEmpty = cards.filter(function (c) { return emptySeats(c).length; });
       var withPeople = cards.filter(function (c) { return humanSeats(c).length > 1; });
@@ -8381,7 +8457,7 @@
       var fills = card.querySelectorAll(".ldAwardFill"), pct = function (v) { return Math.max(0, Math.min(1, v)) * 100 + "%"; };
       if (fills[0]) fills[0].style.width = pct(wins / 10); if (fills[1]) fills[1].style.width = pct((wins - 10) / 10); if (fills[2]) fills[2].style.width = pct((wins - 20) / 11);
       card.querySelectorAll(".ldCalDay").forEach(function (c) { var day = parseInt(c.textContent, 10); c.classList.toggle("isDealDone", deal.done.indexOf(day) >= 0); });
-      card.querySelector(".ldNum").textContent = "Deal " + deal.number; card.querySelector(".ldTime").textContent = deal.minutes; card.querySelector(".ldWon").textContent = fmt(deal.won) + " of " + fmt(deal.played);
+      card.querySelector(".ldNum").textContent = deal.number; card.querySelector(".ldTime").textContent = deal.minutes; card.querySelector(".ldWon").textContent = fmt(deal.won) + " of " + fmt(deal.played);
     };
     document.addEventListener("DOMContentLoaded", function () { window.renderClub("hearts"); });
   })();
