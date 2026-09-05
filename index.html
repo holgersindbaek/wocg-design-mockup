@@ -3262,6 +3262,7 @@
     <label class="ctl"><span>Catalog layout</span><select id="sel-catalog"></select></label>
     <label class="ctl"><span>Divider</span><select id="sel-divider"></select></label>
     <label class="ctl"><span>Sections</span><select id="sel-sect"></select></label>
+    <label class="ctl"><span>Corner buttons</span><select id="sel-cbtn"></select></label>
     <label class="ctl"><span>Menu bar</span><select id="sel-menu"></select></label>
     <label class="ctl"><span>Link hover</span><select id="sel-lhover"></select></label>
   </div>
@@ -3545,6 +3546,31 @@
                  -1px 1px 0 rgba(0,0,0,.32), 1px 1px 0 rgba(0,0,0,.32); }
   :is(#openTablesTop, #lobbyLiveTables) .ltTime, :is(#openTablesTop, #lobbyLiveTables) .hvClock { transition: none !important; }
 
+  /* The corner buttons (5 September, from the open tables hover lab). The clock stays a clock; on hover the tile's
+     verbs arrive as real buttons in the felt's top right, 12px from its edges as the nameplates keep from the sides:
+     Join on a table you can sit at, Host and Options on the host tile (in place of the gear), Watch and Queue on a
+     live table (Watch alone when it is ranked, which the queue refuses). Hidden at rest, dealt in on the arriving
+     curve with no wait, out on the leaving curve. The Corner buttons switcher picks the coat; the game's own yellow
+     button, as base.scss draws it, is the default. */
+  :is(#openTablesTop, #lobbyLiveTables) .cbtn { position: absolute; z-index: 4; top: 4px; right: 0; display: flex; gap: 6px;
+    opacity: 0; pointer-events: none; }
+  :is(#openTablesTop, #lobbyLiveTables) .ltCard:hover .cbtn { pointer-events: auto; }
+  :is(#openTablesTop, #lobbyLiveTables) .cbtn .button { height: 24px; line-height: 24px; font-size: 16px; padding: 0 10px;
+    box-shadow: 0 0 0 1px rgba(0,0,0,.16); transition: background-color 24ms ease-out; }
+  body.cbtn-gameyellow .cbtn .button { background-color: #FFE066; color: #C96800; text-shadow: none; }
+  body.cbtn-gameyellow .cbtn .button:hover { background-color: color-mix(in srgb, #FFE066 92%, #E67700 8%); }
+  body.cbtn-triogreen .cbtn .button { background-color: var(--triogreen); color: #fff;
+    text-shadow: -1px -1px 0 var(--triogreenring), 1px -1px 0 var(--triogreenring), -1px 1px 0 var(--triogreenring), 1px 1px 0 var(--triogreenring); }
+  body.cbtn-triogreen .cbtn .button:hover { background-color: var(--triogreenhover); }
+  body.cbtn-evergreen .cbtn .button { background-color: #00a82d; color: #fff;
+    text-shadow: -1px -1px 0 color-mix(in srgb, #00a82d 78%, black), 1px -1px 0 color-mix(in srgb, #00a82d 78%, black), -1px 1px 0 color-mix(in srgb, #00a82d 78%, black), 1px 1px 0 color-mix(in srgb, #00a82d 78%, black); }
+  body.cbtn-evergreen .cbtn .button:hover { background-color: color-mix(in srgb, #00a82d 92%, black); }
+  body.cbtn-lightblue .cbtn .button { background-color: var(--triolight); color: var(--triolightink); text-shadow: none; }
+  body.cbtn-lightblue .cbtn .button:hover { background-color: var(--triolighthover); }
+  body.cbtn-blue .cbtn .button { background-color: var(--trioblue); color: #fff;
+    text-shadow: -1px -1px 0 var(--triobluering), 1px -1px 0 var(--triobluering), -1px 1px 0 var(--triobluering), 1px 1px 0 var(--triobluering); }
+  body.cbtn-blue .cbtn .button:hover { background-color: var(--triobluehover); }
+
   /* the options gear, top right, on your own table only. It sits in the one corner every tile
      leaves empty, and away from the marks, so a row of status marks never looks clickable. */
   /* The glyph is 16px, under the 18px marks, so the control sits quieter than the facts. The button
@@ -3591,7 +3617,7 @@
   <div class="lobbyscope" id="openTablesTop">
     <div class="lobbyhead"><span class="pophead">Open tables</span></div>
     <div class="lobbyTablesPanel" id="lobbyTablesPanel">
-      <div class="ltGrid"><div class="ltCard"><div class="tableListing hearts players4"><div class="header"><div class="playersContainer"><div class="spacer30"></div><div class="player playernumber1"><img width="32" height="32" src="WomanGirl2.svg" alt=""><div class="playerNameContainer"><p class="playerName">Marge</p><span class="completionBadge">97</span></div></div><div class="spacer30"></div><div class="player playernumber0 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty</p></div></div><div class="spacer20"></div><div class="player playernumber2"><img width="32" height="32" src="ManMan3.svg" alt=""><div class="playerNameContainer"><p class="playerName">carl52</p><span class="completionBadge">91</span></div></div><div class="spacer30"></div><div class="player playernumber3 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty</p></div></div><div class="spacer30"></div><img class="ltArt art-hearts" src="hearts_logo@2x.png" alt="Hearts" data-tip="<b>Hearts</b><br>Ends at 100"><div class="ltTime" data-tip="Not started yet &middot; waiting for players"><svg class="ltRing" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="#fff" stroke-width="2"/></svg><span>0 min</span></div><div class="ltMarks"><svg class="ltMark" viewBox="0 0 18 18" aria-hidden="true" data-tip="Tournament rules"><path d="M9 3.4v11.2M4.15 6.2l9.7 5.6M13.85 6.2l-9.7 5.6" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg></div></div></div></div></div><div class="ltCard"><div class="tableListing spades isTeamGame players4"><div class="header"><div class="playersContainer"><div class="spacer30"></div><div class="player playernumber1"><img width="32" height="32" src="WomanScientist.svg" alt=""><div class="playerNameContainer"><p class="playerName">Vera</p><span class="completionBadge">99</span></div></div><div class="spacer30"></div><div class="player playernumber0 playedTogether"><img width="32" height="32" src="AnimalCat.svg" alt=""><div class="playerNameContainer"><p class="playerName">Duckling</p><span class="playerBadge isLiked"></span><span class="completionBadge">96</span></div></div><div class="spacer20"></div><div class="player playernumber2 isBot seatAvailable"><img width="32" height="32" src="AlienMartian.svg" alt=""><div class="playerNameContainer"><p class="playerName">Bot Ada</p><span class="playerBadge isBot"></span></div></div><div class="spacer30"></div><div class="player playernumber3"><img width="32" height="32" src="AnimalBeaver.svg" alt=""><div class="playerNameContainer"><p class="playerName">Hank</p><span class="completionBadge">80</span></div></div><div class="spacer30"></div><img class="ltArt art-spades" src="spades_logo@2x.png" alt="Spades" data-tip="<b>Spades</b><br>You take Bot Ada&rsquo;s hand and score<br>Plays to 500"><div class="ltTime" data-tip="In play for 12 min"><svg class="ltRing" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="#fff" stroke-width="2"/><path d="M8 8V1A7 7 0 0 1 15 8z" fill="#fff"/></svg><span>12 min</span></div></div></div></div></div><div class="ltCard isFriend"><div class="tableListing euchre isTeamGame players4"><div class="header"><div class="playersContainer"><div class="spacer30"></div><div class="player playernumber1 playedTogether"><img width="32" height="32" src="ManCowboy.svg" alt=""><div class="playerNameContainer"><p class="playerName">BobK</p><span class="playerBadge isLiked"></span><span class="completionBadge is100"></span></div></div><div class="spacer30"></div><div class="player playernumber0 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty</p></div></div><div class="spacer20"></div><div class="player playernumber2 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty</p></div></div><div class="spacer30"></div><div class="player playernumber3 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty</p></div></div><div class="spacer30"></div><img class="ltArt art-euchre" src="euchre_logo@2x.png" alt="Euchre" data-tip="<b>Euchre</b><br>Dealer may pass<br>No bots<br>Plays to 10"><div class="ltTime" data-tip="Not started yet &middot; waiting for players"><svg class="ltRing" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="#fff" stroke-width="2"/></svg><span>0 min</span></div><div class="ltMarks"><svg class="ltMark" viewBox="0 0 18 18" aria-hidden="true" data-tip="No bots &middot; people only"><circle cx="9" cy="5.9" r="2.9" fill="#fff"/><path d="M3.2 15.6c0-3.2 2.6-4.9 5.8-4.9s5.8 1.7 5.8 4.9z" fill="#fff"/></svg><svg class="ltMark" viewBox="0 0 18 18" aria-hidden="true" data-tip="Private table"><rect x="3.5" y="8" width="11" height="8" rx="2" fill="#fff"/><path d="M6 8V5.8a3 3 0 0 1 6 0V8" fill="none" stroke="#fff" stroke-width="2"/><circle cx="9" cy="12" r="1.3" fill="#327333"/></svg></div></div></div></div></div><div class="ltCard"><div class="tableListing pinochle isTeamGame players4"><div class="header"><div class="playersContainer"><div class="spacer30"></div><div class="player playernumber1"><img width="32" height="32" src="WomanBusinesswoman.svg" alt=""><div class="playerNameContainer"><p class="playerName">wendy_h</p><span class="completionBadge">93</span></div></div><div class="spacer30"></div><div class="player playernumber0"><img width="32" height="32" src="AnimalCow.svg" alt=""><div class="playerNameContainer"><p class="playerName">PragueJoe</p><span class="completionBadge">98</span></div></div><div class="spacer20"></div><div class="player playernumber2"><img width="32" height="32" src="ManGeek2.svg" alt=""><div class="playerNameContainer"><p class="playerName">north4th</p><span class="completionBadge">88</span></div></div><div class="spacer30"></div><div class="player playernumber3 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty</p></div></div><div class="spacer30"></div><img class="ltArt art-pinochle" src="pinochle_logo@2x.png" alt="Pinochle" data-tip="<b>Pinochle</b><br>Plays to 150"><div class="ltTime" data-tip="Not started yet &middot; one seat left, the deal starts when you sit"><svg class="ltRing" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="#fff" stroke-width="2"/></svg><span>0 min</span></div><div class="ltMarks"><svg class="ltMark" viewBox="0 0 18 18" aria-hidden="true" data-tip="Ranked table"><path d="M2.6 14.2 2 6.4c0-.5.6-.8 1-.5l3.1 2.6c.3.2.7.1.9-.2L8.5 4c.2-.4.8-.4 1 0l1.5 4.3c.2.3.6.4.9.2L15 5.9c.4-.3 1 0 1 .5l-.6 7.8c0 .4-.4.7-.8.7H3.4c-.4 0-.8-.3-.8-.7z" fill="#fff"/></svg></div></div></div></div></div><div class="ltCard"><div class="tableListing rummy players4"><div class="header"><div class="playersContainer"><div class="spacer30"></div><div class="player playernumber1"><img width="32" height="32" src="AlienBlue.svg" alt=""><div class="playerNameContainer"><p class="playerName">cardShark52</p><span class="completionBadge">99</span></div></div><div class="spacer30"></div><div class="player playernumber0"><img width="32" height="32" src="WomanCowgirl.svg" alt=""><div class="playerNameContainer"><p class="playerName">mollyb</p><span class="completionBadge is100"></span></div></div><div class="spacer20"></div><div class="player playernumber2 isBot seatAvailable"><img width="32" height="32" src="AlienMartian.svg" alt=""><div class="playerNameContainer"><p class="playerName">Robot 2</p><span class="playerBadge isBot"></span></div></div><div class="spacer30"></div><div class="player playernumber3 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty</p></div></div><div class="spacer30"></div><img class="ltArt art-rummy" src="rummy_logo@2x.png" alt="Rummy" data-tip="<b>Rummy</b><br>You take Robot 2&rsquo;s hand and score<br>Plays to 500"><div class="ltTime" data-tip="In play for 10 min &middot; a player left, you take their hand and score"><svg class="ltRing" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="#fff" stroke-width="2"/><path d="M8 8V1A7 7 0 0 1 15 8z" fill="#fff"/></svg><span>10 min</span></div></div></div></div></div><div class="ltCard isNew"><div class="tableListing canasta isTeamGame players4"><div class="header"><div class="playersContainer"><div class="spacer30"></div><div class="player playernumber1 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty</p></div></div><div class="spacer30"></div><div class="player playernumber0 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty</p></div></div><div class="spacer20"></div><div class="player playernumber2 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty</p></div></div><div class="spacer30"></div><div class="player playernumber3 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty</p></div></div><div class="spacer30"></div><img class="ltArt art-canasta" src="canasta_logo@2x.png" alt="Canasta" data-tip="<b>Canasta</b><br>Your table &middot; plays to 5,000"><div class="ltTime" data-tip="Nobody here yet &middot; click to deal a table of your own"><span class="ltPlusWrap"><svg class="ltPlus" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.2v11.6M2.2 8h11.6" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/></svg></span><span>New table</span></div><div class="ltMarks"><svg class="ltMark" viewBox="0 0 18 18" aria-hidden="true" data-tip="Ranked table"><path d="M2.6 14.2 2 6.4c0-.5.6-.8 1-.5l3.1 2.6c.3.2.7.1.9-.2L8.5 4c.2-.4.8-.4 1 0l1.5 4.3c.2.3.6.4.9.2L15 5.9c.4-.3 1 0 1 .5l-.6 7.8c0 .4-.4.7-.8.7H3.4c-.4 0-.8-.3-.8-.7z" fill="#fff"/></svg><svg class="ltMark" viewBox="0 0 18 18" aria-hidden="true" data-tip="No bots &middot; people only"><circle cx="9" cy="5.9" r="2.9" fill="#fff"/><path d="M3.2 15.6c0-3.2 2.6-4.9 5.8-4.9s5.8 1.7 5.8 4.9z" fill="#fff"/></svg></div><button type="button" class="ltGear" data-tip="Change what this table is" aria-label="Table options"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M15.1 9.9c.03-.3.05-.6.05-.9s-.02-.6-.06-.9l1.44-1.1a.35.35 0 0 0 .08-.44l-1.36-2.36a.34.34 0 0 0-.42-.15l-1.7.68a5 5 0 0 0-1.55-.9l-.26-1.8a.34.34 0 0 0-.34-.29H8.02a.34.34 0 0 0-.34.29l-.26 1.8c-.56.23-1.08.54-1.55.9l-1.7-.68a.34.34 0 0 0-.42.15L2.39 6.56a.34.34 0 0 0 .08.44l1.44 1.1c-.04.3-.07.6-.07.9s.02.6.06.9l-1.43 1.1a.34.34 0 0 0-.08.44l1.36 2.36c.08.15.26.2.42.15l1.7-.68c.47.36.98.67 1.55.9l.26 1.8c.03.17.17.29.34.29h2.72c.17 0 .31-.12.34-.29l.26-1.8c.56-.23 1.08-.54 1.55-.9l1.7.68c.16.06.34 0 .42-.15l1.36-2.36a.34.34 0 0 0-.08-.44zM9 11.9A2.9 2.9 0 1 1 9 6.1a2.9 2.9 0 0 1 0 5.8z" fill="#fff"/></svg></button></div></div></div></div></div>
+      <div class="ltGrid"><div class="ltCard"><div class="tableListing hearts players4"><div class="header"><div class="playersContainer"><div class="spacer30"></div><div class="player playernumber1"><img width="32" height="32" src="WomanGirl2.svg" alt=""><div class="playerNameContainer"><p class="playerName">Marge</p><span class="completionBadge">97</span></div></div><div class="spacer30"></div><div class="player playernumber0 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty</p></div></div><div class="spacer20"></div><div class="player playernumber2"><img width="32" height="32" src="ManMan3.svg" alt=""><div class="playerNameContainer"><p class="playerName">carl52</p><span class="completionBadge">91</span></div></div><div class="spacer30"></div><div class="player playernumber3 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty</p></div></div><div class="spacer30"></div><img class="ltArt art-hearts" src="hearts_logo@2x.png" alt="Hearts" data-tip="<b>Hearts</b><br>Ends at 100"><div class="ltTime" data-tip="Not started yet &middot; waiting for players"><svg class="ltRing" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="#fff" stroke-width="2"/></svg><span>0 min</span></div><div class="ltMarks"><svg class="ltMark" viewBox="0 0 18 18" aria-hidden="true" data-tip="Tournament rules"><path d="M9 3.4v11.2M4.15 6.2l9.7 5.6M13.85 6.2l-9.7 5.6" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg></div></div></div></div></div><div class="ltCard"><div class="tableListing spades isTeamGame players4"><div class="header"><div class="playersContainer"><div class="spacer30"></div><div class="player playernumber1"><img width="32" height="32" src="WomanScientist.svg" alt=""><div class="playerNameContainer"><p class="playerName">Vera</p><span class="completionBadge">99</span></div></div><div class="spacer30"></div><div class="player playernumber0 playedTogether"><img width="32" height="32" src="AnimalCat.svg" alt=""><div class="playerNameContainer"><p class="playerName">Duckling</p><span class="playerBadge isLiked"></span><span class="completionBadge">96</span></div></div><div class="spacer20"></div><div class="player playernumber2 isBot seatAvailable"><img width="32" height="32" src="AlienMartian.svg" alt=""><div class="playerNameContainer"><p class="playerName">Bot Ada</p><span class="playerBadge isBot"></span></div></div><div class="spacer30"></div><div class="player playernumber3"><img width="32" height="32" src="AnimalBeaver.svg" alt=""><div class="playerNameContainer"><p class="playerName">Hank</p><span class="completionBadge">80</span></div></div><div class="spacer30"></div><img class="ltArt art-spades" src="spades_logo@2x.png" alt="Spades" data-tip="<b>Spades</b><br>You take Bot Ada&rsquo;s hand and score<br>Plays to 500"><div class="ltTime" data-tip="In play for 12 min"><svg class="ltRing" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="#fff" stroke-width="2"/><path d="M8 8V1A7 7 0 0 1 15 8z" fill="#fff"/></svg><span>12 min</span></div></div></div></div></div><div class="ltCard isFriend"><div class="tableListing euchre isTeamGame players4"><div class="header"><div class="playersContainer"><div class="spacer30"></div><div class="player playernumber1 playedTogether"><img width="32" height="32" src="ManCowboy.svg" alt=""><div class="playerNameContainer"><p class="playerName">BobK</p><span class="playerBadge isLiked"></span><span class="completionBadge is100"></span></div></div><div class="spacer30"></div><div class="player playernumber0 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty</p></div></div><div class="spacer20"></div><div class="player playernumber2 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty</p></div></div><div class="spacer30"></div><div class="player playernumber3 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty</p></div></div><div class="spacer30"></div><img class="ltArt art-euchre" src="euchre_logo@2x.png" alt="Euchre" data-tip="<b>Euchre</b><br>Dealer may pass<br>No bots<br>Plays to 10"><div class="ltTime" data-tip="Not started yet &middot; waiting for players"><svg class="ltRing" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="#fff" stroke-width="2"/></svg><span>0 min</span></div><div class="ltMarks"><svg class="ltMark" viewBox="0 0 18 18" aria-hidden="true" data-tip="No bots &middot; people only"><circle cx="9" cy="5.9" r="2.9" fill="#fff"/><path d="M3.2 15.6c0-3.2 2.6-4.9 5.8-4.9s5.8 1.7 5.8 4.9z" fill="#fff"/></svg><svg class="ltMark" viewBox="0 0 18 18" aria-hidden="true" data-tip="Private table"><rect x="3.5" y="8" width="11" height="8" rx="2" fill="#fff"/><path d="M6 8V5.8a3 3 0 0 1 6 0V8" fill="none" stroke="#fff" stroke-width="2"/><circle cx="9" cy="12" r="1.3" fill="#327333"/></svg></div></div></div></div></div><div class="ltCard"><div class="tableListing pinochle isTeamGame players4"><div class="header"><div class="playersContainer"><div class="spacer30"></div><div class="player playernumber1"><img width="32" height="32" src="WomanBusinesswoman.svg" alt=""><div class="playerNameContainer"><p class="playerName">wendy_h</p><span class="completionBadge">93</span></div></div><div class="spacer30"></div><div class="player playernumber0"><img width="32" height="32" src="AnimalCow.svg" alt=""><div class="playerNameContainer"><p class="playerName">PragueJoe</p><span class="completionBadge">98</span></div></div><div class="spacer20"></div><div class="player playernumber2"><img width="32" height="32" src="ManGeek2.svg" alt=""><div class="playerNameContainer"><p class="playerName">north4th</p><span class="completionBadge">88</span></div></div><div class="spacer30"></div><div class="player playernumber3 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty</p></div></div><div class="spacer30"></div><img class="ltArt art-pinochle" src="pinochle_logo@2x.png" alt="Pinochle" data-tip="<b>Pinochle</b><br>Plays to 150"><div class="ltTime" data-tip="Not started yet &middot; one seat left, the deal starts when you sit"><svg class="ltRing" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="#fff" stroke-width="2"/></svg><span>0 min</span></div><div class="ltMarks"><svg class="ltMark" viewBox="0 0 18 18" aria-hidden="true" data-tip="Ranked table"><path d="M2.6 14.2 2 6.4c0-.5.6-.8 1-.5l3.1 2.6c.3.2.7.1.9-.2L8.5 4c.2-.4.8-.4 1 0l1.5 4.3c.2.3.6.4.9.2L15 5.9c.4-.3 1 0 1 .5l-.6 7.8c0 .4-.4.7-.8.7H3.4c-.4 0-.8-.3-.8-.7z" fill="#fff"/></svg></div></div></div></div></div><div class="ltCard"><div class="tableListing rummy players4"><div class="header"><div class="playersContainer"><div class="spacer30"></div><div class="player playernumber1"><img width="32" height="32" src="AlienBlue.svg" alt=""><div class="playerNameContainer"><p class="playerName">cardShark52</p><span class="completionBadge">99</span></div></div><div class="spacer30"></div><div class="player playernumber0"><img width="32" height="32" src="WomanCowgirl.svg" alt=""><div class="playerNameContainer"><p class="playerName">mollyb</p><span class="completionBadge is100"></span></div></div><div class="spacer20"></div><div class="player playernumber2 isBot seatAvailable"><img width="32" height="32" src="AlienMartian.svg" alt=""><div class="playerNameContainer"><p class="playerName">Robot 2</p><span class="playerBadge isBot"></span></div></div><div class="spacer30"></div><div class="player playernumber3 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty</p></div></div><div class="spacer30"></div><img class="ltArt art-rummy" src="rummy_logo@2x.png" alt="Rummy" data-tip="<b>Rummy</b><br>You take Robot 2&rsquo;s hand and score<br>Plays to 500"><div class="ltTime" data-tip="In play for 10 min &middot; a player left, you take their hand and score"><svg class="ltRing" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="#fff" stroke-width="2"/><path d="M8 8V1A7 7 0 0 1 15 8z" fill="#fff"/></svg><span>10 min</span></div></div></div></div></div><div class="ltCard isNew"><div class="tableListing canasta isTeamGame players4"><div class="header"><div class="playersContainer"><div class="spacer30"></div><div class="player playernumber1 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty</p></div></div><div class="spacer30"></div><div class="player playernumber0 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty</p></div></div><div class="spacer20"></div><div class="player playernumber2 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty</p></div></div><div class="spacer30"></div><div class="player playernumber3 isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt=""><div class="playerNameContainer"><p class="playerName">Empty</p></div></div><div class="spacer30"></div><img class="ltArt art-canasta" src="canasta_logo@2x.png" alt="Canasta" data-tip="<b>Canasta</b><br>Your table &middot; plays to 5,000"><div class="ltTime" data-tip="Nobody here yet &middot; click to deal a table of your own"><span class="ltPlusWrap"><svg class="ltPlus" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.2v11.6M2.2 8h11.6" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/></svg></span><span>New table</span></div><div class="ltMarks"><svg class="ltMark" viewBox="0 0 18 18" aria-hidden="true" data-tip="Ranked table"><path d="M2.6 14.2 2 6.4c0-.5.6-.8 1-.5l3.1 2.6c.3.2.7.1.9-.2L8.5 4c.2-.4.8-.4 1 0l1.5 4.3c.2.3.6.4.9.2L15 5.9c.4-.3 1 0 1 .5l-.6 7.8c0 .4-.4.7-.8.7H3.4c-.4 0-.8-.3-.8-.7z" fill="#fff"/></svg><svg class="ltMark" viewBox="0 0 18 18" aria-hidden="true" data-tip="No bots &middot; people only"><circle cx="9" cy="5.9" r="2.9" fill="#fff"/><path d="M3.2 15.6c0-3.2 2.6-4.9 5.8-4.9s5.8 1.7 5.8 4.9z" fill="#fff"/></svg></div></div></div></div></div></div>
       
     </div>
   </div>
@@ -4101,6 +4127,15 @@
     ["sampler", "Category sampler + full sections"],
     ["split", "Popular grid + categories"]
   ];
+  /* the coat of the corner buttons the open and live tiles show on hover (5 September) */
+  var CBTNS = [
+    ["gameyellow", "The game's yellow button (#FFE066, dark orange ink)"],
+    ["triogreen", "Trio green, outlined letters"],
+    ["evergreen", "Evernote green (#00a82d), outlined letters"],
+    ["lightblue", "Light blue (the lobby's light button)"],
+    ["blue", "Blue (the lobby's blue button)"]
+  ];
+  var curCbtn = "gameyellow";
   var SECTS = [
     ["none", "Sections on the canvas (as today)"],
     ["contained", "Open tables in the Evernote container"],
@@ -5334,7 +5369,7 @@
   }
   function applyBody() {
     var scene = curLayout.indexOf("sc") === 0;
-    document.body.className = curBase + " play-" + curPlay + " layout-" + curLayout + (scene ? " scenehero" : "") + " font-" + curFont + " shadow-" + curShadow + " edge-" + curEdge + " tex-" + curTexture + " cat-" + curCatalog + " stats-" + curStats + " menu-" + curMenu + " counter-" + curCounter + " rail-" + curRail + " playbtn-" + curPlayBtn + " avedge-" + curAvedge + " avsh-" + curAvshadow + " cnav-" + curCnav + " foot-" + curFooter + " viewer-" + curViewer + " sect-" + curSect + " div-" + curDivider + " lhover-" + curLhover + " tilebg-" + curTileBg + " pinpair-" + curPinPair + " tint-" + curTint + (palShown ? " show-palette" : "");
+    document.body.className = curBase + " play-" + curPlay + " layout-" + curLayout + (scene ? " scenehero" : "") + " font-" + curFont + " shadow-" + curShadow + " edge-" + curEdge + " tex-" + curTexture + " cat-" + curCatalog + " stats-" + curStats + " menu-" + curMenu + " counter-" + curCounter + " rail-" + curRail + " playbtn-" + curPlayBtn + " avedge-" + curAvedge + " avsh-" + curAvshadow + " cnav-" + curCnav + " foot-" + curFooter + " viewer-" + curViewer + " sect-" + curSect + " div-" + curDivider + " cbtn-" + curCbtn + " lhover-" + curLhover + " tilebg-" + curTileBg + " pinpair-" + curPinPair + " tint-" + curTint + (palShown ? " show-palette" : "");
     applyTints();
     var ht = document.getElementById("herotitle"), hs = document.getElementById("herosub");
     if (scene) {
@@ -5367,6 +5402,7 @@
     document.getElementById("sel-stats").value = curStats;
     document.getElementById("sel-menu").value = curMenu;
     document.getElementById("sel-sect").value = curSect;
+    document.getElementById("sel-cbtn").value = curCbtn;
     document.getElementById("sel-divider").value = curDivider;
     document.getElementById("sel-lhover").value = curLhover;
     document.getElementById("sel-counter").value = curCounter;
@@ -5657,6 +5693,7 @@
   buildSel("sel-stats", STATSLINES, function (v) { curStats = v; });
   buildSel("sel-menu", MENUS, function (v) { curMenu = v; });
   buildSel("sel-sect", SECTS, function (v) { curSect = v; });
+  buildSel("sel-cbtn", CBTNS, function (v) { curCbtn = v; });
   buildSel("sel-divider", DIVIDERS, function (v) { curDivider = v; });
   buildSel("sel-lhover", LHOVERS, function (v) { curLhover = v; });
   (function () {
@@ -6582,6 +6619,36 @@
     return { text: mins ? mins + " min" : "In play", fraction: 0.25, tip: full || "In play" };
   }
 
+  /* The corner buttons, shared by the open and the live tiles: cbtnMake puts the group into a felt's
+     .playersContainer once, cbtnShow deals it in or out. The lab's recipe: 260ms in on the arriving curve
+     with no wait, 190ms out on the leaving curve; cancelled only on reversal. */
+  window.cbtnMake = function (box, labels) {
+    if (!box || box.querySelector(".cbtn")) return box && box.querySelector(".cbtn");
+    var g = document.createElement("div");
+    g.className = "cbtn";
+    labels.forEach(function (l) {
+      var a = document.createElement("a");
+      a.className = "button small";
+      a.textContent = l;
+      a.href = "#";
+      a.addEventListener("click", function (e) { e.preventDefault(); e.stopPropagation(); });
+      g.appendChild(a);
+    });
+    box.appendChild(g);
+    return g;
+  };
+  var CB_OUT_KF = [{ opacity: 1, transform: "scale(1)" }, { opacity: 0, transform: "scale(.97)" }];
+  var CB_IN_KF = [{ opacity: 0, transform: "translateY(10px) scale(.94)" }, { opacity: 1, transform: "translateY(0) scale(1)" }];
+  var CB_OUT = { duration: 190, easing: "cubic-bezier(.32,0,.67,0)", fill: "both" };
+  var CB_IN = { duration: 260, easing: "cubic-bezier(.22,1,.36,1)", fill: "both" };
+  window.cbtnShow = function (card, on, settle) {
+    var g = card && card.querySelector(".cbtn");
+    if (!g || !g.animate) return;
+    g.getAnimations().forEach(function (x) { x.cancel(); });
+    var a = g.animate(on ? CB_IN_KF : CB_OUT_KF, on ? CB_IN : CB_OUT);
+    if (settle) a.currentTime = on ? CB_IN.duration : CB_OUT.duration;
+  };
+
   /* the live tables carry their state where an open table carries its clock */
   document.addEventListener("DOMContentLoaded", function () {
     document.querySelectorAll("#lobbyLiveTables .llCard").forEach(function (card) {
@@ -6598,10 +6665,8 @@
         '<circle cx="8" cy="8" r="7" fill="none" stroke="#fff" stroke-width="2"/>' +
         ringWedge(pr.fraction) + '</svg><span>' + pr.text + "</span>";
       box.appendChild(t);
-      var inv = document.createElement("span");
-      inv.className = "hvClock";
-      inv.textContent = "Watch";
-      box.appendChild(inv);
+      /* Watch, and Queue unless the table is ranked (the crown mark), which the seat queue refuses */
+      window.cbtnMake(box, card.querySelector(".ltMark") ? ["Watch"] : ["Watch", "Queue"]);
       if (typeof window.wtipAttach === "function") window.wtipAttach(t, t.getAttribute("data-tip"));
     });
     /* the same hand over the open tables run, on the same recipe */
@@ -6615,13 +6680,7 @@
       var want = function (v) {
         if (on === v) return;
         on = v;
-        var a = card.querySelector(".ltTime"), b = card.querySelector(".hvClock");
-        if (!a || !b || !a.animate) return;
-        var leaving = v ? a : b, arriving = v ? b : a;
-        leaving.getAnimations().forEach(function (x) { x.cancel(); });
-        arriving.getAnimations().forEach(function (x) { x.cancel(); });
-        leaving.animate(OUT_KF, OUT);
-        arriving.animate(IN_KF, IN);
+        window.cbtnShow(card, v);
       };
       card.addEventListener("mouseover", function () { want(true); });
       card.addEventListener("mouseout", function (e) { if (!card.contains(e.relatedTarget)) want(false); });
@@ -6963,15 +7022,11 @@
       arriving.animate(INV_IN_KF, INV_IN);
     }
     function addInvitation(box) {
-      if (box.querySelector(".hvClock")) return;
-      var clock = box.querySelector(".ltTime");
-      if (!clock) return;
+      var pc = box.classList && box.classList.contains("playersContainer") ? box : box.querySelector(".playersContainer");
+      if (!pc || pc.querySelector(".cbtn")) return;
       var card = box.closest(".ltCard");
-      var txt = document.createElement("span");
-      txt.className = "hvClock";
-      /* the host tile is the only one where clicking is not a join */
-      txt.textContent = card && card.classList.contains("isNew") ? "Host table" : "Join table";
-      clock.parentNode.insertBefore(txt, clock.nextSibling);
+      /* the host tile is the only one where clicking is not a join: it gets Host and Options, in place of the gear */
+      window.cbtnMake(pc, card && card.classList.contains("isNew") ? ["Host", "Options"] : ["Join"]);
     }
     /* A turnover builds a fresh .playersContainer, so the clock and the invitation the pointer was
        over are gone and the new pair starts at rest. Without this, a table that turns over under a
@@ -6981,10 +7036,7 @@
        would win. */
     function syncInvite(tile) {
       if (!tile || !tile._inv) return;
-      var clock = tile.querySelector(".ltTime"), txt = tile.querySelector(".hvClock");
-      if (!clock || !txt || !clock.animate) return;
-      var a = clock.animate(INV_OUT_KF, INV_OUT); a.currentTime = INV_OUT.duration;
-      var b = txt.animate(INV_IN_KF, INV_IN); b.currentTime = INV_IN.delay + INV_IN.duration;
+      window.cbtnShow(tile, true, true);
     }
 
     /* The invitation is about the whole tile, so it stays up wherever the pointer is inside it,
@@ -6996,8 +7048,7 @@
       var want = function (on) {
         if (card._inv === on) return;
         card._inv = on;
-        var clock = card.querySelector(".ltTime"), txt = card.querySelector(".hvClock");
-        invHandOver(on ? clock : txt, on ? txt : clock);
+        window.cbtnShow(card, on);
       };
       card.addEventListener("mouseover", function () { want(true); });
       card.addEventListener("mouseout", function (e) {
