@@ -3689,7 +3689,8 @@
   .otFilter { --ot-outline: -1px -1px 0 var(--ot-thumbring), 1px -1px 0 var(--ot-thumbring), -1px 1px 0 var(--ot-thumbring), 1px 1px 0 var(--ot-thumbring);
     position: relative; margin: 2px 0 8px; font-family: "BuloRounded", "Verdana", "Arial", sans-serif; --thspd: 220ms; --thease: cubic-bezier(.645,.045,.355,1);
     --ot-tray: #e4ddd0; --ot-ring: #c9c0ae; --ot-line: #c9c0ae; --ot-ink: #4e4d4c; --ot-hover: #dcd4c5;
-    --ot-listrow: var(--canvas, #f9f6f2); --ot-listline: #e6e0d6;
+    --ot-listrow: var(--canvas, #f9f6f2); --ot-listline: #e6e0d6; --ot-listhover: color-mix(in srgb, var(--ot-listrow), var(--ot-tray));
+    --ot-listshadow: 0 2px 4px rgba(60,45,25,.06), 0 8px 20px rgba(60,45,25,.12);
     --ot-thumb: var(--triogreen); --ot-thumbring: var(--triogreenring); --ot-thumbink: #fff; --ot-thumbshadow: var(--ot-outline); }
   /* the leaderboard's own blue: the light blue tray with the solid blue thumb and white outlined text */
   body.otc-blue .otFilter { --ot-tray: var(--triolight); --ot-ring: var(--triolightring); --ot-ink: var(--triolightink); --ot-hover: var(--triolighthover); --ot-line: var(--triolightline);
@@ -3750,13 +3751,13 @@
   .otFilter .track .ov .ovbtn .zone svg path { fill: var(--ot-ink); stroke: var(--ot-ink); }
   /* the list: the leaderboard's, light blue rows on a blue frame, with the tray's corners, 8px under the tray and flush with its right edge */
   .otFilter .ovlist { display: none; position: absolute; z-index: 30; top: calc(100% + 10px); right: -2px; min-width: 100%; box-sizing: border-box; margin: 0; padding: 0; list-style: none;
-    background: #fff; border: 1px solid var(--ot-line); border-radius: calc(var(--radius-md, 6px) + 2px); corner-shape: squircle; overflow: hidden; }
+    background: #fff; border: 1px solid var(--ot-line); border-radius: calc(var(--radius-md, 6px) + 2px); corner-shape: squircle; overflow: hidden; box-shadow: var(--ot-listshadow); }
   .otFilter .ov:hover .ovlist, .otFilter .ov.open .ovlist { display: block; }
   .otFilter .ov.picked:hover .ovlist { display: none; }
   .otFilter .ovlist .mi { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 0 12px; font-size: 16px; line-height: 24px; font-weight: bold;
     color: var(--ot-ink); background: var(--ot-listrow); border-bottom: 1px solid var(--ot-listline); cursor: pointer; white-space: nowrap; }
   .otFilter .ovlist .mi:last-child, .otFilter .ovlist .mi:has(+ .foot) { border-bottom: 0; }
-  .otFilter .ovlist .mi:hover { background: var(--ot-tray); }
+  .otFilter .ovlist .mi:hover { background: var(--ot-listhover); }
   /* the foot of the Open tables list (6 September): how many tables the grid shows at a time. The rows sit on the canvas with a
      line a step darker than it; the foot is a 28px strip of the tray on the tray's ring colour, Show: in the list's ink at the
      numbers' size, and the numbers as cells as wide as their text with the bar's corner, the chosen one on the thumb. */
