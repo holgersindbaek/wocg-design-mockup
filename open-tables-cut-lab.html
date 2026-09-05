@@ -3819,31 +3819,30 @@
     .cutlab .gridwrap .otMore .deck i::before, .cutlab .gridwrap .otMore .deck i::after { transition: none !important; } }
 
 
-  /* ── lab only: the row fades from the top. The mask is on the tile itself, so felt, ring and corners go to nothing before
-     the cut, and what shows through is the band. The curve is ease-out, so the felt drops fast and the tail is thin: solid at
-     the gap, half gone a quarter of the way down, a tenth left at three quarters. --fadeend is where it is fully gone;
-     --peek is how much of the row there is at all. ── */
-  .cutlab .gridwrap[data-peek^="top"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) { --fadeend: calc(var(--peek) - 4px); position: relative;
-    -webkit-mask-image: linear-gradient(to bottom, #000 0, rgba(0,0,0,.55) 25%, rgba(0,0,0,.28) 50%, rgba(0,0,0,.1) 75%, transparent 100%); mask-image: linear-gradient(to bottom, #000 0, rgba(0,0,0,.55) 25%, rgba(0,0,0,.28) 50%, rgba(0,0,0,.1) 75%, transparent 100%);
-    -webkit-mask-size: 100% var(--fadeend); mask-size: 100% var(--fadeend); -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; }
-  .cutlab .gridwrap[data-peek="topquicker"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) { --fadeend: calc(var(--peek) * .7); }
-  .cutlab .gridwrap:is([data-peek="top72"], [data-peek="top72grow"]) { --peek: 72px; }
-  .cutlab .gridwrap:is([data-peek="top56"], [data-peek="top56grow"]) { --peek: 56px; }
-  .cutlab .gridwrap:is([data-peek="top40"], [data-peek="top40grow"]) { --peek: 40px; }
-  /* the flat blur sits on the table inside the tile */
-  .cutlab .gridwrap[data-peek="topblur"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) .tableListing { filter: blur(3px); }
-  /* the growing blur: two layers of glass inside the tile, masked to its lower part, 3px from a fifth of the way down and 8px from half way, so the row is sharpest where it is most solid */
-  .cutlab .gridwrap[data-peek$="grow"]:not(.open) .ltGrid > .ltCard:nth-child(n+7)::before, .cutlab .gridwrap[data-peek$="grow"]:not(.open) .ltGrid > .ltCard:nth-child(n+7)::after { content: ""; position: absolute; inset: 0; z-index: 5; pointer-events: none; }
-  .cutlab .gridwrap[data-peek$="grow"]:not(.open) .ltGrid > .ltCard:nth-child(n+7)::before { backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); -webkit-mask-image: linear-gradient(to bottom, transparent calc(var(--peek) * .2), #000 calc(var(--peek) * .5)); mask-image: linear-gradient(to bottom, transparent calc(var(--peek) * .2), #000 calc(var(--peek) * .5)); }
-  .cutlab .gridwrap[data-peek$="grow"]:not(.open) .ltGrid > .ltCard:nth-child(n+7)::after { backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); -webkit-mask-image: linear-gradient(to bottom, transparent calc(var(--peek) * .5), #000 calc(var(--peek) * .9)); mask-image: linear-gradient(to bottom, transparent calc(var(--peek) * .5), #000 calc(var(--peek) * .9)); }
+  /* ── lab only: a solid top, then a short fade. The first --solid pixels of the third row are whole; the felt then fades on an
+     ease-out curve over --fadelen (half gone a quarter of the way, a tenth left at three quarters) and is transparent 4px before
+     the cut. The mask is on the tile itself, so felt, ring and corners go into the band and nothing else. ── */
+  .cutlab .gridwrap[data-peek^="s"] { --peek: calc(var(--solid) + var(--fadelen) + 4px); }
+  .cutlab .gridwrap[data-peek^="s"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) { position: relative;
+    -webkit-mask-image: linear-gradient(to bottom, #000 var(--solid), rgba(0,0,0,.55) calc(var(--solid) + var(--fadelen) * .25), rgba(0,0,0,.28) calc(var(--solid) + var(--fadelen) * .5), rgba(0,0,0,.1) calc(var(--solid) + var(--fadelen) * .75), transparent calc(var(--solid) + var(--fadelen)));
+    mask-image: linear-gradient(to bottom, #000 var(--solid), rgba(0,0,0,.55) calc(var(--solid) + var(--fadelen) * .25), rgba(0,0,0,.28) calc(var(--solid) + var(--fadelen) * .5), rgba(0,0,0,.1) calc(var(--solid) + var(--fadelen) * .75), transparent calc(var(--solid) + var(--fadelen))); }
+  .cutlab .gridwrap[data-peek^="s16f40"] { --solid: 16px; --fadelen: 40px; }
+  .cutlab .gridwrap[data-peek^="s16f56"] { --solid: 16px; --fadelen: 56px; }
+  .cutlab .gridwrap[data-peek^="s24f32"] { --solid: 24px; --fadelen: 32px; }
+  .cutlab .gridwrap[data-peek^="s16f80"] { --solid: 16px; --fadelen: 80px; }
+  /* the flat blur sits on the table inside the tile, the whole row soft, the solid top included */
+  .cutlab .gridwrap[data-peek$="b"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) .tableListing { filter: blur(3px); }
+  /* the blur under the solid top: one layer of glass inside the tile, clear over the solid part and 3px from 12px below it, so the whole 16px stays sharp */
+  .cutlab .gridwrap[data-peek$="g"]:not(.open) .ltGrid > .ltCard:nth-child(n+7)::after { content: ""; position: absolute; inset: 0; z-index: 5; pointer-events: none; backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
+    -webkit-mask-image: linear-gradient(to bottom, transparent var(--solid), #000 calc(var(--solid) + 12px)); mask-image: linear-gradient(to bottom, transparent var(--solid), #000 calc(var(--solid) + 12px)); }
 </style>
 <h1>Open tables &middot; how the third row is cut</h1>
 <p class="note">
   Round eight, third pass. Two rows of tables stay whole. A third row is cut, and the cut row cannot be used: no hover,
   no click, no focus. Nothing shows at rest. When the pointer is over the cut zone the site's green Show more tables button
   comes up, and a click opens the rest. The tables here are fixed: nothing deals, nothing turns over, so the cut itself
-  can be judged. Fourth pass: the stack that spreads stays, and the fade is the one from the top, quicker, at four heights,
-  with a flat blur or one that grows down the row. The earlier passes are in git history up to 7cd72ee.
+  can be judged. Fifth pass: the stack that spreads stays, and the fade keeps a solid top of at least 16px before a shorter
+  eased fade, plain, under a flat blur, or with the top sharp and the blur under it. The earlier passes are in git history up to 607e894.
 </p>
 
 <div class="asec">
@@ -3856,6 +3855,7 @@
         <li><b>No button at rest.</b> Green, and only under the pointer.</li>
         <li><b>The long fade is out.</b> Felt dissolving into beige reads muddy.</li>
         <li><b>The stack that spreads, the fade and the blur go on</b> <span class="tag">5 Sep, evening</span>. The cuts, the shapes, the sheets and the depth cues are out.</li>
+        <li><b>At least 16px of the tables whole, then a shorter fade</b> <span class="tag">5 Sep, night</span>. 3a the flat blur, 2d the 56px row and 2a the quicker fade were the ones that interested.</li>
         <li><b>Fades from the top, quicker, lower, blurrier further down</b> <span class="tag">5 Sep, late</span>. The fade must go into the band colour and nothing else.</li>
       </ul>
     </div>
@@ -3870,16 +3870,16 @@
     <div class="dcard rule"><h3>How to read the cards <span class="tag">three families</span></h3>
       <ul>
         <li><b>The stack.</b> No third row: two rows, and the edges of the next tables under them, spreading under the pointer.</li>
-        <li><b>From the top.</b> The row fades from its first pixel and is gone before the cut, on an ease-out curve. The same fade at four heights.</li>
-        <li><b>From the top, with blur.</b> The flat blur, and a blur that grows the further down the row goes, at the same heights.</li>
+        <li><b>A solid top, then a short fade.</b> The first 16 or 24px of the row whole, then an eased fade of 32 to 80px into the band.</li>
+        <li><b>The same, with blur.</b> The flat 3px blur over the whole row, or the row sharp over its solid top and blurred under it.</li>
       </ul>
     </div>
   </div>
 </div>
 
 <div class="asec" id="secStack"><h2>One &middot; the stack</h2><p class="desc">Two whole rows, and the edges of the next tables under them.</p><div id="stackVariants"></div></div>
-<div class="asec" id="secTop"><h2>Two &middot; from the top</h2><p class="desc">The row fades from its first pixel into the band, quickly, and is gone before the cut. At four heights.</p><div id="topVariants"></div></div>
-<div class="asec" id="secTopBlur"><h2>Three &middot; from the top, with blur</h2><p class="desc">The same fades, and the row blurs: flat, or more the further down it goes.</p><div id="blurVariants"></div></div>
+<div class="asec" id="secTop"><h2>Two &middot; a solid top, then a short fade</h2><p class="desc">The first 16 or 24px of the row whole, then an eased fade into the band. Four lengths.</p><div id="topVariants"></div></div>
+<div class="asec" id="secTopBlur"><h2>Three &middot; the same, with blur</h2><p class="desc">The flat 3px blur over the whole row, then the row sharp over its solid top and blurred under it.</p><div id="blurVariants"></div></div>
 <script>
 /* the avatar edge filter and shadow the homepage wears by default, rebuilt here as the anim lab does */
 (function () {
@@ -4258,29 +4258,29 @@ window.LAB = (function () {
   cutCard("stackVariants", { key: "fan", title: "1a &middot; The stack that spreads", tag: "kept", tagCls: "pick",
     note: "Two rows, and under each tile two edges of the next tables in a stack. When the pointer is over the stack the edges spread a little, the stack being thumbed, and the button comes up on it." });
 
-  /* ═══════════ Two: from the top ═══════════ */
-  cutCard("topVariants", { key: "top", title: "2a &middot; From the top, quicker", tag: "fade base", tagCls: "base",
-    note: "The 96px row of before, fading from its first pixel on an ease-out curve: half gone a quarter of the way down, a tenth left at three quarters, nothing 4px before the cut. The felt drops fast, so what is left is a thin tail into the band." });
-  cutCard("topVariants", { key: "topquicker", title: "2b &middot; Quicker still",
-    note: "The same curve, but done at 70 percent of the row. The last 30px is bare band, and the button hangs there." });
-  cutCard("topVariants", { key: "top72", title: "2c &middot; Lower: 72px",
-    note: "Less of the tables: 72px of row, so the art and the top seat show and little else, with the quick fade over them." });
-  cutCard("topVariants", { key: "top56", title: "2d &middot; Lower: 56px",
-    note: "56px of row: the tops of the tiles, the art and the head of the top seat, fading as they go." });
-  cutCard("topVariants", { key: "top40", title: "2e &middot; Lowest: 40px",
-    note: "40px: only the crowns of the tiles, a green haze under the second row that says there is more. The least row that still reads as tables." });
+  /* ═══════════ Two: a solid top, then a short fade ═══════════ */
+  cutCard("topVariants", { key: "s16f40", title: "2a &middot; 16px whole, a 40px fade", tag: "fade base", tagCls: "base",
+    note: "The first 16px of the third row are whole, felt, art and the top of the seat, then the eased fade takes 40px: half gone at 26px, a tenth left at 46px, nothing at 56px. A 56px row with a solid top." });
+  cutCard("topVariants", { key: "s16f56", title: "2b &middot; 16px whole, a 56px fade",
+    note: "The same top and a 56px fade, a 72px row. The art and the top seat's head show under the fade before it goes." });
+  cutCard("topVariants", { key: "s24f32", title: "2c &middot; 24px whole, a 32px fade",
+    note: "More solid and less fade in the same 56px: 24px whole, then 32px to nothing. The quickest fade of the set." });
+  cutCard("topVariants", { key: "s16f80", title: "2d &middot; 16px whole, an 80px fade",
+    note: "The 96px row of before with its solid top: 16px whole, then the eased fade over 80px. The tallest, for comparison." });
 
-  /* ═══════════ Three: from the top, with blur ═══════════ */
-  cutCard("blurVariants", { key: "topblur", title: "3a &middot; The flat blur",
-    note: "2a with the row blurred by 3px all over, the card from before with the quicker fade." });
-  cutCard("blurVariants", { key: "topgrow", title: "3b &middot; Blurrier the further down",
-    note: "2a, and the blur grows with the fade: sharp at the gap, 3px from a fifth of the way down, 8px from half way. The row is sharpest where it is most solid, and goes out of focus as it goes." });
-  cutCard("blurVariants", { key: "top72grow", title: "3c &middot; Growing blur at 72px",
-    note: "The growing blur on the 72px row." });
-  cutCard("blurVariants", { key: "top56grow", title: "3d &middot; Growing blur at 56px",
-    note: "The growing blur on the 56px row." });
-  cutCard("blurVariants", { key: "top40grow", title: "3e &middot; Growing blur at 40px",
-    note: "The growing blur on the 40px row: the 8px blur starts 20px down, so the haze is nearly all blur." });
+  /* ═══════════ Three: the same, with blur ═══════════ */
+  cutCard("blurVariants", { key: "s16f40b", title: "3a &middot; 2a, the flat blur",
+    note: "2a with the row blurred by 3px all over, the solid top included: the tables are soft shapes from the gap down, and the fade takes them." });
+  cutCard("blurVariants", { key: "s16f56b", title: "3b &middot; 2b, the flat blur",
+    note: "2b with the flat blur." });
+  cutCard("blurVariants", { key: "s24f32b", title: "3c &middot; 2c, the flat blur",
+    note: "2c with the flat blur." });
+  cutCard("blurVariants", { key: "s16f80b", title: "3d &middot; 2d, the flat blur",
+    note: "2d with the flat blur, the 96px row." });
+  cutCard("blurVariants", { key: "s16f40g", title: "3e &middot; 2a, sharp top, blur under it",
+    note: "2a, and the 16px solid top stays sharp; the blur comes in over the next 12px and the fade takes the rest. The whole pixels are truly whole." });
+  cutCard("blurVariants", { key: "s16f56g", title: "3f &middot; 2b, sharp top, blur under it",
+    note: "2b the same way: 16px sharp, then blur and the 56px fade." });
 })(window.LAB);
 </script>
 <script>
