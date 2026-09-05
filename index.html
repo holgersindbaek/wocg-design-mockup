@@ -3641,6 +3641,10 @@
   #openTablesTop .ltGrid > .ltCard { order: 1; }
   #openTablesTop .ltGrid > .ltCard.isNew { order: 2; }
   #openTablesTop .ltGrid > .ltCard.ltBlank { order: 3; }
+  /* These are the resting arrangement only. A change of game sets style.order on every tile in ONE
+     frame before any deal starts, because .ltBlank goes on and off as each deal begins: left to the
+     classes, every tile would jump to its new place the moment its own deal started, and with a 70ms
+     stagger the grid would rearrange five times over. That is what read as blinking. */
   #openTablesTop .ltCard.ltBlank .tableListing .header::before,
   #openTablesTop .ltCard.ltBlank .tableListing .header::after { box-shadow: none; }
 
@@ -3692,6 +3696,10 @@
     text-shadow: -1px -1px 0 var(--triogreenring), 1px -1px 0 var(--triogreenring), -1px 1px 0 var(--triogreenring), 1px 1px 0 var(--triogreenring); }
   body.otpeek-seeallgreen #openTablesTop .otSeeAll:hover { background-color: var(--triogreenhover); }
   body.otpeek-seeallgreen #openTablesTop .otSeeAll:focus-visible { box-shadow: inset 0 0 0 1px var(--triogreenring), 0 0 0 3px rgba(67,160,56,.35); }
+  /* the chooser's own colours at the chooser's height: the tray, its ring, its ink, its hover, 28px tall like the bar */
+  body.otpeek-seealltray #openTablesTop .otSeeAll { height: 28px; line-height: 28px; background-color: #e4ddd0; box-shadow: inset 0 0 0 1px #c9c0ae; color: #4e4d4c; text-shadow: none; }
+  body.otpeek-seealltray #openTablesTop .otSeeAll:hover { background-color: #dcd4c5; }
+  body.otpeek-seealltray #openTablesTop .otSeeAll:focus-visible { box-shadow: inset 0 0 0 1px #c9c0ae, 0 0 0 3px rgba(201,192,174,.6); }
   .lobbyTopBand > .otFilter { flex: 0 0 100%; width: 100%; margin: 0; } /* the bar over both cards: the full row, the cards 16px under it, the row's own gap, as the tiles are under the open tables' bar */
   .otFilter { --ot-outline: -1px -1px 0 var(--ot-thumbring), 1px -1px 0 var(--ot-thumbring), -1px 1px 0 var(--ot-thumbring), 1px 1px 0 var(--ot-thumbring);
     position: relative; margin: 2px 0 8px; font-family: "BuloRounded", "Verdana", "Arial", sans-serif; --thspd: 220ms; --thease: cubic-bezier(.645,.045,.355,1);
@@ -3781,94 +3789,6 @@
   #openTablesTop .ltCard.isNew .cbtn { flex-direction: column; align-items: stretch; }
 </style>
 <style>
-  /* ── the third row is cut: two rows stay whole, the third is cut at a straight line under the gap, and the cut row is
-     out of reach (no hover, no clicks, no focus: the script makes it inert). Nothing shows at rest; when the pointer is
-     over the cut zone the green Show more tables button comes up, hanging from the cut line, and a click opens the rest.
-     The script puts the setting on the panel as data-peek, so these rules stay simple; the settings differ in what the
-     cut looks like. --peek is the height of the third row that shows. The tile's top seat (art, avatar, name and badge)
-     ends at a third of the tile height plus 1px and the side seats' heads begin 2px later, so the cut sits at a third
-     plus 9px, rounded to a whole pixel: the top seat whole, the side seats hidden, and 8px of felt under the name at
-     every width. ── */
-  #lobbyTablesPanel { --otrow: 268px; --peek: round(calc(var(--otrow) / 3 + 9px), 1px); --otfadecol: var(--canvas, #f9f6f2); --cut: calc(var(--otrow) * 2 + 32px + var(--peek)); }
-  #lobbyTablesPanel[data-peek] { position: relative; }
-  #lobbyTablesPanel[data-peek]:not(.open) .ltGrid { max-height: var(--cut); overflow: visible; clip-path: inset(-24px -24px 0 -24px); }
-  #lobbyTablesPanel[data-peek]:not(.open) .ltGrid > .ltCard:nth-child(n+7) { pointer-events: none; }
-  #lobbyTablesPanel[data-peek]:not([data-peek="scroll"]):not(.open) .ltGrid > .ltCard:nth-child(n+7) .player:not(.playernumber1) { visibility: hidden; }
-  /* the hover zone lies over the cut, from the bottom of the second row to 20px past the cut line; the button's top sits 4px
-     over the felt, so it hangs from the edge with felt between it and the middle tile's name */
-  #lobbyTablesPanel .otMore { display: none; }
-  #lobbyTablesPanel[data-peek]:not(.open) .otMore { display: flex; justify-content: center; align-items: flex-end; position: absolute; left: 0; right: 0;
-    top: calc(var(--otrow) * 2 + 16px); height: calc(16px + var(--peek) + 20px); z-index: 4; box-sizing: border-box; }
-  #lobbyTablesPanel .otMore .button { opacity: 0; transition: opacity .15s ease-out; position: relative; z-index: 1; outline: none; }
-  #lobbyTablesPanel .otMore:hover .button, #lobbyTablesPanel .otMore .button:focus-visible { opacity: 1; }
-  #lobbyTablesPanel .otMore .button:focus-visible { box-shadow: inset 0 0 0 1px var(--triogreenring), 0 0 0 3px rgba(67,160,56,.35); }
-  #lobbyTablesPanel .otMore .deck { display: none; }
-  /* seam: the bare cut with a scored seam right under it, a hairline in the divider's colour and a lit line below, the page's own rule */
-  #lobbyTablesPanel[data-peek="seam"]:not(.open)::after { content: ""; position: absolute; left: 0; right: 0; top: var(--cut); height: 2px; z-index: 3; pointer-events: none;
-    background: linear-gradient(to bottom, #D9D2C4 0 1px, rgba(255,255,255,.7) 1px 2px); }
-  /* sheet: the band lies over the row like a sheet of paper, and its edge throws a short shadow onto the felt under the name, not into the gaps */
-  #lobbyTablesPanel[data-peek="sheet"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) { position: relative; }
-  #lobbyTablesPanel[data-peek="sheet"]:not(.open) .ltGrid > .ltCard:nth-child(n+7)::after { content: ""; position: absolute; left: 0; right: 0; top: calc(var(--peek) - 8px); height: 8px; z-index: 5;
-    background: linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,.34)); }
-  /* crease: the felt darkens in two hard steps at the cut, a fold rather than a shadow */
-  #lobbyTablesPanel[data-peek="crease"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) { position: relative; }
-  #lobbyTablesPanel[data-peek="crease"]:not(.open) .ltGrid > .ltCard:nth-child(n+7)::after { content: ""; position: absolute; left: 0; right: 0; top: calc(var(--peek) - 5px); height: 5px; z-index: 5;
-    background: linear-gradient(to bottom, rgba(0,0,0,.14) 0 3px, rgba(0,0,0,.34) 3px 5px); }
-  /* short: the third row is not clipped at all, its tiles are simply short boxes that finish their own corners, and the felt's ring turns the foot corners too */
-  #lobbyTablesPanel[data-peek="short"]:not(.open) .ltGrid { max-height: none; clip-path: none; }
-  #lobbyTablesPanel[data-peek="short"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) { height: var(--peek); }
-  #lobbyTablesPanel[data-peek="short"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) .tableListing .header::after { bottom: auto; height: var(--peek); border-radius: 20px; }
-  /* lip: 20px of bare felt, the corner radius exactly, so the corners finish before the cut; the art and seats stay out of it */
-  #lobbyTablesPanel[data-peek="lip"] { --peek: 20px; }
-  #lobbyTablesPanel[data-peek="lip"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) .header > * { visibility: hidden; }
-  /* tucked: the third row slides up under the second, like cards in a hand, and only a plain felt sliver shows below each tile */
-  #lobbyTablesPanel[data-peek="tucked"] { --peek: 30px; }
-  #lobbyTablesPanel[data-peek="tucked"]:not(.open) .ltGrid { max-height: calc(var(--otrow) * 2 + 16px + var(--peek)); }
-  #lobbyTablesPanel[data-peek="tucked"]:not(.open) .ltGrid > .ltCard:nth-child(-n+6) { position: relative; z-index: 1; }
-  #lobbyTablesPanel[data-peek="tucked"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) { position: relative; z-index: 0; margin: 0 6px; height: var(--otrow); transform: translateY(calc(var(--peek) - 16px - var(--otrow))); background-color: #2d682e; box-shadow: var(--liftshadow);
-    clip-path: inset(calc(var(--otrow) - var(--peek)) -12px -12px -12px); }
-  #lobbyTablesPanel[data-peek="tucked"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) > * { visibility: hidden; }
-  #lobbyTablesPanel[data-peek="tucked"]:not(.open) .otMore { height: calc(var(--peek) + 20px); }
-  /* stack and fan: the third row stays under the second, and two edges show below each tile, the next tables in a stack; fan spreads them under the pointer */
-  #lobbyTablesPanel:is([data-peek="stack"], [data-peek="fan"]) { --peek: -16px; }
-  #lobbyTablesPanel:is([data-peek="stack"], [data-peek="fan"]):not(.open) { padding-bottom: 16px; }
-  /* the grid ends on the second row's bottom edge here, so the clip runs 12px further to keep that row's lift shadow; the third row starts 16px down and stays hidden */
-  #lobbyTablesPanel:is([data-peek="stack"], [data-peek="fan"]):not(.open) .ltGrid { clip-path: inset(-24px -24px -12px -24px); }
-  #lobbyTablesPanel:is([data-peek="stack"], [data-peek="fan"]):not(.open) .otMore { top: calc(var(--otrow) * 2 + 16px); height: 44px; align-items: center; padding: 0; }
-  #lobbyTablesPanel:is([data-peek="stack"], [data-peek="fan"]):not(.open) .otMore .deck { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 16px; position: absolute; left: 0; right: 0; top: 0; height: 22px; }
-  #lobbyTablesPanel .otMore .deck i { position: relative; display: block; }
-  #lobbyTablesPanel .otMore .deck i::before, #lobbyTablesPanel .otMore .deck i::after { content: ""; position: absolute; top: 0; background: #327333; corner-shape: squircle;
-    box-shadow: inset 0 0 0 1px rgba(255,255,255,.35), 0 2px 4px rgba(0,0,0,.06); }
-  #lobbyTablesPanel .otMore .deck i::before { left: 8px; right: 8px; height: 11px; border-radius: 0 0 12px 12px; z-index: 1; }
-  #lobbyTablesPanel .otMore .deck i::after { left: 20px; right: 20px; height: 19px; border-radius: 0 0 11px 11px; opacity: .55; }
-  #lobbyTablesPanel[data-peek="fan"] .otMore .deck i::before, #lobbyTablesPanel[data-peek="fan"] .otMore .deck i::after { transition: height .22s cubic-bezier(.22,1,.36,1), left .22s cubic-bezier(.22,1,.36,1), right .22s cubic-bezier(.22,1,.36,1); }
-  #lobbyTablesPanel[data-peek="fan"] .otMore:hover .deck i::before { height: 13px; left: 4px; right: 4px; }
-  #lobbyTablesPanel[data-peek="fan"] .otMore:hover .deck i::after { height: 22px; left: 14px; right: 14px; }
-  /* cover: a sheet in the band's colour lies over the row, leaving a 10px lip of bare felt; under the pointer it slides down past the cut line and merges with the band, and the seats are there under it */
-  #lobbyTablesPanel[data-peek="cover"]:not(.open) .otMore { clip-path: inset(0 -24px 0 -24px); }
-  #lobbyTablesPanel[data-peek="cover"]:not(.open) .otMore::before { content: ""; position: absolute; left: -24px; right: -24px; top: 26px; height: calc(var(--peek) - 8px);
-    background: var(--otfadecol); transition: transform .18s ease-in; }
-  #lobbyTablesPanel[data-peek="cover"]:not(.open) .otMore:hover::before { transform: translateY(calc(var(--peek) - 10px)); transition: transform .26s cubic-bezier(.22,1,.36,1); }
-  #lobbyTablesPanel[data-peek="cover"]:not(.open):not(:has(.otMore:hover)) .ltGrid > .ltCard:nth-child(n+7) .header > * { visibility: hidden; }
-  #lobbyTablesPanel[data-peek="cover"] .otMore:hover .button { transition: opacity .16s ease-out .16s; }
-  /* fade: the long fade from before, kept to compare against */
-  #lobbyTablesPanel[data-peek="fade"] { --peek: 56px; }
-  #lobbyTablesPanel[data-peek="fade"]:not(.open)::after { content: ""; position: absolute; left: -2px; right: -2px; top: calc(var(--otrow) * 2 + 16px); height: calc(16px + var(--peek) + 1px);
-    pointer-events: none; z-index: 3; background: linear-gradient(to bottom, rgba(255,255,255,0), var(--otfadecol) 78%); }
-  /* scroll: no button, the tables scroll under the fade, the fade goes when the last row is reached, and a fade at the top once the first row has gone under the bar */
-  #lobbyTablesPanel[data-peek="scroll"] { --peek: 56px; }
-  #lobbyTablesPanel[data-peek="scroll"]:not(.open) .ltGrid { overflow-y: auto; clip-path: none; scrollbar-width: none; }
-  #lobbyTablesPanel[data-peek="scroll"] .ltGrid::-webkit-scrollbar { display: none; }
-  #lobbyTablesPanel[data-peek="scroll"]:not(.open) .ltGrid > .ltCard:nth-child(n+7) { pointer-events: auto; }
-  #lobbyTablesPanel[data-peek="scroll"]:not(.open) .otMore { display: none; }
-  #lobbyTablesPanel[data-peek="scroll"]:not(.open)::after { content: ""; position: absolute; left: -2px; right: -2px; top: calc(var(--otrow) * 2 + 16px); height: calc(16px + var(--peek) + 1px);
-    pointer-events: none; z-index: 3; background: linear-gradient(to bottom, rgba(255,255,255,0), var(--otfadecol) 78%); transition: opacity .2s ease-out; }
-  #lobbyTablesPanel[data-peek="scroll"].atend::after { opacity: 0; }
-  #lobbyTablesPanel[data-peek="scroll"]:not(.open)::before { content: ""; position: absolute; left: -2px; right: -2px; top: 0; height: 40px; pointer-events: none; z-index: 3;
-    background: linear-gradient(to top, rgba(255,255,255,0), var(--otfadecol) 90%); opacity: 0; transition: opacity .2s ease-out; }
-  #lobbyTablesPanel[data-peek="scroll"].scrolled::before { opacity: 1; }
-  @media (prefers-reduced-motion: reduce) { #lobbyTablesPanel .ltGrid, #lobbyTablesPanel .otMore, #lobbyTablesPanel .otMore .button, #lobbyTablesPanel .otMore::before,
-    #lobbyTablesPanel .otMore .deck i::before, #lobbyTablesPanel .otMore .deck i::after { transition: none !important; } }
 </style>
   <div class="lobbyscope" id="openTablesTop">
     <div class="lobbyhead"><span class="pophead">Open tables</span></div>
@@ -4389,24 +4309,11 @@
     ["warmgreen", "Evernote: the warm band as the tray, the Play green thumb"]
   ];
   var curOtColor = "warmdarkergreen";
-  /* how the open tables say there is more: the third row peeking under a fade, with the peek and the fade to try against the divider */
-  /* every setting but off and scroll: the cut row is out of reach, and the green button comes up only under the pointer */
+  /* how the open tables say there is more: the See all button beside the games bar, in three colours */
   var OTPEEKS = [
     ["seeallink", "See all: the site's small button beside the games bar, in the ink thumb's dark"],
     ["seeallgreen", "See all: the same button in the Play green, as the active cell"],
-    ["off", "Six tiles, nothing more"],
-    ["cut", "Cut: the third row cut clean under its top seat"],
-    ["seam", "Cut: the same, with a scored seam under the cut"],
-    ["sheet", "Cut: the band lies over the row like a sheet, its edge throwing a short shadow on the felt"],
-    ["crease", "Cut: the felt darkens in two hard steps at the cut, a crease"],
-    ["short", "Shape: the third row as short tiles with their own rounded feet"],
-    ["lip", "Shape: a 20px lip of bare felt, the tops of the next tiles"],
-    ["tucked", "Shape: the third row tucked under the second, a felt sliver under each tile"],
-    ["stack", "Shape: two rows, and the edges of a stack under them"],
-    ["fan", "Hover: the stack, its edges spread under the pointer"],
-    ["cover", "Hover: a sheet over the row leaving a lip, it slides down under the pointer"],
-    ["fade", "Before: the long fade"],
-    ["scroll", "Before: the tables scroll under the fade, no button"]
+    ["seealltray", "See all: the chooser's own colours, at the chooser's height"]
   ];
   var curOtPeek = "seeallink";
   var SECTS = [
@@ -6991,13 +6898,9 @@
     if (!grid) return;
     var TEAM_GAMES = ["spades", "euchre", "twentynine", "pinochledd", "pinochle", "canasta", "handfoot", "whist", "bridge"]; /* C.GAME_TEAMS: the partners' plates go red on these */
     function teamClass(id) { return TEAM_GAMES.indexOf(id) >= 0 ? " isTeamGame" : ""; }
-    var TICK = 4500; /* five live tables plus the New table card make two full rows; with the third row peeking, eight */
-    function liveCards() {
-      var c = document.body.className;
-      /* See all: closed, the five live tables and the host tile; open, every table the bar counts for the picked game */
-      if (/\botpeek-seeall/.test(c)) { var p = document.getElementById("lobbyTablesPanel"); return p && p.classList.contains("open") ? Math.max(5, Math.min(60, availableFor(activeGame))) : 5; }
-      return /\botpeek-scroll\b/.test(c) ? 11 : (/\botpeek-(?!off\b)/.test(c) ? 8 : 5);
-    }
+    var TICK = 4500; /* five live tables plus the New table card make two full rows */
+    /* closed, the five live tables and the host tile; open by See all, every table the bar counts for the picked game */
+    function liveCards() { var p = document.getElementById("lobbyTablesPanel"); return p && p.classList.contains("open") ? Math.max(5, Math.min(60, availableFor(activeGame))) : 5; }
     var reduced = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
     /* a table turns over without leaving the page: the whole tile goes soft first, then what sits on the
        felt fades out and the new table's own seats fade in, and only then does the tile come back into focus */
@@ -7481,6 +7384,7 @@
       if (realCount() >= wantReal()) return;
       var blank = blankCards()[0];
       if (blank) {
+        blank.style.order = "1";
         blank.setAttribute("data-busy", "1");
         dealtInto(blank, pick(tablePool()));
         return;
@@ -7507,7 +7411,9 @@
       if (card.getAttribute("data-busy")) return;
       if (replace === false || slotCount() > liveCards()) { card.remove(); return; }
       card.setAttribute("data-busy", "1");
-      dealtInto(card, realCount() > wantReal() ? null : pick(tablePool()));
+      var toFelt = realCount() > wantReal();
+      if (toFelt) card.style.order = "3";
+      dealtInto(card, toFelt ? null : pick(tablePool()));
     }
 
     /* ── the game bar picks a game: every tile that does not show it turns over to one that does, one after
@@ -7524,6 +7430,8 @@
       activeGame = id;
       var cards = realCards(), todo = [];
       if (id === "all") {
+        /* every slot holds a table again, so they all take the tables' place in the order */
+        [].slice.call(grid.querySelectorAll(".ltCard:not(.isNew)")).forEach(function (c) { c.style.order = "1"; });
         var seen = {};
         cards.forEach(function (c) { var g = gameOf(c); if (seen[g]) todo.push(c); else seen[g] = true; });
         /* felt left over from a thin game becomes a table again */
@@ -7539,7 +7447,11 @@
            dealt away rather than the section quietly shrinking. */
         var entry = tablePool()[0];
         var want = Math.max(0, Math.min(liveCards(), availableFor(id)));
-        [].slice.call(grid.querySelectorAll(".ltCard:not(.isNew)")).forEach(function (c, i) {
+        var slots = [].slice.call(grid.querySelectorAll(".ltCard:not(.isNew)"));
+        /* the whole grid takes its final arrangement here, in one frame, before a single deal runs.
+           Everything after this changes only what is ON a tile, never where the tile is. */
+        slots.forEach(function (c, i) { c.style.order = i < want ? "1" : "3"; });
+        slots.forEach(function (c, i) {
           var wantsTable = i < want, isBlank = c.classList.contains("ltBlank");
           if (wantsTable && !isBlank && gameOf(c) === id) return;
           if (!wantsTable && isBlank) return;
@@ -8398,62 +8310,26 @@
   });
 </script>
 <script>
-  /* ── the third row is cut. The row height comes from the first tile and, for the fade and the scrolling setting, the
-     fade colour from the nearest painted ancestor, both refreshed when the options change; the setting itself goes on
-     the panel as data-peek. While the panel is closed the cut row is inert, so it takes no pointer, no hover and no
-     focus (the engine keeps the host tile in the sixth slot, above the cut). The green button opens the rest; with
-     the scrolling setting the tables scroll under the fade and the fade goes at the end. ── */
+  /* ── See all: the button beside the games bar opens the panel, and the live layer deals in every table the bar counts
+     for the picked game; open, it says Show fewer. Picking another game in the bar closes it back to six. ── */
   document.addEventListener("DOMContentLoaded", function () {
-    var panel = document.getElementById("lobbyTablesPanel");
-    if (!panel) return;
-    var grid = panel.querySelector(".ltGrid");
-    var more = document.createElement("div"); more.className = "otMore";
-    more.innerHTML = '<span class="deck"><i></i><i></i><i></i></span><span class="button small green" role="button" tabindex="0">Show more tables</span>';
-    panel.appendChild(more);
-    var btn = more.querySelector(".button");
-    function open() { panel.classList.add("open"); guard(); }
-    btn.addEventListener("click", open);
-    btn.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(); } });
-    function rowH() { var t = grid.querySelector(".ltCard"); if (t) panel.style.setProperty("--otrow", Math.round(t.getBoundingClientRect().height) + "px"); }
-    function fadeColor() {
-      var el = panel;
-      while (el && el !== document.documentElement) { var bg = getComputedStyle(el).backgroundColor; if (bg && bg !== "rgba(0, 0, 0, 0)" && bg !== "transparent") { panel.style.setProperty("--otfadecol", bg); return; } el = el.parentNode; }
-      panel.style.setProperty("--otfadecol", getComputedStyle(document.body).backgroundColor);
-    }
-    function atEnd() {
-      var scrolls = panel.dataset.peek === "scroll";
-      panel.classList.toggle("atend", scrolls && grid.scrollTop + grid.clientHeight >= grid.scrollHeight - 2);
-      panel.classList.toggle("scrolled", scrolls && grid.scrollTop > 2);
-    }
-    grid.addEventListener("scroll", atEnd);
-    function mode() { var m = document.body.className.match(/\botpeek-(\w+)/); return m && m[1] !== "off" ? m[1] : null; }
-    function guard() {
-      var closed = panel.dataset.peek && panel.dataset.peek !== "scroll" && !panel.classList.contains("open");
-      [].slice.call(grid.children).forEach(function (c, i) { c.inert = !!(closed && i >= 6); });
-    }
-    /* See all: no cut and no data-peek; the button beside the bar toggles the panel open, and the live layer deals the rest in */
-    var see = document.getElementById("otSeeAll");
-    function seeLabel() { if (see) see.textContent = panel.classList.contains("open") ? "Show fewer" : "See all"; }
-    function toggleSee() { panel.classList.toggle("open"); if (window.otLive && window.otLive.setPeek) window.otLive.setPeek(); guard(); seeLabel(); }
-    if (see) {
-      see.addEventListener("click", toggleSee);
-      see.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleSee(); } });
-    }
-    /* a new game in the bar starts from six again */
-    window.otSeeAll = { close: function () { if (panel.classList.contains("open") && !panel.dataset.peek) { panel.classList.remove("open"); if (window.otLive && window.otLive.setPeek) window.otLive.setPeek(); guard(); seeLabel(); } } };
+    var panel = document.getElementById("lobbyTablesPanel"), see = document.getElementById("otSeeAll");
+    if (!panel || !see) return;
+    function seeLabel() { see.textContent = panel.classList.contains("open") ? "Show fewer" : "See all"; }
+    function deal() { if (window.otLive && window.otLive.setPeek) window.otLive.setPeek(); }
+    function toggleSee() { panel.classList.toggle("open"); deal(); seeLabel(); }
+    see.addEventListener("click", toggleSee);
+    see.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleSee(); } });
+    window.otSeeAll = { close: function () { if (panel.classList.contains("open")) { panel.classList.remove("open"); deal(); seeLabel(); } } };
+    /* a change of setting starts closed */
     var last = null;
     function sync() {
-      var m = mode(), isSee = !!m && m.indexOf("seeall") === 0;
-      if (m && !isSee) panel.dataset.peek = m; else delete panel.dataset.peek;
+      var m = document.body.className.match(/\botpeek-(\w+)/); m = m ? m[1] : null;
       if (m !== last) { panel.classList.remove("open"); last = m; }
-      if (window.otLive && window.otLive.setPeek) window.otLive.setPeek();
-      rowH(); fadeColor(); atEnd(); guard(); seeLabel();
+      deal(); seeLabel();
     }
     sync();
-    window.addEventListener("resize", function () { rowH(); atEnd(); });
     new MutationObserver(sync).observe(document.body, { attributes: true, attributeFilter: ["class"] });
-    new MutationObserver(guard).observe(grid, { childList: true });
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(sync);
   });
 </script>
 <script>

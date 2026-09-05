@@ -3887,6 +3887,20 @@
   .pglab .pgctl.seebtn .button.dk-felt { --dk: #275c28; --dkring: #1c4420; --dkhover: #22512a; }
   .pglab .pgctl.seebtn .button.dk-slate { --dk: #3a4a44; --dkring: #28352f; --dkhover: #33413c; }
   .pglab .pgctl.seebtn .button.dk-play { --dk: var(--triogreen); --dkring: var(--triogreenring); --dkhover: var(--triogreenhover); }
+  /* the chooser's own colours at the chooser's height: tray, ring, ink and hover, 28px like the bar */
+  .pglab .pgctl.seebtn .button.dk-tray { height: 28px; line-height: 28px; background-color: #e4ddd0; box-shadow: inset 0 0 0 1px #c9c0ae; color: #4e4d4c; text-shadow: none; }
+  .pglab .pgctl.seebtn .button.dk-tray:hover { background-color: #dcd4c5; }
+
+  /* ── Four: the More list also picks how many tables to show. A group at the foot of the list: a small heading and a
+     segmented choice in the bar's own clothes, 6, 12, 24 or all, the current one on the green thumb ── */
+  .pglab.moremenu .ovlist { min-width: 220px; }
+  .pglab .ovlist .mlab { display: block; font: bold 11.5px/14px "BuloRounded", Verdana, sans-serif; letter-spacing: .04em; text-transform: uppercase; color: #8a857c; padding: 8px 10px 4px; background: #fff; }
+  .pglab .ovlist .mlab.top { border-bottom: 1px solid #e9e4db; }
+  .pglab .ovlist .mgroup { padding: 4px 10px 10px; background: #fff; }
+  .pglab .ovlist .mseg { display: flex; background: #e4ddd0; box-shadow: inset 0 0 0 1px #c9c0ae; border-radius: 7px; corner-shape: squircle; padding: 2px; }
+  .pglab .ovlist .mseg i { flex: 1 1 0; text-align: center; font-style: normal; font-weight: bold; font-size: 14px; line-height: 22px; border-radius: 5px; corner-shape: squircle; cursor: pointer; color: #4e4d4c; }
+  .pglab .ovlist .mseg i:not(.on):hover { background: #dcd4c5; }
+  .pglab .ovlist .mseg i.on { background: var(--triogreen); color: #fff; box-shadow: inset 0 0 0 1px var(--triogreenring); cursor: default; }
 </style>
 <h1>Open tables &middot; for the few who want more</h1>
 <p class="note">
@@ -3923,7 +3937,8 @@
       <ul>
         <li><b>Dots under the grid.</b> Plain, with arrows, the current one a pill, dashes, one line, with the count, with a tip, as little tables.</li>
         <li><b>The tray at the bottom.</b> The games bar's own tray, its cells saying the tables, a dot, a step, an amount, or the games on the page.</li>
-        <li><b>See all, the button beside the games bar.</b> The pick. Six dark colours for it, 8px from the bar.</li>
+        <li><b>See all, the button beside the games bar.</b> The pick. Six dark colours, the Play green, and the chooser's own colours at its height.</li>
+        <li><b>The More list picks how many, too.</b> The amount inside the bar's own list, under three names for the cell.</li>
       </ul>
     </div>
   </div>
@@ -3931,7 +3946,8 @@
 
 <div class="asec" id="secDots"><h2>One &middot; dots under the grid</h2><p class="desc">A slide deck's dots, one per page of six, centred under the grid. Eight forms of the same idea.</p><div id="dotVariants"></div></div>
 <div class="asec" id="secTray"><h2>Two &middot; the games bar's tray, at the bottom</h2><p class="desc">The same tray and green thumb the games bar uses, centred under the grid, but its cells say something other than 1 to 8.</p><div id="trayVariants"></div></div>
-<div class="asec" id="secSee"><h2>Three &middot; See all, the button beside the games bar</h2><p class="desc">The pick: the site's small button at the right of the games bar, 8px from it, saying See all. Six dark colours to choose from. One click opens all 48 below.</p><div id="seeVariants"></div></div>
+<div class="asec" id="secSee"><h2>Three &middot; See all, the button beside the games bar</h2><p class="desc">The pick: the site's small button at the right of the games bar, 8px from it, saying See all. Six dark colours, the Play green, and the chooser's own colours at its height. One click opens all 48 below.</p><div id="seeVariants"></div></div>
+<div class="asec" id="secMore"><h2>Four &middot; the More list picks how many, too</h2><p class="desc">The bar's More list already holds the other games. Here it also holds how many tables to show at a time, 6, 12, 24 or all, and the question is what the cell is then called.</p><div id="moreVariants"></div></div>
 <script>
 /* the avatar edge filter and shadow the homepage wears by default, rebuilt here as the anim lab does */
 (function () {
@@ -4298,7 +4314,7 @@ window.LAB = (function () {
   /* a card: the stage, its grid in a two-row viewport, and one control. mode: swap (the other tiles hidden), slide (the grid
      translates), scroll (the viewport scrolls, with or without snap). The control gets init(ctl, S) once and update(ctl, S) on every change. */
   function pageCard(host, spec) {
-    var st = L.makeStage(wseg({}), { sel: "all", deferGrid: false, cls: "pglab" + (spec.cls ? " " + spec.cls : "") });
+    var st = L.makeStage(wseg(spec.bar || {}), { sel: "all", deferGrid: false, cls: "pglab" + (spec.cls ? " " + spec.cls : "") });
     var c = document.createElement("div"); c.className = "vcard";
     c.innerHTML = "<h3>" + spec.title + (spec.tag ? ' <span class="tag ' + (spec.tagCls || "") + '">' + spec.tag + "</span>" : "") + '</h3><p class="vnote">' + spec.note + "</p>";
     c.appendChild(st);
@@ -4431,12 +4447,29 @@ window.LAB = (function () {
       update: function (ctl, S) { ctl.querySelector(".lab").textContent = S.expanded ? "Show fewer" : "See all"; } });
   }
   seeCard("seeink", "dk-ink", "3a &middot; The ink thumb", "The dark from the mockup's own Evernote scheme, the ink thumb the games bar can wear: #3d3d3a, ring #2a2a28. Warm-black, a shade lighter than the page's text. In the mockup now.", "the pick");
-  seeCard("seeplay", "dk-play", "3g &middot; The Play green, as the active cell", "The same button in the Play button's green, the colour the bar's active cell wears, so the See all and the picked game are one colour. In the mockup as the other setting.", "twin");
+
+  /* ═══════════ Four: the More list picks how many, too ═══════════ */
+  var AMOUNTS = [6, 12, 24, 0];
+  function moreCard(key, label, title, note, gamesHead) {
+    pageCard("moreVariants", { key: key, mode: "swap", cls: "moremenu", title: title, note: note, bar: label ? { moreLabel: function () { return label; } } : {},
+      init: function (ctl, S) {
+        var list = S.st.querySelector(".ovlist"); if (!list || list.querySelector(".mgroup")) return;
+        if (gamesHead) list.insertAdjacentHTML("afterbegin", '<span class="mlab top">Games</span>');
+        list.insertAdjacentHTML("beforeend", '<span class="mlab">Tables at a time</span><div class="mgroup"><span class="mseg">' + AMOUNTS.map(function (v) { return '<i data-perv="' + v + '">' + (v || "All") + "</i>"; }).join("") + "</span></div>");
+        S.st.addEventListener("click", function (e) { var c = e.target.closest("[data-perv]"); if (!c) return; var v = +c.dataset.perv; S.expanded = v === 0; S.per = v || 6; S.page = 0; S.apply(); });
+      },
+      update: function (ctl, S) { S.st.querySelectorAll("[data-perv]").forEach(function (c) { c.classList.toggle("on", S.expanded ? c.dataset.perv === "0" : +c.dataset.perv === S.per); }); } });
+  }
+  moreCard("morekeep", null, "4a &middot; Still called More", "The list as it is, the other games, and under a line a small heading, Tables at a time, with 6, 12, 24 and All on the bar's own tray. More still fits: more games, more tables.", false);
+  moreCard("moreshow", "Show", "4b &middot; Called Show", "The same list under a cell called Show, with a Games heading over the games, since the cell no longer says what the list is. Show reads as both: show a game, show more tables.", true);
+  moreCard("moreview", "View", "4c &middot; Called View", "The same list under View, the word a data table uses for its columns and its page size. Truer to what the list does, and further from how the site talks.", true);
   seeCard("seetext", "dk-text", "3b &middot; The page's text ink", "The colour the page's text is set in, #212529, ring #0f1214. The darkest of the set, and it belongs to the page already.");
   seeCard("seewarm", "dk-warm", "3c &middot; Warm charcoal", "The divider's warm grey taken all the way down: #4a4438, ring #332f26. It is the band's own hue, dark, so it sits in the section rather than on it.");
   seeCard("seeforest", "dk-forest", "3d &middot; Evernote's forest green", "Evernote's green taken dark, the forest their marks sit on: #1e5631, ring #143d22. Green, but far from the Play button's green, so it does not read as Play.");
   seeCard("seefelt", "dk-felt", "3e &middot; The felt, dark", "The tables' own felt, #327333, darkened to #275c28, ring #1c4420. The button is made of the thing it opens more of.");
   seeCard("seeslate", "dk-slate", "3f &middot; Dark slate", "A cool dark with a hint of green, #3a4a44, ring #28352f. Between the ink and the greens: dark first, green second.");
+  seeCard("seeplay", "dk-play", "3g &middot; The Play green, as the active cell", "The same button in the Play button's green, the colour the bar's active cell wears, so the See all and the picked game are one colour. In the mockup as the other setting.", "twin");
+  seeCard("seetray", "dk-tray", "3h &middot; The chooser's colours, at its height", "The button in the bar's own clothes: the tray, its ring, its ink, its hover, and 28px tall so it stands level with the bar. It reads as part of the chooser rather than a button beside it. In the mockup as the third setting.", "twin");
 })(window.LAB);
 </script>
 <script>
