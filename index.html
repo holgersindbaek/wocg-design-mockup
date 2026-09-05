@@ -2226,9 +2226,10 @@
   .lobbyscope .ldCalDay.isToday { text-decoration: none; font-weight: bold; }
   /* the check in the button's own green (5 September): the SVG is a mask, so the colour is the page's trio green and follows the palette; the file's own fill was #469E00, a green of nobody's. No shadow, and the cell stays white. */
   .lobbyscope .ldCalDay.isDealDone { text-indent: -9999px; background: url("dealDayCheck-green.svg") center / 32px 32px no-repeat; } /* a copy of the check filled with the Play button's green, #43A038, as a plain image so every browser draws it (the mask did not show for Holger) */
-  /* today: the number in bold inside a ring of the same green, in place of the underline (5 September) */
-  .lobbyscope .ldCalDay.isToday::after { content: ""; position: absolute; left: 50%; top: 50%; width: 26px; height: 26px; margin: -13px 0 0 -13px; border-radius: 50%;
-    box-shadow: inset 0 0 0 2px var(--triogreen); pointer-events: none; }
+  /* today, two ways behind the Today's cell switcher (5 September): the number in the button's green with a 2px frame of it inside the cell,
+     or the cell filled with the finished-games badge's lime and the number in its dark green */
+  body.today-frame .lobbyscope .ldCalDay.isToday { color: var(--triogreen); box-shadow: inset 0 0 0 2px var(--triogreen); }
+  body.today-lime .lobbyscope .ldCalDay.isToday { background-color: #C0EB75; color: #4F800B; }
   .lobbyscope .ldInfo { padding: 12px; font-size: 14px; line-height: 20px; color: var(--muted, #4e4d4c); } /* two lines, 64px with its padding: what ten leaderboard rows add to the other tile (5 September) */
   .lobbyscope .ldInfo p { margin: 0; }
   .lobbyscope .ldInfo b { color: #212529; font-weight: bold; }
@@ -3272,6 +3273,7 @@
     <label class="ctl"><span>Status state</span><select id="sel-dstate"></select></label>
     <label class="ctl"><span>Status game</span><select id="sel-dgame"></select></label>
     <label class="ctl"><span>Corner buttons</span><select id="sel-cbtn"></select></label>
+    <label class="ctl"><span>Today's cell</span><select id="sel-today"></select></label>
     <label class="ctl"><span>Game bar colours</span><select id="sel-otcolor"></select></label>
     <label class="ctl"><span>Open tables, more</span><select id="sel-otpeek"></select></label>
   </div>
@@ -4316,6 +4318,8 @@
     ["blue", "Blue (the lobby's blue button)"]
   ];
   var curCbtn = "gameyellow";
+  var TODAYS = [["frame", "Green number in a 2px green frame"], ["lime", "Lime fill, dark green number (the badge's pair)"]];
+  var curToday = "frame";
   /* the game bar over the open tables: the leaderboard's blue, the greens the page already plays with, the game's yellow, or the Evernote scheme */
   var OTCOLORS = [
     ["blue", "Light blue tray, blue thumb (the leaderboard's)"],
@@ -5581,7 +5585,7 @@
   }
   function applyBody() {
     var scene = curLayout.indexOf("sc") === 0;
-    document.body.className = curBase + " play-" + curPlay + " layout-" + curLayout + (scene ? " scenehero" : "") + " font-" + curFont + " shadow-" + curShadow + " edge-" + curEdge + " tex-" + curTexture + " cat-" + curCatalog + " stats-" + curStats + " menu-" + curMenu + " counter-" + curCounter + " rail-" + curRail + " playbtn-" + curPlayBtn + " avedge-" + curAvedge + " avsh-" + curAvshadow + " cnav-" + curCnav + " foot-" + curFooter + " viewer-" + curViewer + " sect-" + curSect + " div-" + curDivider + " cbtn-" + curCbtn + " otc-" + curOtColor + " otpeek-" + curOtPeek + " lhover-" + curLhover + " tilebg-" + curTileBg + " pinpair-" + curPinPair + " tint-" + curTint + (palShown ? " show-palette" : "");
+    document.body.className = curBase + " play-" + curPlay + " layout-" + curLayout + (scene ? " scenehero" : "") + " font-" + curFont + " shadow-" + curShadow + " edge-" + curEdge + " tex-" + curTexture + " cat-" + curCatalog + " stats-" + curStats + " menu-" + curMenu + " counter-" + curCounter + " rail-" + curRail + " playbtn-" + curPlayBtn + " avedge-" + curAvedge + " avsh-" + curAvshadow + " cnav-" + curCnav + " foot-" + curFooter + " viewer-" + curViewer + " sect-" + curSect + " div-" + curDivider + " cbtn-" + curCbtn + " today-" + curToday + " otc-" + curOtColor + " otpeek-" + curOtPeek + " lhover-" + curLhover + " tilebg-" + curTileBg + " pinpair-" + curPinPair + " tint-" + curTint + (palShown ? " show-palette" : "");
     applyTints();
     var ht = document.getElementById("herotitle"), hs = document.getElementById("herosub");
     if (scene) {
@@ -5612,6 +5616,7 @@
     document.getElementById("sel-texture").value = curTexture;
     document.getElementById("sel-stats").value = curStats;
     document.getElementById("sel-cbtn").value = curCbtn;
+    document.getElementById("sel-today").value = curToday;
     if (document.getElementById("sel-otcolor")) document.getElementById("sel-otcolor").value = curOtColor;
     if (document.getElementById("sel-otpeek")) document.getElementById("sel-otpeek").value = curOtPeek;
     document.getElementById("sel-counter").value = curCounter;
@@ -5901,6 +5906,7 @@
   buildSel("sel-otpeek", OTPEEKS, function (v) { curOtPeek = v; });
   buildSel("sel-stats", STATSLINES, function (v) { curStats = v; });
   buildSel("sel-cbtn", CBTNS, function (v) { curCbtn = v; });
+  buildSel("sel-today", TODAYS, function (v) { curToday = v; });
   (function () {
     var bar = document.querySelector(".switchbar");
     var zone = document.querySelector(".switchzone");
@@ -7666,12 +7672,7 @@
     });
     document.querySelectorAll("#railBoard .lbHeart").forEach(function (h2) { attach(h2, "You liked this player"); });
     /* the leaderboard tile's chips and hearts say the same (5 September); the renderer calls this again after a game change */
-    window.tipBoard = function () {
-      document.querySelectorAll("#lobbyDemo .lbUp, #lobbyDemo .lbDown").forEach(function (chip) {
-        var n = chip.textContent.trim(), up = chip.classList.contains("lbUp"), isRank = !!chip.closest(".lbRank");
-        var pl = n === "1" ? " place" : " places";
-        attach(chip, isRank ? (up ? "Up " + n + pl + " since yesterday" : "Down " + n + pl + " since yesterday") : (up ? "Gained " + n + " Elo today" : "Lost " + n + " Elo today"));
-      });
+    window.tipBoard = function () { /* the chips carry no tooltip (Holger, 5 September); the hearts do */
       document.querySelectorAll("#lobbyDemo .lbHeart").forEach(function (h2) { attach(h2, "You liked this player"); });
     };
     window.tipBoard();
@@ -8332,8 +8333,9 @@
   (function () {
     var NAMES = ["SpadeQueen", "mollyb", "TableTalker", "cardShark52", "PragueJoe", "wendy_h", "GinTonic", "north4th", "Beatrix", "Marge", "carl52", "Vera",
       "Duckling", "Hank", "BobK", "Rosie", "HeartsAce", "moonshot", "spadesfan", "BigDeal", "Carol", "Marta", "El_Che", "Joy_", "hootnholler", "jen11099", "Gaz001", "nomore35"];
-    var HEARTS = { rows: [[41, "SpadeQueen", 1512, 0, false], [42, "mollyb", 1506, 2, false], [43, "TableTalker", 1498, 0, true], [44, "cardShark52", 1493, -1, false], [45, "PragueJoe", 1487, 0, false],
-      [46, "Holger", 1481, 3, false, 12], [47, "wendy_h", 1476, 0, false], [48, "GinTonic", 1470, -2, false], [49, "north4th", 1465, 0, false], [50, "Beatrix", 1459, 0, true]],
+    /* the live Hearts leaderboard's own scale (worldofcardgames.com/hearts-leaderboard, 5 September): rank moves of tens to hundreds of places, Elo moves of 4 to 21 */
+    var HEARTS = { rows: [[41, "SpadeQueen", 1512, 0, false], [42, "mollyb", 1506, 273, false], [43, "TableTalker", 1498, 0, true], [44, "cardShark52", 1493, -128, false], [45, "PragueJoe", 1487, 0, false],
+      [46, "Holger", 1481, 236, false, 12], [47, "wendy_h", 1476, 0, false], [48, "GinTonic", 1470, -83, false], [49, "north4th", 1465, 0, false], [50, "Beatrix", 1459, 0, true]],
       deal: { done: [1, 3], number: 248, played: 1204, best: "3rd, top 8%" } };
     function seed(str) { var h = 2166136261; for (var i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); } return function () { h += 0x6D2B79F5; var t = Math.imul(h ^ (h >>> 15), 1 | h); t ^= t + Math.imul(t ^ (t >>> 7), 61 | t); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
     function ordinal(n) { var s = ["th", "st", "nd", "rd"], v = n % 100; return n + (s[(v - 20) % 10] || s[v] || s[0]); }
@@ -8343,9 +8345,9 @@
       for (var i = 0; i < 10; i++) {
         var rank = me - 5 + i, mine = rank === me, name = mine ? "Holger" : pool.splice(Math.floor(r() * pool.length), 1)[0];
         elo -= 3 + Math.floor(r() * 8);
-        var move = r() < 0.4 ? (r() < 0.55 ? 1 : -1) * (1 + Math.floor(r() * 4)) : 0;
-        if (mine) move = (r() < 0.6 ? 1 : -1) * (1 + Math.floor(r() * 5));
-        rows.push([rank, name, elo, move, !mine && r() < 0.2, mine ? (move > 0 ? 1 : -1) * (6 + Math.floor(r() * 20)) : 0]);
+        var move = r() < 0.4 ? (r() < 0.6 ? 1 : -1) * (20 + Math.floor(r() * 400)) : 0;
+        if (mine) move = (r() < 0.6 ? 1 : -1) * (20 + Math.floor(r() * 300));
+        rows.push([rank, name, elo, move, !mine && r() < 0.2, mine ? (move > 0 ? 1 : -1) * (4 + Math.floor(r() * 18)) : 0]);
       }
       var done = [1, 2, 3].filter(function () { return r() < 0.55; });
       return { rows: rows, deal: { done: done, number: 200 + Math.floor(r() * 99), played: 250 + Math.floor(r() * 2200), best: ordinal(1 + Math.floor(r() * 40)) + ", top " + (2 + Math.floor(r() * 30)) + "%" } };
