@@ -3793,6 +3793,26 @@
   .pglab .pgwrap.snap .ltGrid > .ltCard:nth-child(6n+1) { scroll-snap-align: start; }
   @media (prefers-reduced-motion: reduce) { .pglab .pgwrap .ltGrid { transition: none !important; } .pglab .pgwrap.snap .pgview { scroll-behavior: auto; } }
 
+  /* ── the games bar as the mockup has it by default (Game bar colours: the tray a shade darker than the band, the Play green thumb):
+     tray #e4ddd0, ring and lines #c9c0ae, ink #4e4d4c, hover #dcd4c5, the list white-framed with tray-coloured rows ── */
+  .pglab.wseg .track { background: #e4ddd0; box-shadow: inset 0 0 0 1px #c9c0ae; }
+  .pglab.wseg .track > .s, .pglab.wseg .track .ov .ovbtn, .pglab.wseg .track > .s i, .pglab.wseg .track .ov .ovbtn .ovlab i { color: #4e4d4c; }
+  .pglab.wseg .track > .s i, .pglab.wseg .track .ov .ovbtn .ovlab i { opacity: 1; }
+  .pglab.wseg .track:not(.tcopy) > .s:not(.on):hover, .pglab.wseg .track:not(.tcopy) .ov:not(.on) .ovbtn:hover { background: #dcd4c5 !important; }
+  .pglab.dv-full .track > .s + .s::before, .pglab.dv-full .track > .s + .ov::before { background: #c9c0ae; }
+  .pglab.wseg .track .ov .ovbtn .wall { background: #c9c0ae; }
+  .pglab.wseg .track .ov .ovbtn .zone svg path { fill: #4e4d4c; stroke: #4e4d4c; }
+  .pglab.list-site .ovlist { border-color: #c9c0ae; }
+  .pglab.list-site .ovlist .mi { color: #4e4d4c; background: #e4ddd0; border-bottom-color: #c9c0ae; }
+  .pglab.list-site .ovlist .mi:hover { background: #dcd4c5; }
+  .pglab.wseg .tcopy > .s, .pglab.wseg .tcopy > .s i, .pglab.wseg .tcopy .ov .ovbtn, .pglab.wseg .tcopy .ov .ovbtn .ovlab i { color: #fff !important;
+    text-shadow: -1px -1px 0 var(--triogreenring), 1px -1px 0 var(--triogreenring), -1px 1px 0 var(--triogreenring), 1px 1px 0 var(--triogreenring); }
+  .pglab.wseg .tcopy .ov .ovbtn .zone svg path { fill: #fff; stroke: #fff; }
+  /* the bar row: the bar and, for the See all cards, a control at its right */
+  .pglab .barrow { display: flex; align-items: center; gap: 14px; }
+  .pglab .barrow { margin-bottom: 16px; }
+  .pglab .barrow .trackwrap { flex: 1 1 auto; min-width: 0; margin-bottom: 0; }
+
   /* ── the controls ── */
   .pglab .pgctl { font: 14px/20px "BuloRounded", Verdana, sans-serif; color: #4e4d4c; }
   .pglab .pgctl b { color: #212529; }
@@ -3801,108 +3821,76 @@
   .pglab .pgctl .pgarrow { width: 28px; height: 28px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; color: #212529; }
   .pglab .pgctl .pgarrow svg { width: 16px; height: 16px; }
   .pglab .pgctl .pgarrow:hover { background: #ece6db; }
-  /* 1a the page numbers of a data table, right-aligned, the current one an ink pill */
-  .pglab .pgctl.nums { display: flex; justify-content: flex-end; align-items: center; gap: 2px; margin-top: 14px; }
-  .pglab .pgctl.nums .pgnum { min-width: 28px; height: 28px; line-height: 28px; padding: 0 4px; text-align: center; border-radius: 7px; corner-shape: squircle; color: #1971C2; font-weight: bold; }
-  .pglab .pgctl.nums .pgnum:hover { background: #ece6db; }
-  .pglab .pgctl.nums .pgnum.on { background: #212529; color: #fff; cursor: default; }
-  .pglab .pgctl.nums .pgnum.on:hover { background: #212529; }
-  /* 1b the range and two arrows, as a mailbox does it */
-  .pglab .pgctl.range { display: flex; justify-content: flex-end; align-items: center; gap: 4px; margin-top: 14px; }
-  .pglab .pgctl.range .rng { margin-right: 8px; }
-  /* 1c the games bar's own tray, at the bottom, with the pages as its cells and the Play green thumb */
-  .pglab .pgctl.tray { display: flex; position: relative; margin: 14px auto 0; width: max-content; background: #e4ddd0; box-shadow: inset 0 0 0 1px #c9c0ae; border-radius: 9px; corner-shape: squircle; padding: 3px; }
-  .pglab .pgctl.tray .pgnum { position: relative; z-index: 1; min-width: 38px; height: 26px; line-height: 26px; text-align: center; font-weight: bold; font-size: 15px; color: #212529; border-radius: 6px; transition: color .18s; }
-  .pglab .pgctl.tray .pgnum + .pgnum::before { content: ""; position: absolute; left: 0; top: 6px; bottom: 6px; width: 1px; background: #c9c0ae; transition: opacity .18s; }
-  .pglab .pgctl.tray .pgnum.on { color: #fff; cursor: default; }
-  .pglab .pgctl.tray .pgnum.on::before, .pglab .pgctl.tray .pgnum.on + .pgnum::before { opacity: 0; }
-  .pglab .pgctl.tray .pgnum:not(.on):hover { color: #14589a; }
-  .pglab .pgctl.tray .thumb { position: absolute; top: 3px; height: 26px; background: var(--triogreen); box-shadow: inset 0 0 0 1px var(--triogreenring); border-radius: 6px; corner-shape: squircle; transition: left .26s cubic-bezier(.22,1,.36,1), width .26s cubic-bezier(.22,1,.36,1); }
-  /* 1d the full footer of a data table: rows per page, the range, the arrows */
-  .pglab .pgctl.foot { display: flex; align-items: center; justify-content: flex-end; gap: 16px; margin-top: 14px; }
-  .pglab .pgctl.foot .per { position: relative; display: inline-flex; align-items: center; gap: 8px; }
-  .pglab .pgctl.foot .per .chip { display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 8px 0 10px; border-radius: 6px; corner-shape: squircle; background: #fff; box-shadow: inset 0 0 0 1px #c9c0ae; color: #212529; font-weight: bold; }
-  .pglab .pgctl.foot .per .chip svg { width: 10px; height: 10px; }
-  .pglab .pgctl.foot .per .chip:hover { background: #faf8f4; }
-  .pglab .pgctl.foot .per .menu { display: none; position: absolute; left: 0; bottom: calc(100% + 6px); background: #fff; border-radius: 8px; corner-shape: squircle; box-shadow: 0 0 0 1px #c9c0ae, 0 6px 16px rgba(0,0,0,.1); padding: 4px; z-index: 5; min-width: 90px; }
-  .pglab .pgctl.foot .per.open .menu { display: block; }
-  .pglab .pgctl.foot .per .menu .mi { display: block; padding: 4px 10px; border-radius: 5px; font-weight: bold; color: #212529; cursor: pointer; white-space: nowrap; }
-  .pglab .pgctl.foot .per .menu .mi:hover { background: #f4eee5; }
-  .pglab .pgctl.foot .per .menu .mi.on { color: #1971C2; }
-  /* 2a a slim rail beside the grid: the thumb shows how much there is, drags, and the wheel scrolls */
-  .pglab .pgctl.rail { position: absolute; top: 0; right: 0; width: 8px; height: var(--pageh); border-radius: 4px; background: rgba(0,0,0,.06); cursor: pointer; }
-  .pglab .pgctl.rail .thumb { position: absolute; left: 0; right: 0; min-height: 24px; border-radius: 4px; background: #b9b0a0; cursor: grab; transition: background .15s; }
-  .pglab .pgctl.rail .thumb:hover, .pglab .pgctl.rail .thumb.drag { background: #8f8676; }
-  .pglab .pgctl.rail .thumb.drag { cursor: grabbing; }
-  /* 2b up and down at the right edge, the grid sliding a page at a time */
-  .pglab .pgctl.updown { position: absolute; right: -2px; top: calc(var(--pageh) / 2); transform: translateY(-50%); display: flex; flex-direction: column; gap: 8px; }
-  .pglab .pgctl.updown .pgarrow { width: 26px; height: 26px; background: #fff; box-shadow: 0 0 0 1px #c9c0ae, 0 2px 4px rgba(0,0,0,.06); }
-  .pglab .pgctl.updown .pgarrow:hover { background: #faf8f4; }
-  /* 2c dots under the grid, 2d dots beside it */
-  .pglab .pgctl.dots { display: flex; justify-content: center; gap: 9px; margin-top: 16px; }
-  .pglab .pgctl .dot { width: 8px; height: 8px; border-radius: 50%; background: #c9c0ae; transition: background .15s, transform .15s; }
+
+  /* ── One: dots under the grid ── */
+  .pglab .pgctl.dotrow { display: flex; justify-content: center; align-items: center; gap: 9px; margin-top: 16px; min-height: 12px; }
+  .pglab .pgctl .dot { position: relative; width: 8px; height: 8px; border-radius: 50%; background: #c9c0ae; transition: background .15s, transform .15s, width .22s cubic-bezier(.22,1,.36,1); }
   .pglab .pgctl .dot:hover { background: #8f8676; }
   .pglab .pgctl .dot.on { background: #212529; transform: scale(1.3); cursor: default; }
-  .pglab .pgctl.sidedots { position: absolute; right: 0; top: calc(var(--pageh) / 2); transform: translateY(-50%); display: flex; flex-direction: column; gap: 9px; }
-  /* 3a one click: six others */
-  .pglab .pgctl.deal { display: flex; justify-content: center; align-items: center; gap: 12px; margin-top: 14px; }
-  .pglab .pgctl.deal .pgbtn { display: inline-flex; align-items: center; gap: 8px; font-weight: bold; font-size: 16px; color: #1971C2; }
-  .pglab .pgctl.deal .pgbtn svg { width: 18px; height: 18px; }
-  .pglab .pgctl.deal .pgbtn:hover { text-decoration: underline; }
-  .pglab .pgctl.deal .rest { color: #8a857c; }
-  /* 3b in the head, level with the title */
-  .pglab .pgctl.headnext { position: absolute; top: 6px; right: 0; display: flex; gap: 14px; }
-  .pglab .pgctl.headnext .pgbtn { font-weight: bold; font-size: 15px; color: #1971C2; display: inline-flex; align-items: center; gap: 4px; }
-  .pglab .pgctl.headnext .pgbtn svg { width: 14px; height: 14px; }
-  .pglab .pgctl.headnext .pgbtn:hover { text-decoration: underline; }
-  .pglab .pgctl.headnext .pgbtn.off { display: none; }
-  /* 3c the list: a dense table for the few who are looking for something */
-  .pglab .pgctl.list { margin-top: 14px; }
-  .pglab .pgctl.list .toggle { display: inline-flex; align-items: center; gap: 6px; font-weight: bold; color: #1971C2; }
-  .pglab .pgctl.list .toggle svg { width: 12px; height: 12px; transition: transform .18s; }
-  .pglab .pgctl.list.open .toggle svg { transform: rotate(180deg); }
-  .pglab .pgctl.list .toggle:hover { text-decoration: underline; }
-  .pglab .pgtable { display: none; width: 100%; border-collapse: collapse; margin-top: 12px; background: #fff; border-radius: 10px; corner-shape: squircle; overflow: hidden; box-shadow: 0 0 0 1px #d9d2c4; }
-  .pglab .pgctl.list.open .pgtable { display: table; }
-  .pglab .pgtable th { text-align: left; font-size: 11.5px; letter-spacing: .03em; text-transform: uppercase; color: #8a857c; padding: 9px 12px; border-bottom: 1px solid #e9e4db; }
-  .pglab .pgtable td { padding: 5px 12px; border-bottom: 1px solid #f1ede6; color: #212529; vertical-align: middle; height: 34px; }
-  .pglab .pgtable tr:last-child td { border-bottom: 0; }
-  .pglab .pgtable tbody tr:hover td { background: #f8f7f4; }
-  .pglab .pgtable .g { display: flex; align-items: center; gap: 10px; font-weight: bold; }
-  .pglab .pgtable .g img { height: 22px; width: auto; filter: drop-shadow(0 1px 1px rgba(0,0,0,.2)); }
-  .pglab .pgtable .who { display: flex; align-items: center; }
-  .pglab .pgtable .who img { width: 24px; height: 24px; border-radius: 50%; background: #e9e4db; box-shadow: 0 0 0 2px #fff; margin-right: -6px; }
-  .pglab .pgtable .who span { margin-left: 12px; color: #4e4d4c; }
-  .pglab .pgtable .openseats { color: #327333; font-weight: bold; }
-  .pglab .pgtable .full { color: #8a857c; }
-  .pglab .pgtable .act { text-align: right; }
-  .pglab .pgtable .join { display: inline-block; height: 24px; line-height: 24px; padding: 0 12px; border-radius: 6px; corner-shape: squircle; background: var(--triogreen); color: #fff; font-weight: bold; box-shadow: inset 0 0 0 1px var(--triogreenring); cursor: pointer; }
-  .pglab .pgtable .watch { display: inline-block; height: 24px; line-height: 24px; padding: 0 12px; border-radius: 6px; corner-shape: squircle; background: var(--triolight); color: var(--triolightink); font-weight: bold; box-shadow: inset 0 0 0 1px var(--triolightring); cursor: pointer; }
-  /* 4a a drawer handle on the grid's bottom edge */
-  .pglab .pgwrap.handlewrap { margin-bottom: 16px; }
-  .pglab .pgctl.handle { position: absolute; left: 50%; bottom: -2px; transform: translateX(-50%); z-index: 3; }
-  .pglab .pgctl.handle .pgbtn { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 12px 0 14px; border-radius: 14px; background: #fff; box-shadow: 0 0 0 1px #c9c0ae, 0 2px 6px rgba(0,0,0,.08); color: #212529; font-weight: bold; }
-  .pglab .pgctl.handle .pgbtn svg { width: 12px; height: 12px; }
-  .pglab .pgctl.handle .pgbtn:hover { background: #faf8f4; }
-  /* 4b nothing at rest: the corner controls come up under the pointer */
-  .pglab .pgctl.hoverctl { position: absolute; right: 8px; bottom: 20px; display: flex; align-items: center; gap: 6px; opacity: 0; transition: opacity .16s; z-index: 3; }
-  .pglab .pgwrap:hover .pgctl.hoverctl, .pglab .pgwrap:focus-within .pgctl.hoverctl { opacity: 1; }
-  .pglab .pgctl.hoverctl .count { height: 24px; line-height: 24px; padding: 0 9px; border-radius: 12px; background: rgba(0,0,0,.5); color: #fff; font-size: 12px; font-weight: bold; margin-right: 4px; }
-  .pglab .pgctl.hoverctl .pgarrow { width: 26px; height: 26px; background: rgba(255,255,255,.94); box-shadow: 0 0 0 1px #c9c0ae, 0 2px 6px rgba(0,0,0,.1); }
-  .pglab .pgctl.hoverctl .pgarrow:hover { background: #fff; }
-  /* 4c nothing at rest: the wheel turns the pages, and a hint says so once */
-  .pglab .pgctl.hint { position: absolute; left: 50%; bottom: 20px; transform: translateX(-50%); display: inline-flex; align-items: center; gap: 6px; height: 24px; line-height: 24px; padding: 0 10px; border-radius: 12px; background: rgba(0,0,0,.5); color: #fff; font-size: 12px; font-weight: bold; opacity: 0; transition: opacity .2s; pointer-events: none; z-index: 3; }
-  .pglab .pgctl.hint svg { width: 12px; height: 12px; }
-  .pglab .pgwrap:hover .pgctl.hint:not(.gone) { opacity: 1; }
+  /* 1b arrows either side */
+  .pglab .pgctl.dotsarrows .pgarrow { width: 24px; height: 24px; }
+  .pglab .pgctl.dotsarrows .pgarrow.l { margin-right: 6px; } .pglab .pgctl.dotsarrows .pgarrow.r { margin-left: 6px; }
+  /* 1c the current dot stretches to a pill */
+  .pglab .pgctl.dotspill .dot.on { width: 24px; border-radius: 4px; transform: none; }
+  /* 1d dashes, as a story's progress */
+  .pglab .pgctl.dashes { gap: 6px; }
+  .pglab .pgctl.dashes .dot { width: 26px; height: 3px; border-radius: 2px; }
+  .pglab .pgctl.dashes .dot.on { transform: none; }
+  /* 1e one line, the filled part is where you are */
+  .pglab .pgctl.line .track { position: relative; width: 240px; height: 4px; border-radius: 2px; background: #d9d2c4; cursor: pointer; }
+  .pglab .pgctl.line .track .fill { position: absolute; top: 0; bottom: 0; border-radius: 2px; background: #212529; transition: left .3s cubic-bezier(.22,1,.36,1); }
+  .pglab .pgctl.line .track:hover { height: 6px; margin: -1px 0; }
+  /* 1f dots and the count */
+  .pglab .pgctl.dotscount .count { margin-left: 8px; font-weight: bold; color: #4e4d4c; font-size: 13px; }
+  /* 1g a dot says its tables under the pointer */
+  .pglab .pgctl.dotstip .dot::after { content: attr(data-lab); position: absolute; left: 50%; bottom: calc(100% + 7px); transform: translateX(-50%); white-space: nowrap; font: bold 12px/20px "BuloRounded", Verdana, sans-serif; color: #fff; background: #212529; padding: 0 8px; border-radius: 6px; corner-shape: squircle; opacity: 0; pointer-events: none; transition: opacity .12s; }
+  .pglab .pgctl.dotstip .dot:hover::after { opacity: 1; }
+  /* 1h little tables */
+  .pglab .pgctl.felts { gap: 7px; }
+  .pglab .pgctl.felts .dot { width: 16px; height: 12px; border-radius: 4px; corner-shape: squircle; background: #b7c9ae; box-shadow: inset 0 0 0 1px rgba(0,0,0,.08); }
+  .pglab .pgctl.felts .dot:hover { background: #8fb082; }
+  .pglab .pgctl.felts .dot.on { transform: none; background: #327333; box-shadow: inset 0 0 0 1px rgba(255,255,255,.35), 0 1px 2px rgba(0,0,0,.15); }
+
+  /* ── Two: the games bar's tray at the bottom ── */
+  .pglab .pgctl.tray { display: flex; position: relative; margin: 14px auto 0; width: max-content; max-width: 100%; background: #e4ddd0; box-shadow: inset 0 0 0 1px #c9c0ae; border-radius: 9px; corner-shape: squircle; padding: 3px; }
+  .pglab .pgctl.tray .cell { position: relative; z-index: 1; min-width: 38px; height: 26px; line-height: 26px; padding: 0 10px; text-align: center; font-weight: bold; font-size: 15px; color: #4e4d4c; border-radius: 6px; corner-shape: squircle; transition: color .18s; display: inline-flex; align-items: center; justify-content: center; gap: 5px; box-sizing: border-box; }
+  .pglab .pgctl.tray .cell + .cell::before { content: ""; position: absolute; left: 0; top: 4px; bottom: 4px; width: 1px; background: #c9c0ae; transition: opacity .18s; }
+  .pglab .pgctl.tray .cell.on { color: #fff; cursor: default; text-shadow: -1px -1px 0 var(--triogreenring), 1px -1px 0 var(--triogreenring), -1px 1px 0 var(--triogreenring), 1px 1px 0 var(--triogreenring); }
+  .pglab .pgctl.tray .cell.on::before, .pglab .pgctl.tray .cell.on + .cell::before { opacity: 0; }
+  .pglab .pgctl.tray .cell.pgbtn:not(.on):hover { background: #dcd4c5; }
+  .pglab .pgctl.tray .thumb { position: absolute; top: 3px; height: 26px; background: var(--triogreen); box-shadow: inset 0 0 0 1px var(--triogreenring); border-radius: 6px; corner-shape: squircle; transition: left .26s cubic-bezier(.22,1,.36,1), width .26s cubic-bezier(.22,1,.36,1); }
+  .pglab .pgctl.tray .cell svg { width: 14px; height: 14px; }
+  /* 2b dots in the tray */
+  .pglab .pgctl.traydots .cell { min-width: 30px; padding: 0 8px; }
+  .pglab .pgctl.traydots .cell i { display: block; width: 8px; height: 8px; border-radius: 50%; background: #8f8676; transition: background .18s; }
+  .pglab .pgctl.traydots .cell:hover i { background: #4e4d4c; }
+  .pglab .pgctl.traydots .cell.on i { background: #fff; }
+  /* 2c the stepper: the middle cell is a label, the arrows are the buttons */
+  .pglab .pgctl.stepper .cell.lab { cursor: default; padding: 0 14px; color: #212529; }
+  .pglab .pgctl.stepper .cell.lab b { color: #212529; }
+  .pglab .pgctl.stepper .cell.pgarrow { border-radius: 6px; width: auto; min-width: 34px; }
+  /* 2e the games on each page, as their art */
+  .pglab .pgctl.trayicons .cell { padding: 0 8px; gap: 3px; }
+  .pglab .pgctl.trayicons .cell img { height: 15px; width: auto; filter: drop-shadow(0 1px 1px rgba(0,0,0,.25)); }
+  .pglab .pgctl.trayicons .cell .more { font-size: 11px; margin-left: 2px; }
+
+  /* ── Three: See all beside the games bar ── */
+  .pglab .pgctl.seelink .pgbtn { font-weight: bold; font-size: 16px; color: #1971C2; white-space: nowrap; display: inline-flex; align-items: center; gap: 5px; }
+  .pglab .pgctl.seelink .pgbtn svg { width: 14px; height: 14px; }
+  .pglab .pgctl.seelink .pgbtn:hover { text-decoration: underline; }
+  .pglab .pgctl.seebtn .button { white-space: nowrap; }
+  .pglab.wseg .track > .s.seeall { flex: 0 0 auto; color: #1971C2; margin-left: auto; padding: 0 12px; cursor: pointer; }
+  .pglab.wseg .track > .s.seeall::before { content: ""; position: absolute; left: 0; top: -2px; bottom: -2px; width: 1px; background: #c9c0ae; }
+  .pglab.wseg .track:not(.tcopy) > .s.seeall:hover { background: #dcd4c5 !important; color: #14589a; }
 </style>
 <h1>Open tables &middot; for the few who want more</h1>
 <p class="note">
-  Round nine. The premise: most players find a game among the first six tables, and few ever want the rest. So the way
-  to the rest should cost the many nothing, no space, no noise, no muddle at the bottom of the grid, and still be found
-  by the few. The peeking third row assumed everyone would want to see more; this lab drops that and looks at how
-  other things handle "there is more": the page numbers of a data table, a mailbox's range and arrows, a scrollbar, a
-  vertical slide deck with its dots, one-click hands, and controls that only exist under the pointer. Every card is a
-  working control on the same six-table grid, with 48 tables behind it (the mockup's 16, each dealt three ways).
+  Round nine, second pass. The premise: most players find a game among the first six tables, and few ever want the
+  rest. So the way to the rest should cost the many nothing and still be found by the few. Of the fourteen concepts
+  in the first pass, Holger kept two and asked for one more: the dots under the grid, in their different forms; the
+  games bar's own tray at the bottom, showing something other than page numbers; and a See all beside the games bar
+  itself. The rest is in git history up to 9fbe278. Every card is a working control on the same six-table grid,
+  with 48 tables behind it, and the games bar is styled as the mockup has it by default.
 </p>
 
 <div class="asec">
@@ -3914,6 +3902,7 @@
         <li><b>Most people never need more.</b> The first six find them a game, so the way to the rest is for the few.</li>
         <li><b>The rest is a picture, not a place</b>, until it is asked for. No half-tables to click on.</li>
         <li><b>Nothing loud at rest.</b> Green only under the pointer, if at all.</li>
+        <li><b>Dots, the tray, and a See all by the bar go on</b> <span class="tag">5 Sep, late</span>. Pages, rails, hands, handles and hover controls are out.</li>
       </ul>
     </div>
     <div class="dcard data"><h3>What this costs <span class="tag">measured</span></h3>
@@ -3924,21 +3913,19 @@
         <li><b>A hover control</b> takes nothing at rest, and is found by the pointer or the wheel.</li>
       </ul>
     </div>
-    <div class="dcard rule"><h3>How to read the cards <span class="tag">four families</span></h3>
+    <div class="dcard rule"><h3>How to read the cards <span class="tag">three families</span></h3>
       <ul>
-        <li><b>Pages, as a data table does it.</b> Numbers, a range, the games bar's tray, the full footer.</li>
-        <li><b>Vertical.</b> A rail, up and down, dots under, dots beside.</li>
-        <li><b>One click, no browsing.</b> Six others, next six in the head, the list for the searcher.</li>
-        <li><b>Nothing at rest.</b> A drawer handle, corner controls under the pointer, the wheel with a hint.</li>
+        <li><b>Dots under the grid.</b> Plain, with arrows, the current one a pill, dashes, one line, with the count, with a tip, as little tables.</li>
+        <li><b>The tray at the bottom.</b> The games bar's own tray, its cells saying the tables, a dot, a step, an amount, or the games on the page.</li>
+        <li><b>See all, beside the games bar.</b> A link, the site's button, or a cell in the bar itself; one click opens everything.</li>
       </ul>
     </div>
   </div>
 </div>
 
-<div class="asec" id="secPages"><h2>One &middot; pages, as a data table does it</h2><p class="desc">The grid is a page of six, and the pager sits under it on the right, where tables and mailboxes keep it.</p><div id="pageVariants"></div></div>
-<div class="asec" id="secVertical"><h2>Two &middot; vertical</h2><p class="desc">The rest is below, and the control says so: a rail, arrows, dots. The grid slides or scrolls under a fixed two-row window.</p><div id="verticalVariants"></div></div>
-<div class="asec" id="secClick"><h2>Three &middot; one click, no browsing</h2><p class="desc">For the few: one click that gives six others, a link in the head, or a dense list for someone looking for a particular table.</p><div id="clickVariants"></div></div>
-<div class="asec" id="secRest"><h2>Four &middot; nothing at rest</h2><p class="desc">The grid is six tiles and nothing else. The way to the rest appears under the pointer, on the edge, or answers the wheel.</p><div id="restVariants"></div></div>
+<div class="asec" id="secDots"><h2>One &middot; dots under the grid</h2><p class="desc">A slide deck's dots, one per page of six, centred under the grid. Eight forms of the same idea.</p><div id="dotVariants"></div></div>
+<div class="asec" id="secTray"><h2>Two &middot; the games bar's tray, at the bottom</h2><p class="desc">The same tray and green thumb the games bar uses, centred under the grid, but its cells say something other than 1 to 8.</p><div id="trayVariants"></div></div>
+<div class="asec" id="secSee"><h2>Three &middot; See all, beside the games bar</h2><p class="desc">Nothing under the grid. The control sits at the right of the games bar, in the row the page already has, and one click opens all 48 below.</p><div id="seeVariants"></div></div>
 <script>
 /* the avatar edge filter and shadow the homepage wears by default, rebuilt here as the anim lab does */
 (function () {
@@ -4314,8 +4301,13 @@ window.LAB = (function () {
     wrap.className = "pgwrap" + (spec.side ? " side" : "") + (spec.snap ? " snap" : "") + (spec.wrapCls ? " " + spec.wrapCls : ""); wrap.dataset.mode = spec.mode || "slide";
     view.className = "pgview";
     grid.parentNode.insertBefore(wrap, grid); wrap.appendChild(view); view.appendChild(grid);
-    var ctl = document.createElement("div"); ctl.className = "pgctl " + spec.key;
-    (spec.inHead ? st.querySelector(".otscope") : wrap).appendChild(ctl);
+    var ctl;
+    if (spec.inTrack) { ctl = document.createElement("span"); ctl.className = "s seeall pgctl " + spec.key; st.querySelector(".track[data-row]").appendChild(ctl); }
+    else {
+      ctl = document.createElement("div"); ctl.className = "pgctl " + spec.key;
+      if (spec.inBar) { var tw = st.querySelector(".trackwrap"), row = document.createElement("div"); row.className = "barrow"; tw.parentNode.insertBefore(row, tw); row.appendChild(tw); row.appendChild(ctl); }
+      else (spec.inHead ? st.querySelector(".otscope") : wrap).appendChild(ctl);
+    }
     st.limit = 0;
     var S = { page: 0, per: spec.per || 6, expanded: false, wrap: wrap, view: view, grid: grid, ctl: ctl, st: st };
     S.tiles = function () { return [].slice.call(grid.children); };
@@ -4362,86 +4354,82 @@ window.LAB = (function () {
   function arrows(ctl, S) { var m = ctl.querySelector('[data-go="-"]'), p = ctl.querySelector('[data-go="+"]'); if (m) m.classList.toggle("off", S.page === 0); if (p) p.classList.toggle("off", S.page >= S.pages() - 1); }
   function nums(ctl, S, cls) { var want = S.pages(); if (ctl.querySelectorAll("." + cls).length !== want) return false; ctl.querySelectorAll("." + cls).forEach(function (el, i) { el.classList.toggle("on", i === S.page); }); return true; }
 
-  /* ═══════════ One: pages, as a data table does it ═══════════ */
-  pageCard("pageVariants", { key: "nums", mode: "swap", title: "1a &middot; Page numbers", tag: "base", tagCls: "base",
-    note: "The pager of a data table, right-aligned under the grid: an arrow, 1 to 8, an arrow. The current page is an ink pill. The six change in place, no motion.",
-    init: function (ctl, S) { ctl.innerHTML = '<span class="pgarrow pgbtn" data-go="-">' + AL + "</span>" + range(S.pages()).map(function (i) { return '<span class="pgnum pgbtn" data-go="' + i + '">' + (i + 1) + "</span>"; }).join("") + '<span class="pgarrow pgbtn" data-go="+">' + AR + "</span>"; },
-    update: function (ctl, S) { nums(ctl, S, "pgnum"); arrows(ctl, S); } });
-  pageCard("pageVariants", { key: "range", mode: "swap", title: "1b &middot; The range and two arrows",
-    note: "As a mailbox does it: 1 to 6 of 48, and two arrows. No page numbers to read, and the count says how big the rest is. Right-aligned, one line.",
-    init: function (ctl, S) { ctl.innerHTML = '<span class="rng"></span><span class="pgarrow pgbtn" data-go="-">' + AL + '</span><span class="pgarrow pgbtn" data-go="+">' + AR + "</span>"; },
-    update: function (ctl, S) { var r = S.range(); ctl.querySelector(".rng").innerHTML = "<b>" + r.a + "&ndash;" + r.b + "</b> of " + r.n; arrows(ctl, S); } });
-  pageCard("pageVariants", { key: "tray", mode: "slide", title: "1c &middot; The games bar's tray, at the bottom",
-    note: "The same tray the games bar uses, centred under the grid, the pages as its cells and the Play green thumb sliding between them. The page already teaches this control, two inches up.",
-    init: function (ctl, S) { ctl.innerHTML = '<span class="thumb"></span>' + range(S.pages()).map(function (i) { return '<span class="pgnum pgbtn" data-go="' + i + '">' + (i + 1) + "</span>"; }).join(""); },
-    update: function (ctl, S) { nums(ctl, S, "pgnum"); var on = ctl.querySelector(".pgnum.on"), th = ctl.querySelector(".thumb"); if (on && th) { th.style.left = on.offsetLeft + "px"; th.style.width = on.offsetWidth + "px"; } } });
-  pageCard("pageVariants", { key: "foot", mode: "swap", title: "1d &middot; The full footer",
-    note: "Everything a data table's footer has: how many per page (6, 12, 24 or all), the range, and the arrows. The most control and the most furniture; here to show the ceiling.",
-    init: function (ctl, S) { if (ctl.children.length) return; ctl.innerHTML = '<span class="per"><span>Show</span><span class="chip pgbtn" data-per>6 ' + AD + '</span><span class="menu">' + [6, 12, 24, 0].map(function (v) { return '<span class="mi" data-perv="' + v + '">' + (v || "All 48") + "</span>"; }).join("") + '</span></span><span class="rng"></span><span class="pgarrow pgbtn" data-go="-">' + AL + '</span><span class="pgarrow pgbtn" data-go="+">' + AR + "</span>";
-      var per = ctl.querySelector(".per");
-      ctl.addEventListener("click", function (e) { if (e.target.closest("[data-per]")) { per.classList.toggle("open"); return; } var mi = e.target.closest("[data-perv]"); if (mi) { var v = +mi.dataset.perv; S.expanded = v === 0; S.per = v || 6; S.page = 0; per.classList.remove("open"); S.apply(); } });
-      document.addEventListener("click", function (e) { if (!per.contains(e.target)) per.classList.remove("open"); }); },
-    update: function (ctl, S) { var r = S.range(); ctl.querySelector(".rng").innerHTML = S.expanded ? "<b>1&ndash;" + r.n + "</b> of " + r.n : "<b>" + r.a + "&ndash;" + r.b + "</b> of " + r.n; ctl.querySelector("[data-per]").innerHTML = (S.expanded ? "All" : S.per) + " " + AD; ctl.querySelectorAll("[data-perv]").forEach(function (m) { m.classList.toggle("on", S.expanded ? m.dataset.perv === "0" : +m.dataset.perv === S.per); }); arrows(ctl, S); ctl.querySelectorAll(".pgarrow").forEach(function (a) { a.style.visibility = S.expanded ? "hidden" : ""; }); } });
+  function dotsHtml(S, extra) { return range(S.pages()).map(function (i) { var a = i * S.per + 1, b = Math.min(S.tiles().length, (i + 1) * S.per); return '<span class="dot pgbtn" data-go="' + i + '" data-lab="Tables ' + a + '–' + b + '"' + (extra || "") + "></span>"; }).join(""); }
+  function thumbTo(ctl) { var on = ctl.querySelector(".cell.on"), th = ctl.querySelector(".thumb"); if (on && th) { th.style.left = on.offsetLeft + "px"; th.style.width = on.offsetWidth + "px"; } }
+  function cells(ctl, S, cls) { return nums(ctl, S, cls || "cell"); }
+  function pageGames(S, i) { var seen = [], out = []; S.tiles().slice(i * S.per, (i + 1) * S.per).forEach(function (t) { var g = t.dataset.g; if (seen.indexOf(g) < 0) { seen.push(g); out.push(g); } }); return out; }
 
-  /* ═══════════ Two: vertical ═══════════ */
-  pageCard("verticalVariants", { key: "rail", mode: "scroll", side: true, title: "2a &middot; A rail beside the grid",
-    note: "A slim scrollbar of our own at the right edge, always there: its thumb's size says how much is below, it drags, the track click jumps, and the wheel scrolls the grid under the two-row window. No page, just more.",
-    init: function (ctl, S) { if (ctl.children.length) return; ctl.innerHTML = '<span class="thumb"></span>';
-      var th = ctl.querySelector(".thumb"), drag = null;
-      function ratio(y) { var r = ctl.getBoundingClientRect(); return (y - r.top - (th.offsetHeight / 2)) / (r.height - th.offsetHeight); }
-      th.addEventListener("pointerdown", function (e) { drag = true; th.classList.add("drag"); th.setPointerCapture(e.pointerId); e.preventDefault(); });
-      th.addEventListener("pointermove", function (e) { if (!drag) return; S.view.scrollTop = Math.max(0, Math.min(1, ratio(e.clientY))) * (S.view.scrollHeight - S.view.clientHeight); });
-      th.addEventListener("pointerup", function () { drag = false; th.classList.remove("drag"); });
-      ctl.addEventListener("click", function (e) { if (e.target === th) return; S.view.scrollTo({ top: Math.max(0, Math.min(1, ratio(e.clientY))) * (S.view.scrollHeight - S.view.clientHeight), behavior: "smooth" }); }); },
-    update: function (ctl, S) { var v = S.view, th = ctl.querySelector(".thumb"), H = ctl.clientHeight, sh = v.scrollHeight, ch = v.clientHeight; if (!sh || !H) return; var h = Math.max(24, Math.round(H * ch / sh)); th.style.height = h + "px"; th.style.top = Math.round((v.scrollTop / Math.max(1, sh - ch)) * (H - h)) + "px"; } });
-  pageCard("verticalVariants", { key: "updown", mode: "slide", side: true, title: "2b &middot; Up and down at the edge",
-    note: "Two small round arrows on the right edge, at the middle of the grid. The grid slides a page at a time under the window. The down arrow is the whole story at rest: there is more, below.",
-    init: function (ctl, S) { ctl.innerHTML = '<span class="pgarrow pgbtn" data-go="-">' + AU + '</span><span class="pgarrow pgbtn" data-go="+">' + AD + "</span>"; },
-    update: arrows });
-  pageCard("verticalVariants", { key: "dots", mode: "slide", title: "2c &middot; Dots under the grid",
-    note: "A slide deck's dots, one per page of six, centred under the grid. The current one is ink. A dot is a click and a picture at once: eight pages, you are on the first.",
-    init: function (ctl, S) { ctl.innerHTML = range(S.pages()).map(function (i) { return '<span class="dot pgbtn" data-go="' + i + '"></span>'; }).join(""); },
+  /* ═══════════ One: dots under the grid ═══════════ */
+  pageCard("dotVariants", { key: "dots", cls: "", title: "1a &middot; Dots", tag: "base", tagCls: "base", wrapCls: "",
+    note: "Eight dots, 8px, the current one ink and a third larger. A dot is a click and a picture at once: eight pages, you are on the first. The grid slides a page at a time.",
+    init: function (ctl, S) { ctl.classList.add("dotrow"); ctl.innerHTML = dotsHtml(S); },
     update: function (ctl, S) { nums(ctl, S, "dot"); } });
-  pageCard("verticalVariants", { key: "sidedots", mode: "scroll", snap: true, side: true, title: "2d &middot; Dots beside it, the wheel snaps",
-    note: "The dots stand vertically at the right edge, as a one-page-at-a-time site has them, and the wheel snaps the grid page by page. The dots follow the scroll and a click jumps.",
-    init: function (ctl, S) { ctl.innerHTML = range(S.pages()).map(function (i) { return '<span class="dot pgbtn" data-go="' + i + '"></span>'; }).join(""); },
+  pageCard("dotVariants", { key: "dotsarrows", title: "1b &middot; Dots with arrows",
+    note: "The same dots with a small arrow either side, so the next page is one click without aiming at a dot. The arrows dim at the ends.",
+    init: function (ctl, S) { ctl.classList.add("dotrow"); ctl.innerHTML = '<span class="pgarrow pgbtn l" data-go="-">' + AL + "</span>" + dotsHtml(S) + '<span class="pgarrow pgbtn r" data-go="+">' + AR + "</span>"; },
+    update: function (ctl, S) { nums(ctl, S, "dot"); arrows(ctl, S); } });
+  pageCard("dotVariants", { key: "dotspill", title: "1c &middot; The current dot is a pill",
+    note: "The current dot stretches to a 24px pill and the others stay round, the way a phone's home screen and a story do it. The pill slides along the row as you page.",
+    init: function (ctl, S) { ctl.classList.add("dotrow"); ctl.innerHTML = dotsHtml(S); },
+    update: function (ctl, S) { nums(ctl, S, "dot"); } });
+  pageCard("dotVariants", { key: "dashes", title: "1d &middot; Dashes",
+    note: "Eight short dashes instead of dots, 26px by 3px, the current one ink. Quieter than dots and easier to hit, and together they read as a track.",
+    init: function (ctl, S) { ctl.classList.add("dotrow"); ctl.innerHTML = dotsHtml(S); },
+    update: function (ctl, S) { nums(ctl, S, "dot"); } });
+  pageCard("dotVariants", { key: "line", title: "1e &middot; One line",
+    note: "The dots merged into one 240px line, and the filled eighth of it is where you are. A click anywhere on the line goes there. The least furniture that still says how much there is and where you stand.",
+    init: function (ctl, S) { if (ctl.children.length) return; ctl.classList.add("dotrow"); ctl.innerHTML = '<span class="track"><span class="fill"></span></span>';
+      ctl.querySelector(".track").addEventListener("click", function (e) { var r = e.currentTarget.getBoundingClientRect(); S.go(String(Math.floor((e.clientX - r.left) / r.width * S.pages()))); }); },
+    update: function (ctl, S) { var f = ctl.querySelector(".fill"), n = S.pages(); f.style.width = (100 / n) + "%"; f.style.left = (100 * S.page / n) + "%"; } });
+  pageCard("dotVariants", { key: "dotscount", title: "1f &middot; Dots and the count",
+    note: "The dots, and a small 1 / 8 to their right, so the position is also a number. For anyone who does not count dots.",
+    init: function (ctl, S) { ctl.classList.add("dotrow"); ctl.innerHTML = dotsHtml(S) + '<span class="count"></span>'; },
+    update: function (ctl, S) { nums(ctl, S, "dot"); ctl.querySelector(".count").textContent = (S.page + 1) + " / " + S.pages(); } });
+  pageCard("dotVariants", { key: "dotstip", title: "1g &middot; A dot says its tables",
+    note: "The plain dots, and under the pointer a dot says which tables it holds, Tables 7 to 12, in a small ink tip above it. Nothing at rest, the meaning on hover.",
+    init: function (ctl, S) { ctl.classList.add("dotrow"); ctl.innerHTML = dotsHtml(S); },
+    update: function (ctl, S) { nums(ctl, S, "dot"); } });
+  pageCard("dotVariants", { key: "felts", title: "1h &middot; Little tables",
+    note: "The dots as little felt tables, 16px by 12px with the tiles' corners, pale for the other pages and the true felt green for the one you are on. The control is a picture of what it pages.",
+    init: function (ctl, S) { ctl.classList.add("dotrow"); ctl.innerHTML = dotsHtml(S); },
     update: function (ctl, S) { nums(ctl, S, "dot"); } });
 
-  /* ═══════════ Three: one click, no browsing ═══════════ */
-  pageCard("clickVariants", { key: "deal", mode: "swap", fade: true, title: "3a &middot; Six others",
-    note: "For someone who did not like these six: one link, Show me six others, with the count of the rest beside it. The six fade and six others come. No pages, no position, no way back; a fresh hand each click.",
-    init: function (ctl, S) { ctl.innerHTML = '<span class="pgbtn" data-go="deal">' + SHUF + "Show me six others</span><span class=\"rest\"></span>"; },
-    update: function (ctl, S) { var r = S.range(); ctl.querySelector(".rest").textContent = (r.n - S.per) + " more"; } });
-  pageCard("clickVariants", { key: "headnext", mode: "swap", fade: true, inHead: true, title: "3b &middot; Next six, in the head",
-    note: "Nothing under the grid at all. A link in the title row, at the right, level with Open tables: Next 6. Once you have moved, Previous appears beside it. The head has the room, so this costs no height.",
-    init: function (ctl, S) { ctl.innerHTML = '<span class="pgbtn" data-go="-">' + AL + 'Previous</span><span class="pgbtn" data-go="+">Next 6' + AR + "</span>"; },
-    update: function (ctl, S) { arrows(ctl, S); var r = S.range(); ctl.querySelector('[data-go="+"]').innerHTML = "Next " + Math.min(6, r.rest || 6) + AR; } });
-  pageCard("clickVariants", { key: "list", mode: "swap", title: "3c &middot; The list, for the searcher",
-    note: "The six tiles are for browsing. The few who want more are usually looking for something, a friend, a game, an open seat, and a dense list serves that better than more tiles. One link under the grid opens all 48 as a table: game, who is there, seats, time, join.",
-    init: function (ctl, S) { if (ctl.children.length) return;
-      var rows = L.TABLES.map(function (t) {
-        var g = L.byId[t.g], seats = t.seats.filter(function (x) { return x; }), openN = (t.two ? 2 : 4) - seats.length;
-        var who = seats.map(function (x) { return '<img src="' + (x === "bot" ? "AlienMartian.svg" : x[1]) + '" alt="">'; }).join("") + "<span>" + seats.map(function (x) { return x === "bot" ? "Bot Ada" : x[0]; }).join(", ") + "</span>";
-        return "<tr><td><span class=\"g\"><img src=\"" + L.art(t.g) + '" alt="">' + g[1] + "</span></td><td><span class=\"who\">" + who + "</span></td><td>" + (openN ? '<span class="openseats">' + openN + " open</span>" : '<span class="full">Full</span>') + "</td><td>" + (t.mins ? t.mins + " min" : "Not started") + '</td><td class="act">' + (openN ? '<span class="join">Join</span>' : '<span class="watch">Watch</span>') + "</td></tr>";
-      }).join("");
-      ctl.innerHTML = '<span class="toggle pgbtn"><span class="lab"></span>' + AD + '</span><table class="pgtable"><thead><tr><th>Game</th><th>Who is there</th><th>Seats</th><th>Time</th><th></th></tr></thead><tbody>' + rows + "</tbody></table>";
-      ctl.querySelector(".toggle").addEventListener("click", function () { ctl.classList.toggle("open"); S.apply(); }); },
-    update: function (ctl, S) { ctl.querySelector(".lab").textContent = ctl.classList.contains("open") ? "Hide the list" : "All " + S.tiles().length + " tables as a list"; } });
+  /* ═══════════ Two: the games bar's tray, at the bottom ═══════════ */
+  pageCard("trayVariants", { key: "ranges", title: "2a &middot; The tables each page holds", tag: "tray base", tagCls: "base",
+    note: "The tray and the green thumb, and the cells say the tables rather than the page: 1 to 6, 7 to 12, and so on. The same control as the games bar, saying what it will show.",
+    init: function (ctl, S) { ctl.classList.add("tray"); ctl.innerHTML = '<span class="thumb"></span>' + range(S.pages()).map(function (i) { var a = i * S.per + 1, b = Math.min(S.tiles().length, (i + 1) * S.per); return '<span class="cell pgbtn" data-go="' + i + '">' + a + "–" + b + "</span>"; }).join(""); },
+    update: function (ctl, S) { cells(ctl, S); thumbTo(ctl); } });
+  pageCard("trayVariants", { key: "traydots", title: "2b &middot; Dots in the tray",
+    note: "The tray holds dots instead of words, one per page, and the green thumb sits on the current one with its dot turned white. The deck's dots in the games bar's clothes.",
+    init: function (ctl, S) { ctl.classList.add("tray"); ctl.innerHTML = '<span class="thumb"></span>' + range(S.pages()).map(function (i) { return '<span class="cell pgbtn" data-go="' + i + '"><i></i></span>'; }).join(""); },
+    update: function (ctl, S) { cells(ctl, S); thumbTo(ctl); } });
+  pageCard("trayVariants", { key: "stepper", title: "2c &middot; A step at a time",
+    note: "Three cells and no thumb: an arrow, Tables 1 to 6 of 48, an arrow. The tray is the frame and the middle cell is the readout. Small, and it never grows with the count.",
+    init: function (ctl, S) { ctl.classList.add("tray"); ctl.innerHTML = '<span class="cell pgarrow pgbtn" data-go="-">' + AL + '</span><span class="cell lab"></span><span class="cell pgarrow pgbtn" data-go="+">' + AR + "</span>"; },
+    update: function (ctl, S) { var r = S.range(); ctl.querySelector(".lab").innerHTML = "Tables <b>" + r.a + "–" + r.b + "</b> of " + r.n; arrows(ctl, S); } });
+  pageCard("trayVariants", { key: "amount", mode: "swap", title: "2d &middot; How many, not which",
+    note: "The cells are amounts, 6, 12, 24, All 48, and the thumb on 6. The grid grows to what you pick instead of turning pages: the games bar's pattern applied to how much you want to see.",
+    init: function (ctl, S) { if (ctl.children.length) return; ctl.classList.add("tray"); ctl.innerHTML = '<span class="thumb"></span>' + [6, 12, 24, 0].map(function (v) { return '<span class="cell pgbtn" data-perv="' + v + '">' + (v ? "Show " + v : "All " + S.tiles().length) + "</span>"; }).join("");
+      ctl.addEventListener("click", function (e) { var c = e.target.closest("[data-perv]"); if (!c) return; var v = +c.dataset.perv; S.expanded = v === 0; S.per = v || 6; S.page = 0; S.apply(); }); },
+    update: function (ctl, S) { ctl.querySelectorAll(".cell").forEach(function (c) { c.classList.toggle("on", S.expanded ? c.dataset.perv === "0" : +c.dataset.perv === S.per); }); thumbTo(ctl); } });
+  pageCard("trayVariants", { key: "trayicons", title: "2e &middot; The games on each page",
+    note: "Each cell shows the art of the games on that page, so the tray is a map of what is where: a Hearts and a Spades on the first, a Canasta on the third. The thumb slides over the pictures.",
+    init: function (ctl, S) { ctl.classList.add("tray"); ctl.innerHTML = '<span class="thumb"></span>' + range(S.pages()).map(function (i) { var gs = pageGames(S, i); return '<span class="cell pgbtn" data-go="' + i + '">' + gs.slice(0, 3).map(function (g) { return '<img src="' + L.art(g) + '" alt="' + L.byId[g][1] + '">'; }).join("") + (gs.length > 3 ? '<span class="more">+' + (gs.length - 3) + "</span>" : "") + "</span>"; }).join(""); },
+    update: function (ctl, S) { cells(ctl, S); thumbTo(ctl); } });
 
-  /* ═══════════ Four: nothing at rest ═══════════ */
-  pageCard("restVariants", { key: "handle", mode: "swap", wrapCls: "handlewrap", title: "4a &middot; A drawer handle",
-    note: "A small white pill on the grid's bottom edge, half over the last row, half over the band: 42 more, with a chevron. It reads as the handle of a drawer. A click opens all of them below, and the pill says Show fewer.",
+  /* ═══════════ Three: See all, beside the games bar ═══════════ */
+  pageCard("seeVariants", { key: "seelink", mode: "swap", inBar: true, title: "3a &middot; See all, as a link", tag: "see base", tagCls: "base",
+    note: "A blue See all at the right of the games bar, in the bar's own row. Nothing under the grid. One click opens all 48 below and the link says Show fewer.",
     init: function (ctl, S) { ctl.innerHTML = '<span class="pgbtn" data-expand><span class="lab"></span><span class="ic"></span></span>'; },
-    update: function (ctl, S) { var r = S.range(); ctl.querySelector(".lab").textContent = S.expanded ? "Show fewer" : (r.n - S.per) + " more"; ctl.querySelector(".ic").innerHTML = S.expanded ? AU : AD; } });
-  pageCard("restVariants", { key: "hoverctl", mode: "slide", title: "4b &middot; Corner controls under the pointer",
-    note: "Six tiles and nothing else. When the pointer is over the grid, a small count and two arrows come up in its bottom right corner, the way a photo viewer shows its arrows only when you are looking. The grid slides a page at a time.",
-    init: function (ctl, S) { ctl.innerHTML = '<span class="count"></span><span class="pgarrow pgbtn" data-go="-">' + AU + '</span><span class="pgarrow pgbtn" data-go="+">' + AD + "</span>"; },
-    update: function (ctl, S) { ctl.querySelector(".count").textContent = (S.page + 1) + " / " + S.pages(); arrows(ctl, S); } });
-  pageCard("restVariants", { key: "hint", mode: "scroll", snap: true, title: "4c &middot; The wheel, with a hint",
-    note: "No control at all. The grid is a window and the wheel turns its pages, snapping six at a time. Under the pointer a small hint at the bottom edge says Scroll for 42 more, and it goes away for good after the first scroll.",
-    init: function (ctl, S) { ctl.innerHTML = '<span class="lab"></span>' + AD; },
-    update: function (ctl, S) { var r = S.range(); ctl.querySelector(".lab").textContent = "Scroll for " + (r.n - S.per) + " more"; },
-    onScroll: function (ctl, S) { if (S.view.scrollTop > 8) ctl.classList.add("gone"); } });
+    update: function (ctl, S) { ctl.querySelector(".lab").textContent = S.expanded ? "Show fewer" : "See all " + S.tiles().length; ctl.querySelector(".ic").innerHTML = S.expanded ? AU : AD; } });
+  pageCard("seeVariants", { key: "seebtn", mode: "swap", inBar: true, title: "3b &middot; See all, as the site's button",
+    note: "The same place, but the site's small light-blue button, the one the leaderboard uses for Show. Louder than the link, and it says the bar and the button are two different things.",
+    init: function (ctl, S) { ctl.innerHTML = '<span class="button small lightblue pgbtn" data-expand><span class="lab"></span></span>'; },
+    update: function (ctl, S) { ctl.querySelector(".lab").textContent = S.expanded ? "Show fewer" : "See all " + S.tiles().length; } });
+  pageCard("seeVariants", { key: "seecell", mode: "swap", inTrack: true, title: "3c &middot; See all, as a cell in the bar",
+    note: "See all as the last cell of the games bar itself, after More, pushed to the right end of the tray with a line before it. The bar filters and the bar opens; one control.",
+    init: function (ctl, S) { ctl.setAttribute("data-expand", ""); ctl.innerHTML = '<span class="lab"></span>'; },
+    update: function (ctl, S) { ctl.querySelector(".lab").textContent = S.expanded ? "Show fewer" : "See all"; } });
 })(window.LAB);
 </script>
 <script>
