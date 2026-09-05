@@ -3480,10 +3480,20 @@ reaches for a button today, which is what this treatment has to answer for.
     green row's treatment, and two <b>light coats</b>, a pale fill with a dark ink of the same hue, the way the game's
     yellow is built: light trio yellow and light green.
   </p>
+  <p class="vnote">
+    The resting plate under an empty chair says <b>Empty</b>, as the page does (the live site says Empty seat). What the
+    plate rolls to when the seat is hovered has its own switcher: the lab's <b>Join</b>, the brief's <b>Sit here</b> with
+    <b>Take over</b> on a bot's seat, <b>Sit down</b>, or your own name beside your own face.
+  </p>
   <div class="abar" style="margin:0 0 14px">
     <span class="alab">Hold the hover</span>
     <button type="button" class="abtn" data-hold="1">Show every button</button>
     <button type="button" class="abtn" data-hold="0">Hover only</button>
+    <span class="alab" style="margin-left:14px">A hovered seat's plate says</span>
+    <button type="button" class="abtn" data-seat="0">Join</button>
+    <button type="button" class="abtn" data-seat="1">Sit here &middot; Take over</button>
+    <button type="button" class="abtn" data-seat="2">Sit down &middot; Take over</button>
+    <button type="button" class="abtn" data-seat="3">Your name (Holger)</button>
   </div>
   <div class="stateRow"><span>Waiting &middot; two seats free</span><span>In play &middot; a bot to take over</span><span>Placeholder &middot; sit to host</span></div>
   <div class="vlab">Green <i>the lobby's green without its ring, the letters outlined, the game's 16% ring</i></div>
@@ -3574,7 +3584,7 @@ reaches for a button today, which is what this treatment has to answer for.
     if (!who) {
       return '<div class="player playernumber' + i + ' isEmpty">' +
         '<img width="32" height="32" src="avatarEmpty.png" alt="">' +
-        '<div class="playerNameContainer"><p class="playerName">Empty seat</p></div></div>';
+        '<div class="playerNameContainer"><p class="playerName">Empty</p></div></div>'; /* the page says Empty; the live site says Empty seat */
     }
     var b = who[2] >= 70 ? '<span class="completionBadge' + (who[2] === 100 ? " is100" : "") + '">' +
       (who[2] === 100 ? "" : who[2]) + '</span>' : "";
@@ -3694,6 +3704,16 @@ reaches for a button today, which is what this treatment has to answer for.
   var sec = document.getElementById("joinCorner");
   sec.querySelectorAll(".abtn[data-hold]").forEach(function (b) {
     b.addEventListener("click", function () { sec.classList.toggle("hold", b.getAttribute("data-hold") === "1"); });
+  });
+  /* what a hovered seat's plate rolls to, on every armed seat on the page: [empty seat, bot seat] */
+  var SEAT_WORDS = [["Join", "Join"], ["Sit here", "Take over"], ["Sit down", "Take over"], ["Holger", "Holger"]];
+  sec.querySelectorAll(".abtn[data-seat]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var w = SEAT_WORDS[+b.getAttribute("data-seat")];
+      document.querySelectorAll(".player.joinable .pnJoin").forEach(function (p) {
+        p.textContent = w[p.closest(".player").classList.contains("isBot") ? 1 : 0];
+      });
+    });
   });
 })();
 </script>
