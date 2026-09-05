@@ -3641,10 +3641,6 @@
   #openTablesTop .ltGrid > .ltCard { order: 1; }
   #openTablesTop .ltGrid > .ltCard.isNew { order: 2; }
   #openTablesTop .ltGrid > .ltCard.ltBlank { order: 3; }
-  /* These are the resting arrangement only. A change of game sets style.order on every tile in ONE
-     frame before any deal starts, because .ltBlank goes on and off as each deal begins: left to the
-     classes, every tile would jump to its new place the moment its own deal started, and with a 70ms
-     stagger the grid would rearrange five times over. That is what read as blinking. */
   #openTablesTop .ltCard.ltBlank .tableListing .header::before,
   #openTablesTop .ltCard.ltBlank .tableListing .header::after { box-shadow: none; }
 
@@ -7384,7 +7380,6 @@
       if (realCount() >= wantReal()) return;
       var blank = blankCards()[0];
       if (blank) {
-        blank.style.order = "1";
         blank.setAttribute("data-busy", "1");
         dealtInto(blank, pick(tablePool()));
         return;
@@ -7430,8 +7425,6 @@
       activeGame = id;
       var cards = realCards(), todo = [];
       if (id === "all") {
-        /* every slot holds a table again, so they all take the tables' place in the order */
-        [].slice.call(grid.querySelectorAll(".ltCard:not(.isNew)")).forEach(function (c) { c.style.order = "1"; });
         var seen = {};
         cards.forEach(function (c) { var g = gameOf(c); if (seen[g]) todo.push(c); else seen[g] = true; });
         /* felt left over from a thin game becomes a table again */
