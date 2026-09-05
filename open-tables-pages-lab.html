@@ -3832,6 +3832,9 @@
     text-shadow: -1px -1px 0 var(--triogreenring), 1px -1px 0 var(--triogreenring), -1px 1px 0 var(--triogreenring), 1px 1px 0 var(--triogreenring); }
   /* the word before the numbers: the same size and weight as they are, in the list's ink, and not a cell */
   .pglab .ovlist .foot .lab { flex: 0 0 auto; padding: 0 4px 0 10px; height: 24px; line-height: 24px; font-size: 16px; font-weight: bold; color: #4e4d4c; cursor: default; }
+  /* the short strip: 20px cells, so the strip is 24px like the rows above it */
+  .pglab .ovlist .foot.short i, .pglab .ovlist .foot.short .lab { height: 20px; line-height: 20px; }
+  .pglab .ovlist .foot .lab.regular { font-weight: normal; }
 </style>
 <h1>Open tables &middot; how many, inside More</h1>
 <p class="note">
@@ -3856,6 +3859,7 @@
         <li><b>See all is out again</b> <span class="tag">6 Sep</span>. The amount goes into the More list, as 4a had it, but not as a second category with a heading. Either like another game, or a list that is not one long column.</li>
         <li><b>1b and 1e go on</b> <span class="tag">6 Sep, later</span>. But 6 tables is not obvious on its own; maybe headers after all. 1e to be built cleanly: 24px rows, a 28px strip, 24px cells, the right radius and line colour.</li>
         <li><b>The foot wins, 2b with Show and 2a bare</b> <span class="tag">6 Sep, late</span>. No lines between the cells, each as wide as its text, the word at the numbers' size, maybe with a colon. Whether Show adds anything is the open question.</li>
+        <li><b>2c, Show with a colon, is the favourite</b> <span class="tag">6 Sep, later</span>. To try: 20px cells so the strip is 24px like the rows, and the word not bold.</li>
       </ul>
     </div>
     <div class="dcard data"><h3>What this costs <span class="tag">measured</span></h3>
@@ -4326,7 +4330,7 @@ window.LAB = (function () {
 
   var SHOW_TABLES = function (v, n) { return v ? "Show " + v + " tables" : "Show all " + n + " tables"; };
   function games() { return '<span class="mgames">' + gameRows() + "</span>"; }
-  function cleanFoot(label) { return '<span class="foot clean">' + (label ? '<span class="lab">' + label + "</span>" : "") + AMOUNTS.map(function (v) { return '<i data-perv="' + v + '">' + (v || "All") + "</i>"; }).join("") + "</span>"; }
+  function cleanFoot(label, footCls, labCls) { return '<span class="foot clean' + (footCls ? " " + footCls : "") + '">' + (label ? '<span class="lab' + (labCls ? " " + labCls : "") + '">' + label + "</span>" : "") + AMOUNTS.map(function (v) { return '<i data-perv="' + v + '">' + (v || "All") + "</i>"; }).join("") + "</span>"; }
 
   /* ═══════════ One: the foot ═══════════ */
   moreCard("footVariants", { key: "footbare", list: "rows", title: "2a &middot; The foot, bare", tag: "kept",
@@ -4341,6 +4345,15 @@ window.LAB = (function () {
   moreCard("footVariants", { key: "foottables", list: "rows", title: "2d &middot; Tables, with a colon",
     note: "Tables: 6 12 24 All. The noun instead of the verb. It says what is being counted, which Show does not, and it answers the question the numbers raise: six what?",
     html: function (n) { return games() + cleanFoot("Tables:"); } });
+  moreCard("footVariants", { key: "footshort", list: "rows", title: "2e &middot; Show with a colon, the strip at 24px", tag: "from 2c",
+    note: "The cells 20px tall instead of 24, so the strip is 24px like every row above it: 2px of tray, a 20px cell, 2px of tray. The numbers keep their 16px.",
+    html: function (n) { return games() + cleanFoot("Show:", "short"); } });
+  moreCard("footVariants", { key: "footregular", list: "rows", title: "2f &middot; Show with a colon, not bold",
+    note: "2c with the word in the regular weight and the numbers still bold, so the word steps back and the numbers are the thing.",
+    html: function (n) { return games() + cleanFoot("Show:", "", "regular"); } });
+  moreCard("footVariants", { key: "footshortregular", list: "rows", title: "2g &middot; Both: 24px and not bold",
+    note: "The 24px strip with the regular-weight word.",
+    html: function (n) { return games() + cleanFoot("Show:", "short", "regular"); } });
 })(window.LAB);
 </script>
 <script>
