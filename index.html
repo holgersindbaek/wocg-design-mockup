@@ -2188,9 +2188,9 @@
     color: var(--triolightink); background-color: var(--triolight); border-bottom: 1px solid var(--triolightline); padding: 0 12px; cursor: pointer; }
   .lobbyscope .dropupContent li:last-child { border-bottom: none; }
   .lobbyscope .dropupContent li:hover { background-color: var(--triolighthover); }
-  .lobbyscope .ldChallenge { margin-top: 8px; }
+  .lobbyscope .ldChallenge { margin-top: 0; }
   /* the cards take the scheme's own tokens (5 September): the fill is the scheme's canvas and the lines its edge, the same edge the tiles' rings wear; before, a hardcoded #F8F7F4 and the 15% brown line */
-  .lobbyscope .ldPanel { border-radius: 6px; corner-shape: squircle; background-color: var(--canvas, #F8F7F4); border: 1px solid var(--edge, var(--panelline)); }
+  .lobbyscope .ldPanel { border-radius: var(--radius-md, 6px); corner-shape: squircle; /* the Play button's own radius, 12px here (5 September; 6px before) */ background-color: var(--canvas, #F8F7F4); border: 1px solid var(--edge, var(--panelline)); }
   .lobbyscope .ldAward { position: relative; height: 48px; margin-bottom: 8px; padding: 0 8px; }
   .lobbyscope .ldAwardTitle { font-size: 14px; font-weight: 700; line-height: 40px; color: #212529; }
   .lobbyscope .ldAwardBars { position: absolute; left: 8px; right: 8px; bottom: 4px; display: flex; height: 8px; }
@@ -2415,8 +2415,8 @@
     font-size: 20px; line-height: 28px; font-weight: bold; color: #212529; }
   .lobbyscope .lbShow { flex-shrink: 0; }
   .lobbyscope .lbGames { margin-top: 0; }
-  .lobbyscope .lbRows { display: table; width: 100%; margin: 8px 0 6px; background-color: #fff; border: 1px solid var(--edge, var(--panelline));
-    border-radius: 6px; corner-shape: squircle; overflow: hidden; font-size: 14px; line-height: 20px; font-variant-numeric: tabular-nums; }
+  .lobbyscope .lbRows { display: table; width: 100%; margin: 0 0 6px; background-color: #fff; border: 1px solid var(--edge, var(--panelline));
+    border-radius: var(--radius-md, 6px); corner-shape: squircle; overflow: hidden; font-size: 14px; line-height: 20px; font-variant-numeric: tabular-nums; }
   .lobbyscope .lbRow { display: table-row; color: #212529; }
   .lobbyscope .lbRow b { font-weight: bold; }
   .lobbyscope .lbRow > span { display: table-cell; vertical-align: middle; box-sizing: border-box; height: 32px;
@@ -3623,117 +3623,126 @@
      button folded into one tray, the picked game the site's solid blue button sliding along it, a full line
      between the games and none beside the pick, the count in bold after a middle dot, More fused on the end
      with its wall and triangle, opening on hover as the leaderboard's does. The colours are variables so the
-     options panel can recolour the bar: blue is the leaderboard's own. ── */
-  #otFilter { position: relative; margin: 2px 0 8px; font-family: "BuloRounded", "Verdana", "Arial", sans-serif; --thspd: 220ms; --thease: cubic-bezier(.645,.045,.355,1);
-    --ot-tray: var(--triolight); --ot-ring: var(--triolightring); --ot-ink: var(--triolightink); --ot-hover: var(--triolighthover); --ot-line: var(--triolightline);
-    --ot-thumb: var(--trioblue); --ot-thumbring: var(--triobluering); --ot-thumbink: #fff;
-    --ot-thumbshadow: -1px -1px 0 var(--ot-thumbring), 1px -1px 0 var(--ot-thumbring), -1px 1px 0 var(--ot-thumbring), 1px 1px 0 var(--ot-thumbring); }
+     options panel can recolour the bar. The default is the Evernote scheme with the tray a shade darker than the
+     band (#e4ddd0, the ring and the lines #c9c0ae) and the Play button's green as the thumb, set here so the first
+     paint has it too. ── */
+  .lobbyTopBand > .otFilter { flex: 0 0 100%; width: 100%; margin: 0 0 -8px; } /* the bar over both cards: the full row, the cards 8px under it as the tables are under theirs */
+  .otFilter { --ot-outline: -1px -1px 0 var(--ot-thumbring), 1px -1px 0 var(--ot-thumbring), -1px 1px 0 var(--ot-thumbring), 1px 1px 0 var(--ot-thumbring);
+    position: relative; margin: 2px 0 8px; font-family: "BuloRounded", "Verdana", "Arial", sans-serif; --thspd: 220ms; --thease: cubic-bezier(.645,.045,.355,1);
+    --ot-tray: #e4ddd0; --ot-ring: #c9c0ae; --ot-line: #c9c0ae; --ot-ink: #4e4d4c; --ot-hover: #dcd4c5;
+    --ot-thumb: var(--triogreen); --ot-thumbring: var(--triogreenring); --ot-thumbink: #fff; --ot-thumbshadow: var(--ot-outline); }
+  /* the leaderboard's own blue: the light blue tray with the solid blue thumb and white outlined text */
+  body.otc-blue .otFilter { --ot-tray: var(--triolight); --ot-ring: var(--triolightring); --ot-ink: var(--triolightink); --ot-hover: var(--triolighthover); --ot-line: var(--triolightline);
+    --ot-thumb: var(--trioblue); --ot-thumbring: var(--triobluering); --ot-thumbink: #fff; --ot-thumbshadow: var(--ot-outline); }
   /* the greens the page already plays with: the Play button's own green, and Evernote's */
-  body.otc-green #otFilter { --ot-tray: #dcefc9; --ot-ring: #b6d894; --ot-ink: #4F800B; --ot-hover: #d1e8ba; --ot-line: #a4cf7e; --ot-thumb: var(--triogreen); --ot-thumbring: var(--triogreenring); }
-  body.otc-evergreen #otFilter { --ot-tray: #d4f1dc; --ot-ring: #a3dcb5; --ot-ink: #0d6b2a; --ot-hover: #c6ead0; --ot-line: #8fd2a5; --ot-thumb: #00a82d; --ot-thumbring: #008a25; }
+  body.otc-green .otFilter { --ot-tray: #dcefc9; --ot-ring: #b6d894; --ot-ink: #4F800B; --ot-hover: #d1e8ba; --ot-line: #a4cf7e; --ot-thumb: var(--triogreen); --ot-thumbring: var(--triogreenring); --ot-thumbink: #fff; --ot-thumbshadow: var(--ot-outline); }
+  body.otc-evergreen .otFilter { --ot-tray: #d4f1dc; --ot-ring: #a3dcb5; --ot-ink: #0d6b2a; --ot-hover: #c6ead0; --ot-line: #8fd2a5; --ot-thumb: #00a82d; --ot-thumbring: #008a25; --ot-thumbink: #fff; --ot-thumbshadow: var(--ot-outline); }
   /* the game's yellow: the corner buttons' #FFE066 with the pressed #FCC419 as the thumb, dark ink and no outline */
-  body.otc-yellow #otFilter { --ot-tray: #FFF3C2; --ot-ring: #F0DA8A; --ot-ink: #8A5A00; --ot-hover: #FCECA8; --ot-line: #E8CB6A; --ot-thumb: #FFD43B; --ot-thumbring: #E6B92B; --ot-thumbink: #5C3D00; --ot-thumbshadow: none; }
+  body.otc-yellow .otFilter { --ot-tray: #FFF3C2; --ot-ring: #F0DA8A; --ot-ink: #8A5A00; --ot-hover: #FCECA8; --ot-line: #E8CB6A; --ot-thumb: #FFD43B; --ot-thumbring: #E6B92B; --ot-thumbink: #5C3D00; --ot-thumbshadow: none; }
   /* the Evernote scheme: the page's warm band as the tray, so the bar does not stand out, and the ring and the lines in the
      divider's own colour, #D9D2C4. A white card or the ink as the thumb. Then the same with the tray a shade darker, and a shade lighter. */
-  body.otc-warm #otFilter { --ot-tray: var(--band, #f0eee6); --ot-ring: #D9D2C4; --ot-line: #D9D2C4; --ot-ink: #4e4d4c; --ot-hover: color-mix(in srgb, var(--band, #f0eee6) 88%, #D9D2C4); --ot-thumb: #fff; --ot-thumbring: #D9D2C4; --ot-thumbink: #141414; --ot-thumbshadow: none; }
-  body.otc-warmdarker #otFilter { --ot-tray: #e4ddd0; --ot-ring: #c9c0ae; --ot-line: #c9c0ae; --ot-ink: #4e4d4c; --ot-hover: #dcd4c5; --ot-thumb: #fff; --ot-thumbring: #c9c0ae; --ot-thumbink: #141414; --ot-thumbshadow: none; }
-  body.otc-warmdarkergreen #otFilter { --ot-tray: #e4ddd0; --ot-ring: #c9c0ae; --ot-line: #c9c0ae; --ot-ink: #4e4d4c; --ot-hover: #dcd4c5; --ot-thumb: var(--triogreen); --ot-thumbring: var(--triogreenring); }
-  body.otc-warmlighter #otFilter { --ot-tray: #fff; --ot-ring: #D9D2C4; --ot-line: #D9D2C4; --ot-ink: #4e4d4c; --ot-hover: var(--band, #f0eee6); --ot-thumb: #fff; --ot-thumbring: #D9D2C4; --ot-thumbink: #141414; --ot-thumbshadow: 0 0 0 transparent; }
-  body.otc-warmlighter #otFilter .track .thumb { box-shadow: inset 0 0 0 1px var(--ot-thumbring), 0 2px 4px rgba(0,0,0,.1); }
-  body.otc-warmdark #otFilter { --ot-tray: var(--band, #f0eee6); --ot-ring: #D9D2C4; --ot-line: #D9D2C4; --ot-ink: #4e4d4c; --ot-hover: color-mix(in srgb, var(--band, #f0eee6) 88%, #D9D2C4); --ot-thumb: #3d3d3a; --ot-thumbring: #2a2a28; --ot-thumbink: #fff; --ot-thumbshadow: none; }
-  body.otc-warmgreen #otFilter { --ot-tray: var(--band, #f0eee6); --ot-ring: #D9D2C4; --ot-line: #D9D2C4; --ot-ink: #4e4d4c; --ot-hover: color-mix(in srgb, var(--band, #f0eee6) 88%, #D9D2C4); --ot-thumb: var(--triogreen); --ot-thumbring: var(--triogreenring); }
+  body.otc-warm .otFilter { --ot-tray: var(--band, #f0eee6); --ot-ring: #D9D2C4; --ot-line: #D9D2C4; --ot-ink: #4e4d4c; --ot-hover: color-mix(in srgb, var(--band, #f0eee6) 88%, #D9D2C4); --ot-thumb: #fff; --ot-thumbring: #D9D2C4; --ot-thumbink: #141414; --ot-thumbshadow: none; }
+  body.otc-warmdarker .otFilter { --ot-thumb: #fff; --ot-thumbring: #c9c0ae; --ot-thumbink: #141414; --ot-thumbshadow: none; }
+  body.otc-warmlighter .otFilter { --ot-tray: #fff; --ot-ring: #D9D2C4; --ot-line: #D9D2C4; --ot-ink: #4e4d4c; --ot-hover: var(--band, #f0eee6); --ot-thumb: #fff; --ot-thumbring: #D9D2C4; --ot-thumbink: #141414; --ot-thumbshadow: 0 0 0 transparent; }
+  body.otc-warmlighter .otFilter .track .thumb { box-shadow: inset 0 0 0 1px var(--ot-thumbring), 0 2px 4px rgba(0,0,0,.1); }
+  body.otc-warmdark .otFilter { --ot-tray: var(--band, #f0eee6); --ot-ring: #D9D2C4; --ot-line: #D9D2C4; --ot-ink: #4e4d4c; --ot-hover: color-mix(in srgb, var(--band, #f0eee6) 88%, #D9D2C4); --ot-thumb: #3d3d3a; --ot-thumbring: #2a2a28; --ot-thumbink: #fff; --ot-thumbshadow: none; }
+  body.otc-warmgreen .otFilter { --ot-tray: var(--band, #f0eee6); --ot-ring: #D9D2C4; --ot-line: #D9D2C4; --ot-ink: #4e4d4c; --ot-hover: color-mix(in srgb, var(--band, #f0eee6) 88%, #D9D2C4); --ot-thumb: var(--triogreen); --ot-thumbring: var(--triogreenring); --ot-thumbink: #fff; --ot-thumbshadow: var(--ot-outline); }
 
-  #otFilter .track { position: relative; display: flex; align-items: center; flex-wrap: nowrap; width: 100%; box-sizing: border-box; gap: 0; padding: 2px;
+  .otFilter .track { position: relative; display: flex; align-items: center; flex-wrap: nowrap; width: 100%; box-sizing: border-box; gap: 0; padding: 2px;
     border-radius: calc(var(--radius-md, 6px) + 2px); corner-shape: squircle; background: var(--ot-tray);
     box-shadow: inset 0 0 0 1px var(--ot-ring); z-index: 5; will-change: transform; }
   /* the bar sits on its own compositor layer: without it every frame of the move re-rastered the avatars below,
      with their edge filter and drop shadows, at 2x (218 ms of GPU work a click; 53 ms with the layer) */
-  #otFilter .track > .s { position: relative; z-index: 2; flex: 1 1 auto; display: inline-flex; align-items: center; justify-content: center; height: 24px; padding: 0 10px;
+  .otFilter .track > .s { position: relative; z-index: 2; flex: 1 1 auto; display: inline-flex; align-items: center; justify-content: center; height: 24px; padding: 0 10px;
     border-radius: var(--radius-md, 6px); corner-shape: squircle; font: bold 16px/24px "BuloRounded", "Verdana", "Arial", sans-serif; color: var(--ot-ink);
     cursor: pointer; user-select: none; white-space: nowrap; transition: background-color 24ms ease-out; }
-  #otFilter .track > .s > span { display: inline-flex; align-items: baseline; gap: 6px; }
-  #otFilter .track > .s i { font-style: normal; font-size: 12.3px; line-height: 1; font-weight: bold; color: var(--ot-ink); }
-  #otFilter .track > .s i::before { content: "\00B7"; margin-right: 5px; }
+  .otFilter .track > .s > span { display: inline-flex; align-items: baseline; gap: 6px; }
+  .otFilter .track > .s i { font-style: normal; font-size: 12.3px; line-height: 1; font-weight: bold; color: var(--ot-ink); }
+  .otFilter .track > .s i::before { content: "\00B7"; margin-right: 5px; }
   /* the word: a real element whose width grows with the move, kept in step by the script; it shows only in the white copy */
-  #otFilter .track > .s i .w { display: inline-block; width: 0; overflow: visible; clip-path: inset(0); white-space: pre; vertical-align: baseline; font-style: normal; opacity: 0;
+  .otFilter .track > .s i .w { display: inline-block; width: 0; overflow: visible; clip-path: inset(0); white-space: pre; vertical-align: baseline; font-style: normal; opacity: 0;
     transition: width var(--thspd) var(--thease); }
-  #otFilter .track > .s.zero { opacity: .72; }
+  .otFilter .track > .s.zero { opacity: .72; }
   /* hover: the light blue button's own, one shade darker; never on the picked cell */
-  #otFilter .track:not(.tcopy) > .s:not(.on):hover, #otFilter .track:not(.tcopy) .ov:not(.on) .ovbtn:hover { background: var(--ot-hover); }
+  .otFilter .track:not(.tcopy) > .s:not(.on):hover, .otFilter .track:not(.tcopy) .ov:not(.on) .ovbtn:hover { background: var(--ot-hover); }
   /* the lines: one on the left of every cell after the first and on More, the two beside the pick faded on the thumb's clock */
-  #otFilter .track > .s + .s::before, #otFilter .track > .s + .ov::before { content: ""; position: absolute; left: 0; top: -2px; bottom: -2px; width: 1px; background: var(--ot-ring); pointer-events: none;
+  .otFilter .track > .s + .s::before, .otFilter .track > .s + .ov::before { content: ""; position: absolute; left: 0; top: -2px; bottom: -2px; width: 1px; background: var(--ot-ring); pointer-events: none;
     transition: opacity var(--thspd) var(--thease); }
-  #otFilter .track > .s.on::before, #otFilter .track > .nextpick::before, #otFilter .track > .ov.on::before { opacity: 0; }
+  .otFilter .track > .s.on::before, .otFilter .track > .nextpick::before, .otFilter .track > .ov.on::before { opacity: 0; }
   /* More: the leaderboard's dropdown button, fused on the end. The word sits 3px from the wall, the triangle 2px after it.
      Its hover bridge reaches down through the tray's padding and the 8px gap, so the pointer can travel to the list. */
-  #otFilter .track .ov { position: relative; z-index: 2; flex: 0 0 auto; margin-left: auto; }
-  #otFilter .track .ov::after { content: ""; position: absolute; left: 0; right: -2px; top: 100%; height: 12px; }
-  #otFilter .track .ov .ovbtn { display: inline-flex; align-items: center; height: 24px; padding: 0 0 0 10px; border-radius: var(--radius-md, 6px); corner-shape: squircle;
+  .otFilter .track .ov { position: relative; z-index: 2; flex: 0 0 auto; margin-left: auto; }
+  .otFilter .track .ov::after { content: ""; position: absolute; left: 0; right: -2px; top: 100%; height: 12px; }
+  .otFilter .track .ov .ovbtn { display: inline-flex; align-items: center; height: 24px; padding: 0 0 0 10px; border-radius: var(--radius-md, 6px); corner-shape: squircle;
     font: bold 16px/24px "BuloRounded", "Verdana", "Arial", sans-serif; color: var(--ot-ink); cursor: pointer; user-select: none; white-space: nowrap; transition: background-color 24ms ease-out; }
-  #otFilter .track .ov .ovbtn .ovlab { padding-right: 3px; }
-  #otFilter .track .ov .ovbtn .wall { width: 1px; align-self: stretch; background: transparent; }
-  #otFilter .track .ov .ovbtn .zone { width: 22px; padding-left: 2px; box-sizing: border-box; align-self: stretch; display: flex; align-items: center; justify-content: flex-start; }
-  #otFilter .track .ov .ovbtn .zone svg { width: 8px; height: 7px; display: block; }
-  #otFilter .track .ov .ovbtn .zone svg path { fill: var(--ot-ink); stroke: var(--ot-ink); }
+  .otFilter .track .ov .ovbtn .ovlab { padding-right: 3px; }
+  .otFilter .track .ov .ovbtn .wall { width: 1px; align-self: stretch; background: transparent; }
+  .otFilter .track .ov .ovbtn .zone { width: 22px; padding-left: 2px; box-sizing: border-box; align-self: stretch; display: flex; align-items: center; justify-content: flex-start; }
+  .otFilter .track .ov .ovbtn .zone svg { width: 8px; height: 7px; display: block; }
+  .otFilter .track .ov .ovbtn .zone svg path { fill: var(--ot-ink); stroke: var(--ot-ink); }
   /* the list: the leaderboard's, light blue rows on a blue frame, with the tray's corners, 8px under the tray and flush with its right edge */
-  #otFilter .ovlist { display: none; position: absolute; z-index: 30; top: calc(100% + 10px); right: -2px; min-width: 100%; box-sizing: border-box; margin: 0; padding: 0; list-style: none;
+  .otFilter .ovlist { display: none; position: absolute; z-index: 30; top: calc(100% + 10px); right: -2px; min-width: 100%; box-sizing: border-box; margin: 0; padding: 0; list-style: none;
     background: #fff; border: 1px solid var(--ot-line); border-radius: calc(var(--radius-md, 6px) + 2px); corner-shape: squircle; overflow: hidden; }
-  #otFilter .ov:hover .ovlist, #otFilter .ov.open .ovlist { display: block; }
-  #otFilter .ov.picked:hover .ovlist { display: none; }
-  #otFilter .ovlist .mi { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 0 12px; font-size: 16px; line-height: 24px; font-weight: bold;
+  .otFilter .ov:hover .ovlist, .otFilter .ov.open .ovlist { display: block; }
+  .otFilter .ov.picked:hover .ovlist { display: none; }
+  .otFilter .ovlist .mi { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 0 12px; font-size: 16px; line-height: 24px; font-weight: bold;
     color: var(--ot-ink); background: var(--ot-tray); border-bottom: 1px solid var(--ot-line); cursor: pointer; white-space: nowrap; }
-  #otFilter .ovlist .mi:last-child { border-bottom: 0; }
-  #otFilter .ovlist .mi:hover { background: var(--ot-hover); }
-  #otFilter .ovlist .mi i { font-style: normal; font-size: 13px; opacity: .75; }
-  #otFilter .ovlist .mi.dim { opacity: .7; }
+  .otFilter .ovlist .mi:last-child { border-bottom: 0; }
+  .otFilter .ovlist .mi:hover { background: var(--ot-hover); }
+  .otFilter .ovlist .mi i { font-style: normal; font-size: 13px; opacity: .75; }
+  .otFilter .ovlist .mi.dim { opacity: .7; }
   /* the thumb: the site's blue button, sliding. It carries the button's shadow; the tray, being a recess, has only its ring */
-  #otFilter .track .thumb { position: absolute; z-index: 1; left: 0; top: 0; width: 0; height: 0; pointer-events: none; opacity: 0;
+  .otFilter .track .thumb { position: absolute; z-index: 1; left: 0; top: 0; width: 0; height: 0; pointer-events: none; opacity: 0;
     border-radius: var(--radius-md, 6px); corner-shape: squircle; background: var(--ot-thumb); box-shadow: inset 0 0 0 1px var(--ot-thumbring), 0 2px 4px rgba(0,0,0,.06);
     transition: left var(--thspd) var(--thease), width var(--thspd) var(--thease), top var(--thspd) var(--thease), height var(--thspd) var(--thease), opacity calc(var(--thspd) / 2) linear; }
   /* the white copy: the whole bar again in white, clipped to the thumb's window, so the text is white exactly where the thumb is */
-  #otFilter .tcopy { position: absolute; inset: 0; z-index: 6; margin: 0; pointer-events: none; background: transparent; box-shadow: none;
+  .otFilter .tcopy { position: absolute; inset: 0; z-index: 6; margin: 0; pointer-events: none; background: transparent; box-shadow: none;
     clip-path: inset(0 100% 0 0); transition: clip-path var(--thspd) var(--thease), opacity calc(var(--thspd) / 2) linear; }
-  #otFilter .tcopy > .s, #otFilter .tcopy > .s i, #otFilter .tcopy .ov .ovbtn { color: var(--ot-thumbink); text-shadow: var(--ot-thumbshadow); }
-  #otFilter .tcopy > .s + .s::before, #otFilter .tcopy > .s + .ov::before { display: none; }
-  #otFilter .tcopy > .s, #otFilter .tcopy .ov .ovbtn { background: transparent !important; opacity: 1; }
-  #otFilter .tcopy .ov .ovbtn .zone svg path { fill: var(--ot-thumbink); stroke: var(--ot-thumbink); }
-  #otFilter .tcopy > .s i .w { opacity: 1; }
+  .otFilter .tcopy > .s, .otFilter .tcopy > .s i, .otFilter .tcopy .ov .ovbtn { color: var(--ot-thumbink); text-shadow: var(--ot-thumbshadow); }
+  .otFilter .tcopy > .s + .s::before, .otFilter .tcopy > .s + .ov::before { display: none; }
+  .otFilter .tcopy > .s, .otFilter .tcopy .ov .ovbtn { background: transparent !important; opacity: 1; }
+  .otFilter .tcopy .ov .ovbtn .zone svg path { fill: var(--ot-thumbink); stroke: var(--ot-thumbink); }
+  .otFilter .tcopy > .s i .w { opacity: 1; }
   /* before the script has placed the thumb, the picked cell paints itself, so the bar is complete on the very first frame */
-  #otFilter:not(.ready) .track > .s.on { background: var(--ot-thumb); color: var(--ot-thumbink); text-shadow: var(--ot-thumbshadow); box-shadow: inset 0 0 0 1px var(--ot-thumbring), 0 2px 4px rgba(0,0,0,.06); }
-  #otFilter:not(.ready) .track > .s.on i { color: var(--ot-thumbink); }
-  #otFilter:not(.ready) .track > .s.on i .w { width: auto !important; opacity: 1; }
-  #otFilter:not(.ready) .track > .s.on + .s::before, #otFilter:not(.ready) .track > .s.on + .ov::before { opacity: 0; }
-  #otFilter .track.still, #otFilter .track.still *, #otFilter .thumb.still, #otFilter .tcopy.still, #otFilter .track.nofx, #otFilter .track.nofx *, #otFilter .track.nofx *::before { transition: none !important; }
-  #otFilter .track.measuring > .s, #otFilter .track.measuring > .ov { flex: 0 0 auto !important; min-width: 0 !important; transition: none !important; }
-  @media (prefers-reduced-motion: reduce) { #otFilter .thumb, #otFilter .tcopy, #otFilter .track > .s i .w, #otFilter .track > .s::before, #otFilter .track > .ov::before { transition: none !important; } }
+  .otFilter:not(.ready) .track > .s.on { background: var(--ot-thumb); color: var(--ot-thumbink); text-shadow: var(--ot-thumbshadow); box-shadow: inset 0 0 0 1px var(--ot-thumbring), 0 2px 4px rgba(0,0,0,.06); }
+  .otFilter:not(.ready) .track > .s.on i { color: var(--ot-thumbink); }
+  .otFilter:not(.ready) .track > .s.on i .w { width: auto !important; opacity: 1; }
+  .otFilter:not(.ready) .track > .s.on + .s::before, .otFilter:not(.ready) .track > .s.on + .ov::before { opacity: 0; }
+  .otFilter .track.still, .otFilter .track.still *, .otFilter .thumb.still, .otFilter .tcopy.still, .otFilter .track.nofx, .otFilter .track.nofx *, .otFilter .track.nofx *::before { transition: none !important; }
+  .otFilter .track.measuring > .s, .otFilter .track.measuring > .ov { flex: 0 0 auto !important; min-width: 0 !important; transition: none !important; }
+  @media (prefers-reduced-motion: reduce) { .otFilter .thumb, .otFilter .tcopy, .otFilter .track > .s i .w, .otFilter .track > .s::before, .otFilter .track > .ov::before { transition: none !important; } }
   /* the host tile's two verbs stack, Host over Options, as the live tables' Watch and Queue do */
   #openTablesTop .ltCard.isNew .cbtn { flex-direction: column; align-items: stretch; }
 </style>
 <style>
-  /* ── the third row peeks: two rows stay whole, the third is cut short and a fade in the section's own colour covers
-     only the cut, and the light blue button sits on the fade's edge. The peek, the button's behaviour and the fade's reach
-     come from the options panel, since the fade has to sit well against the space down to the divider. ── */
-  #lobbyTablesPanel { --otrow: 268px; --peek: 72px; --fadeext: 0px; --otfadecol: var(--canvas, #f9f6f2); --fade: calc(var(--peek) + 16px); }
-  body[class*="otpeek-"]:not(.otpeek-off) #lobbyTablesPanel { position: relative; }
-  body.otpeek-a #lobbyTablesPanel { --peek: 40px; }
-  body.otpeek-c #lobbyTablesPanel { --peek: 96px; }
-  body.otpeek-d #lobbyTablesPanel { --fadeext: 34px; }
-  body[class*="otpeek-"]:not(.otpeek-off) #lobbyTablesPanel:not(.open) .ltGrid { max-height: calc(var(--otrow) * 2 + 16px + var(--peek)); overflow: hidden; }
-  /* the fade begins in the gap under the second row, so the two rows are never touched */
-  body[class*="otpeek-"]:not(.otpeek-off) #lobbyTablesPanel:not(.open)::after { content: ""; position: absolute; left: -2px; right: -2px; bottom: calc(-1 * var(--fadeext)); height: calc(var(--fade) + var(--fadeext));
+  /* ── the third row peeks: two rows stay whole, the third is cut short and a fade in the section's own colour covers only
+     the cut, from the top of the gap under the second row. The script puts the setting on the panel as data-peek, so these
+     rules stay simple; the peek, the button's behaviour and the fade's reach come from the options panel, since the fade has
+     to sit well against the space down to the divider. ── */
+  #lobbyTablesPanel { --otrow: 268px; --peek: 72px; --fadeext: 0px; --otfadecol: var(--canvas, #f9f6f2); --fade: calc(16px + var(--peek)); }
+  #lobbyTablesPanel[data-peek] { position: relative; }
+  #lobbyTablesPanel[data-peek="a"] { --peek: 40px; }
+  #lobbyTablesPanel[data-peek="c"] { --peek: 96px; }
+  #lobbyTablesPanel[data-peek="d"] { --fadeext: 34px; }
+  #lobbyTablesPanel[data-peek]:not(.open) .ltGrid { max-height: calc(var(--otrow) * 2 + 16px + var(--peek)); overflow: hidden; }
+  #lobbyTablesPanel[data-peek]:not(.open)::after { content: ""; position: absolute; left: -2px; right: -2px; top: calc(var(--otrow) * 2 + 16px); height: calc(var(--fade) + var(--fadeext));
     pointer-events: none; z-index: 3; background: linear-gradient(to bottom, rgba(255,255,255,0), var(--otfadecol) 78%); }
   #lobbyTablesPanel .otMore { display: none; }
-  body[class*="otpeek-"]:not(.otpeek-off) #lobbyTablesPanel:not(.open) .otMore { display: flex; justify-content: center; position: relative; z-index: 4; margin-top: -12px; }
+  #lobbyTablesPanel[data-peek]:not(.open) .otMore { display: flex; justify-content: center; position: relative; z-index: 4; margin-top: -12px; }
   /* e: the button only when the pointer is over the fade */
-  body.otpeek-e #lobbyTablesPanel:not(.open) .otMore { position: absolute; left: 0; right: 0; bottom: calc(-1 * var(--fadeext)); height: calc(var(--fade) + var(--fadeext)); margin: 0; align-items: flex-end; padding-bottom: 6px; box-sizing: border-box; }
-  body.otpeek-e #lobbyTablesPanel .otMore .button { opacity: 0; transition: opacity .15s ease-out; }
-  body.otpeek-e #lobbyTablesPanel .otMore:hover .button { opacity: 1; }
+  #lobbyTablesPanel[data-peek="e"]:not(.open) .otMore { position: absolute; left: 0; right: 0; top: calc(var(--otrow) * 2 + 16px); height: calc(var(--fade) + var(--fadeext)); margin: 0; align-items: flex-end; padding-bottom: 6px; box-sizing: border-box; }
+  #lobbyTablesPanel[data-peek="e"] .otMore .button { opacity: 0; transition: opacity .15s ease-out; }
+  #lobbyTablesPanel[data-peek="e"] .otMore:hover .button { opacity: 1; }
   /* f: no button, the tables scroll under the fade, and the fade goes when the last row is reached */
-  body.otpeek-f #lobbyTablesPanel .ltGrid { overflow-y: auto; scrollbar-width: none; }
-  body.otpeek-f #lobbyTablesPanel .ltGrid::-webkit-scrollbar { display: none; }
-  body.otpeek-f #lobbyTablesPanel .otMore { display: none !important; }
-  body.otpeek-f #lobbyTablesPanel.atend::after { opacity: 0; }
-  body.otpeek-f #lobbyTablesPanel::after { transition: opacity .2s ease-out; }
+  #lobbyTablesPanel[data-peek="f"]:not(.open) .ltGrid { overflow-y: auto; scrollbar-width: none; }
+  #lobbyTablesPanel[data-peek="f"] .ltGrid::-webkit-scrollbar { display: none; }
+  #lobbyTablesPanel[data-peek="f"]:not(.open) .otMore { display: none; }
+  #lobbyTablesPanel[data-peek="f"]::after { transition: opacity .2s ease-out; }
+  #lobbyTablesPanel[data-peek="f"].atend::after { opacity: 0; }
+  /* and a fade at the top once the first row has gone under the bar */
+  #lobbyTablesPanel[data-peek="f"]:not(.open)::before { content: ""; position: absolute; left: -2px; right: -2px; top: 0; height: 40px; pointer-events: none; z-index: 3;
+    background: linear-gradient(to top, rgba(255,255,255,0), var(--otfadecol) 90%); opacity: 0; transition: opacity .2s ease-out; }
+  #lobbyTablesPanel[data-peek="f"].scrolled::before { opacity: 1; }
 </style>
   <div class="lobbyscope" id="openTablesTop">
     <div class="lobbyhead"><span class="pophead">Open tables</span></div>
@@ -3747,18 +3756,10 @@
   <div id="lobby-slot-top"></div>
   <div id="lobbyDemo" class="lobbyscope">
     <div class="lobbyTopBand">
+      <div class="otFilter" id="ldFilter" aria-label="Game for the leaderboard and the deal"><div class="track" data-row><span class="s on" data-g="hearts"><span>Hearts</span></span><span class="s" data-g="spades"><span>Spades</span></span><span class="s" data-g="euchre"><span>Euchre</span></span><span class="s" data-g="pinochledd"><span>Double Deck Pinochle</span></span><span class="s" data-g="handfoot"><span>Hand & Foot</span></span><span class="s" data-g="ginrummy"><span>Gin Rummy</span></span><span class="s" data-g="twentynine"><span>Twenty-Nine</span></span><span class="s" data-g="rummy"><span>Rummy</span></span><span class="s" data-g="canasta"><span>Canasta</span></span><span class="s" data-g="pinochle"><span>Pinochle</span></span><span class="s" data-g="cribbage"><span>Cribbage</span></span><span class="s" data-g="gofish"><span>Go Fish</span></span><span class="s" data-g="threefiveeight"><span>Sergeant Major</span></span><span class="s" data-g="whist"><span>Whist</span></span><span class="s" data-g="crazyeights"><span>Crazy Eights</span></span><span class="s" data-g="bridge"><span>Bridge</span></span><span class="s" data-g="oldmaid"><span>Old Maid</span></span><span class="s" data-g="sheepshead"><span>Sheepshead</span></span><div class="ov"><span class="ovbtn"><span class="ovlab">More</span><span class="wall"></span><span class="zone"><svg viewBox="0 0 8 7" aria-hidden="true"><path d="M1.2 1h5.6L4 6z" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></svg></span></span><ul class="ovlist"><li class="mi" data-g="hearts">Hearts</li><li class="mi" data-g="spades">Spades</li><li class="mi" data-g="euchre">Euchre</li><li class="mi" data-g="pinochledd">Double Deck Pinochle</li><li class="mi" data-g="handfoot">Hand & Foot</li><li class="mi" data-g="ginrummy">Gin Rummy</li><li class="mi" data-g="twentynine">Twenty-Nine</li><li class="mi" data-g="rummy">Rummy</li><li class="mi" data-g="canasta">Canasta</li><li class="mi" data-g="pinochle">Pinochle</li><li class="mi" data-g="cribbage">Cribbage</li><li class="mi" data-g="gofish">Go Fish</li><li class="mi" data-g="threefiveeight">Sergeant Major</li><li class="mi" data-g="whist">Whist</li><li class="mi" data-g="crazyeights">Crazy Eights</li><li class="mi" data-g="bridge">Bridge</li><li class="mi" data-g="oldmaid">Old Maid</li><li class="mi" data-g="sheepshead">Sheepshead</li></ul></div><span class="thumb still"></span></div></div>
       <div class="lobbycol">
         <div class="lobbyhead"><span class="pophead">Leaderboard</span></div>
         <div class="lobbyBoardCard" id="lobbyBoardCard">
-        <div class="ldChips lbGames">
-          <button type="button" class="button small blue">Hearts</button>
-          <button type="button" class="button small lightblue">Spades</button>
-          <button type="button" class="button small lightblue">Euchre</button>
-          <div class="ldMore">
-            <span class="dropupButton"><span class="dropupButtonText">More</span></span>
-            <ul class="dropupContent"><li>Gin Rummy</li><li>Pinochle</li><li>Double Deck Pinochle</li><li>Canasta</li><li>Whist</li></ul>
-          </div>
-        </div>
         <div class="lbRows">
           <div class="lbRow lbHeaderRow"><span class="lbRank">Rank</span><span class="lbName">Player</span><span class="lbRating">Elo</span></div>
           <div class="lbRow"><span class="lbRank">#41</span><span class="lbName">SpadeQueen</span><span class="lbRating">1,512</span></div>
@@ -3780,15 +3781,6 @@
       <div class="lobbycol">
         <div class="lobbyhead"><span class="pophead">Daily deal</span></div>
         <div class="lobbyDealCard" id="lobbyDealCard">
-        <div class="ldChips">
-          <button type="button" class="button small blue">Hearts</button>
-          <button type="button" class="button small lightblue">Spades</button>
-          <button type="button" class="button small lightblue">Euchre</button>
-          <div class="ldMore">
-            <span class="dropupButton"><span class="dropupButtonText">More</span></span>
-            <ul class="dropupContent"><li>Gin Rummy</li><li>Cribbage</li><li>Pinochle</li><li>Canasta</li><li>Rummy</li></ul>
-          </div>
-        </div>
         <div class="ldChallenge">
           <div class="ldPanel">
             <div class="ldAward">
@@ -4269,7 +4261,7 @@
     ["warmdark", "Evernote: the warm band as the tray, an ink thumb"],
     ["warmgreen", "Evernote: the warm band as the tray, the Play green thumb"]
   ];
-  var curOtColor = "blue";
+  var curOtColor = "warmdarkergreen";
   /* how the open tables say there is more: the third row peeking under a fade, with the peek and the fade to try against the divider */
   var OTPEEKS = [
     ["off", "Six tiles, nothing more"],
@@ -8057,8 +8049,7 @@
      of open tables; the ones that do not fit live in More. A game picked from More takes the last cell in the bar
      and the game it displaces goes into More. The bar is in the markup already, so it paints with the page; this
      script measures what fits, places the thumb and drives the tables. From open-tables-slide-lab, 5 September. ── */
-  document.addEventListener("DOMContentLoaded", function () {
-    var host = document.getElementById("otFilter");
+  function buildGameBar(host, onPick) {
     if (!host) return;
     var track = host.querySelector(".track"), dd = track.querySelector(".ov"), thumb = track.querySelector(".thumb");
     var NAMES = {}; track.querySelectorAll(".ovlist .mi").forEach(function (li) { NAMES[li.dataset.g] = li.firstChild.textContent.trim(); });
@@ -8096,19 +8087,20 @@
        so the thumb aims at where the cell will be once the words have finished growing and shrinking */
     function settle() {
       var cs = cells(track), prev = {}, finalW = {};
-      cs.forEach(function (c) { prev[c.dataset.g] = c.querySelector(".w").style.width || "0px"; });
+      cs.forEach(function (c) { var w = c.querySelector(".w"); prev[c.dataset.g] = w ? (w.style.width || "0px") : "0px"; });
       track.classList.add("nofx");
       cs.forEach(function (c) { var w = c.querySelector(".w"), on = c.classList.contains("on");
+        if (!w) { finalW[c.dataset.g] = "0px"; return; } /* a bar without counts has no word to grow */
         if (on) { var n = +c.querySelector("i").dataset.n; w.textContent = n === 1 ? " table" : " tables"; w.style.width = "auto"; finalW[c.dataset.g] = w.getBoundingClientRect().width + "px"; w.style.width = finalW[c.dataset.g]; }
         else { finalW[c.dataset.g] = "0px"; w.style.width = "0px"; } });
       void track.offsetWidth;
       var target = track.querySelector(".s.on"), rect = null;
       if (target && target.style.display !== "none") { var r = target.getBoundingClientRect(), t = track.getBoundingClientRect(); rect = { left: r.left - t.left, top: r.top - t.top, width: r.width, height: r.height }; }
-      cs.forEach(function (c) { c.querySelector(".w").style.width = prev[c.dataset.g]; });
+      cs.forEach(function (c) { var w = c.querySelector(".w"); if (w) w.style.width = prev[c.dataset.g]; });
       void track.offsetWidth;
       track.classList.remove("nofx");
-      cs.forEach(function (c) { c.querySelector(".w").style.width = finalW[c.dataset.g]; });
-      cells(copy).forEach(function (c) { var w = c.querySelector(".w"); if (c.classList.contains("on")) w.textContent = track.querySelector('[data-g="' + c.dataset.g + '"] .w').textContent; w.style.width = finalW[c.dataset.g] || "0px"; });
+      cs.forEach(function (c) { var w = c.querySelector(".w"); if (w) w.style.width = finalW[c.dataset.g]; });
+      cells(copy).forEach(function (c) { var w = c.querySelector(".w"); if (!w) return; if (c.classList.contains("on")) w.textContent = track.querySelector('[data-g="' + c.dataset.g + '"] .w').textContent; w.style.width = finalW[c.dataset.g] || "0px"; });
       return rect;
     }
     function place(p) {
@@ -8143,23 +8135,29 @@
       render(false);
       /* the tables change only once the thumb has landed: turning them over on the click frame is what made the move stutter */
       clearTimeout(gridTimer);
-      gridTimer = setTimeout(function () { if (window.otLive) window.otLive.setGame(id); }, speed() + 40);
+      gridTimer = setTimeout(function () { onPick(id); }, speed() + 40);
     }
     host.addEventListener("click", function (e) {
       if (e.target.closest(".ovbtn")) { dd.classList.toggle("open"); return; }
       var it = e.target.closest("[data-g]"); if (!it) return;
       pick(it.dataset.g, !!it.closest(".ovlist"));
     });
-    document.addEventListener("click", function (e) { if (!e.target.closest("#otFilter .ov")) dd.classList.remove("open"); });
+    document.addEventListener("click", function (e) { var ov = e.target.closest(".otFilter .ov"); if (!ov || !host.contains(ov)) dd.classList.remove("open"); });
     var rt; window.addEventListener("resize", function () { clearTimeout(rt); rt = setTimeout(fit, 60); });
     fit();
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+  }
+  document.addEventListener("DOMContentLoaded", function () {
+    buildGameBar(document.getElementById("otFilter"), function (id) { if (window.otLive) window.otLive.setGame(id); });
+    /* the same bar over the leaderboard and the deal (5 September): one game for both cards, no counts, no All games */
+    buildGameBar(document.getElementById("ldFilter"), function () {});
   });
 </script>
 <script>
   /* ── the third row peeks under a fade. The row height comes from the first tile and the fade colour from the nearest painted
-     ancestor, both refreshed when the options change. With the button on the edge or on hover, a click opens the rest; with
-     the scrolling setting the tables scroll under the fade and the fade goes at the end. ── */
+     ancestor, both refreshed when the options change; the setting itself goes on the panel as data-peek. With the button on
+     the edge or on hover, a click opens the rest; with the scrolling setting the tables scroll under the fade and the fade goes
+     at the end. ── */
   document.addEventListener("DOMContentLoaded", function () {
     var panel = document.getElementById("lobbyTablesPanel");
     if (!panel) return;
@@ -8174,9 +8172,14 @@
       while (el && el !== document.documentElement) { var bg = getComputedStyle(el).backgroundColor; if (bg && bg !== "rgba(0, 0, 0, 0)" && bg !== "transparent") { panel.style.setProperty("--otfadecol", bg); return; } el = el.parentNode; }
       panel.style.setProperty("--otfadecol", getComputedStyle(document.body).backgroundColor);
     }
-    function atEnd() { panel.classList.toggle("atend", grid.scrollTop + grid.clientHeight >= grid.scrollHeight - 2); }
+    function atEnd() { panel.classList.toggle("atend", grid.scrollTop + grid.clientHeight >= grid.scrollHeight - 2); panel.classList.toggle("scrolled", grid.scrollTop > 2); }
     grid.addEventListener("scroll", atEnd);
-    function sync() { if (window.otLive && window.otLive.setPeek) window.otLive.setPeek(); rowH(); fadeColor(); atEnd(); }
+    function mode() { var m = document.body.className.match(/\botpeek-(\w+)/); return m && m[1] !== "off" ? m[1] : null; }
+    function sync() {
+      var m = mode(); if (m) panel.dataset.peek = m; else delete panel.dataset.peek;
+      if (window.otLive && window.otLive.setPeek) window.otLive.setPeek();
+      rowH(); fadeColor(); atEnd();
+    }
     sync();
     window.addEventListener("resize", function () { rowH(); atEnd(); });
     new MutationObserver(sync).observe(document.body, { attributes: true, attributeFilter: ["class"] });
