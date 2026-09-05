@@ -3255,21 +3255,12 @@
 <div class="switchbar">
   <div class="swgroup">
     <div class="swhead">In play</div>
-    <label class="ctl"><span>Hero subtitle</span><select id="subsel"></select></label>
     <label class="ctl"><span>Viewer</span><select id="sel-viewer"></select></label>
     <label class="ctl"><span>Persona name</span><select id="sel-pname"></select></label>
     <label class="ctl"><span>Daily status</span><select id="sel-dstatus"></select></label>
     <label class="ctl"><span>Status state</span><select id="sel-dstate"></select></label>
     <label class="ctl"><span>Status game</span><select id="sel-dgame"></select></label>
-    <label class="ctl"><span>Tile colors</span><select id="sel-tilebg"></select></label>
-    <label class="ctl"><span>Tile shell</span><select id="sel-tint"></select></label>
-    <label class="ctl"><span>Play button</span><select id="sel-playbtn"></select></label>
-    <label class="ctl"><span>Catalog layout</span><select id="sel-catalog"></select></label>
-    <label class="ctl"><span>Divider</span><select id="sel-divider"></select></label>
-    <label class="ctl"><span>Sections</span><select id="sel-sect"></select></label>
     <label class="ctl"><span>Corner buttons</span><select id="sel-cbtn"></select></label>
-    <label class="ctl"><span>Menu bar</span><select id="sel-menu"></select></label>
-    <label class="ctl"><span>Link hover</span><select id="sel-lhover"></select></label>
   </div>
   <details class="swadv">
     <summary>Advanced — settled settings</summary>
@@ -3611,7 +3602,9 @@
   :is(#openTablesTop, #lobbyLiveTables) .completionBadge { display: flex; align-items: center; justify-content: center; width: 20px; height: 20px;
     position: absolute; right: -10px; top: -10px; background: url("cleanMeldBadge.png") no-repeat center / 20px 20px;
     color: #4F800B; font-size: 12px; font-weight: 900; letter-spacing: -1px; padding-right: 1px; padding-top: 1px; }
-  :is(#openTablesTop, #lobbyLiveTables) .completionBadge.is100 { background-image: url("highReputationBadge.png"); }
+  /* the 100% badge on the success surface, #C0EB75 with the check in #4F800B, the same pair the numbered badge wears (5 September); the
+     production image sits one step deeper on the lime scale, an action colour used as a surface, with the check in the pressed step */
+  :is(#openTablesTop, #lobbyLiveTables) .completionBadge.is100 { background-image: url("highReputationBadge-success.png"); }
 
   /* The section is live: seats fill and empty, and a table that stops being listed is replaced WITHOUT
      the tile moving at all. The felt stays exactly where it is and only what sits on it changes, so
@@ -5408,18 +5401,10 @@
     document.getElementById("sel-shadow").value = curShadow;
     document.getElementById("sel-edge").value = curEdge;
     document.getElementById("sel-texture").value = curTexture;
-    document.getElementById("sel-catalog").value = curCatalog;
     document.getElementById("sel-stats").value = curStats;
-    document.getElementById("sel-menu").value = curMenu;
-    document.getElementById("sel-sect").value = curSect;
     document.getElementById("sel-cbtn").value = curCbtn;
-    document.getElementById("sel-divider").value = curDivider;
-    document.getElementById("sel-lhover").value = curLhover;
     document.getElementById("sel-counter").value = curCounter;
     document.getElementById("sel-rail").value = curRail;
-    document.getElementById("sel-playbtn").value = curPlayBtn;
-    document.getElementById("sel-tilebg").value = curTileBg;
-    document.getElementById("sel-tint").value = curTint;
     document.getElementById("sel-pinpair").value = curPinPair;
     document.getElementById("sel-avedge").value = curAvedge;
     document.getElementById("sel-avshadow").value = curAvshadow;
@@ -5630,6 +5615,8 @@
   };
   function buildSel(id, list, setter) {
     var el = document.getElementById(id);
+    /* a switcher whose row has been retired simply has no control; the cur* default still applies */
+    if (!el) return;
     var favKeys = (FAVES[id] || []).filter(function (k) {
       return list.some(function (x) { return x[0] === k; });
     });
@@ -5699,13 +5686,8 @@
   buildSel("sel-shadow", SHADOWS, function (v) { curShadow = v; });
   buildSel("sel-edge", EDGES, function (v) { curEdge = v; });
   buildSel("sel-texture", TEXTURES, function (v) { curTexture = v; });
-  buildSel("sel-catalog", CATALOGS, function (v) { curCatalog = v; });
   buildSel("sel-stats", STATSLINES, function (v) { curStats = v; });
-  buildSel("sel-menu", MENUS, function (v) { curMenu = v; });
-  buildSel("sel-sect", SECTS, function (v) { curSect = v; });
   buildSel("sel-cbtn", CBTNS, function (v) { curCbtn = v; });
-  buildSel("sel-divider", DIVIDERS, function (v) { curDivider = v; });
-  buildSel("sel-lhover", LHOVERS, function (v) { curLhover = v; });
   (function () {
     var bar = document.querySelector(".switchbar");
     var zone = document.querySelector(".switchzone");
@@ -5716,9 +5698,6 @@
   })();
   buildSel("sel-counter", COUNTERS, function (v) { curCounter = v; });
   buildSel("sel-rail", RAILS, function (v) { curRail = v; });
-  buildSel("sel-playbtn", PLAYBTNS, function (v) { curPlayBtn = v; });
-  buildSel("sel-tilebg", TILEBGS, function (v) { curTileBg = v; });
-  buildSel("sel-tint", TINTS, function (v) { curTint = v; });
   buildSel("sel-pinpair", PINPAIRS, function (v) { curPinPair = v; });
   buildSel("sel-avedge", AVEDGES, function (v) { curAvedge = v; });
   buildSel("sel-avshadow", AVSHADOWS, function (v) { curAvshadow = v; });
@@ -6061,7 +6040,9 @@
   function subLabel(i) { return SUBS[i][1] + (i > 0 ? " — " + SUBS[i][0] : ""); }
   function subIndex(text) { for (var i = 0; i < SUBS.length; i++) if (SUBS[i][0] === text) return i; return 0; }
   var CHOSEN_SUB = subIndex("Join a table or play our robots. Settle in, unwind|and make friends. Free to play, hard to stop."), ALT_SUB = subIndex("Join a friendly table or play our robots. Free to play, hard to stop.");
-  var subsel = document.getElementById("subsel");
+  /* the Hero subtitle switcher has left the panel; the copy code keeps a detached select so it can
+     still read a value. That value stays 0, which means "use the subtitle already in the markup". */
+  var subsel = document.getElementById("subsel") || document.createElement("select");
   SUBS.forEach(function (x, i) {
     var o = document.createElement("option");
     o.value = i; o.textContent = subLabel(i);
