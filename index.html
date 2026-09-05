@@ -2248,6 +2248,11 @@
   .lobbyscope .tableListing { width: 100%; position: relative; }
   .lobbyscope .tableListing.isTeamGame .playernumber1 .playerNameContainer,
   .lobbyscope .tableListing.isTeamGame .playernumber3 .playerNameContainer { background-color: var(--trioredlight); color: #B52626; }
+  /* a set of seats on its way out keeps the colour it arrived with while the listing already wears the next game's class (5 September) */
+  .lobbyscope .tableListing .playersContainer.teamSeats .playernumber1 .playerNameContainer,
+  .lobbyscope .tableListing .playersContainer.teamSeats .playernumber3 .playerNameContainer { background-color: var(--trioredlight); color: #B52626; }
+  .lobbyscope .tableListing .playersContainer.soloSeats .playernumber1 .playerNameContainer,
+  .lobbyscope .tableListing .playersContainer.soloSeats .playernumber3 .playerNameContainer { background-color: var(--triolight); color: #1665AD; }
   .lobbyscope .tableListing .header { position: absolute; overflow: hidden; top: 0; width: 100%; padding-top: 75%;
     background: #327333 url("green-felt.jpg") repeat; background-size: 300px 300px; }
   @media (min-resolution: 2dppx) { .lobbyscope .tableListing .header { background-size: 100px 100px; } }
@@ -3561,6 +3566,7 @@
     box-shadow: 0 0 0 1px rgba(0,0,0,.16); transition: background-color 24ms ease-out; }
   body.cbtn-gameyellow .cbtn .button { background-color: #FFE066; color: #C96800; text-shadow: none; }
   body.cbtn-gameyellow .cbtn .button:hover { background-color: color-mix(in srgb, #FFE066 92%, #E67700 8%); }
+  body.cbtn-gameyellow .cbtn .button:active { background-color: #FCC419; } /* the game's pressed yellow */
   body.cbtn-triogreen .cbtn .button { background-color: var(--triogreen); color: #fff;
     text-shadow: -1px -1px 0 var(--triogreenring), 1px -1px 0 var(--triogreenring), -1px 1px 0 var(--triogreenring), 1px 1px 0 var(--triogreenring); }
   body.cbtn-triogreen .cbtn .button:hover { background-color: var(--triogreenhover); }
@@ -7095,6 +7101,12 @@
       var newBox = fresh.querySelector(".playersContainer");
       header.appendChild(newBox);
       armCard(newBox);
+      /* The listing wears the NEXT game's class from the first frame, so the arriving plates are dealt in
+         in their own colour; the leaving set is frozen in the colour it arrived with (teamSeats / soloSeats
+         on the old container). Before this the class waited for the old contents to go, and a team game's
+         red plates landed red and then turned blue, or blue plates turned red, once the class caught up. */
+      oldBox.classList.add(listing.classList.contains("isTeamGame") ? "teamSeats" : "soloSeats");
+      listing.className = "tableListing " + game[0] + teamClass(game[0]) + " players4";
       /* neither set is touchable while it runs: the arriving one paints on top and hit-tests from the
          first frame, and an element at opacity 0 still takes the pointer */
       oldBox.style.pointerEvents = "none";
@@ -7119,9 +7131,6 @@
       var finish = function () {
         oldBox.remove();
         syncInvite(card);
-        /* the game class waits until the old contents are gone: .tableListing.isTeamGame recolours the
-           playernumber1 and playernumber3 plates, and setting it early would recolour the leaving ones */
-        listing.className = "tableListing " + game[0] + teamClass(game[0]) + " players4";
         /* The arriving animations are deliberately NOT cancelled. Their fill holds exactly the values
            the base style already has, so cancelling changes nothing about the layout, but it does drop
            every element out of the composited rendering path in one frame, and edges and text are
