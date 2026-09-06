@@ -305,7 +305,7 @@
 </div>
 
 <section id="about">
-  <div class="seam" id="aboutSeam" data-title="About the site"></div>
+  <div class="seam" id="aboutSeam" data-title="Behind the games"></div>
   <div class="page" id="aboutBody"></div>
 </section>
 
@@ -503,7 +503,7 @@
   }
   var FEATURES = { text: "Text, bold lead-ins", icons: "Icons", pictures: "Pictures (dummy scenes)" };
   var QUOTES = { paired: "Paired with the promises", row: "A row of three", none: "No quotes" };
-  var TITLES = { site: "About the site", hello: "Hello from Holger", note: "A note from Holger", behind: "Behind the tables", card: "The card room" };
+  var TITLES = { games: "Behind the games", site: "About the site", hello: "Hello from Holger", note: "A note from Holger", behind: "Behind the tables", card: "The card room" };
   var PAPER = { canvas: "Canvas (page colour)", band: "Band (the beige)" };
 
   /* ===== the seam: suit marks every 96px, skipping the ones the title covers ===== */
@@ -526,7 +526,8 @@
   function seams() { document.querySelectorAll(".seam").forEach(function (e) { seam(e, e.dataset.title); }); }
 
   /* ===== state, the panel, the URL ===== */
-  var st = { layout: "letter", features: "text", quotes: "paired", title: "site", paper: "canvas" };
+  /* the defaults are Holger's picks (6 September 2026): the letter on paper, icons for the features, "Behind the games" */
+  var st = { layout: "sheet", features: "icons", quotes: "paired", title: "games", paper: "canvas" };
   var KEYS = ["layout", "features", "quotes", "title", "paper"];
   var body = document.getElementById("aboutBody");
   function apply() {
@@ -537,7 +538,7 @@
     seams();
     document.getElementById("labNote").innerHTML = "<b>" + LAYOUTS[st.layout].name + ".</b> " + LAYOUTS[st.layout].note + " <b>Words:</b> " + words() + ".";
     KEYS.forEach(function (k) { var s = document.getElementById("lab-" + k); if (s.value !== st[k]) s.value = st[k]; });
-    try { localStorage.setItem("aboutlab", JSON.stringify(st)); } catch (e) {}
+    try { localStorage.setItem("aboutlab2", JSON.stringify(st)); } catch (e) {}
   }
   function words() { return body.textContent.trim().split(/\s+/).length; }
   function opts(map) { return Object.keys(map).map(function (k) { return '<option value="' + k + '">' + (map[k].name || map[k]) + "</option>"; }).join(""); }
@@ -555,7 +556,7 @@
   KEYS.forEach(function (k) { document.getElementById("lab-" + k).addEventListener("change", function () { st[k] = this.value; apply(); }); });
 
   /* #layout:quotes:title:paper:features picks a state from the URL, for headless shots; else the last pick is remembered */
-  try { var saved = JSON.parse(localStorage.getItem("aboutlab") || "null"); if (saved) KEYS.forEach(function (k) { if (saved[k]) st[k] = saved[k]; }); } catch (e) {}
+  try { var saved = JSON.parse(localStorage.getItem("aboutlab2") || "null"); if (saved) KEYS.forEach(function (k) { if (saved[k]) st[k] = saved[k]; }); } catch (e) {}
   var hash = (location.hash || "").slice(1).split(":");
   if (hash[0] && LAYOUTS[hash[0]]) { st.layout = hash[0]; if (QUOTES[hash[1]]) st.quotes = hash[1]; if (TITLES[hash[2]]) st.title = hash[2]; if (PAPER[hash[3]]) st.paper = hash[3]; if (FEATURES[hash[4]]) st.features = hash[4]; }
   if (/hidepanel/.test(location.search)) document.body.classList.add("labhidden");
