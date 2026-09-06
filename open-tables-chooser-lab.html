@@ -8598,6 +8598,48 @@
   .labSeamDd .ovlist .mi.dim { opacity: .55; }
   .labSeamDd .ovlist .mi.on { color: var(--ot-thumbink); background: var(--ot-thumb); text-shadow: var(--ot-thumbshadow); cursor: default; }
   .labSeamDd .ovlist .mi.on i { opacity: 1; }
+  /* the chips: the tray recoloured. White: the cards' paper on the settled ring. Green: the bar's picked cell, white text with its outline */
+  .labSeamDd.t-white { --ot-tray: #fff; --ot-ring: #D9D2C4; --ot-hover: var(--band, #f4eee5); }
+  .labSeamDd.t-green { --ot-tray: var(--triogreen); --ot-ring: var(--triogreenring); --ot-ink: #fff; --ot-hover: var(--triogreenring); }
+  .labSeamDd.t-green .ovbtn { text-shadow: var(--ot-outline); }
+  .labSeamDd.t-green .ovbtn:hover::after { display: none; }
+  /* the logo: the game's small art in the tray before its name, on the tray's own colour */
+  .labSeamDd.t-logo .ovbtn { padding-left: 6px; }
+  .labSeamDd.t-logo .glogo { height: 22px; width: auto; display: block; margin-right: 6px; filter: drop-shadow(0 1px 1px rgba(0,0,0,.18)); }
+  /* the text forms: no tray, the button is text with the small triangle after it; the hover bridge and the list as the tray's */
+  .labSeamDd.t-text { font-family: inherit; }
+  .labSeamDd.t-text .ov { position: relative; display: flex; }
+  .labSeamDd.t-text .ov::after { content: ""; position: absolute; left: 0; right: 0; top: 100%; height: 14px; }
+  .labSeamDd.t-text .ovbtn { display: inline-flex; align-items: baseline; cursor: pointer; user-select: none; white-space: nowrap; }
+  .labSeamDd.t-text .ovbtn .wall { display: none; }
+  .labSeamDd.t-text .ovbtn .zone { display: inline-flex; align-items: center; align-self: center; }
+  .labSeamDd.t-text .ovbtn .zone svg { display: block; }
+  .labSeamDd.t-text .ovbtn .zone svg path { fill: #8a857c; stroke: #8a857c; }
+  .labSeamDd.t-text .ovbtn:hover .zone svg path { fill: #141414; stroke: #141414; }
+  /* the bar's word: bold Bulo at the bar's size in the bar's ink, going dark on hover */
+  .labSeamDd.t-word { margin-left: 16px; top: 0; }
+  .labSeamDd.t-word .ovbtn { font: bold 16px/24px "BuloRounded", "Verdana", "Arial", sans-serif; color: #4e4d4c; }
+  .labSeamDd.t-word .ovbtn:hover { color: #141414; }
+  .labSeamDd.t-word .ovbtn .zone { width: 14px; padding-left: 6px; }
+  .labSeamDd.t-word .ovbtn .zone svg { width: 8px; height: 7px; }
+  /* the title's face: a middle dot in the muted ink, then the game at the title's size, in the title's ink or the muted one */
+  .labSeamDd.t-dot, .labSeamDd.t-dotmuted { margin-left: 0; top: 0; vertical-align: baseline; }
+  .labSeamDd.t-dot::before, .labSeamDd.t-dotmuted::before { content: "·"; margin: 0 11px; color: #8a857c; align-self: baseline; }
+  .labSeamDd.t-dot .ovbtn, .labSeamDd.t-dotmuted .ovbtn { font: inherit; }
+  .labSeamDd.t-dot .ovbtn { color: var(--ink, #141414); }
+  .labSeamDd.t-dotmuted .ovbtn { color: #4e4d4c; }
+  .labSeamDd.t-dotmuted .ovbtn:hover { color: #141414; }
+  .labSeamDd.t-dot .ovbtn .zone, .labSeamDd.t-dotmuted .ovbtn .zone { width: 18px; padding-left: 8px; }
+  .labSeamDd.t-dot .ovbtn .zone svg, .labSeamDd.t-dotmuted .ovbtn .zone svg { width: 10px; height: 9px; }
+  /* the game inside the sentence: the title's face, a dotted line under the word in the ring's colour, the triangle tucked after it */
+  .labSeamDd.t-sentence { margin: 0; top: 0; vertical-align: baseline; }
+  .labSeamDd.t-sentence .ovbtn { font: inherit; color: var(--ink, #141414); }
+  .labSeamDd.t-sentence .ovbtn .ovlab { text-decoration: underline dotted #b8ae9c; text-decoration-thickness: 2px; text-underline-offset: 7px; }
+  .labSeamDd.t-sentence .ovbtn:hover .ovlab { text-decoration-color: #4e4d4c; }
+  .labSeamDd.t-sentence .ovbtn .zone { width: 14px; padding-left: 5px; }
+  .labSeamDd.t-sentence .ovbtn .zone svg { width: 9px; height: 8px; }
+  .labSeamDd.t-text .ovlist { top: calc(100% + 8px); left: 0; }
+  .labSeamDd.t-dot .ovlist, .labSeamDd.t-dotmuted .ovlist { left: 26px; }
 </style>
 
 <script>
@@ -8658,21 +8700,34 @@
   var GAMES = [["hearts", "Hearts", 5], ["spades", "Spades", 2], ["euchre", "Euchre", 1], ["pinochledd", "Double Deck Pinochle", 1], ["handfoot", "Hand &amp; Foot", 1], ["ginrummy", "Gin Rummy", 1], ["bridge", "Bridge", 1],
     ["twentynine", "Twenty-Nine", 0], ["rummy", "Rummy", 0], ["canasta", "Canasta", 0], ["pinochle", "Pinochle", 0], ["cribbage", "Cribbage", 0], ["gofish", "Go Fish", 0], ["threefiveeight", "Sergeant Major", 0], ["whist", "Whist", 0], ["crazyeights", "Crazy Eights", 0], ["oldmaid", "Old Maid", 0], ["sheepshead", "Sheepshead", 0]];
   var TRI = '<svg viewBox="0 0 8 7" aria-hidden="true"><path d="M1.2 1h5.6L4 6z" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></svg>';
-  var seamPick = { live: "hearts", lb: "hearts" };
+  var seamPick = { live: "hearts", lb: "hearts" }, seamStyle = "tray";
+  var LOGO = { pinochledd: "ddpinochle", threefiveeight: "sgtmajor" };
   function gameName(g) { if (g === "all") return "All games"; var r = GAMES.filter(function (x) { return x[0] === g; })[0]; return r ? r[1] : g; }
+  function gameLogo(g) { return g === "all" ? "" : '<img class="glogo" src="' + (LOGO[g] || g) + '_logo@2x.png" alt="">'; }
+  /* the dropdown in one of its forms: a tray (the More button alone), a white or green chip, a tray with the game's logo, or plain text
+     in the title's face or the bar's; the list under it is the More list in every form */
   function seamDd(k) {
-    var pick = seamPick[k], rows = (k === "live" ? [["all", "All games", 12]] : []).concat(GAMES);
-    return '<span class="labSeamDd otFilter" data-k="' + k + '"><span class="track"><span class="ov"><span class="ovbtn"><span class="ovlab">' + gameName(pick) + '</span><span class="wall"></span><span class="zone">' + TRI + '</span></span>' +
-      '<ul class="ovlist">' + rows.map(function (r) { return '<li class="mi' + (r[0] === pick ? " on" : "") + (k === "live" && !r[2] ? " dim" : "") + '" data-g="' + r[0] + '">' + r[1] + (k === "live" ? "<i>" + r[2] + "</i>" : "") + "</li>"; }).join("") + "</ul></span></span></span>";
+    var pick = seamPick[k], rows = (k === "live" ? [["all", "All games", 12]] : []).concat(GAMES), t = seamStyle;
+    var list = '<ul class="ovlist">' + rows.map(function (r) { return '<li class="mi' + (r[0] === pick ? " on" : "") + (k === "live" && !r[2] ? " dim" : "") + '" data-g="' + r[0] + '">' + r[1] + (k === "live" ? "<i>" + r[2] + "</i>" : "") + "</li>"; }).join("") + "</ul>";
+    var btn = '<span class="ovbtn">' + (t === "logo" ? gameLogo(pick) : "") + '<span class="ovlab">' + gameName(pick) + '</span><span class="wall"></span><span class="zone">' + TRI + "</span></span>";
+    if (t === "tray" || t === "white" || t === "green" || t === "logo")
+      return '<span class="labSeamDd otFilter t-' + t + '" data-k="' + k + '"><span class="track"><span class="ov">' + btn + list + "</span></span></span>";
+    return '<span class="labSeamDd otFilter t-text t-' + t + '" data-k="' + k + '"><span class="ov">' + btn + list + "</span></span>";
   }
-  function seamHeads() { setHead("live", "Live tables" + seamDd("live")); setHead("lb", "Leaderboard &amp; daily deal" + seamDd("lb")); redraw(); }
+  function seamTitle(k) {
+    var plain = k === "live" ? "Live tables" : "Leaderboard &amp; daily deal", dd = seamDd(k);
+    if (seamStyle === "sentence" && seamPick[k] !== "all") return k === "live" ? "Live " + dd + " tables" : dd + " leaderboard &amp; daily deal";
+    return plain + dd;
+  }
+  function seamHeads() { setHead("live", seamTitle("live")); setHead("lb", seamTitle("lb")); redraw(); }
   document.addEventListener("click", function (e) {
     var dd = e.target.closest(".labSeamDd"); if (!dd) return;
     var ov = dd.querySelector(".ov"), k = dd.dataset.k, mi = e.target.closest(".mi");
     if (!mi) { if (e.target.closest(".ovbtn")) ov.classList.toggle("open"); return; }
     var g = mi.dataset.g; if (g === seamPick[k]) { ov.classList.remove("open"); return; }
-    if (k === "live" && (g === "all" || g === "hearts") && current.id === "seamdd") { setState(g); return; }
-    seamPick[k] = g; if (k === "lb" && window.renderClub) window.renderClub(g);
+    seamPick[k] = g;
+    if (k === "lb" && window.renderClub) window.renderClub(g);
+    if (k === "live") { liveRow.innerHTML = liveHTML; if (g === "hearts") heartsLive(liveRow); }
     seamHeads();
   });
 
@@ -8719,10 +8774,11 @@
         r.querySelector('[data-t="' + st + '"]').classList.add("on"); before(live.querySelector(".lobbyLiveTables"), r);
         r.addEventListener("click", function (e) { var s = e.target.closest("[data-t]"); if (s) setState(s.dataset.t); });
         if (st === "friends") document.body.classList.add("lab-friendsonly"); } },
-    { id: "seamdd", name: "I · A game dropdown on the seam, beside the title", states: [["hearts", "Hearts on both"], ["all", "All games on the live tables"]],
-      note: "Live tables and the leaderboard each get a <b>dropdown on the seam</b>, right after the title on the rule: the bar's More button alone in its tray, with the picked game as its label. <b>Hearts</b> is the pick on both. The open tables keep their bar. The live list has All games at the top with the counts; the leaderboard's list is games only, since it must always show one. Hover or click to open; the leaderboard really re-renders for the game you pick.",
-      apply: function (st) { document.body.classList.add("lab-noldbar"); pickBar("all"); seamPick.live = st === "all" ? "all" : "hearts"; seamPick.lb = "hearts";
-        if (st !== "all") heartsLive(liveRow); seamHeads(); } }
+    { id: "seamdd", name: "I · A game dropdown on the seam, beside the title", states: [
+        ["tray", "Tray: the More button alone"], ["white", "White chip"], ["green", "Green chip: the bar's pick"], ["logo", "Tray with the game's logo"],
+        ["word", "The bar's word, no tray"], ["dot", "Title · Game ▾ in the title's face"], ["dotmuted", "Title · Game ▾, the game muted"], ["sentence", "Live Hearts tables, the game underlined"]],
+      note: "Live tables and the leaderboard each get a <b>dropdown on the seam</b>, right after the title on the rule, and <b>Hearts</b> is the pick on both. The state picks its form: the bar's More button alone in its tray, a white or green chip, the tray with the game's logo, the bar's bold word with no tray at all, the game in the title's own face after a middle dot (in the title's ink, or muted), or the game as a word inside the title, <b>Live Hearts tables</b>, underlined. The open tables keep their bar. The live list has All games at the top with the counts; the leaderboard's list is games only and really re-renders. Hover or click to open.",
+      apply: function (st) { document.body.classList.add("lab-noldbar"); pickBar("all"); seamStyle = st; seamPick.live = "hearts"; seamPick.lb = "hearts"; heartsLive(liveRow); seamHeads(); } }
   ];
 
   function merged() {
