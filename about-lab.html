@@ -117,6 +117,8 @@
   /* light: the leaderboard's up chip; tray: the game chooser's container, ring and ink */
   #about .tagc-light .ntag { color: #4F800B; background: #C0EB75; box-shadow: inset 0 0 0 1px rgba(0,0,0,.08); }
   #about .tagc-tray .ntag { color: #4e4d4c; background: #e4ddd0; box-shadow: inset 0 0 0 1px #c9c0ae; }
+  #about .tags-chooser .ntag { font-size: 16px; line-height: 24px; padding: 0 10px; border-radius: 6px; corner-shape: squircle; vertical-align: 0; }
+  #about .tags-small .ntag { font-size: 14px; line-height: 20px; padding: 0 8px; border-radius: 5px; corner-shape: squircle; vertical-align: 0; }
   #about .rep { font-size: 14px; color: var(--faint); margin-left: 6px; white-space: nowrap; }
   #about .nwclose { margin-top: 12px; color: var(--muted); }
   #about .chip { flex: 0 0 74px; display: inline-block; text-align: center; font-size: 12px; font-weight: bold; line-height: 20px; padding: 0 8px; border-radius: 10px;
@@ -520,7 +522,9 @@
   function faq(list) { return (list || D.faq).map(function (f) { return '<div class="faqi"><b>' + f[0] + "</b><p>" + f[1] + "</p></div>"; }).join(""); }
   /* what's new, three ways, never more than three dates or eight lines */
   var NX = { reports: "Counts, and who reported it", counted: "Counts in the intro", plain: "Plain intro" };
-  var TAGC = { light: "Light green (leaderboard chip)", tray: "Chooser tray (warm grey)", dark: "Dark green" };
+  var TAGC = { tray: "Chooser tray (warm grey)", light: "Light green (leaderboard chip)", dark: "Dark green" };
+  /* the chooser's cell is Bulo bold 16 on a 24px pill with 6px squircle corners; the leaderboard chip is Bulo bold 12 on 16 with 4px corners */
+  var TAGS = { chooser: "Chooser size, 16 on 24", small: "Between, 14 on 20", chip: "Chip size, 12 on 16" };
   var NEWS = { tags: "Change first, category as a tag", lines: "Category word first", dated: "Grouped under the dates", chips: "Category chip first", classic: "Date labels, as on the live page" };
   var KCOL = { New: "#00a82d", Improved: "#4d64ff", Fixed: "#8a857c" };
   function newsSlice() { var out = [], n = 0; D.news.slice(0, 3).forEach(function (d) { var items = d[2].filter(function () { return n++ < 8; }); if (items.length) out.push([d[0], d[1], items]); }); return out; }
@@ -759,8 +763,8 @@
   /* ===== state, the panel, the URL ===== */
   /* the defaults are Holger's picks (6 September 2026): the letter on paper, icons for the features, "Behind the games" */
   var PHOTO = { sig: "By the signature", text: "In the text, three lines" };
-  var st = { layout: "tiles", headline: "just", photo: "sig", news: "tags", nx: "reports", tagc: "light", features: "icons", quotes: "paired", heads: "features", type: "gelica", sep: "rules", title: "games", paper: "canvas" };
-  var KEYS = ["layout", "headline", "photo", "features", "quotes", "heads", "type", "sep", "title", "paper", "news", "nx", "tagc"];
+  var st = { layout: "tiles", headline: "just", photo: "sig", news: "tags", nx: "reports", tagc: "tray", tagsize: "chooser", features: "icons", quotes: "paired", heads: "features", type: "gelica", sep: "rules", title: "games", paper: "canvas" };
+  var KEYS = ["layout", "headline", "photo", "features", "quotes", "heads", "type", "sep", "title", "paper", "news", "nx", "tagc", "tagsize"];
   var body = document.getElementById("aboutBody");
   /* a break before every block head, except heads that live inside a card or a column set */
   function breaks() {
@@ -775,7 +779,7 @@
   }
   function apply() {
     H = HEADS[st.heads] || HEADS.plain;
-    body.className = "page lay-" + st.layout + " type-" + st.type + " tagc-" + st.tagc;
+    body.className = "page lay-" + st.layout + " type-" + st.type + " tagc-" + st.tagc + " tags-" + st.tagsize;
     body.innerHTML = LAYOUTS[st.layout].build(st.quotes, st.features);
     breaks();
     document.getElementById("aboutSeam").dataset.title = TITLES[st.title];
@@ -783,7 +787,7 @@
     seams();
     document.getElementById("labNote").innerHTML = "<b>" + LAYOUTS[st.layout].name + ".</b> " + LAYOUTS[st.layout].note + " <b>Words:</b> " + words() + ".";
     KEYS.forEach(function (k) { var s = document.getElementById("lab-" + k); if (s.value !== st[k]) s.value = st[k]; });
-    try { localStorage.setItem("aboutlab15", JSON.stringify(st)); } catch (e) {}
+    try { localStorage.setItem("aboutlab16", JSON.stringify(st)); } catch (e) {}
   }
   function words() { return body.textContent.trim().split(/\s+/).length; }
   function opts(map) { return Object.keys(map).map(function (k) { return '<option value="' + k + '">' + (map[k].name || map[k]) + "</option>"; }).join(""); }
@@ -793,7 +797,7 @@
     '<label>Head (the letter)</label><select id="lab-layout">' + LAYOUT_ORDER.map(function (k) { return '<option value="' + k + '">' + LAYOUTS[k].name + "</option>"; }).join("") + "</select>" +
     '<label>Article headline</label><select id="lab-headline">' + opts(HEADLINES) + "</select>" +
     '<div class="grid">' + cell("Photo", "photo", PHOTO) + cell("Features", "features", FEATURES) + cell("Player quotes", "quotes", QUOTES) + cell("Block titles", "heads", HEADS) + cell("Type", "type", TYPE) +
-    cell("Breaks", "sep", SEP) + cell("Section title", "title", TITLES) + cell("Paper", "paper", PAPER) + cell("What's new", "news", NEWS) + cell("What's new extras", "nx", NX) + cell("Tag colour", "tagc", TAGC) + "</div>" +
+    cell("Breaks", "sep", SEP) + cell("Section title", "title", TITLES) + cell("Paper", "paper", PAPER) + cell("What's new", "news", NEWS) + cell("What's new extras", "nx", NX) + cell("Tag colour", "tagc", TAGC) + cell("Tag size", "tagsize", TAGS) + "</div>" +
     '<p class="note" id="labNote"></p>';
   document.body.appendChild(p);
   p.querySelector(".hide").addEventListener("click", function () { document.body.classList.add("labhidden"); });
@@ -801,9 +805,9 @@
   KEYS.forEach(function (k) { document.getElementById("lab-" + k).addEventListener("change", function () { st[k] = this.value; apply(); }); });
 
   /* #layout:quotes:title:paper:features picks a state from the URL, for headless shots; else the last pick is remembered */
-  try { var saved = JSON.parse(localStorage.getItem("aboutlab15") || "null"); if (saved) KEYS.forEach(function (k) { if (saved[k]) st[k] = saved[k]; }); } catch (e) {}
+  try { var saved = JSON.parse(localStorage.getItem("aboutlab16") || "null"); if (saved) KEYS.forEach(function (k) { if (saved[k]) st[k] = saved[k]; }); } catch (e) {}
   var hash = (location.hash || "").slice(1).split(":");
-  if (hash[0] && LAYOUTS[hash[0]]) { st.layout = hash[0]; if (QUOTES[hash[1]]) st.quotes = hash[1]; if (TITLES[hash[2]]) st.title = hash[2]; if (PAPER[hash[3]]) st.paper = hash[3]; if (FEATURES[hash[4]]) st.features = hash[4]; if (HEADS[hash[5]]) st.heads = hash[5]; if (TYPE[hash[6]]) st.type = hash[6]; if (SEP[hash[7]]) st.sep = hash[7]; if (HEADLINES[hash[8]]) st.headline = hash[8]; if (PHOTO[hash[9]]) st.photo = hash[9]; if (NEWS[hash[10]]) st.news = hash[10]; if (NX[hash[11]]) st.nx = hash[11]; if (TAGC[hash[12]]) st.tagc = hash[12]; }
+  if (hash[0] && LAYOUTS[hash[0]]) { st.layout = hash[0]; if (QUOTES[hash[1]]) st.quotes = hash[1]; if (TITLES[hash[2]]) st.title = hash[2]; if (PAPER[hash[3]]) st.paper = hash[3]; if (FEATURES[hash[4]]) st.features = hash[4]; if (HEADS[hash[5]]) st.heads = hash[5]; if (TYPE[hash[6]]) st.type = hash[6]; if (SEP[hash[7]]) st.sep = hash[7]; if (HEADLINES[hash[8]]) st.headline = hash[8]; if (PHOTO[hash[9]]) st.photo = hash[9]; if (NEWS[hash[10]]) st.news = hash[10]; if (NX[hash[11]]) st.nx = hash[11]; if (TAGC[hash[12]]) st.tagc = hash[12]; if (TAGS[hash[13]]) st.tagsize = hash[13]; }
   if (/hidepanel/.test(location.search)) document.body.classList.add("labhidden");
   apply();
   var t; window.addEventListener("resize", function () { clearTimeout(t); t = setTimeout(seams, 120); });
