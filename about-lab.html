@@ -112,7 +112,8 @@
   #about .nwi > span { flex: 1; min-width: 0; }
   #about .nwi > time { flex: 0 0 auto; font-size: 14px; color: var(--faint); }
   #about .nwi > span.chip { flex: 0 0 74px; }
-  #about .nwi > span.chip.after { flex: 0 0 auto; min-width: 0; }
+  /* the tag after a change: the leaderboard chip's shape (4px corners, 12px bold on a 16px line, a faint inset ring) in the chooser's dark green, no arrow, one colour for every kind */
+  #about .ntag { display: inline-block; vertical-align: 1px; margin-left: 6px; border-radius: 4px; padding: 0 5px; font: bold 12px/16px "BuloRounded", Verdana, sans-serif; color: #fff; background: var(--accent-deep); box-shadow: inset 0 0 0 1px rgba(0,0,0,.12); white-space: nowrap; }
   #about .chip { flex: 0 0 74px; display: inline-block; text-align: center; font-size: 12px; font-weight: bold; line-height: 20px; padding: 0 8px; border-radius: 10px;
     color: var(--c); background: color-mix(in srgb, var(--c) 12%, #fff); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--c) 30%, #fff); }
   #about .up > div { margin-bottom: 2px; }
@@ -446,8 +447,7 @@
     /* the site first, the sender second: the section is about the place, and Holger only signs it */
     hello: [
       "World of Card Games is a free place to play eighteen classic card games in your browser, with real people or against the bots. If a seat is empty, a bot keeps it warm until someone sits down.",
-      "I'm Holger, a designer and programmer from Denmark, and I look after the site on my own. Robert, who also made World of Solitaire, started it in December 2011. Marya ran it for years, and at the start of 2023 she handed it to me.",
-      "If a game is new to you, the <a href=\"#rules\">rules pages</a> walk you through each one, and the <a href=\"#leaderboards\">leaderboards</a> show who has been winning lately."
+      "I'm Holger, a designer and programmer from Denmark, and I look after the site on my own. Robert, who also made World of Solitaire, started it in December 2011. Marya ran it for years, and at the start of 2023 she handed it to me."
     ],
     write: "If something breaks, a rule looks wrong, or you'd like a game added, write to me at <a class=\"mail\" href=\"mailto:holger@worldofcardgames.com\">holger@worldofcardgames.com</a>. I read every email myself and try to answer them all.",
     promises: [
@@ -471,12 +471,13 @@
       ["Can I play on my own, right now?", "Yes. Pick a game and choose Play bots. The bots sit down at once, and a solo table has no clock, so take as long as you like over a hand."],
       ["How do I get to a table with real people?", "Finish one game against the bots in that game first, then the tables with people open up for it. An invite link, a friend's table or a rematch skips that first game."],
       ["Can I play with friends?", "Yes, and none of them needs an account. Once you've finished one game here, choose Host table, tick Private and give the table a name. Tell your friends the name, or send them the invite link."],
+      ["Can I play competitively?", "Yes. Ranked games use a rating that starts at 1500 and moves with every result, and there are daily, weekly and monthly <a href=\"#leaderboards\">leaderboards</a> for each game. You need an account and ten finished games first."],
       ["I've never played this game. Can I learn it here?", "Yes. Every game has a <a href=\"#rules\">rules page</a> and a short hands-on tutorial. In your first ten games, arrows point out a good card to play, and a hint link stays after that."],
       ["What happens if my internet drops mid-game?", "In a ranked game your seat is held for three minutes, so you can come back to the same hand. A dropped connection isn't treated as quitting. A solo game waits for hours."],
       ["What if someone is rude at the table?", "Hover over their name and choose Mute to hide their chat, or Block so you're never seated together at a public table again. Every chat message also has a flag, and flagged chat gets reviewed."],
       ["Are the cards dealt fairly?", "Yes. Every hand is shuffled on my server with a fresh random number for each deal, before anyone sees a card. There's no way for me or anyone else to steer what you're dealt, and the shuffle tests are on the site."]
     ],
-    upIntro: "I do my best to keep the site up to date, and most weeks bring a fix or two. The full changelog goes back to December 2011.",
+    upIntro: "Most weeks bring a fix or two. These are the newest, and the <a href=\"#changelog\">full changelog</a> goes back to December 2011.",
     /* the real changelog, newest first, with the duplicate 3 September block merged; the section shows at most three dates and eight lines */
     news: [
       ["3 September 2026", "3 Sep", [["New", "Go Fish and Old Maid sort your hand by rank."], ["Improved", "Short, wide windows use the compact layout again."]]],
@@ -520,10 +521,10 @@
     if (mode === "dated") return days.map(function (d) { return '<div class="nwd">' + d[0] + "</div>" + d[2].map(function (i) { return '<div class="nwi"><b>' + i[0] + "</b><span>" + i[1] + "</span></div>"; }).join(""); }).join("");
     var rows = []; days.forEach(function (d) { d[2].forEach(function (i) { rows.push([d[1], i[0], i[1]]); }); });
     if (mode === "chips") return rows.map(function (r) { return '<div class="nwi"><span class="chip" style="--c:' + KCOL[r[1]] + '">' + r[1] + "</span><span>" + r[2] + "</span><time>" + r[0] + "</time></div>"; }).join("");
-    if (mode === "tags") return rows.map(function (r) { return '<div class="nwi"><span>' + r[2] + '</span><span class="chip after" style="--c:' + KCOL[r[1]] + '">' + r[1] + "</span><time>" + r[0] + "</time></div>"; }).join("");
+    if (mode === "tags") return rows.map(function (r) { return '<div class="nwi"><span>' + r[2] + ' <span class="ntag">' + r[1] + "</span></span><time>" + r[0] + "</time></div>"; }).join("");
     return rows.map(function (r) { return '<div class="nwi"><b>' + r[1] + "</b><span>" + r[2] + "</span><time>" + r[0] + "</time></div>"; }).join("");
   }
-  function upLink() { return '<p class="stamp"><a href="#">Read the full changelog</a></p>'; }
+  function upLink() { return ""; }
 
   var LAYOUTS = {
     letter: { name: "The letter", note: "One reading measure, everything in the order a reader asks it: who is here, what it's like, what people say, what you might wonder, what changed. The photo sits in the letter like a byline. Quotes are indented with a rule, so they read as proof, not as ads.",
