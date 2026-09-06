@@ -8740,6 +8740,10 @@
   .sitefooter .fBar .fLine > * + *::before { content: "\00B7"; margin: 0 9px; color: #8a857c; }
   .sitefooter .fBar .fLine.partner { color: #8a857c; }
   .sitefooter .fBar .social { margin: 0 0 0 auto; }
+  .sitefooter .fBar.centred { display: flex; align-items: center; }
+  .sitefooter .fBar.centred .fLines { flex: 1 1 auto; min-width: 0; }
+  .sitefooter .fBar.one .fLine { min-height: 24px; }
+  .sitefooter .fMark { display: block; height: 24px; width: auto; margin: 2px 0 2px; }
   .sitefooter .fBar .social::before { content: none; }
   .sitefooter .fBar .social > a { width: 20px; height: 20px; }
   .sitefooter .fBar .social > a[aria-label="X"] svg { width: 16px; height: 16px; }
@@ -8795,11 +8799,19 @@
     row: { name: "One running line, A to Z", note: "Every game in <b>one running line</b> under the head, a middle dot between the names, A to Z. The footer drops to a few lines; the rest sits beneath.",
       html: function () { return '<div class="fRow"><strong>Games</strong>' + alpha(POPULAR).concat(["boardgames"]).map(link).join(" ") + "</div>"; } }
   };
-  function siteCol(head, withSocial) { return ul(head, SITE.map(function (p) { return li(plain(p)); }).concat(withSocial ? [li(SOCIAL)] : [])); }
+  var HEADS = { site: ["Site", "<b>Site</b>: short, and it says these are the site's own pages, not games."], resources: ["Resources", "<b>Resources</b>: today's word, kept."], more: ["More", "<b>More</b>: the plainest; it only says there is more."],
+    explore: ["Explore", "<b>Explore</b>: an invitation, but it promises more than five links give."], wocg: ["World of Card Games", "<b>World of Card Games</b>: the site's name as the head, so the column reads as the site's own pages."],
+    mark: ['<img class="fMark" src="wocg-logo.png" alt="World of Card Games">', "<b>The wordmark</b> as the head: no word at all, the column belongs to the mark."] };
+  var head = "site";
+  function siteCol(h, withSocial) { return ul(HEADS[head][0], SITE.map(function (p) { return li(plain(p)); }).concat(withSocial ? [li(SOCIAL)] : [])); }
   function legalCol(head, withPartner) { return ul(head, LEGAL.concat(RAPTIVE).map(function (p) { return li(plain(p)); }).concat(withPartner ? ['<li class="list-inline-item fMuted">A Raptive Partner Site</li>'] : [])); }
-  function bar(withSocial) {
-    return '<div class="fBar"><div class="fLine"><span>&copy; 2026 World of Card Games</span>' + LEGAL.map(plain).join("") + (withSocial ? SOCIAL : "") + '</div><div class="fLine partner"><span>A Raptive Partner Site</span>' + RAPTIVE.map(plain).join("") + "</div></div>";
+  function bar(withSocial, centred) {
+    var lines = '<div class="fLine"><span>&copy; 2026 World of Card Games</span>' + LEGAL.map(plain).join("") + (withSocial && !centred ? SOCIAL : "") + '</div><div class="fLine partner"><span>A Raptive Partner Site</span>' + RAPTIVE.map(plain).join("") + "</div>";
+    if (centred) return '<div class="fBar centred"><div class="fLines">' + lines + "</div>" + SOCIAL + "</div>";
+    return '<div class="fBar">' + lines + "</div>";
   }
+  /* one line only: the year at the left, the icons at the right; every link is in a column above */
+  function yearBar() { return '<div class="fBar one"><div class="fLine"><span>&copy; 2026 World of Card Games</span>' + SOCIAL + "</div></div>"; }
   var BRAND = '<div class="footerSection fBrand"><img src="wocg-logo.png" alt="World of Card Games"><p>Play cards in good company.</p>' + SOCIAL + "</div>";
   var REST = {
     today: { name: "Today: Resources, and the partner's column", note: "<b>Resources</b> holds the site's pages and the legal ones together, the social icons under ToS, and the partner's disclosure stands as a third column with a head as heavy as Games. With four or more game columns it wraps under them.",
@@ -8810,6 +8822,10 @@
       html: function () { return section("footerResources", [siteCol("Site", true)]) + bar(false); }, before: "" },
     barsocial: { name: "As the bar, with the social icons in it", note: "As the bar, but the <b>social icons sit at the right end of the bar's first line</b>, so the Site column is links only and the bar has a left and a right.",
       html: function () { return section("footerResources", [siteCol("Site", false)]) + bar(true); }, before: "" },
+    barcentred: { name: "As the bar, the icons centred on its two lines", note: "As the bar with the icons in it, but the <b>icons sit centred against both lines</b>, so the bar reads as one block at the left and one at the right rather than icons on the first line only.",
+      html: function () { return section("footerResources", [siteCol("Site", false)]) + bar(true, true); }, before: "" },
+    colsbar: { name: "Site and Legal columns, then a one-line bar", note: "The two columns hold <b>every link</b>, Legal with the partner's line muted, and the bar is <b>one line</b>: the year at the left, the social icons at the right. Nothing in the bar repeats a column.",
+      html: function () { return section("footerResources", [siteCol("Site", false)]) + section("footerResources", [legalCol("Legal", true)]) + yearBar(); }, before: "" },
     brand: { name: "A brand column first, then the bar", note: "A <b>first column with the wordmark</b>, the site's own line, and the social icons; then the games and the site's pages; the small print in the bar. The footer then opens with who this is. With the menu's five game columns it does not fit and wraps; with the page's three it does.",
       html: function () { return section("footerResources", [siteCol("Site", false)]) + bar(false); }, before: BRAND }
   };
@@ -8819,30 +8835,32 @@
     if (games === "today" && rest === "today") { footer.innerHTML = TODAY; return; }
     footer.innerHTML = REST[rest].before + GAMES[games].html() + REST[rest].html();
   }
-  function pick(g, r) {
-    games = GAMES[g] ? g : "today"; rest = REST[r] ? r : "today";
+  function pick(g, r, h) {
+    games = GAMES[g] ? g : "today"; rest = REST[r] ? r : "today"; head = HEADS[h] ? h : "site";
     render();
-    document.getElementById("labGames").value = games; document.getElementById("labRest").value = rest;
-    document.getElementById("labNote").innerHTML = GAMES[games].note + "<br><br>" + REST[rest].note;
-    try { localStorage.setItem("footerlab", games + ":" + rest); } catch (e) {}
+    document.getElementById("labGames").value = games; document.getElementById("labRest").value = rest; document.getElementById("labHead").value = head;
+    document.getElementById("labNote").innerHTML = GAMES[games].note + "<br><br>" + REST[rest].note + (rest === "today" ? "" : "<br><br>" + HEADS[head][1]);
+    try { localStorage.setItem("footerlab", games + ":" + rest + ":" + head); } catch (e) {}
   }
 
   var p = document.createElement("div"); p.id = "labPanel";
   p.innerHTML = '<h2>Footer &middot; the content in other orders</h2><span class="hide" title="Hide (H shows it again)">hide</span>' +
     '<label>The games</label><select id="labGames">' + Object.keys(GAMES).map(function (k) { return '<option value="' + k + '">' + GAMES[k].name + "</option>"; }).join("") + "</select>" +
     '<label>The rest</label><select id="labRest">' + Object.keys(REST).map(function (k) { return '<option value="' + k + '">' + REST[k].name + "</option>"; }).join("") + "</select>" +
+    '<label>The Site head</label><select id="labHead">' + Object.keys(HEADS).map(function (k) { return '<option value="' + k + '">' + (k === "mark" ? "The wordmark" : HEADS[k][0]) + "</option>"; }).join("") + "</select>" +
     '<p class="note" id="labNote"></p>';
   document.body.appendChild(p);
   p.querySelector(".hide").addEventListener("click", function () { document.body.classList.add("labhidden"); });
   document.addEventListener("keydown", function (e) { if (e.key === "h" || e.key === "H") document.body.classList.toggle("labhidden"); });
-  document.getElementById("labGames").addEventListener("change", function () { pick(this.value, rest); });
-  document.getElementById("labRest").addEventListener("change", function () { pick(games, this.value); });
+  document.getElementById("labGames").addEventListener("change", function () { pick(this.value, rest, head); });
+  document.getElementById("labRest").addEventListener("change", function () { pick(games, this.value, head); });
+  document.getElementById("labHead").addEventListener("change", function () { pick(games, rest, this.value); });
 
-  /* #games:rest in the URL picks a pair, for headless shots; else the last pick is remembered. The page scrolls to the footer once the intro has run. */
+  /* #games:rest:head in the URL picks a set, for headless shots; else the last pick is remembered. The page scrolls to the footer once the intro has run. */
   var saved = null; try { saved = (localStorage.getItem("footerlab") || "").split(":"); } catch (e) {}
   var hash = (location.hash || "").slice(1);
   if (hash) { saved = hash.split(":"); if (/hidepanel/.test(location.search)) document.body.classList.add("labhidden"); }
-  pick(saved && saved[0] ? saved[0] : "today", saved && saved[1] ? saved[1] : "today");
+  pick(saved && saved[0] ? saved[0] : "today", saved && saved[1] ? saved[1] : "today", saved && saved[2] ? saved[2] : "site");
   var moved = false; window.addEventListener("wheel", function () { moved = true; }, { passive: true }); window.addEventListener("keydown", function () { moved = true; });
   window.addEventListener("load", function () {
     setTimeout(function () { if (moved) return; document.documentElement.style.scrollBehavior = "auto"; document.querySelector(".sitefooter").scrollIntoView({ block: "end" }); document.documentElement.style.scrollBehavior = ""; }, 4300);
