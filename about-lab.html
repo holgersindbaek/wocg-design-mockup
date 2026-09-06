@@ -425,8 +425,9 @@
     greet: "Hello there.",
     /* the site first, the sender second: the section is about the place, and Holger only signs it */
     hello: [
-      "World of Card Games is a free place to play eighteen classic card games in your browser, with real people or against the bots. The ads pay for the servers. If you'd rather play without them, a small subscription turns them off.",
-      "I'm Holger, a designer and programmer from Denmark, and I look after the site on my own. Robert, who also made World of Solitaire, started it in December 2011. Marya ran it for years, and at the start of 2023 she handed it to me."
+      "World of Card Games is a free place to play eighteen classic card games in your browser, with real people or against the bots. If a seat is empty, a bot keeps it warm until someone sits down.",
+      "I'm Holger, a designer and programmer from Denmark, and I look after the site on my own. Robert, who also made World of Solitaire, started it in December 2011. Marya ran it for years, and at the start of 2023 she handed it to me.",
+      "If a game is new to you, the <a href=\"#rules\">rules pages</a> walk you through each one, and the <a href=\"#leaderboards\">leaderboards</a> show who has been winning lately."
     ],
     write: "If something breaks, a rule looks wrong, or you'd like a game added, write to me at <a class=\"mail\" href=\"mailto:holger@worldofcardgames.com\">holger@worldofcardgames.com</a>. I read every email myself and try to answer them all.",
     promises: [
@@ -450,7 +451,7 @@
       ["Can I play on my own, right now?", "Yes. Pick a game and choose Play bots. The bots sit down at once, and a solo table has no clock, so take as long as you like over a hand."],
       ["How do I get to a table with real people?", "Finish one game against the bots in that game first, then the tables with people open up for it. An invite link, a friend's table or a rematch skips that first game."],
       ["Can I play with friends?", "Yes, and none of them needs an account. Once you've finished one game here, choose Host table, tick Private and give the table a name. Tell your friends the name, or send them the invite link."],
-      ["I've never played this game. Can I learn it here?", "Yes. Every game has a rules page and a short hands-on tutorial. In your first ten games, arrows point out a good card to play, and a hint link stays after that."],
+      ["I've never played this game. Can I learn it here?", "Yes. Every game has a <a href=\"#rules\">rules page</a> and a short hands-on tutorial. In your first ten games, arrows point out a good card to play, and a hint link stays after that."],
       ["What happens if my internet drops mid-game?", "In a ranked game your seat is held for three minutes, so you can come back to the same hand. A dropped connection isn't treated as quitting. A solo game waits for hours."],
       ["What if someone is rude at the table?", "Hover over their name and choose Mute to hide their chat, or Block so you're never seated together at a public table again. Every chat message also has a flag, and flagged chat gets reviewed."],
       ["Are the cards dealt fairly?", "Yes. Every hand is shuffled on my server with a fresh random number for each deal, before anyone sees a card. There's no way for me or anyone else to steer what you're dealt, and the shuffle tests are on the site."]
@@ -661,7 +662,8 @@
     fouram: { name: "Someone is always at a table, even at 4 a.m.", t: "Someone is always at a table, even at 4 a.m.", s: "Real people play around the clock, and bots fill any seat that stays empty." },
     few: { name: "A few words about this place", t: "A few words about this place", s: "What it is, what keeps it running, and where to write." },
     fewBare: { name: "A few words about this place (no standfirst)", t: "A few words about this place", s: "" },
-    room: { name: "Room for one more", t: "Room for one more", s: "Sit down at a table that is already going, or start one of your own." },
+    room: { name: "Room for one more", t: "Room for one more", s: "There is always a seat at a table here, whatever the hour." },
+    roomSit: { name: "Room for one more (sit down standfirst)", t: "Room for one more", s: "Sit down at a table that is already going, or start one of your own." },
     keeps: { name: "What keeps the site going", t: "What keeps the site going", s: "What the ads are for, and what happens when you write in." },
     pays: { name: "How the site pays its way", t: "How the site pays its way", s: "" },
     works: { name: "How this site works", t: "How this site works", s: "Who is at the tables, what the ads are for, and where to write." },
@@ -701,7 +703,7 @@
   /* ===== state, the panel, the URL ===== */
   /* the defaults are Holger's picks (6 September 2026): the letter on paper, icons for the features, "Behind the games" */
   var PHOTO = { sig: "By the signature", text: "In the text, three lines" };
-  var st = { layout: "tiles", headline: "mgmt", photo: "sig", features: "icons", quotes: "paired", heads: "features", type: "gelica", sep: "rules", title: "games", paper: "canvas" };
+  var st = { layout: "tiles", headline: "room", photo: "sig", features: "icons", quotes: "paired", heads: "features", type: "gelica", sep: "rules", title: "games", paper: "canvas" };
   var KEYS = ["layout", "headline", "photo", "features", "quotes", "heads", "type", "sep", "title", "paper"];
   var body = document.getElementById("aboutBody");
   /* a break before every block head, except heads that live inside a card or a column set */
@@ -725,7 +727,7 @@
     seams();
     document.getElementById("labNote").innerHTML = "<b>" + LAYOUTS[st.layout].name + ".</b> " + LAYOUTS[st.layout].note + " <b>Words:</b> " + words() + ".";
     KEYS.forEach(function (k) { var s = document.getElementById("lab-" + k); if (s.value !== st[k]) s.value = st[k]; });
-    try { localStorage.setItem("aboutlab11", JSON.stringify(st)); } catch (e) {}
+    try { localStorage.setItem("aboutlab12", JSON.stringify(st)); } catch (e) {}
   }
   function words() { return body.textContent.trim().split(/\s+/).length; }
   function opts(map) { return Object.keys(map).map(function (k) { return '<option value="' + k + '">' + (map[k].name || map[k]) + "</option>"; }).join(""); }
@@ -743,7 +745,7 @@
   KEYS.forEach(function (k) { document.getElementById("lab-" + k).addEventListener("change", function () { st[k] = this.value; apply(); }); });
 
   /* #layout:quotes:title:paper:features picks a state from the URL, for headless shots; else the last pick is remembered */
-  try { var saved = JSON.parse(localStorage.getItem("aboutlab11") || "null"); if (saved) KEYS.forEach(function (k) { if (saved[k]) st[k] = saved[k]; }); } catch (e) {}
+  try { var saved = JSON.parse(localStorage.getItem("aboutlab12") || "null"); if (saved) KEYS.forEach(function (k) { if (saved[k]) st[k] = saved[k]; }); } catch (e) {}
   var hash = (location.hash || "").slice(1).split(":");
   if (hash[0] && LAYOUTS[hash[0]]) { st.layout = hash[0]; if (QUOTES[hash[1]]) st.quotes = hash[1]; if (TITLES[hash[2]]) st.title = hash[2]; if (PAPER[hash[3]]) st.paper = hash[3]; if (FEATURES[hash[4]]) st.features = hash[4]; if (HEADS[hash[5]]) st.heads = hash[5]; if (TYPE[hash[6]]) st.type = hash[6]; if (SEP[hash[7]]) st.sep = hash[7]; if (HEADLINES[hash[8]]) st.headline = hash[8]; if (PHOTO[hash[9]]) st.photo = hash[9]; }
   if (/hidepanel/.test(location.search)) document.body.classList.add("labhidden");
