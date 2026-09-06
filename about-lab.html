@@ -93,7 +93,7 @@
   #about .pr b { color: var(--ink); }
   /* quotes */
   #about .q { display: flex; gap: 12px; align-items: flex-start; margin: 4px 0 16px; }
-  #about .q .av { flex: 0 0 40px; width: 40px; height: 40px; border-radius: 9px; corner-shape: squircle; background: #e4ddd0; box-shadow: inset 0 0 0 1px rgba(0,0,0,.1); overflow: hidden; }
+  #about .q .av { flex: 0 0 40px; width: 40px; height: 40px; border-radius: 12px; corner-shape: squircle; background: #e4ddd0; box-shadow: inset 0 0 0 1px rgba(0,0,0,.1); overflow: hidden; }
   #about .q .av img { width: 100%; height: 100%; display: block; }
   #about .q .qt { font-style: italic; margin: 0; }
   #about .q .qw { font-size: 14px; color: var(--faint); margin: 2px 0 0; font-style: normal; }
@@ -392,7 +392,7 @@
   #about .qtiles.qs-namefirst .q .av { width: 40px; height: 40px; flex-basis: 40px; }
   #about .qtiles.qs-namefirst .q > div { display: contents; }
   #about .qtiles.qs-namefirst .q .qw { order: 0; display: flex; flex-direction: column; font: bold 16px/20px "BuloRounded", Verdana, sans-serif; color: var(--ink); margin: 0; flex: 1; min-width: 0; }
-  #about .qtiles.qs-namefirst .q .qwho { font: 400 14px/18px "BuloRounded", Verdana, sans-serif; color: var(--muted); }
+  #about .qtiles.qs-namefirst .q .qwho { font: 400 16px/20px "BuloRounded", Verdana, sans-serif; color: var(--muted); } /* the name's size, not bold; two 20px lines = the 40px avatar */
   #about .qtiles.qs-namefirst .q .qwho::before { content: none; }
   #about .qtiles.qs-namefirst .q .qt { order: 1; flex-basis: 100%; margin: 0; }
 
@@ -509,9 +509,9 @@
     /* real inbox lines, Holger's picks of 6 September 2026, in his trimmed wording; names and avatars are stand-ins until each sender has said yes */
     quotes: [
       /* the second line is the state or country they live in; the places and "Dennis" are made up until the writers answer the permission mail (6 September 2026) */
-      ["I have been on this site for more than 10 years because of the camaraderie.", "Irean", "WomanCowgirl.svg", "Texas"],
-      ["I came upon your site a few days ago and love it. I play against the bots and the skill level is very competitive, especially compared to other sites I have seen.", "Dennis", "AnimalFox.svg", "Canada"],
-      ["Just retired after 20 years and I live for YOUR card games! Best on the net.", "RC", "ManCowboy.svg", "Florida"]
+      ["I have been on this site for more than 10 years because of the camaraderie.", "Irean", "WomanCowgirl.svg", "Texas, USA"],
+      ["I came upon your site a few days ago and love it. I play against the bots and the skill level is very competitive, especially compared to other sites I have seen.", "Dennis", "AnimalFox.svg", "Ontario, Canada"],
+      ["Just retired after 20 years and I live for YOUR card games! Best on the net.", "RC", "ManCowboy.svg", "Florida, USA"]
     ],
     faq: [
       ["Is it free?", "Yes. All eighteen games are free to play and the ads pay for the site. If you'd rather play without ads, a small subscription turns them off and you see the price before you pay anything."],
@@ -839,7 +839,7 @@
     seams();
     document.getElementById("labNote").innerHTML = "<b>" + LAYOUTS[st.layout].name + ".</b> " + LAYOUTS[st.layout].note + " <b>Words:</b> " + words() + ".";
     KEYS.forEach(function (k) { var s = document.getElementById("lab-" + k); if (s.value !== st[k]) s.value = st[k]; });
-    try { localStorage.setItem("aboutlab25", JSON.stringify(st)); } catch (e) {}
+    try { localStorage.setItem("aboutlab26", JSON.stringify(st)); } catch (e) {}
   }
   function words() { return body.textContent.trim().split(/\s+/).length; }
   function opts(map) { return Object.keys(map).map(function (k) { return '<option value="' + k + '">' + (map[k].name || map[k]) + "</option>"; }).join(""); }
@@ -857,7 +857,7 @@
   KEYS.forEach(function (k) { document.getElementById("lab-" + k).addEventListener("change", function () { st[k] = this.value; apply(); }); });
 
   /* #layout:quotes:title:paper:features picks a state from the URL, for headless shots; else the last pick is remembered */
-  try { var saved = JSON.parse(localStorage.getItem("aboutlab25") || "null"); if (saved) KEYS.forEach(function (k) { if (saved[k]) st[k] = saved[k]; }); } catch (e) {}
+  try { var saved = JSON.parse(localStorage.getItem("aboutlab26") || "null"); if (saved) KEYS.forEach(function (k) { if (saved[k]) st[k] = saved[k]; }); } catch (e) {}
   var hash = (location.hash || "").slice(1).split(":");
   if (hash[0] && LAYOUTS[hash[0]]) { st.layout = hash[0]; if (QUOTES[hash[1]]) st.quotes = hash[1]; if (TITLES[hash[2]]) st.title = hash[2]; if (PAPER[hash[3]]) st.paper = hash[3]; if (FEATURES[hash[4]]) st.features = hash[4]; if (HEADS[hash[5]]) st.heads = hash[5]; if (TYPE[hash[6]]) st.type = hash[6]; if (SEP[hash[7]]) st.sep = hash[7]; if (HEADLINES[hash[8]]) st.headline = hash[8]; if (PHOTO[hash[9]]) st.photo = hash[9]; if (NEWS[hash[10]]) st.news = hash[10]; if (NX[hash[11]]) st.nx = hash[11]; if (TAGC[hash[12]]) st.tagc = hash[12]; if (TAGS[hash[13]]) st.tagsize = hash[13]; if (SIG[hash[14]]) st.sig = hash[14]; if (SIGC[hash[15]]) st.sigc = hash[15]; if (SIGNOFF[hash[16]]) st.signoff = hash[16]; if (QSTYLE[hash[17]]) st.qstyle = hash[17]; }
   if (/hidepanel/.test(location.search)) document.body.classList.add("labhidden");
