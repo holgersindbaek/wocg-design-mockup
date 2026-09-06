@@ -246,9 +246,15 @@
   #about .postal .pstamp { position: absolute; right: 0; top: 0; }
   #about .postal .postmark { right: 52px; top: 18px; }
 
+  /* --- a signed note: no paper, no stamp, no pen greeting; the person, the typed words, and a handwritten name at the end --- */
+  #about .signed { max-width: 900px; margin: 0 auto 40px; display: grid; grid-template-columns: 120px 1fr; gap: 28px; align-items: start; }
+  #about .signed .photo { width: 120px; height: 120px; border-radius: 14px; corner-shape: squircle; margin-top: 4px; }
+  #about .signed .txt { max-width: 720px; }
+  #about .signed .sig { display: inline-block; font: 600 36px/1.1 "Caveat", cursive; color: #1e3f8f; margin: 2px 0 0; transform: rotate(-2deg); transform-origin: left center; }
+
   /* ===== the six promises, shown three ways: as text, with icons, or as small pictures ===== */
   #about .fgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px 24px; margin: 4px 0 20px; }
-  #about :is(.lay-letter, .lay-margin, .lay-note, .lay-pc, .lay-sheet, .lay-air, .lay-postal) .fgrid:not(.one) { grid-template-columns: repeat(2, 1fr); }
+  #about :is(.lay-letter, .lay-margin, .lay-note, .lay-pc, .lay-sheet, .lay-air, .lay-postal, .lay-signed) .fgrid:not(.one) { grid-template-columns: repeat(2, 1fr); }
   #about .fgrid.one { grid-template-columns: 1fr; gap: 12px; }
   #about .ft { display: flex; gap: 12px; align-items: flex-start; }
   #about .ft b { display: block; }
@@ -436,6 +442,8 @@
         '<div class="pcAddr"><div class="stampzone">' + print() + stamp() + postmark() + '</div><div class="addr"><span class="to">To</span><div class="ln">Everyone who likes a good hand of cards</div><div class="ln">at any table, any time of day</div><div class="ln">worldofcardgames.com</div></div></div></div></div>' + rest(q, f); } },
     postal: { name: "Postal feeling, no card", note: "The postcard's cues without the postcard: the page itself is the paper. A taped print of the photo, a pen greeting and sign-off, the typed paragraphs, and the stamp with its postmark sitting at the right like a letterhead. The players' words stay as small notes.",
       build: function (q, f) { return '<div class="postal">' + print() + '<div><p class="greet">Hello there,</p>' + paras() + write() + '<p class="sig">Happy gaming, Holger</p></div><div class="stampzone">' + stamp() + postmark() + "</div></div>" + rest(q, f); } },
+    signed: { name: "A signed note, no paper", note: "Less a postcard, more a personal note from the person who runs the place. A plain byline photo, a typed greeting in the display face, the typed paragraphs, and one handwritten thing only: the name at the end. The players' words are plain quotes again, not notes.",
+      build: function (q, f) { return '<div class="signed">' + photo(120) + '<div class="txt"><p class="greet">Hello there.</p>' + paras() + write() + '<p style="margin:14px 0 0">Happy gaming,</p><span class="sig">Holger</span></div></div>' + rest(q, f); } },
     sheet: { name: "Letter on paper", note: "A sheet of writing paper: two faint creases where it was folded, the date in typewriter top left, the photo held by a paperclip top right, a pen greeting, typed paragraphs, a pen sign-off and a P.S. The tilt and the shadow lift it off the page.",
       build: function (q, f) { return '<div class="sheet paperish"><div class="headrow"><span class="date">Denmark,<br>6 September 2026</span><span class="clipwrap"><span class="clip"></span>' + print() + '</span></div>' +
         '<p class="greet">Hello there,</p>' + paras() + write() + '<p class="sig">Happy gaming,<br>Holger</p><p class="ps">P.S. The full changelog goes back to December 2011, if you like reading that sort of thing.</p></div>' + rest(q, f); } },
