@@ -956,6 +956,7 @@
   .swadv > .swgroup:first-of-type { margin-top: 16px; }
   .swgroup { margin-bottom: 22px; }
   .swgroup:last-child { margin-bottom: 0; }
+  .swnote { font-size: 12px; line-height: 1.45; color: #4e4d4c; margin: 6px 0 10px; max-width: 520px; }
   .swhead { font-size: 14px; font-weight: 700; color: #222222; margin-bottom: 10px;
     padding-bottom: 5px; border-bottom: 1px solid #e5e5e5; }
   .ctl { display: flex; flex-direction: column; gap: 3px; margin-bottom: 10px; }
@@ -2226,32 +2227,37 @@
     font-size: 14px; font-weight: 700; color: #212529; }
   .lobbyscope .ldCalDay:not(.isFuture) { cursor: pointer; }
   .lobbyscope .ldCalDay.isFuture { font-weight: normal; color: #495057; }
-  .lobbyscope .ldCalDay.isToday { text-decoration: none; font-weight: bold; }
+  .lobbyscope .ldCalDay.isPicked { font-weight: bold; } /* the chosen day: today until another day is picked (6 September) */
   /* the check in the button's own green (5 September): the SVG is a mask, so the colour is the page's trio green and follows the palette; the file's own fill was #469E00, a green of nobody's. No shadow, and the cell stays white. */
   .lobbyscope .ldCalDay.isDealDone { text-indent: -9999px; background: url("dealDayCheck-green.svg") center / 32px 32px no-repeat; } /* a copy of the check filled with the Play button's green, #43A038, as a plain image so every browser draws it (the mask did not show for Holger) */
   /* today, two ways behind the Today's cell switcher (5 September): the number in the button's green with a 2px frame of it inside the cell,
      or the cell filled with the finished-games badge's lime and the number in its dark green */
-  body.today-lime .lobbyscope .ldCalDay.isToday { background-color: #C0EB75; color: #4F800B; }
-  body.today-everfill .lobbyscope .ldCalDay.isToday { background-color: #00a82d; color: #fff; }
-  body.today-bluefill .lobbyscope .ldCalDay.isToday { background-color: var(--triolight); color: var(--triolightink); }
-  body.today-pill .lobbyscope .ldCalDay.isToday { color: #fff; background: radial-gradient(circle at center, var(--triogreen) 13px, transparent 13.5px) #fff; }
-  body.today-dot .lobbyscope .ldCalDay.isToday { background: radial-gradient(circle at 50% 82%, var(--triogreen) 2.5px, transparent 3px) #fff; }
-  body.today-ring .lobbyscope .ldCalDay.isToday::after, body.today-ringink .lobbyscope .ldCalDay.isToday::after { content: ""; position: absolute; left: 50%; top: 50%; width: 26px; height: 26px; margin: -13px 0 0 -13px; border-radius: 50%; pointer-events: none; }
-  body.today-ring .lobbyscope .ldCalDay.isToday { color: var(--triogreen); }
-  body.today-ring .lobbyscope .ldCalDay.isToday::after { box-shadow: inset 0 0 0 2px var(--triogreen); }
-  body.today-ringink .lobbyscope .ldCalDay.isToday::after { box-shadow: inset 0 0 0 2px #212529; }
-  body.today-underline .lobbyscope .ldCalDay.isToday { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; text-decoration-color: var(--triogreen); }
-  body.today-disc .lobbyscope .ldCalDay.isToday { color: #fff; background: radial-gradient(circle at center, var(--triogreen) 10.5px, transparent 11px) #fff; }
+  body.today-lime .lobbyscope .ldCalDay.isPicked { background-color: #C0EB75; color: #4F800B; }
+  body.today-everfill .lobbyscope .ldCalDay.isPicked { background-color: #00a82d; color: #fff; }
+  body.today-bluefill .lobbyscope .ldCalDay.isPicked { background-color: var(--triolight); color: var(--triolightink); }
+  body.today-pill .lobbyscope .ldCalDay.isPicked { color: #fff; background: radial-gradient(circle at center, var(--triogreen) 13px, transparent 13.5px) #fff; }
+  body.today-dot .lobbyscope .ldCalDay.isPicked { background: radial-gradient(circle at 50% 82%, var(--triogreen) 2.5px, transparent 3px) #fff; }
+  body.today-ring .lobbyscope .ldCalDay.isPicked::after, body.today-ringink .lobbyscope .ldCalDay.isPicked::after { content: ""; position: absolute; left: 50%; top: 50%; width: 26px; height: 26px; margin: -13px 0 0 -13px; border-radius: 50%; pointer-events: none; }
+  body.today-ring .lobbyscope .ldCalDay.isPicked { color: var(--triogreen); }
+  body.today-ring .lobbyscope .ldCalDay.isPicked::after { box-shadow: inset 0 0 0 2px var(--triogreen); }
+  body.today-ringink .lobbyscope .ldCalDay.isPicked::after { box-shadow: inset 0 0 0 2px #212529; }
+  body.today-underline .lobbyscope .ldCalDay.isPicked { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; text-decoration-color: var(--triogreen); }
+  body.today-disc .lobbyscope .ldCalDay.isPicked { color: #fff; background: radial-gradient(circle at center, var(--triogreen) 10.5px, transparent 11px) #fff; }
   /* the 1px frames stand in for the grid's own lines around the cell, not inside them: the cell's top and right lines take the colour, and a
      1px shadow to the left and below covers the neighbours' lines, the cell lifted above them (5 September) */
-  :is(body.today-frame1, body.today-inkframe1, body.today-everframe1) .lobbyscope .ldCalDay.isToday { position: relative; z-index: 1; border-color: var(--td); color: var(--td); box-shadow: -1px 0 0 var(--td), 0 1px 0 var(--td); }
-  body.today-frame1 .lobbyscope .ldCalDay.isToday { --td: var(--triogreen); }
-  body.today-inkframe1 .lobbyscope .ldCalDay.isToday { --td: #3d3d3a; } /* the mockup's Evernote ink, the games bar's ink thumb */
-  body.today-everframe1 .lobbyscope .ldCalDay.isToday { --td: #00a82d; }
-  body.today-badge .lobbyscope .ldCalDay.isToday { color: #4F800B; font-size: 13px; font-weight: 900; letter-spacing: -.5px; background: url("cleanMeldBadge.png") center / 28px 28px no-repeat #fff; }
-  /* a day you can still play answers the pointer with the grey; a picked day other than today wears an ink frame, and the button names it */
-  .lobbyscope .ldCalDay:not(.isFuture):hover { background-color: var(--canvas, #F8F7F4); }
-  .lobbyscope .ldCalDay.isPicked { box-shadow: inset 0 0 0 2px #212529; }
+  :is(body.today-frame1, body.today-inkframe1, body.today-everframe1, body.today-inkwarm, body.today-inkedge, body.today-inkcanvas, body.today-inkcanvasgreen) .lobbyscope .ldCalDay.isPicked { position: relative; z-index: 1; border-color: var(--td); color: var(--tdink, var(--td)); box-shadow: -1px 0 0 var(--td), 0 1px 0 var(--td); }
+  body.today-frame1 .lobbyscope .ldCalDay.isPicked { --td: var(--triogreen); }
+  body.today-inkframe1 .lobbyscope .ldCalDay.isPicked { --td: #3d3d3a; } /* the mockup's Evernote ink, the games bar's ink thumb */
+  body.today-everframe1 .lobbyscope .ldCalDay.isPicked { --td: #00a82d; }
+  /* the ink number with a gentler frame and a tinted cell (6 September): the games bar's ring #c9c0ae on the band's warm tint, or the scheme's edge on its canvas */
+  body.today-inkwarm .lobbyscope .ldCalDay.isPicked { --td: #c9c0ae; --tdink: #3d3d3a; background-color: var(--band, #f4eee5); }
+  body.today-inkedge .lobbyscope .ldCalDay.isPicked { --td: var(--edge, #d2cfca); --tdink: #3d3d3a; background-color: var(--canvas, #f9f6f2); }
+  /* the chosen day: the facts cell with its line one tone darker than the grid's, the edge mixed a tenth toward the ink (6 September, the default); the number in the ink, or in the green */
+  body.today-inkcanvas .lobbyscope .ldCalDay.isPicked { --td: color-mix(in srgb, var(--edge, #d2cfca) 90%, var(--ink, #141414)); --tdink: #3d3d3a; background-color: var(--canvas, #f9f6f2); }
+  body.today-inkcanvasgreen .lobbyscope .ldCalDay.isPicked { --td: color-mix(in srgb, var(--edge, #d2cfca) 90%, var(--ink, #141414)); --tdink: var(--triogreen); background-color: var(--canvas, #f9f6f2); } /* the facts cells' own recipe: the canvas fill inside the grid's lines, the ink number (6 September, the default) */
+  /* a day you can still play answers the pointer with the band's tint and the ink, today included; the canvas fill it had was too close to white to show */
+  .lobbyscope .ldCalDay:not(.isFuture):hover, :is(body.today-inkedge, body.today-inkwarm, body.today-inkcanvas, body.today-inkcanvasgreen) .lobbyscope .ldCalDay.isPicked:hover { background-color: var(--band, #f4eee5); color: #3d3d3a; }
+  body.today-badge .lobbyscope .ldCalDay.isPicked { color: #4F800B; font-size: 13px; font-weight: 900; letter-spacing: -.5px; background: url("cleanMeldBadge.png") center / 28px 28px no-repeat #fff; }
   /* the deal's facts as three cells under the calendar, in its grammar: a muted caption over a bold value, the calendar's lines between them; 64px, what ten leaderboard rows add to the other tile (5 September) */
   .lobbyscope .ldInfo { display: grid; grid-template-columns: 1fr 1fr 1.2fr; font-size: 14px; line-height: 18px; color: var(--muted, #4e4d4c); background-color: var(--canvas, #F8F7F4); } /* the value first in bold, the caption under it, on the grey (5 September) */
   .lobbyscope .ldFact { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 13px 12px 14px; border-right: 1px solid var(--edge, var(--panelline)); } /* centred both ways, the caption reading on from the value, 18px lines, 63px in all (5 September) */ /* 63px, so with the foot's new line the deal tile stays the leaderboard's 401px */
@@ -3297,6 +3303,7 @@
     <label class="ctl"><span>Status state</span><select id="sel-dstate"></select></label>
     <label class="ctl"><span>Status game</span><select id="sel-dgame"></select></label>
     <label class="ctl"><span>Corner buttons</span><select id="sel-cbtn"></select></label>
+    <label class="ctl"><span>Button finish</span><select id="sel-bfin"></select></label>
     <label class="ctl"><span>Today's cell</span><select id="sel-today"></select></label>
     <label class="ctl"><span>Game bar colours</span><select id="sel-otcolor"></select></label>
     <label class="ctl"><span>Section spacing</span><select id="sel-sgap"></select></label>
@@ -3304,6 +3311,7 @@
   </div>
   <details class="swadv">
     <summary>Advanced — settled settings</summary>
+    <div class="swnote">Official in-game button (6 Sep 2026, game-button-lab.html tile 110): warm lemon #FFD75A as a 3% satin (#FFDC5F to #FAD255), a 1px top highlight at 35% white, leather ink #5C3A00, a 1px ring in the ink colour at 70% with a 1px drop shadow, a 20px squircle (16px compact). Hover one Open Color stop deeper (#FFD43B), pressed flat #FCC419. See the Corner buttons coat “official” and the Button finish option.</div>
     <div class="swgroup">
       <div class="swhead">Look</div>
       <label class="ctl"><span>Signed-in copy</span><select id="sel-pcopy"></select></label>
@@ -3593,9 +3601,26 @@
   :is(#openTablesTop, #lobbyLiveTables) .ltCard:hover .cbtn { pointer-events: auto; }
   /* a live table's two verbs stack, Watch over Queue, the pair as wide as its wider word */
   #lobbyLiveTables .cbtn { flex-direction: column; align-items: stretch; }
+  /* ── the official finish option (6 September): a satin (10% white to 5% black) and a 1px top highlight painted under the label
+     of every button in its own colour; the warm ring (the ink colour at 70%) only on the buttons that sit on the felt; the
+     game-yellow corner buttons take the official colour. Pressed drops the satin, as the game button does. ── */
+  body.bfin-game .gplay, body.bfin-game .button, body.bfin-game .ovbtn { position: relative; isolation: isolate; }
+  body.bfin-game .gplay::before, body.bfin-game .button::before, body.bfin-game .ovbtn::before { content: ""; position: absolute; inset: 0; z-index: -1;
+    border-radius: inherit; corner-shape: inherit; pointer-events: none;
+    background: linear-gradient(180deg, rgba(255,255,255,.10) 0%, rgba(0,0,0,.05) 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,.35); }
+  body.bfin-game .gplay:active::before, body.bfin-game .button:active::before, body.bfin-game .ovbtn:active::before { background: none; box-shadow: none; }
+  body.bfin-game .ltCard .button::before { box-shadow: inset 0 1px 0 rgba(255,255,255,.35), 0 0 0 1px color-mix(in srgb, currentColor 70%, transparent), 0 1px 2px rgba(0,0,0,.30); }
+  body.bfin-game.cbtn-gameyellow :is(#openTablesTop, #lobbyLiveTables) .cbtn .button { background-color: #FFD75A; color: #5C3A00; box-shadow: none; }
+  body.bfin-game.cbtn-gameyellow :is(#openTablesTop, #lobbyLiveTables) .cbtn .button:hover { background-color: #FFD43B; }
+  body.bfin-game.cbtn-gameyellow :is(#openTablesTop, #lobbyLiveTables) .cbtn .button:active { background-color: #FCC419; }
   :is(#openTablesTop, #lobbyLiveTables) .cbtn .button { height: 24px; line-height: 24px; font-size: 16px; padding: 0 10px;
     box-shadow: 0 0 0 1px rgba(0,0,0,.16); transition: background-color 24ms ease-out; }
   body.cbtn-gameyellow .cbtn .button { background-color: #FFE066; color: #C96800; text-shadow: none; }
+  /* the official in-game button, decided 6 September (game-button-lab.html tile 110); scoped like the geometry rule so its ring wins */
+  body.cbtn-official :is(#openTablesTop, #lobbyLiveTables) .cbtn .button { background-color: #FFD75A; background-image: linear-gradient(180deg, #FFDC5F 0%, #FAD255 100%); color: #5C3A00; text-shadow: none;
+    box-shadow: 0 0 0 1px rgba(92,58,0,.70), 0 1px 2px rgba(0,0,0,.30), inset 0 1px 0 rgba(255,255,255,.35); }
+  body.cbtn-official :is(#openTablesTop, #lobbyLiveTables) .cbtn .button:hover { background-image: linear-gradient(180deg, #FFD940 0%, #FACF36 100%); box-shadow: 0 0 0 1px rgba(92,58,0,.70), 0 2px 4px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.35); }
+  body.cbtn-official :is(#openTablesTop, #lobbyLiveTables) .cbtn .button:active { background-image: none; background-color: #FCC419; box-shadow: 0 0 0 1px rgba(92,58,0,.70); }
   body.cbtn-gameyellow .cbtn .button:hover { background-color: color-mix(in srgb, #FFE066 92%, #E67700 8%); }
   body.cbtn-gameyellow .cbtn .button:active { background-color: #FCC419; } /* the game's pressed yellow */
   body.cbtn-triogreen .cbtn .button { background-color: var(--triogreen); color: #fff;
@@ -3848,7 +3873,7 @@
             <div class="ldCal"><span class="ldCalHead">Mo</span><span class="ldCalHead">Tu</span><span class="ldCalHead">We</span><span class="ldCalHead">Th</span><span class="ldCalHead">Fr</span><span class="ldCalHead">Sa</span><span class="ldCalHead">Su</span><span class="ldCalCell"></span><span class="ldCalCell"></span><span class="ldCalCell"></span><span class="ldCalCell"></span><span class="ldCalCell"></span><span class="ldCalCell ldCalDay isDealDone">1</span><span class="ldCalCell ldCalDay">2</span><span class="ldCalCell ldCalDay isDealDone">3</span><span class="ldCalCell ldCalDay isToday">4</span><span class="ldCalCell ldCalDay isFuture">5</span><span class="ldCalCell ldCalDay isFuture">6</span><span class="ldCalCell ldCalDay isFuture">7</span><span class="ldCalCell ldCalDay isFuture">8</span><span class="ldCalCell ldCalDay isFuture">9</span><span class="ldCalCell ldCalDay isFuture">10</span><span class="ldCalCell ldCalDay isFuture">11</span><span class="ldCalCell ldCalDay isFuture">12</span><span class="ldCalCell ldCalDay isFuture">13</span><span class="ldCalCell ldCalDay isFuture">14</span><span class="ldCalCell ldCalDay isFuture">15</span><span class="ldCalCell ldCalDay isFuture">16</span><span class="ldCalCell ldCalDay isFuture">17</span><span class="ldCalCell ldCalDay isFuture">18</span><span class="ldCalCell ldCalDay isFuture">19</span><span class="ldCalCell ldCalDay isFuture">20</span><span class="ldCalCell ldCalDay isFuture">21</span><span class="ldCalCell ldCalDay isFuture">22</span><span class="ldCalCell ldCalDay isFuture">23</span><span class="ldCalCell ldCalDay isFuture">24</span><span class="ldCalCell ldCalDay isFuture">25</span><span class="ldCalCell ldCalDay isFuture">26</span><span class="ldCalCell ldCalDay isFuture">27</span><span class="ldCalCell ldCalDay isFuture">28</span><span class="ldCalCell ldCalDay isFuture">29</span><span class="ldCalCell ldCalDay isFuture">30</span><span class="ldCalCell ldCalDay isFuture">31</span><span class="ldCalCell"></span><span class="ldCalCell"></span><span class="ldCalCell"></span><span class="ldCalCell"></span><span class="ldCalCell"></span><span class="ldCalCell"></span></div>
           </div>
         </div>
-        <div class="ldInfo"><div class="ldFact"><b>Deal <span class="ldNum">248</span></b><span class="ldCap">of 365 this year</span></div><div class="ldFact"><b><span class="ldTime">8</span> minutes</b><span class="ldCap">average to play</span></div><div class="ldFact"><b class="ldWon">312 of 1204</b><span class="ldCap">players won today</span></div></div>
+        <div class="ldInfo"><div class="ldFact"><b>Deal <span class="ldNum">248</span></b><span class="ldCap">of 365 this year</span></div><div class="ldFact"><b class="ldTime">8 min 24 sec</b><span class="ldCap">average to play</span></div><div class="ldFact"><b class="ldWon">312 of 1204</b><span class="ldCap">players won today</span></div></div>
         <div class="ldFoot"><button type="button" class="button green ldPlay">Play today's challenge</button></div>
       </div>
       </div>
@@ -4287,17 +4312,27 @@
   /* the coat of the corner buttons the open and live tiles show on hover (5 September) */
   var CBTNS = [
     ["gameyellow", "The game's yellow button (#FFE066, dark orange ink)"],
+    ["official", "The official in-game button (6 Sep 2026): #FFD75A satin, top highlight, leather ink, warm ring"],
     ["triogreen", "Trio green, outlined letters"],
     ["evergreen", "Evernote green (#00a82d), outlined letters"],
     ["lightblue", "Light blue (the lobby's light button)"],
     ["blue", "Blue (the lobby's blue button)"]
   ];
   var curCbtn = "gameyellow";
-  var TODAYS = [["frame1", "Green number in a 1px green frame"], ["inkframe1", "Evernote ink number in a 1px ink frame (#3d3d3a)"], ["everframe1", "Evernote green number in a 1px Evernote frame"], ["lime", "Lime fill, dark green number (the badge's pair)"], ["everfill", "Evernote green fill, white number"],
+  /* the game's official button finish, decided 6 September 2026 (game-button-lab.html tile 110): warm lemon #FFD75A as a 3% satin,
+     a 1px top highlight, leather ink #5C3A00, a 1px ring in the ink colour at 70%, a 20px squircle. The option puts the finish
+     (satin + highlight) on every button on the page in its own colour, gives the game-yellow corner buttons the new colour, and
+     draws the ring only on the buttons that sit on the felt (the open and live tiles). */
+  var BFINS = [
+    ["asis", "As designed (each button its own finish)"],
+    ["game", "The game's official finish on every button: satin + highlight; ring on the felt only; light yellow becomes #FFD75A"]
+  ];
+  var curBfin = "asis";
+  var TODAYS = [["inkcanvas", "The facts cell, its line one tone darker than the grid, ink number"], ["inkcanvasgreen", "The facts cell, its line one tone darker than the grid, green number"], ["inkedge", "Like the facts cells: the canvas fill in the grid's lines, the ink number"], ["inkwarm", "Evernote ink number, the bar's ring #c9c0ae as the frame, the band's tint as the fill"], ["frame1", "Green number in a 1px green frame"], ["inkframe1", "Evernote ink number in a 1px ink frame (#3d3d3a)"], ["everframe1", "Evernote green number in a 1px Evernote frame"], ["lime", "Lime fill, dark green number (the badge's pair)"], ["everfill", "Evernote green fill, white number"],
     ["bluefill", "The nameplate's light blue, blue number"], ["pill", "A green disc behind a white number (Apple, Google)"], ["dot", "A green dot under the number"],
     ["ring", "A green outlined circle, green number (Material's today)"], ["ringink", "An ink outlined circle"], ["underline", "A green underline under the number"],
     ["disc", "A small green disc, white number"], ["badge", "The finished-games badge at 28px, its dark green number"]];
-  var curToday = "frame1";
+  var curToday = "inkcanvas";
   /* the game bar over the open tables: the leaderboard's blue, the greens the page already plays with, the game's yellow, or the Evernote scheme */
   var OTCOLORS = [
     ["blue", "Light blue tray, blue thumb (the leaderboard's)"],
@@ -5551,7 +5586,7 @@
   }
   function applyBody() {
     var scene = curLayout.indexOf("sc") === 0;
-    document.body.className = curBase + " play-" + curPlay + " layout-" + curLayout + (scene ? " scenehero" : "") + " font-" + curFont + " shadow-" + curShadow + " edge-" + curEdge + " tex-" + curTexture + " cat-" + curCatalog + " stats-" + curStats + " menu-" + curMenu + " counter-" + curCounter + " rail-" + curRail + " playbtn-" + curPlayBtn + " avedge-" + curAvedge + " avsh-" + curAvshadow + " cnav-" + curCnav + " foot-" + curFooter + " viewer-" + curViewer + " sect-" + curSect + " div-" + curDivider + " cbtn-" + curCbtn + " today-" + curToday + " otc-" + curOtColor + " sgap-" + curSgap + " othover-" + curOtHover + " lhover-" + curLhover + " tilebg-" + curTileBg + " pinpair-" + curPinPair + " tint-" + curTint + (palShown ? " show-palette" : "");
+    document.body.className = curBase + " play-" + curPlay + " layout-" + curLayout + (scene ? " scenehero" : "") + " font-" + curFont + " shadow-" + curShadow + " edge-" + curEdge + " tex-" + curTexture + " cat-" + curCatalog + " stats-" + curStats + " menu-" + curMenu + " counter-" + curCounter + " rail-" + curRail + " playbtn-" + curPlayBtn + " avedge-" + curAvedge + " avsh-" + curAvshadow + " cnav-" + curCnav + " foot-" + curFooter + " viewer-" + curViewer + " sect-" + curSect + " div-" + curDivider + " cbtn-" + curCbtn + " bfin-" + curBfin + " today-" + curToday + " otc-" + curOtColor + " sgap-" + curSgap + " othover-" + curOtHover + " lhover-" + curLhover + " tilebg-" + curTileBg + " pinpair-" + curPinPair + " tint-" + curTint + (palShown ? " show-palette" : "");
     applyTints();
     var ht = document.getElementById("herotitle"), hs = document.getElementById("herosub");
     if (scene) {
@@ -5874,6 +5909,7 @@
   buildSel("sel-othover", OTHOVERS, function (v) { curOtHover = v; });
   buildSel("sel-stats", STATSLINES, function (v) { curStats = v; });
   buildSel("sel-cbtn", CBTNS, function (v) { curCbtn = v; });
+  buildSel("sel-bfin", BFINS, function (v) { curBfin = v; });
   buildSel("sel-today", TODAYS, function (v) { curToday = v; });
   (function () {
     var bar = document.querySelector(".switchbar");
@@ -8380,7 +8416,7 @@
        rank moves in the tens to hundreds of places, the Elo moves 4 to 21; these ten rows carry that sample's own numbers */
     var HEARTS = { rows: [[41, "SpadeQueen", 1512, 273, false, 6], [42, "mollyb", 1506, 726, false, 21], [43, "TableTalker", 1498, 237, true, 5], [44, "cardShark52", 1493, -332, false, -8], [45, "PragueJoe", 1487, 361, false, 9],
       [46, "Holger", 1481, 175, false, 5], [47, "wendy_h", 1476, 236, false, 7], [48, "GinTonic", 1470, -128, false, -5], [49, "north4th", 1465, 151, false, 6], [50, "Beatrix", 1459, 83, true, 4]],
-      deal: { done: [1, 3], number: 248, played: 1204, won: 312, minutes: 8 } };
+      deal: { done: [1, 3], number: 248, played: 1204, won: 312, minutes: 8, seconds: 24 } };
     /* how long a deal takes, roughly, per game */
     var MINUTES = { hearts: 8, spades: 12, euchre: 6, pinochledd: 15, handfoot: 20, ginrummy: 5, twentynine: 10, rummy: 9, canasta: 18, pinochle: 12, cribbage: 7, gofish: 4, threefiveeight: 9, whist: 8, crazyeights: 4, bridge: 14, oldmaid: 3, sheepshead: 9 };
     function seed(str) { var h = 2166136261; for (var i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); } return function () { h += 0x6D2B79F5; var t = Math.imul(h ^ (h >>> 15), 1 | h); t ^= t + Math.imul(t ^ (t >>> 7), 61 | t); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
@@ -8396,7 +8432,7 @@
       }
       var done = [1, 2, 3].filter(function () { return r() < 0.55; });
       var played = 250 + Math.floor(r() * 2200);
-      return { rows: rows, deal: { done: done, number: 200 + Math.floor(r() * 99), played: played, won: Math.floor(played * (0.12 + r() * 0.35)), minutes: MINUTES[id] || (5 + Math.floor(r() * 10)) } };
+      return { rows: rows, deal: { done: done, number: 200 + Math.floor(r() * 99), played: played, won: Math.floor(played * (0.12 + r() * 0.35)), minutes: MINUTES[id] || (5 + Math.floor(r() * 10)), seconds: Math.floor(r() * 60) } };
     }
     function fmt(n) { return n >= 10000 ? n.toLocaleString("en-US") : String(n); } /* a separator only from 10,000 up (Holger, 5 September) */
     function chip(n) { return n ? ' <span class="' + (n > 0 ? "lbUp" : "lbDown") + '">' + Math.abs(n) + "</span>" : ""; }
@@ -8407,6 +8443,19 @@
     var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     function leaving() { return [].slice.call(document.querySelectorAll("#lobbyBoardCard .lbRow:not(.lbHeaderRow), #lobbyDealCard .ldAwardTitle, #lobbyDealCard .ldCalDay.isDealDone, #lobbyDealCard .ldFact")); }
     function dealIn(els, from) { els.forEach(function (el, i) { if (el.animate) el.animate(IN_KF, { duration: 260, delay: from + i * 38, easing: "cubic-bezier(.22,1,.36,1)", fill: "both" }); }); }
+    var currentGame = "hearts", currentDeal = null;
+    function showFacts(f, today) {
+      var card = document.getElementById("lobbyDealCard");
+      card.querySelector(".ldNum").textContent = f.number; card.querySelector(".ldTime").textContent = f.minutes + " min " + f.seconds + " sec"; card.querySelector(".ldWon").textContent = fmt(f.won) + " of " + fmt(f.played);
+      card.querySelector(".ldWon").nextElementSibling.textContent = today ? "players won today" : "players won that day";
+    }
+    /* another day's deal: its number counts back from today's, and its players and winners are dealt from the game and the day */
+    function factsFor(day, todayNum) {
+      var r = seed(currentGame + ":" + day), played = 250 + Math.floor(r() * 2200);
+      /* the day's average sits within a minute of the game's usual length */
+      var secs = currentDeal.minutes * 60 + Math.floor(r() * 120) - 60;
+      return { number: currentDeal.number - (todayNum - day), minutes: Math.floor(secs / 60), seconds: secs % 60, played: played, won: Math.floor(played * (0.12 + r() * 0.35)) };
+    }
     window.renderClub = function (id, instant) {
       if (!instant && !reduced && document.body.animate) {
         leaving().forEach(function (el) { el.animate(OUT_KF, { duration: 190, easing: "cubic-bezier(.32,0,.67,0)", fill: "both" }); });
@@ -8429,13 +8478,14 @@
       card.querySelector(".ldAwardTitle").textContent = wins + (wins === 1 ? " win" : " wins");
       var fills = card.querySelectorAll(".ldAwardFill"), pct = function (v) { return Math.max(0, Math.min(1, v)) * 100 + "%"; };
       if (fills[0]) fills[0].style.width = pct(wins / 10); if (fills[1]) fills[1].style.width = pct((wins - 10) / 10); if (fills[2]) fills[2].style.width = pct((wins - 20) / 11);
-      card.querySelectorAll(".ldCalDay").forEach(function (c) { var day = parseInt(c.textContent, 10); c.classList.toggle("isDealDone", deal.done.indexOf(day) >= 0); c.classList.remove("isPicked"); });
+      card.querySelectorAll(".ldCalDay").forEach(function (c) { var day = parseInt(c.textContent, 10); c.classList.toggle("isDealDone", deal.done.indexOf(day) >= 0); c.classList.toggle("isPicked", c.classList.contains("isToday")); });
       card.querySelector(".ldPlay").textContent = "Play today's challenge";
+      currentGame = id; currentDeal = deal;
       if (window.wtipAttach) card.querySelectorAll(".ldCalDay:not(.isFuture)").forEach(function (c) {
         var done = c.classList.contains("isDealDone"), today = c.classList.contains("isToday");
         window.wtipAttach(c, done ? "Played \u00b7 play it again to beat your score" : (today ? "Today's challenge" : "Not played yet"));
       });
-      card.querySelector(".ldNum").textContent = deal.number; card.querySelector(".ldTime").textContent = deal.minutes; card.querySelector(".ldWon").textContent = fmt(deal.won) + " of " + fmt(deal.played);
+      showFacts(deal, true);
     };
     document.addEventListener("DOMContentLoaded", function () {
       window.renderClub("hearts", true);
@@ -8443,10 +8493,11 @@
       var card = document.getElementById("lobbyDealCard");
       if (card) card.addEventListener("click", function (e) {
         var day = e.target.closest(".ldCalDay"); if (!day || day.classList.contains("isFuture")) return;
-        var today = day.classList.contains("isToday");
+        var today = day.classList.contains("isToday"), todayNum = parseInt(card.querySelector(".ldCalDay.isToday").textContent, 10);
         card.querySelectorAll(".ldCalDay.isPicked").forEach(function (c) { c.classList.remove("isPicked"); });
-        if (!today) day.classList.add("isPicked");
+        day.classList.add("isPicked");
         card.querySelector(".ldPlay").textContent = today ? "Play today's challenge" : "Play the August " + day.textContent.trim() + " challenge";
+        showFacts(today ? currentDeal : factsFor(parseInt(day.textContent, 10), todayNum), today);
       });
     });
   })();
@@ -8534,6 +8585,19 @@
   #labSticky.on { transform: none; }
   #labSticky .otFilter { max-width: 1112px; margin: 0 auto; }
   #labSticky .otFilter .track > .s, #labSticky .otFilter .ov .ovbtn { cursor: pointer; }
+
+  /* the dropdown on the seam (concept I): the bar's More button, alone in its tray, after the title on the rule. It sits in the
+     title's own span, so the head script measures it, breaks the rule around it and keeps the suits clear of it; the halo copy hides it */
+  .pophead .labSeamDd, .ttl .labSeamDd { display: inline-flex; vertical-align: middle; margin: 0 0 0 14px; position: relative; top: 1px; } /* middle puts the tray 2px above the rule's centre; this lands it on it */
+  .labSeamDd .track { width: auto; }
+  .labSeamDd .track .ov { display: flex; } /* no line box under the button: the title's 26px line-height would make the tray 32px */
+  .ttl.halo .labSeamDd { visibility: hidden; }
+  .divhead .ttl .labSeamDd { pointer-events: auto; }
+  .divhead:has(.labSeamDd:hover), .divhead:has(.labSeamDd .ov.open) { z-index: 40; }
+  .labSeamDd .ovlist { right: auto; left: -2px; }
+  .labSeamDd .ovlist .mi.dim { opacity: .55; }
+  .labSeamDd .ovlist .mi.on { color: var(--ot-thumbink); background: var(--ot-thumb); text-shadow: var(--ot-thumbshadow); cursor: default; }
+  .labSeamDd .ovlist .mi.on i { opacity: 1; }
 </style>
 
 <script>
@@ -8590,6 +8654,28 @@
     return s;
   }
 
+  /* the seam dropdown: the More button's markup in its own tray, a game name as the label, the list under it */
+  var GAMES = [["hearts", "Hearts", 5], ["spades", "Spades", 2], ["euchre", "Euchre", 1], ["pinochledd", "Double Deck Pinochle", 1], ["handfoot", "Hand &amp; Foot", 1], ["ginrummy", "Gin Rummy", 1], ["bridge", "Bridge", 1],
+    ["twentynine", "Twenty-Nine", 0], ["rummy", "Rummy", 0], ["canasta", "Canasta", 0], ["pinochle", "Pinochle", 0], ["cribbage", "Cribbage", 0], ["gofish", "Go Fish", 0], ["threefiveeight", "Sergeant Major", 0], ["whist", "Whist", 0], ["crazyeights", "Crazy Eights", 0], ["oldmaid", "Old Maid", 0], ["sheepshead", "Sheepshead", 0]];
+  var TRI = '<svg viewBox="0 0 8 7" aria-hidden="true"><path d="M1.2 1h5.6L4 6z" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></svg>';
+  var seamPick = { live: "hearts", lb: "hearts" };
+  function gameName(g) { if (g === "all") return "All games"; var r = GAMES.filter(function (x) { return x[0] === g; })[0]; return r ? r[1] : g; }
+  function seamDd(k) {
+    var pick = seamPick[k], rows = (k === "live" ? [["all", "All games", 12]] : []).concat(GAMES);
+    return '<span class="labSeamDd otFilter" data-k="' + k + '"><span class="track"><span class="ov"><span class="ovbtn"><span class="ovlab">' + gameName(pick) + '</span><span class="wall"></span><span class="zone">' + TRI + '</span></span>' +
+      '<ul class="ovlist">' + rows.map(function (r) { return '<li class="mi' + (r[0] === pick ? " on" : "") + (k === "live" && !r[2] ? " dim" : "") + '" data-g="' + r[0] + '">' + r[1] + (k === "live" ? "<i>" + r[2] + "</i>" : "") + "</li>"; }).join("") + "</ul></span></span></span>";
+  }
+  function seamHeads() { setHead("live", "Live tables" + seamDd("live")); setHead("lb", "Leaderboard &amp; daily deal" + seamDd("lb")); redraw(); }
+  document.addEventListener("click", function (e) {
+    var dd = e.target.closest(".labSeamDd"); if (!dd) return;
+    var ov = dd.querySelector(".ov"), k = dd.dataset.k, mi = e.target.closest(".mi");
+    if (!mi) { if (e.target.closest(".ovbtn")) ov.classList.toggle("open"); return; }
+    var g = mi.dataset.g; if (g === seamPick[k]) { ov.classList.remove("open"); return; }
+    if (k === "live" && (g === "all" || g === "hearts") && current.id === "seamdd") { setState(g); return; }
+    seamPick[k] = g; if (k === "lb" && window.renderClub) window.renderClub(g);
+    seamHeads();
+  });
+
   var CONCEPTS = [
     { id: "asis", name: "Today: three sections, two bars", states: [["all", "All games picked"], ["hearts", "Hearts picked"]],
       note: "The reference. <b>Open tables</b> has the bar with the counts and the More list; <b>Live tables</b> has no chooser at all; the <b>leaderboard</b> has a second bar because it must always show one game. Pick Hearts to see the open tables follow while the live tables do not.",
@@ -8632,7 +8718,11 @@
         var r = el('<div class="labRow"><span class="labMuted"><b>12</b> tables in play &middot; <b>2</b> with friends</span><span class="labSwitch"><span data-t="all">All<i>12</i></span><span data-t="friends">Friends<i>2</i></span></span></div>');
         r.querySelector('[data-t="' + st + '"]').classList.add("on"); before(live.querySelector(".lobbyLiveTables"), r);
         r.addEventListener("click", function (e) { var s = e.target.closest("[data-t]"); if (s) setState(s.dataset.t); });
-        if (st === "friends") document.body.classList.add("lab-friendsonly"); } }
+        if (st === "friends") document.body.classList.add("lab-friendsonly"); } },
+    { id: "seamdd", name: "I · A game dropdown on the seam, beside the title", states: [["hearts", "Hearts on both"], ["all", "All games on the live tables"]],
+      note: "Live tables and the leaderboard each get a <b>dropdown on the seam</b>, right after the title on the rule: the bar's More button alone in its tray, with the picked game as its label. <b>Hearts</b> is the pick on both. The open tables keep their bar. The live list has All games at the top with the counts; the leaderboard's list is games only, since it must always show one. Hover or click to open; the leaderboard really re-renders for the game you pick.",
+      apply: function (st) { document.body.classList.add("lab-noldbar"); pickBar("all"); seamPick.live = st === "all" ? "all" : "hearts"; seamPick.lb = "hearts";
+        if (st !== "all") heartsLive(liveRow); seamHeads(); } }
   ];
 
   function merged() {
