@@ -810,12 +810,12 @@
   var PHOTO = { sig: "By the signature", text: "In the text, three lines" };
   /* the signature: the Caveat face used so far, or one of the four PNGs from 6 September 2026 (black ink on transparency, tinted through a CSS mask) */
   /* the closing line above the name: his real email close first, then the card-flavoured ones from the naming round of 6 September 2026 */
-  var SIGNOFF = { best: "All the best,", table: "See you at a table,", cards: "Hope the cards fall your way,", seat: "Save me a seat,", chair: "Pull up a chair,", enjoy: "Enjoy the games,", happy: "Happy gaming," };
+  var SIGNOFF = { tables: "See you at the tables,", best: "All the best,", table: "See you at a table,", cards: "Hope the cards fall your way,", seat: "Save me a seat,", chair: "Pull up a chair,", enjoy: "Enjoy the games,", happy: "Happy gaming," };
   /* how the three player quotes are shown (6 September 2026) */
   var QSTYLE = { cards: "White tiles, avatar on top", inline: "Avatar beside the words", bubble: "Chat bubble, avatar below", mark: "Big quote mark, no avatar", plain: "Three columns, no tiles", felt: "Felt tiles like the game tiles", namefirst: "Name first, then the words" };
   var SIG = { caveatpng: "Caveat as a PNG, the decided one", caveat: "Caveat font (the one so far)", s1: "Signature 1, thin script", s2: "Signature 2, calligraphic", s3: "Signature 3, rounded script", s4: "Signature 4, marker" };
   var SIGC = { blue: "Pen blue (#1e3f8f)", ink: "Ink, the text colour", soft: "Ink at 75%", muted: "Muted grey (#4e4d4c)", green: "Deep green, the accent" };
-  var st = { layout: "tiles", headline: "none", photo: "sig", news: "tags", nx: "counted", tagc: "tray", tagsize: "chip", sig: "caveatpng", sigc: "ink", signoff: "best", qstyle: "namefirst", features: "icons", quotes: "paired", heads: "features", type: "gelica", sep: "rules", title: "games", paper: "canvas" };
+  var st = { layout: "tiles", headline: "none", photo: "sig", news: "tags", nx: "counted", tagc: "tray", tagsize: "chip", sig: "caveatpng", sigc: "ink", signoff: "tables", qstyle: "namefirst", features: "icons", quotes: "paired", heads: "features", type: "gelica", sep: "rules", title: "games", paper: "canvas" };
   var KEYS = ["layout", "headline", "photo", "features", "quotes", "heads", "type", "sep", "title", "paper", "news", "nx", "tagc", "tagsize", "sig", "sigc", "signoff", "qstyle"];
   var body = document.getElementById("aboutBody");
   /* a break before every block head, except heads that live inside a card or a column set */
@@ -839,7 +839,7 @@
     seams();
     document.getElementById("labNote").innerHTML = "<b>" + LAYOUTS[st.layout].name + ".</b> " + LAYOUTS[st.layout].note + " <b>Words:</b> " + words() + ".";
     KEYS.forEach(function (k) { var s = document.getElementById("lab-" + k); if (s.value !== st[k]) s.value = st[k]; });
-    try { localStorage.setItem("aboutlab24", JSON.stringify(st)); } catch (e) {}
+    try { localStorage.setItem("aboutlab25", JSON.stringify(st)); } catch (e) {}
   }
   function words() { return body.textContent.trim().split(/\s+/).length; }
   function opts(map) { return Object.keys(map).map(function (k) { return '<option value="' + k + '">' + (map[k].name || map[k]) + "</option>"; }).join(""); }
@@ -857,7 +857,7 @@
   KEYS.forEach(function (k) { document.getElementById("lab-" + k).addEventListener("change", function () { st[k] = this.value; apply(); }); });
 
   /* #layout:quotes:title:paper:features picks a state from the URL, for headless shots; else the last pick is remembered */
-  try { var saved = JSON.parse(localStorage.getItem("aboutlab24") || "null"); if (saved) KEYS.forEach(function (k) { if (saved[k]) st[k] = saved[k]; }); } catch (e) {}
+  try { var saved = JSON.parse(localStorage.getItem("aboutlab25") || "null"); if (saved) KEYS.forEach(function (k) { if (saved[k]) st[k] = saved[k]; }); } catch (e) {}
   var hash = (location.hash || "").slice(1).split(":");
   if (hash[0] && LAYOUTS[hash[0]]) { st.layout = hash[0]; if (QUOTES[hash[1]]) st.quotes = hash[1]; if (TITLES[hash[2]]) st.title = hash[2]; if (PAPER[hash[3]]) st.paper = hash[3]; if (FEATURES[hash[4]]) st.features = hash[4]; if (HEADS[hash[5]]) st.heads = hash[5]; if (TYPE[hash[6]]) st.type = hash[6]; if (SEP[hash[7]]) st.sep = hash[7]; if (HEADLINES[hash[8]]) st.headline = hash[8]; if (PHOTO[hash[9]]) st.photo = hash[9]; if (NEWS[hash[10]]) st.news = hash[10]; if (NX[hash[11]]) st.nx = hash[11]; if (TAGC[hash[12]]) st.tagc = hash[12]; if (TAGS[hash[13]]) st.tagsize = hash[13]; if (SIG[hash[14]]) st.sig = hash[14]; if (SIGC[hash[15]]) st.sigc = hash[15]; if (SIGNOFF[hash[16]]) st.signoff = hash[16]; if (QSTYLE[hash[17]]) st.qstyle = hash[17]; }
   if (/hidepanel/.test(location.search)) document.body.classList.add("labhidden");
