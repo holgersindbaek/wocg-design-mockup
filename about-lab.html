@@ -315,7 +315,21 @@
   #about .serifnote .close { margin: 14px 0 0; clear: both; }
   #about .serifnote.reader .artTitle { margin-bottom: 14px; }
   #about .serifnote.reader .artStand { margin-bottom: 18px; }
-  #about .serifnote.reader .photo { width: 84px; height: 84px; border-radius: 12px; margin: 5px 18px 4px 0; }
+  /* three lines of 19px/1.55 are 88px; 80px plus a 4px top margin keeps the fourth line clear of the photo */
+  #about .serifnote.reader .photo { width: 80px; height: 80px; border-radius: 12px; margin: 4px 18px 0 0; }
+  #about .serifnote.hybrid .artBy { margin-bottom: 18px; }
+
+  /* --- tiles as breakers: the features as picture tiles and the quotes as cards, full width, with no heads of their own --- */
+  #about .fgrid.tiles { grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 44px 0; }
+  #about .fgrid.tiles .fpic { background: var(--card); border-radius: 20px; corner-shape: squircle; box-shadow: 0 2px 8px rgba(0,0,0,.24); overflow: hidden; }
+  #about .fgrid.tiles .fimg { border-radius: 20px; box-shadow: inset 0 0 0 1px rgba(52,58,64,.4); }
+  #about .fgrid.tiles .fpic b { margin: 10px 12px 0; }
+  #about .fgrid.tiles .fpic p { margin: 2px 12px 12px; }
+  #about .qtiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 44px 0; }
+  #about .qtiles .q { flex-direction: column; margin: 0; padding: 18px 20px; background: var(--card); border-radius: 20px; corner-shape: squircle; box-shadow: 0 0 0 1px var(--hairline), 0 2px 8px rgba(60,45,25,.08); }
+  #about .qtiles .q .av { width: 44px; height: 44px; flex-basis: 44px; }
+  #about .lay-tiles .brk { display: none; }
+  #about .lay-tiles .measure { margin-top: 0; }
   #about .serifnote .sender { display: flex; align-items: baseline; gap: 14px; }
   #about .serifnote .sender small { font: 14px/1.4 "BuloRounded", Verdana, sans-serif; color: var(--faint); }
   #about .serifnote .sig { display: inline-block; font: 600 36px/1.1 "Caveat", cursive; color: #1e3f8f; margin: 2px 0 0; transform: rotate(-2deg); transform-origin: left center; }
@@ -520,9 +534,16 @@
         '<p style="margin:16px 0 0">Happy gaming,</p><span class="sig">Holger</span></div>' + rest(q, f); } },
     column: { name: "The columnist", note: "A newspaper column, with the site as the subject and Holger as the sender: a one-line byline above, a small round mug the text wraps around, the same reading measure as the rest of the section, and the signed name at the end.",
       build: function (q, f) { return '<div class="columnist"><p class="byline">By <b>Holger Sindbaek</b>, who runs World of Card Games</p>' + photo(88) + greet() + paras() + write() + '<p style="margin:14px 0 0;clear:both">Happy gaming,</p><span class="sig">Holger</span></div>' + rest(q, f); } },
-    reader: { name: "Dear reader, with a headline", note: "The Dear reader shape, which Holger likes best, with the greeting replaced by a headline about the site and the photo made smaller. The words still wrap round the photo at the section's measure, the body is the serif, and Holger signs at the end with one small line. Pick the headline in the chooser.",
-      build: function (q, f) { var h = HEADLINES[st.headline] || HEADLINES.since; return '<div class="serifnote reader"><h2 class="artTitle">' + h.t + "</h2>" + (h.s ? '<p class="artStand">' + h.s + "</p>" : "") + photo(84) + paras() + write() +
-        '<p class="close">Happy gaming,</p><div class="sender"><span class="sig">Holger</span><small>Holger Sindbaek, who runs the site</small></div></div>' + rest(q, f); } },
+    reader: { name: "Dear reader, with a headline", note: "The Dear reader shape, which Holger likes best, with the greeting replaced by a headline about the site. The photo sits inside the first paragraph and spans exactly three lines. The body is the serif at the section's measure, and Holger signs at the end with one small line. Pick the headline in the chooser.",
+      build: function (q, f) { return readerHead(false) + rest(q, f); } },
+    hybrid: { name: "Article, photo in the text", note: "The article's headline and byline on top, and the Dear reader body under them: the photo inside the first paragraph across three lines, the serif body, the signed name. The byline names the sender, so the sender line at the end is dropped.",
+      build: function (q, f) { return readerHead(true) + rest(q, f); } },
+    tiles: { name: "Tiles as breakers", note: "The note, then the six features as picture tiles across the full width, then the questions, then the three quotes as cards, then What's new. The tile rows are the breaks, so neither the features nor the quotes carry a head. The tiles borrow the game tiles' shape, so the section keeps the page's own rhythm.",
+      build: function (q, f) { return readerHead(false) +
+        '<div class="fgrid tiles pictures">' + D.promises.map(function (p, i) { return featureItem(p, i, "pictures"); }).join("") + "</div>" +
+        '<div class="measure"><h3>' + H.faq + "</h3>" + faq() + "</div>" +
+        '<div class="qtiles">' + D.quotes.slice(0, 3).map(quote).join("") + "</div>" +
+        '<div class="measure"><h3>' + H.up + "</h3><p>" + D.upIntro + "</p>" + updates() + upLink() + '<p class="tag">One more hand.</p></div>'; } },
     article: { name: "The article", note: "Dear reader without the greeting: a headline about the site, an optional standfirst, and a byline with a small round author photo, the way a magazine shows who wrote a piece. The body stays in the serif at the section's measure, and Holger signs at the end. Pick the headline in the chooser.",
       build: function (q, f) { var h = HEADLINES[st.headline] || HEADLINES.since; return '<div class="article"><h2 class="artTitle">' + h.t + "</h2>" + (h.s ? '<p class="artStand">' + h.s + "</p>" : "") +
         '<div class="artBy">' + photo(36) + "<span>By <b>Holger Sindbaek</b>, who runs World of Card Games &middot; 6 September 2026</span></div>" +
@@ -545,6 +566,14 @@
       '<circle cx="48" cy="50" r="41" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="48" cy="50" r="28" fill="none" stroke="currentColor" stroke-width="1.2"/>' +
       '<text font-size="7.6" font-weight="bold" letter-spacing="1.3" fill="currentColor" font-family="BuloRounded, Verdana, sans-serif"><textPath href="#pmArc">WORLD OF CARD GAMES &#183; DENMARK &#183;</textPath></text>' +
       '<text x="48" y="47" text-anchor="middle" font-size="9.5" font-weight="bold" fill="currentColor" font-family="BuloRounded, Verdana, sans-serif">6 SEP</text><text x="48" y="59" text-anchor="middle" font-size="9.5" font-weight="bold" fill="currentColor" font-family="BuloRounded, Verdana, sans-serif">2026</text>' + waves + "</svg></div>";
+  }
+  /* the note in the Dear reader shape: a site headline, an optional standfirst, an optional byline, the photo inside the first paragraph, the serif body, the signed name */
+  function readerHead(byline) {
+    var h = HEADLINES[st.headline] || HEADLINES.since;
+    return '<div class="serifnote reader' + (byline ? " hybrid" : "") + '"><h2 class="artTitle">' + h.t + "</h2>" + (h.s ? '<p class="artStand">' + h.s + "</p>" : "") +
+      (byline ? '<div class="artBy"><span>By <b>Holger Sindbaek</b>, who runs World of Card Games &middot; 6 September 2026</span></div>' : "") +
+      photo(80) + paras() + write() + '<p class="close">Happy gaming,</p>' +
+      (byline ? '<span class="sig">Holger</span>' : '<div class="sender"><span class="sig">Holger</span><small>Holger Sindbaek, who runs the site</small></div>') + "</div>";
   }
   /* what follows the paper: the promises with the notes, the questions, the updates, the tagline */
   function rest(q, f) { return '<div class="measure"><h3>' + H.like + '</h3>' + features(f, q) +
@@ -622,7 +651,7 @@
   var H = HEADS.plain;
   var TYPE = { gelica: "Serif heads", bulo: "Bulo heads" };
   var SEP = { none: "Space only", rules: "Hairlines", suits: "Suit marks" };
-  var LAYOUT_ORDER = ["reader", "serif", "article", "column", "sheet", "quiet", "editor", "signed", "postal", "pc", "air", "letter", "bc", "card", "margin", "note"];
+  var LAYOUT_ORDER = ["reader", "hybrid", "article", "tiles", "serif", "column", "sheet", "quiet", "editor", "signed", "postal", "pc", "air", "letter", "bc", "card", "margin", "note"];
   var QUOTES = { paired: "Paired", row: "Row of three", none: "None" };
   var TITLES = { games: "Behind the games", site: "About the site", hello: "Hello from Holger", note: "A note from Holger", behind: "Behind the tables", card: "The card room" };
   var PAPER = { canvas: "Canvas", band: "Band" };
