@@ -3256,6 +3256,11 @@
   /* ===== about-section: Behind the games (from about-lab.html, 6 September 2026): the signed note, the six features as tiles,
      the questions, three quotes as cards, what's new. Everything sits at the note's 680px measure. ===== */
   #sec-about.isOff { display: none; }
+  /* about-section: the page alternates canvas and band down to the footer; the classics sit on canvas, so this section takes the band (full bleed, like the rummy section) and the footer after it moves to canvas */
+  body:is(.div-blushdeck, .div-longdeal, .div-longdealopt, .div-longdealmono, .div-longdealends, .div-plainline, .div-deckmorse, .div-bracelet, .div-fourstations, .div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) #sec-about:not(.isOff) { position: relative; z-index: 0; }
+  body:is(.div-blushdeck, .div-longdeal, .div-longdealopt, .div-longdealmono, .div-longdealends, .div-plainline, .div-deckmorse, .div-bracelet, .div-fourstations, .div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) #sec-about:not(.isOff)::after { content: ""; position: absolute; top: 0; bottom: 0; left: 50%; width: 100vw; transform: translateX(-50%); z-index: -1; background: var(--band, #f4eee5); }
+  body:is(.div-blushdeck, .div-longdeal, .div-longdealopt, .div-longdealmono, .div-longdealends, .div-plainline, .div-deckmorse, .div-bracelet, .div-fourstations, .div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) #sec-about:not(.isOff) ~ .sitefooter { background: var(--canvas, #f9f6f2); }
+  body:is(.div-blushdeck, .div-longdeal, .div-longdealopt, .div-longdealmono, .div-longdealends, .div-plainline, .div-deckmorse, .div-bracelet, .div-fourstations, .div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells).foot-wavyline #sec-about:not(.isOff) ~ .sitefooter::before { background: var(--canvas, #f9f6f2); }
   body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) #sec-about > .pophead { display: none; }
   body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) #sec-about { padding-top: var(--sectgap); padding-bottom: var(--sectgap); position: relative; z-index: 0; }
   #sec-about h2, #sec-about h3 { text-transform: none; letter-spacing: normal; }
@@ -8085,7 +8090,7 @@
     ["#sec-tt", "top:-7px", "#sec-tt > .pophead", 3, "canvas"],
     ["#sec-rummy", "top:-7px", "#sec-rummy > .pophead", 4, "band"],
     ["#sec-classic", "top:-7px", "#sec-classic > .pophead", 5, "canvas"],
-    ["#sec-about:not(.isOff)", "top:-7px", "#sec-about > .pophead", 6, "canvas"], /* about-section: the head in the rule like the catalog heads */
+    ["#sec-about:not(.isOff)", "top:-7px", "#sec-about > .pophead", 6, "band"], /* about-section: the head in the rule like the catalog heads */
     [".sitefooter", "top:-7px", null, 7, "band"] /* no head: the footer's row, drawn here only in the fitted modes */
   ];
   /* the halo (title seam lab 121): the head is stroked 3px in the paper below the seam, under the ink, so the counters and the gaps inside
