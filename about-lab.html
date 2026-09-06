@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About the site &middot; lab</title>
+<link rel="preload" href="Gelica-Medium.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="BuloRounded-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="BuloRounded-Bold.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+  @font-face { font-family: "BuloRounded"; src: url("BuloRounded-Regular.woff2") format("woff2"); font-weight: normal; font-style: normal; font-display: swap; }
+  @font-face { font-family: "BuloRounded"; src: url("BuloRounded-Bold.woff2") format("woff2"); font-weight: bold; font-style: normal; font-display: swap; }
+  @font-face { font-family: "BuloRounded"; src: url("BuloRounded-Italic.otf") format("opentype"); font-weight: normal; font-style: italic; font-display: swap; }
+  @font-face { font-family: "BuloRounded"; src: url("BuloRounded-BoldItalic.otf") format("opentype"); font-weight: bold; font-style: italic; font-display: swap; }
+  @font-face { font-family: "Gelica"; src: url("Gelica-Regular.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+  @font-face { font-family: "Gelica"; src: url("Gelica-Medium.woff2") format("woff2"); font-weight: 500; font-display: swap; }
+  @font-face { font-family: "Gelica"; src: url("Gelica-SemiBold.woff2") format("woff2"); font-weight: 600; font-display: swap; }
+
+  /* ===== the mockup's tokens (evernote scheme, the current default) ===== */
+  :root {
+    --canvas: #f9f6f2; --band: #f4eee5; --surface: #ffffff; --card: #ffffff;
+    --ink: #141414; --ink-soft: #262626; --muted: #4e4d4c; --faint: #8a857c; --hairline: #e7e7e7; --edge: #d2cfca; --rule: #d9d2c4;
+    --accent: #00a82d; --accent-deep: #008a25; --accent-ink: #ffffff;
+    --adrail-w: 328px; --radius-md: 12px;
+    --suit-dark: #262626; --suit-red: #b54a3f;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    font-family: "BuloRounded", "Verdana", "Arial", "Helvetica", sans-serif; -webkit-font-smoothing: antialiased;
+    background: var(--canvas); color: var(--ink); font-size: 16px; line-height: 1.5;
+    padding-right: var(--adrail-w);
+  }
+  a { color: var(--accent-deep); text-decoration: none; border-bottom: 1px solid var(--hairline); }
+  a:hover { border-bottom-color: var(--accent-deep); }
+  p { margin: 0 0 12px; }
+  .page { max-width: 1160px; margin: 0 auto; padding: 0 24px; }
+
+  /* ===== a stand-in ad rail, so the column is as wide as on the real page ===== */
+  #adrail { position: fixed; top: 0; right: 0; bottom: 0; width: var(--adrail-w); z-index: 15; padding: 8px; display: flex; flex-direction: column; align-items: center; gap: 8px;
+    background: #efeae2; box-shadow: inset 1px 0 0 rgba(0,0,0,.08), inset 2px 0 5px rgba(60,45,25,.08), inset 5px 0 12px rgba(60,45,25,.08); }
+  #adrail .adslot { width: 300px; background: #e3ddd2; border-radius: 6px; box-shadow: inset 0 0 0 1px rgba(0,0,0,.08); }
+  #adrail .adslot.tall { height: 600px; } #adrail .adslot.box { height: 250px; }
+  @media (max-width: 1150px) { :root { --adrail-w: 0px; } #adrail { display: none; } }
+
+  /* ===== the seam: the head in the rule with suit marks at fixed stations (the mockup's default divider) ===== */
+  .seam { position: relative; height: 0; z-index: 3; --above: var(--band); --below: var(--canvas); }
+  .seam .rule { position: absolute; left: 0; right: 0; top: 0; height: 1px; background: var(--rule); }
+  .seam .ttl { position: absolute; left: 50%; top: 0; transform: translate(-50%, -50%); padding: 0 18px; white-space: nowrap;
+    font: 500 26px/26px "Gelica", Georgia, serif; color: var(--ink); background: linear-gradient(to bottom, var(--above) 50%, var(--below) 50%); }
+  .seam .su { position: absolute; top: 0; width: 14px; height: 14px; padding: 0 9px; box-sizing: content-box; transform: translate(-50%, -50%);
+    background: linear-gradient(to bottom, var(--above) 50%, var(--below) 50%); opacity: .55; }
+  .seam .su svg { display: block; width: 14px; height: 14px; }
+
+  /* ===== context above: the tail of the Classic games band ===== */
+  #ctx { background: var(--band); padding: 44px 0 40px; }
+  #ctx .seam { --above: var(--canvas); --below: var(--band); margin-bottom: 44px; }
+  .ctiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .ctile { display: flex; flex-direction: column; background: var(--card); border-radius: 20px; corner-shape: squircle; box-shadow: 0 2px 8px rgba(0,0,0,.24); overflow: hidden;
+    --tintbg: oklch(from var(--tint) .95 .045 h); --ring: oklch(from var(--tint) .55 .12 h); }
+  .ctile .cimg { position: relative; height: 176px; background: var(--tint); display: flex; align-items: center; justify-content: center; border-radius: 20px; corner-shape: squircle; }
+  .ctile .cimg::after { content: ""; position: absolute; inset: 0; border-radius: 20px; corner-shape: squircle; box-shadow: inset 0 0 0 1px rgba(52,58,64,.4); }
+  .ctile .cimg img { max-width: 64%; max-height: 72%; }
+  .ctile .chip { position: absolute; left: 12px; bottom: 10px; font-size: 14px; font-weight: bold; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,.4); }
+  .ctile .chip i { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #fff; margin-right: 6px; opacity: .85; }
+  .ctile .cmeta { padding: 12px; background: var(--tintbg); }
+  .ctile .ctitle { font-size: 20px; font-weight: bold; line-height: 28px; }
+  .ctile .csub { font-size: 16px; line-height: 1.35; color: var(--muted); min-height: 2.7em; }
+  .ctile .cplay { margin-top: 8px; height: 32px; border: 0; width: 100%; border-radius: var(--radius-md); corner-shape: squircle; font: bold 18px "BuloRounded", sans-serif; color: #fff;
+    background: var(--tint); box-shadow: inset 0 0 0 1px var(--ring), 0 2px 4px rgba(0,0,0,.06); }
+
+  /* ===== the section ===== */
+  #about { padding: 44px 0 56px; position: relative; }
+  body.paper-band #about { background: var(--band); }
+  body.paper-band #aboutSeam { --below: var(--band); }
+  body.paper-band #ctx { background: var(--canvas); }
+  body.paper-band #ctx .seam { --above: var(--band); --below: var(--canvas); }
+  #aboutSeam { margin-bottom: 44px; }
+  #about h3 { font-size: 20px; line-height: 28px; font-weight: bold; margin: 0 0 10px; }
+  #about .greet { font: 500 26px/32px "Gelica", Georgia, serif; margin: 0 0 12px; }
+  #about .photo { display: block; border-radius: 50%; box-shadow: 0 0 0 1px rgba(0,0,0,.12), 0 2px 6px rgba(60,45,25,.18); object-fit: cover; }
+  #about .who { font-size: 14px; color: var(--faint); line-height: 1.4; }
+  #about .signoff { margin-top: 18px; }
+  #about .signoff .sig { font: 500 26px/30px "Gelica", Georgia, serif; margin: 2px 0 0; }
+  #about .tag { font: 500 18px/24px "Gelica", Georgia, serif; color: var(--faint); margin-top: 10px; }
+  #about .tag::before { content: "\2660\00a0"; color: var(--suit-dark); opacity: .5; }
+  #about .mail { font-weight: bold; }
+  /* promises */
+  #about .pr { margin: 0 0 12px; }
+  #about .pr b { color: var(--ink); }
+  /* quotes */
+  #about .q { display: flex; gap: 12px; align-items: flex-start; margin: 4px 0 16px; }
+  #about .q .av { flex: 0 0 40px; width: 40px; height: 40px; border-radius: 50%; background: #e4ddd0; box-shadow: inset 0 0 0 1px rgba(0,0,0,.1); overflow: hidden; }
+  #about .q .av img { width: 100%; height: 100%; display: block; }
+  #about .q .qt { font-style: italic; margin: 0; }
+  #about .q .qw { font-size: 14px; color: var(--faint); margin: 2px 0 0; font-style: normal; }
+  /* faq */
+  #about .faqi { margin: 0 0 14px; }
+  #about .faqi b { display: block; }
+  #about .faqi p { margin: 0; color: var(--ink-soft); }
+  /* updates */
+  #about .up { margin: 0 0 10px; }
+  #about .up .d { display: block; font-size: 13px; font-weight: bold; letter-spacing: .06em; text-transform: uppercase; color: var(--faint); }
+  #about .stamp { font-size: 14px; color: var(--faint); margin-top: 8px; }
+  #about .card { background: var(--card); border-radius: 20px; corner-shape: squircle; box-shadow: 0 0 0 1px var(--hairline), 0 2px 8px rgba(60,45,25,.08); padding: 22px 24px; }
+  #about .bandcard { background: var(--band); border-radius: 20px; corner-shape: squircle; padding: 20px 22px; }
+  body.paper-band #about .bandcard { background: var(--canvas); }
+
+  /* --- layout: the letter (one measure, everything in reading order) --- */
+  .lay-letter .col { max-width: 660px; margin: 0 auto; }
+  .lay-letter .hello { display: grid; grid-template-columns: 96px 1fr; gap: 22px; align-items: start; margin-bottom: 26px; }
+  .lay-letter .hello .photo { width: 96px; height: 96px; margin-top: 4px; }
+  .lay-letter h3 { margin-top: 30px; }
+  .lay-letter .q { margin-left: 16px; padding-left: 14px; border-left: 2px solid var(--rule); }
+
+  /* --- layout: promises and proof (Basecamp: claims as cards, quotes as their proof) --- */
+  .lay-bc .head { display: grid; grid-template-columns: 128px 1fr; gap: 28px; align-items: start; margin-bottom: 34px; }
+  .lay-bc .head .photo { width: 128px; height: 128px; }
+  .lay-bc .head .txt { max-width: 720px; }
+  .lay-bc .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 34px; }
+  .lay-bc .grid3 .pr { margin: 0; padding: 18px 20px; background: var(--band); border-radius: 20px; corner-shape: squircle; }
+  body.paper-band .lay-bc .grid3 .pr { background: var(--canvas); }
+  .lay-bc .grid3 .pr b { display: block; font-size: 18px; line-height: 26px; margin-bottom: 4px; }
+  .lay-bc .grid3 .q { margin: 0; padding: 18px 20px; background: var(--card); border-radius: 20px; corner-shape: squircle; box-shadow: 0 0 0 1px var(--hairline), 0 2px 8px rgba(60,45,25,.08); flex-direction: column; }
+  .lay-bc .grid3 .q .qt { font-size: 17px; }
+  .lay-bc .faqgrid { display: grid; grid-template-columns: 1fr 1fr; column-gap: 40px; margin-bottom: 30px; }
+  .lay-bc .foot { display: grid; grid-template-columns: 1fr 340px; gap: 32px; align-items: start; }
+  .lay-bc .foot .card .photo { width: 56px; height: 56px; float: left; margin: 0 14px 6px 0; }
+
+  /* --- layout: the postcard (the letter as a card, three columns below) --- */
+  .lay-card .post { display: grid; grid-template-columns: 120px 1fr; gap: 26px; align-items: start; margin-bottom: 32px; }
+  .lay-card .post .photo { width: 120px; height: 120px; }
+  .lay-card .cols { display: grid; grid-template-columns: 1.15fr 1fr 1.15fr; gap: 36px; margin-bottom: 32px; }
+  .lay-card .cols .pr { margin-bottom: 10px; }
+  .lay-card .cols .pr b { display: block; }
+  .lay-card .uprow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+  .lay-card .uprow .up { margin: 0; }
+  .lay-card .uphead { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
+
+  /* --- layout: letter with a margin (text column, the person and the quotes in a sticky rail) --- */
+  .lay-margin .two { display: grid; grid-template-columns: 1fr 300px; gap: 56px; align-items: start; }
+  .lay-margin .main { max-width: 680px; }
+  .lay-margin .rail { position: sticky; top: 24px; }
+  .lay-margin .rail .photo { width: 120px; height: 120px; margin-bottom: 12px; }
+  .lay-margin .rail .name { font: 500 22px/28px "Gelica", Georgia, serif; }
+  .lay-margin .rail .who { margin-bottom: 14px; }
+  .lay-margin .rail .q { margin: 18px 0 0; padding-top: 16px; border-top: 1px solid var(--rule); }
+  .lay-margin h3 { margin-top: 30px; }
+
+  /* --- layout: the counter note (a narrow paper note, quotes as lines, a signature) --- */
+  .lay-note .paper { max-width: 640px; margin: 0 auto; background: var(--card); border-radius: 20px; corner-shape: squircle; padding: 40px 48px 36px;
+    box-shadow: 0 0 0 1px var(--hairline), 0 1px 2px rgba(60,45,25,.06), 0 12px 32px rgba(60,45,25,.10); }
+  .lay-note .paper .photo { width: 72px; height: 72px; margin-bottom: 14px; }
+  .lay-note .paper .greet { font-size: 30px; line-height: 36px; }
+  .lay-note h3 { margin-top: 26px; font: 500 20px/28px "Gelica", Georgia, serif; }
+  .lay-note .pr { margin-bottom: 10px; }
+  .lay-note .q { margin: 8px 0 14px 0; }
+  .lay-note .q .av { display: none; }
+  .lay-note .q .qt::before { content: "\201C"; } .lay-note .q .qt::after { content: "\201D"; }
+  .lay-note .faqi p { color: var(--muted); }
+  .lay-note .signoff { border-top: 1px solid var(--rule); padding-top: 18px; margin-top: 26px; }
+
+  /* ===== footer, as on the mockup ===== */
+  .sitefooter { background: #F4EEE5; border-top: 1px solid #E7E7E7; color: var(--ink); }
+  body.paper-band .sitefooter { border-top-color: #ddd5c7; }
+  .sitefooter footer { max-width: 1160px; margin: 0 auto; padding: 20px 24px 26px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 24px; }
+  .sitefooter .footerSection { display: flex; gap: 24px; width: max-content; max-width: 100%; }
+  .sitefooter .footerGames { gap: 16px; }
+  .sitefooter ul { padding: 0; margin: 0; list-style: none; font-size: 16px; line-height: 28px; }
+  .sitefooter li { white-space: nowrap; }
+  .sitefooter a { color: inherit; border-bottom: none; }
+  .sitefooter .raptive { display: flex; flex-direction: column; font-size: 16px; line-height: 28px; }
+  .sitefooter .raptive b { order: 1; } .sitefooter .raptive a:nth-of-type(1) { order: 2; } .sitefooter .raptive a:nth-of-type(2) { order: 3; }
+
+  /* ===== the chooser (as in the open-tables labs, smaller) ===== */
+  #labPanel { position: fixed; left: 16px; bottom: 16px; z-index: 80; width: 292px; background: #fff; border-radius: 14px; corner-shape: squircle;
+    box-shadow: 0 0 0 1px #e4e0d9, 0 2px 4px rgba(60,45,25,.06), 0 8px 20px rgba(60,45,25,.12); padding: 10px 12px 12px; font-family: "BuloRounded", Verdana, sans-serif; }
+  #labPanel h2 { margin: 0 0 4px; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: #8a857c; }
+  #labPanel label { display: block; font-size: 11.5px; color: #8a857c; margin: 6px 0 2px; }
+  #labPanel select { width: 100%; font: bold 13.5px/1.3 "BuloRounded", Verdana, sans-serif; color: #141414; padding: 5px 7px; border: 1px solid #d9d2c4; border-radius: 8px; background: #f9f6f2; }
+  #labPanel p.note { font-family: -apple-system, "Segoe UI", sans-serif; font-size: 12px; line-height: 1.45; color: #4e4d4c; margin: 8px 0 0; }
+  #labPanel p.note b { color: #141414; }
+  #labPanel .hide { position: absolute; right: 10px; top: 8px; font-size: 11px; color: #8a857c; cursor: pointer; }
+  body.labhidden #labPanel { display: none; }
+</style>
+</head>
+<body>
+
+<aside id="adrail"><div class="adslot tall"></div><div class="adslot box"></div></aside>
+
+<div id="ctx">
+  <div class="seam" data-title="Classic games"></div>
+  <div class="page">
+    <div class="ctiles">
+      <div class="ctile" style="--tint:#c4741a"><div class="cimg"><img src="cribbage_logo@2x.png" alt="Cribbage"><span class="chip"><i></i>76 playing</span></div><div class="cmeta"><div class="ctitle">Cribbage</div><div class="csub">Peg your way round the board in the classic counting game.</div><button class="cplay">Play</button></div></div>
+      <div class="ctile" style="--tint:#d43a4a"><div class="cimg"><img src="crazyeights_logo@2x.png" alt="Crazy Eights"><span class="chip"><i></i>39 playing</span></div><div class="cmeta"><div class="ctitle">Crazy Eights</div><div class="csub">Match suits and ranks, and save your eights.</div><button class="cplay">Play</button></div></div>
+      <div class="ctile" style="--tint:#3f8fd4"><div class="cimg"><img src="gofish_logo@2x.png" alt="Go Fish"><span class="chip"><i></i>21 playing</span></div><div class="cmeta"><div class="ctitle">Go Fish</div><div class="csub">Ask for cards, collect the books, go fish.</div><button class="cplay">Play</button></div></div>
+      <div class="ctile" style="--tint:#e0842c"><div class="cimg"><img src="oldmaid_logo@2x.png" alt="Old Maid"><span class="chip"><i></i>14 playing</span></div><div class="cmeta"><div class="ctitle">Old Maid</div><div class="csub">Pair up fast and do not get stuck with the maid.</div><button class="cplay">Play</button></div></div>
+    </div>
+  </div>
+</div>
+
+<section id="about">
+  <div class="seam" id="aboutSeam" data-title="About the site"></div>
+  <div class="page" id="aboutBody"></div>
+</section>
+
+<div class="sitefooter">
+  <footer>
+    <div class="footerSection footerGames">
+      <ul><li><strong>Games</strong></li><li><a href="#">Hearts</a></li><li><a href="#">Spades</a></li><li><a href="#">Euchre</a></li><li><a href="#">Gin Rummy</a></li><li><a href="#">Cribbage</a></li><li><a href="#">Pinochle</a></li><li><a href="#">DD Pinochle</a></li></ul>
+      <ul><li>&nbsp;</li><li><a href="#">Canasta</a></li><li><a href="#">Hand &amp; Foot</a></li><li><a href="#">Rummy</a></li><li><a href="#">Crazy Eights</a></li><li><a href="#">Bridge</a></li><li><a href="#">Whist</a></li></ul>
+      <ul><li>&nbsp;</li><li><a href="#">Go Fish</a></li><li><a href="#">Old Maid</a></li><li><a href="#">Sheepshead</a></li><li><a href="#">Twenty-Nine</a></li><li><a href="#">Sergeant Major</a></li><li><a href="#">Board Games</a></li></ul>
+    </div>
+    <div class="footerSection">
+      <ul><li><strong>Resources</strong></li><li><a href="#">About</a></li><li><a href="#">Leaderboards</a></li><li><a href="#">Rules &amp; Guides</a></li><li><a href="#">Blog</a></li><li><a href="#">Contact</a></li><li><a href="#">Privacy Policy</a></li><li><a href="#">Community Guidelines</a></li><li><a href="#">ToS</a></li></ul>
+    </div>
+    <div class="footerSection"><div class="raptive"><b>A Raptive Partner Site</b><a href="#">Update Privacy Preferences</a><a href="#">Terms of Content Use</a></div></div>
+  </footer>
+</div>
+
+<script>
+(function () {
+  /* ===== the copy: one voice, facts the code on master can back ===== */
+  var D = {
+    greet: "Hello, I'm Holger.",
+    hello: [
+      "I'm a designer and programmer from Denmark, and I love classic card games like Spades and Hearts. Robert, who also made World of Solitaire, started this site in December 2011. Marya ran it for years, and at the start of 2023 she handed it to me. I've looked after it on my own since then.",
+      "World of Card Games is a free place to play eighteen classic card games in your browser, with real people or against the bots. The ads pay for the servers. If you'd rather play without them, a small subscription turns them off."
+    ],
+    write: "If something breaks, a rule looks wrong, or you'd like a game added, write to me at <a class=\"mail\" href=\"mailto:holger@worldofcardgames.com\">holger@worldofcardgames.com</a>. I read every email myself and try to answer them all.",
+    promises: [
+      ["Real people, right now.", "The numbers at the top of the page are live. You can see who's at every table before you sit down, and join a game that's already under way."],
+      ["You never wait.", "Pick a game and a table opens at once. If you'd rather play the bots, they sit down straight away, and a solo table has no clock."],
+      ["The table waits for you.", "If your connection drops in a ranked game, your seat is held for three minutes. A solo game waits for hours, so you can close the laptop and come back after dinner."],
+      ["Help while you learn.", "For your first ten games of anything new, arrows point at a good card. Then they fade on their own. Every game has a rules page and a short tutorial."],
+      ["Tables stay friendly.", "Mute or block anyone in one click, and flag a message for review. People who keep spoiling games play the bots for a while."],
+      ["Your own table.", "Give a private table a name and send your friends the link. They don't need an account to join, and the same name works every week."]
+    ],
+    /* real lines from the inbox (July to September 2026); the names are placeholders until each writer says yes */
+    quotes: [
+      ["Thank you for making a site where people can play games and meet new friends.", "Linda, plays Euchre", "WomanCowgirl.svg"],
+      ["I appreciate all the hard work you put into World of Card Games.", "Ruth, Hand &amp; Foot", "WomanScientist.svg"],
+      ["You're doing a great job with this. The only thing I'd change is the countdown bar.", "Mike, Spades", "ManChef.svg"],
+      ["I really do love playing the game.", "Connie, Hand &amp; Foot", "AnimalFox.svg"]
+    ],
+    faq: [
+      ["Is it free?", "Yes. All eighteen games are free to play, and the ads pay for the site. If you'd rather play without ads, a small subscription turns them off, and you see the price before you pay anything."],
+      ["Do I need an account?", "No. You can sit down and play as a guest right away. If you sign up, your name, stats, avatar and settings follow you to any computer, tablet or phone, and ranked games open after ten finished games."],
+      ["Can I play on my own, right now?", "Yes. Pick a game and choose Play bots. The bots sit down at once, and a solo table has no clock, so take as long as you like over a hand."],
+      ["How do I get to a table with real people?", "Finish one game against the bots in that game first, then the tables with people open up for it. An invite link, a friend's table or a rematch skips that first game."],
+      ["Can I play with friends?", "Yes, and none of them needs an account. Once you've finished one game here, choose Host table, tick Private and give the table a name. Tell your friends the name, or send them the invite link."],
+      ["I've never played this game. Can I learn it here?", "Yes. Every game has a rules page and a short hands-on tutorial. In your first ten games, arrows point out a good card to play, and a hint link stays after that."],
+      ["What happens if my internet drops mid-game?", "In a ranked game your seat is held for three minutes, so you can come back to the same hand. A dropped connection isn't treated as quitting. A solo game waits for hours."],
+      ["What if someone is rude at the table?", "Hover over their name and choose Mute to hide their chat, or Block so you're never seated together at a public table again. Every chat message also has a flag, and flagged chat gets reviewed."],
+      ["Are the cards dealt fairly?", "Yes. Every hand is shuffled on my server with a fresh random number for each deal, before anyone sees a card. There's no way for me or anyone else to steer what you're dealt, and the shuffle tests are on the site."]
+    ],
+    upIntro: "I do my best to keep the site up to date, and most weeks bring a fix or two. The full changelog goes back to December 2011.",
+    updates: [
+      ["3 September 2026", "Go Fish and Old Maid now sort your hand by rank. Short, wide windows use the compact layout again."],
+      ["31 August 2026", "Fixed the screen freezing when cards were rearranged in Double Deck Pinochle and Gin Rummy. Failed nil tricks in Spades now count as bags."],
+      ["30 August 2026", "Fixed the chat box needing two clicks before you could type."],
+      ["21 August 2026", "Fixed phantom wild cards in Hand &amp; Foot melds, and the Euchre chat button resizing the screen on phones."]
+    ],
+    stamp: "Last updated 3 September 2026"
+  };
+
+  /* ===== small builders, shared by every layout ===== */
+  function photo(px) { return '<img class="photo" src="holger-avatar.jpg" alt="Holger Sindbaek" width="' + px + '" height="' + px + '">'; }
+  function greet() { return '<p class="greet">' + D.greet + "</p>"; }
+  function paras() { return D.hello.map(function (t) { return "<p>" + t + "</p>"; }).join(""); }
+  function write() { return "<p>" + D.write + "</p>"; }
+  function signoff(withTag) { return '<div class="signoff"><p style="margin:0">Happy gaming,</p><p class="sig">Holger</p>' + (withTag ? '<p class="tag">One more hand.</p>' : "") + "</div>"; }
+  function pr(p) { return '<p class="pr"><b>' + p[0] + "</b> " + p[1] + "</p>"; }
+  function quote(q) { return '<div class="q"><span class="av"><img src="' + q[2] + '" alt=""></span><div><p class="qt">' + q[0] + '</p><p class="qw">' + q[1] + "</p></div></div>"; }
+  /* paired: a quote follows every second promise, as its proof; row: the quotes as a strip; none: no quotes */
+  function promises(mode) {
+    var out = "", qi = 0;
+    D.promises.forEach(function (p, i) { out += pr(p); if (mode === "paired" && i % 2 === 1 && qi < 3) out += quote(D.quotes[qi++]); });
+    return out;
+  }
+  function quotesRow(n) { return '<div class="qrow">' + D.quotes.slice(0, n || 3).map(quote).join("") + "</div>"; }
+  function faq(list) { return (list || D.faq).map(function (f) { return '<div class="faqi"><b>' + f[0] + "</b><p>" + f[1] + "</p></div>"; }).join(""); }
+  function updates(n) { return D.updates.slice(0, n || 4).map(function (u) { return '<div class="up"><span class="d">' + u[0] + "</span>" + u[1] + "</div>"; }).join(""); }
+  function upLink() { return '<p class="stamp"><a href="#">Read the full changelog</a> &middot; ' + D.stamp + "</p>"; }
+
+  var LAYOUTS = {
+    letter: { name: "The letter", note: "One reading measure, everything in the order a reader asks it: who is here, what it's like, what people say, what you might wonder, what changed. The photo sits in the letter like a byline. Quotes are indented with a rule, so they read as proof, not as ads.",
+      build: function (q) { return '<div class="col"><div class="hello">' + photo(96) + "<div>" + greet() + paras() + "</div></div>" +
+        "<h3>What it's like here</h3>" + promises(q) + (q === "row" ? quotesRow(3) : "") +
+        "<h3>Questions people ask</h3>" + faq() +
+        "<h3>Latest updates</h3><p>" + D.upIntro + "</p>" + updates() + upLink() +
+        "<h3>Write to me</h3>" + write() + signoff(true) + "</div>"; } },
+    bc: { name: "Promises and proof (Basecamp)", note: "Wide. The letter opens next to a big photo, then the six promises sit as cards with a player's words beside each pair, the way Basecamp puts a quote next to a claim. FAQ in two columns, then the updates with a small write-to-me card.",
+      build: function (q) {
+        var cells = "", qi = 0;
+        D.promises.forEach(function (p, i) { cells += pr(p); if (q === "paired" && i % 2 === 1 && qi < 3) cells += quote(D.quotes[qi++]); });
+        return '<div class="head">' + photo(128) + '<div class="txt">' + greet() + paras() + "</div></div>" +
+          "<h3>What it's like here</h3>" + '<div class="grid3">' + cells + "</div>" + (q === "row" ? '<div class="grid3">' + D.quotes.slice(0, 3).map(quote).join("") + "</div>" : "") +
+          "<h3>Questions people ask</h3>" + '<div class="faqgrid">' + faq() + "</div>" +
+          '<div class="foot"><div><h3>Latest updates</h3><p>' + D.upIntro + "</p>" + updates() + upLink() + "</div>" +
+          '<div class="card">' + photo(56) + "<h3>Write to me</h3>" + write() + signoff(true) + "</div></div>";
+      } },
+    card: { name: "The postcard", note: "The letter is a card: photo left, four short paragraphs right, signed. Under it three columns carry the promises, the players' words and the questions, and the updates run as a row of four dates. The densest of the five.",
+      build: function (q) {
+        var qs = q === "none" ? "" : '<div><h3>What people write</h3>' + D.quotes.slice(0, 3).map(quote).join("") + "</div>";
+        return '<div class="card post">' + photo(120) + "<div>" + greet() + paras() + write() + signoff(false) + "</div></div>" +
+          '<div class="cols"><div><h3>What it\'s like here</h3>' + D.promises.map(pr).join("") + "</div>" + qs +
+          '<div><h3>Questions people ask</h3>' + faq(D.faq.slice(0, 6)) + '<p class="stamp"><a href="#">More answers on the Help page</a></p></div></div>' +
+          '<div class="uphead"><h3>Latest updates</h3><span class="stamp">' + D.stamp + ' &middot; <a href="#">Full changelog</a></span></div><div class="uprow">' + updates(4) + "</div>" +
+          '<p class="tag" style="text-align:center">One more hand.</p>';
+      } },
+    margin: { name: "Letter with a margin", note: "A text column with the person in a sticky margin: photo, name, the email, and the players' words stacked under a rule. The margin stays in view while the letter, the promises, the questions and the updates scroll past. Quotes always live in the margin here.",
+      build: function (q) { return '<div class="two"><div class="main">' + greet() + paras() +
+        "<h3>What it's like here</h3>" + promises("none") +
+        "<h3>Questions people ask</h3>" + faq() +
+        "<h3>Latest updates</h3><p>" + D.upIntro + "</p>" + updates() + upLink() +
+        "<h3>Write to me</h3>" + write() + signoff(true) + "</div>" +
+        '<aside class="rail">' + photo(120) + '<p class="name">Holger Sindbaek</p><p class="who">Designer and programmer, Denmark.<br>Runs the site since 2023.</p><p><a class="mail" href="mailto:holger@worldofcardgames.com">holger@worldofcardgames.com</a></p>' +
+        (q === "none" ? "" : D.quotes.slice(0, 3).map(quote).join("")) + "</aside></div>"; } },
+    note: { name: "The counter note", note: "A narrow paper note pinned at the bottom of the page. Small photo, a bigger greeting, promises and questions as plain prose, quotes as quoted lines, and a signature. The calmest of the five, and the shortest.",
+      build: function (q) { return '<div class="paper">' + photo(72) + greet() + paras() +
+        "<h3>What it's like here</h3>" + promises(q === "row" ? "paired" : q) +
+        "<h3>A few questions</h3>" + faq(D.faq.slice(0, 6)) +
+        "<h3>Since last time</h3>" + updates(3) + upLink() +
+        write() + signoff(true) + "</div>"; } }
+  };
+  var QUOTES = { paired: "Paired with the promises", row: "A row of three", none: "No quotes" };
+  var TITLES = { site: "About the site", hello: "Hello from Holger", behind: "Behind the tables", card: "The card room" };
+  var PAPER = { canvas: "Canvas (page colour)", band: "Band (the beige)" };
+
+  /* ===== the seam: suit marks every 96px, skipping the ones the title covers ===== */
+  var SUITS = {
+    spade: ["M39.95,9 C39.95,9 69.97,20.85 70,43.08 C70.01,52.75 62.13,60.61 52.39,60.62 C49.42,60.63 46.62,59.90 44.16,58.61 L48,71.00 L32,71.00 L35.82,58.65 C33.38,59.93 30.60,60.65 27.64,60.66 C17.91,60.67 10.01,52.83 10,43.16 C9.96,20.92 39.95,9 39.95,9 Z", "dark"],
+    heart: ["M52.34,13.99 C56.93,13.99 61.08,15.95 64.09,19.13 C67.12,22.32 68.99,26.74 69.00,31.62 C69.02,53.20 43.52,65.35 40.04,66.90 C37.71,65.85 26.39,60.44 18.57,50.99 C14.26,45.79 11.00,39.34 10.99,31.70 C10.99,26.82 12.85,22.40 15.87,19.19 C18.87,16.01 23.02,14.03 27.60,14.03 C32.15,14.02 36.26,15.95 39.26,19.07 C39.51,19.33 39.75,19.60 39.98,19.87 C40.21,19.60 40.46,19.33 40.70,19.07 C43.70,15.94 47.80,14.00 52.34,13.99 Z", "red"],
+    club: ["M39.99,11 C47.76,11 54.06,17.3 54.06,25.06 C54.06,28.79 52.61,32.18 50.24,34.70 C51.98,33.93 53.90,33.50 55.93,33.50 C63.70,33.50 70,39.80 70,47.57 C70,55.33 63.70,61.63 55.93,61.63 C50.95,61.63 46.57,59.04 44.08,55.13 L44.85,58.33 C46.17,63.81 47.36,69 47.36,69 L32.93,69 C32.93,69 33.93,64.19 35.11,58.95 L36.05,54.91 C33.57,58.94 29.13,61.63 24.06,61.63 C16.29,61.63 10,55.33 10,47.57 C10,39.80 16.29,33.50 24.06,33.50 C26.09,33.50 28.01,33.93 29.76,34.70 C27.38,32.19 25.93,28.80 25.93,25.06 C25.93,17.3 32.23,11 39.99,11 Z", "dark"],
+    diamond: ["M40,3.68 L66.75,40.00 L40,76.31 L13.24,40.00 L40,3.68 Z", "red"]
+  };
+  var ORDER = ["spade", "heart", "club", "diamond"];
+  function seam(el, title) {
+    el.innerHTML = '<div class="rule"></div><span class="ttl">' + title + "</span>";
+    var w = el.clientWidth, ttl = el.querySelector(".ttl"), tw = ttl.offsetWidth, cx = w / 2, k = 0;
+    for (var x = 48; x < w - 20; x += 96, k++) {
+      if (Math.abs(x - cx) < tw / 2 + 34) continue;
+      var s = SUITS[ORDER[k % 4]], fill = s[1] === "red" ? "#b54a3f" : "#262626";
+      el.insertAdjacentHTML("beforeend", '<span class="su" style="left:' + x + 'px"><svg viewBox="0 0 80 80"><path d="' + s[0] + '" fill="' + fill + '"/></svg></span>');
+    }
+  }
+  function seams() { document.querySelectorAll(".seam").forEach(function (e) { seam(e, e.dataset.title); }); }
+
+  /* ===== state, the panel, the URL ===== */
+  var st = { layout: "letter", quotes: "paired", title: "site", paper: "canvas" };
+  var body = document.getElementById("aboutBody");
+  function apply() {
+    body.className = "page lay-" + st.layout;
+    body.innerHTML = LAYOUTS[st.layout].build(st.quotes);
+    document.getElementById("aboutSeam").dataset.title = TITLES[st.title];
+    document.body.classList.toggle("paper-band", st.paper === "band");
+    seams();
+    document.getElementById("labNote").innerHTML = "<b>" + LAYOUTS[st.layout].name + ".</b> " + LAYOUTS[st.layout].note + " <b>Words:</b> " + words() + ".";
+    ["layout", "quotes", "title", "paper"].forEach(function (k) { var s = document.getElementById("lab-" + k); if (s.value !== st[k]) s.value = st[k]; });
+    try { localStorage.setItem("aboutlab", JSON.stringify(st)); } catch (e) {}
+  }
+  function words() { return body.textContent.trim().split(/\s+/).length; }
+  function opts(map) { return Object.keys(map).map(function (k) { return '<option value="' + k + '">' + (map[k].name || map[k]) + "</option>"; }).join(""); }
+  var p = document.createElement("div"); p.id = "labPanel";
+  p.innerHTML = '<h2>About the site &middot; lab</h2><span class="hide" title="Hide (H shows it again)">hide</span>' +
+    '<label>Layout</label><select id="lab-layout">' + opts(LAYOUTS) + "</select>" +
+    '<label>Player quotes</label><select id="lab-quotes">' + opts(QUOTES) + "</select>" +
+    '<label>Section title</label><select id="lab-title">' + opts(TITLES) + "</select>" +
+    '<label>Paper</label><select id="lab-paper">' + opts(PAPER) + "</select>" +
+    '<p class="note" id="labNote"></p>';
+  document.body.appendChild(p);
+  p.querySelector(".hide").addEventListener("click", function () { document.body.classList.add("labhidden"); });
+  document.addEventListener("keydown", function (e) { if (e.key === "h" || e.key === "H") document.body.classList.toggle("labhidden"); });
+  ["layout", "quotes", "title", "paper"].forEach(function (k) { document.getElementById("lab-" + k).addEventListener("change", function () { st[k] = this.value; apply(); }); });
+
+  /* #layout:quotes:title:paper picks a state from the URL, for headless shots; else the last pick is remembered */
+  try { var saved = JSON.parse(localStorage.getItem("aboutlab") || "null"); if (saved) Object.keys(st).forEach(function (k) { if (saved[k]) st[k] = saved[k]; }); } catch (e) {}
+  var hash = (location.hash || "").slice(1).split(":");
+  if (hash[0] && LAYOUTS[hash[0]]) { st.layout = hash[0]; if (QUOTES[hash[1]]) st.quotes = hash[1]; if (TITLES[hash[2]]) st.title = hash[2]; if (PAPER[hash[3]]) st.paper = hash[3]; }
+  if (/hidepanel/.test(location.search)) document.body.classList.add("labhidden");
+  apply();
+  var t; window.addEventListener("resize", function () { clearTimeout(t); t = setTimeout(seams, 120); });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(seams);
+})();
+</script>
+</body>
+</html>
