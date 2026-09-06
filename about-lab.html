@@ -294,6 +294,18 @@
   #about .columnist .photo { float: left; width: 88px; height: 88px; margin: 4px 18px 4px 0; shape-outside: circle(50%); shape-margin: 10px; }
   #about .columnist .sig { display: inline-block; font: 600 36px/1.1 "Caveat", cursive; color: #1e3f8f; margin: 2px 0 0; transform: rotate(-2deg); transform-origin: left center; }
 
+  /* --- the article: a headline about the site, a standfirst, a byline with a small author photo, the body in the serif, signed --- */
+  #about .article { max-width: 680px; margin: 0 auto 44px; }
+  #about .artTitle { font: 500 32px/38px "Gelica", Georgia, serif; letter-spacing: -.005em; color: var(--ink); margin: 0 0 10px; }
+  #about .artStand { font: 400 19px/1.45 "Gelica", Georgia, serif; color: var(--muted); margin: 0 0 16px; }
+  #about .artBy { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--faint); margin: 0 0 20px; padding-bottom: 14px; border-bottom: 1px solid var(--rule); }
+  #about .artBy .photo { width: 36px; height: 36px; margin: 0; flex: 0 0 auto; }
+  #about .artBy b { color: var(--ink); }
+  #about .article p.body { font: 400 19px/1.55 "Gelica", Georgia, serif; color: var(--ink-soft); }
+  #about .article .mail { font-weight: 600; }
+  #about .article .close { font: 400 19px/1.55 "Gelica", Georgia, serif; color: var(--ink-soft); margin: 14px 0 0; }
+  #about .article .sig { display: inline-block; font: 600 36px/1.1 "Caveat", cursive; color: #1e3f8f; margin: 2px 0 0; transform: rotate(-2deg); transform-origin: left center; }
+
   /* --- dear reader: the letter set in the serif, the photo inside the text with the words wrapping round it, one small sender line --- */
   #about .serifnote { max-width: 680px; margin: 0 auto 44px; }
   #about .serifnote .photo { float: left; width: 112px; height: 112px; border-radius: 16px; corner-shape: squircle; margin: 8px 22px 6px 0; }
@@ -307,7 +319,7 @@
 
   /* ===== the six promises, shown three ways: as text, with icons, or as small pictures ===== */
   #about .fgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px 24px; margin: 4px 0 20px; }
-  #about :is(.lay-letter, .lay-margin, .lay-note, .lay-pc, .lay-sheet, .lay-air, .lay-postal, .lay-signed, .lay-quiet, .lay-editor, .lay-column, .lay-serif) .fgrid:not(.one) { grid-template-columns: repeat(2, 1fr); }
+  #about :is(.lay-letter, .lay-margin, .lay-note, .lay-pc, .lay-sheet, .lay-air, .lay-postal, .lay-signed, .lay-quiet, .lay-editor, .lay-column, .lay-serif, .lay-article) .fgrid:not(.one) { grid-template-columns: repeat(2, 1fr); }
   #about .fgrid.one { grid-template-columns: 1fr; gap: 12px; }
   #about .ft { display: flex; gap: 12px; align-items: flex-start; }
   #about .ft b { display: block; }
@@ -505,6 +517,10 @@
         '<p style="margin:16px 0 0">Happy gaming,</p><span class="sig">Holger</span></div>' + rest(q, f); } },
     column: { name: "The columnist", note: "A newspaper column, with the site as the subject and Holger as the sender: a one-line byline above, a small round mug the text wraps around, the same reading measure as the rest of the section, and the signed name at the end.",
       build: function (q, f) { return '<div class="columnist"><p class="byline">By <b>Holger Sindbaek</b>, who runs World of Card Games</p>' + photo(88) + greet() + paras() + write() + '<p style="margin:14px 0 0;clear:both">Happy gaming,</p><span class="sig">Holger</span></div>' + rest(q, f); } },
+    article: { name: "The article", note: "Dear reader without the greeting: a headline about the site, an optional standfirst, and a byline with a small round author photo, the way a magazine shows who wrote a piece. The body stays in the serif at the section's measure, and Holger signs at the end. Pick the headline in the chooser.",
+      build: function (q, f) { var h = HEADLINES[st.headline] || HEADLINES.since; return '<div class="article"><h2 class="artTitle">' + h.t + "</h2>" + (h.s ? '<p class="artStand">' + h.s + "</p>" : "") +
+        '<div class="artBy">' + photo(36) + "<span>By <b>Holger Sindbaek</b>, who runs World of Card Games &middot; 6 September 2026</span></div>" +
+        D.hello.map(function (t) { return '<p class="body">' + t + "</p>"; }).join("") + '<p class="body">' + D.write + '</p><p class="close">Happy gaming,</p><span class="sig">Holger</span></div>' + rest(q, f); } },
     serif: { name: "Dear reader", note: "The letter set in the display serif at a reading size, in the same measure as the rest of the section. The photo sits inside the text and the words wrap around it, so the person is in the letter, not above it. The site comes first in the copy; the sender signs at the end with one small line.",
       build: function (q, f) { return '<div class="serifnote">' + photo(112) + '<p class="greet">Dear reader,</p>' + paras() + write() + '<p class="close">Happy gaming,</p><div class="sender"><span class="sig">Holger</span><small>Holger Sindbaek, who runs the site</small></div></div>' + rest(q, f); } },
     sheet: { name: "Letter on paper", note: "A sheet of writing paper: two faint creases where it was folded, the date in typewriter top left, the photo held by a paperclip top right, a pen greeting, typed paragraphs, a pen sign-off and a P.S. The tilt and the shadow lift it off the page.",
@@ -574,16 +590,28 @@
   }
   var FEATURES = { text: "Text, bold lead-ins", icons: "Icons", pictures: "Pictures (dummy scenes)" };
   /* the heads inside the section, three sets; "Frequently asked questions" is also what the site's FAQ extractor looks for */
+  /* the sets differ only in the promises head; the naming panel (6 September 2026) ranked What to expect, Good to know, At the table, When you sit down */
   var HEADS = {
-    plain: { name: "Plain", like: "What you can do here", say: "What players say", faq: "Frequently asked questions", up: "What's new" },
-    product: { name: "Product", like: "Features", say: "Testimonials", faq: "Frequently asked questions", up: "What's new" },
-    inbox: { name: "Inbox", like: "What you can do here", say: "From the inbox", faq: "Frequently asked questions", up: "What's new" },
-    warm: { name: "Warm", like: "Around the tables", say: "Kind words", faq: "Frequently asked questions", up: "What changed lately" }
+    plain: { name: "What to expect", like: "What to expect", say: "From the inbox", faq: "Frequently asked questions", up: "What's new" },
+    good: { name: "Good to know", like: "Good to know", say: "From the inbox", faq: "Frequently asked questions", up: "What's new" },
+    table: { name: "At the table", like: "At the table", say: "From the inbox", faq: "Frequently asked questions", up: "What's new" },
+    sit: { name: "When you sit down", like: "When you sit down", say: "From the inbox", faq: "Frequently asked questions", up: "What's new" },
+    product: { name: "Features (product)", like: "Features", say: "Testimonials", faq: "Frequently asked questions", up: "What's new" }
+  };
+  /* the article's headline, about the site and not about the sender; a standfirst is optional */
+  var HEADLINES = {
+    since: { name: "A free place to play cards, since 2011", t: "A free place to play cards, since 2011", s: "" },
+    sinceStand: { name: "…since 2011, with standfirst", t: "A free place to play cards, since 2011", s: "Eighteen classic card games in your browser, with real people or against the bots." },
+    free: { name: "A free place to play cards", t: "A free place to play cards", s: "" },
+    small: { name: "A small site for classic card games", t: "A small site for classic card games", s: "Free to play since 2011, with real people or against the bots." },
+    eighteen: { name: "Eighteen card games in your browser", t: "Eighteen card games in your browser", s: "Free to play, with real people or against the bots, and one person looking after it." },
+    about: { name: "About this site", t: "About this site", s: "Eighteen free card games, real people or bots, and one person who reads every email." },
+    stays: { name: "What this site is, and how it stays free", t: "What this site is, and how it stays free", s: "" }
   };
   var H = HEADS.plain;
   var TYPE = { gelica: "Serif heads", bulo: "Bulo heads" };
   var SEP = { none: "Space only", rules: "Hairlines", suits: "Suit marks" };
-  var LAYOUT_ORDER = ["sheet", "quiet", "editor", "column", "serif", "signed", "postal", "pc", "air", "letter", "bc", "card", "margin", "note"];
+  var LAYOUT_ORDER = ["article", "serif", "column", "sheet", "quiet", "editor", "signed", "postal", "pc", "air", "letter", "bc", "card", "margin", "note"];
   var QUOTES = { paired: "Paired", row: "Row of three", none: "None" };
   var TITLES = { games: "Behind the games", site: "About the site", hello: "Hello from Holger", note: "A note from Holger", behind: "Behind the tables", card: "The card room" };
   var PAPER = { canvas: "Canvas", band: "Band" };
@@ -609,8 +637,8 @@
 
   /* ===== state, the panel, the URL ===== */
   /* the defaults are Holger's picks (6 September 2026): the letter on paper, icons for the features, "Behind the games" */
-  var st = { layout: "sheet", features: "icons", quotes: "paired", heads: "plain", type: "gelica", sep: "rules", title: "games", paper: "canvas" };
-  var KEYS = ["layout", "features", "quotes", "heads", "type", "sep", "title", "paper"];
+  var st = { layout: "article", headline: "since", features: "icons", quotes: "paired", heads: "plain", type: "gelica", sep: "rules", title: "games", paper: "canvas" };
+  var KEYS = ["layout", "headline", "features", "quotes", "heads", "type", "sep", "title", "paper"];
   var body = document.getElementById("aboutBody");
   /* a break before every block head, except heads that live inside a card or a column set */
   function breaks() {
@@ -633,7 +661,7 @@
     seams();
     document.getElementById("labNote").innerHTML = "<b>" + LAYOUTS[st.layout].name + ".</b> " + LAYOUTS[st.layout].note + " <b>Words:</b> " + words() + ".";
     KEYS.forEach(function (k) { var s = document.getElementById("lab-" + k); if (s.value !== st[k]) s.value = st[k]; });
-    try { localStorage.setItem("aboutlab4", JSON.stringify(st)); } catch (e) {}
+    try { localStorage.setItem("aboutlab5", JSON.stringify(st)); } catch (e) {}
   }
   function words() { return body.textContent.trim().split(/\s+/).length; }
   function opts(map) { return Object.keys(map).map(function (k) { return '<option value="' + k + '">' + (map[k].name || map[k]) + "</option>"; }).join(""); }
@@ -641,6 +669,7 @@
   function cell(label, id, map) { return "<div><label>" + label + '</label><select id="lab-' + id + '">' + opts(map) + "</select></div>"; }
   p.innerHTML = '<h2>Behind the games &middot; lab</h2><span class="hide" title="Hide (H shows it again)">hide</span>' +
     '<label>Head (the letter)</label><select id="lab-layout">' + LAYOUT_ORDER.map(function (k) { return '<option value="' + k + '">' + LAYOUTS[k].name + "</option>"; }).join("") + "</select>" +
+    '<label>Article headline</label><select id="lab-headline">' + opts(HEADLINES) + "</select>" +
     '<div class="grid">' + cell("Features", "features", FEATURES) + cell("Player quotes", "quotes", QUOTES) + cell("Block titles", "heads", HEADS) + cell("Type", "type", TYPE) +
     cell("Breaks", "sep", SEP) + cell("Section title", "title", TITLES) + cell("Paper", "paper", PAPER) + "</div>" +
     '<p class="note" id="labNote"></p>';
@@ -650,9 +679,9 @@
   KEYS.forEach(function (k) { document.getElementById("lab-" + k).addEventListener("change", function () { st[k] = this.value; apply(); }); });
 
   /* #layout:quotes:title:paper:features picks a state from the URL, for headless shots; else the last pick is remembered */
-  try { var saved = JSON.parse(localStorage.getItem("aboutlab4") || "null"); if (saved) KEYS.forEach(function (k) { if (saved[k]) st[k] = saved[k]; }); } catch (e) {}
+  try { var saved = JSON.parse(localStorage.getItem("aboutlab5") || "null"); if (saved) KEYS.forEach(function (k) { if (saved[k]) st[k] = saved[k]; }); } catch (e) {}
   var hash = (location.hash || "").slice(1).split(":");
-  if (hash[0] && LAYOUTS[hash[0]]) { st.layout = hash[0]; if (QUOTES[hash[1]]) st.quotes = hash[1]; if (TITLES[hash[2]]) st.title = hash[2]; if (PAPER[hash[3]]) st.paper = hash[3]; if (FEATURES[hash[4]]) st.features = hash[4]; if (HEADS[hash[5]]) st.heads = hash[5]; if (TYPE[hash[6]]) st.type = hash[6]; if (SEP[hash[7]]) st.sep = hash[7]; }
+  if (hash[0] && LAYOUTS[hash[0]]) { st.layout = hash[0]; if (QUOTES[hash[1]]) st.quotes = hash[1]; if (TITLES[hash[2]]) st.title = hash[2]; if (PAPER[hash[3]]) st.paper = hash[3]; if (FEATURES[hash[4]]) st.features = hash[4]; if (HEADS[hash[5]]) st.heads = hash[5]; if (TYPE[hash[6]]) st.type = hash[6]; if (SEP[hash[7]]) st.sep = hash[7]; if (HEADLINES[hash[8]]) st.headline = hash[8]; }
   if (/hidepanel/.test(location.search)) document.body.classList.add("labhidden");
   apply();
   var t; window.addEventListener("resize", function () { clearTimeout(t); t = setTimeout(seams, 120); });
