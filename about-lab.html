@@ -648,11 +648,17 @@
   /* the article's headline, about the site and not about the sender; a standfirst is optional */
   /* second naming round (6 September 2026): the note's title, about the place, never a greeting or a slogan; the reader's judge loved "Room for one more", the editor's judge chose "A few words about this place" */
   var HEADLINES = {
-    /* keyword-bearing: the live homepage H1 is "Free Online Card Games: Play Solo or Multiplayer"; these carry the same head terms as an H2 under the new hero */
-    seo1: { name: "SEO: Free online card games, with real people or the bots", t: "Free online card games, with real people or the bots", s: "Eighteen classic games in your browser, looked after by one person." },
-    seo2: { name: "SEO: Online card games with real people, free to play", t: "Online card games with real people, free to play", s: "Eighteen classic games in your browser, and the bots when a seat is empty." },
-    seo3: { name: "SEO: Multiplayer card games, free in your browser", t: "Multiplayer card games, free in your browser", s: "Eighteen classic games with real people, or the bots when you'd rather play alone." },
-    seo4: { name: "SEO: Classic card games online, free to play", t: "Classic card games online, free to play", s: "With real people or against the bots, in your browser." },
+    /* informative and funny (third naming round, 6 September 2026): dry, true, a person's line; the reader's judge and the editor's judge agreed on the first three */
+    mgmt: { name: "Management would like to introduce himself", t: "Management would like to introduce himself", s: "He is a designer and programmer in Denmark, and he reads the mail himself." },
+    mgmtBare: { name: "Management would like to introduce himself (no standfirst)", t: "Management would like to introduce himself", s: "" },
+    bots: { name: "The bots work for free. The servers don't.", t: "The bots work for free. The servers don't.", s: "The ads pay for the servers, and a small subscription turns the ads off." },
+    pictured: { name: "Everyone who works here is pictured below", t: "Everyone who works here is pictured below", s: "One designer and programmer in Denmark, with eighteen games to look after." },
+    office: { name: "The tables never close. The office does.", t: "The tables never close. The office does.", s: "Real people and bots keep the tables going all night. The site is one person in Denmark." },
+    dinner: { name: "Run from Denmark, played mostly after dinner", t: "Run from Denmark, played mostly after dinner", s: "Most players are in the United States, and the tables fill up in the evening there." },
+    lineage: { name: "Robert started it, Marya kept it, now it's me", t: "Robert started it, Marya kept it, now it's me", s: "The site opened in December 2011 and has changed hands twice since." },
+    email: { name: "The bots don't read the email. I do.", t: "The bots don't read the email. I do.", s: "Bots fill the empty seats. Everything else here is one person in Denmark." },
+    coins: { name: "No coins, no streaks, nobody asks your name", t: "No coins, no streaks, nobody asks your name", s: "Pick a game, take a seat, and play, with or without an account." },
+    fouram: { name: "Someone is always at a table, even at 4 a.m.", t: "Someone is always at a table, even at 4 a.m.", s: "Real people play around the clock, and bots fill any seat that stays empty." },
     few: { name: "A few words about this place", t: "A few words about this place", s: "What it is, what keeps it running, and where to write." },
     fewBare: { name: "A few words about this place (no standfirst)", t: "A few words about this place", s: "" },
     room: { name: "Room for one more", t: "Room for one more", s: "Sit down at a table that is already going, or start one of your own." },
@@ -695,7 +701,7 @@
   /* ===== state, the panel, the URL ===== */
   /* the defaults are Holger's picks (6 September 2026): the letter on paper, icons for the features, "Behind the games" */
   var PHOTO = { sig: "By the signature", text: "In the text, three lines" };
-  var st = { layout: "tiles", headline: "seo1", photo: "sig", features: "icons", quotes: "paired", heads: "features", type: "gelica", sep: "rules", title: "games", paper: "canvas" };
+  var st = { layout: "tiles", headline: "mgmt", photo: "sig", features: "icons", quotes: "paired", heads: "features", type: "gelica", sep: "rules", title: "games", paper: "canvas" };
   var KEYS = ["layout", "headline", "photo", "features", "quotes", "heads", "type", "sep", "title", "paper"];
   var body = document.getElementById("aboutBody");
   /* a break before every block head, except heads that live inside a card or a column set */
@@ -719,7 +725,7 @@
     seams();
     document.getElementById("labNote").innerHTML = "<b>" + LAYOUTS[st.layout].name + ".</b> " + LAYOUTS[st.layout].note + " <b>Words:</b> " + words() + ".";
     KEYS.forEach(function (k) { var s = document.getElementById("lab-" + k); if (s.value !== st[k]) s.value = st[k]; });
-    try { localStorage.setItem("aboutlab10", JSON.stringify(st)); } catch (e) {}
+    try { localStorage.setItem("aboutlab11", JSON.stringify(st)); } catch (e) {}
   }
   function words() { return body.textContent.trim().split(/\s+/).length; }
   function opts(map) { return Object.keys(map).map(function (k) { return '<option value="' + k + '">' + (map[k].name || map[k]) + "</option>"; }).join(""); }
@@ -737,7 +743,7 @@
   KEYS.forEach(function (k) { document.getElementById("lab-" + k).addEventListener("change", function () { st[k] = this.value; apply(); }); });
 
   /* #layout:quotes:title:paper:features picks a state from the URL, for headless shots; else the last pick is remembered */
-  try { var saved = JSON.parse(localStorage.getItem("aboutlab10") || "null"); if (saved) KEYS.forEach(function (k) { if (saved[k]) st[k] = saved[k]; }); } catch (e) {}
+  try { var saved = JSON.parse(localStorage.getItem("aboutlab11") || "null"); if (saved) KEYS.forEach(function (k) { if (saved[k]) st[k] = saved[k]; }); } catch (e) {}
   var hash = (location.hash || "").slice(1).split(":");
   if (hash[0] && LAYOUTS[hash[0]]) { st.layout = hash[0]; if (QUOTES[hash[1]]) st.quotes = hash[1]; if (TITLES[hash[2]]) st.title = hash[2]; if (PAPER[hash[3]]) st.paper = hash[3]; if (FEATURES[hash[4]]) st.features = hash[4]; if (HEADS[hash[5]]) st.heads = hash[5]; if (TYPE[hash[6]]) st.type = hash[6]; if (SEP[hash[7]]) st.sep = hash[7]; if (HEADLINES[hash[8]]) st.headline = hash[8]; if (PHOTO[hash[9]]) st.photo = hash[9]; }
   if (/hidepanel/.test(location.search)) document.body.classList.add("labhidden");
