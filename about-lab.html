@@ -345,11 +345,7 @@
   #about .signrow .sig { margin: 0; }
   /* signature images: black ink on transparency, so a mask paints them in any colour */
   #about .sigc-blue { --sigc: #1e3f8f; } #about .sigc-ink { --sigc: var(--ink); } #about .sigc-soft { --sigc: rgba(20,20,20,.75); } #about .sigc-muted { --sigc: var(--muted); } #about .sigc-green { --sigc: var(--accent-deep); }
-  #about .serifnote .sig.sigimg { height: 40px; background: var(--sigc, #1e3f8f); -webkit-mask: var(--sigurl) left center / contain no-repeat; mask: var(--sigurl) left center / contain no-repeat; transform: none; margin: 4px 0 0; vertical-align: top; }
-  #about .sigimg.s1 { --sigurl: url(signature-1.png); aspect-ratio: 286 / 75; }
-  #about .sigimg.s2 { --sigurl: url(signature-2.png); aspect-ratio: 256 / 59; }
-  #about .sigimg.s3 { --sigurl: url(signature-3.png); aspect-ratio: 273 / 62; }
-  #about .sigimg.s4 { --sigurl: url(signature-4.png); aspect-ratio: 434 / 146; }
+  #about .serifnote .sig.sigimg { height: 40px; width: auto; transform: none; margin: 4px 0 0; vertical-align: top; }
 
 
   /* --- tiles as breakers: the features as picture tiles and the quotes as cards, full width, with no heads of their own --- */
@@ -368,6 +364,31 @@
   #about .qtiles .q { grid-column: span 2; }
   /* five quotes: three on the first row, the two longer ones wider on the second */
   #about .qtiles.five .q:nth-child(n+4) { grid-column: span 3; }
+  /* quote treatments (Quote tiles chooser); the markup is the same for all: .q > .av + div(.qt, .qw) */
+  #about .qtiles.qs-inline .q { flex-direction: row; align-items: flex-start; gap: 12px; }
+  #about .qtiles.qs-inline .q .av { width: 40px; height: 40px; flex-basis: 40px; margin-top: 2px; }
+  #about .qtiles.qs-inline .q .qt { font-size: 17px; line-height: 1.4; }
+  #about .qtiles.qs-bubble .q { background: none; box-shadow: none; padding: 0; overflow: visible; }
+  #about .qtiles.qs-bubble .q > div { position: relative; background: var(--card); border-radius: 16px; corner-shape: squircle; padding: 16px 18px; box-shadow: inset 0 0 0 1px var(--edge), var(--liftshadow); }
+  #about .qtiles.qs-bubble .q > div::after { content: ""; position: absolute; left: 22px; bottom: -9px; width: 16px; height: 16px; background: var(--card); transform: rotate(45deg); box-shadow: 1px 1px 0 0 var(--edge); }
+  #about .qtiles.qs-bubble .q .av { order: 2; width: 36px; height: 36px; flex-basis: 36px; margin: 16px 0 0 20px; }
+  #about .qtiles.qs-bubble .q .qw { position: absolute; left: 66px; bottom: -34px; margin: 0; white-space: nowrap; }
+  #about .qtiles.qs-bubble { margin-bottom: 70px; }
+  #about .qtiles.qs-mark .q .av { display: none; }
+  #about .qtiles.qs-mark .q > div::before { content: "\201C"; display: block; font: 400 56px/.6 "Gelica", Georgia, serif; color: var(--accent-deep); margin: 10px 0 8px; }
+  #about .qtiles.qs-plain .q { background: none; box-shadow: none; border-radius: 0; padding: 14px 0 0; border-top: 1px solid var(--edge); }
+  #about .qtiles.qs-plain .q .av { display: none; }
+  #about .qtiles.qs-plain .q .qt { font-style: italic; }
+  #about .qtiles.qs-felt .q { --tint: #327333; background: var(--tint); box-shadow: inset 0 0 0 1px rgba(0,0,0,.35), var(--liftshadow); }
+  #about .qtiles.qs-felt .q .qt { color: #fff; }
+  #about .qtiles.qs-felt .q .qw { color: rgba(255,255,255,.75); }
+  #about .qtiles.qs-felt .q .av { box-shadow: 0 0 0 2px rgba(255,255,255,.85); border-radius: 50%; }
+  #about .qtiles.qs-namefirst .q { flex-direction: row; flex-wrap: wrap; gap: 10px 12px; align-items: center; align-content: flex-start; }
+  #about .qtiles.qs-namefirst .q .av { width: 32px; height: 32px; flex-basis: 32px; }
+  #about .qtiles.qs-namefirst .q > div { display: contents; }
+  #about .qtiles.qs-namefirst .q .qw { order: 0; font: bold 16px/24px "BuloRounded", Verdana, sans-serif; color: var(--ink); margin: 0; flex: 1; }
+  #about .qtiles.qs-namefirst .q .qt { order: 1; flex-basis: 100%; margin: 0; }
+
   #about .qtiles .q { flex-direction: column; margin: 0; padding: 18px 20px; --tint: #a39a8c;
     /* the quotes have no felt, so the same recipe at a quarter of the chroma: near-white ground, a warm grey ring, warm ink */
     --tintring: var(--edge); --tintink: var(--ink); --tintsub: var(--muted); }
@@ -465,40 +486,38 @@
     greet: "Hello there.",
     /* the site first, the sender second: the section is about the place, and Holger only signs it */
     hello: [
-      "There is always an open table here, at any hour of the day or night. Take a seat and say hi, or ask the bots to sit down with you. It's free, and stopping is the hard part.",
+      "There is always an open table on World of Card Games, at any hour of the day or night. Take a seat and say hi, or ask the bots to sit down with you. Playing is easy and free, stopping is the hard part.",
       "I'm Holger, a designer and programmer from Denmark, and I look after the site on my own. It started back in 2011, long before I came along."
     ],
     write: "If something breaks, a rule looks wrong, or you'd like a game added, write to me at <a class=\"mail\" href=\"mailto:holger@worldofcardgames.com\">holger@worldofcardgames.com</a>. I read every email myself and answer them all.",
     promises: [
-      ["Real people right now", "The numbers at the top of the page are live. You can see who's at every table before you sit down, and join a game that's already under way."],
-      ["You never wait", "Pick a game and a table opens at once. If you'd rather play the bots, they sit down straight away, and a solo table has no clock."],
+      ["Real people right now", "The numbers at the top of the page are live. You can see who's at every table before you sit down and join a game that's already under way."],
+      ["You never wait", "Pick a game and a table opens at once. If you'd rather play the bots, they sit down straight away and a solo table has no clock."],
       ["The table waits for you", "If your connection drops in a ranked game, your seat is held for three minutes. A solo game waits for hours, so you can close the laptop and come back after dinner."],
       ["Help while you learn", "For your first ten games of anything new, arrows point at a good card. Then they fade on their own. Every game has a rules page and a short tutorial."],
-      ["Tables stay friendly", "Mute or block anyone in one click, and flag a message for review. People who keep spoiling games play the bots for a while."],
-      ["Your own table", "Give a private table a name and send your friends the link. They don't need an account to join, and the same name works every week."]
+      ["Tables stay friendly", "Mute or block anyone in one click and flag a message for review. People who keep spoiling games play the bots for a while."],
+      ["Your own table", "Give a private table a name and send your friends the link. They don't need an account to join and the same name works every week."]
     ],
     /* real lines from the inbox (July to September 2026); the names are placeholders until each writer says yes */
     /* real inbox lines, Holger's picks of 6 September 2026, in his trimmed wording; names and avatars are stand-ins until each sender has said yes */
     quotes: [
       ["I have been on this site for more than 10 years because of the camaraderie.", "Irean", "WomanCowgirl.svg"],
-      ["Just retired after 20 years and I live for YOUR card games! Best on the net.", "RC", "ManCowboy.svg"],
-      ["I love your game. Been wanting to try the other ones but I just can't bring myself to stop euchre.", "Melanie, Euchre", "WomanGirl2.svg"],
-      ["Your site has brought me and my friends closer together, and we have met some really nice regular players on your site as well.", "Carlin, Hand &amp; Foot", "ManGeek2.svg"],
-      ["I came upon your site a few days ago and love it. I play against the bots and the skill level is very competitive, especially compared to other sites I have seen.", "A new player", "AnimalFox.svg"]
+      ["I came upon your site a few days ago and love it. I play against the bots and the skill level is very competitive, especially compared to other sites I have seen.", "A new player", "AnimalFox.svg"],
+      ["Just retired after 20 years and I live for YOUR card games! Best on the net.", "RC", "ManCowboy.svg"]
     ],
     faq: [
-      ["Is it free?", "Yes. All eighteen games are free to play, and the ads pay for the site. If you'd rather play without ads, a small subscription turns them off, and you see the price before you pay anything."],
-      ["Do I need an account?", "No. You can sit down and play as a guest right away. If you sign up, your name, stats, avatar and settings follow you to any computer, tablet or phone, and ranked games open after ten finished games."],
-      ["Can I play on my own, right now?", "Yes. Pick a game and choose Play bots. The bots sit down at once, and a solo table has no clock, so take as long as you like over a hand."],
+      ["Is it free?", "Yes. All eighteen games are free to play and the ads pay for the site. If you'd rather play without ads, a small subscription turns them off and you see the price before you pay anything."],
+      ["Do I need an account?", "No. You can sit down and play as a guest right away. If you sign up, your name, stats, avatar and settings follow you to any computer, tablet or phone. Ranked games open after ten finished games."],
+      ["Can I play on my own, right now?", "Yes. Pick a game and choose Play bots. The bots sit down at once and a solo table has no clock, so take as long as you like over a hand."],
       ["How do I get to a table with real people?", "Finish one game against the bots in that game first, then the tables with people open up for it. An invite link, a friend's table or a rematch skips that first game."],
-      ["Can I play with friends?", "Yes, and none of them needs an account. Once you've finished one game here, choose Host table, tick Private and give the table a name. Tell your friends the name, or send them the invite link."],
-      ["Can I play competitively?", "Yes. Ranked games use a rating that starts at 1500 and moves with every result, and there are daily, weekly and monthly <a href=\"#leaderboards\">leaderboards</a> for each game. You need an account and ten finished games first."],
-      ["I've never played this game. Can I learn it here?", "Yes. Every game has a <a href=\"#rules\">rules page</a> and a short hands-on tutorial. In your first ten games, arrows point out a good card to play, and a hint link stays after that."],
+      ["Can I play with friends?", "Yes. None of them needs an account. Once you've finished one game here, choose Host table, tick Private and give the table a name. Tell your friends the name, or send them the invite link."],
+      ["Can I play competitively?", "Yes. Ranked games use a rating that starts at 1500 and moves with every result. There are daily, weekly and monthly <a href=\"#leaderboards\">leaderboards</a> for each game. You need an account and ten finished games first."],
+      ["I've never played this game. Can I learn it here?", "Yes. Every game has a <a href=\"#rules\">rules page</a> and a short hands-on tutorial. In your first ten games, arrows point out a good card to play. A hint link stays after that."],
       ["What happens if my internet drops mid-game?", "In a ranked game your seat is held for three minutes, so you can come back to the same hand. A dropped connection isn't treated as quitting. A solo game waits for hours."],
-      ["What if someone is rude at the table?", "Hover over their name and choose Mute to hide their chat, or Block so you're never seated together at a public table again. Every chat message also has a flag, and flagged chat gets reviewed."],
-      ["Are the cards dealt fairly?", "Yes. Every hand is shuffled on my server with a fresh random number for each deal, before anyone sees a card. There's no way for me or anyone else to steer what you're dealt, and the shuffle tests are on the site."]
+      ["What if someone is rude at the table?", "Hover over their name and choose Mute to hide their chat, or Block so you're never seated together at a public table again. Every chat message also has a flag and flagged chat gets reviewed."],
+      ["Are the cards dealt fairly?", "Yes. Every hand is shuffled on my server with a fresh random number for each deal, before anyone sees a card. There's no way for me or anyone else to steer what you're dealt. The shuffle tests are on the site."]
     ],
-    upIntro: "Most weeks bring a fix or two. These are the newest, and the <a href=\"#changelog\">full changelog</a> goes back to December 2011.",
+    upIntro: "Most weeks bring a fix or two. These are the newest and the <a href=\"#changelog\">full changelog</a> goes back to December 2011.",
     /* the real changelog, newest first, with the duplicate 3 September block merged; the section shows at most three dates and eight lines */
     news: [
       ["3 September 2026", "3 Sep", [["New", "Go Fish and Old Maid sort your hand by rank.", 0], ["Improved", "Short, wide windows use the compact layout again.", 0]]],
@@ -507,19 +526,19 @@
     ],
     /* real counts from static/changelog.json on 5 September 2026: 102 dated entries in 2026, 36 in the last 90 days */
     /* the opening line was the closing line until 6 September 2026; Holger wanted it first, with his address after it */
-    upIntroCounted: "Many of these began as an email from a player. If you spot something, write to me at <a class=\"mail\" href=\"mailto:holger@worldofcardgames.com\">holger@worldofcardgames.com</a>. So far this year the site has had 102 updates, 36 of them in the last three months. These are the newest, and the <a href=\"#changelog\">full changelog</a> goes back to December 2011.",
+    upIntroCounted: "Many of these began as an email from a player. If you spot something, write to me at <a class=\"mail\" href=\"mailto:holger@worldofcardgames.com\">holger@worldofcardgames.com</a>. So far this year the site has had 102 updates, 36 of them in the last three months. These are the newest and the <a href=\"#changelog\">full changelog</a> goes back to December 2011.",
     upClose: "Many of these began as an email from a player.",
     updates: [
       ["3 September 2026", "Go Fish and Old Maid now sort your hand by rank. Short, wide windows use the compact layout again."],
       ["31 August 2026", "Fixed the screen freezing when cards were rearranged in Double Deck Pinochle and Gin Rummy. Failed nil tricks in Spades now count as bags."],
       ["30 August 2026", "Fixed the chat box needing two clicks before you could type."],
-      ["21 August 2026", "Fixed phantom wild cards in Hand &amp; Foot melds, and the Euchre chat button resizing the screen on phones."]
+      ["21 August 2026", "Fixed phantom wild cards in Hand &amp; Foot melds and the Euchre chat button resizing the screen on phones."]
     ],
     stamp: "Last updated 3 September 2026"
   };
 
   /* ===== small builders, shared by every layout ===== */
-  function sig() { return st.sig === "caveat" ? '<span class="sig">Holger Sindb&aelig;k</span>' : '<span class="sig sigimg ' + st.sig + '" role="img" aria-label="Holger Sindb\u00e6k"></span>'; }
+  function sig() { return st.sig === "caveat" ? '<span class="sig">Holger Sindb&aelig;k</span>' : '<img class="sig sigimg" src="signature-' + st.sig.slice(1) + '-' + st.sigc + '.png" alt="Holger Sindb\u00e6k" height="40">'; }
   function photo(px) { return '<img class="photo" src="holger-avatar.jpg" alt="Holger Sindbaek" width="' + px + '" height="' + px + '">'; }
   function greet() { return '<p class="greet">' + D.greet + "</p>"; }
   function helloList() { var h = HEADLINES[st.headline] || {}, list = D.hello.slice(); if (h.lead) list[0] = h.lead + " " + list[0]; return list; }
@@ -621,7 +640,7 @@
       build: function (q, f) { return readerHead(false) +
         '<div class="measure"><div class="fgrid tiles pictures">' + D.promises.map(function (p, i) { return featureItem(p, i, "pictures"); }).join("") + "</div></div>" +
         '<div class="measure"><h3>' + H.faq + "</h3>" + faq() + "</div>" +
-        '<div class="measure"><div class="qtiles' + (D.quotes.length === 5 ? " five" : "") + '">' + D.quotes.slice(0, 5).map(quote).join("") + "</div></div>" +
+        '<div class="measure"><div class="qtiles qs-' + st.qstyle + (D.quotes.length === 5 ? " five" : "") + '">' + D.quotes.slice(0, 5).map(quote).join("") + "</div></div>" +
         '<div class="measure"><h3>' + H.up + "</h3><p>" + upIntro() + "</p>" + updates() + upLink() + "</div>"; } },
     article: { name: "The article", note: "Dear reader without the greeting: a headline about the site, an optional standfirst, and a byline with a small round author photo, the way a magazine shows who wrote a piece. The body stays in the serif at the section's measure, and Holger signs at the end. Pick the headline in the chooser.",
       build: function (q, f) { var h = HEADLINES[st.headline] || HEADLINES.few; return '<div class="article"><h2 class="artTitle">' + h.t + "</h2>" + (h.s ? '<p class="artStand">' + h.s + "</p>" : "") +
@@ -784,10 +803,12 @@
   /* the signature: the Caveat face used so far, or one of the four PNGs from 6 September 2026 (black ink on transparency, tinted through a CSS mask) */
   /* the closing line above the name: his real email close first, then the card-flavoured ones from the naming round of 6 September 2026 */
   var SIGNOFF = { best: "All the best,", table: "See you at a table,", cards: "Hope the cards fall your way,", seat: "Save me a seat,", chair: "Pull up a chair,", enjoy: "Enjoy the games,", happy: "Happy gaming," };
+  /* how the three player quotes are shown (6 September 2026) */
+  var QSTYLE = { cards: "White tiles, avatar on top", inline: "Avatar beside the words", bubble: "Chat bubble, avatar below", mark: "Big quote mark, no avatar", plain: "Three columns, no tiles", felt: "Felt tiles like the game tiles", namefirst: "Name first, then the words" };
   var SIG = { caveat: "Caveat font (the one so far)", s1: "Signature 1, thin script", s2: "Signature 2, calligraphic", s3: "Signature 3, rounded script", s4: "Signature 4, marker" };
   var SIGC = { blue: "Pen blue (#1e3f8f)", ink: "Ink, the text colour", soft: "Ink at 75%", muted: "Muted grey (#4e4d4c)", green: "Deep green, the accent" };
-  var st = { layout: "tiles", headline: "none", photo: "sig", news: "tags", nx: "counted", tagc: "tray", tagsize: "chip", sig: "s3", sigc: "soft", signoff: "best", features: "icons", quotes: "paired", heads: "features", type: "gelica", sep: "rules", title: "games", paper: "canvas" };
-  var KEYS = ["layout", "headline", "photo", "features", "quotes", "heads", "type", "sep", "title", "paper", "news", "nx", "tagc", "tagsize", "sig", "sigc", "signoff"];
+  var st = { layout: "tiles", headline: "none", photo: "sig", news: "tags", nx: "counted", tagc: "tray", tagsize: "chip", sig: "s3", sigc: "soft", signoff: "best", qstyle: "cards", features: "icons", quotes: "paired", heads: "features", type: "gelica", sep: "rules", title: "games", paper: "canvas" };
+  var KEYS = ["layout", "headline", "photo", "features", "quotes", "heads", "type", "sep", "title", "paper", "news", "nx", "tagc", "tagsize", "sig", "sigc", "signoff", "qstyle"];
   var body = document.getElementById("aboutBody");
   /* a break before every block head, except heads that live inside a card or a column set */
   function breaks() {
@@ -810,7 +831,7 @@
     seams();
     document.getElementById("labNote").innerHTML = "<b>" + LAYOUTS[st.layout].name + ".</b> " + LAYOUTS[st.layout].note + " <b>Words:</b> " + words() + ".";
     KEYS.forEach(function (k) { var s = document.getElementById("lab-" + k); if (s.value !== st[k]) s.value = st[k]; });
-    try { localStorage.setItem("aboutlab20", JSON.stringify(st)); } catch (e) {}
+    try { localStorage.setItem("aboutlab21", JSON.stringify(st)); } catch (e) {}
   }
   function words() { return body.textContent.trim().split(/\s+/).length; }
   function opts(map) { return Object.keys(map).map(function (k) { return '<option value="' + k + '">' + (map[k].name || map[k]) + "</option>"; }).join(""); }
@@ -820,7 +841,7 @@
     '<label>Head (the letter)</label><select id="lab-layout">' + LAYOUT_ORDER.map(function (k) { return '<option value="' + k + '">' + LAYOUTS[k].name + "</option>"; }).join("") + "</select>" +
     '<label>Article headline</label><select id="lab-headline">' + opts(HEADLINES) + "</select>" +
     '<div class="grid">' + cell("Photo", "photo", PHOTO) + cell("Features", "features", FEATURES) + cell("Player quotes", "quotes", QUOTES) + cell("Block titles", "heads", HEADS) + cell("Type", "type", TYPE) +
-    cell("Breaks", "sep", SEP) + cell("Section title", "title", TITLES) + cell("Paper", "paper", PAPER) + cell("What's new", "news", NEWS) + cell("What's new extras", "nx", NX) + cell("Tag colour", "tagc", TAGC) + cell("Tag size", "tagsize", TAGS) + cell("Signature", "sig", SIG) + cell("Signature colour", "sigc", SIGC) + cell("Sign-off", "signoff", SIGNOFF) + "</div>" +
+    cell("Breaks", "sep", SEP) + cell("Section title", "title", TITLES) + cell("Paper", "paper", PAPER) + cell("What's new", "news", NEWS) + cell("What's new extras", "nx", NX) + cell("Tag colour", "tagc", TAGC) + cell("Tag size", "tagsize", TAGS) + cell("Signature", "sig", SIG) + cell("Signature colour", "sigc", SIGC) + cell("Sign-off", "signoff", SIGNOFF) + cell("Quote tiles", "qstyle", QSTYLE) + "</div>" +
     '<p class="note" id="labNote"></p>';
   document.body.appendChild(p);
   p.querySelector(".hide").addEventListener("click", function () { document.body.classList.add("labhidden"); });
@@ -828,9 +849,9 @@
   KEYS.forEach(function (k) { document.getElementById("lab-" + k).addEventListener("change", function () { st[k] = this.value; apply(); }); });
 
   /* #layout:quotes:title:paper:features picks a state from the URL, for headless shots; else the last pick is remembered */
-  try { var saved = JSON.parse(localStorage.getItem("aboutlab20") || "null"); if (saved) KEYS.forEach(function (k) { if (saved[k]) st[k] = saved[k]; }); } catch (e) {}
+  try { var saved = JSON.parse(localStorage.getItem("aboutlab21") || "null"); if (saved) KEYS.forEach(function (k) { if (saved[k]) st[k] = saved[k]; }); } catch (e) {}
   var hash = (location.hash || "").slice(1).split(":");
-  if (hash[0] && LAYOUTS[hash[0]]) { st.layout = hash[0]; if (QUOTES[hash[1]]) st.quotes = hash[1]; if (TITLES[hash[2]]) st.title = hash[2]; if (PAPER[hash[3]]) st.paper = hash[3]; if (FEATURES[hash[4]]) st.features = hash[4]; if (HEADS[hash[5]]) st.heads = hash[5]; if (TYPE[hash[6]]) st.type = hash[6]; if (SEP[hash[7]]) st.sep = hash[7]; if (HEADLINES[hash[8]]) st.headline = hash[8]; if (PHOTO[hash[9]]) st.photo = hash[9]; if (NEWS[hash[10]]) st.news = hash[10]; if (NX[hash[11]]) st.nx = hash[11]; if (TAGC[hash[12]]) st.tagc = hash[12]; if (TAGS[hash[13]]) st.tagsize = hash[13]; if (SIG[hash[14]]) st.sig = hash[14]; if (SIGC[hash[15]]) st.sigc = hash[15]; if (SIGNOFF[hash[16]]) st.signoff = hash[16]; }
+  if (hash[0] && LAYOUTS[hash[0]]) { st.layout = hash[0]; if (QUOTES[hash[1]]) st.quotes = hash[1]; if (TITLES[hash[2]]) st.title = hash[2]; if (PAPER[hash[3]]) st.paper = hash[3]; if (FEATURES[hash[4]]) st.features = hash[4]; if (HEADS[hash[5]]) st.heads = hash[5]; if (TYPE[hash[6]]) st.type = hash[6]; if (SEP[hash[7]]) st.sep = hash[7]; if (HEADLINES[hash[8]]) st.headline = hash[8]; if (PHOTO[hash[9]]) st.photo = hash[9]; if (NEWS[hash[10]]) st.news = hash[10]; if (NX[hash[11]]) st.nx = hash[11]; if (TAGC[hash[12]]) st.tagc = hash[12]; if (TAGS[hash[13]]) st.tagsize = hash[13]; if (SIG[hash[14]]) st.sig = hash[14]; if (SIGC[hash[15]]) st.sigc = hash[15]; if (SIGNOFF[hash[16]]) st.signoff = hash[16]; if (QSTYLE[hash[17]]) st.qstyle = hash[17]; }
   if (/hidepanel/.test(location.search)) document.body.classList.add("labhidden");
   apply();
   var t; window.addEventListener("resize", function () { clearTimeout(t); t = setTimeout(seams, 120); });
