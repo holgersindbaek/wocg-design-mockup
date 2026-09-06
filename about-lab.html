@@ -313,13 +313,16 @@
   #about .serifnote .greet { font: 500 28px/34px "Gelica", Georgia, serif; color: var(--ink); margin: 0 0 14px; }
   #about .serifnote .mail { font-weight: 600; }
   #about .serifnote .close { margin: 14px 0 0; clear: both; }
+  #about .serifnote.reader .artTitle { margin-bottom: 14px; }
+  #about .serifnote.reader .artStand { margin-bottom: 18px; }
+  #about .serifnote.reader .photo { width: 84px; height: 84px; border-radius: 12px; margin: 5px 18px 4px 0; }
   #about .serifnote .sender { display: flex; align-items: baseline; gap: 14px; }
   #about .serifnote .sender small { font: 14px/1.4 "BuloRounded", Verdana, sans-serif; color: var(--faint); }
   #about .serifnote .sig { display: inline-block; font: 600 36px/1.1 "Caveat", cursive; color: #1e3f8f; margin: 2px 0 0; transform: rotate(-2deg); transform-origin: left center; }
 
   /* ===== the six promises, shown three ways: as text, with icons, or as small pictures ===== */
   #about .fgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px 24px; margin: 4px 0 20px; }
-  #about :is(.lay-letter, .lay-margin, .lay-note, .lay-pc, .lay-sheet, .lay-air, .lay-postal, .lay-signed, .lay-quiet, .lay-editor, .lay-column, .lay-serif, .lay-article) .fgrid:not(.one) { grid-template-columns: repeat(2, 1fr); }
+  #about :is(.lay-letter, .lay-margin, .lay-note, .lay-pc, .lay-sheet, .lay-air, .lay-postal, .lay-signed, .lay-quiet, .lay-editor, .lay-column, .lay-serif, .lay-article, .lay-reader) .fgrid:not(.one) { grid-template-columns: repeat(2, 1fr); }
   #about .fgrid.one { grid-template-columns: 1fr; gap: 12px; }
   #about .ft { display: flex; gap: 12px; align-items: flex-start; }
   #about .ft b { display: block; }
@@ -517,6 +520,9 @@
         '<p style="margin:16px 0 0">Happy gaming,</p><span class="sig">Holger</span></div>' + rest(q, f); } },
     column: { name: "The columnist", note: "A newspaper column, with the site as the subject and Holger as the sender: a one-line byline above, a small round mug the text wraps around, the same reading measure as the rest of the section, and the signed name at the end.",
       build: function (q, f) { return '<div class="columnist"><p class="byline">By <b>Holger Sindbaek</b>, who runs World of Card Games</p>' + photo(88) + greet() + paras() + write() + '<p style="margin:14px 0 0;clear:both">Happy gaming,</p><span class="sig">Holger</span></div>' + rest(q, f); } },
+    reader: { name: "Dear reader, with a headline", note: "The Dear reader shape, which Holger likes best, with the greeting replaced by a headline about the site and the photo made smaller. The words still wrap round the photo at the section's measure, the body is the serif, and Holger signs at the end with one small line. Pick the headline in the chooser.",
+      build: function (q, f) { var h = HEADLINES[st.headline] || HEADLINES.since; return '<div class="serifnote reader"><h2 class="artTitle">' + h.t + "</h2>" + (h.s ? '<p class="artStand">' + h.s + "</p>" : "") + photo(84) + paras() + write() +
+        '<p class="close">Happy gaming,</p><div class="sender"><span class="sig">Holger</span><small>Holger Sindbaek, who runs the site</small></div></div>' + rest(q, f); } },
     article: { name: "The article", note: "Dear reader without the greeting: a headline about the site, an optional standfirst, and a byline with a small round author photo, the way a magazine shows who wrote a piece. The body stays in the serif at the section's measure, and Holger signs at the end. Pick the headline in the chooser.",
       build: function (q, f) { var h = HEADLINES[st.headline] || HEADLINES.since; return '<div class="article"><h2 class="artTitle">' + h.t + "</h2>" + (h.s ? '<p class="artStand">' + h.s + "</p>" : "") +
         '<div class="artBy">' + photo(36) + "<span>By <b>Holger Sindbaek</b>, who runs World of Card Games &middot; 6 September 2026</span></div>" +
@@ -596,6 +602,10 @@
     good: { name: "Good to know", like: "Good to know", say: "From the inbox", faq: "Frequently asked questions", up: "What's new" },
     table: { name: "At the table", like: "At the table", say: "From the inbox", faq: "Frequently asked questions", up: "What's new" },
     sit: { name: "When you sit down", like: "When you sit down", say: "From the inbox", faq: "Frequently asked questions", up: "What's new" },
+    fp: { name: "Features and promises", like: "Features and promises", say: "From the inbox", faq: "Frequently asked questions", up: "What's new" },
+    ffew: { name: "Features and a few promises", like: "Features and a few promises", say: "From the inbox", faq: "Frequently asked questions", up: "What's new" },
+    fplain: { name: "Features, in plain words", like: "Features, in plain words", say: "From the inbox", faq: "Frequently asked questions", up: "What's new" },
+    fmean: { name: "Features, and what they mean for you", like: "Features, and what they mean for you", say: "From the inbox", faq: "Frequently asked questions", up: "What's new" },
     product: { name: "Features (product)", like: "Features", say: "Testimonials", faq: "Frequently asked questions", up: "What's new" }
   };
   /* the article's headline, about the site and not about the sender; a standfirst is optional */
@@ -611,7 +621,7 @@
   var H = HEADS.plain;
   var TYPE = { gelica: "Serif heads", bulo: "Bulo heads" };
   var SEP = { none: "Space only", rules: "Hairlines", suits: "Suit marks" };
-  var LAYOUT_ORDER = ["article", "serif", "column", "sheet", "quiet", "editor", "signed", "postal", "pc", "air", "letter", "bc", "card", "margin", "note"];
+  var LAYOUT_ORDER = ["reader", "serif", "article", "column", "sheet", "quiet", "editor", "signed", "postal", "pc", "air", "letter", "bc", "card", "margin", "note"];
   var QUOTES = { paired: "Paired", row: "Row of three", none: "None" };
   var TITLES = { games: "Behind the games", site: "About the site", hello: "Hello from Holger", note: "A note from Holger", behind: "Behind the tables", card: "The card room" };
   var PAPER = { canvas: "Canvas", band: "Band" };
@@ -637,7 +647,7 @@
 
   /* ===== state, the panel, the URL ===== */
   /* the defaults are Holger's picks (6 September 2026): the letter on paper, icons for the features, "Behind the games" */
-  var st = { layout: "article", headline: "since", features: "icons", quotes: "paired", heads: "plain", type: "gelica", sep: "rules", title: "games", paper: "canvas" };
+  var st = { layout: "reader", headline: "since", features: "icons", quotes: "paired", heads: "plain", type: "gelica", sep: "rules", title: "games", paper: "canvas" };
   var KEYS = ["layout", "headline", "features", "quotes", "heads", "type", "sep", "title", "paper"];
   var body = document.getElementById("aboutBody");
   /* a break before every block head, except heads that live inside a card or a column set */
@@ -661,7 +671,7 @@
     seams();
     document.getElementById("labNote").innerHTML = "<b>" + LAYOUTS[st.layout].name + ".</b> " + LAYOUTS[st.layout].note + " <b>Words:</b> " + words() + ".";
     KEYS.forEach(function (k) { var s = document.getElementById("lab-" + k); if (s.value !== st[k]) s.value = st[k]; });
-    try { localStorage.setItem("aboutlab5", JSON.stringify(st)); } catch (e) {}
+    try { localStorage.setItem("aboutlab6", JSON.stringify(st)); } catch (e) {}
   }
   function words() { return body.textContent.trim().split(/\s+/).length; }
   function opts(map) { return Object.keys(map).map(function (k) { return '<option value="' + k + '">' + (map[k].name || map[k]) + "</option>"; }).join(""); }
@@ -679,7 +689,7 @@
   KEYS.forEach(function (k) { document.getElementById("lab-" + k).addEventListener("change", function () { st[k] = this.value; apply(); }); });
 
   /* #layout:quotes:title:paper:features picks a state from the URL, for headless shots; else the last pick is remembered */
-  try { var saved = JSON.parse(localStorage.getItem("aboutlab5") || "null"); if (saved) KEYS.forEach(function (k) { if (saved[k]) st[k] = saved[k]; }); } catch (e) {}
+  try { var saved = JSON.parse(localStorage.getItem("aboutlab6") || "null"); if (saved) KEYS.forEach(function (k) { if (saved[k]) st[k] = saved[k]; }); } catch (e) {}
   var hash = (location.hash || "").slice(1).split(":");
   if (hash[0] && LAYOUTS[hash[0]]) { st.layout = hash[0]; if (QUOTES[hash[1]]) st.quotes = hash[1]; if (TITLES[hash[2]]) st.title = hash[2]; if (PAPER[hash[3]]) st.paper = hash[3]; if (FEATURES[hash[4]]) st.features = hash[4]; if (HEADS[hash[5]]) st.heads = hash[5]; if (TYPE[hash[6]]) st.type = hash[6]; if (SEP[hash[7]]) st.sep = hash[7]; if (HEADLINES[hash[8]]) st.headline = hash[8]; }
   if (/hidepanel/.test(location.search)) document.body.classList.add("labhidden");
