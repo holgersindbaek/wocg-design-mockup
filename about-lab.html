@@ -465,10 +465,10 @@
     greet: "Hello there.",
     /* the site first, the sender second: the section is about the place, and Holger only signs it */
     hello: [
-      "World of Card Games is a free place to play eighteen classic card games in your browser, with real people or against the bots. If a seat is empty, a bot keeps it warm until someone sits down.",
-      "I'm Holger, a designer and programmer from Denmark, and I look after the site on my own. Robert, who also made World of Solitaire, started it in December 2011. Marya ran it for years, and at the start of 2023 she handed it to me."
+      "There is always an open table here, at any hour of the day or night. Take a seat and say hi, or ask the bots to sit down with you. It's free, and stopping is the hard part.",
+      "I'm Holger, a designer and programmer from Denmark, and I look after the site on my own. It started back in 2011, long before I came along."
     ],
-    write: "If something breaks, a rule looks wrong, or you'd like a game added, write to me at <a class=\"mail\" href=\"mailto:holger@worldofcardgames.com\">holger@worldofcardgames.com</a>. I read every email myself and try to answer them all.",
+    write: "If something breaks, a rule looks wrong, or you'd like a game added, write to me at <a class=\"mail\" href=\"mailto:holger@worldofcardgames.com\">holger@worldofcardgames.com</a>. I read every email myself and answer them all.",
     promises: [
       ["Real people right now", "The numbers at the top of the page are live. You can see who's at every table before you sit down, and join a game that's already under way."],
       ["You never wait", "Pick a game and a table opens at once. If you'd rather play the bots, they sit down straight away, and a solo table has no clock."],
@@ -652,8 +652,8 @@
     return '<div class="serifnote reader' + (byline ? " hybrid" : "") + '">' + (h.t ? '<h2 class="artTitle' + (h.small ? " small" : "") + '">' + h.t + "</h2>" : "") + (h.s ? '<p class="artStand">' + h.s + "</p>" : "") +
       (byline ? '<div class="artBy"><span>By <b>Holger Sindb&aelig;k</b>, who runs World of Card Games &middot; 6 September 2026</span></div>' : "") +
       (atSig ? "" : photo(80)) + paras() + write() +
-      (atSig ? '<div class="signrow">' + photo(56) + '<div><p class="close">Happy gaming,</p>' + sig() + '</div></div>'
-             : '<p class="close">Happy gaming,</p>' + sig()) + "</div>";
+      (atSig ? '<div class="signrow">' + photo(56) + '<div><p class="close">' + SIGNOFF[st.signoff] + '</p>' + sig() + '</div></div>'
+             : '<p class="close">' + SIGNOFF[st.signoff] + '</p>' + sig()) + "</div>";
   }
   /* what follows the paper: the promises with the notes, the questions, the updates, the tagline */
   function rest(q, f) { return '<div class="measure"><h3>' + H.like + '</h3>' + features(f, q) +
@@ -782,10 +782,12 @@
   /* the defaults are Holger's picks (6 September 2026): the letter on paper, icons for the features, "Behind the games" */
   var PHOTO = { sig: "By the signature", text: "In the text, three lines" };
   /* the signature: the Caveat face used so far, or one of the four PNGs from 6 September 2026 (black ink on transparency, tinted through a CSS mask) */
+  /* the closing line above the name: his real email close first, then the card-flavoured ones from the naming round of 6 September 2026 */
+  var SIGNOFF = { best: "All the best,", table: "See you at a table,", cards: "Hope the cards fall your way,", seat: "Save me a seat,", chair: "Pull up a chair,", enjoy: "Enjoy the games,", happy: "Happy gaming," };
   var SIG = { caveat: "Caveat font (the one so far)", s1: "Signature 1, thin script", s2: "Signature 2, calligraphic", s3: "Signature 3, rounded script", s4: "Signature 4, marker" };
   var SIGC = { blue: "Pen blue (#1e3f8f)", ink: "Ink, the text colour", soft: "Ink at 75%", muted: "Muted grey (#4e4d4c)", green: "Deep green, the accent" };
-  var st = { layout: "tiles", headline: "none", photo: "sig", news: "tags", nx: "counted", tagc: "tray", tagsize: "chip", sig: "s3", sigc: "soft", features: "icons", quotes: "paired", heads: "features", type: "gelica", sep: "rules", title: "games", paper: "canvas" };
-  var KEYS = ["layout", "headline", "photo", "features", "quotes", "heads", "type", "sep", "title", "paper", "news", "nx", "tagc", "tagsize", "sig", "sigc"];
+  var st = { layout: "tiles", headline: "none", photo: "sig", news: "tags", nx: "counted", tagc: "tray", tagsize: "chip", sig: "s3", sigc: "soft", signoff: "best", features: "icons", quotes: "paired", heads: "features", type: "gelica", sep: "rules", title: "games", paper: "canvas" };
+  var KEYS = ["layout", "headline", "photo", "features", "quotes", "heads", "type", "sep", "title", "paper", "news", "nx", "tagc", "tagsize", "sig", "sigc", "signoff"];
   var body = document.getElementById("aboutBody");
   /* a break before every block head, except heads that live inside a card or a column set */
   function breaks() {
@@ -808,7 +810,7 @@
     seams();
     document.getElementById("labNote").innerHTML = "<b>" + LAYOUTS[st.layout].name + ".</b> " + LAYOUTS[st.layout].note + " <b>Words:</b> " + words() + ".";
     KEYS.forEach(function (k) { var s = document.getElementById("lab-" + k); if (s.value !== st[k]) s.value = st[k]; });
-    try { localStorage.setItem("aboutlab19", JSON.stringify(st)); } catch (e) {}
+    try { localStorage.setItem("aboutlab20", JSON.stringify(st)); } catch (e) {}
   }
   function words() { return body.textContent.trim().split(/\s+/).length; }
   function opts(map) { return Object.keys(map).map(function (k) { return '<option value="' + k + '">' + (map[k].name || map[k]) + "</option>"; }).join(""); }
@@ -818,7 +820,7 @@
     '<label>Head (the letter)</label><select id="lab-layout">' + LAYOUT_ORDER.map(function (k) { return '<option value="' + k + '">' + LAYOUTS[k].name + "</option>"; }).join("") + "</select>" +
     '<label>Article headline</label><select id="lab-headline">' + opts(HEADLINES) + "</select>" +
     '<div class="grid">' + cell("Photo", "photo", PHOTO) + cell("Features", "features", FEATURES) + cell("Player quotes", "quotes", QUOTES) + cell("Block titles", "heads", HEADS) + cell("Type", "type", TYPE) +
-    cell("Breaks", "sep", SEP) + cell("Section title", "title", TITLES) + cell("Paper", "paper", PAPER) + cell("What's new", "news", NEWS) + cell("What's new extras", "nx", NX) + cell("Tag colour", "tagc", TAGC) + cell("Tag size", "tagsize", TAGS) + cell("Signature", "sig", SIG) + cell("Signature colour", "sigc", SIGC) + "</div>" +
+    cell("Breaks", "sep", SEP) + cell("Section title", "title", TITLES) + cell("Paper", "paper", PAPER) + cell("What's new", "news", NEWS) + cell("What's new extras", "nx", NX) + cell("Tag colour", "tagc", TAGC) + cell("Tag size", "tagsize", TAGS) + cell("Signature", "sig", SIG) + cell("Signature colour", "sigc", SIGC) + cell("Sign-off", "signoff", SIGNOFF) + "</div>" +
     '<p class="note" id="labNote"></p>';
   document.body.appendChild(p);
   p.querySelector(".hide").addEventListener("click", function () { document.body.classList.add("labhidden"); });
@@ -826,9 +828,9 @@
   KEYS.forEach(function (k) { document.getElementById("lab-" + k).addEventListener("change", function () { st[k] = this.value; apply(); }); });
 
   /* #layout:quotes:title:paper:features picks a state from the URL, for headless shots; else the last pick is remembered */
-  try { var saved = JSON.parse(localStorage.getItem("aboutlab19") || "null"); if (saved) KEYS.forEach(function (k) { if (saved[k]) st[k] = saved[k]; }); } catch (e) {}
+  try { var saved = JSON.parse(localStorage.getItem("aboutlab20") || "null"); if (saved) KEYS.forEach(function (k) { if (saved[k]) st[k] = saved[k]; }); } catch (e) {}
   var hash = (location.hash || "").slice(1).split(":");
-  if (hash[0] && LAYOUTS[hash[0]]) { st.layout = hash[0]; if (QUOTES[hash[1]]) st.quotes = hash[1]; if (TITLES[hash[2]]) st.title = hash[2]; if (PAPER[hash[3]]) st.paper = hash[3]; if (FEATURES[hash[4]]) st.features = hash[4]; if (HEADS[hash[5]]) st.heads = hash[5]; if (TYPE[hash[6]]) st.type = hash[6]; if (SEP[hash[7]]) st.sep = hash[7]; if (HEADLINES[hash[8]]) st.headline = hash[8]; if (PHOTO[hash[9]]) st.photo = hash[9]; if (NEWS[hash[10]]) st.news = hash[10]; if (NX[hash[11]]) st.nx = hash[11]; if (TAGC[hash[12]]) st.tagc = hash[12]; if (TAGS[hash[13]]) st.tagsize = hash[13]; if (SIG[hash[14]]) st.sig = hash[14]; if (SIGC[hash[15]]) st.sigc = hash[15]; }
+  if (hash[0] && LAYOUTS[hash[0]]) { st.layout = hash[0]; if (QUOTES[hash[1]]) st.quotes = hash[1]; if (TITLES[hash[2]]) st.title = hash[2]; if (PAPER[hash[3]]) st.paper = hash[3]; if (FEATURES[hash[4]]) st.features = hash[4]; if (HEADS[hash[5]]) st.heads = hash[5]; if (TYPE[hash[6]]) st.type = hash[6]; if (SEP[hash[7]]) st.sep = hash[7]; if (HEADLINES[hash[8]]) st.headline = hash[8]; if (PHOTO[hash[9]]) st.photo = hash[9]; if (NEWS[hash[10]]) st.news = hash[10]; if (NX[hash[11]]) st.nx = hash[11]; if (TAGC[hash[12]]) st.tagc = hash[12]; if (TAGS[hash[13]]) st.tagsize = hash[13]; if (SIG[hash[14]]) st.sig = hash[14]; if (SIGC[hash[15]]) st.sigc = hash[15]; if (SIGNOFF[hash[16]]) st.signoff = hash[16]; }
   if (/hidepanel/.test(location.search)) document.body.classList.add("labhidden");
   apply();
   var t; window.addEventListener("resize", function () { clearTimeout(t); t = setTimeout(seams, 120); });
