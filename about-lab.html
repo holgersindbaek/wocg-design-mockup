@@ -545,7 +545,7 @@
         '<div class="qtiles">' + D.quotes.slice(0, 3).map(quote).join("") + "</div>" +
         '<div class="measure"><h3>' + H.up + "</h3><p>" + D.upIntro + "</p>" + updates() + upLink() + '<p class="tag">One more hand.</p></div>'; } },
     article: { name: "The article", note: "Dear reader without the greeting: a headline about the site, an optional standfirst, and a byline with a small round author photo, the way a magazine shows who wrote a piece. The body stays in the serif at the section's measure, and Holger signs at the end. Pick the headline in the chooser.",
-      build: function (q, f) { var h = HEADLINES[st.headline] || HEADLINES.since; return '<div class="article"><h2 class="artTitle">' + h.t + "</h2>" + (h.s ? '<p class="artStand">' + h.s + "</p>" : "") +
+      build: function (q, f) { var h = HEADLINES[st.headline] || HEADLINES.few; return '<div class="article"><h2 class="artTitle">' + h.t + "</h2>" + (h.s ? '<p class="artStand">' + h.s + "</p>" : "") +
         '<div class="artBy">' + photo(36) + "<span>By <b>Holger Sindbaek</b>, who runs World of Card Games &middot; 6 September 2026</span></div>" +
         D.hello.map(function (t) { return '<p class="body">' + t + "</p>"; }).join("") + '<p class="body">' + D.write + '</p><p class="close">Happy gaming,</p><span class="sig">Holger</span></div>' + rest(q, f); } },
     serif: { name: "Dear reader", note: "The letter set in the display serif at a reading size, in the same measure as the rest of the section. The photo sits inside the text and the words wrap around it, so the person is in the letter, not above it. The site comes first in the copy; the sender signs at the end with one small line.",
@@ -569,7 +569,7 @@
   }
   /* the note in the Dear reader shape: a site headline, an optional standfirst, an optional byline, the photo inside the first paragraph, the serif body, the signed name */
   function readerHead(byline) {
-    var h = HEADLINES[st.headline] || HEADLINES.since;
+    var h = HEADLINES[st.headline] || HEADLINES.few;
     return '<div class="serifnote reader' + (byline ? " hybrid" : "") + '"><h2 class="artTitle">' + h.t + "</h2>" + (h.s ? '<p class="artStand">' + h.s + "</p>" : "") +
       (byline ? '<div class="artBy"><span>By <b>Holger Sindbaek</b>, who runs World of Card Games &middot; 6 September 2026</span></div>' : "") +
       photo(80) + paras() + write() + '<p class="close">Happy gaming,</p>' +
@@ -639,14 +639,19 @@
     product: { name: "Features (product)", like: "Features", say: "Testimonials", faq: "Frequently asked questions", up: "What's new" }
   };
   /* the article's headline, about the site and not about the sender; a standfirst is optional */
+  /* second naming round (6 September 2026): the note's title, about the place, never a greeting or a slogan; the reader's judge loved "Room for one more", the editor's judge chose "A few words about this place" */
   var HEADLINES = {
-    since: { name: "A free place to play cards, since 2011", t: "A free place to play cards, since 2011", s: "" },
-    sinceStand: { name: "…since 2011, with standfirst", t: "A free place to play cards, since 2011", s: "Eighteen classic card games in your browser, with real people or against the bots." },
-    free: { name: "A free place to play cards", t: "A free place to play cards", s: "" },
-    small: { name: "A small site for classic card games", t: "A small site for classic card games", s: "Free to play since 2011, with real people or against the bots." },
-    eighteen: { name: "Eighteen card games in your browser", t: "Eighteen card games in your browser", s: "Free to play, with real people or against the bots, and one person looking after it." },
-    about: { name: "About this site", t: "About this site", s: "Eighteen free card games, real people or bots, and one person who reads every email." },
-    stays: { name: "What this site is, and how it stays free", t: "What this site is, and how it stays free", s: "" }
+    few: { name: "A few words about this place", t: "A few words about this place", s: "What it is, what keeps it running, and where to write." },
+    fewBare: { name: "A few words about this place (no standfirst)", t: "A few words about this place", s: "" },
+    room: { name: "Room for one more", t: "Room for one more", s: "Sit down at a table that is already going, or start one of your own." },
+    keeps: { name: "What keeps the site going", t: "What keeps the site going", s: "What the ads are for, and what happens when you write in." },
+    pays: { name: "How the site pays its way", t: "How the site pays its way", s: "" },
+    works: { name: "How this site works", t: "How this site works", s: "Who is at the tables, what the ads are for, and where to write." },
+    where: { name: "A word about where you are", t: "A word about where you are", s: "What this is, what the ads are for, and where to write." },
+    between: { name: "Between hands", t: "Between hands", s: "A few lines about the site, for whenever you have a minute." },
+    wondering: { name: "In case you were wondering", t: "In case you were wondering", s: "What the ads pay for, and where to write when a rule looks wrong." },
+    eighteen: { name: "Eighteen card games in your browser", t: "Eighteen card games in your browser", s: "With real people or against the bots, and one person looking after it." },
+    small: { name: "A small site for classic card games", t: "A small site for classic card games", s: "With real people or against the bots, since 2011." }
   };
   var H = HEADS.plain;
   var TYPE = { gelica: "Serif heads", bulo: "Bulo heads" };
@@ -677,7 +682,7 @@
 
   /* ===== state, the panel, the URL ===== */
   /* the defaults are Holger's picks (6 September 2026): the letter on paper, icons for the features, "Behind the games" */
-  var st = { layout: "reader", headline: "since", features: "icons", quotes: "paired", heads: "features", type: "gelica", sep: "rules", title: "games", paper: "canvas" };
+  var st = { layout: "reader", headline: "few", features: "icons", quotes: "paired", heads: "features", type: "gelica", sep: "rules", title: "games", paper: "canvas" };
   var KEYS = ["layout", "headline", "features", "quotes", "heads", "type", "sep", "title", "paper"];
   var body = document.getElementById("aboutBody");
   /* a break before every block head, except heads that live inside a card or a column set */
@@ -701,7 +706,7 @@
     seams();
     document.getElementById("labNote").innerHTML = "<b>" + LAYOUTS[st.layout].name + ".</b> " + LAYOUTS[st.layout].note + " <b>Words:</b> " + words() + ".";
     KEYS.forEach(function (k) { var s = document.getElementById("lab-" + k); if (s.value !== st[k]) s.value = st[k]; });
-    try { localStorage.setItem("aboutlab7", JSON.stringify(st)); } catch (e) {}
+    try { localStorage.setItem("aboutlab8", JSON.stringify(st)); } catch (e) {}
   }
   function words() { return body.textContent.trim().split(/\s+/).length; }
   function opts(map) { return Object.keys(map).map(function (k) { return '<option value="' + k + '">' + (map[k].name || map[k]) + "</option>"; }).join(""); }
@@ -719,7 +724,7 @@
   KEYS.forEach(function (k) { document.getElementById("lab-" + k).addEventListener("change", function () { st[k] = this.value; apply(); }); });
 
   /* #layout:quotes:title:paper:features picks a state from the URL, for headless shots; else the last pick is remembered */
-  try { var saved = JSON.parse(localStorage.getItem("aboutlab7") || "null"); if (saved) KEYS.forEach(function (k) { if (saved[k]) st[k] = saved[k]; }); } catch (e) {}
+  try { var saved = JSON.parse(localStorage.getItem("aboutlab8") || "null"); if (saved) KEYS.forEach(function (k) { if (saved[k]) st[k] = saved[k]; }); } catch (e) {}
   var hash = (location.hash || "").slice(1).split(":");
   if (hash[0] && LAYOUTS[hash[0]]) { st.layout = hash[0]; if (QUOTES[hash[1]]) st.quotes = hash[1]; if (TITLES[hash[2]]) st.title = hash[2]; if (PAPER[hash[3]]) st.paper = hash[3]; if (FEATURES[hash[4]]) st.features = hash[4]; if (HEADS[hash[5]]) st.heads = hash[5]; if (TYPE[hash[6]]) st.type = hash[6]; if (SEP[hash[7]]) st.sep = hash[7]; if (HEADLINES[hash[8]]) st.headline = hash[8]; }
   if (/hidepanel/.test(location.search)) document.body.classList.add("labhidden");
