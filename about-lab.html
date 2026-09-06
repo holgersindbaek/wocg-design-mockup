@@ -318,6 +318,11 @@
   /* three lines of 19px/1.55 are 88px; 80px plus a 4px top margin keeps the fourth line clear of the photo */
   #about .serifnote.reader .photo { width: 80px; height: 80px; border-radius: 12px; margin: 4px 18px 0 0; }
   #about .serifnote.hybrid .artBy { margin-bottom: 18px; }
+  /* the photo by the signature: the sender at the end, like the foot of a letter */
+  #about .signrow { display: flex; align-items: center; gap: 14px; margin-top: 16px; clear: both; }
+  #about .serifnote .signrow .photo { float: none; width: 56px; height: 56px; border-radius: 50%; margin: 0; flex: 0 0 auto; }
+  #about .signrow .close { margin: 0; }
+  #about .signrow .sig { margin: 0; }
 
   /* --- tiles as breakers: the features as picture tiles and the quotes as cards, full width, with no heads of their own --- */
   #about .fgrid.tiles { grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 44px 0; }
@@ -336,7 +341,7 @@
 
   /* ===== the six promises, shown three ways: as text, with icons, or as small pictures ===== */
   #about .fgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px 24px; margin: 4px 0 20px; }
-  #about :is(.lay-letter, .lay-margin, .lay-note, .lay-pc, .lay-sheet, .lay-air, .lay-postal, .lay-signed, .lay-quiet, .lay-editor, .lay-column, .lay-serif, .lay-article, .lay-reader) .fgrid:not(.one) { grid-template-columns: repeat(2, 1fr); }
+  #about :is(.lay-letter, .lay-margin, .lay-note, .lay-pc, .lay-sheet, .lay-air, .lay-postal, .lay-signed, .lay-quiet, .lay-editor, .lay-column, .lay-serif, .lay-article, .lay-reader, .lay-hybrid) .fgrid:not(.one) { grid-template-columns: repeat(2, 1fr); }
   #about .fgrid.one { grid-template-columns: 1fr; gap: 12px; }
   #about .ft { display: flex; gap: 12px; align-items: flex-start; }
   #about .ft b { display: block; }
@@ -569,11 +574,12 @@
   }
   /* the note in the Dear reader shape: a site headline, an optional standfirst, an optional byline, the photo inside the first paragraph, the serif body, the signed name */
   function readerHead(byline) {
-    var h = HEADLINES[st.headline] || HEADLINES.few;
+    var h = HEADLINES[st.headline] || HEADLINES.few, atSig = st.photo === "sig";
     return '<div class="serifnote reader' + (byline ? " hybrid" : "") + '"><h2 class="artTitle">' + h.t + "</h2>" + (h.s ? '<p class="artStand">' + h.s + "</p>" : "") +
-      (byline ? '<div class="artBy"><span>By <b>Holger Sindbaek</b>, who runs World of Card Games &middot; 6 September 2026</span></div>' : "") +
-      photo(80) + paras() + write() + '<p class="close">Happy gaming,</p>' +
-      (byline ? '<span class="sig">Holger</span>' : '<div class="sender"><span class="sig">Holger</span><small>Holger Sindbaek, who runs the site</small></div>') + "</div>";
+      (byline ? '<div class="artBy"><span>By <b>Holger Sindb&aelig;k</b>, who runs World of Card Games &middot; 6 September 2026</span></div>' : "") +
+      (atSig ? "" : photo(80)) + paras() + write() +
+      (atSig ? '<div class="signrow">' + photo(56) + '<div><p class="close">Happy gaming,</p><span class="sig">Holger Sindb&aelig;k</span></div></div>'
+             : '<p class="close">Happy gaming,</p><span class="sig">Holger Sindb&aelig;k</span>') + "</div>";
   }
   /* what follows the paper: the promises with the notes, the questions, the updates, the tagline */
   function rest(q, f) { return '<div class="measure"><h3>' + H.like + '</h3>' + features(f, q) +
@@ -641,6 +647,11 @@
   /* the article's headline, about the site and not about the sender; a standfirst is optional */
   /* second naming round (6 September 2026): the note's title, about the place, never a greeting or a slogan; the reader's judge loved "Room for one more", the editor's judge chose "A few words about this place" */
   var HEADLINES = {
+    /* keyword-bearing: the live homepage H1 is "Free Online Card Games: Play Solo or Multiplayer"; these carry the same head terms as an H2 under the new hero */
+    seo1: { name: "SEO: Free online card games, with real people or the bots", t: "Free online card games, with real people or the bots", s: "Eighteen classic games in your browser, looked after by one person." },
+    seo2: { name: "SEO: Online card games with real people, free to play", t: "Online card games with real people, free to play", s: "Eighteen classic games in your browser, and the bots when a seat is empty." },
+    seo3: { name: "SEO: Multiplayer card games, free in your browser", t: "Multiplayer card games, free in your browser", s: "Eighteen classic games with real people, or the bots when you'd rather play alone." },
+    seo4: { name: "SEO: Classic card games online, free to play", t: "Classic card games online, free to play", s: "With real people or against the bots, in your browser." },
     few: { name: "A few words about this place", t: "A few words about this place", s: "What it is, what keeps it running, and where to write." },
     fewBare: { name: "A few words about this place (no standfirst)", t: "A few words about this place", s: "" },
     room: { name: "Room for one more", t: "Room for one more", s: "Sit down at a table that is already going, or start one of your own." },
@@ -682,8 +693,9 @@
 
   /* ===== state, the panel, the URL ===== */
   /* the defaults are Holger's picks (6 September 2026): the letter on paper, icons for the features, "Behind the games" */
-  var st = { layout: "reader", headline: "few", features: "icons", quotes: "paired", heads: "features", type: "gelica", sep: "rules", title: "games", paper: "canvas" };
-  var KEYS = ["layout", "headline", "features", "quotes", "heads", "type", "sep", "title", "paper"];
+  var PHOTO = { sig: "By the signature", text: "In the text, three lines" };
+  var st = { layout: "tiles", headline: "seo1", photo: "sig", features: "icons", quotes: "paired", heads: "features", type: "gelica", sep: "rules", title: "games", paper: "canvas" };
+  var KEYS = ["layout", "headline", "photo", "features", "quotes", "heads", "type", "sep", "title", "paper"];
   var body = document.getElementById("aboutBody");
   /* a break before every block head, except heads that live inside a card or a column set */
   function breaks() {
@@ -706,7 +718,7 @@
     seams();
     document.getElementById("labNote").innerHTML = "<b>" + LAYOUTS[st.layout].name + ".</b> " + LAYOUTS[st.layout].note + " <b>Words:</b> " + words() + ".";
     KEYS.forEach(function (k) { var s = document.getElementById("lab-" + k); if (s.value !== st[k]) s.value = st[k]; });
-    try { localStorage.setItem("aboutlab8", JSON.stringify(st)); } catch (e) {}
+    try { localStorage.setItem("aboutlab10", JSON.stringify(st)); } catch (e) {}
   }
   function words() { return body.textContent.trim().split(/\s+/).length; }
   function opts(map) { return Object.keys(map).map(function (k) { return '<option value="' + k + '">' + (map[k].name || map[k]) + "</option>"; }).join(""); }
@@ -715,7 +727,7 @@
   p.innerHTML = '<h2>Behind the games &middot; lab</h2><span class="hide" title="Hide (H shows it again)">hide</span>' +
     '<label>Head (the letter)</label><select id="lab-layout">' + LAYOUT_ORDER.map(function (k) { return '<option value="' + k + '">' + LAYOUTS[k].name + "</option>"; }).join("") + "</select>" +
     '<label>Article headline</label><select id="lab-headline">' + opts(HEADLINES) + "</select>" +
-    '<div class="grid">' + cell("Features", "features", FEATURES) + cell("Player quotes", "quotes", QUOTES) + cell("Block titles", "heads", HEADS) + cell("Type", "type", TYPE) +
+    '<div class="grid">' + cell("Photo", "photo", PHOTO) + cell("Features", "features", FEATURES) + cell("Player quotes", "quotes", QUOTES) + cell("Block titles", "heads", HEADS) + cell("Type", "type", TYPE) +
     cell("Breaks", "sep", SEP) + cell("Section title", "title", TITLES) + cell("Paper", "paper", PAPER) + "</div>" +
     '<p class="note" id="labNote"></p>';
   document.body.appendChild(p);
@@ -724,9 +736,9 @@
   KEYS.forEach(function (k) { document.getElementById("lab-" + k).addEventListener("change", function () { st[k] = this.value; apply(); }); });
 
   /* #layout:quotes:title:paper:features picks a state from the URL, for headless shots; else the last pick is remembered */
-  try { var saved = JSON.parse(localStorage.getItem("aboutlab8") || "null"); if (saved) KEYS.forEach(function (k) { if (saved[k]) st[k] = saved[k]; }); } catch (e) {}
+  try { var saved = JSON.parse(localStorage.getItem("aboutlab10") || "null"); if (saved) KEYS.forEach(function (k) { if (saved[k]) st[k] = saved[k]; }); } catch (e) {}
   var hash = (location.hash || "").slice(1).split(":");
-  if (hash[0] && LAYOUTS[hash[0]]) { st.layout = hash[0]; if (QUOTES[hash[1]]) st.quotes = hash[1]; if (TITLES[hash[2]]) st.title = hash[2]; if (PAPER[hash[3]]) st.paper = hash[3]; if (FEATURES[hash[4]]) st.features = hash[4]; if (HEADS[hash[5]]) st.heads = hash[5]; if (TYPE[hash[6]]) st.type = hash[6]; if (SEP[hash[7]]) st.sep = hash[7]; if (HEADLINES[hash[8]]) st.headline = hash[8]; }
+  if (hash[0] && LAYOUTS[hash[0]]) { st.layout = hash[0]; if (QUOTES[hash[1]]) st.quotes = hash[1]; if (TITLES[hash[2]]) st.title = hash[2]; if (PAPER[hash[3]]) st.paper = hash[3]; if (FEATURES[hash[4]]) st.features = hash[4]; if (HEADS[hash[5]]) st.heads = hash[5]; if (TYPE[hash[6]]) st.type = hash[6]; if (SEP[hash[7]]) st.sep = hash[7]; if (HEADLINES[hash[8]]) st.headline = hash[8]; if (PHOTO[hash[9]]) st.photo = hash[9]; }
   if (/hidepanel/.test(location.search)) document.body.classList.add("labhidden");
   apply();
   var t; window.addEventListener("resize", function () { clearTimeout(t); t = setTimeout(seams, 120); });
