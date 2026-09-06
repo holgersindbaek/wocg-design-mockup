@@ -333,6 +333,7 @@
   #about .serifnote .mail { font-weight: 600; }
   #about .serifnote .close { margin: 14px 0 0; clear: both; }
   #about .serifnote.reader .artTitle { margin-bottom: 14px; }
+  #about .serifnote.reader .artTitle.small { font: 500 23px/30px "Gelica", Georgia, serif; letter-spacing: normal; margin: 0 0 10px; }
   #about .serifnote.reader .artStand { margin-bottom: 18px; }
   /* three lines of 19px/1.55 are 88px; 80px plus a 4px top margin keeps the fourth line clear of the photo */
   #about .serifnote.reader .photo { width: 80px; height: 80px; border-radius: 12px; margin: 4px 18px 0 0; }
@@ -633,7 +634,7 @@
   /* the note in the Dear reader shape: a site headline, an optional standfirst, an optional byline, the photo inside the first paragraph, the serif body, the signed name */
   function readerHead(byline) {
     var h = HEADLINES[st.headline] || HEADLINES.few, atSig = st.photo === "sig";
-    return '<div class="serifnote reader' + (byline ? " hybrid" : "") + '"><h2 class="artTitle">' + h.t + "</h2>" + (h.s ? '<p class="artStand">' + h.s + "</p>" : "") +
+    return '<div class="serifnote reader' + (byline ? " hybrid" : "") + '">' + (h.t ? '<h2 class="artTitle' + (h.small ? " small" : "") + '">' + h.t + "</h2>" : "") + (h.s ? '<p class="artStand">' + h.s + "</p>" : "") +
       (byline ? '<div class="artBy"><span>By <b>Holger Sindb&aelig;k</b>, who runs World of Card Games &middot; 6 September 2026</span></div>' : "") +
       (atSig ? "" : photo(80)) + paras() + write() +
       (atSig ? '<div class="signrow">' + photo(56) + '<div><p class="close">Happy gaming,</p><span class="sig">Holger Sindb&aelig;k</span></div></div>'
@@ -705,7 +706,9 @@
   /* the article's headline, about the site and not about the sender; a standfirst is optional */
   /* second naming round (6 September 2026): the note's title, about the place, never a greeting or a slogan; the reader's judge loved "Room for one more", the editor's judge chose "A few words about this place" */
   var HEADLINES = {
-    /* a headline may carry a lead: a sentence prepended to the first paragraph so the body continues the thought */
+    /* a headline may carry a lead: a sentence prepended to the first paragraph so the body continues the thought; 'small' sets it at the block heads' size */
+    none: { name: "No headline, the divider is the title", t: "", s: "" },
+    justSmall: { name: "Just one more hand\u2026 as a small head", t: "Just one more hand\u2026", s: "", lead: "That is what people say at these tables, and it is rarely just one.", small: true },
     just: { name: "Just one more hand\u2026", t: "Just one more hand\u2026", s: "", lead: "That is what people say at these tables, and it is rarely just one." },
     justStand: { name: "Just one more hand\u2026 (with standfirst)", t: "Just one more hand\u2026", s: "What everyone says here, at every hour of the day.", lead: "" },
     hand: { name: "One more hand", t: "One more hand", s: "There is always a seat at a table here, whatever the hour." },
@@ -763,7 +766,7 @@
   /* ===== state, the panel, the URL ===== */
   /* the defaults are Holger's picks (6 September 2026): the letter on paper, icons for the features, "Behind the games" */
   var PHOTO = { sig: "By the signature", text: "In the text, three lines" };
-  var st = { layout: "tiles", headline: "just", photo: "sig", news: "tags", nx: "reports", tagc: "tray", tagsize: "chooser", features: "icons", quotes: "paired", heads: "features", type: "gelica", sep: "rules", title: "games", paper: "canvas" };
+  var st = { layout: "tiles", headline: "none", photo: "sig", news: "tags", nx: "reports", tagc: "tray", tagsize: "chooser", features: "icons", quotes: "paired", heads: "features", type: "gelica", sep: "rules", title: "games", paper: "canvas" };
   var KEYS = ["layout", "headline", "photo", "features", "quotes", "heads", "type", "sep", "title", "paper", "news", "nx", "tagc", "tagsize"];
   var body = document.getElementById("aboutBody");
   /* a break before every block head, except heads that live inside a card or a column set */
@@ -787,7 +790,7 @@
     seams();
     document.getElementById("labNote").innerHTML = "<b>" + LAYOUTS[st.layout].name + ".</b> " + LAYOUTS[st.layout].note + " <b>Words:</b> " + words() + ".";
     KEYS.forEach(function (k) { var s = document.getElementById("lab-" + k); if (s.value !== st[k]) s.value = st[k]; });
-    try { localStorage.setItem("aboutlab16", JSON.stringify(st)); } catch (e) {}
+    try { localStorage.setItem("aboutlab17", JSON.stringify(st)); } catch (e) {}
   }
   function words() { return body.textContent.trim().split(/\s+/).length; }
   function opts(map) { return Object.keys(map).map(function (k) { return '<option value="' + k + '">' + (map[k].name || map[k]) + "</option>"; }).join(""); }
@@ -805,7 +808,7 @@
   KEYS.forEach(function (k) { document.getElementById("lab-" + k).addEventListener("change", function () { st[k] = this.value; apply(); }); });
 
   /* #layout:quotes:title:paper:features picks a state from the URL, for headless shots; else the last pick is remembered */
-  try { var saved = JSON.parse(localStorage.getItem("aboutlab16") || "null"); if (saved) KEYS.forEach(function (k) { if (saved[k]) st[k] = saved[k]; }); } catch (e) {}
+  try { var saved = JSON.parse(localStorage.getItem("aboutlab17") || "null"); if (saved) KEYS.forEach(function (k) { if (saved[k]) st[k] = saved[k]; }); } catch (e) {}
   var hash = (location.hash || "").slice(1).split(":");
   if (hash[0] && LAYOUTS[hash[0]]) { st.layout = hash[0]; if (QUOTES[hash[1]]) st.quotes = hash[1]; if (TITLES[hash[2]]) st.title = hash[2]; if (PAPER[hash[3]]) st.paper = hash[3]; if (FEATURES[hash[4]]) st.features = hash[4]; if (HEADS[hash[5]]) st.heads = hash[5]; if (TYPE[hash[6]]) st.type = hash[6]; if (SEP[hash[7]]) st.sep = hash[7]; if (HEADLINES[hash[8]]) st.headline = hash[8]; if (PHOTO[hash[9]]) st.photo = hash[9]; if (NEWS[hash[10]]) st.news = hash[10]; if (NX[hash[11]]) st.nx = hash[11]; if (TAGC[hash[12]]) st.tagc = hash[12]; if (TAGS[hash[13]]) st.tagsize = hash[13]; }
   if (/hidepanel/.test(location.search)) document.body.classList.add("labhidden");
