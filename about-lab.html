@@ -93,7 +93,7 @@
   #about .pr b { color: var(--ink); }
   /* quotes */
   #about .q { display: flex; gap: 12px; align-items: flex-start; margin: 4px 0 16px; }
-  #about .q .av { flex: 0 0 40px; width: 40px; height: 40px; border-radius: 50%; background: #e4ddd0; box-shadow: inset 0 0 0 1px rgba(0,0,0,.1); overflow: hidden; }
+  #about .q .av { flex: 0 0 40px; width: 40px; height: 40px; border-radius: 50%; corner-shape: squircle; background: #e4ddd0; box-shadow: inset 0 0 0 1px rgba(0,0,0,.1); overflow: hidden; }
   #about .q .av img { width: 100%; height: 100%; display: block; }
   #about .q .qt { font-style: italic; margin: 0; }
   #about .q .qw { font-size: 14px; color: var(--faint); margin: 2px 0 0; font-style: normal; }
@@ -121,6 +121,7 @@
   #about .tags-small .ntag { font-size: 14px; line-height: 20px; padding: 0 8px; border-radius: 5px; corner-shape: squircle; vertical-align: 0; }
   #about .rep { font-size: 14px; color: var(--faint); margin-left: 6px; white-space: nowrap; }
   #about .nwclose { margin-top: 12px; color: var(--muted); }
+  #about .nwi > span > .ntag:first-child { margin-left: 0; margin-right: 4px; } /* the category word first (Holger, 6 September 2026) */
   #about .chip { flex: 0 0 74px; display: inline-block; text-align: center; font-size: 12px; font-weight: bold; line-height: 20px; padding: 0 8px; border-radius: 10px;
     color: var(--c); background: color-mix(in srgb, var(--c) 12%, #fff); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--c) 30%, #fff); }
   #about .up > div { margin-bottom: 2px; }
@@ -347,7 +348,7 @@
   #about .sigc-blue { --sigc: #1e3f8f; } #about .sigc-ink { --sigc: var(--ink); } #about .sigc-soft { --sigc: rgba(20,20,20,.75); } #about .sigc-muted { --sigc: var(--muted); } #about .sigc-green { --sigc: var(--accent-deep); }
   #about .serifnote .sig.sigimg { height: 40px; width: auto; transform: none; margin: 4px 0 0; vertical-align: top; }
   /* the Caveat PNG is trimmed to its ink, so its left edge sits on the text's left edge; sized to the 36px face it was rendered from */
-  #about .serifnote .sig.sigimg.caveatpng { display: block; height: 39px; margin: 3px 0 0 -1px; } /* the same size and offset as the mockup's rule, set by the other session */
+  #about .serifnote .sig.sigimg.caveatpng { display: block; height: 39px; margin: 3px 0 0 -4px; } /* the same size and offset as the mockup's rule, set by the other session */
   #about .serifnote .sig:not(.sigimg) { margin-left: -2px; } /* the H's side bearing, so the font version lines up too */
 
 
@@ -386,10 +387,14 @@
   #about .qtiles.qs-felt .q .qt { color: #fff; }
   #about .qtiles.qs-felt .q .qw { color: rgba(255,255,255,.75); }
   #about .qtiles.qs-felt .q .av { box-shadow: 0 0 0 2px rgba(255,255,255,.85); border-radius: 50%; }
-  #about .qtiles.qs-namefirst .q { flex-direction: row; flex-wrap: wrap; gap: 10px 12px; align-items: center; align-content: flex-start; }
-  #about .qtiles.qs-namefirst .q .av { width: 32px; height: 32px; flex-basis: 32px; }
+  #about .q .qw b { font-weight: inherit; }
+  #about .q .qwho::before { content: " \00b7 "; }
+  #about .qtiles.qs-namefirst .q { flex-direction: row; flex-wrap: wrap; gap: 12px 12px; align-items: center; align-content: flex-start; }
+  #about .qtiles.qs-namefirst .q .av { width: 40px; height: 40px; flex-basis: 40px; }
   #about .qtiles.qs-namefirst .q > div { display: contents; }
-  #about .qtiles.qs-namefirst .q .qw { order: 0; font: bold 16px/24px "BuloRounded", Verdana, sans-serif; color: var(--ink); margin: 0; flex: 1; }
+  #about .qtiles.qs-namefirst .q .qw { order: 0; display: flex; flex-direction: column; font: bold 16px/20px "BuloRounded", Verdana, sans-serif; color: var(--ink); margin: 0; flex: 1; min-width: 0; }
+  #about .qtiles.qs-namefirst .q .qwho { font: 400 14px/18px "BuloRounded", Verdana, sans-serif; color: var(--muted); }
+  #about .qtiles.qs-namefirst .q .qwho::before { content: none; }
   #about .qtiles.qs-namefirst .q .qt { order: 1; flex-basis: 100%; margin: 0; }
 
   #about .qtiles .q { flex-direction: column; margin: 0; padding: 18px 20px; --tint: #a39a8c;
@@ -504,9 +509,9 @@
     /* real lines from the inbox (July to September 2026); the names are placeholders until each writer says yes */
     /* real inbox lines, Holger's picks of 6 September 2026, in his trimmed wording; names and avatars are stand-ins until each sender has said yes */
     quotes: [
-      ["I have been on this site for more than 10 years because of the camaraderie.", "Irean", "WomanCowgirl.svg"],
-      ["I came upon your site a few days ago and love it. I play against the bots and the skill level is very competitive, especially compared to other sites I have seen.", "A new player", "AnimalFox.svg"],
-      ["Just retired after 20 years and I live for YOUR card games! Best on the net.", "RC", "ManCowboy.svg"]
+      ["I have been on this site for more than 10 years because of the camaraderie.", "Irean", "WomanCowgirl.svg", "Playing here for over ten years"],
+      ["I came upon your site a few days ago and love it. I play against the bots and the skill level is very competitive, especially compared to other sites I have seen.", "A new player", "AnimalFox.svg", "Found the site in March"],
+      ["Just retired after 20 years and I live for YOUR card games! Best on the net.", "RC", "ManCowboy.svg", "Premium member since March"]
     ],
     faq: [
       ["Is it free?", "Yes. All eighteen games are free to play and the ads pay for the site. If you'd rather play without ads, a small subscription turns them off and you see the price before you pay anything."],
@@ -520,7 +525,7 @@
       ["What if someone is rude at the table?", "Hover over their name and choose Mute to hide their chat, or Block so you're never seated together at a public table again. Every chat message also has a flag and flagged chat gets reviewed."],
       ["Are the cards dealt fairly?", "Yes. Every hand is shuffled on my server with a fresh random number for each deal, before anyone sees a card. There's no way for me or anyone else to steer what you're dealt. The shuffle tests are on the site."]
     ],
-    upIntro: "Most weeks bring a fix or two. These are the newest and the <a href=\"#changelog\">full changelog</a> goes back to December 2011.",
+    upIntro: "Most weeks bring a fix or two. These are the newest and the <a href=\"#changelog\">full changelog</a> goes back to December 2011:",
     /* the real changelog, newest first, with the duplicate 3 September block merged; the section shows at most three dates and eight lines */
     news: [
       ["3 September 2026", "3 Sep", [["New", "Go Fish and Old Maid sort your hand by rank.", 0], ["Improved", "Short, wide windows use the compact layout again.", 0]]],
@@ -529,7 +534,7 @@
     ],
     /* real counts from static/changelog.json on 5 September 2026: 102 dated entries in 2026, 36 in the last 90 days */
     /* the opening line was the closing line until 6 September 2026; Holger wanted it first, with his address after it */
-    upIntroCounted: "Many of these began as an email from a player. If you spot something, write to me at <a class=\"mail\" href=\"mailto:holger@worldofcardgames.com\">holger@worldofcardgames.com</a>. So far this year the site has had 102 updates, 36 of them in the last three months. These are the newest and the <a href=\"#changelog\">full changelog</a> goes back to December 2011.",
+    upIntroCounted: "Many of these began as an email from a player. If you spot something, write to me at <a class=\"mail\" href=\"mailto:holger@worldofcardgames.com\">holger@worldofcardgames.com</a>. These are the newest and the <a href=\"#changelog\">full changelog</a> goes back to December 2011:",
     upClose: "Many of these began as an email from a player.",
     updates: [
       ["3 September 2026", "Go Fish and Old Maid now sort your hand by rank. Short, wide windows use the compact layout again."],
@@ -549,7 +554,7 @@
   function write() { return "<p>" + D.write + "</p>"; }
   function signoff(withTag) { return '<div class="signoff"><p style="margin:0">Happy gaming,</p><p class="sig">Holger</p>' + (withTag ? '<p class="tag">One more hand.</p>' : "") + "</div>"; }
   function pr(p) { return '<p class="pr"><b>' + p[0] + ".</b> " + p[1] + "</p>"; }
-  function quote(q) { return '<div class="q"><span class="av"><img src="' + q[2] + '" alt=""></span><div><p class="qt">' + q[0] + '</p><p class="qw">' + q[1] + "</p></div></div>"; }
+  function quote(q) { return '<div class="q"><span class="av"><img src="' + q[2] + '" alt=""></span><div><p class="qt">' + q[0] + '</p><p class="qw"><b>' + q[1] + "</b>" + (q[3] ? '<span class="qwho">' + q[3] + "</span>" : "") + "</p></div></div>"; }
   /* paired: a quote follows every second promise, as its proof; row: the quotes as a strip; none: no quotes */
   function promises(mode) {
     var out = "", qi = 0;
@@ -575,7 +580,7 @@
     if (mode === "dated") return days.map(function (d) { return '<div class="nwd">' + d[0] + "</div>" + d[2].map(function (i) { return '<div class="nwi"><b>' + i[0] + "</b><span>" + i[1] + "</span></div>"; }).join(""); }).join("");
     var rows = []; days.forEach(function (d) { d[2].forEach(function (i) { rows.push([d[1], i[0], i[1], i[2]]); }); });
     if (mode === "chips") return rows.map(function (r) { return '<div class="nwi"><span class="chip" style="--c:' + KCOL[r[1]] + '">' + r[1] + "</span><span>" + r[2] + "</span><time>" + r[0] + "</time></div>"; }).join("");
-    if (mode === "tags") return rows.map(function (r) { return '<div class="nwi"><span>' + r[2] + ' <span class="ntag">' + r[1] + "</span>" + rep(r[3]) + "</span><time>" + r[0] + "</time></div>"; }).join("") + close();
+    if (mode === "tags") return rows.map(function (r) { return '<div class="nwi"><span><span class="ntag">' + r[1] + "</span> " + r[2] + rep(r[3]) + "</span><time>" + r[0] + "</time></div>"; }).join("") + close();
     return rows.map(function (r) { return '<div class="nwi"><b>' + r[1] + "</b><span>" + r[2] + "</span><time>" + r[0] + "</time></div>"; }).join("");
   }
   function upLink() { return ""; }
@@ -810,7 +815,7 @@
   var QSTYLE = { cards: "White tiles, avatar on top", inline: "Avatar beside the words", bubble: "Chat bubble, avatar below", mark: "Big quote mark, no avatar", plain: "Three columns, no tiles", felt: "Felt tiles like the game tiles", namefirst: "Name first, then the words" };
   var SIG = { caveatpng: "Caveat as a PNG, the decided one", caveat: "Caveat font (the one so far)", s1: "Signature 1, thin script", s2: "Signature 2, calligraphic", s3: "Signature 3, rounded script", s4: "Signature 4, marker" };
   var SIGC = { blue: "Pen blue (#1e3f8f)", ink: "Ink, the text colour", soft: "Ink at 75%", muted: "Muted grey (#4e4d4c)", green: "Deep green, the accent" };
-  var st = { layout: "tiles", headline: "none", photo: "sig", news: "tags", nx: "counted", tagc: "tray", tagsize: "chip", sig: "caveatpng", sigc: "ink", signoff: "best", qstyle: "cards", features: "icons", quotes: "paired", heads: "features", type: "gelica", sep: "rules", title: "games", paper: "canvas" };
+  var st = { layout: "tiles", headline: "none", photo: "sig", news: "tags", nx: "counted", tagc: "tray", tagsize: "chip", sig: "caveatpng", sigc: "ink", signoff: "best", qstyle: "namefirst", features: "icons", quotes: "paired", heads: "features", type: "gelica", sep: "rules", title: "games", paper: "canvas" };
   var KEYS = ["layout", "headline", "photo", "features", "quotes", "heads", "type", "sep", "title", "paper", "news", "nx", "tagc", "tagsize", "sig", "sigc", "signoff", "qstyle"];
   var body = document.getElementById("aboutBody");
   /* a break before every block head, except heads that live inside a card or a column set */
@@ -834,7 +839,7 @@
     seams();
     document.getElementById("labNote").innerHTML = "<b>" + LAYOUTS[st.layout].name + ".</b> " + LAYOUTS[st.layout].note + " <b>Words:</b> " + words() + ".";
     KEYS.forEach(function (k) { var s = document.getElementById("lab-" + k); if (s.value !== st[k]) s.value = st[k]; });
-    try { localStorage.setItem("aboutlab22", JSON.stringify(st)); } catch (e) {}
+    try { localStorage.setItem("aboutlab23", JSON.stringify(st)); } catch (e) {}
   }
   function words() { return body.textContent.trim().split(/\s+/).length; }
   function opts(map) { return Object.keys(map).map(function (k) { return '<option value="' + k + '">' + (map[k].name || map[k]) + "</option>"; }).join(""); }
@@ -852,7 +857,7 @@
   KEYS.forEach(function (k) { document.getElementById("lab-" + k).addEventListener("change", function () { st[k] = this.value; apply(); }); });
 
   /* #layout:quotes:title:paper:features picks a state from the URL, for headless shots; else the last pick is remembered */
-  try { var saved = JSON.parse(localStorage.getItem("aboutlab22") || "null"); if (saved) KEYS.forEach(function (k) { if (saved[k]) st[k] = saved[k]; }); } catch (e) {}
+  try { var saved = JSON.parse(localStorage.getItem("aboutlab23") || "null"); if (saved) KEYS.forEach(function (k) { if (saved[k]) st[k] = saved[k]; }); } catch (e) {}
   var hash = (location.hash || "").slice(1).split(":");
   if (hash[0] && LAYOUTS[hash[0]]) { st.layout = hash[0]; if (QUOTES[hash[1]]) st.quotes = hash[1]; if (TITLES[hash[2]]) st.title = hash[2]; if (PAPER[hash[3]]) st.paper = hash[3]; if (FEATURES[hash[4]]) st.features = hash[4]; if (HEADS[hash[5]]) st.heads = hash[5]; if (TYPE[hash[6]]) st.type = hash[6]; if (SEP[hash[7]]) st.sep = hash[7]; if (HEADLINES[hash[8]]) st.headline = hash[8]; if (PHOTO[hash[9]]) st.photo = hash[9]; if (NEWS[hash[10]]) st.news = hash[10]; if (NX[hash[11]]) st.nx = hash[11]; if (TAGC[hash[12]]) st.tagc = hash[12]; if (TAGS[hash[13]]) st.tagsize = hash[13]; if (SIG[hash[14]]) st.sig = hash[14]; if (SIGC[hash[15]]) st.sigc = hash[15]; if (SIGNOFF[hash[16]]) st.signoff = hash[16]; if (QSTYLE[hash[17]]) st.qstyle = hash[17]; }
   if (/hidepanel/.test(location.search)) document.body.classList.add("labhidden");
