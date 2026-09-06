@@ -538,11 +538,11 @@
       build: function (q, f) { return readerHead(false) + rest(q, f); } },
     hybrid: { name: "Article, photo in the text", note: "The article's headline and byline on top, and the Dear reader body under them: the photo inside the first paragraph across three lines, the serif body, the signed name. The byline names the sender, so the sender line at the end is dropped.",
       build: function (q, f) { return readerHead(true) + rest(q, f); } },
-    tiles: { name: "Tiles as breakers", note: "The note, then the six features as picture tiles across the full width, then the questions, then the three quotes as cards, then What's new. The tile rows are the breaks, so neither the features nor the quotes carry a head. The tiles borrow the game tiles' shape, so the section keeps the page's own rhythm.",
+    tiles: { name: "Tiles as breakers", note: "The note, then the six features as picture tiles at the text's own width, then the questions, then the three quotes as cards, then What's new. The tile rows are the breaks, so neither the features nor the quotes carry a head. The tiles borrow the game tiles' shape, so the section keeps the page's own rhythm.",
       build: function (q, f) { return readerHead(false) +
-        '<div class="fgrid tiles pictures">' + D.promises.map(function (p, i) { return featureItem(p, i, "pictures"); }).join("") + "</div>" +
+        '<div class="measure"><div class="fgrid tiles pictures">' + D.promises.map(function (p, i) { return featureItem(p, i, "pictures"); }).join("") + "</div></div>" +
         '<div class="measure"><h3>' + H.faq + "</h3>" + faq() + "</div>" +
-        '<div class="qtiles">' + D.quotes.slice(0, 3).map(quote).join("") + "</div>" +
+        '<div class="measure"><div class="qtiles">' + D.quotes.slice(0, 3).map(quote).join("") + "</div></div>" +
         '<div class="measure"><h3>' + H.up + "</h3><p>" + D.upIntro + "</p>" + updates() + upLink() + '<p class="tag">One more hand.</p></div>'; } },
     article: { name: "The article", note: "Dear reader without the greeting: a headline about the site, an optional standfirst, and a byline with a small round author photo, the way a magazine shows who wrote a piece. The body stays in the serif at the section's measure, and Holger signs at the end. Pick the headline in the chooser.",
       build: function (q, f) { var h = HEADLINES[st.headline] || HEADLINES.few; return '<div class="article"><h2 class="artTitle">' + h.t + "</h2>" + (h.s ? '<p class="artStand">' + h.s + "</p>" : "") +
