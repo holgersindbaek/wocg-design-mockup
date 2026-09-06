@@ -343,6 +343,14 @@
   #about .serifnote .signrow .photo { float: none; width: 56px; height: 56px; border-radius: 50%; margin: 0; flex: 0 0 auto; }
   #about .signrow .close { margin: 0; }
   #about .signrow .sig { margin: 0; }
+  /* signature images: black ink on transparency, so a mask paints them in any colour */
+  #about .sigc-blue { --sigc: #1e3f8f; } #about .sigc-ink { --sigc: var(--ink); } #about .sigc-soft { --sigc: rgba(20,20,20,.75); } #about .sigc-muted { --sigc: var(--muted); } #about .sigc-green { --sigc: var(--accent-deep); }
+  #about .serifnote .sig.sigimg { height: 40px; background: var(--sigc, #1e3f8f); -webkit-mask: var(--sigurl) left center / contain no-repeat; mask: var(--sigurl) left center / contain no-repeat; transform: none; margin: 4px 0 0; vertical-align: top; }
+  #about .sigimg.s1 { --sigurl: url(signature-1.png); aspect-ratio: 286 / 75; }
+  #about .sigimg.s2 { --sigurl: url(signature-2.png); aspect-ratio: 256 / 59; }
+  #about .sigimg.s3 { --sigurl: url(signature-3.png); aspect-ratio: 273 / 62; }
+  #about .sigimg.s4 { --sigurl: url(signature-4.png); aspect-ratio: 434 / 146; }
+
 
   /* --- tiles as breakers: the features as picture tiles and the quotes as cards, full width, with no heads of their own --- */
   #about .fgrid.tiles { grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 44px 0; }
@@ -356,7 +364,10 @@
   /* the tiles speak like the game tiles above them: Bulo bold 20 over Bulo 16, whatever the serif setting does to the rest */
   #about .page .fgrid.tiles .fpic b { margin: 10px 12px 0; font: bold 20px/28px "BuloRounded", Verdana, sans-serif; color: var(--tintink); }
   #about .page .fgrid.tiles .fpic p { margin: 0 12px 12px; font: 16px/1.35 "BuloRounded", Verdana, sans-serif; color: var(--tintsub); }
-  #about .qtiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 44px 0; }
+  #about .qtiles { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; margin: 44px 0; }
+  #about .qtiles .q { grid-column: span 2; }
+  /* five quotes: three on the first row, the two longer ones wider on the second */
+  #about .qtiles.five .q:nth-child(n+4) { grid-column: span 3; }
   #about .qtiles .q { flex-direction: column; margin: 0; padding: 18px 20px; --tint: #a39a8c;
     /* the quotes have no felt, so the same recipe at a quarter of the chroma: near-white ground, a warm grey ring, warm ink */
     --tintring: var(--edge); --tintink: var(--ink); --tintsub: var(--muted); }
@@ -367,7 +378,7 @@
   #about .lay-tiles .measure { margin-top: 0; }
   #about .serifnote .sender { display: flex; align-items: baseline; gap: 14px; }
   #about .serifnote .sender small { font: 14px/1.4 "BuloRounded", Verdana, sans-serif; color: var(--faint); }
-  #about .serifnote .sig { display: inline-block; font: 600 36px/1.1 "Caveat", cursive; color: #1e3f8f; margin: 2px 0 0; transform: rotate(-2deg); transform-origin: left center; }
+  #about .serifnote .sig { display: inline-block; font: 600 36px/1.1 "Caveat", cursive; color: var(--sigc, #1e3f8f); margin: 2px 0 0; transform: rotate(-2deg); transform-origin: left center; }
 
   /* ===== the six promises, shown three ways: as text, with icons, or as small pictures ===== */
   #about .fgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px 24px; margin: 4px 0 20px; }
@@ -467,11 +478,13 @@
       ["Your own table", "Give a private table a name and send your friends the link. They don't need an account to join, and the same name works every week."]
     ],
     /* real lines from the inbox (July to September 2026); the names are placeholders until each writer says yes */
+    /* real inbox lines, Holger's picks of 6 September 2026, in his trimmed wording; names and avatars are stand-ins until each sender has said yes */
     quotes: [
-      ["Thank you for making a site where people can play games and meet new friends.", "Linda, plays Euchre", "WomanCowgirl.svg"],
-      ["I appreciate all the hard work you put into World of Card Games.", "Ruth, Hand &amp; Foot", "WomanScientist.svg"],
-      ["You're doing a great job with this. The only thing I'd change is the countdown bar.", "Mike, Spades", "ManChef.svg"],
-      ["I really do love playing the game.", "Connie, Hand &amp; Foot", "AnimalFox.svg"]
+      ["I have been on this site for more than 10 years because of the camaraderie.", "Irean", "WomanCowgirl.svg"],
+      ["Just retired after 20 years and I live for YOUR card games! Best on the net.", "RC", "ManCowboy.svg"],
+      ["I love your game. Been wanting to try the other ones but I just can't bring myself to stop euchre.", "Melanie, Euchre", "WomanGirl2.svg"],
+      ["Your site has brought me and my friends closer together, and we have met some really nice regular players on your site as well.", "Carlin, Hand &amp; Foot", "ManGeek2.svg"],
+      ["I came upon your site a few days ago and love it. I play against the bots and the skill level is very competitive, especially compared to other sites I have seen.", "A new player", "AnimalFox.svg"]
     ],
     faq: [
       ["Is it free?", "Yes. All eighteen games are free to play, and the ads pay for the site. If you'd rather play without ads, a small subscription turns them off, and you see the price before you pay anything."],
@@ -505,6 +518,7 @@
   };
 
   /* ===== small builders, shared by every layout ===== */
+  function sig() { return st.sig === "caveat" ? '<span class="sig">Holger Sindb&aelig;k</span>' : '<span class="sig sigimg ' + st.sig + '" role="img" aria-label="Holger Sindb\u00e6k"></span>'; }
   function photo(px) { return '<img class="photo" src="holger-avatar.jpg" alt="Holger Sindbaek" width="' + px + '" height="' + px + '">'; }
   function greet() { return '<p class="greet">' + D.greet + "</p>"; }
   function helloList() { var h = HEADLINES[st.headline] || {}, list = D.hello.slice(); if (h.lead) list[0] = h.lead + " " + list[0]; return list; }
@@ -606,7 +620,7 @@
       build: function (q, f) { return readerHead(false) +
         '<div class="measure"><div class="fgrid tiles pictures">' + D.promises.map(function (p, i) { return featureItem(p, i, "pictures"); }).join("") + "</div></div>" +
         '<div class="measure"><h3>' + H.faq + "</h3>" + faq() + "</div>" +
-        '<div class="measure"><div class="qtiles">' + D.quotes.slice(0, 3).map(quote).join("") + "</div></div>" +
+        '<div class="measure"><div class="qtiles' + (D.quotes.length === 5 ? " five" : "") + '">' + D.quotes.slice(0, 5).map(quote).join("") + "</div></div>" +
         '<div class="measure"><h3>' + H.up + "</h3><p>" + upIntro() + "</p>" + updates() + upLink() + "</div>"; } },
     article: { name: "The article", note: "Dear reader without the greeting: a headline about the site, an optional standfirst, and a byline with a small round author photo, the way a magazine shows who wrote a piece. The body stays in the serif at the section's measure, and Holger signs at the end. Pick the headline in the chooser.",
       build: function (q, f) { var h = HEADLINES[st.headline] || HEADLINES.few; return '<div class="article"><h2 class="artTitle">' + h.t + "</h2>" + (h.s ? '<p class="artStand">' + h.s + "</p>" : "") +
@@ -637,8 +651,8 @@
     return '<div class="serifnote reader' + (byline ? " hybrid" : "") + '">' + (h.t ? '<h2 class="artTitle' + (h.small ? " small" : "") + '">' + h.t + "</h2>" : "") + (h.s ? '<p class="artStand">' + h.s + "</p>" : "") +
       (byline ? '<div class="artBy"><span>By <b>Holger Sindb&aelig;k</b>, who runs World of Card Games &middot; 6 September 2026</span></div>' : "") +
       (atSig ? "" : photo(80)) + paras() + write() +
-      (atSig ? '<div class="signrow">' + photo(56) + '<div><p class="close">Happy gaming,</p><span class="sig">Holger Sindb&aelig;k</span></div></div>'
-             : '<p class="close">Happy gaming,</p><span class="sig">Holger Sindb&aelig;k</span>') + "</div>";
+      (atSig ? '<div class="signrow">' + photo(56) + '<div><p class="close">Happy gaming,</p>' + sig() + '</div></div>'
+             : '<p class="close">Happy gaming,</p>' + sig()) + "</div>";
   }
   /* what follows the paper: the promises with the notes, the questions, the updates, the tagline */
   function rest(q, f) { return '<div class="measure"><h3>' + H.like + '</h3>' + features(f, q) +
@@ -766,8 +780,11 @@
   /* ===== state, the panel, the URL ===== */
   /* the defaults are Holger's picks (6 September 2026): the letter on paper, icons for the features, "Behind the games" */
   var PHOTO = { sig: "By the signature", text: "In the text, three lines" };
-  var st = { layout: "tiles", headline: "none", photo: "sig", news: "tags", nx: "reports", tagc: "tray", tagsize: "chooser", features: "icons", quotes: "paired", heads: "features", type: "gelica", sep: "rules", title: "games", paper: "canvas" };
-  var KEYS = ["layout", "headline", "photo", "features", "quotes", "heads", "type", "sep", "title", "paper", "news", "nx", "tagc", "tagsize"];
+  /* the signature: the Caveat face used so far, or one of the four PNGs from 6 September 2026 (black ink on transparency, tinted through a CSS mask) */
+  var SIG = { caveat: "Caveat font (the one so far)", s1: "Signature 1, thin script", s2: "Signature 2, calligraphic", s3: "Signature 3, rounded script", s4: "Signature 4, marker" };
+  var SIGC = { blue: "Pen blue (#1e3f8f)", ink: "Ink, the text colour", soft: "Ink at 75%", muted: "Muted grey (#4e4d4c)", green: "Deep green, the accent" };
+  var st = { layout: "tiles", headline: "none", photo: "sig", news: "tags", nx: "counted", tagc: "tray", tagsize: "chip", sig: "s3", sigc: "soft", features: "icons", quotes: "paired", heads: "features", type: "gelica", sep: "rules", title: "games", paper: "canvas" };
+  var KEYS = ["layout", "headline", "photo", "features", "quotes", "heads", "type", "sep", "title", "paper", "news", "nx", "tagc", "tagsize", "sig", "sigc"];
   var body = document.getElementById("aboutBody");
   /* a break before every block head, except heads that live inside a card or a column set */
   function breaks() {
@@ -782,7 +799,7 @@
   }
   function apply() {
     H = HEADS[st.heads] || HEADS.plain;
-    body.className = "page lay-" + st.layout + " type-" + st.type + " tagc-" + st.tagc + " tags-" + st.tagsize;
+    body.className = "page lay-" + st.layout + " type-" + st.type + " tagc-" + st.tagc + " tags-" + st.tagsize + " sig-" + st.sig + " sigc-" + st.sigc;
     body.innerHTML = LAYOUTS[st.layout].build(st.quotes, st.features);
     breaks();
     document.getElementById("aboutSeam").dataset.title = TITLES[st.title];
@@ -790,7 +807,7 @@
     seams();
     document.getElementById("labNote").innerHTML = "<b>" + LAYOUTS[st.layout].name + ".</b> " + LAYOUTS[st.layout].note + " <b>Words:</b> " + words() + ".";
     KEYS.forEach(function (k) { var s = document.getElementById("lab-" + k); if (s.value !== st[k]) s.value = st[k]; });
-    try { localStorage.setItem("aboutlab17", JSON.stringify(st)); } catch (e) {}
+    try { localStorage.setItem("aboutlab19", JSON.stringify(st)); } catch (e) {}
   }
   function words() { return body.textContent.trim().split(/\s+/).length; }
   function opts(map) { return Object.keys(map).map(function (k) { return '<option value="' + k + '">' + (map[k].name || map[k]) + "</option>"; }).join(""); }
@@ -800,7 +817,7 @@
     '<label>Head (the letter)</label><select id="lab-layout">' + LAYOUT_ORDER.map(function (k) { return '<option value="' + k + '">' + LAYOUTS[k].name + "</option>"; }).join("") + "</select>" +
     '<label>Article headline</label><select id="lab-headline">' + opts(HEADLINES) + "</select>" +
     '<div class="grid">' + cell("Photo", "photo", PHOTO) + cell("Features", "features", FEATURES) + cell("Player quotes", "quotes", QUOTES) + cell("Block titles", "heads", HEADS) + cell("Type", "type", TYPE) +
-    cell("Breaks", "sep", SEP) + cell("Section title", "title", TITLES) + cell("Paper", "paper", PAPER) + cell("What's new", "news", NEWS) + cell("What's new extras", "nx", NX) + cell("Tag colour", "tagc", TAGC) + cell("Tag size", "tagsize", TAGS) + "</div>" +
+    cell("Breaks", "sep", SEP) + cell("Section title", "title", TITLES) + cell("Paper", "paper", PAPER) + cell("What's new", "news", NEWS) + cell("What's new extras", "nx", NX) + cell("Tag colour", "tagc", TAGC) + cell("Tag size", "tagsize", TAGS) + cell("Signature", "sig", SIG) + cell("Signature colour", "sigc", SIGC) + "</div>" +
     '<p class="note" id="labNote"></p>';
   document.body.appendChild(p);
   p.querySelector(".hide").addEventListener("click", function () { document.body.classList.add("labhidden"); });
@@ -808,9 +825,9 @@
   KEYS.forEach(function (k) { document.getElementById("lab-" + k).addEventListener("change", function () { st[k] = this.value; apply(); }); });
 
   /* #layout:quotes:title:paper:features picks a state from the URL, for headless shots; else the last pick is remembered */
-  try { var saved = JSON.parse(localStorage.getItem("aboutlab17") || "null"); if (saved) KEYS.forEach(function (k) { if (saved[k]) st[k] = saved[k]; }); } catch (e) {}
+  try { var saved = JSON.parse(localStorage.getItem("aboutlab19") || "null"); if (saved) KEYS.forEach(function (k) { if (saved[k]) st[k] = saved[k]; }); } catch (e) {}
   var hash = (location.hash || "").slice(1).split(":");
-  if (hash[0] && LAYOUTS[hash[0]]) { st.layout = hash[0]; if (QUOTES[hash[1]]) st.quotes = hash[1]; if (TITLES[hash[2]]) st.title = hash[2]; if (PAPER[hash[3]]) st.paper = hash[3]; if (FEATURES[hash[4]]) st.features = hash[4]; if (HEADS[hash[5]]) st.heads = hash[5]; if (TYPE[hash[6]]) st.type = hash[6]; if (SEP[hash[7]]) st.sep = hash[7]; if (HEADLINES[hash[8]]) st.headline = hash[8]; if (PHOTO[hash[9]]) st.photo = hash[9]; if (NEWS[hash[10]]) st.news = hash[10]; if (NX[hash[11]]) st.nx = hash[11]; if (TAGC[hash[12]]) st.tagc = hash[12]; if (TAGS[hash[13]]) st.tagsize = hash[13]; }
+  if (hash[0] && LAYOUTS[hash[0]]) { st.layout = hash[0]; if (QUOTES[hash[1]]) st.quotes = hash[1]; if (TITLES[hash[2]]) st.title = hash[2]; if (PAPER[hash[3]]) st.paper = hash[3]; if (FEATURES[hash[4]]) st.features = hash[4]; if (HEADS[hash[5]]) st.heads = hash[5]; if (TYPE[hash[6]]) st.type = hash[6]; if (SEP[hash[7]]) st.sep = hash[7]; if (HEADLINES[hash[8]]) st.headline = hash[8]; if (PHOTO[hash[9]]) st.photo = hash[9]; if (NEWS[hash[10]]) st.news = hash[10]; if (NX[hash[11]]) st.nx = hash[11]; if (TAGC[hash[12]]) st.tagc = hash[12]; if (TAGS[hash[13]]) st.tagsize = hash[13]; if (SIG[hash[14]]) st.sig = hash[14]; if (SIGC[hash[15]]) st.sigc = hash[15]; }
   if (/hidepanel/.test(location.search)) document.body.classList.add("labhidden");
   apply();
   var t; window.addEventListener("resize", function () { clearTimeout(t); t = setTimeout(seams, 120); });
