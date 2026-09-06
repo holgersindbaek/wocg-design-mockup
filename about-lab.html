@@ -103,8 +103,18 @@
   #about .faqi p { margin: 0; color: var(--ink-soft); }
   /* updates */
   #about .up { margin: 0 0 10px; }
-  #about .up .d { display: block; font-size: 12px; font-weight: bold; letter-spacing: .06em; text-transform: uppercase; color: var(--faint); }
+  #about .up .d { display: block; font-size: 14px; font-weight: bold; color: var(--faint); }
   #about .stamp { font-size: 14px; color: var(--faint); margin-top: 8px; }
+  /* what's new rows: a category word or chip, the change, the date at the end in the small size; nothing in capitals */
+  #about .nwd { font-weight: bold; margin: 14px 0 4px; }
+  #about .nwi { display: flex; gap: 12px; align-items: baseline; margin: 0 0 6px; }
+  #about .nwi > b { flex: 0 0 74px; color: var(--muted); }
+  #about .nwi > span { flex: 1; min-width: 0; }
+  #about .nwi > time { flex: 0 0 auto; font-size: 14px; color: var(--faint); }
+  #about .nwi > span.chip { flex: 0 0 74px; }
+  #about .chip { flex: 0 0 74px; display: inline-block; text-align: center; font-size: 12px; font-weight: bold; line-height: 20px; padding: 0 8px; border-radius: 10px;
+    color: var(--c); background: color-mix(in srgb, var(--c) 12%, #fff); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--c) 30%, #fff); }
+  #about .up > div { margin-bottom: 2px; }
   #about .card { background: var(--card); border-radius: 20px; corner-shape: squircle; box-shadow: 0 0 0 1px var(--hairline), 0 2px 8px rgba(60,45,25,.08); padding: 22px 24px; }
   #about .bandcard { background: var(--band); border-radius: 20px; corner-shape: squircle; padding: 20px 22px; }
   body.paper-band #about .bandcard { background: var(--canvas); }
@@ -330,7 +340,7 @@
      a 1px ring of the same hue a step darker, the lift shadow, deep ink for the title; the felt is the tint here */
   #about .fgrid.tiles .fpic, #about .qtiles .q { --tint: #327333; --tintbg: oklch(from var(--tint) .95 .045 h); --tintring: oklch(from var(--tint) .79 .11 h);
     --tintink: oklch(from var(--tint) .44 .15 h); --tintsub: oklch(from var(--tint) .52 .10 h);
-    background: var(--tintbg); border-radius: 20px; corner-shape: squircle; box-shadow: inset 0 0 0 1px var(--tintring), var(--liftshadow); overflow: hidden; }
+    background: var(--card); border-radius: 20px; corner-shape: squircle; box-shadow: inset 0 0 0 1px var(--tintring), var(--liftshadow); overflow: hidden; }
   #about .fgrid.tiles .fimg { position: relative; border-radius: 0; box-shadow: none; }
   #about .fgrid.tiles .fimg::after { content: ""; position: absolute; inset: 0; box-shadow: inset 0 0 0 1px rgba(0,0,0,.75); mix-blend-mode: soft-light; pointer-events: none; }
   /* the tiles speak like the game tiles above them: Bulo bold 20 over Bulo 16, whatever the serif setting does to the rest */
@@ -466,6 +476,13 @@
       ["Are the cards dealt fairly?", "Yes. Every hand is shuffled on my server with a fresh random number for each deal, before anyone sees a card. There's no way for me or anyone else to steer what you're dealt, and the shuffle tests are on the site."]
     ],
     upIntro: "I do my best to keep the site up to date, and most weeks bring a fix or two. The full changelog goes back to December 2011.",
+    /* the real changelog, newest first, with the duplicate 3 September block merged; the section shows at most three dates and eight lines */
+    news: [
+      ["3 September 2026", "3 Sep", [["New", "Go Fish and Old Maid sort your hand by rank."], ["Improved", "Short, wide windows use the compact layout again."]]],
+      ["31 August 2026", "31 Aug", [["Fixed", "The screen freezing when cards were rearranged in Double Deck Pinochle and Gin Rummy."], ["Fixed", "Failed nil tricks in Spades now count as bags."], ["Fixed", "The right bower can be played when going alone in Euchre."], ["Fixed", "Opponent cards showing face up in Hand & Foot."]]],
+      ["30 August 2026", "30 Aug", [["Fixed", "The chat box needing two clicks before you could type."]]],
+      ["21 August 2026", "21 Aug", [["Fixed", "Phantom wild cards in Hand & Foot melds."], ["Fixed", "The Euchre chat button resizing the screen on phones."]]]
+    ],
     updates: [
       ["3 September 2026", "Go Fish and Old Maid now sort your hand by rank. Short, wide windows use the compact layout again."],
       ["31 August 2026", "Fixed the screen freezing when cards were rearranged in Double Deck Pinochle and Gin Rummy. Failed nil tricks in Spades now count as bags."],
@@ -491,8 +508,19 @@
   }
   function quotesRow(n) { return '<div class="qrow">' + D.quotes.slice(0, n || 3).map(quote).join("") + "</div>"; }
   function faq(list) { return (list || D.faq).map(function (f) { return '<div class="faqi"><b>' + f[0] + "</b><p>" + f[1] + "</p></div>"; }).join(""); }
-  function updates(n) { return D.updates.slice(0, n || 4).map(function (u) { return '<div class="up"><span class="d">' + u[0] + "</span>" + u[1] + "</div>"; }).join(""); }
-  function upLink() { return '<p class="stamp"><a href="#">Read the full changelog</a> &middot; ' + D.stamp + "</p>"; }
+  /* what's new, three ways, never more than three dates or eight lines */
+  var NEWS = { lines: "One line each, date at the end", dated: "Grouped under the dates", chips: "Category chips", classic: "Date labels, as on the live page" };
+  var KCOL = { New: "#00a82d", Improved: "#4d64ff", Fixed: "#8a857c" };
+  function newsSlice() { var out = [], n = 0; D.news.slice(0, 3).forEach(function (d) { var items = d[2].filter(function () { return n++ < 8; }); if (items.length) out.push([d[0], d[1], items]); }); return out; }
+  function updates(n) {
+    var mode = st.news || "lines", days = newsSlice();
+    if (mode === "classic") return days.map(function (d) { return '<div class="up"><span class="d">' + d[0] + "</span>" + d[2].map(function (i) { return "<div>" + i[1] + "</div>"; }).join("") + "</div>"; }).join("");
+    if (mode === "dated") return days.map(function (d) { return '<div class="nwd">' + d[0] + "</div>" + d[2].map(function (i) { return '<div class="nwi"><b>' + i[0] + "</b><span>" + i[1] + "</span></div>"; }).join(""); }).join("");
+    var rows = []; days.forEach(function (d) { d[2].forEach(function (i) { rows.push([d[1], i[0], i[1]]); }); });
+    if (mode === "chips") return rows.map(function (r) { return '<div class="nwi"><span class="chip" style="--c:' + KCOL[r[1]] + '">' + r[1] + "</span><span>" + r[2] + "</span><time>" + r[0] + "</time></div>"; }).join("");
+    return rows.map(function (r) { return '<div class="nwi"><b>' + r[1] + "</b><span>" + r[2] + "</span><time>" + r[0] + "</time></div>"; }).join("");
+  }
+  function upLink() { return '<p class="stamp"><a href="#">Read the full changelog</a></p>'; }
 
   var LAYOUTS = {
     letter: { name: "The letter", note: "One reading measure, everything in the order a reader asks it: who is here, what it's like, what people say, what you might wonder, what changed. The photo sits in the letter like a byline. Quotes are indented with a rule, so they read as proof, not as ads.",
@@ -509,7 +537,7 @@
         return '<div class="head">' + photo(128) + '<div class="txt">' + greet() + paras() + write() + signoff(false) + "</div></div>" +
           "<h3>" + H.like + "</h3>" + block +
           "<h3>" + H.faq + "</h3>" + '<div class="faqgrid">' + faq() + "</div>" +
-          "<h3>" + H.up + "</h3><p>" + D.upIntro + "</p>" + updates() + upLink() + '<p class="tag">One more hand.</p>';
+          "<h3>" + H.up + "</h3><p>" + D.upIntro + "</p>" + updates() + upLink();
       } },
     card: { name: "The postcard", note: "The letter is a card: photo left, four short paragraphs right, signed. Under it three columns carry the promises, the players' words and the questions, and the updates run as a row of four dates. The densest of the five.",
       build: function (q, f) {
@@ -517,14 +545,13 @@
         return '<div class="card post">' + photo(120) + "<div>" + greet() + paras() + write() + signoff(false) + "</div></div>" +
           '<div class="cols"><div><h3>' + H.like + '</h3>' + (f === "text" ? D.promises.map(pr).join("") : '<div class="fgrid one ' + f + '">' + D.promises.map(function (p, i) { return featureItem(p, i, f === "pictures" ? "icons" : f); }).join("") + "</div>") + "</div>" + qs +
           '<div><h3>' + H.faq + '</h3>' + faq(D.faq.slice(0, 6)) + '<p class="stamp"><a href="#">More answers on the Help page</a></p></div></div>' +
-          '<div class="uphead"><h3>' + H.up + '</h3><span class="stamp">' + D.stamp + ' &middot; <a href="#">Full changelog</a></span></div><div class="uprow">' + updates(4) + "</div>" +
-          '<p class="tag" style="text-align:center">One more hand.</p>';
+          '<div class="uphead"><h3>' + H.up + '</h3><span class="stamp">' + D.stamp + ' &middot; <a href="#">Full changelog</a></span></div><div class="uprow">' + updates(4) + "</div>";
       } },
     margin: { name: "Letter with a margin", note: "A text column with the person in a sticky margin: photo, name, the email, and the players' words stacked under a rule. The margin stays in view while the letter, the promises, the questions and the updates scroll past. Quotes always live in the margin here.",
       build: function (q, f) { return '<div class="two"><div class="main">' + greet() + paras() + write() + signoff(false) +
         "<h3>" + H.like + "</h3>" + features(f, "none") +
         "<h3>" + H.faq + "</h3>" + faq() +
-        "<h3>" + H.up + "</h3><p>" + D.upIntro + "</p>" + updates() + upLink() + '<p class="tag">One more hand.</p></div>' +
+        "<h3>" + H.up + "</h3><p>" + D.upIntro + "</p>" + updates() + upLink() + "</div>" +
         '<aside class="rail">' + photo(120) + '<p class="name">Holger Sindbaek</p><p class="who">Designer and programmer, Denmark.<br>Runs the site since 2023.</p><p><a class="mail" href="mailto:holger@worldofcardgames.com">holger@worldofcardgames.com</a></p>' +
         (q === "none" ? "" : D.quotes.slice(0, 3).map(quote).join("")) + "</aside></div>"; } },
     note: { name: "The counter note", note: "A narrow paper note pinned at the bottom of the page. Small photo, a bigger greeting, promises and questions as plain prose, quotes as quoted lines, and a signature. The calmest of the five, and the shortest.",
@@ -559,7 +586,7 @@
         '<div class="measure"><div class="fgrid tiles pictures">' + D.promises.map(function (p, i) { return featureItem(p, i, "pictures"); }).join("") + "</div></div>" +
         '<div class="measure"><h3>' + H.faq + "</h3>" + faq() + "</div>" +
         '<div class="measure"><div class="qtiles">' + D.quotes.slice(0, 3).map(quote).join("") + "</div></div>" +
-        '<div class="measure"><h3>' + H.up + "</h3><p>" + D.upIntro + "</p>" + updates() + upLink() + '<p class="tag">One more hand.</p></div>'; } },
+        '<div class="measure"><h3>' + H.up + "</h3><p>" + D.upIntro + "</p>" + updates() + upLink() + "</div>"; } },
     article: { name: "The article", note: "Dear reader without the greeting: a headline about the site, an optional standfirst, and a byline with a small round author photo, the way a magazine shows who wrote a piece. The body stays in the serif at the section's measure, and Holger signs at the end. Pick the headline in the chooser.",
       build: function (q, f) { var h = HEADLINES[st.headline] || HEADLINES.few; return '<div class="article"><h2 class="artTitle">' + h.t + "</h2>" + (h.s ? '<p class="artStand">' + h.s + "</p>" : "") +
         '<div class="artBy">' + photo(36) + "<span>By <b>Holger Sindbaek</b>, who runs World of Card Games &middot; 6 September 2026</span></div>" +
@@ -594,7 +621,7 @@
   }
   /* what follows the paper: the promises with the notes, the questions, the updates, the tagline */
   function rest(q, f) { return '<div class="measure"><h3>' + H.like + '</h3>' + features(f, q) +
-    "<h3>" + H.faq + "</h3>" + faq() + "<h3>" + H.up + "</h3><p>" + D.upIntro + "</p>" + updates() + upLink() + '<p class="tag">One more hand.</p></div>'; }
+    "<h3>" + H.faq + "</h3>" + faq() + "<h3>" + H.up + "</h3><p>" + D.upIntro + "</p>" + updates() + upLink() + "</div>"; }
 
   /* ===== the promises three ways. Icons: a line icon in a tinted ring. Pictures: dummy scenes on a felt, drawn in place ===== */
   var ICONS = [
@@ -658,6 +685,7 @@
   /* the article's headline, about the site and not about the sender; a standfirst is optional */
   /* second naming round (6 September 2026): the note's title, about the place, never a greeting or a slogan; the reader's judge loved "Room for one more", the editor's judge chose "A few words about this place" */
   var HEADLINES = {
+    hand: { name: "One more hand", t: "One more hand", s: "There is always a seat at a table here, whatever the hour." },
     /* informative and funny (third naming round, 6 September 2026): dry, true, a person's line; the reader's judge and the editor's judge agreed on the first three */
     mgmt: { name: "Management would like to introduce himself", t: "Management would like to introduce himself", s: "He is a designer and programmer in Denmark, and he reads the mail himself." },
     mgmtBare: { name: "Management would like to introduce himself (no standfirst)", t: "Management would like to introduce himself", s: "" },
@@ -712,8 +740,8 @@
   /* ===== state, the panel, the URL ===== */
   /* the defaults are Holger's picks (6 September 2026): the letter on paper, icons for the features, "Behind the games" */
   var PHOTO = { sig: "By the signature", text: "In the text, three lines" };
-  var st = { layout: "tiles", headline: "room", photo: "sig", features: "icons", quotes: "paired", heads: "features", type: "gelica", sep: "rules", title: "games", paper: "canvas" };
-  var KEYS = ["layout", "headline", "photo", "features", "quotes", "heads", "type", "sep", "title", "paper"];
+  var st = { layout: "tiles", headline: "hand", photo: "sig", news: "lines", features: "icons", quotes: "paired", heads: "features", type: "gelica", sep: "rules", title: "games", paper: "canvas" };
+  var KEYS = ["layout", "headline", "photo", "features", "quotes", "heads", "type", "sep", "title", "paper", "news"];
   var body = document.getElementById("aboutBody");
   /* a break before every block head, except heads that live inside a card or a column set */
   function breaks() {
@@ -736,7 +764,7 @@
     seams();
     document.getElementById("labNote").innerHTML = "<b>" + LAYOUTS[st.layout].name + ".</b> " + LAYOUTS[st.layout].note + " <b>Words:</b> " + words() + ".";
     KEYS.forEach(function (k) { var s = document.getElementById("lab-" + k); if (s.value !== st[k]) s.value = st[k]; });
-    try { localStorage.setItem("aboutlab12", JSON.stringify(st)); } catch (e) {}
+    try { localStorage.setItem("aboutlab13", JSON.stringify(st)); } catch (e) {}
   }
   function words() { return body.textContent.trim().split(/\s+/).length; }
   function opts(map) { return Object.keys(map).map(function (k) { return '<option value="' + k + '">' + (map[k].name || map[k]) + "</option>"; }).join(""); }
@@ -746,7 +774,7 @@
     '<label>Head (the letter)</label><select id="lab-layout">' + LAYOUT_ORDER.map(function (k) { return '<option value="' + k + '">' + LAYOUTS[k].name + "</option>"; }).join("") + "</select>" +
     '<label>Article headline</label><select id="lab-headline">' + opts(HEADLINES) + "</select>" +
     '<div class="grid">' + cell("Photo", "photo", PHOTO) + cell("Features", "features", FEATURES) + cell("Player quotes", "quotes", QUOTES) + cell("Block titles", "heads", HEADS) + cell("Type", "type", TYPE) +
-    cell("Breaks", "sep", SEP) + cell("Section title", "title", TITLES) + cell("Paper", "paper", PAPER) + "</div>" +
+    cell("Breaks", "sep", SEP) + cell("Section title", "title", TITLES) + cell("Paper", "paper", PAPER) + cell("What's new", "news", NEWS) + "</div>" +
     '<p class="note" id="labNote"></p>';
   document.body.appendChild(p);
   p.querySelector(".hide").addEventListener("click", function () { document.body.classList.add("labhidden"); });
@@ -754,9 +782,9 @@
   KEYS.forEach(function (k) { document.getElementById("lab-" + k).addEventListener("change", function () { st[k] = this.value; apply(); }); });
 
   /* #layout:quotes:title:paper:features picks a state from the URL, for headless shots; else the last pick is remembered */
-  try { var saved = JSON.parse(localStorage.getItem("aboutlab12") || "null"); if (saved) KEYS.forEach(function (k) { if (saved[k]) st[k] = saved[k]; }); } catch (e) {}
+  try { var saved = JSON.parse(localStorage.getItem("aboutlab13") || "null"); if (saved) KEYS.forEach(function (k) { if (saved[k]) st[k] = saved[k]; }); } catch (e) {}
   var hash = (location.hash || "").slice(1).split(":");
-  if (hash[0] && LAYOUTS[hash[0]]) { st.layout = hash[0]; if (QUOTES[hash[1]]) st.quotes = hash[1]; if (TITLES[hash[2]]) st.title = hash[2]; if (PAPER[hash[3]]) st.paper = hash[3]; if (FEATURES[hash[4]]) st.features = hash[4]; if (HEADS[hash[5]]) st.heads = hash[5]; if (TYPE[hash[6]]) st.type = hash[6]; if (SEP[hash[7]]) st.sep = hash[7]; if (HEADLINES[hash[8]]) st.headline = hash[8]; if (PHOTO[hash[9]]) st.photo = hash[9]; }
+  if (hash[0] && LAYOUTS[hash[0]]) { st.layout = hash[0]; if (QUOTES[hash[1]]) st.quotes = hash[1]; if (TITLES[hash[2]]) st.title = hash[2]; if (PAPER[hash[3]]) st.paper = hash[3]; if (FEATURES[hash[4]]) st.features = hash[4]; if (HEADS[hash[5]]) st.heads = hash[5]; if (TYPE[hash[6]]) st.type = hash[6]; if (SEP[hash[7]]) st.sep = hash[7]; if (HEADLINES[hash[8]]) st.headline = hash[8]; if (PHOTO[hash[9]]) st.photo = hash[9]; if (NEWS[hash[10]]) st.news = hash[10]; }
   if (/hidepanel/.test(location.search)) document.body.classList.add("labhidden");
   apply();
   var t; window.addEventListener("resize", function () { clearTimeout(t); t = setTimeout(seams, 120); });
