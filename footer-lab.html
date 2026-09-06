@@ -8752,6 +8752,10 @@
   .sitefooter .fBrand img { display: block; height: 30px; width: auto; margin: 2px 0 10px; }
   .sitefooter .fBrand p { margin: 0 0 10px; font-size: 16px; line-height: 24px; color: #4e4d4c; }
   .sitefooter .fBrand .social { margin-top: 2px; }
+  /* the two groups: the games gathered at the left, the site's columns at the right, 32px between neighbours inside a group (56 and 40 did not fit the page's families beside Site and Legal with the wordmark head) */
+  .sitefooter .fLeft, .sitefooter .fRight { display: flex; gap: 32px; max-width: 100%; min-width: 0; }
+  .sitefooter .fRight { margin-left: auto; }
+  .sitefooter .fLeft .fRow { flex: 1 1 auto; }
   /* a muted line inside a column: the partner's name where a head would be too much */
   .sitefooter li.fMuted { color: #8a857c; }
 </style>
@@ -8830,17 +8834,21 @@
       html: function () { return section("footerResources", [siteCol("Site", false)]) + bar(false); }, before: BRAND }
   };
 
-  var games = "today", rest = "today";
+  var ALIGN = { even: ["Spread evenly, as today", "The columns <b>spread evenly</b> across the width, as today: the space between neighbours depends on how many there are."],
+    split: ["Games at the left, the rest at the right", "<b>Two groups</b>: the games gathered at the left with an even 32px between families, the site's columns gathered at the right, and open space between the two. The bar keeps the full width."] };
+  var games = "today", rest = "today", align = "even";
   function render() {
-    if (games === "today" && rest === "today") { footer.innerHTML = TODAY; return; }
-    footer.innerHTML = REST[rest].before + GAMES[games].html() + REST[rest].html();
+    if (games === "today" && rest === "today" && align === "even") { footer.innerHTML = TODAY; return; }
+    var r = REST[rest].html(), i = r.indexOf('<div class="fBar'), cols = i < 0 ? r : r.slice(0, i), barHtml = i < 0 ? "" : r.slice(i);
+    if (align === "split") footer.innerHTML = '<div class="fLeft">' + REST[rest].before + GAMES[games].html() + '</div><div class="fRight">' + cols + "</div>" + barHtml;
+    else footer.innerHTML = REST[rest].before + GAMES[games].html() + r;
   }
-  function pick(g, r, h) {
-    games = GAMES[g] ? g : "today"; rest = REST[r] ? r : "today"; head = HEADS[h] ? h : "site";
+  function pick(g, r, h, a) {
+    games = GAMES[g] ? g : "today"; rest = REST[r] ? r : "today"; head = HEADS[h] ? h : "site"; align = ALIGN[a] ? a : "even";
     render();
-    document.getElementById("labGames").value = games; document.getElementById("labRest").value = rest; document.getElementById("labHead").value = head;
-    document.getElementById("labNote").innerHTML = GAMES[games].note + "<br><br>" + REST[rest].note + (rest === "today" ? "" : "<br><br>" + HEADS[head][1]);
-    try { localStorage.setItem("footerlab", games + ":" + rest + ":" + head); } catch (e) {}
+    document.getElementById("labGames").value = games; document.getElementById("labRest").value = rest; document.getElementById("labHead").value = head; document.getElementById("labAlign").value = align;
+    document.getElementById("labNote").innerHTML = GAMES[games].note + "<br><br>" + REST[rest].note + (rest === "today" ? "" : "<br><br>" + HEADS[head][1]) + "<br><br>" + ALIGN[align][1];
+    try { localStorage.setItem("footerlab", games + ":" + rest + ":" + head + ":" + align); } catch (e) {}
   }
 
   var p = document.createElement("div"); p.id = "labPanel";
@@ -8848,19 +8856,21 @@
     '<label>The games</label><select id="labGames">' + Object.keys(GAMES).map(function (k) { return '<option value="' + k + '">' + GAMES[k].name + "</option>"; }).join("") + "</select>" +
     '<label>The rest</label><select id="labRest">' + Object.keys(REST).map(function (k) { return '<option value="' + k + '">' + REST[k].name + "</option>"; }).join("") + "</select>" +
     '<label>The Site head</label><select id="labHead">' + Object.keys(HEADS).map(function (k) { return '<option value="' + k + '">' + (k === "mark" ? "The wordmark" : HEADS[k][0]) + "</option>"; }).join("") + "</select>" +
+    '<label>Alignment</label><select id="labAlign">' + Object.keys(ALIGN).map(function (k) { return '<option value="' + k + '">' + ALIGN[k][0] + "</option>"; }).join("") + "</select>" +
     '<p class="note" id="labNote"></p>';
   document.body.appendChild(p);
   p.querySelector(".hide").addEventListener("click", function () { document.body.classList.add("labhidden"); });
   document.addEventListener("keydown", function (e) { if (e.key === "h" || e.key === "H") document.body.classList.toggle("labhidden"); });
-  document.getElementById("labGames").addEventListener("change", function () { pick(this.value, rest, head); });
-  document.getElementById("labRest").addEventListener("change", function () { pick(games, this.value, head); });
-  document.getElementById("labHead").addEventListener("change", function () { pick(games, rest, this.value); });
+  document.getElementById("labGames").addEventListener("change", function () { pick(this.value, rest, head, align); });
+  document.getElementById("labRest").addEventListener("change", function () { pick(games, this.value, head, align); });
+  document.getElementById("labHead").addEventListener("change", function () { pick(games, rest, this.value, align); });
+  document.getElementById("labAlign").addEventListener("change", function () { pick(games, rest, head, this.value); });
 
-  /* #games:rest:head in the URL picks a set, for headless shots; else the last pick is remembered. The page scrolls to the footer once the intro has run. */
+  /* #games:rest:head:align in the URL picks a set, for headless shots; else the last pick is remembered. The page scrolls to the footer once the intro has run. */
   var saved = null; try { saved = (localStorage.getItem("footerlab") || "").split(":"); } catch (e) {}
   var hash = (location.hash || "").slice(1);
   if (hash) { saved = hash.split(":"); if (/hidepanel/.test(location.search)) document.body.classList.add("labhidden"); }
-  pick(saved && saved[0] ? saved[0] : "today", saved && saved[1] ? saved[1] : "today", saved && saved[2] ? saved[2] : "site");
+  pick(saved && saved[0] ? saved[0] : "today", saved && saved[1] ? saved[1] : "today", saved && saved[2] ? saved[2] : "site", saved && saved[3] ? saved[3] : "even");
   var moved = false; window.addEventListener("wheel", function () { moved = true; }, { passive: true }); window.addEventListener("keydown", function () { moved = true; });
   window.addEventListener("load", function () {
     setTimeout(function () { if (moved) return; document.documentElement.style.scrollBehavior = "auto"; document.querySelector(".sitefooter").scrollIntoView({ block: "end" }); document.documentElement.style.scrollBehavior = ""; }, 4300);
