@@ -2067,7 +2067,11 @@
   .sitefooter footer { max-width: 1160px; margin: 0 auto; padding: 20px 24px 26px;
     display: flex; flex-wrap: wrap; justify-content: space-between; gap: 24px; }
   .sitefooter .footerSection { display: flex; gap: 24px; max-width: 100%; min-width: 0; width: max-content; }
-  .sitefooter .footerGames { gap: 16px; }
+  /* a family is one group (footer lab, 6 September): the head over its columns, so the head's width does not widen the first column */
+  .sitefooter .footerGroup { flex-direction: column; gap: 0; }
+  .sitefooter .footerGroup > strong { display: block; font-size: 16px; line-height: 28px; }
+  .sitefooter .footerCols { display: flex; gap: 20px; }
+  .sitefooter .footerPartner { color: #8a857c; }
   .sitefooter ul { padding: 0; margin: 0; list-style: none; font-size: 16px; line-height: 28px; }
   .sitefooter li { white-space: nowrap; }
   .sitefooter a { color: inherit; border-bottom: none; }
@@ -2078,11 +2082,6 @@
   .sitefooter .social > a[aria-label="X"] { box-sizing: border-box; padding: 2px; }
   .sitefooter .social > a[aria-label="X"] svg { width: 20px; height: 20px; }
   .sitefooter .social > a:hover { opacity: 0.7; text-decoration: none; }
-  .sitefooter .footerRaptive .adthrive-footer-message { display: flex; flex-direction: column;
-    font-size: 16px; line-height: 28px; }
-  .sitefooter .footerRaptive .adthrive-footer-message > span { order: 1; font-weight: bold; }
-  .sitefooter .footerRaptive .adthrive-privacy-preferences { order: 2; }
-  .sitefooter .footerRaptive .raptive-content-terms-footer { order: 3; }
 
   /* ===== below the fold: active palette only ===== */
   .wrap { max-width: 960px; margin: 0 auto; padding: 8px 32px 96px; }
@@ -3992,35 +3991,47 @@
   <div class="sitefooter">
     <div class="footer-basic">
       <footer>
-        <div class="footerSection footerGames">
-          <ul class="list-inline">
-            <li class="list-inline-item"><strong>Games</strong></li>
-            <li class="list-inline-item"><a href="/hearts">Hearts</a></li>
-            <li class="list-inline-item"><a href="/spades">Spades</a></li>
-            <li class="list-inline-item"><a href="/euchre">Euchre</a></li>
-            <li class="list-inline-item"><a href="/gin-rummy">Gin Rummy</a></li>
-            <li class="list-inline-item"><a href="/cribbage">Cribbage</a></li>
-            <li class="list-inline-item"><a href="/pinochle">Pinochle</a></li>
-            <li class="list-inline-item"><a href="/double-deck-pinochle">DD Pinochle</a></li>
-          </ul>
-          <ul class="list-inline">
-            <li class="list-inline-item footerSpacer">&nbsp;</li>
-            <li class="list-inline-item"><a href="/canasta">Canasta</a></li>
-            <li class="list-inline-item"><a href="/hand-and-foot">Hand &amp; Foot</a></li>
-            <li class="list-inline-item"><a href="/rummy">Rummy</a></li>
-            <li class="list-inline-item"><a href="/crazy-eights">Crazy Eights</a></li>
-            <li class="list-inline-item"><a href="/bridge">Bridge</a></li>
-            <li class="list-inline-item"><a href="/whist">Whist</a></li>
-          </ul>
-          <ul class="list-inline">
-            <li class="list-inline-item footerSpacer">&nbsp;</li>
-            <li class="list-inline-item"><a href="/go-fish">Go Fish</a></li>
-            <li class="list-inline-item"><a href="/old-maid">Old Maid</a></li>
-            <li class="list-inline-item"><a href="/sheepshead">Sheepshead</a></li>
-            <li class="list-inline-item"><a href="/twenty-nine">Twenty-Nine</a></li>
-            <li class="list-inline-item"><a href="/sergeant-major">Sergeant Major</a></li>
-            <li class="list-inline-item"><a href="https://papergames.io/">Board Games</a></li>
-          </ul>
+        <div class="footerSection footerGroup">
+          <strong>Trick-taking games</strong>
+          <div class="footerCols">
+            <ul class="list-inline">
+              <li class="list-inline-item"><a href="/hearts">Hearts</a></li>
+              <li class="list-inline-item"><a href="/spades">Spades</a></li>
+              <li class="list-inline-item"><a href="/euchre">Euchre</a></li>
+              <li class="list-inline-item"><a href="/pinochle">Pinochle</a></li>
+              <li class="list-inline-item"><a href="/double-deck-pinochle">DD Pinochle</a></li>
+            </ul>
+            <ul class="list-inline">
+              <li class="list-inline-item"><a href="/bridge">Bridge</a></li>
+              <li class="list-inline-item"><a href="/whist">Whist</a></li>
+              <li class="list-inline-item"><a href="/sheepshead">Sheepshead</a></li>
+              <li class="list-inline-item"><a href="/twenty-nine">Twenty-Nine</a></li>
+              <li class="list-inline-item"><a href="/sergeant-major">Sergeant Major</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="footerSection footerGroup">
+          <strong>Rummy games</strong>
+          <div class="footerCols">
+            <ul class="list-inline">
+              <li class="list-inline-item"><a href="/canasta">Canasta</a></li>
+              <li class="list-inline-item"><a href="/gin-rummy">Gin Rummy</a></li>
+              <li class="list-inline-item"><a href="/hand-and-foot">Hand &amp; Foot</a></li>
+              <li class="list-inline-item"><a href="/rummy">Rummy</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="footerSection footerGroup">
+          <strong>Classic games</strong>
+          <div class="footerCols">
+            <ul class="list-inline">
+              <li class="list-inline-item"><a href="/cribbage">Cribbage</a></li>
+              <li class="list-inline-item"><a href="/crazy-eights">Crazy Eights</a></li>
+              <li class="list-inline-item"><a href="/go-fish">Go Fish</a></li>
+              <li class="list-inline-item"><a href="/old-maid">Old Maid</a></li>
+              <li class="list-inline-item"><a href="https://papergames.io/">Board Games</a></li>
+            </ul>
+          </div>
         </div>
         <div class="footerSection footerResources">
           <ul class="list-inline">
@@ -4030,9 +4041,7 @@
             <li class="list-inline-item"><a href="/rules">Rules &amp; Guides</a></li>
             <li class="list-inline-item"><a href="https://worldofcardgames.com/blog/">Blog</a></li>
             <li class="list-inline-item"><a href="/contact">Contact</a></li>
-            <li class="list-inline-item"><a href="/world-of-card-games-privacy-policy">Privacy Policy</a></li>
-            <li class="list-inline-item"><a href="/community-guidelines">Community Guidelines</a></li>
-            <li class="list-inline-item tosSocial"><a href="/world-of-card-games-terms-of-use">ToS</a>
+            <li class="list-inline-item">
               <div class="social">
                 <a href="https://x.com/WorldOfCardGamz" aria-label="X"><svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24h-6.657l-5.214-6.817-5.966 6.817H1.68l7.73-8.835L1.254 2.25h6.826l4.713 6.231 5.45-6.231Zm-1.16 17.52h1.833L7.084 4.126H5.117L17.083 19.77Z"></path></svg></a>
                 <a href="https://www.facebook.com/WorldOfCardGames/"><img src="facebook-48.png" alt="Facebook" loading="lazy" width="32" height="32"></a>
@@ -4041,12 +4050,16 @@
             </li>
           </ul>
         </div>
-        <div class="footerSection footerRaptive">
-          <div class="adthrive-comscore adthrive-footer-message">
-            <div class="adthrive-privacy-preferences"><a href="#">Update Privacy Preferences</a></div>
-            <div class="raptive-content-terms-footer"><a href="#" class="raptive-content-terms-footer-link">Terms of Content Use</a></div>
-            <span>A Raptive Partner Site</span>
-          </div>
+        <div class="footerSection footerLegal">
+          <ul class="list-inline">
+            <li class="list-inline-item"><strong>Legal</strong></li>
+            <li class="list-inline-item"><a href="/world-of-card-games-privacy-policy">Privacy Policy</a></li>
+            <li class="list-inline-item"><a href="/world-of-card-games-terms-of-use">Terms of Use</a></li>
+            <li class="list-inline-item"><a href="/community-guidelines">Community Guidelines</a></li>
+            <li class="list-inline-item adthrive-privacy-preferences"><a href="#">Update Privacy Preferences</a></li>
+            <li class="list-inline-item raptive-content-terms-footer"><a href="#" class="raptive-content-terms-footer-link">Terms of Content Use</a></li>
+            <li class="list-inline-item footerPartner">A Raptive Partner Site</li>
+          </ul>
         </div>
       </footer>
     </div>
