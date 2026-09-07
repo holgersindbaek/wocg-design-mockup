@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-"""The faint border on every avatar (avatar-svg-lab.html, the softer set's row 13), as a rule:
-   a 2-unit centred stroke, black at 15%, on the PARTS of each drawing. Skipped: tiny shapes (under 10 units:
+"""The faint border on every avatar, as a rule: a 2-unit INNER border, black at 15%, on every PART of the drawing
+   (a stroked reference to the shape, masked to the shape), an OUTER border on the teeth (small near-white shapes low
+   in the face, stroked under the shape), and no border between a part and its own shades. Skipped: tiny shapes (under 10 units:
    eyes, dots, marks), the ink (fills darker than L .03), and SHADING: overlapping shapes whose colours differ only
    in lightness (the same Lab hue within 16 degrees, a similar chroma, under 32 L apart) are one material, a base with
    its shadows and highlights, and only the largest of them is stroked; a change of hue or chroma (grey hair beside
@@ -85,58 +86,79 @@ def measure(files):
     return by
 
 def decide(els):
-    """stroke the PARTS: near-tone shapes that overlap (a base, its shadows and highlights) are one material family,
-       and only the family's largest shape gets the stroke; the eyes, dots and marks (under 10 units) and the ink stay bare"""
-    dec = {}
-    live = [e for e in els if e["area"] > 0 and max(e["x1"] - e["x0"], e["y1"] - e["y0"]) >= 10 and lum(e["fill"]) >= 0.03]
+    """per shape: 'in' (an inner border: a part), 'out' (an outer border: the teeth), 'shade', 'tiny' or 'ink';
+       families: overlapping shapes of one material (the same Lab hue and chroma, lightness apart) share one border,
+       drawn on the family's largest member and masked away where it meets the others"""
+    dec = {}; fam_of = {}
+    live = [e for e in els if e["area"] > 0 and lum(e["fill"]) >= 0.03]
+    ys = [e["y1"] for e in live] or [160]; ytop = min(e["y0"] for e in live) if live else 0; ybot = max(ys)
+    def dim(e): return max(e["x1"] - e["x0"], e["y1"] - e["y0"])
+    teeth = [e for e in live if lab(e["fill"])[0] > 92 and 6 <= dim(e) < 30 and (e["y0"] + e["y1"]) / 2 > ytop + 0.55 * (ybot - ytop)]
+    parts = [e for e in live if dim(e) >= 10 and e not in teeth]
     for e in els:
-        if e not in live: dec[e["i"]] = "ink" if (e["area"] > 0 and lum(e["fill"]) < 0.03) else "tiny"
-    parent = {id(e): id(e) for e in live}
+        if e in teeth: dec[e["i"]] = "out"
+        elif e not in parts: dec[e["i"]] = "ink" if (e["area"] > 0 and lum(e["fill"]) < 0.03) else "tiny"
+    parent = {id(e): id(e) for e in parts}
     def find(x):
         while parent[x] != x: parent[x] = parent[parent[x]]; x = parent[x]
         return x
     def same_material(a, b):
-        """a shade of the same material keeps the hue and roughly the chroma and only moves in lightness;
-           a change of hue or of chroma (grey hair beside skin, blonde beside skin) is another material"""
         La, Aa, Ba, Ca, Ha = lab(a["fill"]); Lb, Ab, Bb, Cb, Hb = lab(b["fill"])
-        if abs(La - Lb) > 32: return False                       # too far apart in lightness to be a shade
-        if Ca < 9 and Cb < 9: pass                               # both greys: lightness alone decides
-        elif Ca < 9 or Cb < 9: return False                      # a grey beside a colour: two materials
+        if abs(La - Lb) > 32: return False
+        if Ca < 9 and Cb < 9: pass
+        elif Ca < 9 or Cb < 9: return False
         else:
-            if hdiff(Ha, Hb) > 16: return False                  # a different hue: two materials
-            if abs(Ca - Cb) / max(Ca, Cb) > 0.5: return False    # a much stronger or weaker colour: two materials
+            if hdiff(Ha, Hb) > 16: return False
+            if abs(Ca - Cb) / max(Ca, Cb) > 0.5: return False
         ix = max(0, min(a["x1"], b["x1"]) - max(a["x0"], b["x0"])); iy = max(0, min(a["y1"], b["y1"]) - max(a["y0"], b["y0"]))
         small = min(max(1, (a["x1"] - a["x0"]) * (a["y1"] - a["y0"])), max(1, (b["x1"] - b["x0"]) * (b["y1"] - b["y0"])))
         return ix * iy / small >= 0.3
-    for i, a in enumerate(live):
-        for b in live[i + 1:]:
+    for i, a in enumerate(parts):
+        for b in parts[i + 1:]:
             if same_material(a, b): parent[find(id(a))] = find(id(b))
     families = {}
-    for e in live: families.setdefault(find(id(e)), []).append(e)
+    for e in parts: families.setdefault(find(id(e)), []).append(e)
     for fam in families.values():
         base = max(fam, key=lambda e: e["area"])
-        for e in fam: dec[e["i"]] = "stroke" if e is base else "shade"
-    return dec
+        for e in fam:
+            dec[e["i"]] = "in" if e is base else "shade"
+            fam_of[e["i"]] = [x["i"] for x in fam if x is not e]
+    return dec, fam_of
 
-def write(f, dec):
-    s = open(SRC + f).read(); head, body = split(s)
-    nb = body
-    for e in EL.findall(body):
-        pass
-    els = EL.findall(body)
+def write(f, dec, fam_of):
+    """the shape keeps its geometry once, with an id and its fill on a wrapper; the border is a <use> of it:
+       inner = a 4-unit stroke on the reference, masked to the shape (and away from its own shades);
+       outer (teeth) = a 2-unit stroke on the reference drawn under the shape"""
+    s = open(SRC + f).read(); head, body = split(s); styles = styles_of(s)
+    els = EL.findall(body); nb = body
     for i, e in enumerate(els):
-        if dec.get(i) == "stroke":
-            nb = nb.replace(e, e[:-2] + ' stroke="#000" stroke-opacity="%s" stroke-width="%s" stroke-linejoin="round"/>' % (OP, W), 1)
+        d = dec.get(i)
+        if d not in ("in", "out", "shade"): continue
+        fill = fill_of(e, styles)
+        if not fill: continue
+        c = re.search(r'class="([^"]+)"', e)
+        if c and "opacity" in styles.get(c.group(1), ""): continue
+        core = re.sub(r'\s(id|class)="[^"]*"', "", e)
+        core = core[:-2] + ' id="ab%d"/>' % i
+        shape = '<g fill="%s">' % fill + core + '</g>'
+        if d == "shade": rep = shape
+        elif d == "out":
+            rep = '<use href="#ab%d" fill="none" stroke="#000" stroke-opacity="%s" stroke-width="%s" stroke-linejoin="round"/>' % (i, OP, W) + shape
+        else:
+            others = "".join('<use href="#ab%d" fill="#000" stroke="#000" stroke-width="%s" stroke-linejoin="round"/>' % (k, W * 2) for k in fam_of.get(i, []))
+            mask = '<mask id="am%d" maskUnits="userSpaceOnUse" x="0" y="0" width="160" height="160"><use href="#ab%d" fill="#fff"/>%s</mask>' % (i, i, others)
+            rep = shape + mask + '<use href="#ab%d" fill="none" stroke="#000" stroke-opacity="%s" stroke-width="%s" stroke-linejoin="round" mask="url(#am%d)"/>' % (i, OP, W * 2, i)
+        nb = nb.replace(e, rep, 1)
     open(OUT + f, "w").write(head + nb)
 
 if __name__ == "__main__":
     files = sorted(f for f in os.listdir(SRC) if f.endswith(".svg"))
     by = measure(files)
-    decisions = {}; counts = {"stroke": 0, "shade": 0, "tiny": 0, "ink": 0}
+    decisions = {}; counts = {"in": 0, "out": 0, "shade": 0, "tiny": 0, "ink": 0}
     for f in files:
-        dec = decide(by.get(f, [])); decisions[f] = dec
+        dec, fam_of = decide(by.get(f, [])); decisions[f] = dec
         for v in dec.values(): counts[v] += 1
-        write(f, dec)
+        write(f, dec, fam_of)
     json.dump(decisions, open(OUT + "decisions.json", "w"), indent=0)
     grow = [(os.path.getsize(SRC + f), os.path.getsize(OUT + f)) for f in files]
     print("files", len(files), counts, "size +%d bytes, mean +%.1f%%" % (sum(b - a for a, b in grow), 100 * sum(b / a - 1 for a, b in grow) / len(grow)))
