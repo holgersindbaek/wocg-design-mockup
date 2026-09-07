@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """The faint border on every avatar (avatar-svg-lab.html, the softer set's row 13), as a rule:
    a 2-unit centred stroke, black at 15%, on the PARTS of each drawing. Skipped: tiny shapes (under 10 units:
-   eyes, dots, marks), the ink (fills darker than L .03), and SHADING: near-tone shapes (under 1.5:1, the same hue)
-   that overlap are one material (a base with its shadows and highlights), and only the largest of them is stroked,
-   so the lines fall where one material meets another (face and hair, cloth and body), not inside a material.
+   eyes, dots, marks), the ink (fills darker than L .03), and SHADING: overlapping shapes whose colours differ only
+   in lightness (the same Lab hue within 16 degrees, a similar chroma, under 32 L apart) are one material, a base with
+   its shadows and highlights, and only the largest of them is stroked; a change of hue or chroma (grey hair beside
+   skin, blonde beside skin) is a new material, so the lines fall where materials meet and never inside one.
    Reads game-assets/avatars/*.svg, measures every filled shape by rendering it alone (one headless Chromium
    screenshot for the whole set), writes game-assets/avatars-bordered/*.svg and a decisions.json next to them.
    The same rule for a Lottie file is lottie_strokes() in zz-tmp-build-avatar-svg-soft.py."""
@@ -44,6 +45,16 @@ def hue(h):
     r, g, b = rgb(h); hh, s, v = colorsys.rgb_to_hsv(r, g, b); return hh * 360, s
 def hdiff(a, b):
     d = abs(a - b); return min(d, 360 - d)
+def lab(h):
+    """CIELAB (D65) of a hex colour"""
+    import math
+    r, g, b = rgb(h)
+    f = lambda v: v / 12.92 if v <= 0.04045 else ((v + 0.055) / 1.055) ** 2.4
+    r, g, b = f(r), f(g), f(b)
+    X = (0.4124 * r + 0.3576 * g + 0.1805 * b) / 0.95047; Y = 0.2126 * r + 0.7152 * g + 0.0722 * b; Z = (0.0193 * r + 0.1192 * g + 0.9505 * b) / 1.08883
+    t = lambda v: v ** (1 / 3) if v > 0.008856 else 7.787 * v + 16 / 116
+    L = 116 * t(Y) - 16; A = 500 * (t(X) - t(Y)); B = 200 * (t(Y) - t(Z))
+    return L, A, B, math.hypot(A, B), math.degrees(math.atan2(B, A)) % 360
 
 def measure(files):
     """render every filled shape alone in one grid; return {file: [{i, fill, area, x0, y0, x1, y1}]}"""
@@ -85,13 +96,18 @@ def decide(els):
         while parent[x] != x: parent[x] = parent[parent[x]]; x = parent[x]
         return x
     def same_material(a, b):
-        r = ratio(a["fill"], b["fill"])
-        if r >= 1.5: return False
-        ha, sa = hue(a["fill"]); hb, sb = hue(b["fill"])
-        if sa > 0.12 and sb > 0.12 and hdiff(ha, hb) > 40: return False
+        """a shade of the same material keeps the hue and roughly the chroma and only moves in lightness;
+           a change of hue or of chroma (grey hair beside skin, blonde beside skin) is another material"""
+        La, Aa, Ba, Ca, Ha = lab(a["fill"]); Lb, Ab, Bb, Cb, Hb = lab(b["fill"])
+        if abs(La - Lb) > 32: return False                       # too far apart in lightness to be a shade
+        if Ca < 9 and Cb < 9: pass                               # both greys: lightness alone decides
+        elif Ca < 9 or Cb < 9: return False                      # a grey beside a colour: two materials
+        else:
+            if hdiff(Ha, Hb) > 16: return False                  # a different hue: two materials
+            if abs(Ca - Cb) / max(Ca, Cb) > 0.5: return False    # a much stronger or weaker colour: two materials
         ix = max(0, min(a["x1"], b["x1"]) - max(a["x0"], b["x0"])); iy = max(0, min(a["y1"], b["y1"]) - max(a["y0"], b["y0"]))
         small = min(max(1, (a["x1"] - a["x0"]) * (a["y1"] - a["y0"])), max(1, (b["x1"] - b["x0"]) * (b["y1"] - b["y0"])))
-        return ix * iy / small >= 0.4
+        return ix * iy / small >= 0.3
     for i, a in enumerate(live):
         for b in live[i + 1:]:
             if same_material(a, b): parent[find(id(a))] = find(id(b))
