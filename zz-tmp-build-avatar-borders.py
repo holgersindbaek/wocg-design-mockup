@@ -1,24 +1,37 @@
 #!/usr/bin/env python3
-"""The faint border on every avatar, as a rule decided from what is VISIBLE (v7).
+"""The faint border on every avatar, decided from what is VISIBLE and from how the artwork is shaded (v8).
 
 The line: 2 units (in the 160-unit box), black at 15%, on one side of every edge where two materials meet.
-Which side, per visible edge between a part and its neighbour:
-  1. the background (the silhouette): the part keeps its inner line (the coat sits outside it)
-  2. the same material (CIELAB: same hue within 16 degrees, chroma within half, under 32 L apart; greys within 20 L): no line
-  3. one side grey (chroma under 10), the other coloured: the coloured side owns the line, unless the grey is darker by
-     more than 18 L (white or grey hair beside a face: the line goes on the face; a black shirt beside a face: on the shirt)
-  4. both coloured or both grey, more than 18 L apart: the darker side owns it
-  5. otherwise the more saturated side (blonde beside skin, a yellow shirt beside skin), and if neither is, the piece on top
-The line follows the top piece's outline: its own inner line where it owns the edge, an outer band on the piece under
-it where that piece owns it (white hair edges onto the face, teeth onto the mouth). Hidden outline (under a later shape)
-gets nothing. Tiny shapes (under 10 units), ink (fills darker than L .03), line art and translucent shapes are never bordered.
 
-How: one headless page per file renders (a) the whole drawing with every shape in a unique flat id colour and no
-anti-aliasing, (b) the drawing as it is, (c) every shape alone. The full outline of each part is traced from (c);
-at every point of it (a) says whether the point is visible and what lies just outside; (b) gives each shape's
-colour as seen. Runs of the same decision along the outline become polylines in the border's mask: the inner line is a
-stroked <use> of the shape masked to the shape minus black cut polylines; the outer band is the same stroke masked to
-white polylines minus the shape. Both are placed right after the shape so later shapes cover them.
+What counts as ONE material (no line): this artwork shades a piece by turning its own colour up or down,
+so a shade is the piece's colour times one multiplier and a highlight is it screened by one amount. Two
+colours are one material when a single multiplier (0.45 to 0.97) or a single screen (0.03 to 0.55) takes
+one to the other on every channel, the channels agreeing within 0.09. Two greys are one material up to 22 L
+apart (every grey is a multiple of every other one, so the ratio says nothing). A grey beside a colour is
+always a change of material, except a pale mark lying inside a coloured piece (a shine on a lens).
+The old test compared hue and lightness alone, which merged brown hair with tan skin and split a lens
+from its own shine.
+
+Which side of an edge, once the two are different materials:
+  1. the background (the silhouette): the part keeps its inner line, the coat sits outside it
+  2. one side grey (chroma under 10), the other coloured: the coloured side owns the line, unless the grey
+     is darker by more than 18 L (white or grey hair beside a face: the line goes on the face)
+  3. both coloured or both grey, more than 18 L apart: the darker side owns it
+  4. otherwise the more saturated side, and if neither is, the piece on top
+  5. nothing is drawn when the owner is too dark to show a line (under 25 L) and the seam already reads on
+     its own (over 40 apart in CIE76): black hair beside skin needs no help
+The line follows the top piece's outline: its own inner line where it owns the edge, an outer band on the
+piece under it where that piece owns it AND this piece lies on it. Hidden outline gets nothing. Tiny shapes
+(under 10 units), translucent shapes and line art are never bordered; a dark fill is line art only when it
+is small (under 24 units across or 250 square units), so hair drawn in near-black is a piece.
+
+How: one headless page per file renders (a) the whole drawing with every shape in a unique flat id colour and
+no anti-aliasing, (b) the drawing as it is, (c) every shape alone. The full outline of each part is traced
+from (c); at every point of it (a) says whether the point is visible and what lies just outside; (b) gives
+each shape's colour as seen. Runs of the same decision along the outline become polylines in the border's
+mask: the inner line is a stroked <use> of the shape masked to the shape minus black cut polylines; the outer
+band is the same stroke masked to white polylines minus the shape. Both are placed right after the shape so
+later shapes cover them.
 Reads game-assets/avatars/*.svg, writes game-assets/avatars-bordered/*.svg and decisions.json next to them.
 Usage: zz-tmp-build-avatar-borders.py [--base] [names...]   (--base: only files without _win/_think/_lose)"""
 import re, os, json, subprocess, math, sys, base64
@@ -34,6 +47,12 @@ CHROME = "/opt/homebrew/bin/chromium"
 S = 3; PX = 160 * S; COLS = 8
 W, OP, CUT = 4, 0.15, 5
 T_L, T_C, T_GREY = 18, 8, 10
+SPREAD, K_LO, K_HI, T_LO, T_HI = 0.09, 0.45, 1.0, 0.0, 0.55   # what counts as one turn of the tone (1.0 = the same colour)
+T_GREY_L = 22                       # two greys are one material up to this far apart in lightness
+PALE_L, LIGHT_L, MARK_AREA, MARK_RING, MARK_DE = 88, 75, 0.5, 0.75, 24
+                                    # a near-white mark on a light piece is a shine on it, not a piece of its own
+INK_DIM, INK_AREA = 24, 250         # a dark fill this big is a piece (hair), not line art
+DARK_L, FAR = 25, 40                # a line the owner cannot show, on a seam that already reads, is not drawn
 MIN_DIM, MIN_RUN, TOL = 10, 2.0, 0.5
 os.makedirs(OUT, exist_ok=True); os.makedirs(TMP, exist_ok=True)
 
@@ -44,7 +63,15 @@ def split(s):
         m = re.search(r'</defs>', s); cut = m.end() if m else s.index('>', s.index('<svg')) + 1
     return s[:cut], s[cut:]
 def styles_of(s):
-    return {k: re.sub(r'\s+', '', v) for k, v in re.findall(r'\.([\w-]+)\s*\{([^}]*)\}', s)}
+    """the class rules, in source order; a grouped selector (.a,.b{...}) feeds every class it names"""
+    out = {}
+    for css in re.findall(r'<style[^>]*>(.*?)</style>', s, re.S):
+        for sel, body in re.findall(r'([^{}]+)\{([^}]*)\}', css):
+            body = re.sub(r'\s+', '', body)
+            for one in sel.split(","):
+                m = re.fullmatch(r'\.([\w-]+)', one.strip())
+                if m: out[m.group(1)] = (out.get(m.group(1), "") + ";" + body).strip(";")
+    return out
 def props(e, styles):
     """what the element paints: fill hex or None, stroke hex or None, the stroke props, clip-path, fill-rule, opacity"""
     c = re.search(r'class="([^"]+)"', e); st = styles.get(c.group(1), "") if c else ""
@@ -87,14 +114,27 @@ def lab(r, g, b):
     return L, math.hypot(A, B), math.degrees(math.atan2(B, A)) % 360
 def hdiff(a, b):
     d = abs(a - b); return min(d, 360 - d)
-def same_material(a, b):
+def dE(a, b):
+    """CIE76 between two (L, C, H)"""
     La, Ca, Ha = a; Lb, Cb, Hb = b
-    if Ca < 9 and Cb < 9: return abs(La - Lb) <= 20
-    if abs(La - Lb) > 32: return False
-    if Ca < 9 or Cb < 9: return False
-    if hdiff(Ha, Hb) > 16: return False
-    if abs(Ca - Cb) / max(Ca, Cb) > 0.5: return False
-    return True
+    aa, ab = Ca * math.cos(math.radians(Ha)), Ca * math.sin(math.radians(Ha))
+    ba, bb = Cb * math.cos(math.radians(Hb)), Cb * math.sin(math.radians(Hb))
+    return math.sqrt((La - Lb) ** 2 + (aa - ba) ** 2 + (ab - bb) ** 2)
+def one_step(A, B):
+    """B is A darkened by one multiplier (a shade) or A lightened by one screen (a tint)"""
+    k = [b / a for a, b in zip(A, B) if a >= 24]
+    if len(k) >= 2 and max(k) - min(k) <= SPREAD and K_LO <= sum(k) / len(k) <= K_HI: return True
+    t = [(a - b) / (255 - b) for a, b in zip(A, B) if b <= 231]
+    return len(t) >= 2 and max(t) - min(t) <= SPREAD and T_LO <= sum(t) / len(t) <= T_HI
+def same_material(ca, cb, ra, rb):
+    """one material = one colour with the tone turned up or down; (L, C, H) and the sRGB seen"""
+    La, Ca, _ = ca; Lb, Cb, _ = cb
+    ga, gb = Ca < T_GREY, Cb < T_GREY
+    if ga and gb: return abs(La - Lb) <= T_GREY_L      # every grey is a multiple of every other one
+    if ga != gb: return False                          # a grey beside a colour is a change of material
+    if dE(ca, cb) < 3: return True                     # the same colour twice
+    A, B = (ra, rb) if sum(ra) >= sum(rb) else (rb, ra)
+    return one_step(A, B)
 def owner(a, b, a_on_top):
     """which of the two colours (L, C, H) owns the line: True = a"""
     La, Ca, _ = a; Lb, Cb, _ = b
@@ -165,19 +205,39 @@ def analyse(info):
             if len(nb): label[y, x] = np.bincount(nb).argmax()
     label[label == -2] = -1
     masks = [cell(2 + i)[..., 3] > 0 for i in range(N)]
-    colour = {}; dim = {}
+    colour = {}; dim = {}; seen = {}; area = {}
     for i in range(N):
         ys, xs = np.nonzero(masks[i]); dim[i] = (max(xs.max() - xs.min(), ys.max() - ys.min()) + 1) / S if len(xs) else 0
+        area[i] = float(masks[i].sum()) / (S * S)
         vis = label == i
         if vis.sum() < 4: continue
         er = vis & np.roll(vis, 1, 0) & np.roll(vis, -1, 0) & np.roll(vis, 1, 1) & np.roll(vis, -1, 1)
         px = real[er if er.sum() >= 4 else vis]
         med = np.median(px[:, :3], axis=0) / 255
-        colour[i] = lab(*med)
+        colour[i] = lab(*med); seen[i] = tuple(float(v) * 255 for v in med)
+    ring = {}
+    for i in range(N):
+        v = label == i                       # what lies around the part where it can be seen
+        if not v.any(): ring[i] = {}; continue
+        out = (np.roll(v, 1, 0) | np.roll(v, -1, 0) | np.roll(v, 1, 1) | np.roll(v, -1, 1)) & ~v
+        n = float(out.sum())
+        nb = label[out]; nb = nb[nb >= 0]
+        if not n or not nb.size: ring[i] = {}; continue
+        c = np.bincount(nb, minlength=N).astype(float)
+        ring[i] = {int(j): c[j] / n for j in np.nonzero(c)[0]}
+    def one_material(i, j):
+        """one material, or a near-white shine lying on a light piece (the shine on a lens, on a cheek)"""
+        if same_material(colour[i], colour[j], seen[i], seen[j]): return True
+        for a, b in ((i, j), (j, i)):
+            if not (colour[a][0] >= PALE_L and colour[a][1] < T_GREY): continue
+            if area[a] >= MARK_AREA * area[b]: continue
+            if ring.get(a, {}).get(b, 0) >= MARK_RING: return True          # it lies inside that piece
+            if colour[b][0] >= LIGHT_L and dE(colour[a], colour[b]) < MARK_DE: return True
+        return False
     def is_part(i):
         p = P[i]
         if not p["fill"] or p["opacity"] or i not in colour: return False
-        if lum(p["fill"]) < 0.03: return False
+        if lum(p["fill"]) < 0.03 and not (dim[i] >= INK_DIM and area[i] >= INK_AREA): return False
         return dim[i] >= MIN_DIM or (dim[i] >= 6 and colour[i][0] > 92)
     def material(i):
         """the colour a neighbour shows; None for nothing (background, tiny, unseen)"""
@@ -187,6 +247,9 @@ def analyse(info):
         return colour[i]
     result = {}; audit = {}
     for i in range(N):
+        if i in colour and not is_part(i):
+            audit[i] = {"colour": [round(c, 1) for c in colour[i]], "fill": P[i]["fill"], "dim": round(dim[i], 1),
+                        "area": round(area[i], 1), "runs": None}
         if not is_part(i): continue
         contours = skm.find_contours(masks[i].astype(float), 0.5)
         cuts, keeps, runs = [], [], []
@@ -201,9 +264,14 @@ def analyse(info):
                 if not any(label[c] == i for c in inside): dec.append("hidden"); continue
                 nbs = [label[c] for c in outside]; nb = max(set(nbs), key=nbs.count)
                 m = material(nb)
-                if m is None: dec.append("in"); continue
-                if same_material(colour[i], m): dec.append("none"); continue
-                dec.append("in" if owner(colour[i], m, i > nb) else "out:%d" % nb)
+                if m is None: dec.append("in@bg"); continue
+                if one_material(i, nb): dec.append("none@%d" % nb); continue
+                if min(colour[i][0], m[0]) < DARK_L and dE(colour[i], m) > FAR:
+                    dec.append("far@%d" % nb); continue   # the dark side cannot show a line and the seam already reads
+                if owner(colour[i], m, i > nb): dec.append("in@%d" % nb); continue
+                # the neighbour owns the line. A band onto it only when this shape lies ON it; where the two
+                # merely abut, the neighbour traces the same edge itself and draws its own inner line there.
+                dec.append(("out:%d" % nb) if any(masks[nb][c] for c in inside) else "none@%d" % nb)
             # runs, short ones merged into the longer neighbour
             def to_runs(d):
                 r = []
@@ -229,14 +297,24 @@ def analyse(info):
                 pts = cont[a:b]
                 if len(pts) < 2: continue
                 runs.append([v, round(float(run_units([v, a, b])), 1)])
-                if v == "in" or v == "hidden": continue
+                if v.split("@")[0] == "in" or v == "hidden": continue
                 poly = simplify(pts / S, TOL)
                 cuts.append(fmt(poly))
                 if v.startswith("out"): keeps.append(fmt(poly))
-        inner = any(v == "in" for v, _ in runs)
+        inner = any(v.split("@")[0] == "in" for v, _ in runs)
         if inner or keeps:
             result[i] = {"cuts": cuts, "keeps": keeps, "inner": inner}
-        audit[i] = {"colour": [round(c, 1) for c in colour[i]], "runs": runs}
+        nbrs = {}
+        ai = float(masks[i].sum())
+        for v, _ in runs:
+            tag = v.partition("@")[2] or (v.split(":")[1] if v.startswith("out:") else "")
+            if not tag or tag == "bg": continue
+            nb = int(tag)
+            if nb in nbrs or nb >= N: continue
+            inter = float((masks[i] & masks[nb]).sum()); an = float(masks[nb].sum())
+            nbrs[nb] = [round(inter / ai, 2) if ai else 0, round(inter / an, 2) if an else 0]
+        audit[i] = {"colour": [round(c, 1) for c in colour[i]], "fill": P[i]["fill"], "dim": round(dim[i], 1),
+                    "area": round(ai / (S * S), 1), "nbrs": nbrs, "runs": runs}
     return result, audit
 
 def write(info, result):
