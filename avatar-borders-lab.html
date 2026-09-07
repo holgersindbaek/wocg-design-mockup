@@ -1,0 +1,2062 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Avatar borders lab &middot; Settings modal &middot; over the Euchre table</title>
+<!--
+  The in-game settings modal (Settings in the menu bar, Profile in the table bar) in many versions, drawn over
+  game.html's replica of the live Euchre table. Each version is a spec (navigation, style, controls, grouping, who is
+  looking) rendered from one content model, so every version holds the same settings.
+  This is the published copy of game-settings-lab-3.html (7 September 2026): the chooser, its handle, the caption card
+  and the keyboard knobs are switched off; the url hash still takes any knob, e.g. #page=look,sub=wallpaper.
+  Do not edit by hand: regenerate from the lab.
+-->
+<link rel="preload" href="BuloRounded-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="BuloRounded-Bold.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="Gelica-Medium.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+  @font-face { font-family: "Gelica"; src: url("Gelica-Medium.woff2") format("woff2"); font-weight: 500; font-display: swap; }
+  @font-face { font-family: 'BuloRounded'; src: url("BuloRounded-Regular.woff2") format('woff2'); font-style: normal; font-weight: normal; font-display: swap; }
+  @font-face { font-family: 'BuloRounded'; src: url("BuloRounded-Bold.woff2") format('woff2'); font-style: normal; font-weight: bold; font-display: swap; }
+
+  :root {
+    /* the game's tokens, as computed on the live page */
+    --font: BuloRounded, Verdana, Arial, Helvetica, sans-serif;
+    --felt: url("green-felt.jpg");
+    --felt-size: 100px 100px;
+    --paper: #F8F9FA;          /* menu bar, table bar, score board */
+    --ink: #212529;            /* table bar labels, user name */
+    --ink-menu: #343A40;       /* menu links, the 1px outlines */
+    --ink-muted: #868E96;      /* disabled labels, the "Score" title */
+    --team1-bg: #A5D8FF;       /* our team: plates, message box, score cell */
+    --team1-ink: #1665AD;
+    --team2-bg: #FFC1BF;       /* the opponents */
+    --team2-ink: #B52626;
+    --button-bg: #FFE066;
+    --button-ink: #C96800;
+    --card-ink: #252525;       /* the card's 1px inset outline */
+    --outline: 0 0 0 1px var(--ink-menu) inset;
+    --ambient: 0 0 8px rgba(0, 0, 0, .24);
+    --radius: 8px;             /* --radius-lg; doubles to 16px on squircle browsers, see below */
+    --menu-h: 32px;
+    --ad-w: 336px;             /* set by the layout: 336px from 1024px wide, 160px below */
+  }
+  @supports (corner-shape: squircle) {
+    :root { --radius: 16px; }
+    @media (max-width: 640px), (max-height: 640px) { :root { --radius: 12px; } }
+    body *, body *::before, body *::after { corner-shape: squircle; }
+  }
+
+  html, body { margin: 0; height: 100%; }
+  body {
+    position: relative; font-family: var(--font); font-size: 16px; color: #fff;
+    background: var(--felt) 0 0 / var(--felt-size) repeat;
+    overflow: hidden; user-select: none; -webkit-user-select: none;
+    /* the game's text rendering (base.scss html, body): greyscale antialiasing, no ligatures, the .01 shadow nudge */
+    text-shadow: rgba(0, 0, 0, .01) 0 0 1px;
+    -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility; font-variant-ligatures: none;
+  }
+  * { box-sizing: border-box; }
+  /* the game's spotlight (overlay blend, shifted left by half the ad rail) and vignette, with a 6% band behind the rail */
+  body::before {
+    content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none; mix-blend-mode: overlay;
+    background:
+      radial-gradient(circle closest-side at calc(50% - var(--ad-w) / 2) 50%, rgba(255, 255, 255, .16) 0%, rgba(255, 255, 255, 0) 100%),
+      radial-gradient(circle min(25vw - var(--ad-w) / 4, 25vh) at calc(50% - var(--ad-w) / 2) 50%, rgba(255, 255, 255, .08) 0%, rgba(255, 255, 255, 0) 100%);
+  }
+  body::after {
+    content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none;
+    box-shadow: inset 0 0 8vw rgba(0, 0, 0, .12); border-right: var(--ad-w) solid rgba(0, 0, 0, .06);
+  }
+  .sizer { position: absolute; left: -2000px; top: -2000px; }   /* FitText's measuring span */
+
+  /* ===== the site's menu bar (32px) ===== */
+  #menuBar {
+    position: absolute; left: 0; top: 0; right: 0; height: var(--menu-h); z-index: 9201;
+    background: var(--paper); box-shadow: var(--ink-menu) 0 1px 0 0, var(--ambient);
+    line-height: var(--menu-h); color: var(--ink-menu); display: flex; align-items: center;
+  }
+  #menuBar .logo { width: 38px; height: 32px; margin-left: 16px; overflow: hidden; flex: none; }
+  #menuBar .logo img { width: 170px; height: 32px; display: block; }
+  #menuBar ul { list-style: none; margin: 0 0 0 8px; padding: 0; display: flex; }
+  #menuBar li { margin-right: 8px; white-space: nowrap; cursor: pointer; }
+  #menuBar li a { color: inherit; text-decoration: none; }
+  #menuBar li a.active { font-weight: bold; }
+  #menuBar li.dropdown { padding-right: 13px; margin-right: 10px; background: url("game-assets/ui/arrowDown.png") right 50% / 13px 13px no-repeat; }
+  #menuBar .games { display: none; margin-left: 8px; font-weight: bold; cursor: pointer; }   /* the burger label under 924px */
+  @media (max-width: 924px) { #menuBar ul { display: none; } #menuBar .games { display: block; } }
+  #menuBar .userBar { margin-left: auto; margin-right: 8px; display: flex; align-items: center; font-weight: bold; color: var(--ink); }
+  #menuBar .userBar img.icon { width: 40px; height: 32px; display: block; cursor: pointer; }
+  #menuBar .userBar img.friends { margin-right: 8px; }
+  #menuBar .userBar img.avatar { width: 28px; height: 28px; display: block; }
+  #menuBar .userBar .userName { margin-left: 8px; white-space: nowrap; }
+
+  /* ===== the ad rail (336px from 1024px wide, 160px below; top, bottom and width come from the layout) ===== */
+  #ad {
+    position: absolute; right: 0; z-index: 9200;
+    background: rgba(0, 0, 0, .08); border-radius: var(--radius) 0 0 var(--radius);
+    box-shadow: rgba(0, 0, 0, .08) 0 0 0 1px inset;
+  }
+  #ad .slots { position: absolute; left: 0; right: 0; top: 1px; bottom: 24px; padding-bottom: 169px; overflow: hidden; } /* the live rail clips the slots above the docked video */
+  #ad .slot { width: 300px; margin: 0 auto; display: block; }
+  #ad .slot img { display: block; width: 300px; }
+  #ad .slot + .slot { margin-top: 8px; }
+  #ad .video { position: absolute; left: 18px; bottom: 24px; width: 300px; }
+  #ad .video img { display: block; width: 300px; }
+  body.ad160 #ad .slots, body.ad160 #ad .video { display: none; }
+  #ad .hideAds {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 24px; line-height: 24px; padding: 0 8px;
+    text-align: center; font-weight: bold; color: #fff; background: rgba(0, 0, 0, .08);
+    border-radius: 0 0 0 var(--radius); box-shadow: rgba(0, 0, 0, .08) 0 1px 0 0 inset; cursor: pointer; white-space: nowrap;
+  }
+
+  /* ===== the playspace: the game's box under the menu bar; every piece sits in it at its resolved position ===== */
+  #playspace { position: absolute; left: 0; top: var(--menu-h); z-index: 1; }
+  .piece { position: absolute; }
+
+  /* cards: a .card box that rotates around its centre, the face inside */
+  .card .face {
+    position: absolute; inset: 0; border-radius: var(--r); overflow: hidden; background: #fff center / 100% 100% no-repeat;
+    box-shadow: var(--card-ink) 0 0 0 1px inset, rgba(0, 0, 0, .2) 0 0 8px 0;
+  }
+
+  /* name plates */
+  .namePlate { border-radius: var(--radius); box-shadow: var(--outline), var(--ambient); overflow: hidden; z-index: 4001; }
+  .namePlate.team1, .scorePlate.team1 { background: var(--team1-bg); }
+  .namePlate.team2, .scorePlate.team2 { background: var(--team2-bg); }
+  .scorePlate { border-radius: 0 0 var(--radius) var(--radius); z-index: 4001; }
+  .scorePlate.side { box-shadow: var(--ink-menu) 1px 0 0 0, var(--ink-menu) 0 1px 0 0, var(--ink-menu) -1px 0 0 0, var(--ambient); }
+  .scorePlate.inline { background: none; }
+  .text { z-index: 4002; font-weight: bold; text-align: center; white-space: nowrap; }
+  .text.team1 { color: var(--team1-ink); }
+  .text.team2 { color: var(--team2-ink); }
+  .avatar { z-index: 4002; filter: drop-shadow(0 0 8px rgba(0, 0, 0, .24)); }
+  .avatar.side { z-index: 4000; }   /* the side plates lie over the avatar's chin */
+  .avatar img, #menuBar .userBar img.avatar { filter: drop-shadow(1px 0 var(--card-ink)) drop-shadow(-1px 0 var(--card-ink)) drop-shadow(0 1px var(--card-ink)) drop-shadow(0 -1px var(--card-ink)); }
+  .avatar img { width: 100%; height: 100%; display: block; }
+  .chip { z-index: 4002; background: url("game-assets/ui/dealer.png") center / 100% 100% no-repeat; filter: drop-shadow(0 0 8px rgba(0, 0, 0, .24)); }
+  body.ps-compact .chip { background-image: url("game-assets/ui/dealerSmall.png"); }
+
+  /* the buttons on the felt (size, line-height and font size come from the layout) */
+  .button {
+    z-index: 8001; text-align: center; white-space: nowrap;
+    font-weight: bold; color: var(--button-ink); background: var(--button-bg); border-radius: var(--radius);
+    box-shadow: rgba(0, 0, 0, .16) 0 0 0 1px, rgba(0, 0, 0, .24) 0 0 4px 0; cursor: pointer;
+    transition: background-color 24ms ease-out, box-shadow 24ms ease-out;
+  }
+  .button:hover { background: color-mix(in srgb, var(--button-bg) 92%, #E67700 8%); box-shadow: rgba(0, 0, 0, .24) 0 0 0 1px, rgba(0, 0, 0, .40) 0 0 6px 0; }
+  .button:active { transform: scale(.98); }
+
+  /* the message box, top left (position and max-width come from the layout; content-box like the game) */
+  .messageBox {
+    position: absolute; box-sizing: content-box; min-width: 80px; max-width: 320px; padding: 12px; z-index: 4800;
+    background: var(--team1-bg); color: var(--team1-ink); font-size: 20px; line-height: 24px; font-weight: normal; text-align: left; white-space: normal;
+    border-radius: var(--radius); box-shadow: var(--outline), var(--ambient); overflow-wrap: break-word;
+  }
+  body.ps-compact .messageBox { padding: 8px; font-size: 16px; line-height: 20px; }
+
+  /* the score board, top right */
+  .scoreBoard { position: absolute; z-index: 3999; background: var(--paper); border-radius: var(--radius); text-align: center; white-space: nowrap; width: max-content; }
+  .scoreBoard::after { content: ""; position: absolute; inset: 0; border-radius: inherit; box-shadow: var(--outline), var(--ambient); pointer-events: none; }
+  .scoreBoard .cell { padding: 0 12px; height: 38px; line-height: 38px; font-size: 24px; font-weight: bold; }
+  .scoreBoard .cell.team1 { background: var(--team1-bg); color: var(--team1-ink); border-radius: var(--radius) var(--radius) 0 0; box-shadow: var(--ink-menu) -1px 0 0 0 inset, var(--ink-menu) 0 -1px 0 0 inset; }
+  .scoreBoard .cell.team2 { background: var(--team2-bg); color: var(--team2-ink); border-radius: 0 0 var(--radius) var(--radius); box-shadow: var(--ink-menu) -1px 0 0 0 inset, var(--ink-menu) 0 1px 0 0 inset; }
+  .scoreBoard .title { height: 20px; line-height: 20px; font-size: 12px; font-weight: bold; color: var(--ink-muted); padding: 0 4px; box-shadow: var(--ink-menu) -1px 0 0 0 inset; }   /* the game's cells carry an inner right line (base.scss #scoreBoard tr td) */
+  body.ps-compact .scoreBoard .cell { height: 24px; line-height: 24px; font-size: 16px; padding: 0 8px; }
+  body.ps-compact .scoreBoard .title { padding: 0 8px; }
+
+  /* the table bar, bottom centre (or a 58px column at the playspace's right edge when the window is 576px tall or less) */
+  .tableBar {
+    position: absolute; width: 400px; height: 56px; padding: 0 11px; z-index: 9975;
+    background: var(--paper); border-radius: var(--radius); box-shadow: var(--outline), var(--ambient);
+  }
+  .tableBar ul { list-style: none; margin: 0; padding: 0; height: 56px; display: flex; align-items: flex-end; justify-content: space-evenly; }
+  .tableBar li {
+    width: 54px; padding: 22px 0 6px; text-align: center; font-size: 16px; line-height: 16px; font-weight: bold; color: var(--ink); cursor: pointer;
+    background: var(--icon) 50% 0 / 20px 20px no-repeat;
+  }
+  .tableBar li.play { padding-top: 32px; background-size: 40px 32px; }
+  .tableBar li.disabled { color: var(--ink-muted); cursor: default; }
+  .tableBar.side { width: 58px; padding: 12px 0; }
+  .tableBar.side ul { flex-direction: column; align-items: center; height: 100%; width: 58px; }
+  .tableBar.side li { padding: 24px 0 4px; }
+  .tableBar.side li:last-child { padding-bottom: 0; }
+
+  /* Felt buttons: the official in-game button (6 Sep 2026, game-button-lab.html tile 108): flat warm lemon,
+     leather ink, a see-through 1px ring in the ink colour at 70% with a 1px drop shadow, a 20px squircle (16px compact) */
+  body.fbtn-official .button {
+    background: #FFD75A; color: #5C3A00; border-radius: 10px;
+    box-shadow: rgba(92, 58, 0, .70) 0 0 0 1px, rgba(0, 0, 0, .30) 0 1px 2px;
+  }
+  @supports (corner-shape: squircle) {
+    body.fbtn-official .button { border-radius: 20px; }
+    body.fbtn-official.ps-compact .button { border-radius: 16px; }
+  }
+  body.fbtn-official .button:hover { background: #FFD43B; box-shadow: rgba(92, 58, 0, .70) 0 0 0 1px, rgba(0, 0, 0, .35) 0 2px 4px; }
+  body.fbtn-official .button:active { background: #FCC419; box-shadow: rgba(92, 58, 0, .70) 0 0 0 1px; transform: scale(.98); }
+
+  .switchzone { position: fixed; right: 0; bottom: 0; width: 336px; height: 200px; z-index: 9300; }
+  .switchbar {
+    position: fixed; top: 0; right: 0; bottom: 0; width: 328px; z-index: 9301;
+    box-sizing: border-box; overflow-y: auto; transform: translateX(100%);
+    padding: 18px 16px 20px;
+    background: rgba(255, 255, 255, .94); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    border-left: 1px solid rgba(229, 229, 229, .8);
+    font-family: -apple-system, "Helvetica Neue", Arial, sans-serif; color: #222; text-shadow: none; user-select: none;
+  }
+  .switchbar.isOpen, .switchbar:focus-within { transform: translateX(0); }
+  .swtoggle {
+    display: block; width: 100%; margin-bottom: 18px; padding: 9px 10px; cursor: pointer;
+    font-family: inherit; font-size: 13px; font-weight: 700; color: #fff; text-align: left;
+    background: #1665AD; border: 0; border-radius: 8px;
+  }
+  .swtoggle small { display: block; font-weight: 500; opacity: .85; margin-top: 2px; }
+  body.design-original .swtoggle { background: #5C3A00; }
+  .swgroup { margin-bottom: 22px; }
+  .swgroup:last-child { margin-bottom: 0; }
+  .swhead { font-size: 14px; font-weight: 700; color: #222222; margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px solid #e5e5e5; }
+  .ctl { display: flex; flex-direction: column; gap: 3px; margin-bottom: 10px; }
+  .ctl span { font-size: 12px; color: #777777; }
+  .switchbar select {
+    font-family: inherit; font-size: 13px; font-weight: 600; color: #555;
+    padding: 5px 6px; border-radius: 7px; border: 1px solid #dddddd; background: #ffffff; width: 100%;
+  }
+  .swadv { margin-top: 22px; }
+  .swadv summary { cursor: pointer; font-size: 14px; font-weight: 700; color: #888; padding-bottom: 5px; border-bottom: 1px solid #e5e5e5; list-style: none; }
+  .swadv summary::before { content: "\25B8  "; font-size: 11px; }
+  .swadv[open] summary::before { content: "\25BE  "; }
+  .swnote { font-size: 12px; line-height: 1.45; color: #4e4d4c; margin: 10px 0 10px; }
+  .swnote code { font-family: ui-monospace, Menlo, monospace; font-size: 11px; }
+
+  /* ===== the modal system: one root .sm, the look from its classes ===== */
+  .sm { position: absolute; inset: 0; z-index: 9990; font-family: var(--font); color: var(--sm-ink); text-shadow: none; user-select: none; --tab-h: 40px;
+    --sm-paper: #F8F9FA; --sm-ink: #212529; --sm-muted: #868E96; --sm-line: #CED4DA; --sm-ring: rgba(0,0,0,.08); --sm-radius: 8px; --sm-pad: 12px;
+    --sm-row: 68px; --sm-lab: 20px; --sm-desc: 14px; --sm-accent: #00a82d; --sm-accentring: #007a20; --sm-blue: #1971C2; --sm-lightblue: #A5D8FF; --sm-lightring: #63B4F2;
+    --sm-ck: #FFE066; --sm-ckring: #F0C419; --sm-cktick: #E67700; --sm-shadow: 0 0 24px rgba(0,0,0,.4); --sm-back: rgba(0,0,0,.64); --sm-seg-tray: #e4ddd0; --sm-seg-ring: #c9c0ae; --sm-seg-ink: #4e4d4c; }
+  @supports (corner-shape: squircle) { .sm { --sm-radius: 16px; } }
+  .sm .back { position: absolute; inset: 0; background: var(--sm-back); }
+  .sm.bd-soft .back { background: rgba(0,0,0,.4); }
+  .sm.bd-blur .back { background: rgba(20,30,20,.45); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+  .sm.bd-none .back { background: none; pointer-events: none; }
+  .sm .box { position: absolute; left: 50%; top: 40px; transform: translateX(-50%); width: min(768px, calc(100% - 32px)); max-height: calc(100% - 80px); display: flex; flex-direction: column;
+    background: var(--sm-paper); border-radius: var(--sm-radius); box-shadow: var(--sm-shadow); font-size: var(--sm-lab); line-height: 32px; }
+  .sm .head { position: relative; flex: none; padding: var(--sm-pad) var(--sm-pad) 0; }
+  .sm .body { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 0 var(--sm-pad) var(--sm-pad); scrollbar-width: thin; }
+  .sm .cols { flex: 1 1 auto; min-height: 0; display: flex; }
+  .sm .cols .body { flex: 1; }
+  .sm .ttl { display: block; font-weight: bold; font-size: 20px; line-height: 32px; }
+  /* the close: outside the box as today, or inside the head at the right */
+  .sm .x { position: absolute; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; }
+  .sm .x.out { right: -32px; top: -10px; }
+  .sm .x.in { right: 8px; top: 8px; color: var(--sm-muted); border-radius: 50%; }
+  .sm .x.in:hover { background: rgba(0,0,0,.06); color: var(--sm-ink); }
+  .sm.titled .x.in { top: 12px; }
+  /* the tabs as today: five equal cells on one rule, the picked one a bordered tab */
+  .sm .tabs { display: flex; box-shadow: 0 1px 0 0 var(--sm-line); }
+  .sm .tabs .tab { flex: 1; text-align: center; line-height: var(--tab-h); white-space: nowrap; cursor: pointer; border-radius: 6px 6px 0 0; }
+  .sm .tabs .tab.on { font-weight: bold; box-shadow: 0 1px 0 0 var(--sm-paper), 0 0 0 1px var(--sm-line); }
+  .sm .tabs .tab:not(.on):hover { text-decoration: underline; }
+  /* sections */
+  .sm .sec { display: block; }
+  .sm .sh { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 24px 0 8px; border-bottom: 1px solid var(--sm-line); font-weight: bold; line-height: 32px; }
+  .sm .sec.tight .sh { display: none; }
+  .sm .sec.tight .sb > .row { border-top: 1px solid var(--sm-line); }
+  .sm .sec.fold > summary { list-style: none; cursor: pointer; }
+  .sm .sec.fold > summary::-webkit-details-marker { display: none; }
+  .sm .sec.fold > summary .chev { transition: transform 120ms; color: var(--sm-muted); }
+  .sm .sec.fold[open] > summary .chev { transform: rotate(90deg); }
+  /* rows: label left, control right, a hairline between */
+  .sm .row { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--sm-line); min-height: var(--sm-row); box-sizing: border-box; }
+  .sm .sb > .row:last-child, .sm .sb > .gamesWrap { border-bottom: 0; }
+  .sm .row .lab { display: flex; flex-direction: column; min-width: 0; line-height: 24px; }
+  .sm .row .lt { font-size: var(--sm-lab); line-height: 28px; }
+  .sm .row .ld { font-size: var(--sm-desc); line-height: 20px; color: var(--sm-muted); }
+  .sm .row .cx { display: flex; align-items: center; gap: 8px; flex: none; }
+  .sm .row.stacked { flex-direction: column; align-items: stretch; gap: 8px; }
+  .sm .row.stacked .cx { justify-content: stretch; }
+  .sm .row.stacked .cx .seg { width: 100%; }
+  .sm .row.stacked .cx .seg .sg { flex: 1; text-align: center; }
+  .sm .row.link { cursor: pointer; }
+  .sm .row.link .cx { color: var(--sm-muted); }
+  .sm .cnt { font-size: 16px; color: var(--sm-muted); }
+  .sm .chev { display: block; }
+  /* the yellow radio and checkbox of today (the site's images) */
+  .sm .rd, .sm .ck { display: inline-flex; align-items: center; gap: 4px; height: 24px; line-height: 24px; font-size: var(--sm-lab); cursor: pointer; white-space: nowrap; }
+  .sm .rd i, .sm .ck i { display: inline-block; width: 24px; height: 24px; background: url("game-assets/ui/radioUnchecked.png") center / contain no-repeat; }
+  .sm .rd.on i { background-image: url("game-assets/ui/radioChecked.png"); }
+  .sm .ck i { background-image: url("game-assets/ui/checkboxUnchecked.png"); }
+  .sm .ck.on i { background-image: url("game-assets/ui/checkboxChecked.png"); }
+  .sm .rd + .rd { margin-left: 4px; }
+  .sm .gamesWrap { display: flex; flex-wrap: wrap; gap: 12px 20px; padding: 12px 0 4px; }
+  /* the switch: 44 by 24, the site's green when on (the Play green, ring 78% toward black), grey when off */
+  .sm .sw { position: relative; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
+  .sm .sw i { display: inline-block; width: 44px; height: 24px; border-radius: 12px; background: #CED4DA; box-shadow: inset 0 0 0 1px rgba(0,0,0,.12); position: relative; transition: background-color 120ms; }
+  .sm .sw i::after { content: ""; position: absolute; left: 2px; top: 2px; width: 20px; height: 20px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.25); transition: transform 160ms cubic-bezier(.645,.045,.355,1); }
+  .sm .sw.on i { background: var(--sm-accent); box-shadow: inset 0 0 0 1px var(--sm-accentring); }
+  .sm .sw.on i::after { transform: translateX(20px); }
+  .sm .sw b { font-weight: normal; font-size: 16px; }
+  /* the segmented control from the front page: a tray with a ring, cells 24px, the picked one the green thumb with outlined white text */
+  .sm .seg { display: inline-flex; padding: 2px; border-radius: 8px; corner-shape: squircle; background: var(--sm-seg-tray); box-shadow: inset 0 0 0 1px var(--sm-seg-ring); }
+  .sm .seg .sg { position: relative; padding: 0 10px; height: 24px; line-height: 24px; font: bold 16px/24px var(--font); color: var(--sm-seg-ink); border-radius: 6px; corner-shape: squircle; cursor: pointer; white-space: nowrap; }
+  .sm .seg .sg + .sg::before { content: ""; position: absolute; left: 0; top: -2px; bottom: -2px; width: 1px; background: var(--sm-seg-ring); }
+  .sm .seg .sg.on { background: var(--sm-accent); color: #fff; box-shadow: inset 0 0 0 1px var(--sm-accentring), 0 2px 4px rgba(0,0,0,.06);
+    text-shadow: -1px -1px 0 var(--sm-accentring), 1px -1px 0 var(--sm-accentring), -1px 1px 0 var(--sm-accentring), 1px 1px 0 var(--sm-accentring); }
+  .sm .seg .sg.on::before, .sm .seg .sg.on + .sg::before { opacity: 0; }
+  .sm .seg .sg:not(.on):hover { background: rgba(0,0,0,.05); }
+  /* the select stand-in: text with a chevron */
+  .sm .sel { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px; border-radius: 6px; corner-shape: squircle; box-shadow: inset 0 0 0 1px var(--sm-line); background: #fff; font-size: 16px; font-weight: bold; color: var(--sm-ink); cursor: pointer; }
+  /* the small buttons: the site's light blue, red and green */
+  .sm .bt { display: inline-block; height: 32px; line-height: 32px; padding: 0 10px; border-radius: 6px; corner-shape: squircle; font-size: 20px; font-weight: bold; cursor: pointer; white-space: nowrap; }
+  .sm .bt.lil { height: 24px; line-height: 24px; font-size: 16px; padding: 0 8px; }
+  .sm .bt.light { background: var(--sm-lightblue); color: var(--sm-blue); box-shadow: inset 0 0 0 1px var(--sm-lightring); }
+  .sm .bt.red { background: #FFA8A8; color: #C92A2A; box-shadow: inset 0 0 0 1px #f03e3e; }
+  .sm .bt.green { background: #C0EB75; color: #4F800B; box-shadow: inset 0 0 0 1px #74B816; }
+  .sm .bt.solid { background: var(--sm-accent); color: #fff; box-shadow: inset 0 0 0 1px var(--sm-accentring); text-shadow: -1px -1px 0 var(--sm-accentring), 1px -1px 0 var(--sm-accentring), -1px 1px 0 var(--sm-accentring), 1px 1px 0 var(--sm-accentring); }
+  .sm .btns { flex-wrap: wrap; justify-content: flex-end; }
+  /* chips (games), the list (switch per game) */
+  .sm .gamesChips { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px 0 4px; }
+  .sm .chip { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px 0 8px; border-radius: 14px; font-size: 16px; font-weight: bold; color: var(--sm-seg-ink); background: var(--sm-seg-tray); box-shadow: inset 0 0 0 1px var(--sm-seg-ring); cursor: pointer; }
+  .sm .chip i { width: 14px; height: 14px; border-radius: 50%; box-shadow: inset 0 0 0 1px var(--sm-seg-ring); background: #fff; }
+  .sm .chip.on { color: #fff; background: var(--sm-accent); box-shadow: inset 0 0 0 1px var(--sm-accentring); }
+  .sm .chip.on i { background: #fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 8'><path d='M1 4l3 3 5-6' fill='none' stroke='%2300a82d' stroke-width='2'/></svg>") center / 9px no-repeat; box-shadow: none; }
+  .sm .gamesList { display: grid; grid-template-columns: 1fr 1fr; gap: 0 24px; padding: 4px 0 0; }
+  .sm .gamesList .gl { display: flex; align-items: center; gap: 10px; height: 40px; border-bottom: 1px solid var(--sm-line); font-size: 18px; }
+  .sm .gamesList .gl:nth-last-child(-n+2) { border-bottom: 0; }
+  /* the forms of today (password) */
+  .sm .form { display: flex; flex-direction: column; gap: 10px; padding: 16px 0 4px; }
+  .sm .form label { display: flex; flex-direction: column; font-size: 14px; color: var(--sm-muted); line-height: 20px; }
+  .sm .form input { height: 32px; font: 18px var(--font); padding: 0 8px; border: 0; border-radius: 6px; box-shadow: inset 0 0 0 1px var(--sm-line); background: #fff; color: var(--sm-ink); }
+  .sm .form .bt { align-self: flex-start; }
+  /* the choosers */
+  .sm .pk { display: grid; grid-template-columns: repeat(var(--cols), 1fr); gap: 8px; padding: 8px 0 4px; }
+  .sm .pk .pi { position: relative; cursor: pointer; border-radius: 8px; transition: transform 80ms; }
+  .sm .pk .pi:not(.on):hover { transform: scale(1.04); }
+  .sm .pk .pair { display: flex; gap: 2px; aspect-ratio: 1 / .72; border-radius: 8px; }
+  .sm .pk .pair img { width: calc(50% - 1px); height: 100%; object-fit: cover; border-radius: 8px; box-shadow: inset 0 0 0 1px #343A40; background: #fff; }
+  .sm .pk .sq { display: block; aspect-ratio: 1; border-radius: 8px; background: center / cover no-repeat; box-shadow: inset 0 0 0 1px #343A40; }
+  .sm .pk.avs .pi img { display: block; width: 100%; aspect-ratio: 1; filter: drop-shadow(1px 0 #252525) drop-shadow(-1px 0 #252525) drop-shadow(0 1px #252525) drop-shadow(0 -1px #252525); }
+  .sm .pk .pi.on .pair, .sm .pk .pi.on .sq { box-shadow: 0 0 0 4px #66A80F; }
+  .sm .pk.avs .pi.on img { filter: drop-shadow(1px 0 #252525) drop-shadow(-1px 0 #252525) drop-shadow(0 1px #252525) drop-shadow(0 -1px #252525) drop-shadow(0 -4px 0 #5C940D) drop-shadow(0 4px 0 #5C940D) drop-shadow(-4px 0 0 #5C940D) drop-shadow(4px 0 0 #5C940D); }
+  .sm .pk .pn { display: block; text-align: center; font-size: 14px; line-height: 20px; color: var(--sm-muted); margin-top: 4px; }
+  .sm .strip { padding: 8px 0 4px; }
+  .sm .strip .sh { padding-top: 8px; }
+  .sm .strip .more { font-size: 16px; font-weight: normal; color: var(--sm-blue); cursor: pointer; }
+  .sm .strip .pk { grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); }
+  /* the stats stand-in */
+  .sm .statsPick { display: flex; flex-wrap: wrap; gap: 8px 16px; padding: 12px 0; }
+  .sm table.stats { width: 100%; border-collapse: collapse; font-size: 18px; line-height: 40px; }
+  .sm table.stats th { text-align: center; font-weight: bold; border-bottom: 1px solid var(--sm-line); }
+  .sm table.stats td { border-bottom: 1px solid var(--sm-line); text-align: center; }
+  .sm table.stats td:first-child, .sm table.stats th:first-child { text-align: left; }
+  /* the quick panel's doors */
+  .sm .doors { display: flex; flex-direction: column; margin-top: 8px; }
+  .sm .door { display: flex; align-items: center; justify-content: space-between; height: 44px; font-size: 18px; color: var(--sm-blue); cursor: pointer; border-top: 1px solid var(--sm-line); }
+  .sm .door .chev { color: var(--sm-muted); }
+
+  /* ===== the styles: sty-today is the base above; each of these changes the tokens and a few shapes ===== */
+  /* tidy: the same paper, the close inside, a title, 16px labels on 24px lines, rows 56px, hairlines lighter */
+  .sm.sty-tidy { --sm-row: 56px; --sm-lab: 18px; --sm-line: #DEE2E6; }
+  .sm.sty-tidy .head { padding-top: 12px; }
+  .sm.sty-tidy .tabs { box-shadow: none; gap: 4px; border-bottom: 1px solid var(--sm-line); }
+  .sm.sty-tidy .tabs .tab { flex: 0 0 auto; padding: 0 12px; line-height: 36px; border-radius: 0; box-shadow: none; position: relative; color: var(--sm-muted); }
+  .sm.sty-tidy .tabs .tab.on { color: var(--sm-ink); box-shadow: inset 0 -3px 0 0 var(--sm-accent); }
+  .sm.sty-tidy .tabs .tab:not(.on):hover { text-decoration: none; color: var(--sm-ink); }
+  .sm.sty-tidy .sh { padding-top: 20px; }
+  .sm.sty-tidy .sec.grp .sh { border-bottom: 0; padding: 20px 0 2px; font-size: 16px; color: var(--sm-muted); line-height: 24px; }
+  /* paper: the front page mockup's warm language */
+  .sm.sty-paper, .sm.sty-inset { --sm-paper: #f9f6f2; --sm-ink: #141414; --sm-muted: #8a857c; --sm-line: #e7e7e7; --sm-radius: 20px; --sm-pad: 20px; --sm-row: 56px; --sm-lab: 18px;
+    --sm-shadow: 0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09), 0 12px 32px rgba(0,0,0,.28); --sm-lightblue: #abd2ff; --sm-lightring: #83b5ef; }
+  .sm.sty-paper .box, .sm.sty-inset .box { corner-shape: squircle; box-shadow: 0 0 0 1px #d2cfca, var(--sm-shadow); }
+  .sm.sty-paper .head, .sm.sty-inset .head { padding-top: 16px; }
+  .sm.sty-paper .ttl, .sm.sty-inset .ttl, .sm.sty-piece .ttl, .sm.sty-dark .ttl { font-size: 24px; line-height: 32px; }
+  .sm.sty-paper .tabs, .sm.sty-inset .tabs, .sm.sty-piece .tabs, .sm.sty-dark .tabs { box-shadow: none; gap: 4px; margin-top: 8px; border-bottom: 1px solid var(--sm-line); }
+  .sm.sty-paper .tabs .tab, .sm.sty-inset .tabs .tab, .sm.sty-piece .tabs .tab, .sm.sty-dark .tabs .tab { flex: 0 0 auto; padding: 0 12px; line-height: 36px; border-radius: 0; box-shadow: none; color: var(--sm-muted); }
+  .sm.sty-paper .tabs .tab.on, .sm.sty-inset .tabs .tab.on, .sm.sty-piece .tabs .tab.on, .sm.sty-dark .tabs .tab.on { color: var(--sm-ink); box-shadow: inset 0 -3px 0 0 var(--sm-accent); }
+  .sm.sty-paper .tabs .tab:not(.on):hover, .sm.sty-inset .tabs .tab:not(.on):hover, .sm.sty-piece .tabs .tab:not(.on):hover, .sm.sty-dark .tabs .tab:not(.on):hover { text-decoration: none; color: var(--sm-ink); }
+  .sm.sty-paper .sh, .sm.sty-inset .sh { border-bottom: 0; padding: 22px 0 4px; font-size: 16px; color: var(--sm-muted); line-height: 24px; }
+  .sm.sty-paper .sec.grp .sh .st, .sm.sty-inset .sh .st { font-size: 16px; }
+  .sm.sty-paper .bt.lil, .sm.sty-inset .bt.lil, .sm.sty-dark .bt.lil { border-radius: 12px; corner-shape: squircle; padding: 0 10px; }
+  .sm.sty-paper .sel, .sm.sty-inset .sel { box-shadow: inset 0 0 0 1px #d2cfca; background: #fff; }
+  .sm.sty-paper .form input, .sm.sty-inset .form input { box-shadow: inset 0 0 0 1px #d2cfca; }
+  /* inset: every section a white card on the warm canvas, rows inside with hairlines, iOS grouped style */
+  .sm.sty-inset .sec { margin-top: 6px; }
+  .sm.sty-inset .sb { background: #fff; border-radius: 16px; corner-shape: squircle; box-shadow: 0 0 0 1px #e7e7e7, 0 1px 2px rgba(60,45,25,.05); padding: 0 16px; }
+  .sm.sty-inset .sb > .row:first-child { border-top: 0; }
+  .sm.sty-inset .sb > .row:last-child { border-bottom: 0; }
+  .sm.sty-inset .sec.fold .sb { padding: 0 16px; }
+  .sm.sty-inset .pk, .sm.sty-inset .gamesWrap, .sm.sty-inset .gamesChips, .sm.sty-inset .form, .sm.sty-inset .statsPick { padding: 12px 0; }
+  .sm.sty-inset .sec.tight { margin-top: 6px; }
+  /* piece: a piece on the table, the game's paper with the 1px ink outline and the ambient shadow of the score board */
+  .sm.sty-piece { --sm-paper: #F8F9FA; --sm-row: 56px; --sm-lab: 18px; --sm-pad: 16px; --sm-line: #DEE2E6; --sm-shadow: 0 0 0 1px #343A40 inset, 0 0 8px rgba(0,0,0,.24); --sm-back: rgba(0,0,0,.4); }
+  .sm.sty-piece .box { box-shadow: 0 0 0 1px #343A40, 0 0 8px rgba(0,0,0,.24); }
+  .sm.sty-piece .head { padding-top: 12px; }
+  .sm.sty-piece .sh { padding: 20px 0 6px; }
+  .sm.sty-piece .sec.grp .sh { border-bottom: 0; padding: 20px 0 2px; font-size: 16px; color: var(--sm-muted); line-height: 24px; }
+  .sm.sty-piece .x.in { top: 10px; }
+  /* dark: a panel that belongs to the felt, the ink of the table in glass, white type */
+  .sm.sty-dark { --sm-paper: rgba(24,32,26,.94); --sm-ink: #F8F9FA; --sm-muted: #A7B0A9; --sm-line: rgba(255,255,255,.12); --sm-row: 56px; --sm-lab: 18px; --sm-pad: 20px; --sm-radius: 20px;
+    --sm-shadow: 0 0 0 1px rgba(255,255,255,.14), 0 16px 40px rgba(0,0,0,.5); --sm-back: rgba(0,0,0,.35); --sm-seg-tray: rgba(255,255,255,.1); --sm-seg-ring: rgba(255,255,255,.18); --sm-seg-ink: #E9ECEF;
+    --sm-lightblue: rgba(165,216,255,.18); --sm-lightring: rgba(165,216,255,.45); --sm-blue: #A5D8FF; }
+  .sm.sty-dark .box { corner-shape: squircle; backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+  .sm.sty-dark .head { padding-top: 16px; }
+  .sm.sty-dark .sh { border-bottom: 0; padding: 22px 0 4px; font-size: 16px; color: var(--sm-muted); line-height: 24px; }
+  .sm.sty-dark .sw i { background: rgba(255,255,255,.16); box-shadow: inset 0 0 0 1px rgba(255,255,255,.12); }
+  .sm.sty-dark .sw.on i { background: var(--sm-accent); }
+  .sm.sty-dark .sel { background: rgba(255,255,255,.08); box-shadow: inset 0 0 0 1px rgba(255,255,255,.18); color: var(--sm-ink); }
+  .sm.sty-dark .x.in { color: var(--sm-muted); }
+  .sm.sty-dark .x.in:hover { background: rgba(255,255,255,.1); color: #fff; }
+  .sm.sty-dark .bt.red { background: rgba(240,62,62,.18); color: #FFA8A8; box-shadow: inset 0 0 0 1px rgba(240,62,62,.5); }
+  .sm.sty-dark .bt.green { background: rgba(102,168,15,.22); color: #C0EB75; box-shadow: inset 0 0 0 1px rgba(116,184,22,.5); }
+  .sm.sty-dark .form input { background: rgba(255,255,255,.08); color: #fff; box-shadow: inset 0 0 0 1px rgba(255,255,255,.18); }
+  .sm.sty-dark .pk .pi.on .pair, .sm.sty-dark .pk .pi.on .sq { box-shadow: 0 0 0 3px #fff; }
+  .sm.sty-dark table.stats th, .sm.sty-dark table.stats td { border-color: var(--sm-line); }
+  .sm.sty-dark .chip { background: rgba(255,255,255,.08); color: #E9ECEF; box-shadow: inset 0 0 0 1px rgba(255,255,255,.16); }
+  .sm.sty-dark .chip i { background: rgba(255,255,255,.2); box-shadow: none; }
+  .sm.sty-dark .chip.on { background: var(--sm-accent); color: #fff; }
+  .sm.sty-dark .door { color: #A5D8FF; }
+  /* ===== the navigations ===== */
+  /* segmented tabs under the title */
+  .sm .segnav { padding: 8px 0 4px; }
+  .sm .segnav .seg { display: flex; width: 100%; }
+  .sm .segnav .seg .sg { flex: 1; text-align: center; }
+  /* the sidebar: a column of pages on the left, the picked one filled */
+  .sm .side { flex: 0 0 176px; display: flex; flex-direction: column; gap: 2px; padding: 8px 12px 12px 0; border-right: 1px solid var(--sm-line); margin-left: var(--sm-pad); }
+  .sm.nav-side .head { padding-bottom: 8px; border-bottom: 1px solid var(--sm-line); margin: 0 var(--sm-pad); padding-left: 0; padding-right: 0; }
+  .sm.nav-side .cols .body { padding-left: 20px; }
+  .sm .side .tab { display: block; padding: 0 12px; line-height: 36px; font-size: 18px; border-radius: 10px; corner-shape: squircle; cursor: pointer; color: var(--sm-ink); }
+  .sm .side .tab.on { background: var(--sm-seg-tray); font-weight: bold; box-shadow: inset 0 0 0 1px var(--sm-seg-ring); }
+  .sm .side .tab:not(.on):hover { background: rgba(0,0,0,.04); }
+  .sm.sty-today .side .tab.on, .sm.sty-tidy .side .tab.on, .sm.sty-piece .side .tab.on { background: var(--sm-lightblue); color: var(--sm-blue); box-shadow: inset 0 0 0 1px var(--sm-lightring); }
+  .sm.sty-dark .side .tab.on { background: rgba(255,255,255,.12); box-shadow: inset 0 0 0 1px rgba(255,255,255,.16); }
+  .sm.sty-dark .side .tab:not(.on):hover { background: rgba(255,255,255,.06); }
+  /* one page: a chip row that jumps to the sections, staying at the top */
+  .sm .jump { display: flex; gap: 6px; padding: 8px 0 10px; border-bottom: 1px solid var(--sm-line); overflow-x: auto; scrollbar-width: none; }
+  .sm .jump .jp { flex: none; height: 28px; line-height: 28px; padding: 0 12px; border-radius: 14px; font-size: 16px; font-weight: bold; color: var(--sm-muted); cursor: pointer; box-shadow: inset 0 0 0 1px var(--sm-line); }
+  .sm .jump .jp.on { color: var(--sm-ink); background: var(--sm-seg-tray); box-shadow: inset 0 0 0 1px var(--sm-seg-ring); }
+  /* the quick panel: a small card by the Profile button, no tabs, rows 48px */
+  .sm.nav-quick { --sm-row: 48px; --sm-lab: 18px; --sm-pad: 16px; }
+  .sm.nav-quick .box { width: 360px; left: calc((100% - var(--ad-w)) / 2); top: auto; transform: translateX(-50%); bottom: 88px; }
+  .sm.nav-quick.phone .box { left: 50%; bottom: 80px; }
+  .sm.nav-quick .head { padding-top: 12px; }
+  .sm.nav-quick .x.in { top: 10px; }
+  .sm.nav-quick .back { background: none; }
+  /* ===== the positions ===== */
+  /* right: a drawer from the ad rail's side, the table stays visible, no backdrop or a soft one */
+  .sm.pos-right .box { left: auto; right: 0; top: 0; bottom: 0; transform: none; width: 440px; max-height: none; border-radius: var(--sm-radius) 0 0 var(--sm-radius); corner-shape: squircle; }
+  .sm.pos-right .x.out { right: auto; left: -40px; top: 8px; }
+  /* sheet: the phone's bottom sheet with a grab handle, 92% tall, the head staying */
+  .sm.pos-sheet .box { left: 0; right: 0; top: auto; bottom: 0; transform: none; width: 100%; max-height: 92%; border-radius: var(--sm-radius) var(--sm-radius) 0 0; }
+  .sm.pos-sheet .grab { width: 36px; height: 5px; border-radius: 3px; background: var(--sm-line); margin: 8px auto 0; }
+  .sm.pos-sheet .x.out { display: none; }
+  /* full: the phone's full page, a top bar with the close on the left as a back */
+  .sm.pos-full .box { left: 0; top: 0; right: 0; bottom: 0; transform: none; width: 100%; max-height: none; border-radius: 0; }
+  .sm.pos-full .x.out { display: none; }
+  /* the phone: tabs scroll, rows stack */
+  .sm.phone .tabs { overflow-x: auto; scrollbar-width: none; }
+  .sm.phone .tabs .tab { flex: 0 0 auto; padding: 0 12px; }
+  .sm.phone .box { width: calc(100% - 16px); }
+  .sm.phone .x.out { right: 0; top: -36px; }
+
+  /* ===== additions after the research round (6 Sep, late) ===== */
+  /* today, faithfully: the whole box scrolls, so the tabs and the close go with it, and the box is nearly the window's height */
+  .sm.sty-today .box { display: block; overflow-y: auto; min-height: calc(100% - 80px); }
+  .sm.sty-today .body { overflow: visible; }
+  .sm.sty-today .head { position: static; }
+  /* the lighter scrim for a look page (18%) */
+  .sm.bd-light .back { background: rgba(20,16,10,.18); }
+  /* the lemon controls: today's yellow with the ring and the dark mark that pass the contrast checks (fill #FFD75A, ring #8d691b, mark #5C3A00) */
+  .sm.lemon .rd i, .sm.lemon .ck i { background-image: none; background: #FFD75A; box-shadow: inset 0 0 0 1px #8d691b; position: relative; }
+  .sm.lemon .rd i { border-radius: 50%; }
+  .sm.lemon .ck i { border-radius: 6px; corner-shape: squircle; }
+  .sm.lemon .rd.on i::after { content: ""; position: absolute; left: 7px; top: 7px; width: 10px; height: 10px; border-radius: 50%; background: #5C3A00; }
+  .sm.lemon .ck.on i::after { content: ""; position: absolute; left: 5px; top: 6px; width: 14px; height: 8px; border-left: 3px solid #5C3A00; border-bottom: 3px solid #5C3A00; transform: rotate(-45deg); }
+  .sm.lemon .sw i { box-shadow: inset 0 0 0 1px #868E96; background: #ADB5BD; }
+  .sm.lemon .sw.on i { background: #FFD75A; box-shadow: inset 0 0 0 1px #8d691b; }
+  .sm.lemon .sw.on i::after { background: #5C3A00; }
+  /* the lemon tray for the segmented control (index.html's otc-yellow): tray #FFF3C2, ring #F0DA8A, ink #8A5A00, thumb #FFD43B with ink #5C3D00, no outline */
+  .sm.seg-lemon { --sm-seg-tray: #FFF3C2; --sm-seg-ring: #F0DA8A; --sm-seg-ink: #8A5A00; }
+  .sm.seg-lemon .seg .sg.on { background: #FFD43B; color: #5C3D00; box-shadow: inset 0 0 0 1px #E6B92B; text-shadow: none; }
+  .sm.seg-lemon .chip.on { background: #FFD43B; color: #5C3D00; box-shadow: inset 0 0 0 1px #E6B92B; }
+  .sm.seg-lemon .chip.on i { background: #fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 8'><path d='M1 4l3 3 5-6' fill='none' stroke='%235C3D00' stroke-width='2'/></svg>") center / 9px no-repeat; }
+  .sm.seg-lemon .sw.on i { background: #FFD75A; box-shadow: inset 0 0 0 1px #8d691b; }
+  .sm.seg-lemon .sw.on i::after { background: #5C3A00; }
+  .sm.seg-lemon .pk .pi.on .pair, .sm.seg-lemon .pk .pi.on .sq { box-shadow: 0 0 0 3px #FFD75A, 0 0 0 4px #5C3A00; }
+  /* the ink ring on every control: the table's own outline token, 10.9:1 on the paper */
+  .sm.ring .seg { box-shadow: inset 0 0 0 1px #343A40; --sm-seg-tray: #E9ECEF; --sm-seg-ring: #CED4DA; --sm-seg-ink: #495057; }
+  .sm.ring .seg .sg.on { background: #008A25; box-shadow: none; text-shadow: none; }
+  .sm.ring .sw i { box-shadow: inset 0 0 0 1px #343A40; background: #ADB5BD; }
+  .sm.ring .sw i::after { box-shadow: 0 0 0 1px #343A40; }
+  .sm.ring .sw.on i { background: #008A25; box-shadow: inset 0 0 0 1px #343A40; }
+  .sm.ring .pk .pi .pair img, .sm.ring .pk .pi .sq { box-shadow: inset 0 0 0 1px #343A40; }
+  .sm.ring .pk .pi.on .pair, .sm.ring .pk .pi.on .sq { box-shadow: 0 0 0 3px #008A25; }
+  /* two columns for the compact desktop: the option groups flow into two 24px-apart columns, a group never split */
+  .sm.twocol .body > .sec.grp, .sm.twocol .body .twocolwrap { break-inside: avoid; }
+  .sm.twocol .body { column-count: 2; column-gap: 24px; }
+  .sm.twocol .body > .sec { break-inside: avoid; display: inline-block; width: 100%; }
+  /* the drill-down: a first screen of rows, then the pane with a back chevron in the head */
+  .sm .drill .row { min-height: 56px; }
+  .sm .drill .row .lt { font-size: 20px; }
+  .sm .bk { position: absolute; left: 12px; top: 12px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; cursor: pointer; color: var(--sm-muted); }
+  .sm .bk:hover { background: rgba(0,0,0,.06); color: var(--sm-ink); }
+  .sm .bk + .ttl { padding-left: 36px; }
+  /* the Look page's second row: Avatar, Wallpaper, Deck */
+  .sm .subnav { padding: 10px 0 6px; }
+  .sm .subnav .seg { display: inline-flex; }
+  .sm .subnav .seg .sg { padding: 0 16px; }
+  /* the sentence over the ranked games */
+  .sm .note { font-size: 14px; line-height: 20px; color: var(--sm-muted); padding: 10px 0 2px; }
+  /* the value rows: the word at the right, the whole row a door */
+  .sm.ctl-value .row.link .cx { color: var(--sm-muted); }
+  .sm.ctl-value .row.link .cnt { font-size: 18px; color: var(--sm-ink); }
+  /* a box keeps a working height so a tab switch does not jump; the sheet stands at 92% of the phone whatever it holds */
+  .sm:not(.sty-today):not(.nav-quick):not(.nav-drill):not(.pos-right):not(.pos-sheet):not(.pos-full) .box { min-height: min(520px, calc(100% - 80px)); }
+  .sm.pos-sheet .box { height: 92%; max-height: 92%; }
+  .sm.nav-drill:not(.pos-full) .box { min-height: 0; }
+  /* after the critic: the description ink passes 4.5:1 on its paper (#495057 on the paper, #4e4d4c on the cream); today's hairline token on the tidy and piece styles */
+  .sm { --sm-desc-ink: #495057; }
+  .sm.sty-paper, .sm.sty-inset { --sm-desc-ink: #4e4d4c; }
+  .sm.sty-dark { --sm-desc-ink: #B5C4B7; }
+  .sm .row .ld, .sm .note { color: var(--sm-desc-ink); }
+  .sm.sty-tidy, .sm.sty-piece { --sm-line: #CED4DA; }
+  /* a narrower box for the list pages (640), the picture pages keep 768 */
+  .sm.narrow .box { width: min(640px, calc(100% - 32px)); }
+  /* the game runs on under the modal: a pill in the head says it is your turn and is the way back */
+  .sm .turn { position: absolute; right: 52px; top: 12px; display: inline-flex; align-items: center; gap: 8px; height: 32px; padding: 0 12px 0 10px; border-radius: 16px; background: #FFD75A; color: #5C3A00; font-size: 16px; font-weight: bold; box-shadow: 0 0 0 1px rgba(92,58,0,.7), 0 1px 2px rgba(0,0,0,.3); cursor: pointer; }
+  .sm .turn i { width: 8px; height: 8px; border-radius: 50%; background: #5C3A00; animation: turnpulse 1.2s ease-in-out infinite; }
+  .sm .turn b { font-weight: normal; opacity: .85; }
+  @keyframes turnpulse { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
+  /* the Your look strip: three doors in one row at the top of the settings page */
+  .sm .lookstrip { display: flex; align-items: center; gap: 20px; padding: 14px 12px; margin: 12px 0 4px; border-radius: 12px; corner-shape: squircle; background: rgba(0,0,0,.035); box-shadow: inset 0 0 0 1px var(--sm-line); cursor: pointer; }
+  .sm .lookstrip .ls { display: inline-flex; align-items: center; gap: 10px; font-size: 18px; }
+  .sm .lookstrip .ls img { width: 44px; height: 44px; display: block; filter: drop-shadow(1px 0 #252525) drop-shadow(-1px 0 #252525) drop-shadow(0 1px #252525) drop-shadow(0 -1px #252525); }
+  .sm .lookstrip .ls .sq { display: block; width: 44px; height: 44px; border-radius: 8px; background: center / cover; box-shadow: inset 0 0 0 1px #343A40; }
+  .sm .lookstrip .ls .pair { display: flex; gap: 2px; height: 44px; }
+  .sm .lookstrip .ls .pair img { width: 30px; height: 44px; border-radius: 4px; filter: none; box-shadow: inset 0 0 0 1px #343A40; object-fit: cover; }
+  .sm .lookstrip .chev { margin-left: auto; color: var(--sm-muted); }
+  .sm.sty-paper .lookstrip, .sm.sty-inset .lookstrip { background: #fff; box-shadow: 0 0 0 1px #e7e7e7; }
+  .sm.sty-dark .lookstrip { background: rgba(255,255,255,.06); box-shadow: inset 0 0 0 1px rgba(255,255,255,.12); }
+  /* after the visual checks (6 Sep, late) */
+  /* the switch keeps one column: the value word sits to its left, the switch on the right rail */
+  .sm .row .cx .sel { min-width: 96px; justify-content: space-between; }
+  /* the phone's sheet and full page meet both edges */
+  .sm.phone.pos-sheet .box, .sm.phone.pos-full .box { width: 100%; }
+  /* the drill list: a rule under the head, none after the last row */
+  .sm.nav-drill .head { padding-bottom: 8px; }
+  .sm.nav-drill .head::after { content: ""; position: absolute; left: var(--sm-pad); right: var(--sm-pad); bottom: 0; height: 1px; background: var(--sm-line); }
+  .sm .drill .row:last-child { border-bottom: 0; }
+  /* the sidebar version's close on the same rail as the others */
+  .sm.nav-side .x.in { right: -4px; }
+  /* the jump chips pick with the green thumb, one colour family */
+  .sm .jump .jp { box-shadow: inset 0 0 0 1px var(--sm-seg-ring); background: var(--sm-seg-tray); color: var(--sm-seg-ink); }
+  .sm .jump .jp.on { color: #fff; background: var(--sm-accent); box-shadow: inset 0 0 0 1px var(--sm-accentring); }
+  /* the bottom of a scrolling body: room under the last row and a fade in the paper colour, so a cut reads as more */
+  .sm:not(.sty-today) .body { padding-bottom: 28px; }
+  .sm:not(.sty-today):not(.nav-quick) .box::after { content: ""; position: absolute; left: 1px; right: 1px; bottom: 0; height: 28px; pointer-events: none; border-radius: 0 0 var(--sm-radius) var(--sm-radius); background: linear-gradient(to bottom, transparent, var(--sm-paper)); }
+  .sm.sty-dark .box::after { background: linear-gradient(to bottom, transparent, rgba(24,32,26,.94)); }
+  /* group heads and tile names in the ink that passes */
+  .sm .sec.grp .sh, .sm.sty-paper .sh, .sm.sty-inset .sh, .sm.sty-dark .sh, .sm .pk .pn { color: var(--sm-desc-ink); }
+  /* the compact desktop's two columns: shorter rows so the ten options fit the bound box */
+  .sm.twocol { --sm-row: 44px; --sm-lab: 16px; }
+  .sm.twocol .row { padding: 8px 0; }
+  .sm.twocol .sec.grp .sh { padding-top: 14px; }
+  /* the quick panel sits by the Profile button, its right edge on the table bar's right end */
+  .sm.nav-quick .box { left: calc((100% - var(--ad-w)) / 2 + 200px); transform: translateX(-100%); }
+  /* after the fourth check: the select's ring passes, the tabs and counts use the passing ink, the cool paper gets a grey tray, the close glyph sits on the content edge */
+  .sm .sel { box-shadow: inset 0 0 0 1px #868E96; min-width: 96px; }
+  .sm:not(.sty-today) .tabs .tab:not(.on), .sm .cnt, .sm .strip .more { color: var(--sm-desc-ink); }
+  .sm.sty-tidy, .sm.sty-piece { --sm-seg-tray: #E9ECEF; --sm-seg-ring: #CED4DA; --sm-seg-ink: #495057; }
+  .sm .x.in { right: calc(var(--sm-pad) - 8px); }
+  .sm.nav-side .x.in { right: -8px; }
+  /* the table's global squircle rule would square every circle: radios, the switch's track and knob, the round buttons, the chips' dots stay round */
+  .sm .rd i, .sm .rd i::after, .sm .sw i, .sm .sw i::after, .sm .x.in, .sm .bk, .sm .chip, .sm .chip i, .sm .jump .jp, .sm .turn { corner-shape: round; }
+  /* after the fifth check */
+  /* the outside close is a sibling of the box, at the live position (the box's right edge, 10px above its top) */
+  .sm > .x.out { left: calc(50% + min(384px, 50% - 16px)); top: 30px; right: auto; }
+  .sm.phone > .x.out { left: auto; right: 8px; top: 4px; }
+  .sm.pos-right > .x.out { left: auto; right: 448px; top: 8px; }
+  /* the box clears the table bar; today keeps the live geometry */
+  .sm:not(.sty-today):not(.pos-sheet):not(.pos-full):not(.pos-right):not(.nav-quick) .box { max-height: calc(100% - 120px); }
+  /* no doubled hairline where a folded group meets the next rows */
+  .sm .sec.fold + .sec.tight .sb > .row:first-child { border-top: 0; }
+  /* the close glyph and the segmented row's rule */
+  .sm .x.in { color: var(--sm-desc-ink); }
+  .sm .segnav { padding-bottom: 10px; box-shadow: 0 1px 0 0 var(--sm-line); }
+  /* the lemon tick sits in the middle of its box */
+  .sm.lemon .ck.on i::after { left: 5px; top: 5px; width: 12px; height: 7px; }
+  /* the chosen tile keeps its ink edge under the green ring */
+  .sm .pk .pi.on .pair, .sm .pk .pi.on .sq { box-shadow: inset 0 0 0 1px #343A40, 0 0 0 4px #66A80F; }
+  .sm .pk .pi.on .pair { box-shadow: 0 0 0 4px #66A80F; }
+  /* more air between a description and its control */
+  .sm .row { gap: 24px; }
+  /* after the sixth check */
+  /* the phone's five tabs fit at 18px with the live's normal weight */
+  .sm.phone .tabs { overflow: visible; }
+  .sm.phone .tabs .tab { flex: 1 1 auto; padding: 0 5px; min-width: 0; font-size: 18px; }
+  /* the lemon thumb wears the official ring so it separates from its tray; the tray stays lemon on the piece paper; the tab underline follows the lemon ink */
+  .sm.sm.seg-lemon { --sm-seg-tray: #FFF3C2; --sm-seg-ring: #F0DA8A; --sm-seg-ink: #8A5A00; }
+  .sm.sm.seg-lemon .seg .sg.on { background: #FFD75A; color: #5C3A00; box-shadow: inset 0 0 0 1px rgba(92,58,0,.7), 0 1px 2px rgba(0,0,0,.2); text-shadow: none; }
+  .sm.sm.seg-lemon .tabs .tab.on { box-shadow: inset 0 -3px 0 0 #8d691b; }
+  /* the drawer starts under the menu bar */
+  .sm.pos-right .box { top: 32px; }
+  .sm.pos-right > .x.out { top: 40px; }
+  /* the turn pill in a sheet's or a drill pane's head */
+  .sm.phone .turn { right: 48px; top: 8px; height: 28px; font-size: 14px; }
+  .sm.phone .turn b { display: none; }
+
+  /* ===== round two (7 Sep): the front page's tokens, exactly. The site's radius token is 6px, 12px where squircles render;
+     the tray is that plus 2px; the tile shell and the box are 20px; the Play green thumb wears its ring at 78% toward black. ===== */
+  .sm.r2 { --r-md: 6px; --sm-radius: 20px; --sm-pad: 20px; --sm-row: 56px; --sm-lab: 18px; --sm-desc: 14px;
+    --sm-paper: #f9f6f2; --sm-ink: #141414; --sm-muted: #4e4d4c; --sm-desc-ink: #4e4d4c; --sm-line: #e7e7e7; --sm-edge: #d2cfca;
+    --sm-accent: #00a82d; --sm-accentring: color-mix(in srgb, #00a82d 78%, black); --sm-accenthover: color-mix(in srgb, #00a82d 92%, black);
+    --sm-seg-tray: #e4ddd0; --sm-seg-ring: #c9c0ae; --sm-seg-ink: #4e4d4c; --sm-seg-hover: #dcd4c5;
+    --sm-lightblue: #abd2ff; --sm-lightring: #83b5ef; --sm-blue: #1971C2;
+    --lift: 0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09); }
+  @supports (corner-shape: squircle) { .sm.r2 { --r-md: 12px; } }
+  .sm.r2 .box { corner-shape: squircle; box-shadow: 0 0 0 1px var(--sm-edge), var(--lift), 0 16px 40px rgba(0,0,0,.28); }
+  /* the head: no title, the tabs at the left and the close at the right, on one rule */
+  .sm.r2 .head { padding: 10px var(--sm-pad) 0; }
+  .sm.r2 .tabs { box-shadow: none; gap: 4px; margin-top: 0; border-bottom: 1px solid var(--sm-line); padding-right: 40px; }
+  .sm.r2 .tabs .tab { flex: 0 0 auto; padding: 0 12px; line-height: 40px; border-radius: 0; box-shadow: none; color: var(--sm-desc-ink); font-size: 18px; }
+  .sm.r2 .tabs .tab.on { color: var(--sm-ink); font-weight: bold; box-shadow: inset 0 -3px 0 0 var(--sm-accent); }
+  .sm.r2 .tabs .tab:not(.on):hover { text-decoration: none; color: var(--sm-ink); }
+  .sm.r2:not(.titled) .x.in { top: 12px; right: calc(var(--sm-pad) - 8px); }
+  .sm.r2 .x.in { border-radius: var(--r-md); corner-shape: squircle; }
+  .sm.r2.nav-seg .segnav { padding: 12px 0 10px; box-shadow: none; padding-right: 40px; }
+  /* the heads: every head as the People head, bold on a rule (Holger: the same headline as People) */
+  .sm.r2 .sh, .sm.r2 .sec.grp .sh { display: flex; justify-content: space-between; align-items: center; padding: 22px 0 8px; border-bottom: 1px solid var(--sm-line); font-weight: bold; font-size: 20px; line-height: 28px; color: var(--sm-ink); }
+  .sm.r2 .sec.grp .sh .st, .sm.r2 .sh .st { font-size: 20px; }
+  .sm.r2 .body > .sec:first-child .sh { padding-top: 14px; }
+  .sm.r2.heads-none .sh, .sm.r2.heads-none .sec.grp .sh { border-bottom: 0; padding-bottom: 2px; }
+  .sm.r2.heads-none .sb > .row:first-child { border-top: 0; }
+  /* the rows */
+  .sm.r2 .row { gap: 24px; }
+  .sm.r2 .row .lt { font-size: 18px; line-height: 26px; }
+  .sm.r2 .row .ld { font-size: 14px; line-height: 20px; }
+  /* the segmented control at the site's radius: cells 12px squircle in a 14px tray, 2px padding, the hover fill of the front page bar */
+  .sm.r2 .seg { border-radius: calc(var(--r-md) + 2px); corner-shape: squircle; background: var(--sm-seg-tray); box-shadow: inset 0 0 0 1px var(--sm-seg-ring); }
+  .sm.r2 .seg .sg { border-radius: var(--r-md); corner-shape: squircle; height: 24px; line-height: 24px; font-size: 16px; padding: 0 12px; color: var(--sm-seg-ink); }
+  .sm.r2 .seg .sg:not(.on):hover { background: var(--sm-seg-hover); }
+  .sm.r2 .seg .sg.on { background: var(--sm-accent); color: #fff; box-shadow: inset 0 0 0 1px var(--sm-accentring), 0 2px 4px rgba(0,0,0,.06);
+    text-shadow: -1px -1px 0 var(--sm-accentring), 1px -1px 0 var(--sm-accentring), -1px 1px 0 var(--sm-accentring), 1px 1px 0 var(--sm-accentring); }
+  .sm.r2 .subnav .seg .sg { padding: 0 16px; }
+  /* the switch, tied to the tray: off is the tray's own colour and ring, on is the Play green with its ring; the knob white with the tray's ring */
+  .sm.r2 .sw i { width: 44px; height: 24px; background: var(--sm-seg-tray); box-shadow: inset 0 0 0 1px var(--sm-seg-ring); border-radius: 12px; corner-shape: round; }
+  .sm.r2 .sw i::after { width: 20px; height: 20px; left: 2px; top: 2px; background: #fff; box-shadow: 0 0 0 1px var(--sm-seg-ring), 0 1px 2px rgba(0,0,0,.12); border-radius: 50%; corner-shape: round; }
+  .sm.r2 .sw.on i { background: var(--sm-accent); box-shadow: inset 0 0 0 1px var(--sm-accentring); }
+  .sm.r2 .sw.on i::after { transform: translateX(20px); box-shadow: 0 0 0 1px var(--sm-accentring), 0 1px 2px rgba(0,0,0,.12); }
+  .sm.r2 .sw:hover i { background: var(--sm-seg-hover); } .sm.r2 .sw.on:hover i { background: var(--sm-accenthover); }
+  /* squircle: the track at the tray's corner (14px squircle) and the knob at the cell's (12px squircle), the same two shapes as the segmented control */
+  .sm.r2.sw-squircle .sw i { border-radius: calc(var(--r-md) + 2px); corner-shape: squircle; }
+  .sm.r2.sw-squircle .sw i::after { border-radius: var(--r-md); corner-shape: squircle; }
+  /* squircle8: a tighter 8px squircle track with a 6px knob, closer to a rounded rectangle */
+  .sm.r2.sw-squircle8 .sw i { border-radius: 8px; corner-shape: squircle; }
+  .sm.r2.sw-squircle8 .sw i::after { border-radius: 6px; corner-shape: squircle; }
+  /* tick: the squircle knob carries a green tick when on */
+  .sm.r2.sw-tick .sw i { border-radius: calc(var(--r-md) + 2px); corner-shape: squircle; }
+  .sm.r2.sw-tick .sw i::after { border-radius: var(--r-md); corner-shape: squircle; }
+  .sm.r2.sw-tick .sw.on i::after { background: #fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 10'><path d='M1.5 5.5l3 3 6-7' fill='none' stroke='%2300a82d' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/></svg>") center / 11px no-repeat; }
+  /* wide: a 48px track with a taller 26px body, the knob 22px, for the phone's thumb */
+  .sm.r2.sw-wide .sw i { width: 48px; height: 26px; border-radius: calc(var(--r-md) + 2px); corner-shape: squircle; }
+  .sm.r2.sw-wide .sw i::after { width: 22px; height: 22px; border-radius: var(--r-md); corner-shape: squircle; }
+  .sm.r2.sw-wide .sw.on i::after { transform: translateX(22px); }
+  /* the small buttons at the site's radius: the front page's light blue, the solid Play green, a light red */
+  .sm.r2 .bt { border-radius: var(--r-md); corner-shape: squircle; height: 24px; line-height: 24px; font-size: 16px; padding: 0 10px; }
+  .sm.r2 .bt.light { background: var(--sm-lightblue); color: var(--sm-blue); box-shadow: inset 0 0 0 1px var(--sm-lightring), 0 2px 4px rgba(0,0,0,.06); }
+  .sm.r2 .bt.light:hover { background: #a3ccfb; }
+  .sm.r2 .bt.green { background: var(--sm-accent); color: #fff; box-shadow: inset 0 0 0 1px var(--sm-accentring), 0 2px 4px rgba(0,0,0,.06);
+    text-shadow: -1px -1px 0 var(--sm-accentring), 1px -1px 0 var(--sm-accentring), -1px 1px 0 var(--sm-accentring), 1px 1px 0 var(--sm-accentring); }
+  .sm.r2 .bt.green:hover { background: var(--sm-accenthover); }
+  .sm.r2 .bt.red { background: #fcbcb4; color: #B52626; box-shadow: inset 0 0 0 1px #e8958c, 0 2px 4px rgba(0,0,0,.06); }
+  .sm.r2 .form input { box-shadow: inset 0 0 0 1px var(--sm-edge); border-radius: var(--r-md); corner-shape: squircle; }
+  .sm.r2 .sel { box-shadow: inset 0 0 0 1px var(--sm-edge); border-radius: var(--r-md); corner-shape: squircle; }
+  /* the pickers: the chosen tile wears the Play green ring over its ink edge */
+  .sm.r2 .pk .pi.on .pair, .sm.r2 .pk .pi.on .sq { box-shadow: inset 0 0 0 1px #343A40, 0 0 0 3px var(--sm-accent); }
+  .sm.r2 .pk .pi.on .pair { box-shadow: 0 0 0 3px var(--sm-accent); }
+  .sm.r2 .pk .pn { color: var(--sm-desc-ink); }
+  .sm.r2 .chip { border-radius: var(--r-md); corner-shape: squircle; }
+  .sm.r2 .gamesList .gl { font-size: 18px; }
+  /* the cards on the cream (Holger: might be even better): each group a white card, 16px squircle, the site's edge and lift; the head above it as the People head */
+  .sm.r2.sty-inset .sb { background: #fff; border-radius: 16px; corner-shape: squircle; box-shadow: 0 0 0 1px var(--sm-edge), var(--lift); padding: 0 16px; }
+  .sm.r2.sty-inset .sh, .sm.r2.sty-inset .sec.grp .sh { border-bottom: 0; padding: 22px 0 8px; }
+  .sm.r2.sty-inset .sec.tight .sb > .row { border-top: 0; }
+  .sm.r2.sty-inset .sec.tight { margin-top: 8px; }
+  .sm.r2.sty-inset .pk, .sm.r2.sty-inset .gamesList, .sm.r2.sty-inset .gamesChips, .sm.r2.sty-inset .form { padding: 12px 0; }
+  .sm.r2.sty-inset .note { padding: 12px 0 4px; }
+  /* the head inside the card, as its first row */
+  .sm.r2.headsin .sec { background: #fff; border-radius: 16px; corner-shape: squircle; box-shadow: 0 0 0 1px var(--sm-edge), var(--lift); margin-top: 16px; padding: 0 16px; }
+  .sm.r2.headsin .body > .sec:first-child { margin-top: 14px; }
+  .sm.r2.headsin .sec .sh { padding: 12px 0 6px; border-bottom: 1px solid var(--sm-line); }
+  .sm.r2.headsin .sec .sb { background: none; box-shadow: none; padding: 0; border-radius: 0; }
+  /* the backdrops: black with a blur */
+  .sm.bd-blackblur .back { background: rgba(0,0,0,.45); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+  .sm.bd-blackblur60 .back { background: rgba(0,0,0,.6); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+  .sm.bd-blackblur30 .back { background: rgba(0,0,0,.3); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+  .sm.bd-today .back { background: rgba(0,0,0,.64); }
+  /* the box widths */
+  .sm.r2.narrow .box { width: min(640px, calc(100% - 32px)); }
+  .sm.r2.w600 .box { width: min(600px, calc(100% - 32px)); }
+  .sm.r2.w720 .box { width: min(720px, calc(100% - 32px)); }
+  .sm.r2 .box::after { background: linear-gradient(to bottom, transparent, var(--sm-paper)); }
+  /* the phone */
+  .sm.r2.phone .tabs .tab { padding: 0 10px; }
+  .sm.r2.pos-sheet .box { border-radius: 20px 20px 0 0; corner-shape: squircle; }
+  /* ===== the user dropdown mock for the Stats question: the live dropdown under the avatar with Stats added ===== */
+  #menuBar .ddmock { display: none; position: absolute; top: 100%; right: 8px; min-width: 120px; padding: 0 8px; background: #F8F9FA; border-radius: 0 0 8px 8px; z-index: 9210;
+    box-shadow: inset 0 1px 0 0 rgba(0,0,0,.24), 0 0 0 1px rgba(0,0,0,.32), 0 0 16px rgba(0,0,0,.32); font-weight: normal; color: #212529; font-size: 16px; line-height: 32px; }
+  #menuBar .ddmock div { border-bottom: 1px solid #CED4DA; white-space: nowrap; cursor: pointer; }
+  #menuBar .ddmock div:last-child { border-bottom: 0; }
+  #menuBar .ddmock div.on { font-weight: bold; }
+  body.dd-open #menuBar .ddmock { display: block; }
+  body.dd-open #menuBar .userBar { position: relative; }
+  .sm.r2.phone.pos-sheet .box, .sm.r2.phone.pos-full .box { width: 100%; }
+  /* slab (GitHub Primer's ToggleSwitch): a 56px track, the knob half the track, the word in the empty half; the knob's radius is the track's minus the inset */
+  .sm.r2.sw-slab .sw i { width: 56px; height: 24px; border-radius: 8px; corner-shape: squircle; font: bold 13px/24px var(--font); }
+  .sm.r2.sw-slab .sw i::before { content: "Off"; position: absolute; right: 0; top: 0; width: 28px; text-align: center; color: var(--sm-seg-ink); }
+  .sm.r2.sw-slab .sw i::after { width: 26px; height: 20px; border-radius: 6px; corner-shape: squircle; }
+  .sm.r2.sw-slab .sw.on i::before { content: "On"; left: 0; right: auto; color: #fff; text-shadow: -1px -1px 0 var(--sm-accentring), 1px -1px 0 var(--sm-accentring), -1px 1px 0 var(--sm-accentring), 1px 1px 0 var(--sm-accentring); }
+  .sm.r2.sw-slab .sw.on i::after { transform: translateX(26px); }
+  /* inverse (Arco's round switch, Base Web): the tray never changes, the knob carries the green, so it is the segmented thumb sliding between two ends */
+  .sm.r2.sw-inverse .sw i { border-radius: 8px; corner-shape: squircle; }
+  .sm.r2.sw-inverse .sw i::after { border-radius: 6px; corner-shape: squircle; }
+  .sm.r2.sw-inverse .sw.on i { background: var(--sm-seg-tray); box-shadow: inset 0 0 0 1px var(--sm-seg-ring); }
+  .sm.r2.sw-inverse .sw.on:hover i { background: var(--sm-seg-hover); }
+  .sm.r2.sw-inverse .sw.on i::after { background: var(--sm-accent); box-shadow: inset 0 0 0 1px var(--sm-accentring), 0 2px 4px rgba(0,0,0,.06); }
+  /* ===== round three (7 Sep, later): Options · Design · Account, the big tray as tabs, cards with the head above, the tray as the on and off ===== */
+  /* the tabs as the tray at the big button size: cells 32px, bold 20px, the tray 36px, the close beside it */
+  .sm.r3.nav-seg .segnav { padding: 12px 40px 10px 0; box-shadow: none; }
+  .sm.r3.nav-seg .segnav .seg { width: 100%; }
+  .sm.r3.tabs-big .segnav .seg .sg { height: 32px; line-height: 32px; font-size: 20px; }
+  .sm.r3.nav-seg:not(.titled) .x.in { top: 14px; }
+  .sm.r3.tabs-big:not(.titled) .x.in { top: 16px; }
+  /* the slab at the tray's size: a 64px track 28px tall with the tray's corners, the knob a 24px cell with the cell's corners, the word bold 16px in the empty half */
+  .sm.r2.sw-slabtray .sw i { width: 64px; height: 28px; border-radius: calc(var(--r-md) + 2px); corner-shape: squircle; font: bold 16px/28px var(--font); }
+  .sm.r2.sw-slabtray .sw i::before { content: "Off"; position: absolute; right: 0; top: 0; width: 34px; text-align: center; color: var(--sm-seg-ink); }
+  .sm.r2.sw-slabtray .sw i::after { width: 30px; height: 24px; left: 2px; top: 2px; border-radius: var(--r-md); corner-shape: squircle; }
+  .sm.r2.sw-slabtray .sw.on i::before { content: "On"; left: 0; right: auto; color: #fff; text-shadow: -1px -1px 0 var(--sm-accentring), 1px -1px 0 var(--sm-accentring), -1px 1px 0 var(--sm-accentring), 1px 1px 0 var(--sm-accentring); }
+  .sm.r2.sw-slabtray .sw.on i::after { transform: translateX(30px); }
+  /* behind the box: black 64% with a 4px blur */
+  .sm.bd-black64blur4 .back { background: rgba(0,0,0,.64); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
+  /* the visible handle for the chooser, bottom right */
+  #swhandle { position: fixed; right: 0; bottom: 60px; z-index: 10000; padding: 6px 10px 6px 12px; border-radius: 8px 0 0 8px; background: rgba(255,255,255,.94); color: #1665AD;
+    font: 700 12px/1 -apple-system, "Helvetica Neue", Arial, sans-serif; box-shadow: 0 0 0 1px #e4e0d9, 0 4px 12px rgba(0,0,0,.25); cursor: pointer; text-shadow: none; }
+  .switchbar.isOpen ~ #swhandle { display: none; }
+  /* ===== the questions of 7 September, late ===== */
+  /* the trays move as the game bar does: the thumb slides under the cells and the white text is a clipped copy on the same clock */
+  .sm.r3 .seg { position: relative; --thspd: 220ms; --thease: cubic-bezier(.645,.045,.355,1); }
+  .sm.r3 .seg > .sg { position: relative; z-index: 2; padding: 0 10px; }
+  .sm.r3 .seg > .sg.on { background: none; box-shadow: none; color: var(--sm-seg-ink); text-shadow: none; }
+  .sm.r3 .seg > .sg + .sg::before { transition: opacity var(--thspd) var(--thease); }
+  .sm.r3 .seg > .thumb { position: absolute; z-index: 1; left: 0; top: 2px; width: 0; height: 24px; opacity: 0; pointer-events: none;
+    background: var(--sm-accent); border-radius: var(--r-md); corner-shape: squircle; box-shadow: inset 0 0 0 1px var(--sm-accentring), 0 2px 4px rgba(0,0,0,.06);
+    transition: left var(--thspd) var(--thease), width var(--thspd) var(--thease), top var(--thspd) var(--thease), height var(--thspd) var(--thease), opacity calc(var(--thspd) / 2) linear; }
+  .sm.r3 .seg > .tcopy { position: absolute; inset: 2px; z-index: 3; display: flex; pointer-events: none; opacity: 0; clip-path: inset(0 100% 0 0);
+    transition: clip-path var(--thspd) var(--thease), opacity calc(var(--thspd) / 2) linear; }
+  .sm.r3 .seg > .tcopy > .sg { color: #fff; text-shadow: -1px -1px 0 var(--sm-accentring), 1px -1px 0 var(--sm-accentring), -1px 1px 0 var(--sm-accentring), 1px 1px 0 var(--sm-accentring); background: none; box-shadow: none; }
+  .sm.r3 .seg > .tcopy > .sg + .sg::before { display: none; }
+  .sm.r3 .seg.still > .thumb, .sm.r3 .seg.still > .tcopy, .sm.r3 .seg.still > .sg + .sg::before { transition: none; }
+  .sm.r3 .segnav .seg > .sg, .sm.r3 .segnav .seg > .tcopy > .sg { flex: 1; text-align: center; justify-content: center; display: inline-flex; align-items: center; }
+  .sm.r3.tabs-big .segnav .seg > .thumb { height: 32px; }
+  .sm.r3 .segnav .seg > .tcopy > .sg { height: 32px; line-height: 32px; font-size: 20px; }
+  .sm.r3:not(.tabs-big) .segnav .seg > .tcopy > .sg { height: 24px; line-height: 24px; font-size: 16px; }
+  @media (prefers-reduced-motion: reduce) { .sm.r3 .seg > .thumb, .sm.r3 .seg > .tcopy, .sm.r3 .seg > .sg + .sg::before { transition: none; } }
+  /* the container's padding: 12px as the front page tiles, the cards inside 12px too */
+  .sm.r3 { --sm-pad: 12px; }
+  .sm.r3.pad16 { --sm-pad: 16px; } .sm.r3.pad20 { --sm-pad: 20px; }
+  .sm.r3.sty-inset .sb { padding: 0 12px; }
+  .sm.r3.sty-inset.cardr12 .sb { border-radius: 12px; } .sm.r3.sty-inset.cardr8 .sb { border-radius: 8px; }
+  .sm.r3.headsin .sec { padding: 0 12px; }
+  .sm.r3.headsin.cardr12 .sec { border-radius: 12px; } .sm.r3.headsin.cardr8 .sec { border-radius: 8px; }
+  .sm.r3 .head { padding-top: 12px; }
+  .sm.r3.nav-seg .segnav { padding: 0 0 8px; }
+  .sm.r3.nav-seg.close-in .segnav { padding-right: 40px; }
+  .sm.r3.nav-seg:not(.titled).close-in .x.in { top: 14px; }
+  .sm.r3.tabs-big.nav-seg:not(.titled).close-in .x.in { top: 14px; }
+  /* the close: today's white cross outside the box (the base), a white round button outside on the corner, inside the tray row, or a round button inside */
+  .sm.r3 > .x.out { position: absolute; width: 32px; height: 32px; color: #fff; display: flex; align-items: center; justify-content: center; right: auto; }
+  .sm.r3 > .x.out svg { width: 20px; height: 20px; }
+  .sm.r3.close-outround > .x.out, .sm.r3.close-inround .x.in { width: 36px; height: 36px; border-radius: 50%; corner-shape: round; background: #fff; color: #141414; box-shadow: 0 0 0 1px var(--sm-edge), var(--lift); }
+  .sm.r3.close-outround > .x.out svg, .sm.r3.close-inround .x.in svg { width: 16px; height: 16px; }
+  .sm.r3.close-inround .x.in { top: 12px; right: 12px; }
+  .sm.r3.close-inround .x.in:hover, .sm.r3.close-outround > .x.out:hover { background: #f4eee5; }
+  .sm.r3.close-out .x.in, .sm.r3.close-outround .x.in { display: none; }
+  .sm.r3.close-in > .x.out, .sm.r3.close-inround > .x.out { display: none; }
+  .sm.r3.close-inround.nav-seg .segnav { padding-right: 44px; }
+  /* ===== 7 September, later still ===== */
+  /* the white copy must sit exactly on the cells: the same padding for the real cells and the copy's */
+  .sm.r3 .seg .sg { padding: 0 10px; }
+  .sm.r3 .subnav .seg .sg { padding: 0 16px; }
+  .sm.r3 .segnav .seg .sg { padding: 0 12px; }
+  /* the whole box scrolls, the head with it, and no fade at the bottom */
+  .sm.r3 .box { display: block; overflow-y: auto; scrollbar-width: thin; }
+  .sm.r3 .head { position: static; }
+  .sm.r3 .body { overflow: visible; padding-bottom: 12px; }
+  .sm.r3 .box::after { display: none; }
+  .sm.r3.pos-sheet .box { display: block; }
+  /* the Design page's second level: underline tabs (the base), a plain text row, or three sections with jump links */
+  .sm.r3 .subtabs { display: flex; gap: 4px; padding: 6px 0 0; border-bottom: 1px solid var(--sm-line); }
+  .sm.r3 .subtabs .stab { padding: 0 10px; line-height: 36px; font-size: 16px; color: var(--sm-desc-ink); cursor: pointer; }
+  .sm.r3 .subtabs .stab.on { color: var(--sm-ink); font-weight: bold; box-shadow: inset 0 -3px 0 0 var(--sm-accent); }
+  .sm.r3 .subtabs .stab:not(.on):hover { color: var(--sm-ink); }
+  .sm.r3 .subplain, .sm.r3 .subjump { display: flex; align-items: center; gap: 8px; padding: 12px 0 2px; font-size: 16px; color: var(--sm-desc-ink); }
+  .sm.r3 .subplain i, .sm.r3 .subjump i { font-style: normal; color: var(--sm-seg-ring); }
+  .sm.r3 .subplain .slink, .sm.r3 .subjump .slink { cursor: pointer; }
+  .sm.r3 .subplain .slink.on { color: var(--sm-ink); font-weight: bold; }
+  .sm.r3 .subjump .slink { color: var(--sm-blue); }
+  .sm.r3 .subjump::before { content: "Jump to"; color: var(--sm-desc-ink); margin-right: 2px; }
+  /* ===== 7 September, afternoon ===== */
+  /* the hover as the game bar's: a fill over the whole cell, 1px into the tray's padding up to the ring, square corners, the two ends following the tray's inner corner; never on the picked cell */
+  .sm.r3 .seg .sg:not(.on):hover { background: none; }
+  .sm.r3 .seg > .sg:not(.on):hover::after { content: ""; position: absolute; left: 0; right: 0; top: -1px; bottom: -1px; z-index: -1; background: var(--sm-seg-hover); }
+  .sm.r3 .seg > .thumb + .sg:not(.on):hover::after { border-radius: calc(var(--r-md) + 1px) 0 0 calc(var(--r-md) + 1px); corner-shape: squircle; }
+  .sm.r3 .seg > .sg:nth-last-child(2):not(.on):hover::after { border-radius: 0 calc(var(--r-md) + 1px) calc(var(--r-md) + 1px) 0; corner-shape: squircle; }
+  .sm.r3 .seg > .sg { z-index: 2; isolation: isolate; }
+  /* lighter trays on the white cards: the front page's warm tray (the band, the divider's ring) or the canvas itself */
+  .sm.r3.trayc-band .sb .seg, .sm.r3.trayc-band .sb .sw i { --sm-seg-tray: #f4eee5; --sm-seg-ring: #d9d2c4; --sm-seg-hover: color-mix(in srgb, #f4eee5 88%, #d9d2c4); }
+  .sm.r3.trayc-canvas .sb .seg, .sm.r3.trayc-canvas .sb .sw i { --sm-seg-tray: #f9f6f2; --sm-seg-ring: #d9d2c4; --sm-seg-hover: #f0eae0; }
+  .sm.r3.trayc-band .sb .sw i, .sm.r3.trayc-canvas .sb .sw i { background: var(--sm-seg-tray); box-shadow: inset 0 0 0 1px var(--sm-seg-ring); }
+  /* the Design page's second level spans the box: three equal cells, as the big tabs do */
+  .sm.r3 .subtabs { width: 100%; gap: 0; }
+  .sm.r3 .subtabs .stab { flex: 1; text-align: center; padding: 0; }
+  .sm.r3 .subnav .seg { display: flex; width: 100%; }
+  .sm.r3 .subnav .seg .sg, .sm.r3 .subnav .seg .tcopy .sg { flex: 1; text-align: center; display: inline-flex; align-items: center; justify-content: center; }
+  .sm.r3 .subplain { justify-content: space-around; width: 100%; }
+  .sm.r3 .subplain i { display: none; }
+  /* ===== the Design page as three containers, the Account page's ranked block ===== */
+  .sm.r3 .glabel { font-size: 16px; font-weight: bold; color: var(--sm-ink); line-height: 24px; padding: 14px 0 2px; border-top: 1px solid var(--sm-line); margin-top: 6px; }
+  .sm.r3 .glabel.first { border-top: 0; margin-top: 0; padding-top: 10px; }
+  .sm.r3 .sb > .pk + .row { border-top: 1px solid var(--sm-line); margin-top: 8px; }
+  .sm.r3 .sb > .row[data-key=legacy] { border-bottom: 0; }
+  .sm.r3 .note a.lk, .sm.r3 .ld a.lk { color: var(--sm-blue); text-decoration: underline; cursor: pointer; }
+  .sm.r3 .seg.disabled { opacity: .45; pointer-events: none; }
+  .sm.r3 .seg.disabled > .sg { color: var(--sm-seg-ink); }
+  .sm.r3 .gamesList.off .gl span { color: var(--sm-desc-ink); }
+  .sm.r3 .gamesList .gl { height: 44px; }
+  /* ===== the page change (7 Sep, afternoon): the old page leaves while the thumb slides, the new page enters once it has landed ===== */
+  .sm.r3 .body.leaving.pt-fade, .sm.r3 .body.leaving.pt-rise { opacity: 0; transition: opacity 200ms ease-out; }
+  .sm.r3 .body.leaving.pt-slide { opacity: 0; transition: opacity 200ms ease-out, transform 220ms cubic-bezier(.645,.045,.355,1); transform: translateX(-16px); }
+  .sm.r3 .body.enter.pt-fade { animation: smFade 200ms ease-out both; }
+  .sm.r3 .body.enter.pt-rise { animation: smRise 240ms cubic-bezier(.2,.7,.2,1) both; }
+  .sm.r3 .body.enter.pt-slide.dir-right { animation: smSlideR 240ms cubic-bezier(.2,.7,.2,1) both; }
+  .sm.r3 .body.enter.pt-slide.dir-left { animation: smSlideL 240ms cubic-bezier(.2,.7,.2,1) both; }
+  @keyframes smFade { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes smRise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  @keyframes smSlideR { from { opacity: 0; transform: translateX(28px); } to { opacity: 1; transform: none; } }
+  @keyframes smSlideL { from { opacity: 0; transform: translateX(-28px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .sm.r3 .body.enter, .sm.r3 .body.leaving { animation: none; transition: none; opacity: 1; transform: none; } }
+  /* ===== the leaderboards list: name left, the on and off at the right; the row height knob ===== */
+  .sm.r3 .gamesList .gl { display: flex; align-items: center; justify-content: space-between; gap: 12px; height: 44px; }
+  .sm.r3 .gamesList .gl span { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .sm.r3 .gamesList .gl .seg { flex: none; }
+  .sm.r3.rows-tighter { --sm-row: 48px; }
+  .sm.r3.rows-tighter .row { padding: 8px 0; }
+  .sm.r3.rows-tighter .row .lt { line-height: 24px; }
+  .sm.r3.rows-tight { --sm-row: 44px; }
+  .sm.r3.rows-tight .row { padding: 6px 0; }
+  .sm.r3.rows-tight .row .lt { line-height: 24px; }
+  .sm.r3.rows-tight .row .ld { line-height: 18px; }
+  .sm.r3.rows-tighter .gamesList .gl { height: 40px; }
+  .sm.r3.rows-tight .gamesList .gl { height: 36px; }
+  /* the guest's leaderboard trays: the normal On · Off tray with Off picked, faded out and not clickable */
+  .sm.r3 .seg.disabled { opacity: .4; pointer-events: none; filter: saturate(.6); }
+  .sm.r3 .seg.disabled > .sg { color: var(--sm-seg-ink); }
+  .sm.r3 .gamesList.off .gl span { color: var(--sm-desc-ink); opacity: .7; }
+  .sm.r3 .seg.disabled > .tcopy > .sg { text-shadow: none; }
+  .sm.r3 .seg.disabled > .thumb { box-shadow: none; }
+  /* the ranked sentence under the head, on the cream, and the columns' gap */
+  .sm.r3 .sec > .note.out { padding: 6px 0 10px; }
+  .sm.r3 .row.kind-text .lab { max-width: none; }
+  .sm.r3.rankcols-two12 .gamesList { gap: 0 12px; }
+  .sm.r3.rankcols-two24 .gamesList { gap: 0 24px; }
+  .sm.r3.rankcols-two48 .gamesList { gap: 0 48px; }
+  .sm.r3.rankcols-one .gamesList { grid-template-columns: 1fr; }
+  .sm.r3.rankcols-one .gamesList .gl:nth-last-child(2) { border-bottom: 1px solid var(--sm-line); }
+  /* the guest's trays: the row's own span only, never the tray's text; the grey thumb says it cannot be used */
+  .sm.r3 .gamesList.off .gl span { color: inherit; opacity: 1; }
+  .sm.r3 .gamesList.off .gl > span { color: var(--sm-desc-ink); }
+  .sm.r3 .seg.disabled.grey { opacity: 1; filter: none; }
+  .sm.r3 .seg.disabled.grey > .thumb { background: #b9b3a7; box-shadow: inset 0 0 0 1px #a39d92; }
+  .sm.r3 .seg.disabled.grey > .tcopy > .sg { color: #fff; text-shadow: none; }
+  .sm.r3 .seg.disabled.grey > .sg { color: #9a948a; }
+  /* the sentence in the head, right aligned beside the title */
+  .sm.r3 .sh .shint { flex: 0 1 62%; text-align: right; font-weight: normal; font-size: 14px; line-height: 18px; color: var(--sm-desc-ink); }
+  .sm.r3 .sh .shint a.lk { color: var(--sm-blue); text-decoration: underline; cursor: pointer; }
+  /* the guest's ranked rows: the names in the normal ink, the grey thumb's white text with its outline, and the front page's tooltip (tooltip lab C2, damped entrance) on hover */
+  .sm.r3 .gamesList.off .gl > span { color: var(--sm-ink); }
+  .sm.r3 .seg.disabled.grey > .tcopy > .sg { text-shadow: -1px -1px 0 #a39d92, 1px -1px 0 #a39d92, -1px 1px 0 #a39d92, 1px 1px 0 #a39d92; }
+  .sm.r3 .seg.disabled.trig { pointer-events: auto; cursor: default; overflow: visible; }
+  .sm.r3 .seg.disabled.trig > .sg { pointer-events: none; }
+  .sm.r3 .seg > .tip { --tipdelay: .25s; position: absolute; z-index: 20; bottom: calc(100% + 10px); left: 50%; transform: translateX(-50%) translateY(5px) scale(.96);
+    background: #F9F6F2; color: #262626; font-size: 13px; line-height: 18px; font-weight: normal; padding: 7px 11px 8px; white-space: nowrap;
+    border-radius: var(--r-md); corner-shape: squircle; box-shadow: inset 0 0 0 1px #d2cfca, var(--lift); pointer-events: none; opacity: 0; visibility: hidden;
+    transition: opacity .1s linear, transform .12s ease-in, visibility 0s .12s; }
+  .sm.r3 .seg > .tip::after { content: ""; position: absolute; top: 100%; left: 50%; width: 10px; height: 10px; margin: -5.5px 0 0 -5px; box-sizing: border-box; transform: rotate(45deg); background: inherit;
+    border: 0 solid #d2cfca; border-right-width: 1px; border-bottom-width: 1px; border-radius: 0 0 2px 0; }
+  .sm.r3 .seg.trig:hover > .tip { opacity: 1; visibility: visible; transform: translateX(-50%);
+    transition: opacity .1s linear var(--tipdelay), transform .22s cubic-bezier(.22,1,.36,1) var(--tipdelay), visibility 0s var(--tipdelay); }
+  .sm.r3 .gamesList .gl:nth-child(2n) .seg > .tip { left: auto; right: 0; transform: translateX(0) translateY(5px) scale(.96); }
+  .sm.r3 .gamesList .gl:nth-child(2n) .seg.trig:hover > .tip { transform: none; }
+  .sm.r3 .gamesList .gl:nth-child(2n) .seg > .tip::after { left: auto; right: 24px; }
+
+  /* ===== the lab's own pieces ===== */
+  /* the stage holds the table so the phone frame can shrink it; the felt and the spotlight move from the body onto it */
+  body { background: #2a2a28; overflow: hidden; }
+  body::before, body::after { display: none; }
+  #stage { position: absolute; inset: 0; overflow: hidden; background: var(--felt) 0 0 / var(--felt-size) repeat; }
+  #stage::before { content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none; mix-blend-mode: overlay;
+    background: radial-gradient(circle closest-side at calc(50% - var(--ad-w) / 2) 50%, rgba(255,255,255,.16) 0%, rgba(255,255,255,0) 100%),
+      radial-gradient(circle min(25vw - var(--ad-w) / 4, 25vh) at calc(50% - var(--ad-w) / 2) 50%, rgba(255,255,255,.08) 0%, rgba(255,255,255,0) 100%); }
+  #stage::after { content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none; box-shadow: inset 0 0 8vw rgba(0,0,0,.12); border-right: var(--ad-w) solid rgba(0,0,0,.06); }
+  body.frame-phone #stage { inset: auto; left: 50%; top: 50%; width: 390px; height: 844px; transform: translate(-50%, -50%); border-radius: 28px; box-shadow: 0 0 0 10px #111, 0 0 0 12px #333, 0 30px 60px rgba(0,0,0,.5); }
+  body.frame-compact #stage { inset: auto; left: 50%; top: 50%; width: 1024px; height: 700px; transform: translate(-50%, -50%); box-shadow: 0 0 0 1px #555, 0 30px 60px rgba(0,0,0,.5); }
+  body.frame-phone #ad, body.frame-phone #stage::after { display: none; }
+  body.frame-phone #menuBar ul { display: none; } body.frame-phone #menuBar .games { display: block; }
+  #smLayer { position: absolute; inset: 0; z-index: 9990; pointer-events: none; }
+  #smLayer > .sm { pointer-events: auto; }
+  body.modal-off #smLayer { display: none; }
+  /* the caption card: which version this is and why, bottom left over the felt */
+  #cap { position: fixed; left: 16px; bottom: 16px; z-index: 9995; width: 300px; padding: 12px 14px; border-radius: 14px; corner-shape: squircle; background: rgba(255,255,255,.94); backdrop-filter: blur(6px);
+    box-shadow: 0 0 0 1px #e4e0d9, 0 8px 20px rgba(0,0,0,.25); font-family: -apple-system, "Helvetica Neue", Arial, sans-serif; color: #222; text-shadow: none; font-size: 12.5px; line-height: 1.45; }
+  #cap b.num { display: inline-block; font-size: 11px; font-weight: 700; color: #fff; background: #1665AD; border-radius: 4px; padding: 0 5px; line-height: 16px; margin-right: 6px; vertical-align: 1px; }
+  #cap .nm { font-weight: 700; font-size: 13.5px; color: #141414; }
+  #cap .why { margin-top: 6px; color: #4e4d4c; }
+  #cap .nav { margin-top: 8px; display: flex; gap: 6px; }
+  #cap .nav span { flex: 1; text-align: center; font-size: 12px; font-weight: 700; color: #1665AD; background: #eef5ff; border-radius: 6px; padding: 4px 0; cursor: pointer; user-select: none; }
+  body.frame-phone #cap { left: 16px; bottom: 16px; }
+  body.cap-off #cap { display: none; }
+  /* the gallery: every version at once, small, on its own felt */
+  #gallery { position: absolute; inset: 0; z-index: 9998; overflow-y: auto; background: #f9f6f2; padding: 20px 24px 80px; display: none; font-family: "BuloRounded", Verdana, sans-serif; text-shadow: none; color: #141414; }
+  body.gallery #gallery { display: block; }
+  #gallery h1 { font-size: 22px; margin: 0 0 4px; }
+  #gallery p.note { font-size: 13px; color: #8a857c; margin: 0 0 18px; max-width: 900px; line-height: 1.45; font-family: -apple-system, "Helvetica Neue", Arial, sans-serif; }
+  #gallery h2 { font-size: 16px; margin: 30px 0 4px; }
+  #gallery p.desc { font-size: 12.5px; color: #8a857c; margin: 0 0 12px; max-width: 900px; line-height: 1.45; font-family: -apple-system, "Helvetica Neue", Arial, sans-serif; }
+  #gallery .grid { display: grid; grid-template-columns: repeat(auto-fill, 340px); gap: 26px 20px; }
+  #gallery .gt { width: 340px; cursor: pointer; }
+  #gallery .gt .shot { position: relative; width: 340px; height: 230px; overflow: hidden; border-radius: 6px; background: url("green-felt.jpg") 0 0 / 60px 60px repeat; box-shadow: inset 0 0 0 1px rgba(0,0,0,.2); }
+  #gallery .gt .shot .sm { zoom: .3; width: 1133px; height: 767px; }
+  #gallery .gt .shot .sm.phone { zoom: .272; width: 390px; height: 844px; left: 50%; transform: translateX(-50%); }
+  #gallery .gt .shot .sm.nav-quick .box { bottom: 40px; left: 50%; transform: translateX(-50%); }
+  #gallery .gt .gcap { font-size: 12px; color: #6f6b62; margin: 8px 0 0; line-height: 1.4; font-family: -apple-system, "Helvetica Neue", Arial, sans-serif; }
+  #gallery .gt .gcap b { color: #141414; font-size: 12.5px; }
+  #gallery .gt .gcap .num { display: inline-block; font-size: 11px; font-weight: 700; color: #fff; background: #1665AD; border-radius: 4px; padding: 0 5px; line-height: 16px; margin-right: 5px; }
+  #gallery .gt:hover .shot { box-shadow: 0 0 0 2px #1665AD; }
+  #gallery .gt.picked .shot { box-shadow: 0 0 0 3px #00a82d; }
+  /* the switchbar on top of everything, the gallery included */
+  .switchbar { z-index: 9999; }
+  /* the avatar lab: the chooser is back (game-settings.html is the published copy and hides it) */
+  .switchzone { z-index: 9998; }
+  .swrow { display: flex; gap: 6px; margin: 0 0 10px; }
+  .swrow button { flex: 1; font-family: inherit; font-size: 12px; font-weight: 700; padding: 6px 4px; border-radius: 7px; border: 1px solid #ddd; background: #fff; color: #555; cursor: pointer; }
+  .swrow button.on { background: #A5D8FF; border-color: #7AB8EC; color: #1971C2; }
+  .swkeys { font-size: 11px; color: #999; line-height: 1.5; margin-top: 12px; }
+  .swkeys b { display: inline-block; min-width: 14px; padding: 0 4px; border: 1px solid #ccc; border-radius: 4px; text-align: center; color: #555; font-family: ui-monospace, Menlo, monospace; font-size: 10.5px; }
+
+  /* ===== the avatar edge knob: the frontpage's open-table pair (index.html, 6 September): the inner rim at 8% and the ghost ring at 32%; with or without the frontpage's ambient; or the game's outline ===== */
+  body.avedge-game1 .avatar img, body.avedge-game1 #menuBar .userBar img.avatar, body.avedge-game1 .sm .pk.avs .pi img { filter: url(#avatarLine1); }
+  body.avedge-game1 .sm .pk.avs .pi.on img { filter: url(#avatarLine1) drop-shadow(0 -4px 0 #5C940D) drop-shadow(0 4px 0 #5C940D) drop-shadow(-4px 0 0 #5C940D) drop-shadow(4px 0 0 #5C940D); }
+  body.avedge-game15 .avatar img, body.avedge-game15 #menuBar .userBar img.avatar, body.avedge-game15 .sm .pk.avs .pi img { filter: url(#avatarLine15); }
+  body.avedge-game15 .sm .pk.avs .pi.on img { filter: url(#avatarLine15) drop-shadow(0 -4px 0 #5C940D) drop-shadow(0 4px 0 #5C940D) drop-shadow(-4px 0 0 #5C940D) drop-shadow(4px 0 0 #5C940D); }
+  body.avedge-gamein .avatar img, body.avedge-gamein #menuBar .userBar img.avatar, body.avedge-gamein .sm .pk.avs .pi img { filter: url(#avatarLineIn); }
+  body.avedge-gamein .sm .pk.avs .pi.on img { filter: url(#avatarLineIn) drop-shadow(0 -4px 0 #5C940D) drop-shadow(0 4px 0 #5C940D) drop-shadow(-4px 0 0 #5C940D) drop-shadow(4px 0 0 #5C940D); }
+  /* the seat's box clips nothing: the outline's bottom pixel must show under the flat-cut busts */
+  .avatar, .avatar img { overflow: visible; }
+  body.avedge-front .avatar, body.avedge-frontamb .avatar { filter: none; }
+  body.avedge-front .avatar img, body.avedge-front #menuBar .userBar img.avatar, body.avedge-front .sm .pk.avs .pi img { filter: url(#avatarPairSolid); }
+  body.avedge-front .sm .pk.avs .pi.on img { filter: url(#avatarPairSolid) drop-shadow(0 -4px 0 #5C940D) drop-shadow(0 4px 0 #5C940D) drop-shadow(-4px 0 0 #5C940D) drop-shadow(4px 0 0 #5C940D); }
+  body.avedge-frontamb .avatar img, body.avedge-frontamb #menuBar .userBar img.avatar, body.avedge-frontamb .sm .pk.avs .pi img {
+    filter: url(#avatarEdgeLit8) drop-shadow(1px 0 rgba(0,0,0,.32)) drop-shadow(-1px 0 rgba(0,0,0,.32)) drop-shadow(0 1px rgba(0,0,0,.32)) drop-shadow(0 -1px rgba(0,0,0,.32)) drop-shadow(0 0 3px rgba(0,0,0,.20)) drop-shadow(0 0 9px rgba(0,0,0,.18)); }
+  body.avedge-frontamb .sm .pk.avs .pi.on img {
+    filter: url(#avatarEdgeLit8) drop-shadow(1px 0 rgba(0,0,0,.32)) drop-shadow(-1px 0 rgba(0,0,0,.32)) drop-shadow(0 1px rgba(0,0,0,.32)) drop-shadow(0 -1px rgba(0,0,0,.32)) drop-shadow(0 0 3px rgba(0,0,0,.20)) drop-shadow(0 0 9px rgba(0,0,0,.18)) drop-shadow(0 -4px 0 #5C940D) drop-shadow(0 4px 0 #5C940D) drop-shadow(-4px 0 0 #5C940D) drop-shadow(4px 0 0 #5C940D); }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <!-- index.html's #avatarEdge-litrim8: a true 1px inner rim, the alpha eroded by 1px, the ring inked white at 8%, laid over the art -->
+  <!-- the game's outline as one true line: the alpha blurred by 1px and cut where the blur has fallen to 0.16, which is 1.0px outside the silhouette (measured on a disc: 1.0 to 1.2px at DPR 1 and 2; the old 0.55px blur gave 0.6px), inked #252525, the art on top: a round ring, the same width at the diagonals, nothing doubled -->
+  <filter id="avatarLine1" x="-6%" y="-6%" width="112%" height="112%" color-interpolation-filters="sRGB">
+    <feGaussianBlur in="SourceAlpha" stdDeviation="1" result="blur"/>
+    <feComponentTransfer in="blur" result="fat"><feFuncA type="linear" slope="16.7" intercept="-2.33"/></feComponentTransfer>
+    <feFlood flood-color="#252525" result="inkf"/><feComposite in="inkf" in2="fat" operator="in" result="outline"/>
+    <feMerge><feMergeNode in="outline"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+  <!-- the same ring at 1.5px (blur 1.5, cut at 0.16) for the "bigger" comparison -->
+  <filter id="avatarLine15" x="-8%" y="-8%" width="116%" height="116%" color-interpolation-filters="sRGB">
+    <feGaussianBlur in="SourceAlpha" stdDeviation="1.5" result="blur"/>
+    <feComponentTransfer in="blur" result="fat"><feFuncA type="linear" slope="16.7" intercept="-2.33"/></feComponentTransfer>
+    <feFlood flood-color="#252525" result="inkf"/><feComposite in="inkf" in2="fat" operator="in" result="outline"/>
+    <feMerge><feMergeNode in="outline"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+  <!-- the frontpage's pair, solid: the 1px ring above in solid #252525 under the art, the 1px inner rim at white 8% over it; no translucent shadows -->
+  <filter id="avatarPairSolid" x="-6%" y="-6%" width="112%" height="112%" color-interpolation-filters="sRGB">
+    <feGaussianBlur in="SourceAlpha" stdDeviation="1" result="blur"/>
+    <feComponentTransfer in="blur" result="fat"><feFuncA type="linear" slope="16.7" intercept="-2.33"/></feComponentTransfer>
+    <feFlood flood-color="#252525" result="inkf"/><feComposite in="inkf" in2="fat" operator="in" result="outline"/>
+    <feMorphology in="SourceAlpha" operator="erode" radius="1" result="eroded"/>
+    <feComposite in="SourceAlpha" in2="eroded" operator="out" result="ring"/>
+    <feFlood flood-color="#ffffff" flood-opacity="0.08" result="white"/><feComposite in="white" in2="ring" operator="in" result="rim"/>
+    <feMerge><feMergeNode in="outline"/><feMergeNode in="SourceGraphic"/><feMergeNode in="rim"/></feMerge>
+  </filter>
+  <!-- the same line inside the silhouette: the alpha eroded by 1px, the ring inked #252525 over the art; the shape does not grow -->
+  <filter id="avatarLineIn" x="-2%" y="-2%" width="104%" height="104%" color-interpolation-filters="sRGB">
+    <feMorphology in="SourceAlpha" operator="erode" radius="1" result="eroded"/>
+    <feComposite in="SourceAlpha" in2="eroded" operator="out" result="ring"/>
+    <feFlood flood-color="#252525"/><feComposite in2="ring" operator="in" result="ringInk"/>
+    <feBlend in="ringInk" in2="SourceGraphic" mode="normal"/>
+  </filter>
+  <filter id="avatarEdgeLit8" x="-2%" y="-2%" width="104%" height="104%" color-interpolation-filters="sRGB">
+    <feMorphology in="SourceAlpha" operator="erode" radius="1" result="eroded"/>
+    <feComposite in="SourceAlpha" in2="eroded" operator="out" result="ring"/>
+    <feFlood flood-color="#ffffff" flood-opacity="0.08"/>
+    <feComposite in2="ring" operator="in" result="ringInk"/>
+    <feBlend in="ringInk" in2="SourceGraphic" mode="normal"/>
+  </filter>
+</defs></svg>
+
+
+<div id="stage">
+<nav id="menuBar">
+  <a class="logo" href="#"><img src="game-assets/ui/logo.png" alt="World of Card Games" width="170" height="32"></a>
+  <div class="games">Games</div>
+  <ul>
+    <li><a href="#">Hearts</a></li>
+    <li><a href="#">Spades</a></li>
+    <li><a href="#" class="active">Euchre</a></li>
+    <li><a href="#">Gin Rummy</a></li>
+    <li><a href="#">Double Deck Pinochle</a></li>
+    <li><a href="#">Canasta</a></li>
+    <li><a href="#">Hand &amp; Foot</a></li>
+    <li class="dropdown"><span>All games</span></li>
+  </ul>
+  <div class="userBar">
+    <img class="icon" src="game-assets/ui/menuActivity.svg" alt="Activity" width="40" height="32">
+    <img class="icon friends" src="game-assets/ui/menuFriends.svg" alt="Friends" width="40" height="32">
+    <img class="avatar" id="menuAvatar" src="game-assets/avatars/AnimalSheep.svg" alt="" width="28" height="28">
+    <span class="userName" id="menuUserName">Guest #2,452</span>
+    <div class="ddmock"><div>Settings</div><div class="on">Stats</div><div>Log in</div><div>Sign up</div></div>
+  </div>
+</nav>
+
+<div id="playspace"></div>
+<div class="messageBox" id="messageBox"></div>
+<div class="scoreBoard" id="scoreBoard"></div>
+<div class="tableBar" id="tableBar"></div>
+
+<div id="ad">
+  <div class="slots">
+    <div class="slot"><img src="adMedrec1.png" alt="" width="300" height="250"></div>
+    <div class="slot"><img src="adMedrec2.png" alt="" width="300" height="250"></div>
+  </div>
+  <div class="video"><img src="adVideo.png" alt="" width="300" height="170"></div>
+  <div class="hideAds">Hide ads</div>
+</div>
+
+<div id="smLayer"></div>
+</div>
+<div id="cap"></div>
+
+<div id="gallery"></div>
+
+<div class="switchzone"></div>
+<div class="switchbar">
+  <button type="button" class="swtoggle" id="design-toggle"></button>
+  <div class="swgroup">
+    <div class="swhead">The avatars</div>
+    <label class="ctl"><span>Border inside the drawing</span><select id="kn-avborder"></select></label>
+    <label class="ctl"><span>Outline around the avatar</span><select id="kn-avedge"></select></label>
+    <div class="swnote">The border is drawn into the SVG, on the seam wherever two materials meet. The outline is the coat around the whole avatar, drawn by a CSS filter.</div>
+  </div>
+  <div class="swgroup">
+    <div class="swhead">Where you are</div>
+    <label class="ctl"><span>Page</span><select id="kn-page"></select></label>
+    <label class="ctl"><span>Design page</span><select id="kn-sub"></select></label>
+    <label class="ctl"><span>Who is looking</span><select id="kn-player"></select></label>
+    <label class="ctl"><span>Window</span><select id="kn-frame"></select></label>
+  </div>
+  <div class="swgroup">
+    <div class="swhead">The open choices</div>
+    <label class="ctl"><span>The close</span><select id="kn-close"></select></label>
+    <label class="ctl"><span>Tabs</span><select id="kn-tabs"></select></label>
+    <label class="ctl"><span>Heads and cards</span><select id="kn-heads"></select></label>
+    <label class="ctl"><span>Lines under the titles</span><select id="kn-lines"></select></label>
+    <label class="ctl"><span>On and off control</span><select id="kn-sw"></select></label>
+    <label class="ctl"><span>Behind the box</span><select id="kn-bd"></select></label>
+    <label class="ctl"><span>Box width</span><select id="kn-width"></select></label>
+    <label class="ctl"><span>Container padding</span><select id="kn-pad"></select></label>
+    <label class="ctl"><span>Card corners</span><select id="kn-cardr"></select></label>
+    <label class="ctl"><span>The Design page</span><select id="kn-dnav"></select></label>
+    <label class="ctl"><span>The first tab's name</span><select id="kn-name"></select></label>
+  </div>
+  <div class="swgroup">
+    <div class="swhead">The lab</div>
+    <label class="ctl"><span>Caption card</span><select id="kn-cap"></select></label>
+    <label class="ctl"><span>Modal</span><select id="kn-modal"></select></label>
+  </div>
+  <div class="swkeys"><b>&uarr;</b> <b>&darr;</b> the last knob's options &middot; <b>z</b> the last knob, back and forth &middot; <b>m</b> hide the modal &middot; <b>c</b> caption &middot; the url takes any knob, as ?page=look&amp;sub=wallpaper&amp;sw=slabtray</div>
+  <details class="swadv">
+    <summary>Advanced — what this is</summary>
+    <div class="swnote">The settled box (7 September): one box with Holger's decisions, and the choices still open as knobs. The table is game.html's port of the game's layout engine. Every avatar (141) and wallpaper the site offers a guest are in the Design page.</div>
+  </details>
+</div>
+<div id="swhandle">Chooser</div>
+
+<script>
+/* ===== the state on the table (edit here) ===== */
+var STATE = {
+  user: { name: "Guest #2,452", avatar: "AnimalSheep" },
+  message: "Accept card as trump suit or pass.",
+  score: [0, 0],                                  /* our team, their team */
+  upCard: "1c",                                   /* rank 1..13 + suit c d h s; "back" for face down */
+  hand: ["9c", "10d", "13c", "9h", "11h"],        /* the bottom hand, left to right */
+  botHands: [5, 5, 5],                            /* cards held by the left, top and right player */
+  dealer: 3,                                      /* seat: 0 bottom, 1 left, 2 top, 3 right */
+  buttons: ["Pass", "Accept", "Go alone"],
+  seats: [
+    { name: "Guest #2,452", avatar: "AnimalSheep", team: 1, handScore: "–" },
+    { name: "WALL-E",       avatar: "RobotBoy10",  team: 2, handScore: "–" },
+    { name: "R2-D2",        avatar: "RobotBoy4",   team: 1, handScore: "–" },
+    { name: "Tin Man",      avatar: "RobotBoy6",   team: 2, handScore: "–" }
+  ]
+};
+
+/* ===== the game's layout engine, ported =====
+   Playspace box: web/dust/common/playspace_layout_projection.dust. Spot resolution: static/js/wocg/Spot.js (resize).
+   Spot configs: static/js/wocg/Layout.js and game/euchre/euchre-layout.js. Fans: Spot.js calculateCoords, calcPieceXY.
+   Card size: piece/card.js. Buttons: piece/button.js and Layout.positionPlayAreaButtons. Text: FitText.js.
+   Chrome: Table.js (message box, score board, fanCardsWider), TableBar.js, AdWidget.js. All in playspace pixels
+   unless said otherwise; a spot publishes rounded integers, but positions itself with its own un-rounded size. */
+var RATIO = 0.71621622;
+var floor = Math.floor, round = Math.round;
+
+function isCompactSize(w, h, bp) { return (w >= h && h <= bp) || (w <= h && w <= bp); }
+
+/* the viewport -> the playspace box, the layout classes, the gutter and the ad rail width */
+function geometry(VW, VH) {
+  var userBar = 32;
+  var landscape = VW >= VH, portraitV = VW <= VH;
+  var mobile = (landscape && VH <= 640) || (portraitV && VW <= 640);
+  var adWidth = (mobile && landscape && VW >= 896) ? 336 : (VW >= 1024 ? 336 : 160);
+  if (mobile && portraitV) adWidth = 0;
+  var maxWidth = VW - adWidth, maxHeight = VH - userBar, lcw, lch;
+  var side = landscape && VH <= 576 && VW >= 480;                       /* the table bar becomes a column at the right */
+  if (side) { maxWidth -= 58 + 8; lcw = maxWidth; lch = maxHeight; }
+  else {
+    lcw = maxWidth; lch = maxHeight - 56 - 16;
+    maxHeight -= 56 + (isCompactSize(maxWidth, maxHeight - 56 - 16, 640) ? 8 : 16);
+  }
+  var compact = isCompactSize(lcw, lch, 640), small = isCompactSize(lcw, lch, 480);
+  return {
+    VW: VW, VH: VH, adWidth: adWidth, pw: maxWidth, ph: maxHeight, top: userBar,
+    compact: compact, small: small, portrait: maxWidth <= maxHeight, landscape: maxWidth >= maxHeight, side: side,
+    G: side ? 8 : (compact ? 8 : 16)                                    /* Y.wocg.playspaceGutter */
+  };
+}
+
+/* Math.js helpers used by the fans */
+function rotatedDimensions(deg, w, h) {
+  var a = deg * Math.PI / 180, s = Math.sin(a), c = Math.cos(a);
+  var xs = [0, c * w, -s * h, c * w - s * h], ys = [0, s * w, c * h, s * w + c * h];
+  return [floor(Math.max.apply(null, xs) - Math.min.apply(null, xs)), floor(Math.max.apply(null, ys) - Math.min.apply(null, ys))];
+}
+function rotatePointInBox(x, y, deg, w, h) {
+  var a = deg * Math.PI / 180, cx = w / 2, cy = h / 2, dx = x - cx, dy = y - cy;
+  var d = Math.sqrt(dx * dx + dy * dy), t = Math.atan2(dy, dx) + a;
+  return [Math.cos(t) * d + cx, Math.sin(t) * d + cy];
+}
+
+/* Spot.js calculateCoords: the cards on an arc */
+function calculateCoords(n, R, cw, ch, dir, spacing) {
+  var per = Math.atan((cw * spacing) / R) * 180 / Math.PI;
+  var start = { N: 270, S: 90, E: 0, W: 180 }[dir] - 0.5 * per * (n - 1);
+  var c = [], minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  for (var i = 0; i < n; i++) {
+    var deg = start + per * i, r = deg * Math.PI / 180;
+    var x = cw / 2 + Math.cos(r) * R, y = ch / 2 + Math.sin(r) * R;
+    minX = Math.min(minX, x); minY = Math.min(minY, y); maxX = Math.max(maxX, x); maxY = Math.max(maxY, y);
+    c.push({ x: x, y: y, angle: deg + 90 });
+  }
+  var rd = rotatedDimensions(c[0].angle, cw, ch), ox = 0, oy = 0;
+  var ewFix = ch - rotatePointInBox(0, 0, 270, cw, ch)[1];
+  if (dir === "N") { ox = -minX + (rd[0] - cw) / 2; oy = -minY; }
+  else if (dir === "S") { ox = -minX + (rd[0] - cw) / 2; oy = -maxY; }
+  else if (dir === "W") { oy = -minY + (rd[1] - ch) / 2; ox = -minX + ewFix; }
+  else if (dir === "E") { oy = -minY + (rd[1] - ch) / 2; ox = -maxX + ewFix; }
+  c.forEach(function (p) { p.x = round(p.x + ox); p.y = round(p.y + oy); p.angle = round(p.angle); });
+  return c;
+}
+function fullDimensions(cw, ch, c) {
+  var xs = c.map(function (p) { return p.x; }), ys = c.map(function (p) { return p.y; });
+  var f = rotatedDimensions(c[0].angle, cw, ch), l = rotatedDimensions(c[c.length - 1].angle, cw, ch);
+  return [Math.max.apply(null, xs) - Math.min.apply(null, xs) + cw + (f[0] - cw) / 2 + (l[0] - cw) / 2,
+          Math.max.apply(null, ys) - Math.min.apply(null, ys) + ch + (f[1] - ch) / 2];
+}
+
+/* one fan spot -> the cards' boxes (piece/card.js sizes the card from the spot's cross axis; Spot.js preUpdatePieces and calcPieceXY place it) */
+function layoutFan(spot, cfg) {
+  var base = (cfg.direction === "east" || cfg.direction === "west") ? floor(spot.h) : floor(spot.w);
+  var cw = floor(base * RATIO), ch = base;
+  var n = cfg.count;
+  if (!n) return [];
+  var peek = (20 * (cfg.peekModifier || 0.8)) / 100;
+  peek = Math.max(peek, cfg.compactPortrait ? 0.64 : 0.4);
+  if (cfg.fannable && typeof cfg.peekModifier === "number") peek *= (cfg.peekModifier || 1.0);
+  var containerWidth = (cfg.arcDirection === "E" || cfg.arcDirection === "W") ? spot.h : spot.w;
+  if (n > 1) peek = Math.min(peek, ((containerWidth - cw) / (n - 1)) / cw);
+  var coords = calculateCoords(n, cfg.arcRadius, cw, ch, cfg.arcDirection, peek);
+  var full = fullDimensions(cw, ch, coords);
+  var pd = cfg.rotate ? rotatedDimensions(cfg.rotate, cw, ch) : [cw, ch];
+  var vertical = cfg.arcDirection === "N" || cfg.arcDirection === "S";
+  var aw = vertical ? full[0] : pd[0], ah = vertical ? pd[1] : full[1];
+  return coords.map(function (c, i) {
+    var x = spot.x + c.x, y = spot.y + c.y;
+    if (cfg.alignX === "center") x += (spot.w - aw) / 2; else if (cfg.alignX === "right") x += spot.w - aw;
+    if (cfg.alignY === "center") y += (spot.h - ah) / 2; else if (cfg.alignY === "bottom") y += spot.h - ah;
+    var to = c.angle;                                                    /* Transition.js takes the short way round from 0deg */
+    if (0 < to && 360 - to < to) to = -(360 - to);
+    return { x: floor(x), y: floor(y), w: cw, h: ch, rotate: to, z: cfg.zBase + i };
+  });
+}
+
+/* the whole table for a viewport */
+function layoutTable(VW, VH) {
+  var g = geometry(VW, VH), pw = g.pw, ph = g.ph, compact = g.compact, portrait = g.portrait;
+  var gutter = compact ? 8 : 16;                                          /* Layout.responsiveGutter */
+  var plateH = compact ? 32 : 40, scorePlateH = compact ? 20 : 24, nameOffset = compact ? 12 : 24, nameMax = compact ? 20 : 24;
+  var chipSize = compact ? 24 : 32, btnH = compact ? 32 : 40, btnThreshold = compact ? 48 : 88, gap = 8;
+  var fallbackBottom = gutter + (compact ? 68 : 96), topPlateTop = fallbackBottom - plateH, avatarAvail = Math.max(0, fallbackBottom - gutter);
+  var nameTextH = round((plateH * 0.72) / 2) * 2;
+  var aspect = pw / ph;
+  var horizontalWidth = Math.max(floor(pw * 0.18), 64), verticalHeight = Math.max(floor(ph * 0.16), 40), verticalSmall = Math.min(floor(ph * 0.06), 40);
+  var avatarSize = aspect < 1 ? Math.min(Math.max(verticalSmall * 4, 60), horizontalWidth) : verticalHeight;
+  if (aspect < 1 && compact) avatarSize = Math.min(avatarSize, Math.max(48, floor(ph * 0.16)));
+  var playerAvatar = Math.min(avatarSize, avatarAvail);
+  var handMax = Math.min(pw * 0.72, ph * 0.44);                            /* the opponent hands' long side, a float */
+
+  var S = {};                                                             /* resolved spots: id -> {x, y, w, h}, published as integers */
+  var put = function (id, x, y, w, h) { S[id] = { x: round(x), y: round(y), w: round(w), h: round(h) }; return S[id]; };
+  var center = function () { var b = S.hand2.y + S.hand2.h; return b + (S.hand0.y - b) / 2; };   /* Layout.playspaceCenter, not rounded */
+
+  [0, 2, 1, 3].forEach(function (seat) {                                   /* the game's spot order: S, N, W, E */
+    var inl = seat === 0 || seat === 2, w, h, x, y, plate;
+    /* name plate */
+    if (seat === 0) { w = Math.min(400, Math.max(0, pw - 2 * gutter)); h = plateH; x = (pw - w) / 2; y = floor(ph) - h - gutter; }
+    else if (seat === 2) { w = Math.min(400, Math.max(240, floor(pw * 0.48))); h = plateH; x = (pw - w) / 2; y = topPlateTop; }
+    else {
+      w = Math.min(Math.max(floor(pw * 0.18), 88), 400); h = plateH;      /* minWidth 88, maxWidth 400, minHeight assigns the plate height */
+      if (w / 4 > h) w = h * 4; else h = w / 4;                             /* ensureRatio 4 */
+      w = Math.min(Math.max(w, 88), 400); h = plateH;                       /* the clamps run again after the ratio */
+      x = seat === 1 ? (compact ? 8 : 16) : floor(pw - w - (compact ? 8 : 16)); y = center();
+    }
+    plate = put("namePlate" + seat, x, y, w, h);
+    /* name text */
+    w = plate.w - nameOffset; h = nameTextH;
+    if (inl) { w -= floor(w * 0.7); x = plate.x + floor(w * 0.10); } else { x = plate.x + plate.w / 2 - w / 2; }
+    y = plate.y + plate.h / 2 - h / 2;
+    put("name" + seat, x, y, w, h);
+    /* score plate */
+    w = plate.w - (inl ? nameOffset : (!compact ? 40 : (portrait ? 16 : 24))); h = scorePlateH;
+    if (inl) { w -= floor(w * 0.7); y = plate.y + plate.h / 2 - h / 2; x = plate.x + plate.w - w - floor(w * 0.10); }
+    else { y = plate.y + plate.h; x = plate.x + plate.w / 2 - w / 2; }
+    var sp = put("scorePlate" + seat, x, y, w, h);
+    /* hand score text */
+    var inset = inl ? 0 : 4; w = Math.max(sp.w - inset * 2, 0); h = inl ? nameTextH : sp.h;
+    var yr = inl ? plate : sp; y = yr.y + yr.h / 2 - h / 2; x = sp.x + sp.w / 2 - w / 2;
+    put("handScore" + seat, x, y, w, h);
+    /* avatar */
+    w = h = playerAvatar; x = plate.x + plate.w / 2 - w / 2;
+    if (inl) { y = plate.y + plate.h - h; if (seat === 0) y += (compact ? 8 : 16); else y -= 1; }
+    else { y = plate.y - h; y -= floor(h * -0.01); }                      /* above the plate; the default -1% internal margin moves it 1px down */
+    var av = put("avatar" + seat, x, y, w, h);
+    /* hand spot */
+    if (seat === 0) {
+      w = floor(pw * 0.92); h = avatarSize; h += floor(h * 0.48); h = Math.min(h, 240);
+      if (w / h < 2.4) w = h * 2.4;                                         /* ensureMinRatio (the width grows, Spot.js:428-433) */
+      h = Math.min(h, 240);
+      y = av.y - floor(h * 0.44); x = av.x + av.w / 2 - w / 2;
+    } else if (seat === 2) {
+      w = S.hand0.w; h = S.hand0.h; w -= floor(w * 0.48); h -= floor(h * 0.48); w = Math.min(w, handMax);
+      y = plate.y + plate.h - h + floor(h * 0.16); x = plate.x + plate.w / 2 - w / 2;
+    } else {
+      w = S.hand0.h; h = S.hand0.w; w -= floor(w * 0.48); h -= floor(h * 0.48); h = Math.min(h, handMax);
+      if (seat === 1) x = plate.x + plate.w - w + floor(w * 0.16); else x = plate.x - floor(w * 0.16);
+      y = plate.y - floor(h * 0.5);
+    }
+    put("hand" + seat, x, y, w, h);
+    /* dealer chip */
+    w = h = chipSize;
+    x = seat === 3 ? plate.x + floor(w * -0.5) : plate.x + plate.w - w + floor(w * 0.5);
+    y = plate.y - h + floor(h * 0.5);
+    put("dealerChip" + seat, x, y, w, h);
+  });
+
+  /* the upcard and the bid buttons */
+  var up = put("upCard", (pw - S.hand0.w) / 2, center() - floor(S.hand0.h * 0.5), S.hand0.w, S.hand0.h);
+  var upW = floor(up.h * RATIO);
+  var upPiece = { x: floor(up.x + (up.w - upW) / 2), y: up.y, w: upW, h: up.h };
+  var cardSpotW = round(up.h * RATIO);
+  var bw = Math.min(Math.max(floor(pw * 0.16), Math.max(cardSpotW, btnThreshold)), cardSpotW >= btnThreshold ? cardSpotW : btnThreshold);
+  var acc = put("accept", (pw - bw) / 2, up.y + up.h + gap, bw, btnH);
+  put("pass", acc.x - bw - gap, acc.y, bw, btnH);
+  put("goAlone", acc.x + acc.w + gap, acc.y, bw, btnH);
+  var nBtn = STATE.buttons.length, total = nBtn * bw + gap * (nBtn - 1), bx = round((pw - total) / 2);   /* Layout.positionPlayAreaButtons */
+  var buttons = STATE.buttons.map(function (label, i) { var b = { label: label, x: bx, y: acc.y, w: bw, h: btnH }; bx += bw + gap; return b; });
+
+  /* the fans: hand0 gets the fanCardsWider peek, the bots the default */
+  var pm = Math.min(1.5, 1.5 * (pw / ph) * 0.8);
+  var cp = compact && portrait;
+  var fans = {
+    0: layoutFan(S.hand0, { direction: "east", arcDirection: "N", rotate: null, arcRadius: 1200, peekModifier: pm, fannable: true, count: STATE.hand.length, alignX: "center", alignY: "top", zBase: 3200, compactPortrait: cp }),
+    1: layoutFan(S.hand1, { direction: "south", arcDirection: "E", rotate: 90, arcRadius: 384, count: STATE.botHands[0], alignX: "right", alignY: "center", zBase: 3000, compactPortrait: cp }),
+    2: layoutFan(S.hand2, { direction: "west", arcDirection: "S", rotate: 180, arcRadius: 384, count: STATE.botHands[1], alignX: "center", alignY: "bottom", zBase: 3000, compactPortrait: cp }),
+    3: layoutFan(S.hand3, { direction: "north", arcDirection: "W", rotate: -90, arcRadius: 384, count: STATE.botHands[2], alignX: "left", alignY: "center", zBase: 3000, compactPortrait: cp })
+  };
+
+  /* the chrome, in viewport pixels (Table.js, TableBar.js, AdWidget) */
+  var G = g.G, msgPad = compact ? 8 : 12;
+  var msg = { x: G, y: g.top + G, maxWidth: null };
+  var plateLefts = [];
+  [0, 1, 2, 3].forEach(function (seat) { var p = S["namePlate" + seat]; if (p.y >= ph / 2 || p.x <= msg.x) return; plateLefts.push(p.x); });
+  if (plateLefts.length) { var mw = floor(Math.min.apply(null, plateLefts) - msg.x - G - 2 * msgPad); if (mw < 320 && mw >= 80) msg.maxWidth = mw; }
+  var chrome = {
+    message: msg,
+    scoreBoard: { y: g.top + G, xFor: function (boardW) { return Math.max(floor(G), floor(pw - boardW - G)); } },
+    tableBar: g.side ? { side: true, x: pw, y: g.top + G, h: Math.max(0, floor(ph - 2 * G)) } : { side: false, x: floor(pw / 2 - 200), bottom: G },
+    ad: { width: g.adWidth, top: g.top + G, bottom: G }
+  };
+  return { g: g, spots: S, fans: fans, upPiece: upPiece, buttons: buttons, chrome: chrome,
+           text: { nameMax: nameMax, scoreMaxInline: nameMax, scoreMaxSide: 16, buttonMax: compact ? 20 : 24 } };
+}
+
+/* FitText.js: the largest font size whose measured text stays inside the box, then the line height */
+var sizer = document.createElement("span"); sizer.className = "sizer"; document.body.appendChild(sizer);
+function fitText(text, maxWidth, maxHeight, opts) {
+  opts = opts || {};
+  sizer.style.fontWeight = opts.fontWeight || "normal"; sizer.style.lineHeight = ""; sizer.style.fontSize = ""; sizer.textContent = text;
+  var step = Math.max(1, Math.min(floor(maxHeight * 0.2), 6));
+  var grow = function (prop, start, stepSize, strict) {
+    var v = start; sizer.style[prop] = v + "px";
+    var inside = function () { var h = sizer.offsetHeight, w = sizer.offsetWidth; return strict ? (h < maxHeight && w < maxWidth) : (h <= maxHeight && w <= maxWidth); };
+    while (inside()) { v += stepSize; sizer.style[prop] = v + "px"; }
+    return v - stepSize;
+  };
+  var fs = grow("fontSize", 1, step, true); fs = grow("fontSize", fs, 1, true);
+  if (opts.maxSize) fs = Math.min(fs, opts.maxSize);
+  sizer.style.fontSize = fs + "px";
+  var lh = grow("lineHeight", 1, step, false); lh = grow("lineHeight", lh, 1, false);
+  if (fs == opts.maxSize) lh = NaN;                                      /* the game never passes maxLineHeight, so no line-height is written then */
+  if (opts.lineHeight) lh = opts.lineHeight;
+  return { fontSize: fs, lineHeight: lh };
+}
+
+/* ===== rendering ===== */
+var SQUIRCLE = window.CSS && CSS.supports && CSS.supports("corner-shape", "squircle");
+function px(n) { return n + "px"; }
+function el(cls, style, html) {
+  var d = document.createElement("div");
+  d.className = cls;
+  if (style) d.setAttribute("style", style);
+  if (html != null) d.innerHTML = html;
+  return d;
+}
+function box(b) { return "left:" + px(b.x) + ";top:" + px(b.y) + ";width:" + px(b.w) + ";height:" + px(b.h) + ";"; }
+function cardRadius(w) { var r = w < 40 ? 4 : (w < 100 ? 6 : 8); return SQUIRCLE ? r * 2 : r; }
+function card(id, b, spot) {
+  var c = el("piece card", box(b) + "rotate:" + (b.rotate || 0) + "deg;z-index:" + b.z + ";--r:" + px(cardRadius(b.w)));
+  c.setAttribute("data-spot", spot);
+  c.appendChild(el("face", "background-image:url(game-assets/cards/" + id + ".png)"));
+  return c;
+}
+function textPiece(cls, b, spot, text, opts) {
+  var fit = fitText(text, b.w, b.h, opts);
+  var st = box(b) + "font-size:" + px(fit.fontSize) + ";" + (isNaN(fit.lineHeight) ? "" : "line-height:" + px(fit.lineHeight) + ";");
+  var t = el("piece text " + cls, st, "<span>" + text + "</span>");
+  t.setAttribute("data-spot", spot);
+  return t;
+}
+
+var LAYOUT = null;
+function render() {
+  var L = LAYOUT = layoutTable(stageW(), stageH());
+  var g = L.g, S = L.spots, s = STATE;
+  document.documentElement.style.setProperty("--ad-w", px(g.adWidth));
+
+  var ps = document.getElementById("playspace");
+  ps.innerHTML = "";
+  ps.style.width = px(g.pw); ps.style.height = px(g.ph); ps.style.top = px(g.top);
+
+  /* the hands */
+  L.fans[0].forEach(function (b, i) { ps.appendChild(card(s.hand[i], b, "hand0")); });
+  [1, 2, 3].forEach(function (seat) { L.fans[seat].forEach(function (b) { ps.appendChild(card("back", b, "hand" + seat)); }); });
+
+  /* the upcard and the bid buttons */
+  ps.appendChild(card(s.upCard, { x: L.upPiece.x, y: L.upPiece.y, w: L.upPiece.w, h: L.upPiece.h, rotate: 0, z: 3600 }, "upCard"));
+  L.buttons.forEach(function (b, i) {
+    var fit = fitText(b.label, b.w - 8, b.h, { maxSize: L.text.buttonMax });
+    var d = el("piece button", box(b) + "line-height:" + px(b.h) + ";font-size:" + px(fit.fontSize), b.label);
+    d.setAttribute("data-spot", ["pass", "accept", "goAlone"][i] || "button" + i);
+    ps.appendChild(d);
+  });
+
+  /* the players */
+  s.seats.forEach(function (p, seat) {
+    var team = "team" + p.team, inl = seat === 0 || seat === 2;
+    var plate = el("piece namePlate " + team, box(S["namePlate" + seat])); plate.setAttribute("data-spot", "namePlate" + seat); ps.appendChild(plate);
+    ps.appendChild(textPiece(team, S["name" + seat], "name" + seat, p.name, { maxSize: L.text.nameMax, fontWeight: "bold" }));
+    var sp = el("piece scorePlate " + team + (inl ? " inline" : " side"), box(S["scorePlate" + seat])); sp.setAttribute("data-spot", "scorePlate" + seat); ps.appendChild(sp);
+    ps.appendChild(textPiece(team, S["handScore" + seat], "handScore" + seat, p.handScore, { maxSize: inl ? L.text.scoreMaxInline : L.text.scoreMaxSide, lineHeight: S["handScore" + seat].h, fontWeight: "bold" }));
+    var av = el("piece avatar" + (inl ? "" : " side"), box(S["avatar" + seat]));
+    av.setAttribute("data-spot", "avatar" + seat);
+    av.innerHTML = '<img src="' + AVDIR() + p.avatar + '.svg" alt="">';
+    ps.appendChild(av);
+  });
+  var chip = el("piece chip", box(S["dealerChip" + s.dealer])); chip.setAttribute("data-spot", "dealerChip" + s.dealer); ps.appendChild(chip);
+
+  /* the message box, the score board, the table bar and the ad rail (viewport pixels) */
+  var mb = document.getElementById("messageBox");
+  mb.innerHTML = "<span>" + s.message + "</span>";
+  mb.style.left = px(L.chrome.message.x); mb.style.top = px(L.chrome.message.y);
+  mb.style.maxWidth = L.chrome.message.maxWidth ? px(L.chrome.message.maxWidth) : "";
+  var sb = document.getElementById("scoreBoard");
+  sb.innerHTML = '<div class="cell team1">' + s.score[0] + '</div><div class="title">Score</div><div class="cell team2">' + s.score[1] + '</div>';
+  sb.style.top = px(L.chrome.scoreBoard.y);
+  var tb = document.getElementById("tableBar");
+  tb.innerHTML = '<ul>' +
+    '<li style="--icon:url(game-assets/ui/tableMenu.png)">Info</li>' +
+    '<li class="disabled" style="--icon:url(game-assets/ui/pauseMenu.png)">Pause</li>' +
+    '<li class="disabled" style="--icon:url(game-assets/ui/chatMenu.png)">Chat</li>' +
+    '<li class="play" style="--icon:url(game-assets/ui/playMenu.png)">Play</li>' +
+    '<li style="--icon:url(game-assets/ui/hintMenu.png)">Hint</li>' +
+    '<li style="--icon:url(game-assets/ui/helpMenu.png)">Help</li>' +
+    '<li style="--icon:url(game-assets/ui/profileMenu.png)">Profile</li>' +
+    '</ul>';
+  var t = L.chrome.tableBar;
+  tb.classList.toggle("side", t.side);
+  if (t.side) { tb.style.left = px(t.x); tb.style.top = px(t.y); tb.style.bottom = "auto"; tb.style.height = px(t.h); }
+  else { tb.style.left = px(t.x); tb.style.top = "auto"; tb.style.bottom = px(t.bottom); tb.style.height = ""; }
+  var ad = document.getElementById("ad");
+  ad.style.width = px(L.chrome.ad.width); ad.style.top = px(L.chrome.ad.top); ad.style.bottom = px(L.chrome.ad.bottom);
+
+  document.getElementById("menuUserName").textContent = s.user.name;
+  document.getElementById("menuAvatar").src = AVDIR() + s.user.avatar + ".svg";
+  applyBody();
+  sb.style.left = px(L.chrome.scoreBoard.xFor(sb.offsetWidth));            /* the board is content-sized, so it is measured after the styles apply */
+}
+
+/* ===== the settings model: everything the modal holds today, with the real usage (OpenPanel, 30 days to 6 Sep 2026) ===== */
+var GAMES = ["Hearts", "Spades", "Euchre", "Twenty-Nine", "Gin Rummy", "Sergeant Major", "Double Deck Pinochle", "Pinochle", "Go Fish", "Old Maid",
+  "Canasta", "Hand & Foot", "Whist", "Rummy", "Cribbage", "Crazy Eights", "Bridge", "Sheepshead"];
+var OPTS = {
+  sound:     { label: "Sound effects",        tip: "Play in-game sound effects",                         kind: "tri",  value: 2,     saves: 5417, off: 4284 },
+  emotions:  { label: "Avatar emotions",      tip: "Show avatar emotion animations",                     kind: "tri",  value: 1,     saves: 2710, off: 2009 },
+  anim:      { label: "Animations",           tip: "Show in-game animations",                            kind: "tri",  value: 2,     saves: 2148, off: 1776 },
+  prompts:   { label: "Game prompts",         tip: "Show game prompts and status messages",              kind: "tri",  value: 2,     saves: 1892, off: 1611 },
+  hints:     { label: "Game hints",           tip: "Show suggested moves when you are low on time",      kind: "bi",   value: 1,     saves: 2137, off: 2050 },
+  narrow:    { label: "Narrow cards",         tip: "Reduce spacing between cards",                       kind: "bool", value: false, saves: 865 },
+  overlap:   { label: "Overlap trick cards",  tip: "Show trick cards close together in the trick pile",  kind: "bool", value: false, saves: 475 },
+  chat:      { label: "Table chat",           tip: "Show messages from players at your table",           kind: "bool", value: true,  saves: 877 },
+  profanity: { label: "Filter chat profanity", tip: "Hide offensive language in chat",                   kind: "bool", value: true,  saves: 893 },
+  social:    { label: "Social notifications", tip: "Show notifications for friends and activity",        kind: "bool", value: true,  saves: 836 },
+  legacy:    { label: "Use legacy avatars",   tip: "Switch to the original avatar style",                kind: "bool", value: false, saves: 930 }
+};
+/* the same lines said the plain way, for the versions that write a line under each label (Holger's voice, no dashes) */
+var DESC = {
+  sound: "The cards, the chips and the chime when it's your turn.",
+  emotions: "The faces your avatar pulls after a trick or a hand.",
+  anim: "Cards sliding and turning across the table.",
+  prompts: "The messages in the top corner that say what's going on.",
+  hints: "An arrow points at a good card when your clock runs low.",
+  narrow: "Fan the cards closer, so a big hand takes less room.",
+  overlap: "Pile the trick's cards on each other instead of side by side.",
+  chat: "See what the other players write at the table.",
+  profanity: "Hide swear words in what others write.",
+  social: "A note when a friend comes online or writes to you.",
+  legacy: "The older avatar drawings. The table reloads when you change this."
+};
+var VITAL = "Vital keeps only the ones that tell you it's your turn.";
+/* what the middle value keeps, per the code (SoundEffects.js vitalSoundMap, Table.js isVitalGamePromptMessage, the score animation, the win, lose and think faces) */
+var VITAL_NOTE = { sound: "Vital keeps only the ticks and the chime.", emotions: "Vital keeps only the win, lose and think faces.", anim: "Vital keeps only the score counting up.", prompts: "Vital keeps only the hints." };
+var VITAL_WORD = { sound: "Ticks and chime", emotions: "Big moments", anim: "Scores only", prompts: "Hints only" };
+var TRI = [["2", "All"], ["1", "Vital"], ["0", "Off"]];
+var BI = [["1", "On"], ["0", "Off"]];
+var PEOPLE = [["liked", "Liked players", 3], ["blocked", "Blocked players", 1], ["muted", "Muted players", 0]];
+var DECKS = [["classic", "Classic"], ["anglo", "Anglo-American"], ["egypt", "Egypt"], ["ornamental", "Ornamental"], ["tango", "Tango"], ["torres", "Torres"], ["ninaste", "Ninaste"]];
+var WALLS = [["green-felt.jpg", "Green felt", "green-felt.jpg"], ["wallpapers/blue-canvas.jpg", "Blue canvas"], ["wallpapers/fabric02.jpg", "Fabric #2"], ["wallpapers/khaki.jpg", "Khaki"],
+  ["wallpapers/pumpkin.jpg", "Pumpkin"], ["wallpapers/grass.jpg", "Grass"], ["wallpapers/clouds.jpg", "Clouds"], ["wallpapers/humidor-pink.jpg", "Humidor pink"], ["wallpapers/golden-victorian.jpg", "Golden Victorian"]];
+var AVATARS = ["AnimalSheep", "ManBoy", "ManBoy2", "ManBoyAngel", "ManBoyScientist", "ManBoyScientistGun", "ManBusinessman", "ManCaveman", "ManChef", "ManChefPizza", "ManClown", "ManCowboy", "ManGeek", "ManGeek2", "ManGeek3", "ManGeekBoy", "ManGeekBoy2", "ManGeekWalkman", "ManHandyman", "ManImpatient", "ManMan", "ManMan2", "ManMan3", "ManMan4", "ManMan5", "ManMan6", "ManMan7", "ManMan8", "ManMan9", "ManMan10", "ManMan11", "ManConflicted", "ManMuscleMan", "ManPirate", "ManLeprechaun", "ManSantaWaving", "ManScientist", "ManSleezyBoxer", "ManSnowboarder", "ManWizard", "WomanCowgirl", "WomanGirl", "WomanGirl2", "WomanSickGirl", "WomanGirlAngel", "WomanBusinesswoman", "WomanLaptop", "WomanDoctor", "WomanRunner"];
+var AVATAR_GROUPS = [["Men", 0, 29], ["Women", 29, 49]];
+
+/* who is looking: what each kind of player sees in the account rows */
+var PLAYERS = {
+  guest:      { name: "Guest #2,452", avatar: "AnimalSheep", registered: false, subscriber: false },
+  registered: { name: "PiLady10",     avatar: "WomanScientist", registered: true, subscriber: false },
+  subscriber: { name: "PiLady10",     avatar: "WomanScientist", registered: true, subscriber: true },
+  arkadium:   { name: "Guest #2,452", avatar: "AnimalSheep", registered: false, subscriber: false, arkadium: true }
+};
+
+/* ===== the groupings: how the eleven options (and the rest) are cut into sections ===== */
+/* each group: title, the option keys, and an optional line under the title. "rest" sections are named by kind and drawn by the renderer */
+var GROUPINGS = {
+  /* today: one list in the code's order, then the rest */
+  today: {
+    options: [{ title: "Settings", keys: ["sound", "emotions", "anim", "prompts", "hints", "narrow", "overlap", "chat", "profanity", "social", "legacy"], sub: true }]
+  },
+  /* by theme, in Holger's words */
+  theme: {
+    options: [
+      { title: "Sound and motion", keys: ["sound", "anim", "emotions"] },
+      { title: "Help while you play", keys: ["prompts", "hints"] },
+      { title: "The cards", keys: ["narrow", "overlap"] },
+      { title: "Chat and friends", keys: ["chat", "profanity", "social"] }
+    ]
+  },
+  /* by how often people change them (the 30 day saves), most changed first */
+  freq: {
+    options: [{ title: "Settings", keys: ["sound", "emotions", "anim", "hints", "prompts", "profanity", "chat", "narrow", "social", "overlap"], sub: true }]
+  },
+  /* the short list a new player needs, then the rest folded */
+  short: {
+    options: [
+      { title: "Settings", keys: ["sound", "emotions", "anim", "hints"], sub: true },
+      { title: "More", keys: ["prompts", "chat", "profanity", "narrow", "overlap", "social"], fold: true }
+    ]
+  }
+};
+/* ===== round two: the short lines, only where the title does not say it (Holger, 7 Sep) ===== */
+var DESC2 = {
+  emotions: "The faces your avatar makes.",
+  prompts: "Messages about what's going on.",
+  hints: "Shows a good card when your time runs low.",
+  narrow: "A tighter fan when you hold many cards.",
+  overlap: "Stacks the trick's cards in one pile.",
+  social: "When a friend comes online or writes.",
+  legacy: "The old drawings. The table reloads."
+};
+var DESC2_ONLY = ["emotions", "prompts", "hints", "narrow", "overlap", "social", "legacy"];
+/* the page names of round two */
+var LABELS2 = { look: "Design", table: "Table", account: "Account" };
+/* ===== round three: the whole catalogue, in the live order (7 Sep 2026) ===== */
+var AVATARS = ["ManBoy", "ManBoy2", "ManBoyAngel", "ManBoyScientist", "ManBoyScientistGun", "ManBusinessman", "ManCaveman", "ManChef", "ManChefPizza", "ManClown", "ManCowboy", "ManGeek", "ManGeek2", "ManGeek3", "ManGeekBoy", "ManGeekBoy2", "ManGeekWalkman", "ManHandyman", "ManImpatient", "ManMan", "ManMan2", "ManMan3", "ManMan4", "ManMan5", "ManMan6", "ManMan7", "ManMan8", "ManMan9", "ManMan10", "ManMan11", "ManConflicted", "ManMuscleMan", "ManPirate", "ManLeprechaun", "ManSantaWaving", "ManScientist", "ManSleezyBoxer", "ManSnowboarder", "ManWizard", "WomanCowgirl", "WomanGirl", "WomanGirl2", "WomanSickGirl", "WomanGirlAngel", "WomanBusinesswoman", "WomanLaptop", "WomanDoctor", "WomanRunner", "WomanScientist", "WomanSkier", "WomanTennisPlayer", "WomanWeightlifter", "WomanYoga", "WomanSuperGirl", "WomanSuperGirl2", "WomanSuperMom", "WomanWoman", "WomanWoman2", "WomanWoman3", "WomanWoman4", "WomanWoman5", "WomanWoman6", "WomanWoman7", "WomanWoman8", "WomanWoman9", "WomanWoman10", "WomanWoman11", "WomanWoman12", "WomanWoman13", "WomanWoman14", "WomanWoman15", "WomanWoman16", "WomanWoman17", "WomanWoman18", "WomanWoman19", "WomanWoman20", "WomanWoman21", "WomanWomanTrenchCoat", "WomanWomanUmbrella", "AlienBlob", "AlienBlue", "AlienFuzzballAngel", "AlienFuzzballBlack", "AlienFuzzballGreen", "AlienLollipop", "AlienMartian", "AlienOneEye", "AlienTwoFoot", "AnimalAlligator", "AnimalBeaver", "AnimalBird", "AnimalBunnyBowTie", "AnimalBunnyPointingUp", "AnimalButterfly", "AnimalButterfly2", "AnimalCat", "AnimalCatWitch", "AnimalCow", "AnimalDogGeek", "AnimalDogSitting3", "AnimalDogTambourine", "AnimalFox", "AnimalFox2", "AnimalFoxRockstar", "AnimalGopherConstruction", "AnimalKangaroo", "AnimalKoala", "AnimalMonkeyToes", "AnimalMouse", "AnimalMouseHole", "AnimalPandaHappy", "AnimalPandaWaving", "AnimalPenguin", "AnimalPenguinAsleep", "AnimalPenguinConfused", "AnimalPenguinFat", "AnimalPig", "AnimalPigCool", "AnimalRaccoon2", "AnimalSeahorse", "AnimalSnake", "AnimalSquirrel", "AnimalSquirrel2", "AnimalToucan", "AnimalTurkeyNervous", "OtherApple", "OtherAstronaut", "OtherBaby", "OtherMauveIris", "OtherJackOLantern", "OtherJackOLantern2", "OtherJackOLantern3", "OtherJackOLantern4", "OtherJackOLantern5", "OtherNinja", "OtherRaceCar", "OtherRose", "OtherWhiteRose", "OtherSnowMan", "OtherChristmasTree", "OtherVolcano"];
+var AVATAR_GROUPS = [["Men", 0, 39], ["Women", 39, 79], ["Aliens", 79, 88], ["Animals", 88, 125], ["Other", 125, 141]];
+var WALLS = [["game-assets/wallpapers/green-felt.jpg", "Green felt"], ["game-assets/wallpapers/blue-canvas.jpg", "Blue canvas"], ["game-assets/wallpapers/fabric.jpg", "Fabric"], ["game-assets/wallpapers/fabric02.jpg", "Fabric #02"], ["game-assets/wallpapers/fabric03.jpg", "Fabric #03"], ["game-assets/wallpapers/fabric04.jpg", "Fabric #04"], ["game-assets/wallpapers/fabric05.jpg", "Fabric #05"], ["game-assets/wallpapers/fabric06.jpg", "Fabric #06"], ["game-assets/wallpapers/fabric07.jpg", "Fabric #07"], ["game-assets/wallpapers/fabric08.jpg", "Fabric #08"], ["game-assets/wallpapers/fabric09.jpg", "Fabric #09"], ["game-assets/wallpapers/fabric10.jpg", "Fabric #10"], ["game-assets/wallpapers/fabric11.jpg", "Fabric #11"], ["game-assets/wallpapers/aloha-turkey.jpg", "Aloha turkey"], ["game-assets/wallpapers/anchors.jpg", "Anchors"], ["game-assets/wallpapers/animal.jpg", "Animal"], ["game-assets/wallpapers/animal2.jpg", "Animal #2"], ["game-assets/wallpapers/armada.jpg", "Armada"], ["game-assets/wallpapers/armored.jpg", "Armored"], ["game-assets/wallpapers/autumn-butterflies.jpg", "Autumn butterflies"], ["game-assets/wallpapers/beachy.jpg", "Beachy"], ["game-assets/wallpapers/blue-lotus.jpg", "Blue lotus"], ["game-assets/wallpapers/bones-leather.jpg", "Bones leather"], ["game-assets/wallpapers/broach.jpg", "Broach"], ["game-assets/wallpapers/cabin.jpg", "Cabin"], ["game-assets/wallpapers/camellia.jpg", "Camellia"], ["game-assets/wallpapers/charcoal.jpg", "Charcoal"], ["game-assets/wallpapers/chocolate-diamond.jpg", "Chocolate diamond"], ["game-assets/wallpapers/clouds.jpg", "Clouds"], ["game-assets/wallpapers/dark-forest.jpg", "Dark forest"], ["game-assets/wallpapers/dark-tile.jpg", "Dark tile"], ["game-assets/wallpapers/denim-daisies.jpg", "Denim daisies"], ["game-assets/wallpapers/discs.jpg", "Discs"], ["game-assets/wallpapers/frost.jpg", "Frost"], ["game-assets/wallpapers/fruit-salad.jpg", "Fruit salad"], ["game-assets/wallpapers/fuchsia.jpg", "Fuchsia"], ["game-assets/wallpapers/german-pinks.jpg", "German pinks"], ["game-assets/wallpapers/ghost-tile.jpg", "Ghost tile"], ["game-assets/wallpapers/giza.jpg", "Giza"], ["game-assets/wallpapers/golden-victorian.jpg", "Golden victorian"], ["game-assets/wallpapers/grass.jpg", "Grass"], ["game-assets/wallpapers/grunge.jpg", "Grunge"], ["game-assets/wallpapers/hold-fast.jpg", "Hold fast"], ["game-assets/wallpapers/hollyhock.jpg", "Hollyhock"], ["game-assets/wallpapers/humidor-pink.jpg", "Humidor pink"], ["game-assets/wallpapers/intertwined-darkened.jpg", "Intertwined darkened"], ["game-assets/wallpapers/iridescent.jpg", "Iridescent"], ["game-assets/wallpapers/khaki.jpg", "Khaki"], ["game-assets/wallpapers/lotus-vases.jpg", "Lotus vases"], ["game-assets/wallpapers/medallion-burned.jpg", "Medallion burned"], ["game-assets/wallpapers/octo-redux.jpg", "Octo redux"], ["game-assets/wallpapers/panda-madness.jpg", "Panda madness"], ["game-assets/wallpapers/paper-flower.jpg", "Paper flower"], ["game-assets/wallpapers/paragon.jpg", "Paragon"], ["game-assets/wallpapers/picnic.jpg", "Picnic"], ["game-assets/wallpapers/pink-lines.jpg", "Pink lines"], ["game-assets/wallpapers/pink.jpg", "Pink"], ["game-assets/wallpapers/pinkie-bouquet.jpg", "Pinkie bouquet"], ["game-assets/wallpapers/prestige-one.jpg", "Prestige one"], ["game-assets/wallpapers/prestige.jpg", "Prestige"], ["game-assets/wallpapers/pumpkin.jpg", "Pumpkin"], ["game-assets/wallpapers/purple-swirl.jpg", "Purple swirl"], ["game-assets/wallpapers/rafters.jpg", "Rafters"], ["game-assets/wallpapers/ravens.jpg", "Ravens"], ["game-assets/wallpapers/renzler.jpg", "Renzler"], ["game-assets/wallpapers/royal-lobsterific.jpg", "Royal lobsterific"], ["game-assets/wallpapers/ruby-sundial.jpg", "Ruby sundial"], ["game-assets/wallpapers/simple-paisley.jpg", "Simple paisley"], ["game-assets/wallpapers/snowflake.jpg", "Snowflake"], ["game-assets/wallpapers/straw-flowers.jpg", "Straw flowers"], ["game-assets/wallpapers/techno.jpg", "Techno"], ["game-assets/wallpapers/ultra-violet.jpg", "Ultra violet"], ["game-assets/wallpapers/vintage-scarlet.jpg", "Vintage scarlet"], ["game-assets/wallpapers/violet-fabric.jpg", "Violet fabric"]];
+var WALL_GROUPS = [["Fabrics", 0, 13], ["Assorted", 13, 74], ["Walls and Floors", 74, 74]];
+/* ===== the controls: every piece returns an HTML string; the look comes from the variant's classes on the root ===== */
+function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;"); }
+function radioImg(on, label, name) {
+  return '<span class="rd' + (on ? " on" : "") + '" data-name="' + name + '"><i></i>' + esc(label) + '</span>';
+}
+function checkImg(on, label) {
+  return '<span class="ck' + (on ? " on" : "") + '"><i></i>' + (label ? esc(label) : "") + '</span>';
+}
+function sw(on, label) {
+  return '<span class="sw' + (on ? " on" : "") + '" role="switch" aria-checked="' + !!on + '"><i></i>' + (label ? '<b>' + esc(label) + '</b>' : "") + '</span>';
+}
+function seg(choices, value, cls) {
+  var h = '<span class="seg' + (cls ? " " + cls : "") + '"><span class="thumb"></span>';
+  choices.forEach(function (c) { h += '<span class="sg' + (c[0] === String(value) ? " on" : "") + '">' + esc(c[1]) + '</span>'; });
+  return h + '</span>';
+}
+/* the game bar's move (open-tables-slide-lab, 5 Sep): the thumb is its own element sliding under the cells, and a copy of the cells drawn white
+   is clipped to the thumb's window on the same clock, so the text under the thumb is white with no crossfade */
+function placeThumb(segEl, cell, instant) {
+  var thumb = segEl.querySelector(":scope > .thumb"), copy = segEl.querySelector(":scope > .tcopy");
+  if (!thumb || !cell) return;
+  var left = cell.offsetLeft, width = cell.offsetWidth, top = cell.offsetTop, height = cell.offsetHeight;
+  var set = function () {
+    thumb.style.left = left + "px"; thumb.style.top = top + "px"; thumb.style.width = width + "px"; thumb.style.height = height + "px"; thumb.style.opacity = "1";
+    if (copy) { copy.style.clipPath = "inset(" + (top - 2) + "px " + (segEl.clientWidth - left - width - 2) + "px " + (segEl.clientHeight - top - height - 2) + "px " + (left - 2) + "px)"; copy.style.opacity = "1"; }
+  };
+  if (instant) { segEl.classList.add("still"); set(); segEl.offsetWidth; requestAnimationFrame(function () { requestAnimationFrame(function () { segEl.classList.remove("still"); }); }); }
+  else set();
+}
+function initSegs(root) {
+  root.querySelectorAll(".seg").forEach(function (segEl) {
+    if (segEl.querySelector(":scope > .tcopy")) return;
+    var copy = document.createElement("span"); copy.className = "tcopy";
+    segEl.querySelectorAll(":scope > .sg").forEach(function (s) { var d = document.createElement("span"); d.className = "sg" + (s.classList.contains("on") ? " on" : ""); d.innerHTML = s.innerHTML; copy.appendChild(d); });
+    segEl.appendChild(copy);
+    placeThumb(segEl, segEl.querySelector(":scope > .sg.on"), true);
+  });
+}
+function placeClose(root) {
+  var x = root.querySelector(":scope > .x.out"), box = root.querySelector(":scope > .box");
+  if (!x || !box) return;
+  var rb = box.getBoundingClientRect(), rr = root.getBoundingClientRect();
+  var dy = root.classList.contains("xy-tabs") ? 14 : (root.classList.contains("xy-edge") ? 0 : -10);
+  if (root.classList.contains("close-outround")) { x.style.left = (rb.right - rr.left - 18) + "px"; x.style.top = (rb.top - rr.top - 18 + (dy > 0 ? dy + 4 : 0)) + "px"; }
+  else { x.style.left = (rb.right - rr.left) + "px"; x.style.top = (rb.top - rr.top + dy) + "px"; }
+}
+function segOff(choices) {
+  var h = '<span class="seg disabled"><span class="thumb"></span>';
+  choices.forEach(function (c) { h += '<span class="sg">' + esc(c[1]) + '</span>'; });
+  return h + '</span>';
+}
+function sel(choices, value) {
+  var cur = choices.filter(function (c) { return c[0] === String(value); })[0] || choices[0];
+  return '<span class="sel">' + esc(cur[1]) + '<svg viewBox="0 0 10 6" width="10" height="6"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></span>';
+}
+function btn(text, kind, small) {
+  return '<span class="bt ' + (kind || "light") + (small === false ? "" : " lil") + '">' + esc(text) + '</span>';
+}
+function chevron() { return '<svg class="chev" viewBox="0 0 8 12" width="8" height="12"><path d="M1.5 1l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>'; }
+
+/* one option row: label (and a line under it when the variant writes descriptions) on the left, the control on the right */
+function optRow(key, v, opts) {
+  var o = OPTS[key], ctl = v.ctl || "radio", h = "";
+  if (key === "legacy" && CUR_PLAYER && CUR_PLAYER.arkadium) return "";
+  var desc = v.desc === "short" ? (DESC2_ONLY.indexOf(key) >= 0 && (!v.descOnly || v.descOnly.indexOf(key) >= 0) ? DESC2[key] : null)
+    : (v.desc && (!v.descOnly || v.descOnly.indexOf(key) >= 0) ? DESC[key] : null);
+  if (desc && o.kind === "tri" && v.vitalNote && !v.vitalWords && ctl !== "switchplain") desc += " " + (VITAL_NOTE[key] || VITAL).replace("Vital", v.vitalWord || "Vital");
+  var stacked = v.stack && (o.kind === "tri" || v.sw === "seg2") && ctl === "seg";   /* the phone: a tray goes under its label, a switch stays beside it */
+  h += '<div class="row kind-' + o.kind + (stacked ? " stacked" : "") + (ctl === "value" && o.kind !== "bool" ? " link" : "") + '" data-key="' + key + '">';
+  h += '<div class="lab"><span class="lt">' + esc(o.label) + '</span>' + (desc ? '<span class="ld">' + esc(desc) + '</span>' : "") + '</div>';
+  h += '<div class="cx">' + optControl(key, o, ctl, v) + '</div>';
+  return h + '</div>';
+}
+function optControl(key, o, ctl, v) {
+  var val = o.value, word = v.vitalWords ? VITAL_WORD[key] : v.vitalWord, TRI3 = word ? TRI.map(function (c) { return c[1] === "Vital" ? [c[0], word] : c; }) : TRI;
+  if (ctl === "value") { var cur = (o.kind === "tri" ? TRI3 : BI).filter(function (c) { return c[0] === String(val); })[0]; return o.kind === "bool" ? sw(!!val) : '<span class="cnt">' + esc(cur ? cur[1] : "") + '</span>' + chevron(); }
+  if (o.kind === "tri") {
+    if (ctl === "radio") return TRI3.map(function (c) { return radioImg(c[0] === String(val), c[1], key); }).join("");
+    if (ctl === "seg") return seg(TRI3, val);
+    if (ctl === "select") return sel(TRI3, val);
+    if (ctl === "switch") return (val !== 0 ? sel([["2", "All"], ["1", word ? word : "Vital only"]], val) : "") + sw(val !== 0);
+    if (ctl === "switchplain") return sw(val !== 0);
+    if (ctl === "check") return checkImg(val !== 0);
+  }
+  if (o.kind === "bi") {
+    if (ctl === "radio") return BI.map(function (c) { return radioImg(c[0] === String(val), c[1], key); }).join("");
+    if (ctl === "check") return checkImg(val === 1);
+    if (v.sw === "seg2") return seg(BI, val);
+    return sw(val === 1);
+  }
+  if (ctl === "radio" || ctl === "check") return checkImg(!!val);
+  if (v.sw === "seg2") return seg(BI, val ? 1 : 0);
+  return sw(!!val);
+}
+
+/* the subscription row: what today shows to everyone, or what each kind of player should see */
+function subscriptionRow(v, player) {
+  if (player.arkadium && v.guestaware) return "";
+  var h = '<div class="row kind-buttons" data-key="subscription"><div class="lab"><span class="lt">Subscription</span>';
+  if (v.desc) h += '<span class="ld">' + (player.subscriber ? "Ad free, renews on the 3rd of every month." : "Play without ads.") + '</span>';
+  h += '</div><div class="cx btns">';
+  if (!v.guestaware) h += btn("Cancel", "red") + btn("Manage", "light") + btn("Start trial", "light");
+  else if (player.subscriber) h += btn("Manage", "light") + btn("Cancel", "red");
+  else h += btn("Start free trial", "green");
+  return h + '</div></div>';
+}
+function peopleRows(v) {
+  var mode = v.people || "button";
+  return PEOPLE.map(function (p) {
+    var h = '<div class="row kind-people' + (mode === "chevron" ? " link" : "") + '" data-key="' + p[0] + '"><div class="lab"><span class="lt">' + esc(p[1]) + '</span>';
+    if (v.desc) h += '<span class="ld">' + { liked: "Their tables come first in the list.", blocked: "You never sit at a table with them.", muted: "You don't see what they write." }[p[0]] + '</span>';
+    h += '</div><div class="cx">';
+    if (mode === "chevron") h += '<span class="cnt">' + (p[2] ? p[2] : "None") + '</span>' + chevron();
+    else if (mode === "count") h += '<span class="cnt">' + p[2] + '</span>' + btn("Manage", "light");
+    else h += btn("Manage", "light");
+    return h + '</div></div>';
+  }).join("");
+}
+function gamesBlock(v) {
+  var mode = v.games || "checks", h = "", ranked = !!(CUR_PLAYER && CUR_PLAYER.registered);
+  if (v.rankHonest && CUR_PLAYER && CUR_PLAYER.arkadium) return '<div class="note">Ranked play is not on here.</div>';
+  var lb = v.rankLink ? '<a class="lk">leaderboards</a>' : 'leaderboards';
+  var noteHTML = function (text) { return v.rankNote === "row" ? '<div class="row kind-text" data-key="ranknote"><div class="lab"><span class="lt">' + (ranked ? "Ranked games" : "Ranked play") + '</span><span class="ld">' + text + '</span></div></div>' : '<div class="note' + (v.rankNote === "head" || v.rankNote === "headright" ? " out" : "") + '">' + text + '</div>'; };
+  if (v.rankHonest && !ranked && (v.guestRank === "disabled" || v.guestRank === "grey")) {
+    h += noteHTML('<a class="lk">Sign in</a> and play ten games to join the ' + lb + '.');
+    var tipText = 'Sign in and play ten games to join the leaderboards.';
+    h += '<div class="gamesList off">' + GAMES.map(function (g) { var t = seg(BI, 0, "disabled" + (v.guestRank === "grey" ? " grey" : "") + " trig"); return '<div class="gl"><span>' + esc(g) + '</span>' + t.replace(/<\/span>$/, '<span class="tip">' + tipText + '</span></span>') + '</div>'; }).join("") + '</div>';
+    return h;
+  }
+  if (v.rankHonest && !ranked) return '<div class="row kind-buttons" data-key="rankguest"><div class="lab"><span class="lt">Ranked play needs an account</span><span class="ld">Sign in and play ten games to join the ranked league.</span></div><div class="cx btns">' + btn("Sign in", "light") + '</div></div>';
+  var tick = mode === "checks" ? ["tick", "Untick one"] : (mode === "master" ? ["turn on", "Turn one off"] : ["turn on", "Turn one off"]);
+  if (v.rankHonest && mode !== "master") h += noteHTML('Your results count on the ' + lb + ' in the games you ' + tick[0] + '. ' + (tick[0] === "tick" ? "Untick a game" : "Turn a game off") + ' and you lose that rank for good. You cannot turn it back on for a week.');
+  if (mode === "checks") h += '<div class="gamesWrap">' + GAMES.map(function (g) { return checkImg(ranked && !v.guestaware ? false : ranked, g); }).join("") + '</div>';
+  else if (mode === "list") h += '<div class="gamesList">' + GAMES.map(function (g) { return '<div class="gl">' + (v.r3 ? '<span>' + esc(g) + '</span>' + (v.sw === "seg2" ? seg(BI, 1) : sw(true)) : (v.sw === "seg2" ? seg(BI, 1) : sw(true)) + '<span>' + esc(g) + '</span>') + '</div>'; }).join("") + '</div>';
+  else if (mode === "chips") h += '<div class="gamesChips">' + GAMES.map(function (g, i) { return '<span class="chip' + (i === 4 ? "" : " on") + '"><i></i>' + esc(g) + '</span>'; }).join("") + '</div>';
+  else if (mode === "master") h += '<div class="row kind-bool" data-key="rankall"><div class="lab"><span class="lt">Rank me on the leaderboards</span>' + (v.desc ? '<span class="ld">Turn it off to stay off every leaderboard. Turning a game off deletes that rank for good and locks the choice for a week.</span>' : "") + '</div><div class="cx">' + sw(true) + '</div></div>' +
+    '<div class="row link fold" data-key="rankexc"><div class="lab"><span class="lt">Exceptions</span></div><div class="cx"><span class="cnt">Not in Gin Rummy</span>' + chevron() + '</div></div>';
+  return h;
+}
+function accountRows(v, player) {
+  var h = "";
+  if (!player.registered) {
+    if (v.guestaware) h += '<div class="row kind-buttons" data-key="guest"><div class="lab"><span class="lt">' + (v.r3 ? "Guest account" : "You play as a guest") + '</span>' + (v.desc ? '<span class="ld">Sign in to keep your stats and settings on every device.</span>' : "") + '</div><div class="cx btns">' + btn("Sign in", v.r3 ? "green" : "light") + '</div></div>';
+    return h;
+  }
+  h += '<div class="row kind-buttons" data-key="password"><div class="lab"><span class="lt">Password</span>' + (v.desc ? '<span class="ld">Last changed in March.</span>' : "") + '</div><div class="cx btns">' + btn("Change", "light") + '</div></div>';
+  h += '<div class="row kind-buttons" data-key="delete"><div class="lab"><span class="lt">Delete account</span>' + (v.desc ? '<span class="ld">Removes your stats and your name for good.</span>' : "") + '</div><div class="cx btns">' + btn("Delete", "red") + '</div></div>';
+  return h;
+}
+function passwordForm() {
+  return '<div class="form"><label><span>Old password</span><input type="password" value="••••••••"></label><label><span>New password</span><input type="password"></label>' + btn("Change", "light", false) + '</div>';
+}
+function legalRows(v) {
+  return '<div class="row link" data-key="privacy"><div class="lab"><span class="lt">Update privacy preferences</span></div><div class="cx">' + chevron() + '</div></div>' +
+    '<div class="row link" data-key="terms"><div class="lab"><span class="lt">Terms of content use</span></div><div class="cx">' + chevron() + '</div></div>';
+}
+/* the choosers: grids as today, or one strip per kind with the names under */
+function deckGrid(v, cols) {
+  return '<div class="pk decks' + (v.names ? " named" : "") + '" style="--cols:' + (cols || 3) + '">' + DECKS.map(function (d, i) {
+    return '<div class="pi' + (i === 0 ? " on" : "") + '"><span class="pair"><img src="game-assets/decks/' + d[0] + '-12h.png" alt=""><img src="game-assets/decks/' + d[0] + '-back.png" alt=""></span>' + (v.names ? '<span class="pn">' + esc(d[1]) + '</span>' : "") + '</div>';
+  }).join("") + '</div>';
+}
+function wallGrid(v, cols, n, from) {
+  var all = (!n || n >= WALLS.length) && WALLS.length < 20;
+  return '<div class="pk walls' + (v.names ? " named" : "") + '" style="--cols:' + (cols || 5) + '">' + WALLS.slice(from || 0, n ? (from || 0) + n : WALLS.length).map(function (w, i) {
+    return '<div class="pi' + (/green-felt/.test(w[0]) ? " on" : "") + '"><span class="sq" style="background-image:url(' + w[0] + ')"></span>' + (v.names ? '<span class="pn">' + esc(w[1]) + '</span>' : "") + '</div>';
+  }).join("") + '</div>' + (all ? '<div class="note">The lab holds 9 of the site\'s 94 wallpapers.</div>' : "");
+}
+function wallGroups(v, cols) {
+  if (typeof WALL_GROUPS === "undefined") return sectionHTML("Fabrics", wallGrid(v, cols, 6)) + sectionHTML("Assorted", wallGrid(v, cols));
+  return WALL_GROUPS.filter(function (g) { return g[2] > g[1]; }).map(function (g) { return sectionHTML(g[0], wallGrid(v, cols, g[2] - g[1], g[1])); }).join("");
+}
+function avatarGrid(v, cols, n, from) {
+  var list = AVATARS.slice(from || 0, n ? (from || 0) + n : AVATARS.length);
+  return '<div class="pk avs" style="--cols:' + (cols || 5) + '">' + list.map(function (a, i) {
+    return '<div class="pi' + (a === "AnimalSheep" ? " on" : "") + '"><img src="' + AVDIR() + a + '.svg" alt=""></div>';
+  }).join("") + '</div>';
+}
+function avatarGroups(v, cols) {
+  return AVATAR_GROUPS.map(function (g) { return sectionHTML(g[0], avatarGrid(v, cols, g[2] - g[1], g[1])); }).join("");
+}
+function lookStrips(v) {
+  return '<div class="strip"><div class="sh"><span class="lt">Deck</span></div>' + deckGrid(v, 7) + '</div>' +
+    '<div class="strip"><div class="sh"><span class="lt">Wallpaper</span><span class="more">All 94</span></div>' + wallGrid(v, 8, 8) + '</div>' +
+    '<div class="strip"><div class="sh"><span class="lt">Avatar</span><span class="more">All 141</span></div>' + avatarGrid(v, 8, 8) + '</div>';
+}
+function statsBlock(v) {
+  var rows = [["Games played", "0", "56,586,914"], ["Games finished", "0", "37,608,185"], ["Games won", "0", "33,482,528"], ["Average game length", "0 seconds", "32 minutes"], ["Total playtime", "0 seconds", "3,500 years"]];
+  return '<div class="statsPick">' + (v.ctl === "radio" ? ["All games", "Hearts", "Spades", "Euchre", "Gin Rummy"].map(function (g, i) { return radioImg(i === 0, g, "stats"); }).join("") : seg([["a", "All games"], ["h", "Hearts"], ["s", "Spades"], ["e", "Euchre"]], "a")) + '</div>' +
+    '<table class="stats"><tr><th></th><th>You</th><th>Everyone</th></tr>' + rows.map(function (r) { return '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td><td>' + r[2] + '</td></tr>'; }).join("") + '</table>';
+}
+
+/* the Your look strip: the three things people change most, as thumbnails at the top of the settings page, each a door to its chooser */
+function lookStrip(v) {
+  return '<div class="lookstrip"><span class="ls"><img src="' + AVDIR() + 'AnimalSheep.svg" alt=""><b>Avatar</b></span><span class="ls"><i class="sq" style="background-image:url(green-felt.jpg)"></i><b>Wallpaper</b></span><span class="ls"><i class="pair"><img src="game-assets/decks/classic-12h.png" alt=""><img src="game-assets/decks/classic-back.png" alt=""></i><b>Deck</b></span>' + chevron() + '</div>';
+}
+
+/* the legacy avatars row, drawn where the version puts it */
+function legacyRow(v) {
+  var d = v.desc === "short" ? DESC2.legacy : (v.desc ? "The table reloads when you change this." : null);
+  return '<div class="row kind-bool" data-key="legacy"><div class="lab"><span class="lt">Use the older avatar drawings</span>' + (d ? '<span class="ld">' + esc(d) + '</span>' : "") + '</div><div class="cx">' + (v.sw === "seg2" ? seg(BI, 0) : sw(false)) + '</div></div>';
+}
+
+/* the Design page as three containers: the groups as small labels inside the card, or one flat grid */
+function avatarCard(v, cols, flat) {
+  if (flat) return avatarGrid(v, cols);
+  return AVATAR_GROUPS.map(function (g, i) { return '<div class="glabel' + (i ? "" : " first") + '">' + esc(g[0]) + '</div>' + avatarGrid(v, cols, g[2] - g[1], g[1]); }).join("");
+}
+function wallCard(v, cols, flat) {
+  if (flat || typeof WALL_GROUPS === "undefined") return wallGrid(v, cols);
+  return WALL_GROUPS.filter(function (g) { return g[2] > g[1]; }).map(function (g, i) { return '<div class="glabel' + (i ? "" : " first") + '">' + esc(g[0]) + '</div>' + wallGrid(v, cols, g[2] - g[1], g[1]); }).join("");
+}
+/* ===== the modal: pages, sections and the box, built from a variant spec =====
+   v: { nav: tabs | seg | side | one | quick | sheet,  sty: today | tidy | paper | piece | dark | inset,  pos: center | right | sheet | pop,
+        ctl: radio | seg | switch | select | switchplain | check,  grp: today | theme | freq | short,  games, people,
+        close: out | in,  title: "" | "Settings",  desc, vitalNote, guestaware, look: tabs | merged | strips, stats: true | false,
+        allInOne (today: the account rows inside Options), jump (a chip row on a one page modal), names (picker names), stack (phone rows) } */
+var PAGE_LABELS = { options: "Options", settings: "Settings", table: "Table", look: "Look", deck: "Deck", wallpaper: "Wallpaper", avatar: "Avatar", people: "People", account: "Account", ranking: "Leaderboards", stats: "Stats" };
+var DRILL_SUMS = { look: "Sheep, green felt, classic deck", table: "Sound on, hints on", options: "Sound on, hints on", people: "3 liked, 1 blocked", stats: "0 games" };
+function drillSum(p) {
+  var reg = CUR_PLAYER && CUR_PLAYER.registered;
+  if (p === "account") return reg ? (CUR_PLAYER.subscriber ? CUR_PLAYER.name + ", ad free" : CUR_PLAYER.name) : "Guest";
+  if (p === "people") return reg ? "3 liked, 1 blocked" : "Nothing yet";
+  return DRILL_SUMS[p] || "";
+}
+var CUR_PLAYER = null;
+function labelOf(p, v) { return (v && v.labels && v.labels[p]) || PAGE_LABELS[p] || p; }
+
+function pagesFor(v) {
+  if (v.pages) return CUR_PLAYER && CUR_PLAYER.arkadium ? v.pages.filter(function (p) { return p !== "account"; }) : v.pages;
+  if (v.nav === "one") return ["settings"];
+  var p = ["options"];
+  if (v.look === "merged" || v.look === "strips") p.push("look"); else p.push("deck", "wallpaper", "avatar");
+  if (!v.allInOne) p.push("people", "account");
+  if (v.stats !== false) p.push("stats");
+  return p;
+}
+function sectionHTML(title, body, extra, cls) {
+  return '<section class="sec' + (cls ? " " + cls : "") + '">' + (title ? '<div class="sh"><span class="st">' + esc(title) + '</span>' + (extra || "") + '</div>' : "") + '<div class="sb">' + body + '</div></section>';
+}
+function optionSections(v) {
+  var g = GROUPINGS[v.grp || "today"];
+  return g.options.map(function (s) {
+    var rows = s.keys.map(function (k) { return optRow(k, v); }).join("");
+    if (s.fold) return '<details class="sec fold"><summary class="sh"><span class="st">' + esc(s.title) + '</span>' + chevron() + '</summary><div class="sb">' + rows + '</div></details>';
+    var title = (v.groupNames && v.groupNames[s.title]) || s.title;
+    return sectionHTML(s.sub && v.title ? null : title, rows, "", s.sub ? "" : "grp");
+  }).join("");
+}
+function pageHTML(id, v, player) {
+  var h = "";
+  if (id === "options" || id === "settings") {
+    if (v.lookStrip) h += lookStrip(v);
+    h += optionSections(v);
+    if (v.allInOne) {
+      h += sectionHTML(null, subscriptionRow(v, player) + (v.guestaware ? accountRows(v, player) : ""), "", "tight");
+      h += sectionHTML("People", peopleRows(v));
+      h += sectionHTML("Leaderboard participation", gamesBlock(v), btn("Leaderboards", "light"));
+      if (player.registered) { h += sectionHTML("Change password", passwordForm()); h += sectionHTML("Delete account", '<div class="form"><label><span>Confirm with password</span><input type="password"></label>' + btn("Delete account", "red", false) + '</div>'); }
+      h += sectionHTML("Legal and privacy", legalRows(v));
+    }
+    if (v.nav === "one") {
+      h += sectionHTML("Look", lookStrips(v), "", "look");
+      h += sectionHTML("People", peopleRows(v));
+      h += sectionHTML("Ranked play", gamesBlock(v), btn("Leaderboards", "light"));
+      h += sectionHTML("Account", subscriptionRow(v, player) + accountRows(v, player) + legalRows(v));
+    }
+  } else if (id === "table") {
+    h += optionSections(v);
+  } else if (id === "look" && v.lookSub) {
+    var sub = v.lookPage || "avatar", SUBS = [["avatar", "Avatar"], ["wallpaper", "Wallpaper"], ["deck", "Deck"]];
+    var lr = (v.legacyHere || v.legacyBottom) && !player.arkadium ? legacyRow(v) : "", ac = v.narrowAll ? 6 : 7, wc = v.narrowAll ? 5 : 6, dc = v.narrowAll ? 3 : 4;
+    if (v.dnav === "cards" || v.dnav === "cardsflat") {
+      var flat = v.dnav === "cardsflat", ac3 = v.tiles >= 8 ? 8 : ac, wc3 = v.tiles === 88 ? 8 : (v.tiles === 8 ? 6 : wc);
+      h += sectionHTML("Avatar", avatarCard(v, ac3, flat) + lr) + sectionHTML("Wallpaper", wallCard(v, wc3, flat)) + sectionHTML("Deck", deckGrid(v, dc));
+    } else if (v.dnav === "stack") {
+      h += '<div class="subjump">' + SUBS.map(function (c) { return '<span class="slink" data-sub="' + c[0] + '">' + c[1] + '</span>'; }).join('<i>·</i>') + '</div>';
+      h += avatarGroups(v, ac) + sectionHTML(null, lr, "", "tight") + wallGroups(v, wc) + sectionHTML("Deck", deckGrid(v, dc));
+    } else {
+      if (v.dnav === "underline") h += '<div class="subtabs">' + SUBS.map(function (c) { return '<span class="stab' + (c[0] === sub ? " on" : "") + '" data-sub="' + c[0] + '">' + c[1] + '</span>'; }).join("") + '</div>';
+      else if (v.dnav === "plain") h += '<div class="subplain">' + SUBS.map(function (c) { return '<span class="slink' + (c[0] === sub ? " on" : "") + '" data-sub="' + c[0] + '">' + c[1] + '</span>'; }).join('<i>·</i>') + '</div>';
+      else h += '<div class="subnav">' + seg(SUBS, sub, "subseg") + '</div>';
+      if (sub === "avatar") h += (v.legacyBottom ? "" : lr) + avatarGroups(v, ac) + (v.legacyBottom ? sectionHTML(null, lr, "", "tight") : "");
+      else if (sub === "wallpaper") h += wallGroups(v, wc);
+      else h += deckGrid(v, dc);
+    }
+  } else if (id === "look") {
+    var lr2 = (v.legacyHere || v.legacyBottom) && !player.arkadium ? legacyRow(v) : "", ac2 = v.narrowAll ? 6 : 7, wc2 = v.narrowAll ? 5 : 6, dc2 = v.narrowAll ? 3 : 4;
+    h += v.look === "strips" ? lookStrips(v) + lr2 : sectionHTML("Deck", deckGrid(v, dc2)) + (v.allWalls ? wallGroups(v, wc2) : sectionHTML("Wallpaper", wallGrid(v, wc2))) + (v.allWalls ? avatarGroups(v, ac2) + (v.legacyBottom ? sectionHTML(null, lr2, "", "tight") : "") : sectionHTML("Avatar", (v.legacyBottom ? "" : lr2) + avatarGrid(v, ac2, v.legacyBottom ? 18 : 21) + (v.legacyBottom ? lr2 : "")));
+  } else if (id === "deck") h += deckGrid(v, 3);
+  else if (id === "wallpaper") h += sectionHTML("Fabrics", wallGrid(v, 5, 5)) + sectionHTML("Assorted", wallGrid(v, 5));
+  else if (id === "avatar") h += avatarGroups(v, 5);
+  else if (id === "people") {
+    h += sectionHTML("People", peopleRows(v));
+  } else if (id === "account") {
+    h += sectionHTML("Account", subscriptionRow(v, player) + accountRows(v, player));
+    if (pagesFor(v).indexOf("people") < 0) h += sectionHTML("People", peopleRows(v));
+    var gb = gamesBlock(v), lead = "", extra = v.rankLink ? "" : btn("Leaderboards", "light");
+    if (v.rankNote === "head" || v.rankNote === "headright") { var mm = gb.match(/^<div class="note out">([\s\S]*?)<\/div>/); if (mm) { if (v.rankNote === "headright") extra = '<span class="shint">' + mm[1] + '</span>'; else lead = mm[0]; gb = gb.slice(mm[0].length); } }
+    h += sectionHTML(v.rankName || "Ranked play", gb, extra).replace('<div class="sb">', lead + '<div class="sb">');
+    h += sectionHTML("Legal and privacy", legalRows(v));
+  } else if (id === "ranking") h += sectionHTML("Ranked play", gamesBlock(v), btn("Leaderboards", "light"));
+  else if (id === "stats") h += statsBlock(v);
+  return h;
+}
+
+/* the quick panel: the five things people change most, and two doors to the rest */
+function quickHTML(v, player) {
+  var keys = ["sound", "emotions", "anim", "hints", "prompts"];
+  return '<div class="sec"><div class="sb">' + keys.map(function (k) { return optRow(k, v); }).join("") + '</div></div>' +
+    '<div class="doors"><span class="door">Deck, wallpaper and avatar' + chevron() + '</span><span class="door">All settings' + chevron() + '</span></div>';
+}
+
+function navHTML(v, pages, cur) {
+  var items = pages.map(function (p) { return '<span class="tab' + (p === cur ? " on" : "") + '" data-page="' + p + '">' + esc(labelOf(p, v)) + '</span>'; }).join("");
+  if (v.nav === "seg") return '<div class="segnav"><span class="seg"><span class="thumb"></span>' + items.replace(/class="tab/g, 'class="sg tab') + '</span></div>';
+  if (v.nav === "side") return '<aside class="side">' + items + '</aside>';
+  if (v.nav === "drill") return '<div class="drill">' + pages.map(function (p) { return '<div class="row link" data-page="' + p + '"><div class="lab"><span class="lt">' + esc(labelOf(p, v)) + '</span></div><div class="cx"><span class="cnt">' + esc(drillSum(p)) + '</span>' + chevron() + '</div></div>'; }).join("") + '</div>';
+  if (v.nav === "one") return v.jump ? '<div class="jump">' + ["Options", "Look", "People", "Ranked play", "Account"].map(function (t, i) { return '<span class="jp' + (i === 0 ? " on" : "") + '">' + t + '</span>'; }).join("") + '</div>' : "";
+  return '<div class="tabs">' + items + '</div>';
+}
+function closeHTML(v) { return '<span class="x ' + (v.close === "in" ? "in" : "out") + '" title="Close"><svg viewBox="0 0 16 16" width="16" height="16"><path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></span>'; }
+
+function buildModal(v, lab) {
+  var player = CUR_PLAYER = PLAYERS[lab.player || "guest"];
+  var pages = pagesFor(v), cur = lab.page && pages.indexOf(lab.page) >= 0 ? lab.page : (v.nav === "drill" ? null : pages[0]);
+  var root = document.createElement("div");
+  var listPage = cur !== "look" && cur !== "deck" && cur !== "wallpaper" && cur !== "avatar";
+  if (v.narrow && listPage) v = Object.assign({}, v, { narrowNow: true });
+  var bd = v.backdropLook && cur === "look" ? v.backdropLook : v.backdrop;
+  var flags = (v.narrowNow || v.narrowAll ? " narrow" : "") + (v.r2 ? " r2" : "") + (v.r3 ? " r3" : "") + (v.tabsBig ? " tabs-big" : "") + (v.heads ? " heads-" + v.heads : "") + (v.sw ? " sw-" + v.sw : "") + (v.width ? " w" + v.width : "") + (v.headsIn ? " headsin" : "") + (v.lemon ? " lemon" : "") + (v.ring ? " ring" : "") + (v.segLemon ? " seg-lemon" : "") + (v.twocol && v.compact && (cur === "table" || cur === "options" || cur === "settings") ? " twocol" : "");
+  root.className = "sm nav-" + (v.nav || "tabs") + " sty-" + (v.sty || "today") + " pos-" + (v.pos || "center") + " ctl-" + (v.ctl || "radio") + (v.desc ? " hasdesc" : "") + (v.close === "in" ? " closein" : " closeout") + (v.title ? " titled" : "") + (v.dense ? " dense" : "") + (bd ? " bd-" + bd : "") + flags;
+  var h = '<div class="back"></div><div class="box">';
+  if (v.nav === "quick") {
+    h += '<div class="head"><span class="ttl">Settings</span>' + closeHTML({ close: "in" }) + '</div><div class="body">' + quickHTML(v, player) + '</div>';
+  } else if (v.nav === "drill") {
+    if (!cur) h += '<div class="head"><span class="ttl">' + esc(v.title || "Settings") + '</span>' + closeHTML({ close: "in" }) + '</div><div class="body">' + navHTML(v, pages, null) + '</div>';
+    else h += '<div class="head"><span class="bk" data-back="1"><svg viewBox="0 0 12 12" width="12" height="12"><path d="M8 1L3 6l5 5" fill="none" stroke="currentColor" stroke-width="2"/></svg></span><span class="ttl">' + esc(labelOf(cur, v)) + '</span>' + closeHTML({ close: "in" }) + '</div><div class="body">' + pageHTML(cur, v, player) + '</div>';
+  } else {
+    var side = v.nav === "side";
+    h += '<div class="head">' + (v.title ? '<span class="ttl">' + esc(v.title) + '</span>' : "") + (v.turnPill ? '<span class="turn"><i></i>Your turn <b>Back to the table</b></span>' : "") + (side ? "" : navHTML(v, pages, cur)) + closeHTML(v) + '</div>';
+    if (side) h += '<div class="cols">' + navHTML(v, pages, cur) + '<div class="body">' + pageHTML(cur, v, player) + '</div></div>';
+    else h += '<div class="body">' + pageHTML(cur, v, player) + '</div>';
+    if (v.pos === "sheet") h = h.replace('<div class="grab"></div><div class="head">', '<div class="head">').replace('<div class="head">', '<div class="grab"></div><div class="head">');
+  }
+  h += '</div>';
+  if (v.close !== "in" && v.nav !== "quick" && v.nav !== "drill") h = h.replace(closeHTML(v), "") + closeHTML(v);
+  root.innerHTML = h;
+  if (v.closeStyle) root.classList.add("close-" + v.closeStyle);
+  if (v.pt && v.pt !== "none" && lab.dir) { var nb = root.querySelector(":scope > .box > .body"); if (nb) nb.classList.add("enter", "pt-" + v.pt, "dir-" + lab.dir); lab.dir = null; }
+  root.querySelectorAll(".tab, .drill .row[data-page]").forEach(function (t) { t.addEventListener("click", function () {
+    var segEl = t.parentNode && t.parentNode.classList && t.parentNode.classList.contains("seg") ? t.parentNode : null;
+    if (segEl && t.classList.contains("sg") && !t.classList.contains("on") && v.r3) {
+      Array.prototype.forEach.call(segEl.querySelectorAll(".sg"), function (c) { c.classList.remove("on"); });
+      t.classList.add("on"); var copy = segEl.querySelector(":scope > .tcopy"); if (copy) { var i = Array.prototype.indexOf.call(segEl.querySelectorAll(":scope > .sg"), t); Array.prototype.forEach.call(copy.children, function (c, j) { c.classList.toggle("on", j === i); }); }
+      placeThumb(segEl, t, false);
+      var pagesNow = pagesFor(v), from = pagesNow.indexOf(cur), to = pagesNow.indexOf(t.getAttribute("data-page"));
+      lab.dir = to > from ? "right" : "left";
+      var body = root.querySelector(":scope > .box > .body"); if (body && v.pt && v.pt !== "none") body.classList.add("leaving", "pt-" + v.pt);
+      setTimeout(function () { lab.page = t.getAttribute("data-page"); lab.rerender(); }, 260);
+      return;
+    }
+    lab.page = t.getAttribute("data-page"); lab.rerender(); }); });
+  root.querySelectorAll(".bk").forEach(function (t) { t.addEventListener("click", function () { lab.page = null; lab.rerender(); }); });
+  root.querySelectorAll(".subseg > .sg").forEach(function (t, i) { t.addEventListener("click", function () { lab.lookPage = ["avatar", "wallpaper", "deck"][i]; if (v.r3) setTimeout(function () { lab.rerender(); }, 260); else lab.rerender(); }); });
+  root.querySelectorAll(".stab, .subplain .slink").forEach(function (t) { t.addEventListener("click", function () { lab.lookPage = t.getAttribute("data-sub"); lab.rerender(); }); });
+  root.querySelectorAll(".subjump .slink").forEach(function (t) { t.addEventListener("click", function () { var k = t.getAttribute("data-sub"), target = root.querySelector(k === "avatar" ? ".pk.avs" : (k === "wallpaper" ? ".pk.walls" : ".pk.decks")); if (target) target.closest(".sec").scrollIntoView({ behavior: "smooth", block: "start" }); }); });
+  requestAnimationFrame(function () { initSegs(root); placeClose(root); });
+  root.querySelectorAll(".sw, .ck").forEach(function (t) { t.addEventListener("click", function () { t.classList.toggle("on"); }); });
+  root.querySelectorAll(".sg").forEach(function (t) { t.addEventListener("click", function () { if (t.classList.contains("tab") || t.parentNode.classList.contains("tcopy")) return;
+    var segEl = t.parentNode, i = Array.prototype.indexOf.call(segEl.querySelectorAll(":scope > .sg"), t);
+    Array.prototype.forEach.call(segEl.querySelectorAll(":scope > .sg"), function (c, j) { c.classList.toggle("on", j === i); });
+    var copy = segEl.querySelector(":scope > .tcopy"); if (copy) Array.prototype.forEach.call(copy.children, function (c, j) { c.classList.toggle("on", j === i); });
+    placeThumb(segEl, t, false); }); });
+  root.querySelectorAll(".rd").forEach(function (t) { t.addEventListener("click", function () { var n = t.getAttribute("data-name"); root.querySelectorAll('.rd[data-name="' + n + '"]').forEach(function (c) { c.classList.remove("on"); }); t.classList.add("on"); }); });
+  root.querySelectorAll(".pi").forEach(function (t) { t.addEventListener("click", function () { Array.prototype.forEach.call(t.parentNode.children, function (c) { c.classList.remove("on"); }); t.classList.add("on"); }); });
+  return root;
+}
+/* ===== round three: one base box, and knobs in the chooser at the right (hover the bottom right) ===== */
+var FBTNS = [["original", "Today's: #FFE066, orange ink, 16% ring"], ["official", "Official (6 Sep 2026): flat #FFD75A, leather ink, 70% ring"]];
+var curFbtn = "official", curDesign = "current";
+var KN = { avborder: "bordered", avedge: "game1", page: "look", sub: "avatar", player: "guest", tabs: "traybig", heads: "cardabove", lines: "short", sw: "seg2", bd: "black64blur4", width: 640, dnav: "cardsflat", tiles: 88, rankname: "Leaderboards", guestrank: "grey", pt: "rise", rows: "tighter", names: "exact", ranknote: "headright", rankcols: "two12", xy: "edge", name: "Game", frame: "desk", cap: "off", modal: "on", close: "out", pad: 12, cardr: 16, trayc: "band" };
+var LAB = { player: "guest", page: "table", lookPage: "avatar", rerender: function () { show(); } };
+/* the avatars' folder: the files as they ship, or the copies with the faint border baked into the SVG (avatar-svg-lab.html, the softer set's row 13: a 2-unit centred stroke, black at 15%, on the parts; shading, ink and tiny shapes left alone) */
+function AVDIR() { return KN.avborder === "bordered" ? "game-assets/avatars-bordered/" : "game-assets/avatars/"; }
+/* knobs from the URL hash, e.g. #page=look,sub=avatar,avborder=bordered */
+(function () { var h = location.hash.replace(/^#/, ""); if (!h) return; h.split(",").forEach(function (t) { var kv = t.split("="); if (kv.length === 2 && KN.hasOwnProperty(kv[0])) KN[kv[0]] = isNaN(+kv[1]) || kv[1] === "" ? kv[1] : +kv[1]; }); })();
+function stageW() { return document.getElementById("stage").clientWidth; }
+function stageH() { return document.getElementById("stage").clientHeight; }
+
+var GROUP_NAMES = {
+  today: {},
+  exact: { "Help while you play": "Prompts and hints", "The cards": "Card layout", "Chat and friends": "Chat and notifications" },
+  short: { "Help while you play": "Messages", "The cards": "Cards", "Chat and friends": "Chat" },
+  warm: { "Help while you play": "Guidance", "The cards": "Hand and tricks", "Chat and friends": "Social" }
+};
+function specNow() {
+  var heads = KN.heads, sty = heads === "cardabove" || heads === "cardinside" ? "inset" : "paper";
+  return { r2: true, r3: true, nav: KN.tabs === "underline" ? "tabs" : "seg", tabsBig: KN.tabs === "traybig", sty: sty, headsIn: heads === "cardinside", heads: heads === "rowsnorule" ? "none" : "rule",
+    ctl: "seg", grp: "theme", close: KN.close === "out" || KN.close === "outround" ? "out" : "in", closeStyle: KN.close, title: "", desc: KN.lines === "short" ? "short" : (KN.lines === "long" ? true : false), descOnly: null, vitalWords: true, guestaware: true,
+    pages: ["table", "look", "account"], labels: { look: "Design", table: KN.name, account: "Account" }, lookSub: true, dnav: KN.dnav, tiles: KN.tiles, rankName: KN.rankname, rankLink: true, guestRank: KN.guestrank, pt: KN.pt, groupNames: GROUP_NAMES[KN.names], rankNote: KN.ranknote, look: "merged", legacyBottom: true,
+    sw: KN.sw, games: "list", people: "chevron", rankHonest: true, backdrop: KN.bd, narrowAll: true, width: KN.width === 640 ? null : KN.width, stats: false, wallGroups: true, allWalls: true,
+    pos: KN.frame === "phone" ? "sheet" : "center", phone: KN.frame === "phone", stack: KN.frame === "phone", compact: KN.frame === "compact", lookPage: KN.sub, pad: KN.pad, cardr: KN.cardr };
+}
+function applyBody() {
+  var cls = [curDesign === "original" ? "design-original" : "design-current"];
+  if (curDesign !== "original") cls.push("fbtn-" + curFbtn);
+  if (LAYOUT) { var g = LAYOUT.g; if (g.compact) cls.push("ps-compact"); if (g.small) cls.push("ps-small"); cls.push(g.portrait ? "ps-portrait" : "ps-landscape"); if (g.side) cls.push("ps-side"); if (g.adWidth === 160) cls.push("ad160"); }
+  if (KN.frame !== "desk") cls.push("frame-" + KN.frame);
+  if (KN.modal === "off" || curDesign === "original") cls.push("modal-off");
+  if (KN.cap === "off") cls.push("cap-off");
+  if (KN.avedge !== "game") cls.push("avedge-" + KN.avedge);
+  document.body.className = cls.join(" ");
+  var t = document.getElementById("design-toggle");
+  t.innerHTML = curDesign === "original" ? "Showing the table alone<small>click to show the settings box</small>" : "Showing the settings box<small>click to see the table alone</small>";
+}
+function show() {
+  var layer = document.getElementById("smLayer"), lastFrame = (document.body.className.match(/frame-\w+/) || ["frame-desk"])[0];
+  layer.innerHTML = "";
+  LAB.player = KN.player; LAB.page = KN.page; LAB.lookPage = KN.sub;
+  var who = PLAYERS[KN.player] || PLAYERS.guest, tableChanged = STATE.seats[0].name !== who.name;
+  STATE.user = { name: who.name, avatar: who.avatar }; STATE.seats[0].name = who.name; STATE.seats[0].avatar = who.avatar;
+  if (tableChanged) render();
+  var m = buildModal(specNow(), LAB);
+  if (KN.frame === "phone") m.classList.add("phone");
+  if (KN.pad !== 12) m.classList.add("pad" + KN.pad);
+  if (KN.cardr !== 16) m.classList.add("cardr" + KN.cardr);
+  if (KN.trayc !== "dark") m.classList.add("trayc-" + KN.trayc);
+  if (KN.trayc === "dark") m.classList.add("trayc-dark");
+  m.classList.add("rows-" + KN.rows, "rankcols-" + KN.rankcols, "xy-" + KN.xy);
+  layer.appendChild(m);
+  applyBody();
+  var nowFrame = (document.body.className.match(/frame-\w+/) || ["frame-desk"])[0];
+  if (nowFrame !== lastFrame) render();
+  document.getElementById("cap").innerHTML = '<div><span class="nm">Settings</span></div><div class="why">' + esc(capText()) + '</div>';
+}
+function capText() {
+  var w = { traybig: "the big tray as tabs", traysmall: "the small tray as tabs", underline: "underline tabs" }[KN.tabs];
+  var h = { cardabove: "cards with the head above", cardinside: "cards with the head inside", rows: "rows on the paper, heads on a rule", rowsnorule: "rows on the paper, no rule" }[KN.heads];
+  var cl = { out: "the white cross outside", outround: "a round button on the corner", in: "the cross in the tab row", inround: "a round button inside" }[KN.close];
+  var s = { seg2: "the tray itself as the on and off", slabtray: "a slab at the tray's size with the word", squircle: "a switch with the tray's corners", squircle8: "a switch with 8px corners", round: "a pill switch" }[KN.sw];
+  var b = { black64blur4: "black 64% with a 4px blur", blackblur: "black 45% with a 6px blur", blackblur60: "black 60% with an 8px blur", today: "black 64%, sharp" }[KN.bd];
+  return KN.name + " · Design · Account, " + w + ", " + cl + ", " + h + ", " + { short: "short lines where needed", none: "no lines", long: "the long lines" }[KN.lines] + ", " + s + ", " + b + ", " + KN.width + "px.";
+}
+/* the page select follows the LAB.page the tabs set */
+LAB.rerender = function () { KN.page = LAB.page || KN.page; KN.sub = LAB.lookPage || KN.sub; syncSelects(); show(); };
+/* the last knob changed, so z can flip it back and forth */
+var LASTKNOB = null;
+function buildSel(id, list, key, after) {
+  var el = document.getElementById(id); el.innerHTML = "";
+  list.forEach(function (x) { el.add(new Option(x[1], x[0])); });
+  el.value = String(KN[key]);
+  el.onchange = function () { var v = isNaN(+el.value) || el.value === "" ? el.value : +el.value; LASTKNOB = { key: key, id: id, prev: KN[key], next: v, after: after }; KN[key] = v; if (after) after(); show(); };
+}
+/* up and down: the next or previous option of the last knob changed (or of the select that has focus), the dropdown stays closed */
+function stepKnob(dir, focused) {
+  var el = focused || (LASTKNOB && document.getElementById(LASTKNOB.id));
+  if (!el) return;
+  var i = el.selectedIndex + dir; if (i < 0 || i >= el.options.length) return;
+  el.selectedIndex = i; el.onchange();
+}
+function flipLastKnob() {
+  if (!LASTKNOB) return;
+  KN[LASTKNOB.key] = KN[LASTKNOB.key] === LASTKNOB.next ? LASTKNOB.prev : LASTKNOB.next;
+  syncSelects(); if (LASTKNOB.after) LASTKNOB.after(); show();
+}
+function syncSelects() { ["avborder", "avedge", "page", "sub", "player", "tabs", "heads", "lines", "sw", "bd", "width", "dnav", "name", "frame", "cap", "modal", "close", "pad", "cardr"].forEach(function (k) { var el = document.getElementById("kn-" + k); if (el) el.value = String(KN[k]); }); }
+buildSel("kn-page", [["table", "Options"], ["look", "Design"], ["account", "Account"]], "page");
+buildSel("kn-avedge", [["game1", "The game's outline as one true 1px line (blur 1 cut at 1.0px out: measured 1.0 to 1.2px; round, the same width all round)"], ["game15", "The same line at 1.5px"], ["gamein", "The game's line inside the silhouette (1px, the shape does not grow)"], ["game", "The game's outline as today (four 1px shadows, which double up at the diagonals)"], ["front", "The frontpage's pair, solid: the 1px ring in solid #252525 and the inner rim at white 8%, no translucent shadow"], ["frontamb", "The frontpage's pair as on the frontpage: the rim at 8%, the ghost ring at 32%, its ambient shadow"]], "avedge", function () { applyBody(); });
+buildSel("kn-avborder", [["bordered", "The border in the SVG: black 15%, 2 units, on the seam wherever two materials meet, on the darker side"], ["plain", "As they ship today, no border"]], "avborder", function () { render(); });
+buildSel("kn-sub", [["avatar", "Avatar"], ["wallpaper", "Wallpaper"], ["deck", "Deck"]], "sub", function () { KN.page = "look"; syncSelects(); });
+buildSel("kn-player", [["guest", "A guest"], ["registered", "A registered player"], ["subscriber", "A subscriber (no ads)"], ["arkadium", "A guest in the Arkadium embed"]], "player");
+buildSel("kn-close", [["out", "Outside, the white cross (today)"], ["outround", "Outside, a white round button on the corner"], ["in", "Inside, at the end of the tab row"], ["inround", "Inside, a round button in the corner"]], "close");
+buildSel("kn-pad", [["12", "12px, as the front page tiles"], ["16", "16px"], ["20", "20px"]], "pad");
+buildSel("kn-cardr", [["16", "16px squircle"], ["12", "12px, the button's corner"], ["8", "8px, concentric with the box"]], "cardr");
+buildSel("kn-tabs", [["traybig", "The tray, big button size (32px)"], ["traysmall", "The tray, small (24px)"], ["underline", "Underline tabs"]], "tabs");
+buildSel("kn-heads", [["cardabove", "Cards, head above (3c)"], ["cardinside", "Cards, head inside (3d)"], ["rows", "Rows on the paper, head on a rule (3a)"], ["rowsnorule", "Rows on the paper, no rule (3b)"]], "heads");
+buildSel("kn-lines", [["short", "Short, only where needed"], ["none", "None"], ["long", "The long lines"]], "lines");
+buildSel("kn-sw", [["seg2", "The tray itself, On · Off (5d)"], ["slabtray", "A slab at the tray's size, the word inside (5g)"], ["squircle", "A switch with the tray's corners (5c)"], ["squircle8", "A switch, 8px track and 6px knob (5b)"], ["round", "A pill switch (5a)"]], "sw");
+buildSel("kn-bd", [["black64blur4", "Black 64%, 4px blur"], ["blackblur", "Black 45%, 6px blur"], ["blackblur60", "Black 60%, 8px blur"], ["today", "Black 64%, sharp"]], "bd");
+buildSel("kn-width", [["640", "640px"], ["600", "600px"], ["720", "720px"]], "width");
+buildSel("kn-dnav", [["cards", "Three containers, the groups as labels inside"], ["cardsflat", "Three containers, no groups"], ["underline", "Underline tabs: Avatar Wallpaper Deck"], ["plain", "A plain text row, the picked one bold"], ["tray", "A small tray under the big one"], ["stack", "Three sections stacked, with jump links"]], "dnav");
+buildSel("kn-name", [["Game", "Game (what lichess and cardgames.io call it)"], ["Options", "Options (the umbrella word, nobody's tab)"], ["Play", "Play"], ["Table", "Table"]], "name");
+buildSel("kn-frame", [["desk", "This window"], ["compact", "1024 by 700 (compact table)"], ["phone", "Phone, 390 by 844"]], "frame");
+buildSel("kn-cap", [["on", "Shown"], ["off", "Hidden"]], "cap");
+buildSel("kn-modal", [["on", "Shown"], ["off", "Hidden"]], "modal");
+document.getElementById("design-toggle").addEventListener("click", function () { curDesign = curDesign === "original" ? "current" : "original"; applyBody(); });
+(function () {
+  var bar = document.querySelector(".switchbar"), zone = document.querySelector(".switchzone"), handle = document.getElementById("swhandle");
+  zone.addEventListener("mouseenter", function () { bar.classList.add("isOpen"); });
+  handle.addEventListener("mouseenter", function () { bar.classList.add("isOpen"); });
+  handle.addEventListener("click", function () { bar.classList.toggle("isOpen"); });
+  document.addEventListener("mousedown", function (e) { if (!bar.contains(e.target) && !zone.contains(e.target) && !handle.contains(e.target)) bar.classList.remove("isOpen"); });
+})();
+var PUBLISHED = false;  /* the avatar lab: z and the arrows work on the last knob */
+document.addEventListener("keydown", function (e) {
+  if (PUBLISHED) return;
+  var tag = e.target && e.target.tagName;
+  if (/INPUT|TEXTAREA/.test(tag)) return;
+  if (tag === "SELECT" && e.key !== "z" && e.key !== "ArrowUp" && e.key !== "ArrowDown") return;   /* z and the arrows work right after picking in a select */
+  if (e.key === "z") e.preventDefault();
+  if (e.key === "m") { KN.modal = KN.modal === "on" ? "off" : "on"; syncSelects(); applyBody(); }
+  else if (e.key === "c") { KN.cap = KN.cap === "on" ? "off" : "on"; syncSelects(); applyBody(); }
+  else if (e.key === "z") { flipLastKnob(); }
+  else if (e.key === "ArrowUp" || e.key === "ArrowDown") { e.preventDefault(); stepKnob(e.key === "ArrowDown" ? 1 : -1, tag === "SELECT" ? e.target : null); }
+});
+/* the url can set any knob: ?page=look&sub=wallpaper&sw=slabtray&heads=rows */
+(function () {
+  location.search.slice(1).split("&").forEach(function (p) { var kv = p.split("="); if (kv[0] && kv[0] in KN && kv[1] !== undefined) KN[kv[0]] = isNaN(+kv[1]) ? decodeURIComponent(kv[1]) : +kv[1]; });
+  syncSelects();
+  render();
+  show();
+})();
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { render(); show(); });
+var resizeTimer = null;
+window.addEventListener("resize", function () { clearTimeout(resizeTimer); resizeTimer = setTimeout(function () { render(); show(); }, 60); });
+window.__settingsLab = { KN: KN, LAB: LAB, show: show, buildModal: buildModal, spec: specNow, get layout() { return LAYOUT; } };
+</script>
+</body>
+</html>
