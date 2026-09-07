@@ -2078,16 +2078,33 @@
   .sitefooter .social img { width: 100%; height: 100%; display: block; }
   .sitefooter .social > a:hover { opacity: 0.7; text-decoration: none; }
   /* the legal things always sit at the bottom (Holger, 7 September 2026): the footer's last section is a full-width row
-     under a hairline at every width, in small muted text, the links to the left, the partner note and the social icons at
-     the right end. Written against the section's position so it fits both the current footer and the grouped one in progress. */
-  .sitefooter footer > .footerSection:last-child { flex-basis: 100%; width: 100%; max-width: none; margin-top: -4px; padding-top: 14px; border-top: 1px solid var(--edge, #d2cfca); }
+     under a hairline at every width, in small muted text. The links and the partner note flow together from the left and
+     the social icons sit at the right end; when the footer is narrow the row's lines are centred and the icons flow with them.
+     Written against the section's position so it fits both the current footer and the grouped one in progress. */
+  .sitefooter footer > .footerSection:last-child { flex-basis: 100%; width: 100%; max-width: none; grid-column: 1 / -1; margin-top: -4px; padding-top: 14px; border-top: 1px solid var(--edge, #d2cfca); }
   .sitefooter footer > .footerSection:last-child > ul, .sitefooter footer > .footerSection:last-child > .adthrive-footer-message { display: flex; flex: 1 1 auto; width: 100%; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 2px 20px; font-size: 14px; line-height: 24px; color: var(--muted, #4e4d4c); }
   .sitefooter footer > .footerSection:last-child li:has(> strong) { display: none; } /* a row needs no "Legal" head */
-  .sitefooter footer > .footerSection:last-child .footerPartner, .sitefooter footer > .footerSection:last-child > .adthrive-footer-message > span { margin-left: auto; order: 8; font-weight: normal; color: #8a857c; }
-  .sitefooter footer > .footerSection:last-child .footerSocial, .sitefooter footer > .footerSection:last-child .social { order: 9; }
+  .sitefooter footer > .footerSection:last-child .footerPartner, .sitefooter footer > .footerSection:last-child > .adthrive-footer-message > span { order: 8; font-weight: normal; color: #8a857c; }
+  .sitefooter footer > .footerSection:last-child .footerSocial, .sitefooter footer > .footerSection:last-child .social { order: 9; margin-left: auto; }
   /* the icons8 set: the X and Facebook marks fill 36 of 48px, the YouTube mark only 32 tall, so it is scaled up to match; 6px between them */
   .sitefooter .social { display: flex; align-items: center; gap: 6px; margin: 0; width: max-content; }
   .sitefooter .social img[alt="YouTube"] { transform: scale(1.125); }
+  /* the link columns of the grouped footer as a grid: four across, two across once the footer is narrower than 620px
+     (the four columns need 607), one under 470px (the trick-taking group's two lists need 197). The steps key off the
+     footer's own width, since the ad rail can narrow it while the window is wide. */
+  .sitefooter .footer-basic { container-type: inline-size; }
+  .sitefooter footer:has(.footerGroup) { display: grid; grid-template-columns: repeat(4, auto); justify-content: space-between; gap: 24px; }
+  /* the legal row's one line needs about 930px (links, partner note, icons); below that its lines are centred and the icons flow with them */
+  @container (max-width: 940px) {
+    .sitefooter footer > .footerSection:last-child > ul, .sitefooter footer > .footerSection:last-child > .adthrive-footer-message { justify-content: center; }
+    .sitefooter footer > .footerSection:last-child .footerSocial, .sitefooter footer > .footerSection:last-child .social { margin-left: 0; }
+  }
+  @container (max-width: 620px) {
+    .sitefooter footer:has(.footerGroup) { grid-template-columns: repeat(2, minmax(0, 1fr)); justify-content: start; }
+  }
+  @container (max-width: 470px) {
+    .sitefooter footer:has(.footerGroup) { grid-template-columns: minmax(0, 1fr); }
+  }
   .sitefooter .footerRaptive .adthrive-footer-message { display: flex; flex-direction: column;
     font-size: 16px; line-height: 28px; }
   .sitefooter .footerRaptive .adthrive-footer-message > span { order: 1; font-weight: bold; }
