@@ -37,40 +37,39 @@ Status doc for the avatar work in this design repo (`Design/WoCG-3/`). Written 2
 - Other sessions own: `index.html` (modified), `open-tables-slide-lab.html` (modified), and the untracked `game-settings-lab-3.html`, `game-assets/avatars/`, `game-assets/cards|decks|live|ui|wallpapers/`, `game-button-lab.html`, `game-*-lab.html`, `game.html`, `GAME-*-STUDY.md`, `TEAM-COLOUR-STUDY.md`. Never commit, revert or clean them. `game-settings-lab-3.html` has my knob edits in it but stays uncommitted; a backup of it is at `/tmp/avstudy/game-settings-lab-3.backup.html`.
 - Mine, committed: `avatar-lab.html`, `avatar-lab/`, `avatar-svg-lab.html`, `AVATAR-STUDY.md`, `zz-tmp-build-avatar-*.py`, `game-assets/avatars-bordered/`, this file. Push after every commit.
 
-## 4. The generator as of v6 (commit 21c33a3)
+## 4. The generator as of v7 (commit a0fcffb and after)
 
-- Measures every filled shape by rendering each alone in a grid (one headless screenshot), records fill, area and bounding box.
-- Parts = shapes over 10 units (or over 6 units and near white, for teeth). Skipped: tiny, ink (L under .03), and "shade" (a shape wholly inside a bigger same-material shape's box).
-- Same material = CIELAB test (under 32 L apart, same hue within 16 degrees, chroma within half, greys by lightness) plus boxes overlapping 30%.
-- Output per part: the shape gets an id and its fill moves to a wrapper `<g fill>`; an inner line = `<use>` of the shape stroked 4 units, masked to the shape, with black dilated `<use>`s of its family and darker neighbours as stops; an outer band = 2-unit stroke masked to a darker neighbour under it, placed right after that neighbour.
-- Numbers: 2,178 inner, raw +133%, gzipped +22% (4.1 to 5.0 KB per file).
+`zz-tmp-build-avatar-borders.py`, usage `python3 zz-tmp-build-avatar-borders.py [--base] [names...]` (`--base` = the 189 files without `_win/_think/_lose`; the full set is 664 files and takes about four minutes). It writes `game-assets/avatars-bordered/*.svg` and `decisions.json` (per file, per part: its colour as seen in CIELAB and the runs along its outline with their decision and length in units).
 
-### Why v6 still fails (diagnosis for v7)
+How it decides, per file:
+1. One headless Chromium page (`/tmp/avstudy/v7/render/<file>.html` and `.png`) with three kinds of `<img>`: the drawing with every shape in a flat id colour (`shape-rendering="crispEdges"`, `--force-color-profile=srgb`, ids 8 levels apart so the screenshot's colour drift cannot merge two shapes), the drawing as it is, and every shape alone. 3 px per unit, 8 cells per row.
+2. The label map says which shape is visible at every pixel. The real render gives every shape's colour as seen (median of its interior pixels). The alone cells give every shape's full outline.
+3. Parts = filled shapes over 10 units (or over 6 and near white, for teeth), not ink (L under .03), not translucent, not line art.
+4. Each part's full outline is traced (`skimage.find_contours`); at every point: hidden (a later shape covers it), or the visible neighbour outside and the decision by the rules in section 5. Runs under 2 units merge into their longer neighbour; the rest become simplified polylines (tolerance 0.5 units).
+5. Output per part: the shape keeps its geometry once with `id="abN"` and its fill on a wrapper `<g fill>`; the inner line is `<use class="abl" href="#abN" mask="url(#amN)">` where the mask is the shape in white plus black cut polylines (class `abc`, 5 units wide, round caps) where the part does not own the line; the outer band is the same stroke masked to white polylines (class `abk`) minus the shape in black. Both sit right after the shape so later shapes cover them. One `<style>` in the head defines the three classes.
 
-Everything in v6 is decided from bounding boxes and draw order, never from what is actually visible:
-- Blonde hair (L about 86) beside light skin (L 84) is under the 6 L "darker" threshold in both directions, and the hair is often drawn under the face, so neither side gets a line.
-- The stops are the neighbour's whole geometry dilated, hidden parts included, so a lock of hair that runs under another lock cuts the visible lock's line: "only some of the hair gets a border".
-- "Shade" is a box test, so a lock inside the big hair's box is skipped even where it lies over the face.
+Numbers for the base set: 2,370 bordered parts, 1,072 with outer bands, raw +51%, gzipped +23% (4.6 to 5.7 KB per file).
 
-## 5. The plan for v7 (in progress in this session)
+Why v6 failed, for the record: it decided from bounding boxes and draw order, never from what was visible. Blonde beside light skin fell under its 6 L "darker" threshold in both directions; stops were a neighbour's whole geometry dilated, hidden parts included, so a lock under another lock cut the visible lock's line; "shade" was a box test.
 
-Decide from a label map, not boxes: render the avatar once with every shape in a unique flat id colour (`shape-rendering="crispEdges"`, no anti-aliasing, 4 px per unit), and once for real to sample each shape's effective colour. Then every visible edge between two shapes is known pixel by pixel, with the top shape (the one whose outline forms the edge) and the shape under it.
+## 5. The rules (as implemented in `owner()` and `analyse()`)
 
-Rules per visible edge between a and b:
-1. Background on one side: the piece keeps its inner line (the silhouette line; the coat sits outside it).
-2. Same material (the CIELAB test): no line.
-3. Lightness apart by more than a threshold (about 18 L): the line goes on the darker side.
-4. Otherwise the line goes on the more saturated side (blonde beside skin, yellow shirt beside skin); if neither is clearly more saturated, on the piece on top.
-5. Encoding: the line always follows the top piece's outline. Owner = top piece: its inner line, masked to the piece, with black cut polylines in the mask where the owner is someone else. Owner = the piece under: an outer band, the top piece's stroke outside the piece, masked to white polylines along those segments. Polylines come from the traced contour of the visible region, simplified; in the piece's own user space (undo ancestor transforms, which exist in the emotion files).
-6. Both lines 2 units, black 15%. Placed right after the piece so later shapes cover them.
+Per visible edge between a part and its neighbour:
+1. Background (the silhouette): the part keeps its inner line, except a near-white grey (L over 85, chroma under 10: white hair, a white shirt) which gets no grey line inside itself. The coat outside does the silhouette.
+2. Same material (`same_material`: both greys within 20 L; otherwise under 32 L apart, hue within 16 degrees, chroma within half): no line.
+3. One grey (chroma under 10), one coloured: the coloured side owns the line, unless the grey is darker by more than 18 L.
+4. Both coloured or both grey, more than 18 L apart: the darker side.
+5. Otherwise the more saturated side (chroma apart by more than 8); failing that the piece drawn on top.
+6. Placement: the line follows the top piece's outline; owner = top piece gives its inner line, owner = the piece under gives an outer band from the top piece's outline onto it (white hair onto the face, teeth onto the mouth). Hidden outline gets nothing. Neighbours that are tiny (under 6 units) count as background.
 
-Verification: contact sheets of every base avatar (plain beside bordered) at 112 px on the felt, and a judge pass against the rules above.
+Thresholds are the constants at the top of the script: `T_L, T_C, T_GREY = 18, 8, 10`, `MIN_DIM, MIN_RUN, TOL = 10, 2.0, 0.5`, `W, OP, CUT = 4, 0.15, 5`.
 
-## 6. The outline (coat) work pending
+## 6. The outline (coat), done in the settings lab on 7 Sept
 
-- `game1` (`#avatarLine1` in the settings lab): blur 0.55 + threshold reaches only about 0.75 px outside the silhouette. Fix: stdDeviation 1.0 and a threshold at the alpha of 1.0 px (about 0.16), verified by measuring the ring on a rendered disc at DPR 1 and 2.
-- `front`: replace the four 32% drop-shadows with a solid 1px ring (same recipe, inked `#252525`) and keep the 8% white inner rim.
-- Both live only in `game-settings-lab-3.html` (uncommitted, other session's file). If Holger picks one, the shipping version goes into `_variables.scss` / `body_open.dust` in the app repo as `AVATAR-STUDY.md` section 11 describes.
+- `game1` (`#avatarLine1`): blur 1.0 and a cut at alpha 0.16 (1.0 px outside the silhouette). Measured on a rendered disc: the old 0.55 blur gave a 0.6 px ring; this gives 1.0 to 1.2 px at DPR 1 and 2 (`/tmp/avstudy/ring/test.py`).
+- `game15` (`#avatarLine15`): the same at 1.5 px, for the "bigger" comparison.
+- `front` (`#avatarPairSolid`): the solid pair: the 1 px ring in solid `#252525` under the art, the 1 px inner rim at white 8% over it, no translucent shadows. `frontamb` keeps the frontpage's translucent pair with its ambient.
+- All in `game-settings-lab-3.html` only (uncommitted, other session's file). If Holger picks one, the shipping version goes into `_variables.scss` / `body_open.dust` in the app repo as `AVATAR-STUDY.md` section 11 describes.
 
 ## 7. Open questions for Holger
 
