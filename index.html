@@ -2077,17 +2077,17 @@
   .sitefooter .social > a { width: 24px; height: 24px; display: inline-block; }
   .sitefooter .social img { width: 100%; height: 100%; display: block; }
   .sitefooter .social > a:hover { opacity: 0.7; text-decoration: none; }
-  /* footer at narrow widths (7 September 2026): the last column stops fitting beside the others when the footer's
-     own width drops under about 810px (the five sections plus four 24px gaps and 48px padding). That happens both
-     in a narrow window and in a wider one where the ad rail takes 328px, so the rule keys off the footer's width
-     (a container query on the wrapper), not the viewport. Instead of wrapping alone into a row of its own the last
-     column becomes the usual legal row: one full-width line under a hairline. */
-  .sitefooter .footer-basic { container-type: inline-size; }
-  @container (max-width: 820px) {
-    .sitefooter footer { row-gap: 18px; }
-    .sitefooter footer > .footerSection:last-child { flex-basis: 100%; width: 100%; max-width: none; padding-top: 16px; border-top: 1px solid var(--edge, #d2cfca); }
-    .sitefooter footer > .footerSection:last-child > ul, .sitefooter footer > .footerSection:last-child > .adthrive-footer-message { display: flex; flex-direction: row; flex-wrap: wrap; align-items: baseline; gap: 2px 24px; }
-  }
+  /* the legal things always sit at the bottom (Holger, 7 September 2026): the footer's last section is a full-width row
+     under a hairline at every width, in small muted text, the links to the left, the partner note and the social icons at
+     the right end. Written against the section's position so it fits both the current footer and the grouped one in progress. */
+  .sitefooter footer > .footerSection:last-child { flex-basis: 100%; width: 100%; max-width: none; margin-top: -4px; padding-top: 14px; border-top: 1px solid var(--edge, #d2cfca); }
+  .sitefooter footer > .footerSection:last-child > ul, .sitefooter footer > .footerSection:last-child > .adthrive-footer-message { display: flex; flex: 1 1 auto; width: 100%; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 2px 20px; font-size: 14px; line-height: 24px; color: var(--muted, #4e4d4c); }
+  .sitefooter footer > .footerSection:last-child li:has(> strong) { display: none; } /* a row needs no "Legal" head */
+  .sitefooter footer > .footerSection:last-child .footerPartner, .sitefooter footer > .footerSection:last-child > .adthrive-footer-message > span { margin-left: auto; order: 8; font-weight: normal; color: #8a857c; }
+  .sitefooter footer > .footerSection:last-child .footerSocial, .sitefooter footer > .footerSection:last-child .social { order: 9; }
+  /* the icons8 set: the X and Facebook marks fill 36 of 48px, the YouTube mark only 32 tall, so it is scaled up to match; 6px between them */
+  .sitefooter .social { display: flex; align-items: center; gap: 6px; margin: 0; width: max-content; }
+  .sitefooter .social img[alt="YouTube"] { transform: scale(1.125); }
   .sitefooter .footerRaptive .adthrive-footer-message { display: flex; flex-direction: column;
     font-size: 16px; line-height: 28px; }
   .sitefooter .footerRaptive .adthrive-footer-message > span { order: 1; font-weight: bold; }
@@ -4052,11 +4052,6 @@
             <li class="list-inline-item"><a href="/world-of-card-games-privacy-policy">Privacy Policy</a></li>
             <li class="list-inline-item"><a href="/community-guidelines">Community Guidelines</a></li>
             <li class="list-inline-item tosSocial"><a href="/world-of-card-games-terms-of-use">ToS</a>
-              <div class="social">
-                <a href="https://x.com/WorldOfCardGamz"><img src="icons8-x-48.png" alt="X" loading="lazy" width="24" height="24"></a>
-                <a href="https://www.facebook.com/WorldOfCardGames/"><img src="icons8-facebook-48.png" alt="Facebook" loading="lazy" width="24" height="24"></a>
-                <a href="https://www.youtube.com/c/Worldofcardgames"><img src="icons8-youtube-48.png" alt="YouTube" loading="lazy" width="24" height="24"></a>
-              </div>
             </li>
           </ul>
         </div>
@@ -4065,6 +4060,11 @@
             <div class="adthrive-privacy-preferences"><a href="#">Update Privacy Preferences</a></div>
             <div class="raptive-content-terms-footer"><a href="#" class="raptive-content-terms-footer-link">Terms of Content Use</a></div>
             <span>A Raptive Partner Site</span>
+            <div class="social">
+                <a href="https://x.com/WorldOfCardGamz"><img src="icons8-x-48.png" alt="X" loading="lazy" width="24" height="24"></a>
+                <a href="https://www.facebook.com/WorldOfCardGames/"><img src="icons8-facebook-48.png" alt="Facebook" loading="lazy" width="24" height="24"></a>
+                <a href="https://www.youtube.com/c/Worldofcardgames"><img src="icons8-youtube-48.png" alt="YouTube" loading="lazy" width="24" height="24"></a>
+              </div>
           </div>
         </div>
       </footer>
