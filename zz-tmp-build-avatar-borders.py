@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """The faint border on every avatar (avatar-svg-lab.html, the softer set's row 13), as a rule:
    a 2-unit centred stroke, black at 15%, on the PARTS of each drawing. Skipped: tiny shapes (under 10 units:
-   eyes, dots, marks), the ink (fills darker than L .03), and SHADING (a shape whose fill is a near tone,
-   under 1.35:1 but not identical, of a bigger shape of the same hue that contains it).
+   eyes, dots, marks), the ink (fills darker than L .03), and SHADING: near-tone shapes (under 1.5:1, the same hue)
+   that overlap are one material (a base with its shadows and highlights), and only the largest of them is stroked,
+   so the lines fall where one material meets another (face and hair, cloth and body), not inside a material.
    Reads game-assets/avatars/*.svg, measures every filled shape by rendering it alone (one headless Chromium
    screenshot for the whole set), writes game-assets/avatars-bordered/*.svg and a decisions.json next to them.
    The same rule for a Lottie file is lottie_strokes() in zz-tmp-build-avatar-svg-soft.py."""
@@ -73,21 +74,32 @@ def measure(files):
     return by
 
 def decide(els):
+    """stroke the PARTS: near-tone shapes that overlap (a base, its shadows and highlights) are one material family,
+       and only the family's largest shape gets the stroke; the eyes, dots and marks (under 10 units) and the ink stay bare"""
     dec = {}
+    live = [e for e in els if e["area"] > 0 and max(e["x1"] - e["x0"], e["y1"] - e["y0"]) >= 10 and lum(e["fill"]) >= 0.03]
     for e in els:
-        if e["area"] == 0 or max(e["x1"] - e["x0"], e["y1"] - e["y0"]) < 10: dec[e["i"]] = "tiny"; continue
-        if lum(e["fill"]) < 0.03: dec[e["i"]] = "ink"; continue
-        hs, ss = hue(e["fill"]); shade = False
-        for t in els:
-            if t is e or t["area"] <= e["area"] * 1.2: continue
-            r = ratio(e["fill"], t["fill"])
-            if r >= 1.35 or r < 1.02: continue            # a different tone, but near: shading. Identical: a part.
-            ht, st = hue(t["fill"])
-            if ss > 0.08 and st > 0.08 and hdiff(hs, ht) > 30: continue
-            ix = max(0, min(e["x1"], t["x1"] + 4) - max(e["x0"], t["x0"] - 4)); iy = max(0, min(e["y1"], t["y1"] + 4) - max(e["y0"], t["y0"] - 4))
-            ea = max(1, (e["x1"] - e["x0"]) * (e["y1"] - e["y0"]))
-            if ix * iy / ea >= 0.8: shade = True; break
-        dec[e["i"]] = "shade" if shade else "stroke"
+        if e not in live: dec[e["i"]] = "ink" if (e["area"] > 0 and lum(e["fill"]) < 0.03) else "tiny"
+    parent = {id(e): id(e) for e in live}
+    def find(x):
+        while parent[x] != x: parent[x] = parent[parent[x]]; x = parent[x]
+        return x
+    def same_material(a, b):
+        r = ratio(a["fill"], b["fill"])
+        if r >= 1.5: return False
+        ha, sa = hue(a["fill"]); hb, sb = hue(b["fill"])
+        if sa > 0.12 and sb > 0.12 and hdiff(ha, hb) > 40: return False
+        ix = max(0, min(a["x1"], b["x1"]) - max(a["x0"], b["x0"])); iy = max(0, min(a["y1"], b["y1"]) - max(a["y0"], b["y0"]))
+        small = min(max(1, (a["x1"] - a["x0"]) * (a["y1"] - a["y0"])), max(1, (b["x1"] - b["x0"]) * (b["y1"] - b["y0"])))
+        return ix * iy / small >= 0.4
+    for i, a in enumerate(live):
+        for b in live[i + 1:]:
+            if same_material(a, b): parent[find(id(a))] = find(id(b))
+    families = {}
+    for e in live: families.setdefault(find(id(e)), []).append(e)
+    for fam in families.values():
+        base = max(fam, key=lambda e: e["area"])
+        for e in fam: dec[e["i"]] = "stroke" if e is base else "shade"
     return dec
 
 def write(f, dec):
