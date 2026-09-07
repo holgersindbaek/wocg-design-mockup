@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-"""The faint border on every avatar, as a rule: a 2-unit INNER border, black at 15%, on every PART of the drawing
-   (a stroked reference to the shape, masked to the shape), an OUTER border on the teeth (small near-white shapes low
-   in the face, stroked under the shape), and no border between a part and its own shades. Skipped: tiny shapes (under 10 units:
+"""The faint border on every avatar, as a rule: a 2-unit border, black at 15%, on the DARKER side of every edge
+   where one material meets another. Each part gets an inner border (a stroked reference to the shape, masked to the
+   shape) that stops short of its own shades and of lighter neighbours, and an outer band on its darker neighbours
+   (so white hair edges onto the face, teeth onto the mouth). No line ever falls between two tones of one material. Skipped: tiny shapes (under 10 units:
    eyes, dots, marks), the ink (fills darker than L .03), and SHADING: overlapping shapes whose colours differ only
    in lightness (the same Lab hue within 16 degrees, a similar chroma, under 32 L apart) are one material, a base with
    its shadows and highlights, and only the largest of them is stroked; a change of hue or chroma (grey hair beside
@@ -86,22 +87,25 @@ def measure(files):
     return by
 
 def decide(els):
-    """per shape: 'in' (an inner border: a part), 'out' (an outer border: the teeth), 'shade', 'tiny' or 'ink';
-       families: overlapping shapes of one material (the same Lab hue and chroma, lightness apart) share one border,
-       drawn on the family's largest member and masked away where it meets the others"""
-    dec = {}; fam_of = {}
+    """per shape: 'in' (bordered), 'shade' (a member of a family that lies wholly inside another member: no edge of its
+       own), 'tiny' or 'ink'; and for every bordered part what shapes its border:
+       same  = overlapping members of its material family (its line stops 2 units short of them: no line between tones),
+       darker = overlapping neighbours of another material that are darker (its line stops short of them: the line belongs
+              on the darker side), onto = those darker neighbours that lie UNDER it in draw order (it paints an outer band
+              on them, drawn right after the neighbour, so a light piece on a dark one, white hair on a face, edges outward)"""
+    dec = {}; info = {}
     live = [e for e in els if e["area"] > 0 and lum(e["fill"]) >= 0.03]
-    ys = [e["y1"] for e in live] or [160]; ytop = min(e["y0"] for e in live) if live else 0; ybot = max(ys)
     def dim(e): return max(e["x1"] - e["x0"], e["y1"] - e["y0"])
-    teeth = [e for e in live if lab(e["fill"])[0] > 92 and 6 <= dim(e) < 30 and (e["y0"] + e["y1"]) / 2 > ytop + 0.55 * (ybot - ytop)]
-    parts = [e for e in live if dim(e) >= 10 and e not in teeth]
+    parts = [e for e in live if dim(e) >= 10 or (dim(e) >= 6 and lab(e["fill"])[0] > 92)]
     for e in els:
-        if e in teeth: dec[e["i"]] = "out"
-        elif e not in parts: dec[e["i"]] = "ink" if (e["area"] > 0 and lum(e["fill"]) < 0.03) else "tiny"
-    parent = {id(e): id(e) for e in parts}
-    def find(x):
-        while parent[x] != x: parent[x] = parent[parent[x]]; x = parent[x]
-        return x
+        if e not in parts: dec[e["i"]] = "ink" if (e["area"] > 0 and lum(e["fill"]) < 0.03) else "tiny"
+    def overlap(a, b, pad):
+        ix = max(0, min(a["x1"], b["x1"] + pad) - max(a["x0"], b["x0"] - pad)); iy = max(0, min(a["y1"], b["y1"] + pad) - max(a["y0"], b["y0"] - pad))
+        small = min(max(1, (a["x1"] - a["x0"]) * (a["y1"] - a["y0"])), max(1, (b["x1"] - b["x0"]) * (b["y1"] - b["y0"])))
+        return ix * iy / small
+    def inside(a, b, m):
+        """a's box lies inside b's box shrunk by m"""
+        return a["x0"] >= b["x0"] + m and a["x1"] <= b["x1"] - m and a["y0"] >= b["y0"] + m and a["y1"] <= b["y1"] - m
     def same_material(a, b):
         La, Aa, Ba, Ca, Ha = lab(a["fill"]); Lb, Ab, Bb, Cb, Hb = lab(b["fill"])
         if abs(La - Lb) > 32: return False
@@ -110,55 +114,66 @@ def decide(els):
         else:
             if hdiff(Ha, Hb) > 16: return False
             if abs(Ca - Cb) / max(Ca, Cb) > 0.5: return False
-        ix = max(0, min(a["x1"], b["x1"]) - max(a["x0"], b["x0"])); iy = max(0, min(a["y1"], b["y1"]) - max(a["y0"], b["y0"]))
-        small = min(max(1, (a["x1"] - a["x0"]) * (a["y1"] - a["y0"])), max(1, (b["x1"] - b["x0"]) * (b["y1"] - b["y0"])))
-        return ix * iy / small >= 0.3
+        return overlap(a, b, 0) >= 0.3
+    parent = {id(e): id(e) for e in parts}
+    def find(x):
+        while parent[x] != x: parent[x] = parent[parent[x]]; x = parent[x]
+        return x
     for i, a in enumerate(parts):
         for b in parts[i + 1:]:
             if same_material(a, b): parent[find(id(a))] = find(id(b))
-    families = {}
-    for e in parts: families.setdefault(find(id(e)), []).append(e)
-    for fam in families.values():
-        base = max(fam, key=lambda e: e["area"])
-        for e in fam:
-            dec[e["i"]] = "in" if e is base else "shade"
-            fam_of[e["i"]] = [x["i"] for x in fam if x is not e]
-    return dec, fam_of
+    for p in parts:
+        fam = [q for q in parts if q is not p and find(id(q)) == find(id(p))]
+        if any(q["area"] > p["area"] and inside(p, q, 2) for q in fam): dec[p["i"]] = "shade"; continue
+        dec[p["i"]] = "in"
+        Lp = lab(p["fill"])[0]
+        same = [q["i"] for q in fam if overlap(p, q, 2) > 0]
+        darker, onto = [], []
+        for q in parts:
+            if q is p or q in fam or overlap(p, q, 2) < 0.05: continue
+            if lab(q["fill"])[0] < Lp - 6:
+                darker.append(q["i"])
+                if q["i"] < p["i"]: onto.append(q["i"])
+        info[p["i"]] = {"same": same, "darker": darker, "onto": onto}
+    return dec, info
 
-def write(f, dec, fam_of):
-    """the shape keeps its geometry once, with an id and its fill on a wrapper; the border is a <use> of it:
-       inner = a 4-unit stroke on the reference, masked to the shape (and away from its own shades);
-       outer (teeth) = a 2-unit stroke on the reference drawn under the shape"""
+def write(f, dec, info):
+    """the shape keeps its geometry once (an id, its fill on a wrapper); its borders are <use> references to it:
+       the inner line = a 4-unit stroke masked to the shape, minus its family and its darker neighbours (dilated 2 units);
+       the outer band = a 2-unit stroke masked to a darker neighbour under it, placed right after that neighbour"""
     s = open(SRC + f).read(); head, body = split(s); styles = styles_of(s)
     els = EL.findall(body); nb = body
+    fills = {i: fill_of(e, styles) for i, e in enumerate(els)}
+    def has_opacity(e):
+        c = re.search(r'class="([^"]+)"', e); return bool(c and "opacity" in styles.get(c.group(1), ""))
+    bordered = {i for i, e in enumerate(els) if dec.get(i) == "in" and fills[i] and not has_opacity(e)}
+    bands = {}
+    for i in bordered:
+        for n in info[i]["onto"]:
+            bands.setdefault(n, []).append('<mask id="ao%d_%d" maskUnits="userSpaceOnUse" x="0" y="0" width="160" height="160"><use href="#ab%d" fill="#fff"/></mask>' % (i, n, n) +
+                '<use href="#ab%d" fill="none" stroke="#000" stroke-opacity="%s" stroke-width="%s" stroke-linejoin="round" mask="url(#ao%d_%d)"/>' % (i, OP, W, i, n))
+    referenced = set(bands) | {k for i in bordered for k in info[i]["same"] + info[i]["darker"]}
     for i, e in enumerate(els):
-        d = dec.get(i)
-        if d not in ("in", "out", "shade"): continue
-        fill = fill_of(e, styles)
-        if not fill: continue
-        c = re.search(r'class="([^"]+)"', e)
-        if c and "opacity" in styles.get(c.group(1), ""): continue
-        core = re.sub(r'\s(id|class)="[^"]*"', "", e)
-        core = core[:-2] + ' id="ab%d"/>' % i
-        shape = '<g fill="%s">' % fill + core + '</g>'
-        if d == "shade": rep = shape
-        elif d == "out":
-            rep = '<use href="#ab%d" fill="none" stroke="#000" stroke-opacity="%s" stroke-width="%s" stroke-linejoin="round"/>' % (i, OP, W) + shape
-        else:
-            others = "".join('<use href="#ab%d" fill="#000" stroke="#000" stroke-width="%s" stroke-linejoin="round"/>' % (k, W * 2) for k in fam_of.get(i, []))
-            mask = '<mask id="am%d" maskUnits="userSpaceOnUse" x="0" y="0" width="160" height="160"><use href="#ab%d" fill="#fff"/>%s</mask>' % (i, i, others)
-            rep = shape + mask + '<use href="#ab%d" fill="none" stroke="#000" stroke-opacity="%s" stroke-width="%s" stroke-linejoin="round" mask="url(#am%d)"/>' % (i, OP, W * 2, i)
+        if not fills[i] or (i not in bordered and i not in referenced): continue
+        core = re.sub(r'\s(id|class)="[^"]*"', "", e)[:-2] + ' id="ab%d"/>' % i
+        shape = '<g fill="%s">' % fills[i] + core + '</g>'
+        rep = shape
+        if i in bordered:
+            stops = "".join('<use href="#ab%d" fill="#000" stroke="#000" stroke-width="%s" stroke-linejoin="round"/>' % (k, W * 2) for k in info[i]["same"] + info[i]["darker"])
+            rep += '<mask id="am%d" maskUnits="userSpaceOnUse" x="0" y="0" width="160" height="160"><use href="#ab%d" fill="#fff"/>%s</mask>' % (i, i, stops)
+            rep += '<use href="#ab%d" fill="none" stroke="#000" stroke-opacity="%s" stroke-width="%s" stroke-linejoin="round" mask="url(#am%d)"/>' % (i, OP, W * 2, i)
+        rep += "".join(bands.get(i, []))
         nb = nb.replace(e, rep, 1)
     open(OUT + f, "w").write(head + nb)
 
 if __name__ == "__main__":
     files = sorted(f for f in os.listdir(SRC) if f.endswith(".svg"))
     by = measure(files)
-    decisions = {}; counts = {"in": 0, "out": 0, "shade": 0, "tiny": 0, "ink": 0}
+    decisions = {}; counts = {"in": 0, "shade": 0, "tiny": 0, "ink": 0}
     for f in files:
-        dec, fam_of = decide(by.get(f, [])); decisions[f] = dec
+        dec, info = decide(by.get(f, [])); decisions[f] = {"roles": dec, "borders": info}
         for v in dec.values(): counts[v] += 1
-        write(f, dec, fam_of)
+        write(f, dec, info)
     json.dump(decisions, open(OUT + "decisions.json", "w"), indent=0)
     grow = [(os.path.getsize(SRC + f), os.path.getsize(OUT + f)) for f in files]
     print("files", len(files), counts, "size +%d bytes, mean +%.1f%%" % (sum(b - a for a, b in grow), 100 * sum(b / a - 1 for a, b in grow) / len(grow)))
