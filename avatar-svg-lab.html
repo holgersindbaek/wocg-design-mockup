@@ -59,6 +59,7 @@
   .parts { display: flex; gap: 10px; flex-wrap: wrap; margin: 8px 0 18px; }
   .parts div { font-size: 11.5px; color: #6f6b62; text-align: center; }
   .parts svg { display: block; width: 96px; height: 96px; background: #fff; box-shadow: inset 0 0 0 1px #e6e0d6; margin-bottom: 3px; }
+  .lt svg { display: block; filter: drop-shadow(1px 0 #252525) drop-shadow(-1px 0 #252525) drop-shadow(0 1px #252525) drop-shadow(0 -1px #252525); }
 </style>
 </head>
 <body class="ol-frontpage">
@@ -106,7 +107,19 @@
 <pre>&lt;path id="Shape" class="cls-2" d="…"/&gt;
 &lt;clipPath id="ib18"&gt;&lt;path d="…"/&gt;&lt;/clipPath&gt;
 &lt;path d="…" fill="none" stroke="#911616" stroke-width="4" stroke-linejoin="round" clip-path="url(#ib18)"/&gt;</pre>
-<p><b>Cost.</b> The file grows by the bordered shapes' path data: 19.4 KB today, 36.4 KB with the three borders (row 4), 44.4 KB for the works (row 11), 52.5 KB for the rule (row 12). Gzip halves the difference. Each avatar has a base SVG, three emotion SVGs and three Lottie JSONs: the SVG edit is a script pass over four files, targeting shapes by fill and size rather than by index; the Lottie side has no inset stroke (a stroke with a track matte per shape), so during the two seconds of a win, think or lose animation the face would show without its borders unless the Lottie files are re-exported with matched stroke layers. At 1.2px the flip is small; it is still a flip.</p>
+<p><b>Cost.</b> The file grows by the bordered shapes' path data: 19.4 KB today, 36.4 KB with the three borders (row 4), 44.4 KB for the works (row 11), 52.5 KB for the rule (row 12). Gzip halves the difference. Each avatar has a base SVG, three emotion SVGs and three Lottie JSONs: the SVG edit is a script pass over four files, targeting shapes by fill and size rather than by index; the Lottie side has no inset stroke (that would need a track matte per shape), so an inset border would drop out for the two seconds of a win, think or lose animation. The plain centred stroke (rows 12 and 13 of the softer set) has no such problem: the next section adds it to the three Lottie files by script and plays them.</p>
+
+<h2>Does it survive the animation?</h2>
+<p>Each avatar also has three Lottie files (win, think, lose; 1600 by 1600, 60fps, 54 to 70 KB each). They are built from the same shapes: the paths sit in the drawing's own 160-unit space and the layers scale them ten times; every fill is the same hex as in the SVG. So a script can find the same parts by fill colour and add a stroke item to each shape group: <code>{"ty":"st","c":{"k":[0,0,0,1]},"o":{"k":15},"w":{"k":2},"lc":2,"lj":2}</code>, width 2 in the drawing's units (the layer scale makes it 20 in the composition, 1.2px at 96), skipping shapes under 10 units (the snapback dots and seams, as in the SVG). That is what row 12 and 13 do in the SVG, so the still and the animation match. The player below is the site's own <code>lottie_light.min.js</code>; the three files were edited by that script and played through it: the win file gained 15 strokes and 1.9 KB (+2.7%), think 11 strokes and 1.4 KB (+2.6%), lose 13 strokes and 1.7 KB (+2.4%). The inset form (rows 2 to 11) cannot be carried into Lottie without a matte layer per shape, which is why the plain stroke is the one to ship if the borders must survive the emotions.</p>
+<div class="stage" style="--g-img:url('green-felt.jpg');--g-size:100px 100px;--g-color:#1e5c1d;display:flex;flex-direction:row;gap:28px;align-items:flex-end;max-width:760px">
+  <div><div class="lt" id="lt-orig" style="width:144px;height:144px"></div><div style="font-size:11px;color:rgba(255,255,255,.7);text-align:center">win, as it ships</div></div>
+  <div><div class="lt" id="lt-win" style="width:144px;height:144px"></div><div style="font-size:11px;color:rgba(255,255,255,.7);text-align:center">win, stroked</div></div>
+  <div><div class="lt" id="lt-think" style="width:144px;height:144px"></div><div style="font-size:11px;color:rgba(255,255,255,.7);text-align:center">think, stroked</div></div>
+  <div><div class="lt" id="lt-lose" style="width:144px;height:144px"></div><div style="font-size:11px;color:rgba(255,255,255,.7);text-align:center">lose, stroked</div></div>
+  <div><div class="lt" id="lt-win48" style="width:48px;height:48px"></div><div style="font-size:11px;color:rgba(255,255,255,.7);text-align:center">48px</div></div>
+</div>
+<p>A still of the same test (three frames of win, then think and lose), in case the player is blocked: <a href="avatar-lab/lottie-strokes.png">avatar-lab/lottie-strokes.png</a>.</p>
+<p><b>Can a script do this to all 158 avatars reliably?</b> Yes, for the plain stroke: the rule is mechanical (find fills by colour or by size, add a stroke item, skip tiny shapes and the eyes), it touches no path data, and the same rule runs on the base SVG, the three emotion SVGs and the three Lottie JSONs, so the seven files stay in step. The judgement calls are per pack, not per file: which fills count as parts (the cap, the shirt) and which are shading (the face's shade band, a blush), because a stroke on a shade band draws a line down the cheek (row 12 of the first section shows it). A skip list per pack of shade colours, or a rule that skips a shape whose fill is within 1.3:1 of the shape under it, handles that; a human should look at each pack's sheet once. Size: about +4% per SVG and +2.5% per Lottie file with the plain stroke; the inset form costs +120% per SVG and does not reach Lottie at all.</p>
 
 <h2>What else could be done to the drawing</h2>
 <ol>
@@ -124,6 +137,7 @@
 </ol>
 
 <h2>The pick</h2>
+<p><b>Third round, on Holger's steer to build on row 2 of the softer set (black at 15%):</b> row 13, the plain stroke on the cap, the beard, the shirt and the collar with the deeper beard. It is the cheapest form (a stroke attribute, +0.85 KB), the one the Lottie files can carry, and its outer half gives the faint cast shadow on the forehead and the neck that the second round was reaching for. Row 11 is the same idea in the inset form, sharper inside the shapes, but +24 KB per SVG and not possible in the animation.</p>
 <p>First round: row 11 (the works) is the most improved face and row 8 (the three borders plus the deeper beard) the one to ship; but the borders read as drawn lines, which was not the ask. Second round: the separation without lines. <b>Row 10 of the softer set</b> (the cap's soft shadow on the forehead, the shirt's on the neck, the beard's edge shaded, the beard one step deeper) says "here the skin ends and the red begins" the way the packs already say it at the neck, and nothing in it is a contour. <b>Row 6</b> (contact bands in each part's own darker tone, 2 units, plus the deeper beard) is the crisper alternative for the 48px listing, where a blurred shade is one pixel wide. Either keeps the frontpage's outline as it is.</p>
 </div>
 
@@ -158,7 +172,10 @@ var SOFT = [
   { id: "s07-shade-beard", name: "Shade + deeper beard", note: "Row 4 plus the deeper beard: the shade version with the beard's mass.", met: "", cost: "38 KB", risk: "" },
   { id: "s08-both", name: "Hairline at 18% + deeper beard", note: "The hairline at 18% and the deeper beard: the quietest set that still separates at 96.", met: "", cost: "38 KB", risk: "At 48 only the beard's fill change survives." },
   { id: "s09-cast", name: "Cast shadows: the skin darkens, not the cap", note: "The shade on the lighter side instead: the cap casts a soft 3-unit shadow onto the forehead (the band follows the cap's edge), the shirt onto the neck, and the beard's edge is shaded. The darker shapes stay as drawn; the skin darkens where something sits on it, which is how the packs already shade the neck.", met: "forehead under the cap −20% L in a 3-unit band", cost: "40 KB + blur filters", risk: "The brim's shadow reaches the ear on the left; at 28 it is a faint tan line." },
-  { id: "s10-cast-beard", name: "Cast shadows + deeper beard", note: "Row 9 plus the deeper beard.", met: "", cost: "40 KB", risk: "" }
+  { id: "s10-cast-beard", name: "Cast shadows + deeper beard", note: "Row 9 plus the deeper beard.", met: "", cost: "40 KB", risk: "" },
+  { id: "s11-faint-fur", name: "Faint and neutral + the collar", note: "Row 2 plus the collar: the same 2-unit inset at black 15% on the three orange blobs, so the collar stops being one mass. The inset form: a stroked copy of each shape clipped to itself.", met: "every edge one step; the collar's blobs separate", cost: "43.8 KB (+24 KB: eleven copied paths and clips)", risk: "The inset form cannot be carried into the Lottie files (no clip per shape there), so the animation would drop it." },
+  { id: "s12-centred", name: "The same as a plain stroke", note: "The same four parts (cap, beard, shirt, collar) with a stroke attribute on the shape itself: 2 units wide, centred on the edge, so 1 unit inside the shape and 1 outside it, black at 15%. No clip, no copy. Where the outer half lands on a neighbour it reads as a faint cast shadow; where it lands on the felt it is invisible; on paper it is a 0.6px grey fringe at 96.", met: "every edge one step, plus a 1-unit cast on the neighbour", cost: "20.2 KB (+0.85 KB, +4%)", risk: "The outer half fattens the silhouette by 1 unit (0.6px at 96) on light grounds." },
+  { id: "s13-centred-beard", name: "Plain stroke + deeper beard", note: "Row 12 plus the beard's fill one step deeper (#cf8f85). This is the form the Lottie files can carry too (see the animation section below).", met: "", cost: "20.2 KB", risk: "" }
 ];
 var GROUNDS = [
   { id: "felt", name: "Green felt", img: "green-felt.jpg", size: "100px 100px", color: "#1e5c1d" },
@@ -229,6 +246,20 @@ fetch(A + "ManCowboy.svg").then(function (r) { return r.text(); }).then(function
   });
 });
 renderControls(); build(); apply();
+/* the animation: the site's player, the win/think/lose files with the strokes added by the script (inlined, so file:// works) */
+(function () {
+  var sc = document.createElement("script"); sc.src = "avatar-lab/lottie_light.min.js";
+  sc.onload = function () {
+    var d = document.createElement("script"); d.src = "avatar-lab/lottie-capped-man.js";
+    d.onload = function () {
+      var L = window.LOTTIE_CAPPED;
+      function play(id, data) { lottie.loadAnimation({ container: document.getElementById(id), renderer: "svg", loop: true, autoplay: true, animationData: JSON.parse(JSON.stringify(data)) }); }
+      play("lt-orig", L.win); play("lt-win", L.winStroked); play("lt-think", L.thinkStroked); play("lt-lose", L.loseStroked); play("lt-win48", L.winStroked);
+    };
+    document.body.appendChild(d);
+  };
+  document.body.appendChild(sc);
+})();
 </script>
 </body>
 </html>
