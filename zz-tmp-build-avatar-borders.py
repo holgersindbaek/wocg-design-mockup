@@ -47,7 +47,8 @@ CHROME = "/opt/homebrew/bin/chromium"
 S = 3; PX = 160 * S; COLS = 8
 W, OP, CUT = 4, 0.15, 5
 T_L, T_C, T_GREY = 18, 8, 10
-SPREAD, K_LO, K_HI, T_LO, T_HI = 0.09, 0.45, 1.0, 0.0, 0.55   # what counts as one turn of the tone (1.0 = the same colour)
+SPREAD, K_LO, K_HI, T_LO, T_HI = 0.09, 0.45, 1.0, 0.0, 0.40   # what counts as one turn of the tone (1.0 = the same colour)
+MOUTH_RING, MOUTH_AREA, MOUTH_L, MOUTH_OP = 0.6, 0.06, 12, 0.35   # the mouth: a small feature low in the face, drawn heavier
 T_GREY_L = 22                       # two greys are one material up to this far apart in lightness
 PALE_L, LIGHT_L, MARK_AREA, MARK_RING, MARK_DE = 88, 75, 0.5, 0.75, 24
                                     # a near-white mark on a light piece is a shine on it, not a piece of its own
@@ -140,9 +141,7 @@ def owner(a, b, a_on_top):
     La, Ca, _ = a; Lb, Cb, _ = b
     ga, gb = Ca < T_GREY, Cb < T_GREY
     if ga != gb:
-        Lg, Lc = (La, Lb) if ga else (Lb, La)
-        grey_owns = Lg < Lc - T_L
-        return grey_owns if ga else not grey_owns
+        return La < Lb          # a grey beside a colour: the darker side, whichever it is
     if abs(La - Lb) > T_L: return La < Lb
     if abs(Ca - Cb) > T_C: return Ca > Cb
     return a_on_top
@@ -225,9 +224,26 @@ def analyse(info):
         if not n or not nb.size: ring[i] = {}; continue
         c = np.bincount(nb, minlength=N).astype(float)
         ring[i] = {int(j): c[j] / n for j in np.nonzero(c)[0]}
+    bb = {}; cy = {}
+    for i in range(N):
+        ys, xs = np.nonzero(masks[i])
+        if len(ys): bb[i] = (ys.min(), ys.max()); cy[i] = float(ys.mean())
+    def mouth_of(i):
+        """the piece this part is a mouth feature of: small, low in it, and lighter or darker than it"""
+        if i not in colour or i not in cy: return None
+        r = ring.get(i, {})
+        if not r: return None
+        j, share = max(r.items(), key=lambda kv: kv[1])
+        if share < MOUTH_RING or j not in colour or j not in bb: return None
+        if area[i] > MOUTH_AREA * area[j]: return None
+        y0, y1 = bb[j]
+        if cy[i] < (y0 + y1) / 2: return None
+        if colour[i][0] >= PALE_L or colour[i][0] <= colour[j][0] - MOUTH_L: return j
+        return None
     def one_material(i, j):
         """one material, or a near-white shine lying on a light piece (the shine on a lens, on a cheek)"""
         if same_material(colour[i], colour[j], seen[i], seen[j]): return True
+        if mouth_of(i) == j or mouth_of(j) == i: return False    # the mouth is a feature, never a shine
         for a, b in ((i, j), (j, i)):
             if not (colour[a][0] >= PALE_L and colour[a][1] < T_GREY): continue
             if area[a] >= MARK_AREA * area[b]: continue
@@ -303,7 +319,7 @@ def analyse(info):
                 if v.startswith("out"): keeps.append(fmt(poly))
         inner = any(v.split("@")[0] == "in" for v, _ in runs)
         if inner or keeps:
-            result[i] = {"cuts": cuts, "keeps": keeps, "inner": inner}
+            result[i] = {"cuts": cuts, "keeps": keeps, "inner": inner, "mouth": mouth_of(i) is not None}
         nbrs = {}
         ai = float(masks[i].sum())
         for v, _ in runs:
@@ -320,7 +336,9 @@ def analyse(info):
 def write(info, result):
     head, body, spans, els, P = info["head"], info["body"], info["spans"], info["els"], info["P"]
     if result:
-        css = '<style>.abl{fill:none;stroke:#000;stroke-opacity:%s;stroke-width:%d;stroke-linejoin:round}.abc,.abk{fill:none;stroke:#000;stroke-width:%d;stroke-linecap:round;stroke-linejoin:round}.abk{stroke:#fff}</style>' % (OP, W, CUT)
+        css = ('<style>.abl{fill:none;stroke:#000;stroke-opacity:%s;stroke-width:%d;stroke-linejoin:round}'
+               '.abc,.abk{fill:none;stroke:#000;stroke-width:%d;stroke-linecap:round;stroke-linejoin:round}'
+               '.abk{stroke:#fff}.abm{stroke-opacity:%s}</style>') % (OP, W, CUT, MOUTH_OP)
         k = head.index('>', head.index('<svg')) + 1; head = head[:k] + css + head[k:]
     parts = []; last = 0
     for i, (a, b) in enumerate(spans):
@@ -332,17 +350,21 @@ def write(info, result):
         if r["inner"]:
             cutp = "".join('<polyline class="abc" points="%s"/>' % c for c in r["cuts"])
             rep += '<mask id="am%d" %s><use href="#ab%d" fill="#fff"/>%s</mask>' % (i, M, i, cutp)
-            rep += '<use class="abl" href="#ab%d" mask="url(#am%d)"/>' % (i, i)
+            rep += '<use class="abl%s" href="#ab%d" mask="url(#am%d)"/>' % (" abm" if r.get("mouth") else "", i, i)
         if r["keeps"]:
             keepp = "".join('<polyline class="abk" points="%s"/>' % c for c in r["keeps"])
             rep += '<mask id="ao%d" %s>%s<use href="#ab%d" fill="#000"/></mask>' % (i, M, keepp, i)
-            rep += '<use class="abl" href="#ab%d" mask="url(#ao%d)"/>' % (i, i)
+            rep += '<use class="abl%s" href="#ab%d" mask="url(#ao%d)"/>' % (" abm" if r.get("mouth") else "", i, i)
         parts.append(rep)
     parts.append(body[last:])
     open(OUT + info["file"], "w").write(head + "".join(parts))
 
 if __name__ == "__main__":
-    args = sys.argv[1:]; base = "--base" in args; names = [a for a in args if not a.startswith("--")]
+    args = sys.argv[1:]; base = "--base" in args
+    for a in args:
+        if a.startswith("--out="): OUT = os.path.join(HERE, "game-assets", a.split("=", 1)[1]) + "/"
+    os.makedirs(OUT, exist_ok=True)
+    names = [a for a in args if not a.startswith("--")]
     files = sorted(f for f in os.listdir(SRC) if f.endswith(".svg") and (not base or "_" not in f) and (not names or f[:-4] in names))
     files = [f for f in files if f != "EmptyChair.svg"]
     infos = [page(f) for f in files]

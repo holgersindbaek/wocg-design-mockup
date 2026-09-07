@@ -26,7 +26,7 @@ Status doc for the avatar work in this design repo (`Design/WoCG-3/`). Written 2
 | the coat lab (79 render-time coats) | `avatar-lab.html`, assets in `avatar-lab/` |
 | the capped-man SVG lab | `avatar-svg-lab.html`, generators `zz-tmp-build-avatar-svg.py`, `zz-tmp-build-avatar-svg-soft.py` (also `lottie_strokes()`) |
 | the set-wide border generator | `zz-tmp-build-avatar-borders.py` (reads `game-assets/avatars/*.svg`, writes `game-assets/avatars-bordered/*.svg` + `decisions.json`) |
-| the chooser | `avatar-borders-lab.html`: the knobs live in a section of their own, **The avatars** — `avborder` (bordered / plain) and `avedge` (game1 / game15 / gamein / game / front / frontamb). It opens on the Design tab, the Avatar page, with the border ON and the true 1px outline. Hover or click the **Chooser** handle at the right edge; `z` flips the last knob, up and down step it. |
+| the chooser | `avatar-borders-lab.html`: the knobs are a section of their own, **The avatars** — `avborder` (bordered-v9 / bordered / plain) and `avedge` (game1 / game15 / gamein / game / front / frontamb). It opens on the Design tab, the Avatar page, on v9 with the game's true 1px outline. Hover or click the **Chooser** handle at the right edge; `z` flips the last knob, up and down step it. `game-settings-lab-3.html` is stale: it has no avatar knobs, no outline and points at the plain folder. |
 | the published box | `game-settings.html` (another session's, tracked): the settled copy, chooser hidden and keyboard knobs off. Its defaults now open on the Design tab with the bordered avatars. Do not commit it. |
 | the frontpage pair's source | `index.html` filter `#avatarEdge-litrim8` (erode 1px, white 8% rim) + `body.avsh-ghostramp32` (four 1px black 32% drop-shadows) |
 | judging harness (not in git) | `/tmp/avjudge3/` : `shots.py NAME...` (one plate per avatar: plain, bordered, and a red map of where the line fell, plus 96 and 48px under the coat), `sheet.py OUT.png SIZE COLS names...` (contact sheet, plain beside bordered, coat on), `facts.py NAME...` (what the generator decided, in words), `ledger.py` (every edge in the set, flagging doubled, missing and partial ones), `material.py probe` (the shade/tint test on known pairs) |
@@ -39,7 +39,7 @@ Status doc for the avatar work in this design repo (`Design/WoCG-3/`). Written 2
 - Other sessions own: `index.html` (modified), `open-tables-slide-lab.html` (modified), and the untracked `game-settings-lab-3.html`, `game-assets/avatars/`, `game-assets/cards|decks|live|ui|wallpapers/`, `game-button-lab.html`, `game-*-lab.html`, `game.html`, `GAME-*-STUDY.md`, `TEAM-COLOUR-STUDY.md`. Never commit, revert or clean them. `game-settings-lab-3.html` has my knob edits in it but stays uncommitted; a backup of it is at `/tmp/avstudy/game-settings-lab-3.backup.html`.
 - Mine, committed: `avatar-lab.html`, `avatar-lab/`, `avatar-svg-lab.html`, `AVATAR-STUDY.md`, `zz-tmp-build-avatar-*.py`, `game-assets/avatars-bordered/`, this file. Push after every commit.
 
-## 4. The generator as of v8
+## 4. The generator as of v9
 
 `zz-tmp-build-avatar-borders.py`, usage `python3 zz-tmp-build-avatar-borders.py [--base] [names...]` (`--base` = the 189 files without `_win/_think/_lose`; the full set is 664 files and takes about four minutes). It writes `game-assets/avatars-bordered/*.svg` and `decisions.json` (per file, per part: its colour as seen in CIELAB and the runs along its outline with their decision and length in units).
 
@@ -50,7 +50,9 @@ How it decides, per file:
 4. Each part's full outline is traced (`skimage.find_contours`); at every point: hidden (a later shape covers it), or the visible neighbour outside and the decision by the rules in section 5. Runs under 2 units merge into their longer neighbour; the rest become simplified polylines (tolerance 0.5 units).
 5. Output per part: the shape keeps its geometry once with `id="abN"` and its fill on a wrapper `<g fill>`; the inner line is `<use class="abl" href="#abN" mask="url(#amN)">` where the mask is the shape in white plus black cut polylines (class `abc`, 5 units wide, round caps) where the part does not own the line; the outer band is the same stroke masked to white polylines (class `abk`) minus the shape in black. Both sit right after the shape so later shapes cover them. One `<style>` in the head defines the three classes.
 
-Numbers for the base set: 2,293 bordered parts, 797 with outer bands, raw +52%, gzipped about +23%. 30 of the
+Numbers: v9 is 664 files, gzipped +26% (4.4 to 5.5 KB); the base set is 2,328 bordered parts, 777 with outer
+bands. v9 writes to `game-assets/avatars-bordered-v9/` (`--out=avatars-bordered-v9`); `game-assets/avatars-bordered/`
+keeps v8, which the same script produced at commit `eed5a1b`. 30 of the
 190 base files are a raster PNG in an SVG wrapper (one placeholder dog repeated), so they have no shapes to border.
 
 Why v6 failed, for the record: it decided from bounding boxes and draw order, never from what was visible. Blonde beside light skin fell under its 6 L "darker" threshold in both directions; stops were a neighbour's whole geometry dilated, hidden parts included, so a lock under another lock cut the visible lock's line; "shade" was a box test.
@@ -66,19 +68,26 @@ touching pairs in the set, real shades come in at a channel spread of 0.02 to 0.
 2. both greys (chroma under 10): one material up to 22 L apart, since every grey is a multiple of every other
 3. a grey beside a colour: a change of material, EXCEPT a near-white mark (L over 88) smaller than half its
    neighbour, either lying inside that neighbour (75% of its visible ring) or on a light piece (L over 75)
-   under 24 apart in CIE76: that is a shine, not a piece
-4. both coloured: one material when a single multiplier (0.45 to 1.0) or a single screen (0.0 to 0.55) carries
-   one to the other on every channel, the channels agreeing within 0.09
+   under 24 apart in CIE76: that is a shine, not a piece. A mouth feature is never a shine (see below).
+4. both coloured: one material when a single multiplier (0.45 to 1.0) or a single screen (0.0 to 0.40) carries
+   one to the other on every channel, the channels agreeing within 0.09. A real highlight here screens by 0.24
+   to 0.30; the bound was 0.55 in v8, which read a face's shaded half as its hair screened by 52%
 
 **Which side?** Per visible edge between a part and its neighbour, once they are different materials:
 
 1. the background (the silhouette): the part keeps its inner line, near-white included; the coat sits outside it
-2. one side grey, the other coloured: the coloured side owns the line, unless the grey is darker by more than 18 L
-   (white or grey hair beside a face puts the line on the face)
+2. one side grey, the other coloured: the darker of the two owns it, with no margin. White hair is lighter than a
+   face, so the face takes it; grey hair is darker, so the hair takes it. v8 gave the line to the coloured side
+   unless the grey was 18 L darker, which put a grey hair 17.5 L darker than its face on the face
 3. both coloured or both grey, more than 18 L apart: the darker side
 4. otherwise the more saturated side, and failing that the piece drawn on top
 5. nothing at all when the owner is under 25 L and the seam is already over 40 apart in CIE76: a black line on
    black hair cannot be seen, and pale skin beside it needs no help
+
+**The mouth.** A part that lies inside a bigger piece (60% of its visible ring), covers under 6% of it, sits below
+that piece's middle, and is either near-white or 12 L darker than it, is a mouth feature: never merged as a shine,
+and stroked at 35% instead of 15% so the smile reads. 73 parts over 42 files. Mouths drawn in ink are dark already
+and are left alone.
 
 **Placement.** The line follows the top piece's outline: its own inner line where it owns the edge, an outer band
 onto the piece under it where that piece owns it AND this piece lies on it (where the two merely abut, the
@@ -89,7 +98,8 @@ small (under 24 units across or 250 square units), so hair drawn in near-black i
 Thresholds are the constants at the top of the script: `T_L, T_C, T_GREY = 18, 8, 10`,
 `SPREAD, K_LO, K_HI, T_LO, T_HI = 0.09, 0.45, 1.0, 0.0, 0.55`, `T_GREY_L = 22`,
 `PALE_L, LIGHT_L, MARK_AREA, MARK_RING, MARK_DE = 88, 75, 0.5, 0.75, 24`, `INK_DIM, INK_AREA = 24, 250`,
-`DARK_L, FAR = 25, 40`, `MIN_DIM, MIN_RUN, TOL = 10, 2.0, 0.5`, `W, OP, CUT = 4, 0.15, 5`.
+`DARK_L, FAR = 25, 40`,
+`MOUTH_RING, MOUTH_AREA, MOUTH_L, MOUTH_OP = 0.6, 0.06, 12, 0.35`, `MIN_DIM, MIN_RUN, TOL = 10, 2.0, 0.5`, `W, OP, CUT = 4, 0.15, 5`.
 
 Why v7 failed, for the record: its material test compared hue, chroma and lightness, which merged brown hair with
 tan skin (the "only some of the hair gets a border" complaint) and split a spectacle lens from its own shine; it
