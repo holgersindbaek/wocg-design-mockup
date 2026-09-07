@@ -6923,8 +6923,46 @@
       '</div>';
     document.body.appendChild(gate);
     document.body.classList.add("gated");
-    var inp = document.getElementById("gate-in");
+    var inp = document.getElementById("gate-in"), go = document.getElementById("gate-go");
     inp.focus();
+    /* While the gate is up, warm the cache: every image the page names (img, srcset, video posters) and every url() in the
+       page's own stylesheets, plus the fonts. When the answer is right the page reloads, so the intro plays once over a
+       page whose assets are all in cache instead of behind the gate on a page still fetching. */
+    function warmUp() {
+      var urls = {};
+      var add = function (u) { if (u && !/^(data:|blob:|javascript:|#)/.test(u)) urls[u] = 1; };   /* no data urls, no url(#id) fragment references */
+      document.querySelectorAll("img[src], img[data-src], source[src], video[src], video[poster]").forEach(function (el) {
+        ["src", "data-src", "poster"].forEach(function (a) { add(el.getAttribute(a)); });
+      });
+      document.querySelectorAll("[srcset]").forEach(function (el) {
+        el.getAttribute("srcset").split(",").forEach(function (part) { add(part.trim().split(/\s+/)[0]); });
+      });
+      var re = /url\((['"]?)([^'")]+)\1\)/g;
+      Array.prototype.forEach.call(document.styleSheets, function (ss) {
+        var rules; try { rules = ss.cssRules; } catch (e) { return; }   /* cross-origin sheets (Google Fonts) are skipped */
+        var walk = function (r) {
+          if (r.style) {
+            var text = r.style.cssText || "", m;
+            while ((m = re.exec(text))) add(m[2]);
+          }
+          if (r.cssRules) Array.prototype.forEach.call(r.cssRules, walk);
+        };
+        Array.prototype.forEach.call(rules || [], walk);
+      });
+      var list = Object.keys(urls);
+      var loads = list.map(function (u) {
+        return new Promise(function (res) {
+          if (/\.(png|jpe?g|gif|webp|svg|avif)(\?|#|$)/i.test(u)) { var im = new Image(); im.onload = im.onerror = function () { res(); }; im.src = u; }
+          else { fetch(u, { mode: "no-cors" }).then(function () { res(); }, function () { res(); }); }
+        });
+      });
+      var fonts = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
+      var loaded = document.readyState === "complete" ? Promise.resolve() : new Promise(function (r) { window.addEventListener("load", r); });
+      return { count: list.length, done: Promise.all([Promise.all(loads), fonts, loaded]) };
+    }
+    var warm = null;
+    var startWarm = function () { warm = warmUp(); window.__gateWarm = warm; };
+    if (document.readyState === "complete") startWarm(); else window.addEventListener("load", startWarm);
     function sha256hex(str) {
       return crypto.subtle.digest("SHA-256", new TextEncoder().encode(str)).then(function (buf) {
         return Array.from(new Uint8Array(buf)).map(function (b) { return b.toString(16).padStart(2, "0"); }).join("");
@@ -6936,8 +6974,11 @@
       sha256hex(guess).then(function (hex) {
         if (hex === HASH) {
           try { localStorage.setItem(KEY, "ok"); } catch (e) {}
-          gate.remove();
-          document.body.classList.remove("gated");
+          /* one last sweep for anything built after load, then reload so the intro plays over a warm cache; never wait more than 10 s */
+          inp.disabled = true; go.disabled = true; go.textContent = "Dealing the cards…";
+          var last = warmUp();
+          var patience = new Promise(function (r) { setTimeout(r, 10000); });
+          Promise.race([Promise.all([warm ? warm.done : null, last.done]), patience]).then(function () { location.reload(); });
         } else {
           document.getElementById("gate-err").textContent = "Not quite — try again.";
           gate.classList.remove("gate-shake"); void gate.offsetWidth; gate.classList.add("gate-shake");
