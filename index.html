@@ -947,6 +947,8 @@
   /* hovering the zone opens the bar; it stays pinned until a click lands
      outside it */
   .switchbar.isOpen, .switchbar:focus-within { transform: translateX(0); }
+  /* on the published copy (github.io) the chooser and its hover zone do not exist; applyBody rewrites body.className, so the flag lives on <html> */
+  html.published .switchzone, html.published .switchbar { display: none !important; }
   .swadv { margin-top: 22px; }
   .swadv summary { cursor: pointer; font-size: 14px; font-weight: 700; color: #888;
     padding-bottom: 5px; border-bottom: 1px solid #e5e5e5; list-style: none; }
@@ -955,12 +957,13 @@
   .swadv > .swgroup:first-of-type { margin-top: 16px; }
   .swgroup { margin-bottom: 22px; }
   .swgroup:last-child { margin-bottom: 0; }
+  .swnote { font-size: 12px; line-height: 1.45; color: #4e4d4c; margin: 6px 0 10px; max-width: 520px; }
   .swhead { font-size: 14px; font-weight: 700; color: #222222; margin-bottom: 10px;
     padding-bottom: 5px; border-bottom: 1px solid #e5e5e5; }
   .ctl { display: flex; flex-direction: column; gap: 3px; margin-bottom: 10px; }
   /* switcher rows Holger retired on 7 September 2026 (status game, status state, daily status, corner buttons, button finish,
      avatar edge, avatar shadow, today's cell, game bar colours, section spacing, game bar hover); their code keeps its defaults */
-  .switchbar label.ctl:has(> #sel-dgame, > #sel-dstate, > #sel-dstatus, > #sel-cbtn, > #sel-bfin, > #sel-avedge, > #sel-avshadow, > #sel-today, > #sel-otcolor, > #sel-sgap, > #sel-othover) { display: none; }
+  .switchbar label.ctl:has(> #sel-dgame, > #sel-dstate, > #sel-dstatus, > #sel-cbtn, > #sel-bfin, > #sel-avedge, > #sel-avshadow, > #sel-today, > #sel-otcolor, > #sel-othover) { display: none; }
   .ctl span { font-size: 12px; color: #777777; }
   .switchbar select {
     font-family: inherit; font-size: 13px; font-weight: 600; color: #555;
@@ -996,6 +999,7 @@
   body.avsh-grounded { --avshadow: drop-shadow(0 1px 1px rgba(0,0,0,.26)) drop-shadow(0 3px 4px rgba(0,0,0,.18)) drop-shadow(0 7px 12px rgba(0,0,0,.16)); }
   body.avsh-game { --avshadow: drop-shadow(0 0 8px rgba(0,0,0,.24)); }
   body.avsh-none { --avshadow: drop-shadow(0 0 0 rgba(0,0,0,0)); }
+  body.avsh-nameplate { --avshadow: drop-shadow(1px 0 rgba(0,0,0,.30)) drop-shadow(-1px 0 rgba(0,0,0,.30)) drop-shadow(0 1px rgba(0,0,0,.30)) drop-shadow(0 -1px rgba(0,0,0,.30)) drop-shadow(0 1px 3px rgba(0,0,0,.35)) drop-shadow(0 2px 6px rgba(0,0,0,.25)); }
   /* the scheme reference lives below the page, hidden until toggled on */
   body:not(.show-palette) .wrap { display: none; }
 
@@ -2053,7 +2057,7 @@
   body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) :is(#sec-tt, #sec-rummy, #sec-classic) > .pophead { display: none; }
   body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) #openTablesTop .lobbyhead { justify-content: flex-end; }
   body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) #liveTablesTop .lobbyhead { display: none; } /* the empty head would still spend its 32px margin and the column's gap */
-  /* with the head on the seam every gap measures --sectgap (48px as settled) from the rule's centre to the neighbour's edge, above and below; the Section spacing option sets it to try more air */
+  /* with the head on the seam every gap measures --sectgap from the rule's centre to the neighbour's edge, above and below: 48px until 7 Sep 2026, 56px since (Holger asked for a little more air); the Section spacing option tries the larger steps */
   body { --sectgap: 48px; }
   body.sgap-56 { --sectgap: 56px; } body.sgap-64 { --sectgap: 64px; } body.sgap-72 { --sectgap: 72px; } body.sgap-80 { --sectgap: 80px; } body.sgap-96 { --sectgap: 96px; }
   body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells).sect-waveband #popsec { padding-bottom: var(--sectgap); }
@@ -2069,7 +2073,11 @@
   .sitefooter footer { max-width: 1160px; margin: 0 auto; padding: 20px 24px 26px;
     display: flex; flex-wrap: wrap; justify-content: space-between; gap: 24px; }
   .sitefooter .footerSection { display: flex; gap: 24px; max-width: 100%; min-width: 0; width: max-content; }
-  .sitefooter .footerGames { gap: 16px; }
+  /* a family is one group (footer lab, 6 September): the head over its columns, so the head's width does not widen the first column */
+  .sitefooter .footerGroup { flex-direction: column; gap: 0; }
+  .sitefooter .footerGroup > strong { display: block; font-size: 16px; line-height: 28px; }
+  .sitefooter .footerCols { display: flex; gap: 20px; }
+  .sitefooter .footerPartner { color: #8a857c; }
   .sitefooter ul { padding: 0; margin: 0; list-style: none; font-size: 16px; line-height: 28px; }
   .sitefooter li { white-space: nowrap; }
   .sitefooter a { color: inherit; border-bottom: none; }
@@ -2105,11 +2113,6 @@
   @container (max-width: 470px) {
     .sitefooter footer:has(.footerGroup) { grid-template-columns: minmax(0, 1fr); }
   }
-  .sitefooter .footerRaptive .adthrive-footer-message { display: flex; flex-direction: column;
-    font-size: 16px; line-height: 28px; }
-  .sitefooter .footerRaptive .adthrive-footer-message > span { order: 1; font-weight: bold; }
-  .sitefooter .footerRaptive .adthrive-privacy-preferences { order: 2; }
-  .sitefooter .footerRaptive .raptive-content-terms-footer { order: 3; }
 
   /* ===== below the fold: active palette only ===== */
   .wrap { max-width: 960px; margin: 0 auto; padding: 8px 32px 96px; }
@@ -3395,6 +3398,9 @@
     <label class="ctl"><span>Status state</span><select id="sel-dstate"></select></label>
     <label class="ctl"><span>Status game</span><select id="sel-dgame"></select></label>
     <label class="ctl"><span>Corner buttons</span><select id="sel-cbtn"></select></label>
+    <label class="ctl"><span>Button finish</span><select id="sel-bfin"></select></label>
+    <label class="ctl"><span>Avatar edge</span><select id="sel-avedge"></select></label>
+    <label class="ctl"><span>Avatar shadow</span><select id="sel-avshadow"></select></label>
     <label class="ctl"><span>Today's cell</span><select id="sel-today"></select></label>
     <label class="ctl"><span>Game bar colours</span><select id="sel-otcolor"></select></label>
     <label class="ctl"><span>Section spacing</span><select id="sel-sgap"></select></label>
@@ -3402,13 +3408,12 @@
   </div>
   <details class="swadv">
     <summary>Advanced — settled settings</summary>
+    <div class="swnote">Official in-game button (6 Sep 2026, game-button-lab.html tile 108): flat warm lemon #FFD75A, leather ink #5C3A00, a see-through 1px ring in the ink colour at 70% with a 1px drop shadow, a 20px squircle (16px compact). Hover one Open Color stop deeper (#FFD43B), pressed flat #FCC419. No gradient and no highlight: the page's buttons are flat too, and only the buttons on the felt get the ring. See the Corner buttons coat “official” and the Button finish option (felt only).</div>
     <div class="swgroup">
       <div class="swhead">Look</div>
       <label class="ctl"><span>Signed-in copy</span><select id="sel-pcopy"></select></label>
       <label class="ctl"><span>Color scheme</span><select id="sel-base"></select></label>
       <button type="button" class="swbtn" id="palette-toggle">Show scheme swatches (bottom of page)</button>
-      <label class="ctl"><span>Avatar edge</span><select id="sel-avedge"></select></label>
-      <label class="ctl"><span>Avatar shadow</span><select id="sel-avshadow"></select></label>
       <label class="ctl"><span>Heading font</span><select id="sel-font"></select></label>
       <label class="ctl"><span>Texture</span><select id="sel-texture"></select></label>
     </div>
@@ -3692,9 +3697,23 @@
   :is(#openTablesTop, #lobbyLiveTables) .ltCard:hover .cbtn { pointer-events: auto; }
   /* a live table's two verbs stack, Watch over Queue, the pair as wide as its wider word */
   #lobbyLiveTables .cbtn { flex-direction: column; align-items: stretch; }
+  /* felt only: the flat official button on the buttons inside the open and live tiles: no satin, no highlight, a see-through ring
+     in the ink colour at 70% and a 1px drop shadow, drawn by a pseudo-element under the label so no coat's own rings are touched */
+  body.bfin-felt .ltCard .button { position: relative; isolation: isolate; }
+  body.bfin-felt .ltCard .button::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; corner-shape: inherit; pointer-events: none;
+    box-shadow: 0 0 0 1px color-mix(in srgb, currentColor 70%, transparent), 0 1px 2px rgba(0,0,0,.30); }
+  body.bfin-felt .ltCard .button:active::before { box-shadow: 0 0 0 1px color-mix(in srgb, currentColor 70%, transparent); }
+  body.bfin-felt.cbtn-gameyellow :is(#openTablesTop, #lobbyLiveTables) .cbtn .button { background-color: #FFD75A; color: #5C3A00; box-shadow: none; }
+  body.bfin-felt.cbtn-gameyellow :is(#openTablesTop, #lobbyLiveTables) .cbtn .button:hover { background-color: #FFD43B; }
+  body.bfin-felt.cbtn-gameyellow :is(#openTablesTop, #lobbyLiveTables) .cbtn .button:active { background-color: #FCC419; }
   :is(#openTablesTop, #lobbyLiveTables) .cbtn .button { height: 24px; line-height: 24px; font-size: 16px; padding: 0 10px;
     box-shadow: 0 0 0 1px rgba(0,0,0,.16); transition: background-color 24ms ease-out; }
   body.cbtn-gameyellow .cbtn .button { background-color: #FFE066; color: #C96800; text-shadow: none; }
+  /* the official in-game button, final 6 September (game-button-lab.html tile 108, flat); scoped like the geometry rule so its ring wins */
+  body.cbtn-official :is(#openTablesTop, #lobbyLiveTables) .cbtn .button { background-color: #FFD75A; color: #5C3A00; text-shadow: none;
+    box-shadow: 0 0 0 1px rgba(92,58,0,.70), 0 1px 2px rgba(0,0,0,.30); }
+  body.cbtn-official :is(#openTablesTop, #lobbyLiveTables) .cbtn .button:hover { background-color: #FFD43B; box-shadow: 0 0 0 1px rgba(92,58,0,.70), 0 2px 4px rgba(0,0,0,.35); }
+  body.cbtn-official :is(#openTablesTop, #lobbyLiveTables) .cbtn .button:active { background-color: #FCC419; box-shadow: 0 0 0 1px rgba(92,58,0,.70); }
   body.cbtn-gameyellow .cbtn .button:hover { background-color: color-mix(in srgb, #FFE066 92%, #E67700 8%); }
   body.cbtn-gameyellow .cbtn .button:active { background-color: #FCC419; } /* the game's pressed yellow */
   body.cbtn-triogreen .cbtn .button { background-color: var(--triogreen); color: #fff;
@@ -4020,7 +4039,7 @@
   <!-- about-section start: Behind the games, built in about-lab.html; the pophead is the seam head, hidden when the rule carries it -->
   <div class="gamesec" id="sec-about">
     <div class="pophead">Behind the games</div>
-    <div class="aboutBody"><div class="serifnote reader"><p>There is always an open table on World of Card Games, at any hour of the day or night. Take a seat and say hi, or ask the bots to sit down with you. Playing is easy and free, stopping is the hard part.</p><p>I'm Holger, a designer and programmer from Denmark, and I look after the site on my own. It started back in 2011, long before I came along.</p><p>If something breaks, a rule looks wrong, or you'd like a game added, write to me at <a class="mail" href="mailto:holger@worldofcardgames.com">holger@worldofcardgames.com</a>. I read every email myself and answer them all.</p><div class="signrow"><img class="photo" src="holger-avatar.jpg" alt="Holger Sindbaek" width="56" height="56"><div><p class="close">See you at the tables,</p><img class="sigimg" src="signature-caveat-ink.png" alt="Holger Sindbæk" width="194" height="39"></div></div></div><div class="measure"><div class="fgrid tiles pictures"><div class="fpic"><div class="fimg"><svg viewBox="0 0 160 120"><rect width="160" height="120" fill="#327333"></rect><rect x="6" y="6" width="148" height="108" rx="10" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="2"></rect><circle cx="80" cy="22" r="15" fill="#fff" opacity="1"></circle><image href="WomanGirl2.svg" x="66" y="8" width="28" height="28" opacity="1"></image><circle cx="22" cy="60" r="15" fill="#fff" opacity="1"></circle><image href="ManCowboy.svg" x="8" y="46" width="28" height="28" opacity="1"></image><circle cx="138" cy="60" r="15" fill="#fff" opacity="1"></circle><image href="AnimalCat.svg" x="124" y="46" width="28" height="28" opacity="1"></image><circle cx="80" cy="98" r="14" fill="none" stroke="#fff" stroke-dasharray="3 3" stroke-width="1.5" opacity=".8"></circle><text x="80" y="103" text-anchor="middle" font-size="16" fill="#fff" opacity=".9">+</text><rect x="58" y="46" width="18" height="26" rx="2.5" fill="#fff" stroke="rgba(0,0,0,.25)" transform="rotate(-8 67 59)"></rect><rect x="68" y="46" width="18" height="26" rx="2.5" fill="#fff" stroke="rgba(0,0,0,.25)" transform="rotate(0 77 59)"></rect><rect x="78" y="46" width="18" height="26" rx="2.5" fill="#fff" stroke="rgba(0,0,0,.25)" transform="rotate(8 87 59)"></rect></svg></div><b>Real people right now</b><p>The numbers at the top of the page are live. You can see who's at every table before you sit down and join a game that's already under way.</p></div><div class="fpic"><div class="fimg"><svg viewBox="0 0 160 120"><rect width="160" height="120" fill="#327333"></rect><rect x="6" y="6" width="148" height="108" rx="10" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="2"></rect><image href="botBadge.png" x="66" y="8" width="28" height="28"></image><image href="botBadge.png" x="8" y="46" width="28" height="28"></image><image href="botBadge.png" x="124" y="46" width="28" height="28"></image><circle cx="80" cy="98" r="15" fill="#fff" opacity="1"></circle><image href="WomanBusinesswoman.svg" x="66" y="84" width="28" height="28" opacity="1"></image><rect x="52" y="48" width="56" height="22" rx="7" fill="#00a82d"></rect><text x="80" y="63" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff" font-family="BuloRounded, Verdana, sans-serif">Play</text></svg></div><b>You never wait</b><p>Pick a game and a table opens at once. If you'd rather play the bots, they sit down straight away and a solo table has no clock.</p></div><div class="fpic"><div class="fimg"><svg viewBox="0 0 160 120"><rect width="160" height="120" fill="#327333"></rect><rect x="6" y="6" width="148" height="108" rx="10" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="2"></rect><circle cx="80" cy="22" r="15" fill="#fff" opacity="1"></circle><image href="WomanGirl2.svg" x="66" y="8" width="28" height="28" opacity="1"></image><circle cx="22" cy="60" r="15" fill="#fff" opacity="1"></circle><image href="ManCowboy.svg" x="8" y="46" width="28" height="28" opacity="1"></image><circle cx="138" cy="60" r="15" fill="#fff" opacity="1"></circle><image href="AnimalCat.svg" x="124" y="46" width="28" height="28" opacity="1"></image><circle cx="80" cy="98" r="15" fill="#fff" opacity="0.38"></circle><image href="WomanBusinesswoman.svg" x="66" y="84" width="28" height="28" opacity="0.38"></image><rect x="62" y="46" width="18" height="26" rx="2.5" fill="#fff" stroke="rgba(0,0,0,.25)" transform="rotate(-4 71 59)"></rect><rect x="72" y="46" width="18" height="26" rx="2.5" fill="#fff" stroke="rgba(0,0,0,.25)" transform="rotate(4 81 59)"></rect><circle cx="104" cy="98" r="11" fill="#fff"></circle><circle cx="104" cy="98" r="8.5" fill="none" stroke="#141414" stroke-width="1.6"></circle><path d="M104 93v5l3 2" fill="none" stroke="#141414" stroke-width="1.6" stroke-linecap="round"></path></svg></div><b>The table waits for you</b><p>If your connection drops in a ranked game, your seat is held for three minutes. A solo game waits for hours, so you can close the laptop and come back after dinner.</p></div><div class="fpic"><div class="fimg"><svg viewBox="0 0 160 120"><rect width="160" height="120" fill="#327333"></rect><rect x="6" y="6" width="148" height="108" rx="10" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="2"></rect><rect x="44" y="70" width="18" height="26" rx="2.5" fill="#fff" stroke="rgba(0,0,0,.25)" transform="rotate(-16 53 83)"></rect><rect x="54" y="70" width="18" height="26" rx="2.5" fill="#fff" stroke="rgba(0,0,0,.25)" transform="rotate(-8 63 83)"></rect><rect x="64" y="70" width="18" height="26" rx="2.5" fill="#fff" stroke="rgba(0,0,0,.25)" transform="rotate(0 73 83)"></rect><rect x="74" y="70" width="18" height="26" rx="2.5" fill="#fff" stroke="rgba(0,0,0,.25)" transform="rotate(8 83 83)"></rect><rect x="84" y="70" width="18" height="26" rx="2.5" fill="#fff" stroke="rgba(0,0,0,.25)" transform="rotate(16 93 83)"></rect><path d="M80 22v24" stroke="#f4c360" stroke-width="4" stroke-linecap="round"></path><path d="M71 39l9 10 9-10" fill="none" stroke="#f4c360" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></path></svg></div><b>Help while you learn</b><p>For your first ten games of anything new, arrows point at a good card. Then they fade on their own. Every game has a rules page and a short tutorial.</p></div><div class="fpic"><div class="fimg"><svg viewBox="0 0 160 120"><rect width="160" height="120" fill="#327333"></rect><rect x="6" y="6" width="148" height="108" rx="10" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="2"></rect><circle cx="22" cy="60" r="15" fill="#fff" opacity="1"></circle><image href="ManCowboy.svg" x="8" y="46" width="28" height="28" opacity="1"></image><circle cx="138" cy="60" r="15" fill="#fff" opacity="1"></circle><image href="AnimalCat.svg" x="124" y="46" width="28" height="28" opacity="1"></image><rect x="46" y="30" width="68" height="30" rx="10" fill="#fff"></rect><path d="M60 60l-6 8 14-8z" fill="#fff"></path><text x="80" y="50" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#141414" font-family="BuloRounded, Verdana, sans-serif">Good game!</text><path d="M104 84c-4-6-12 0-6 6l6 6 6-6c6-6-2-12-6-6z" fill="#e54e40"></path></svg></div><b>Tables stay friendly</b><p>Mute or block anyone in one click and flag a message for review. People who keep spoiling games play the bots for a while.</p></div><div class="fpic"><div class="fimg"><svg viewBox="0 0 160 120"><rect width="160" height="120" fill="#327333"></rect><rect x="6" y="6" width="148" height="108" rx="10" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="2"></rect><rect x="40" y="10" width="80" height="22" rx="7" fill="#fff"></rect><text x="80" y="25" text-anchor="middle" font-size="12" font-weight="bold" fill="#141414" font-family="BuloRounded, Verdana, sans-serif">maple</text><circle cx="22" cy="60" r="15" fill="#fff" opacity="1"></circle><image href="WomanGirl2.svg" x="8" y="46" width="28" height="28" opacity="1"></image><circle cx="138" cy="60" r="15" fill="#fff" opacity="1"></circle><image href="WomanBusinesswoman.svg" x="124" y="46" width="28" height="28" opacity="1"></image><circle cx="80" cy="98" r="14" fill="none" stroke="#fff" stroke-dasharray="3 3" stroke-width="1.5" opacity=".8"></circle><text x="80" y="103" text-anchor="middle" font-size="16" fill="#fff" opacity=".9">+</text><path d="M70 58a8 8 0 0 1 11-11l4 4M90 62a8 8 0 0 1-11 11l-4-4M74 74l12-12" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"></path></svg></div><b>Your own table</b><p>Give a private table a name and send your friends the link. They don't need an account to join and the same name works every week.</p></div></div></div><div class="measure"><h3>Frequently asked questions</h3><div class="faqi"><b>Is it free?</b><p>Yes. All eighteen games are free to play and the ads pay for the site. If you'd rather play without ads, a small subscription turns them off and you see the price before you pay anything.</p></div><div class="faqi"><b>Do I need an account?</b><p>No. You can sit down and play as a guest right away. If you sign up, your name, stats, avatar and settings follow you to any computer, tablet or phone. Ranked games open after ten finished games.</p></div><div class="faqi"><b>Can I play on my own, right now?</b><p>Yes. Pick a game and choose Play bots. The bots sit down at once and a solo table has no clock, so take as long as you like over a hand.</p></div><div class="faqi"><b>How do I get to a table with real people?</b><p>Finish one game against the bots in that game first, then the tables with people open up for it. An invite link, a friend's table or a rematch skips that first game.</p></div><div class="faqi"><b>Can I play with friends?</b><p>Yes. None of them needs an account. Once you've finished one game here, choose Host table, tick Private and give the table a name. Tell your friends the name, or send them the invite link.</p></div><div class="faqi"><b>Can I play competitively?</b><p>Yes. Ranked games use a rating that starts at 1500 and moves with every result. There are daily, weekly and monthly <a href="#leaderboards">leaderboards</a> for each game. You need an account and ten finished games first.</p></div><div class="faqi"><b>I've never played this game. Can I learn it here?</b><p>Yes. Every game has a <a href="#rules">rules page</a> and a short hands-on tutorial. In your first ten games, arrows point out a good card to play. A hint link stays after that.</p></div><div class="faqi"><b>What happens if my internet drops mid-game?</b><p>In a ranked game your seat is held for three minutes, so you can come back to the same hand. A dropped connection isn't treated as quitting. A solo game waits for hours.</p></div><div class="faqi"><b>What if someone is rude at the table?</b><p>Hover over their name and choose Mute to hide their chat, or Block so you're never seated together at a public table again. Every chat message also has a flag and flagged chat gets reviewed.</p></div><div class="faqi"><b>Are the cards dealt fairly?</b><p>Yes. Every hand is shuffled on my server with a fresh random number for each deal, before anyone sees a card. There's no way for me or anyone else to steer what you're dealt. The shuffle tests are on the site.</p></div></div><div class="measure"><div class="qtiles qs-namefirst"><div class="q"><span class="av"><img src="WomanCowgirl.svg" alt=""></span><div><p class="qt">I have been on this site for more than 10 years because of the camaraderie.</p><p class="qw"><b>Irean</b><span class="qwho">Texas, USA</span></p></div></div><div class="q"><span class="av"><img src="AnimalFox.svg" alt=""></span><div><p class="qt">I came upon your site a few days ago and love it. I play against the bots and the skill level is very competitive, especially compared to other sites I have seen.</p><p class="qw"><b>Dennis</b><span class="qwho">Ontario, Canada</span></p></div></div><div class="q"><span class="av"><img src="ManCowboy.svg" alt=""></span><div><p class="qt">Just retired after 20 years and I live for YOUR card games! Best on the net.</p><p class="qw"><b>RC</b><span class="qwho">Florida, USA</span></p></div></div></div></div><div class="measure"><h3>What's new</h3><p>Many of these began as an email from a player. If you spot something, write to me at <a class="mail" href="mailto:holger@worldofcardgames.com">holger@worldofcardgames.com</a>. These are the newest and the <a href="#changelog">full changelog</a> goes back to 2011:</p><div class="nwi"><span>Go Fish and Old Maid sort your hand by rank. <span class="ntag">New</span></span><time>3 Sep</time></div><div class="nwi"><span>Short, wide windows use the compact layout again. <span class="ntag">Improved</span></span><time>3 Sep</time></div><div class="nwi"><span>The screen freezing when cards were rearranged in Double Deck Pinochle and Gin Rummy. <span class="ntag">Fixed</span></span><time>31 Aug</time></div><div class="nwi"><span>Failed nil tricks in Spades now count as bags. <span class="ntag">Fixed</span></span><time>31 Aug</time></div><div class="nwi"><span>The right bower can be played when going alone in Euchre. <span class="ntag">Fixed</span></span><time>31 Aug</time></div><div class="nwi"><span>Opponent cards showing face up in Hand &amp; Foot. <span class="ntag">Fixed</span></span><time>31 Aug</time></div><div class="nwi"><span>Phantom wild cards in Hand &amp; Foot melds. <span class="ntag">Fixed</span></span><time>21 Aug</time></div><div class="nwi"><span>The Euchre chat button resizing the screen on phones. <span class="ntag">Fixed</span></span><time>21 Aug</time></div></div></div>
+    <div class="aboutBody"><div class="serifnote reader"><p>There is always an open table on World of Card Games, at any hour of the day or night. Take a seat and say hi, or ask the bots to sit down with you. Playing is easy and free, stopping is the hard part.</p><p>I'm Holger, a designer and programmer from Denmark, and I look after the site on my own. It started back in 2011, long before I came along.</p><p>If something breaks, a rule looks wrong, or you'd like a game added, write to me at <a class="mail" href="mailto:holger@worldofcardgames.com">holger@worldofcardgames.com</a>. I read every email myself and answer them all.</p><div class="signrow"><img class="photo" src="holger-avatar.jpg" alt="Holger Sindbaek" width="56" height="56"><div><p class="close">See you at the tables,</p><img class="sigimg" src="signature-caveat-ink.png" alt="Holger Sindbæk" width="194" height="39"></div></div></div><div class="measure"><div class="fgrid tiles pictures"><div class="fpic"><div class="fimg"><svg viewBox="0 0 160 120"><rect width="160" height="120" fill="#327333"></rect><rect x="6" y="6" width="148" height="108" rx="10" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="2"></rect><circle cx="80" cy="22" r="15" fill="#fff" opacity="1"></circle><image href="WomanGirl2.svg" x="66" y="8" width="28" height="28" opacity="1"></image><circle cx="22" cy="60" r="15" fill="#fff" opacity="1"></circle><image href="ManCowboy.svg" x="8" y="46" width="28" height="28" opacity="1"></image><circle cx="138" cy="60" r="15" fill="#fff" opacity="1"></circle><image href="AnimalCat.svg" x="124" y="46" width="28" height="28" opacity="1"></image><circle cx="80" cy="98" r="14" fill="none" stroke="#fff" stroke-dasharray="3 3" stroke-width="1.5" opacity=".8"></circle><text x="80" y="103" text-anchor="middle" font-size="16" fill="#fff" opacity=".9">+</text><rect x="58" y="46" width="18" height="26" rx="2.5" fill="#fff" stroke="rgba(0,0,0,.25)" transform="rotate(-8 67 59)"></rect><rect x="68" y="46" width="18" height="26" rx="2.5" fill="#fff" stroke="rgba(0,0,0,.25)" transform="rotate(0 77 59)"></rect><rect x="78" y="46" width="18" height="26" rx="2.5" fill="#fff" stroke="rgba(0,0,0,.25)" transform="rotate(8 87 59)"></rect></svg></div><b>Real people right now</b><p>The numbers at the top of the page are live. You can see who's at every table before you sit down and join a game that's already under way.</p></div><div class="fpic"><div class="fimg"><svg viewBox="0 0 160 120"><rect width="160" height="120" fill="#327333"></rect><rect x="6" y="6" width="148" height="108" rx="10" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="2"></rect><image href="botBadge.png" x="66" y="8" width="28" height="28"></image><image href="botBadge.png" x="8" y="46" width="28" height="28"></image><image href="botBadge.png" x="124" y="46" width="28" height="28"></image><circle cx="80" cy="98" r="15" fill="#fff" opacity="1"></circle><image href="WomanBusinesswoman.svg" x="66" y="84" width="28" height="28" opacity="1"></image><rect x="52" y="48" width="56" height="22" rx="7" fill="#00a82d"></rect><text x="80" y="63" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff" font-family="BuloRounded, Verdana, sans-serif">Play</text></svg></div><b>You never wait</b><p>Pick a game and a table opens at once. If you'd rather play the bots, they sit down straight away and a solo table has no clock.</p></div><div class="fpic"><div class="fimg"><svg viewBox="0 0 160 120"><rect width="160" height="120" fill="#327333"></rect><rect x="6" y="6" width="148" height="108" rx="10" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="2"></rect><circle cx="80" cy="22" r="15" fill="#fff" opacity="1"></circle><image href="WomanGirl2.svg" x="66" y="8" width="28" height="28" opacity="1"></image><circle cx="22" cy="60" r="15" fill="#fff" opacity="1"></circle><image href="ManCowboy.svg" x="8" y="46" width="28" height="28" opacity="1"></image><circle cx="138" cy="60" r="15" fill="#fff" opacity="1"></circle><image href="AnimalCat.svg" x="124" y="46" width="28" height="28" opacity="1"></image><circle cx="80" cy="98" r="15" fill="#fff" opacity="0.38"></circle><image href="WomanBusinesswoman.svg" x="66" y="84" width="28" height="28" opacity="0.38"></image><rect x="62" y="46" width="18" height="26" rx="2.5" fill="#fff" stroke="rgba(0,0,0,.25)" transform="rotate(-4 71 59)"></rect><rect x="72" y="46" width="18" height="26" rx="2.5" fill="#fff" stroke="rgba(0,0,0,.25)" transform="rotate(4 81 59)"></rect><circle cx="104" cy="98" r="11" fill="#fff"></circle><circle cx="104" cy="98" r="8.5" fill="none" stroke="#141414" stroke-width="1.6"></circle><path d="M104 93v5l3 2" fill="none" stroke="#141414" stroke-width="1.6" stroke-linecap="round"></path></svg></div><b>The table waits for you</b><p>If your connection drops in a ranked game, your seat is held for three minutes. A solo game waits for hours, so you can close the laptop and come back after dinner.</p></div><div class="fpic"><div class="fimg"><svg viewBox="0 0 160 120"><rect width="160" height="120" fill="#327333"></rect><rect x="6" y="6" width="148" height="108" rx="10" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="2"></rect><rect x="44" y="70" width="18" height="26" rx="2.5" fill="#fff" stroke="rgba(0,0,0,.25)" transform="rotate(-16 53 83)"></rect><rect x="54" y="70" width="18" height="26" rx="2.5" fill="#fff" stroke="rgba(0,0,0,.25)" transform="rotate(-8 63 83)"></rect><rect x="64" y="70" width="18" height="26" rx="2.5" fill="#fff" stroke="rgba(0,0,0,.25)" transform="rotate(0 73 83)"></rect><rect x="74" y="70" width="18" height="26" rx="2.5" fill="#fff" stroke="rgba(0,0,0,.25)" transform="rotate(8 83 83)"></rect><rect x="84" y="70" width="18" height="26" rx="2.5" fill="#fff" stroke="rgba(0,0,0,.25)" transform="rotate(16 93 83)"></rect><path d="M80 22v24" stroke="#f4c360" stroke-width="4" stroke-linecap="round"></path><path d="M71 39l9 10 9-10" fill="none" stroke="#f4c360" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></path></svg></div><b>Help while you learn</b><p>For your first ten games of anything new, arrows point at a good card. Then they fade on their own. Every game has a rules page and a short tutorial.</p></div><div class="fpic"><div class="fimg"><svg viewBox="0 0 160 120"><rect width="160" height="120" fill="#327333"></rect><rect x="6" y="6" width="148" height="108" rx="10" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="2"></rect><circle cx="22" cy="60" r="15" fill="#fff" opacity="1"></circle><image href="ManCowboy.svg" x="8" y="46" width="28" height="28" opacity="1"></image><circle cx="138" cy="60" r="15" fill="#fff" opacity="1"></circle><image href="AnimalCat.svg" x="124" y="46" width="28" height="28" opacity="1"></image><rect x="46" y="30" width="68" height="30" rx="10" fill="#fff"></rect><path d="M60 60l-6 8 14-8z" fill="#fff"></path><text x="80" y="50" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#141414" font-family="BuloRounded, Verdana, sans-serif">Good game!</text><path d="M104 84c-4-6-12 0-6 6l6 6 6-6c6-6-2-12-6-6z" fill="#e54e40"></path></svg></div><b>Tables stay friendly</b><p>Mute or block anyone in one click and flag a message for review. People who keep spoiling games play the bots for a while.</p></div><div class="fpic"><div class="fimg"><svg viewBox="0 0 160 120"><rect width="160" height="120" fill="#327333"></rect><rect x="6" y="6" width="148" height="108" rx="10" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="2"></rect><rect x="40" y="10" width="80" height="22" rx="7" fill="#fff"></rect><text x="80" y="25" text-anchor="middle" font-size="12" font-weight="bold" fill="#141414" font-family="BuloRounded, Verdana, sans-serif">maple</text><circle cx="22" cy="60" r="15" fill="#fff" opacity="1"></circle><image href="WomanGirl2.svg" x="8" y="46" width="28" height="28" opacity="1"></image><circle cx="138" cy="60" r="15" fill="#fff" opacity="1"></circle><image href="WomanBusinesswoman.svg" x="124" y="46" width="28" height="28" opacity="1"></image><circle cx="80" cy="98" r="14" fill="none" stroke="#fff" stroke-dasharray="3 3" stroke-width="1.5" opacity=".8"></circle><text x="80" y="103" text-anchor="middle" font-size="16" fill="#fff" opacity=".9">+</text><path d="M70 58a8 8 0 0 1 11-11l4 4M90 62a8 8 0 0 1-11 11l-4-4M74 74l12-12" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"></path></svg></div><b>Your own table</b><p>Give a private table a name and send your friends the link. They don't need an account to join and the same name works every week.</p></div></div></div><div class="measure"><h3>Frequently asked questions</h3><div class="faqi"><b>Is it free?</b><p>Yes. All eighteen games are free to play and the ads pay for the site. If you'd rather play without ads, a small subscription turns them off and you see the price before you pay anything.</p></div><div class="faqi"><b>Do I need an account?</b><p>No. You can sit down and play as a guest right away. If you sign up, your name, stats, avatar and settings follow you to any computer, tablet or phone. Ranked games open after ten finished games.</p></div><div class="faqi"><b>Can I play on my own, right now?</b><p>Yes. Pick a game and choose Play bots. The bots sit down at once and a solo table has no clock, so take as long as you like over a hand.</p></div><div class="faqi"><b>How do I get to a table with real people?</b><p>Finish one game against the bots in that game first, then the tables with people open up for it. An invite link, a friend's table or a rematch skips that first game.</p></div><div class="faqi"><b>Can I play with friends?</b><p>Yes. None of them needs an account. Once you've finished one game here, choose Host table, tick Private and give the table a name. Tell your friends the name, or send them the invite link.</p></div><div class="faqi"><b>Can I play competitively?</b><p>Yes. Ranked games use a rating that starts at 1500 and moves with every result. There are daily, weekly and monthly <a href="#leaderboards">leaderboards</a> for each game. You need an account and ten finished games first.</p></div><div class="faqi"><b>I've never played this game. Can I learn it here?</b><p>Yes. Every game has a <a href="#rules">rules page</a> and a short hands-on tutorial. In your first ten games, arrows point out a good card to play. A hint link stays after that.</p></div><div class="faqi"><b>What happens if my internet drops mid-game?</b><p>In a ranked game your seat is held for three minutes, so you can come back to the same hand. A dropped connection isn't treated as quitting. A solo game waits for hours.</p></div><div class="faqi"><b>What if someone is rude at the table?</b><p>Hover over their name and choose Mute to hide their chat, or Block so you're never seated together at a public table again. Every chat message also has a flag and flagged chat gets reviewed.</p></div><div class="faqi"><b>Are the cards dealt fairly?</b><p>Yes. Every hand is shuffled on my server with a fresh random number for each deal, before anyone sees a card. There's no way for me or anyone else to steer what you're dealt. The shuffle tests are on the site.</p></div></div><div class="measure"><div class="qtiles qs-namefirst"><div class="q"><span class="av"><img src="WomanCowgirl.svg" alt=""></span><div><p class="qt">I have been on this site for more than 10 years because of the camaraderie.</p><p class="qw"><b>Irean</b><span class="qwho">Texas, USA</span></p></div></div><div class="q"><span class="av"><img src="AnimalFox.svg" alt=""></span><div><p class="qt">I came upon your site a few days ago and love it. I play against the bots and the skill level is very competitive, especially compared to other sites I have seen.</p><p class="qw"><b>Dennis</b><span class="qwho">Ontario, Canada</span></p></div></div><div class="q"><span class="av"><img src="ManCowboy.svg" alt=""></span><div><p class="qt">Just retired after 20 years and I live for YOUR card games! Best on the net.</p><p class="qw"><b>RC</b><span class="qwho">Florida, USA</span></p></div></div></div></div><div class="measure"><h3>What's new</h3><p>Below are the latest changes. Many of them began as an email from a player. If you spot something, write to me at <a class="mail" href="mailto:holger@worldofcardgames.com">holger@worldofcardgames.com</a>. The <a href="#changelog">full changelog</a> goes back over ten years.</p><div class="nwi"><span>Go Fish and Old Maid sort your hand by rank. <span class="ntag">New</span></span><time>3 Sep</time></div><div class="nwi"><span>Short, wide windows use the compact layout again. <span class="ntag">Improved</span></span><time>3 Sep</time></div><div class="nwi"><span>The screen freezing when cards were rearranged in Double Deck Pinochle and Gin Rummy. <span class="ntag">Fixed</span></span><time>31 Aug</time></div><div class="nwi"><span>Failed nil tricks in Spades now count as bags. <span class="ntag">Fixed</span></span><time>31 Aug</time></div><div class="nwi"><span>The right bower can be played when going alone in Euchre. <span class="ntag">Fixed</span></span><time>31 Aug</time></div><div class="nwi"><span>Opponent cards showing face up in Hand &amp; Foot. <span class="ntag">Fixed</span></span><time>31 Aug</time></div><div class="nwi"><span>Phantom wild cards in Hand &amp; Foot melds. <span class="ntag">Fixed</span></span><time>21 Aug</time></div><div class="nwi"><span>The Euchre chat button resizing the screen on phones. <span class="ntag">Fixed</span></span><time>21 Aug</time></div></div></div>
   </div>
   <!-- about-section end -->
   <div id="lobby-slot-bottom"></div>
@@ -4028,35 +4047,47 @@
   <div class="sitefooter">
     <div class="footer-basic">
       <footer>
-        <div class="footerSection footerGames">
-          <ul class="list-inline">
-            <li class="list-inline-item"><strong>Games</strong></li>
-            <li class="list-inline-item"><a href="/hearts">Hearts</a></li>
-            <li class="list-inline-item"><a href="/spades">Spades</a></li>
-            <li class="list-inline-item"><a href="/euchre">Euchre</a></li>
-            <li class="list-inline-item"><a href="/gin-rummy">Gin Rummy</a></li>
-            <li class="list-inline-item"><a href="/cribbage">Cribbage</a></li>
-            <li class="list-inline-item"><a href="/pinochle">Pinochle</a></li>
-            <li class="list-inline-item"><a href="/double-deck-pinochle">DD Pinochle</a></li>
-          </ul>
-          <ul class="list-inline">
-            <li class="list-inline-item footerSpacer">&nbsp;</li>
-            <li class="list-inline-item"><a href="/canasta">Canasta</a></li>
-            <li class="list-inline-item"><a href="/hand-and-foot">Hand &amp; Foot</a></li>
-            <li class="list-inline-item"><a href="/rummy">Rummy</a></li>
-            <li class="list-inline-item"><a href="/crazy-eights">Crazy Eights</a></li>
-            <li class="list-inline-item"><a href="/bridge">Bridge</a></li>
-            <li class="list-inline-item"><a href="/whist">Whist</a></li>
-          </ul>
-          <ul class="list-inline">
-            <li class="list-inline-item footerSpacer">&nbsp;</li>
-            <li class="list-inline-item"><a href="/go-fish">Go Fish</a></li>
-            <li class="list-inline-item"><a href="/old-maid">Old Maid</a></li>
-            <li class="list-inline-item"><a href="/sheepshead">Sheepshead</a></li>
-            <li class="list-inline-item"><a href="/twenty-nine">Twenty-Nine</a></li>
-            <li class="list-inline-item"><a href="/sergeant-major">Sergeant Major</a></li>
-            <li class="list-inline-item"><a href="https://papergames.io/">Board Games</a></li>
-          </ul>
+        <div class="footerSection footerGroup">
+          <strong>Trick-taking games</strong>
+          <div class="footerCols">
+            <ul class="list-inline">
+              <li class="list-inline-item"><a href="/hearts">Hearts</a></li>
+              <li class="list-inline-item"><a href="/spades">Spades</a></li>
+              <li class="list-inline-item"><a href="/euchre">Euchre</a></li>
+              <li class="list-inline-item"><a href="/pinochle">Pinochle</a></li>
+              <li class="list-inline-item"><a href="/double-deck-pinochle">DD Pinochle</a></li>
+            </ul>
+            <ul class="list-inline">
+              <li class="list-inline-item"><a href="/bridge">Bridge</a></li>
+              <li class="list-inline-item"><a href="/whist">Whist</a></li>
+              <li class="list-inline-item"><a href="/sheepshead">Sheepshead</a></li>
+              <li class="list-inline-item"><a href="/twenty-nine">Twenty-Nine</a></li>
+              <li class="list-inline-item"><a href="/sergeant-major">Sergeant Major</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="footerSection footerGroup">
+          <strong>Rummy games</strong>
+          <div class="footerCols">
+            <ul class="list-inline">
+              <li class="list-inline-item"><a href="/canasta">Canasta</a></li>
+              <li class="list-inline-item"><a href="/gin-rummy">Gin Rummy</a></li>
+              <li class="list-inline-item"><a href="/hand-and-foot">Hand &amp; Foot</a></li>
+              <li class="list-inline-item"><a href="/rummy">Rummy</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="footerSection footerGroup">
+          <strong>Classic games</strong>
+          <div class="footerCols">
+            <ul class="list-inline">
+              <li class="list-inline-item"><a href="/cribbage">Cribbage</a></li>
+              <li class="list-inline-item"><a href="/crazy-eights">Crazy Eights</a></li>
+              <li class="list-inline-item"><a href="/go-fish">Go Fish</a></li>
+              <li class="list-inline-item"><a href="/old-maid">Old Maid</a></li>
+              <li class="list-inline-item"><a href="https://papergames.io/">Board Games</a></li>
+            </ul>
+          </div>
         </div>
         <div class="footerSection footerResources">
           <ul class="list-inline">
@@ -4066,23 +4097,23 @@
             <li class="list-inline-item"><a href="/rules">Rules &amp; Guides</a></li>
             <li class="list-inline-item"><a href="https://worldofcardgames.com/blog/">Blog</a></li>
             <li class="list-inline-item"><a href="/contact">Contact</a></li>
-            <li class="list-inline-item"><a href="/world-of-card-games-privacy-policy">Privacy Policy</a></li>
-            <li class="list-inline-item"><a href="/community-guidelines">Community Guidelines</a></li>
-            <li class="list-inline-item tosSocial"><a href="/world-of-card-games-terms-of-use">ToS</a>
-            </li>
           </ul>
         </div>
-        <div class="footerSection footerRaptive">
-          <div class="adthrive-comscore adthrive-footer-message">
-            <div class="adthrive-privacy-preferences"><a href="#">Update Privacy Preferences</a></div>
-            <div class="raptive-content-terms-footer"><a href="#" class="raptive-content-terms-footer-link">Terms of Content Use</a></div>
-            <span>A Raptive Partner Site</span>
-            <div class="social">
+        <div class="footerSection footerLegal">
+          <ul class="list-inline">
+            <li class="list-inline-item"><strong>Legal</strong></li>
+            <li class="list-inline-item"><a href="/world-of-card-games-privacy-policy">Privacy Policy</a></li>
+            <li class="list-inline-item"><a href="/world-of-card-games-terms-of-use">Terms of Use</a></li>
+            <li class="list-inline-item"><a href="/community-guidelines">Community Guidelines</a></li>
+            <li class="list-inline-item adthrive-privacy-preferences"><a href="#">Update Privacy Preferences</a></li>
+            <li class="list-inline-item raptive-content-terms-footer"><a href="#" class="raptive-content-terms-footer-link">Terms of Content Use</a></li>
+            <li class="list-inline-item footerPartner">A Raptive Partner Site</li>
+            <li class="list-inline-item footerSocial"><div class="social">
                 <a href="https://x.com/WorldOfCardGamz"><img src="icons8-x-48.png" alt="X" loading="lazy" width="24" height="24"></a>
                 <a href="https://www.facebook.com/WorldOfCardGames/"><img src="icons8-facebook-48.png" alt="Facebook" loading="lazy" width="24" height="24"></a>
                 <a href="https://www.youtube.com/c/Worldofcardgames"><img src="icons8-youtube-48.png" alt="YouTube" loading="lazy" width="24" height="24"></a>
-              </div>
-          </div>
+              </div></li>
+          </ul>
         </div>
       </footer>
     </div>
@@ -4393,12 +4424,21 @@
   /* the coat of the corner buttons the open and live tiles show on hover (5 September) */
   var CBTNS = [
     ["gameyellow", "The game's yellow button (#FFE066, dark orange ink)"],
+    ["official", "The official in-game button (6 Sep 2026): flat #FFD75A, leather ink, see-through warm ring, 1px shadow"],
     ["triogreen", "Trio green, outlined letters"],
     ["evergreen", "Evernote green (#00a82d), outlined letters"],
     ["lightblue", "Light blue (the lobby's light button)"],
     ["blue", "Blue (the lobby's blue button)"]
   ];
-  var curCbtn = "gameyellow";
+  var curCbtn = "official"; /* 6 September: the open and live tiles' hover buttons use the official in-game button by default */
+  /* the game's official button, final 6 September 2026 (game-button-lab.html tile 108): flat warm lemon #FFD75A, leather ink #5C3A00,
+     a see-through 1px ring in the ink colour at 70%, a 1px drop shadow, a 20px squircle. "felt" draws it on the buttons that sit on
+     the felt (the open and live tiles) and gives the game-yellow corner buttons the new colour; the page's buttons stay flat without the ring. */
+  var BFINS = [
+    ["asis", "As designed (each button its own finish)"],
+    ["felt", "The game's official button on the felt (open and live tiles): flat, a see-through ring in the ink colour at 70% and a 1px drop shadow; light yellow becomes #FFD75A"]
+  ];
+  var curBfin = "asis";
   var TODAYS = [["inkcanvas", "The facts cell, its line one tone darker than the grid, ink number"], ["inkcanvasgreen", "The facts cell, its line one tone darker than the grid, green number"], ["inkedge", "Like the facts cells: the canvas fill in the grid's lines, the ink number"], ["inkwarm", "Evernote ink number, the bar's ring #c9c0ae as the frame, the band's tint as the fill"], ["frame1", "Green number in a 1px green frame"], ["inkframe1", "Evernote ink number in a 1px ink frame (#3d3d3a)"], ["everframe1", "Evernote green number in a 1px Evernote frame"], ["lime", "Lime fill, dark green number (the badge's pair)"], ["everfill", "Evernote green fill, white number"],
     ["bluefill", "The nameplate's light blue, blue number"], ["pill", "A green disc behind a white number (Apple, Google)"], ["dot", "A green dot under the number"],
     ["ring", "A green outlined circle, green number (Material's today)"], ["ringink", "An ink outlined circle"], ["underline", "A green underline under the number"],
@@ -4419,8 +4459,8 @@
   ];
   var curOtColor = "warmdarkergreen";
   /* the air between the sections: the padding above and below each band, measured from the seam's rule */
-  var SGAPS = [["48", "48px, as settled"], ["56", "56px"], ["64", "64px"], ["72", "72px"], ["80", "80px"], ["96", "96px"]];
-  var curSgap = "48";
+  var SGAPS = [["48", "48px, the earlier setting"], ["56", "56px, as settled (7 Sep 2026)"], ["64", "64px"], ["72", "72px"], ["80", "80px"], ["96", "96px"]];
+  var curSgap = "56";
   /* what a cell of the games bar does under the pointer */
   var OTHOVERS = [["fill", "The whole segment fills, a shade darker than the tray"], ["ink", "Only the ink darkens, no fill"]];
   var curOtHover = "fill";
@@ -4641,7 +4681,84 @@
     .concat(LUMVARIANTS.map(function (v) {
       return [v[0], "luminosity " + v[0].slice(4) + " — " + v[3]];
     }));
-  var curAvedge = "lum-soft";
+  var curAvedge = "litrim8"; /* 6 September: Holger chose the lit inner rim at 8% */
+  /* 6 September: light edges for the avatars on the felt tiles. The grey inner rim and the dark ghost ring both darken the
+     silhouette's edge, so light faces and hair sink into the felt; on a dark ground the edge has to be light. Three options:
+     a white keyline outside (45%, and 70% as the sticker strength), the two-tone (the grey rim inside + the white line outside,
+     the pair that survives any wallpaper), and a lit inner rim (the same eroded rim, inked white instead of grey). All compose
+     with the Avatar shadow switcher; "Tile-soft" gives the cleanest read of the keylines (no dark ghost ring outside them). */
+  AVEDGES.push(
+    ["whitekey45", "White keyline outside, 1px at 45% (6 Sep: light edge for the felt)"],
+    ["whitekey70", "White keyline outside, 1px at 70% (sticker strength)"],
+    ["twotone", "Two-tone: grey rim inside + white keyline outside (survives any ground)"],
+    ["litrim", "Lit inner rim: the eroded rim inked white at 50%"],
+    ["litrim35", "Lit inner rim at 35%"],
+    ["litrim25", "Lit inner rim at 25%"],
+    ["litrim15", "Lit inner rim at 15% (barely there)"],
+    ["litrimw30", "Lit inner rim, warm cream at 30%"],
+    ["litrim25ring30", "Lit inner rim 25% + dark outer ring .30 (light inside, dark outside, as the game button)"],
+    ["litrim25ring45", "Lit inner rim 25% + dark outer ring .45"],
+    ["litrim35ring30", "Lit inner rim 35% + dark outer ring .30"],
+    ["litrim12", "Lit inner rim at 12%"],
+    ["litrim8", "Lit inner rim at 8%"],
+    ["litrim15btn", "Lit inner rim 15% + the game button's ring: leather #5C3A00 at 70% outside, 1px drop shadow"],
+    ["litrim15btn45", "Lit inner rim 15% + the game button's ring at 45%"],
+    ["litrim12btn45", "Lit inner rim 12% + the game button's ring at 45%"]
+  );
+  (function () {
+    var defs = document.querySelector("svg defs");
+    function lit(id, ink, op) {
+      var f = document.createElementNS("http://www.w3.org/2000/svg", "filter");
+      f.setAttribute("id", id); f.setAttribute("x", "-2%"); f.setAttribute("y", "-2%"); f.setAttribute("width", "104%"); f.setAttribute("height", "104%"); f.setAttribute("color-interpolation-filters", "sRGB");
+      f.innerHTML = '<feMorphology in="SourceAlpha" operator="erode" radius="1" result="eroded"/>' +
+        '<feComposite in="SourceAlpha" in2="eroded" operator="out" result="ring"/>' +
+        '<feFlood flood-color="' + ink + '" flood-opacity="' + op + '"/>' +
+        '<feComposite in2="ring" operator="in" result="ringInk"/>' +
+        '<feBlend in="ringInk" in2="SourceGraphic" mode="normal"/>';
+      defs.appendChild(f);
+    }
+    lit("avatarEdge-litrim", "#ffffff", "0.5"); lit("avatarEdge-litrim35", "#ffffff", "0.35"); lit("avatarEdge-litrim25", "#ffffff", "0.25");
+    lit("avatarEdge-litrim15", "#ffffff", "0.15"); lit("avatarEdge-litrimw30", "#FFF3C2", "0.30");
+    lit("avatarEdge-litrim12", "#ffffff", "0.12"); lit("avatarEdge-litrim8", "#ffffff", "0.08");
+    function warm(a) { return "drop-shadow(1px 0 rgba(92,58,0," + a + ")) drop-shadow(-1px 0 rgba(92,58,0," + a + ")) drop-shadow(0 1px rgba(92,58,0," + a + ")) drop-shadow(0 -1px rgba(92,58,0," + a + ")) drop-shadow(0 1px 2px rgba(0,0,0,.30))"; }
+    function dark(a) { return "drop-shadow(1px 0 rgba(0,0,0," + a + ")) drop-shadow(-1px 0 rgba(0,0,0," + a + ")) drop-shadow(0 1px rgba(0,0,0," + a + ")) drop-shadow(0 -1px rgba(0,0,0," + a + "))"; }
+    function key(a) { return "drop-shadow(1px 0 rgba(255,255,255," + a + ")) drop-shadow(-1px 0 rgba(255,255,255," + a + ")) drop-shadow(0 1px rgba(255,255,255," + a + ")) drop-shadow(0 -1px rgba(255,255,255," + a + "))"; }
+    var st = document.createElement("style");
+    st.textContent =
+      "body.avedge-whitekey45 .lobbyscope .player img { filter: " + key(".45") + " var(--avshadow); }\n" +
+      "body.avedge-whitekey45 .lobbyscope .ltInviteeAv::after { box-shadow: 0 0 0 1px rgba(255,255,255,.45); mix-blend-mode: normal; }\n" +
+      "body.avedge-whitekey70 .lobbyscope .player img { filter: " + key(".70") + " var(--avshadow); }\n" +
+      "body.avedge-whitekey70 .lobbyscope .ltInviteeAv::after { box-shadow: 0 0 0 1px rgba(255,255,255,.70); mix-blend-mode: normal; }\n" +
+      "body.avedge-twotone .lobbyscope .player img { filter: url(#avatarEdge-lum-soft) " + key(".60") + " var(--avshadow); }\n" +
+      "body.avedge-twotone .lobbyscope .ltInviteeAv::after { box-shadow: inset 0 0 0 1px rgba(115,115,115,.55), 0 0 0 1px rgba(255,255,255,.60); mix-blend-mode: normal; }\n" +
+      "body.avedge-litrim .lobbyscope .player img { filter: url(#avatarEdge-litrim) var(--avshadow); }\n" +
+      "body.avedge-litrim .lobbyscope .ltInviteeAv::after { box-shadow: inset 0 0 0 1px rgba(255,255,255,.5); mix-blend-mode: normal; }\n" +
+      "body.avedge-litrim35 .lobbyscope .player img { filter: url(#avatarEdge-litrim35) var(--avshadow); }\n" +
+      "body.avedge-litrim35 .lobbyscope .ltInviteeAv::after { box-shadow: inset 0 0 0 1px rgba(255,255,255,.35); mix-blend-mode: normal; }\n" +
+      "body.avedge-litrim25 .lobbyscope .player img { filter: url(#avatarEdge-litrim25) var(--avshadow); }\n" +
+      "body.avedge-litrim25 .lobbyscope .ltInviteeAv::after { box-shadow: inset 0 0 0 1px rgba(255,255,255,.25); mix-blend-mode: normal; }\n" +
+      "body.avedge-litrim15 .lobbyscope .player img { filter: url(#avatarEdge-litrim15) var(--avshadow); }\n" +
+      "body.avedge-litrim15 .lobbyscope .ltInviteeAv::after { box-shadow: inset 0 0 0 1px rgba(255,255,255,.15); mix-blend-mode: normal; }\n" +
+      "body.avedge-litrimw30 .lobbyscope .player img { filter: url(#avatarEdge-litrimw30) var(--avshadow); }\n" +
+      "body.avedge-litrimw30 .lobbyscope .ltInviteeAv::after { box-shadow: inset 0 0 0 1px rgba(255,243,194,.30); mix-blend-mode: normal; }\n" +
+      "body.avedge-litrim25ring30 .lobbyscope .player img { filter: url(#avatarEdge-litrim25) " + dark(".30") + " var(--avshadow); }\n" +
+      "body.avedge-litrim25ring30 .lobbyscope .ltInviteeAv::after { box-shadow: inset 0 0 0 1px rgba(255,255,255,.25), 0 0 0 1px rgba(0,0,0,.30); mix-blend-mode: normal; }\n" +
+      "body.avedge-litrim25ring45 .lobbyscope .player img { filter: url(#avatarEdge-litrim25) " + dark(".45") + " var(--avshadow); }\n" +
+      "body.avedge-litrim25ring45 .lobbyscope .ltInviteeAv::after { box-shadow: inset 0 0 0 1px rgba(255,255,255,.25), 0 0 0 1px rgba(0,0,0,.45); mix-blend-mode: normal; }\n" +
+      "body.avedge-litrim35ring30 .lobbyscope .player img { filter: url(#avatarEdge-litrim35) " + dark(".30") + " var(--avshadow); }\n" +
+      "body.avedge-litrim35ring30 .lobbyscope .ltInviteeAv::after { box-shadow: inset 0 0 0 1px rgba(255,255,255,.35), 0 0 0 1px rgba(0,0,0,.30); mix-blend-mode: normal; }\n" +
+      "body.avedge-litrim12 .lobbyscope .player img { filter: url(#avatarEdge-litrim12) var(--avshadow); }\n" +
+      "body.avedge-litrim12 .lobbyscope .ltInviteeAv::after { box-shadow: inset 0 0 0 1px rgba(255,255,255,.12); mix-blend-mode: normal; }\n" +
+      "body.avedge-litrim8 .lobbyscope .player img { filter: url(#avatarEdge-litrim8) var(--avshadow); }\n" +
+      "body.avedge-litrim8 .lobbyscope .ltInviteeAv::after { box-shadow: inset 0 0 0 1px rgba(255,255,255,.08); mix-blend-mode: normal; }\n" +
+      "body.avedge-litrim15btn .lobbyscope .player img { filter: url(#avatarEdge-litrim15) " + warm(".70") + " var(--avshadow); }\n" +
+      "body.avedge-litrim15btn .lobbyscope .ltInviteeAv::after { box-shadow: inset 0 0 0 1px rgba(255,255,255,.15), 0 0 0 1px rgba(92,58,0,.70), 0 1px 2px rgba(0,0,0,.30); mix-blend-mode: normal; }\n" +
+      "body.avedge-litrim15btn45 .lobbyscope .player img { filter: url(#avatarEdge-litrim15) " + warm(".45") + " var(--avshadow); }\n" +
+      "body.avedge-litrim15btn45 .lobbyscope .ltInviteeAv::after { box-shadow: inset 0 0 0 1px rgba(255,255,255,.15), 0 0 0 1px rgba(92,58,0,.45), 0 1px 2px rgba(0,0,0,.30); mix-blend-mode: normal; }\n" +
+      "body.avedge-litrim12btn45 .lobbyscope .player img { filter: url(#avatarEdge-litrim12) " + warm(".45") + " var(--avshadow); }\n" +
+      "body.avedge-litrim12btn45 .lobbyscope .ltInviteeAv::after { box-shadow: inset 0 0 0 1px rgba(255,255,255,.12), 0 0 0 1px rgba(92,58,0,.45), 0 1px 2px rgba(0,0,0,.30); mix-blend-mode: normal; }\n";
+    document.head.appendChild(st);
+  })();
   var AVSHADOWS = [
     ["ghostramp", "Ghost ring .12 + layered ramp"],
     ["ghostramp32", "Ghost ring .32 + ramp (strong)"],
@@ -4652,9 +4769,10 @@
     ["tilesoft", "Tile-soft: layered ramp, no ring"],
     ["grounded", "Grounded: contact + ramp"],
     ["game", "Game ambient 8px (site today)"],
+    ["nameplate", "As the nameplate: ring .30 + its two drops (1px 3px .35, 2px 6px .25)"],
     ["none", "None"]
   ];
-  var curAvshadow = "ghostramp";
+  var curAvshadow = "hover"; /* 6 September: Holger chose ghost ring + all-around ambient */
   var CNAVS = [
     ["sub-suits", "Subtitle: suit thread \u2014 small suits dealt in from the left (default)"],
     ["none", "None: old subtitle, no categories"],
@@ -5658,7 +5776,7 @@
   }
   function applyBody() {
     var scene = curLayout.indexOf("sc") === 0;
-    document.body.className = curBase + " play-" + curPlay + " layout-" + curLayout + (scene ? " scenehero" : "") + " font-" + curFont + " shadow-" + curShadow + " edge-" + curEdge + " tex-" + curTexture + " cat-" + curCatalog + " stats-" + curStats + " menu-" + curMenu + " counter-" + curCounter + " rail-" + curRail + " playbtn-" + curPlayBtn + " avedge-" + curAvedge + " avsh-" + curAvshadow + " cnav-" + curCnav + " foot-" + curFooter + " viewer-" + curViewer + " sect-" + curSect + " div-" + curDivider + " cbtn-" + curCbtn + " today-" + curToday + " otc-" + curOtColor + " sgap-" + curSgap + " othover-" + curOtHover + " lhover-" + curLhover + " tilebg-" + curTileBg + " pinpair-" + curPinPair + " tint-" + curTint + (palShown ? " show-palette" : "");
+    document.body.className = curBase + " play-" + curPlay + " layout-" + curLayout + (scene ? " scenehero" : "") + " font-" + curFont + " shadow-" + curShadow + " edge-" + curEdge + " tex-" + curTexture + " cat-" + curCatalog + " stats-" + curStats + " menu-" + curMenu + " counter-" + curCounter + " rail-" + curRail + " playbtn-" + curPlayBtn + " avedge-" + curAvedge + " avsh-" + curAvshadow + " cnav-" + curCnav + " foot-" + curFooter + " viewer-" + curViewer + " sect-" + curSect + " div-" + curDivider + " cbtn-" + curCbtn + " bfin-" + curBfin + " today-" + curToday + " otc-" + curOtColor + " sgap-" + curSgap + " othover-" + curOtHover + " lhover-" + curLhover + " tilebg-" + curTileBg + " pinpair-" + curPinPair + " tint-" + curTint + (palShown ? " show-palette" : "");
     applyTints();
     var ht = document.getElementById("herotitle"), hs = document.getElementById("herosub");
     if (scene) {
@@ -5982,10 +6100,12 @@
   buildSel("sel-othover", OTHOVERS, function (v) { curOtHover = v; });
   buildSel("sel-stats", STATSLINES, function (v) { curStats = v; });
   buildSel("sel-cbtn", CBTNS, function (v) { curCbtn = v; });
+  buildSel("sel-bfin", BFINS, function (v) { curBfin = v; });
   buildSel("sel-today", TODAYS, function (v) { curToday = v; });
   (function () {
     var bar = document.querySelector(".switchbar");
     var zone = document.querySelector(".switchzone");
+    if (/github\.io$/i.test(location.hostname)) document.documentElement.classList.add("published");
     zone.addEventListener("mouseenter", function () { bar.classList.add("isOpen"); });
     document.addEventListener("mousedown", function (e) {
       if (!bar.contains(e.target) && !zone.contains(e.target)) bar.classList.remove("isOpen");
