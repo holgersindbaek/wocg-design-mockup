@@ -122,7 +122,7 @@
 </ol>
 
 <h2>The pick</h2>
-<p>Row 11 (the works) is the most improved face; row 4 (the three borders at 2 units) is the smallest edit that changes what you see at 48; row 8 (the three plus the deeper beard) is the one I would ship first, because the beard is the only part of this face that is actually missing at the listing size, and the borders are what make the cap and the shirt read as sewn things rather than colour fields. With the frontpage's outline kept as it is.</p>
+<p>First round: row 11 (the works) is the most improved face and row 8 (the three borders plus the deeper beard) the one to ship; but the borders read as drawn lines, which was not the ask. Second round: the separation without lines. <b>Row 10 of the softer set</b> (the cap's soft shadow on the forehead, the shirt's on the neck, the beard's edge shaded, the beard one step deeper) says "here the skin ends and the red begins" the way the packs already say it at the neck, and nothing in it is a contour. <b>Row 6</b> (contact bands in each part's own darker tone, 2 units, plus the deeper beard) is the crisper alternative for the 48px listing, where a blurred shade is one pixel wide. Either keeps the frontpage's outline as it is.</p>
 </div>
 
 <script>
@@ -143,6 +143,20 @@ var VARIANTS = [
   { id: "v12-rule", name: "A rule, not picks", note: "Every filled shape (except the eyes, the small marks and the teeth) gets a 2-unit inset border in its own fill darkened 28%. What a script could do to all 158 avatars.", met: "every edge one step", cost: "52.5 KB", risk: "The face's shade band gets a border too: a line down the cheek. A rule needs a skip list for shading shapes." },
   { id: "v13-ink", name: "The comic version", note: "A 1.5-unit inset border in the shared ink #27273d on every major shape. Shown to bound the range.", met: "every edge in ink", cost: "50 KB", risk: "A different style from the other 157 files; heavy at 96." },
   { id: "v14-facedark", name: "The three + a deeper shade side", note: "The three borders and the face's shade band one step deeper (#f3a696, 1.32:1 on the skin instead of 1.17), so the head has a lit and a shadow side at 48.", met: "shade band 1.17 → 1.32", cost: "one style value", risk: "Two steps would turn the band into a stripe." }
+];
+
+/* the softer set (7 September, second round): separation, not lines */
+var SOFT = [
+  { id: "s01-hint", name: "A hint: 1 unit, 15% darker", note: "The three insets at 1 unit (0.6px at 96) in their own fill darkened only 15%.", met: "cap edge 3.4 → 4.0 · beard 1.55 → 1.9", cost: "36 KB", risk: "Under 96 it is gone; at 96 it is nearly gone." },
+  { id: "s02-faint", name: "Faint and neutral: black at 15%", note: "The three insets at 2 units, black at 15% instead of a picked colour: one neutral occlusion line, the same rule for any fill.", met: "every edge about one step", cost: "36 KB", risk: "The same grey on the red, the skin and the navy; a little dead on the cap." },
+  { id: "s03-contact", name: "Contact bands only", note: "Bands only where two colours meet: the cap's inset kept only over the face (the forehead edge, not the crown's top), the shirt's only over the neck and the collar (the neckline), the beard's whole edge. Own fill darkened 22%, 2 units.", met: "cap/forehead 3.4 → 5.2 · neckline 4.5 → 5.3", cost: "38 KB", risk: "The brim (over the face) keeps its whole inset; the crown's top edge gets none, which is right." },
+  { id: "s04-shade", name: "The same as a shade", note: "The contact bands as a shade, not a line: 3 units, black at 16 to 20%, blurred 1.2 units, so the darker shape darkens a little where it meets the lighter one.", met: "a soft step at each contact", cost: "38 KB + 3 blur filters", risk: "Three small blur filters in the file; fine for one avatar, a cost across 158 at 150 picker cells." },
+  { id: "s05-hair", name: "A hairline at the contacts", note: "The contact bands as a 1-unit hairline (0.6px at 96, 0.3 at 48) in the fill darkened 32%: the crispest separation with the least ink.", met: "cap/forehead 3.4 → 6.5 along a hairline", cost: "38 KB", risk: "Under 48 the hairline is sub-pixel and the browser fades it to a tint." },
+  { id: "s06-contact-beard", name: "Contact bands + deeper beard", note: "Row 3 plus the beard's fill one step deeper (#cf8f85), so the beard has a mass as well as an edge.", met: "beard fill 1.55 → 1.78", cost: "38 KB", risk: "" },
+  { id: "s07-shade-beard", name: "Shade + deeper beard", note: "Row 4 plus the deeper beard: the shade version with the beard's mass.", met: "", cost: "38 KB", risk: "" },
+  { id: "s08-both", name: "Hairline at 18% + deeper beard", note: "The hairline at 18% and the deeper beard: the quietest set that still separates at 96.", met: "", cost: "38 KB", risk: "At 48 only the beard's fill change survives." },
+  { id: "s09-cast", name: "Cast shadows: the skin darkens, not the cap", note: "The shade on the lighter side instead: the cap casts a soft 3-unit shadow onto the forehead (the band follows the cap's edge), the shirt onto the neck, and the beard's edge is shaded. The darker shapes stay as drawn; the skin darkens where something sits on it, which is how the packs already shade the neck.", met: "forehead under the cap −20% L in a 3-unit band", cost: "40 KB + blur filters", risk: "The brim's shadow reaches the ear on the left; at 28 it is a faint tan line." },
+  { id: "s10-cast-beard", name: "Cast shadows + deeper beard", note: "Row 9 plus the deeper beard.", met: "", cost: "40 KB", risk: "" }
 ];
 var GROUNDS = [
   { id: "felt", name: "Green felt", img: "green-felt.jpg", size: "100px 100px", color: "#1e5c1d" },
@@ -166,8 +180,16 @@ function imgs(id) {
 }
 function build() {
   var html = "";
+  var all = VARIANTS.map(function (v) { return v; });
   VARIANTS.forEach(function (v, i) {
     html += '<div class="row" data-id="' + v.id + '"><div class="cap"><span class="num">' + i + '</span><b>' + esc(v.name) + '</b> <span class="hex">' + esc(v.id) + '</span>' +
+      '<div>' + esc(v.note) + '</div>' + (v.met ? '<div class="met">' + esc(v.met) + '</div>' : '') +
+      (v.cost ? '<div class="risk">File: ' + esc(v.cost) + '</div>' : '') + (v.risk ? '<div class="risk">Risk: ' + esc(v.risk) + '</div>' : '') + '</div>' +
+      '<div class="stage left">' + imgs(v.id) + '</div><div class="stage paper">' + imgs(v.id) + '</div></div>';
+  });
+  html += '<h2>Softer: separation, not lines</h2><p class="desc">Second round, after Holger\'s note that the borders read as lines: the same edits at a fraction of the weight, and bands only where two colours meet, so the eye is told "here the skin ends and the red begins" without a drawn contour. Rows 9 and 10 turn it around and shade the lighter shape (the forehead under the cap, the neck under the shirt) instead of darkening the darker one.</p>';
+  SOFT.forEach(function (v, i) {
+    html += '<div class="row" data-id="' + v.id + '"><div class="cap"><span class="num">' + (i + 1) + '</span><b>' + esc(v.name) + '</b> <span class="hex">' + esc(v.id) + '</span>' +
       '<div>' + esc(v.note) + '</div>' + (v.met ? '<div class="met">' + esc(v.met) + '</div>' : '') +
       (v.cost ? '<div class="risk">File: ' + esc(v.cost) + '</div>' : '') + (v.risk ? '<div class="risk">Risk: ' + esc(v.risk) + '</div>' : '') + '</div>' +
       '<div class="stage left">' + imgs(v.id) + '</div><div class="stage paper">' + imgs(v.id) + '</div></div>';
