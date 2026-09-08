@@ -48,17 +48,17 @@ than the overlap:
 
 Over the 36-stem set, `/tmp/ablottie/_work/stems.json`:
 
-| | whole-shape strokes | per-run trims |
-|---|---:|---:|
-| overlap | 0.363 | **0.506** |
-| line in both | 176,877 | 221,280 |
-| STRAY | 13,954 | **4,575** |
-| LOST | 78,989 | **56,344** |
+| | whole-shape strokes | per-run trims | + the eight fixes below |
+|---|---:|---:|---:|
+| overlap | 0.363 | 0.506 | **0.726** |
+| line in both | 176,877 | 221,280 | 282,368 |
+| STRAY | 13,954 | 4,575 | **4,121** |
+| LOST | 78,989 | 56,344 | **11,942** |
 
-Every one of eight avatars picked because it was among the worst improved, none regressed:
-RobotGirl_win 0.410 to 0.597, WomanSuperGirl2_win 0.431 to 0.599, OtherRaceCar_win 0.481 to 0.593,
-AnimalPenguin_win 0.447 to 0.478, ManBoy_lose 0.286 to 0.429, WomanWoman4_win 0.694 to 0.812,
-AnimalAlligator_win 0.630 to 0.796, ManGeek_win 0.491 to 0.801.
+Named avatars: `ManClown_win` 0.331 to 0.876, `AnimalPenguin_win` 0.447 to 0.852, `ManBoy_win` 0.540
+to 0.838, `ManLeprechaun_win` 0.824 to 0.921, `WomanWomanTrenchCoat_win` 0.560 to 0.824,
+`RobotNeutral_win` 0.084 to 0.598, `ManGeek_win` 0.491 to 0.801, `AnimalAlligator_win` 0.630 to 0.796.
+Nothing measured regressed.
 
 ## 2. The mechanism, as it ended up
 
@@ -201,6 +201,51 @@ a shape whose scale is 0 at every frame, and the merge-paths family, 66 shapes w
 geometry in nested groups. Lottie has no merge-paths modifier at all, so those groups already render
 as a plain union and a stroke there draws sub-path edges the drawing does not have.
 
+## 3b. Eight more faults, all named by Holger or found measuring them
+
+1. **A band goes directly ABOVE the piece it paints onto**, not below its own layer. Below its own
+   layer is only the same thing when the neighbour sits in a lower layer. `WomanWomanTrenchCoat`'s
+   hair and the face shading that bands onto it are two groups of ONE layer, so every band landed
+   under the hair. Recoloured red and re-rendered, all nine of her band layers painted 0 px; moved
+   to the top they painted 4,467 px, 4,444 of it exactly on the still's line.
+2. **A band goes onto EVERY neighbour it lands on**, not only the biggest. A band gets exactly one
+   track matte, so one neighbour meant the stretches lying on the others were clipped away: her
+   earrings band onto her hair AND her face and only 18 of their 34 units were drawn. 8,966 units
+   corpus-wide, 71% of the band still being lost. One layer per neighbour, each above its own, so
+   where two neighbours overlap the upper one covers the lower one's band and nothing paints twice.
+3. **The merge-paths shapes get a matte pair.** The largest missing class, 24,836 units in 15
+   avatars: every stripe on `AnimalPenguin`, `RobotNeutral`'s whole head shell. Their fill sits above
+   the sub-groups that hold the paths, so there is no outer path to prune to and no mask to write.
+   The subtree is cloned twice instead, once with the fill kept as an alpha matte and once with the
+   fill swapped for a stroke.
+4. **No thinning where the still's own cut is carried.** The thinning existed because a 2-unit inset
+   from both sides of a narrow stripe leaves a solid bar, "which is what the still avoids by cutting
+   the line". The cut is carried now, so the still's own width is what to draw. Thinned as well, her
+   necklace beads came out a hairline where the still rings them at the full 4 units.
+5. **A shape the animation draws as a STROKE gets its border.** 270 of them: 56 eyebrows on 27
+   people, 44 whiskers, 7 mouth lines. The still draws the same shape as a filled path, and on a bar
+   narrower than 4 units two 2-unit insets overlap, so the whole bar goes a flat 15% black: measured
+   on `ManLeprechaun`'s brow, 99.5% of it becomes exactly 0.85x its own colour. Wider than that and
+   a core survives, so the pass writes the black at the bar's full width with the original colour
+   back over it at width-4. A mask cannot do this, because the layer's path is the centreline.
+   To pair at all a stroked unit is measured as the BAR it draws, bbox inflated by w/2 and area
+   2Lr + pi r^2: on the centreline his brow is 18.8 x 2.5 of area 30.7 against the still's
+   21.3 x 5.0 of area 51.5, and no match survives that; as the bar it is 20.8 x 4.6 and 45.1.
+6. **The BASE still answers whenever it found the shape at all.** Taking whichever still fit better
+   cost `WomanWomanTrenchCoat` her eyebrows: the base draws them filled and borders them, the
+   emotion still draws them stroked and does not, and the same-kind pair scored better. Frame 0 has
+   to match the base.
+7. **`OtherRose` starts 3 units off her still**, the worst of the whole set at silhouette IoU 0.856.
+   She joins the five already in `START_SHIFT`. Every other avatar was checked: no other one is
+   improved by a translation.
+8. **`ManClown` carries a baked rig stretch**, and he is the only file in the set that does. Three
+   of his layers hold `ks.s = 994.768, 1037.839` and a fourth the exact inverse, so at every rest
+   frame he is 3.8% taller and 0.5% narrower than his still and his head sinks 6.3 units into his
+   collar. It is not an intro that has not settled: the scale is static over the whole clip and the
+   composite passes through 1 for one frame only, at f18. `apply_start_stretch` puts every layer
+   carrying it back to its round base and re-registers the branches, which takes the drawing itself
+   from IoU 0.911 to 0.993 against his still.
+
 ## 4. The traps found while building it
 
 **A layer that fades cannot be cut.** Lottie flattens a layer's shapes and then applies the layer
@@ -262,12 +307,12 @@ effect rather than a structural one. At the sizes an avatar is drawn, 96px and 6
 
 ## 5. The numbers
 
-| | plain | whole-shape strokes | per-run trims |
-|---|---:|---:|---:|
-| raw | 23.5 MB | 44.2 MB | 55.5 MB (x2.36) |
-| gzipped, which is what goes over the wire | 2.71 MB | 3.81 MB | 4.36 MB (+61%) |
-| gzipped per file | 5.9 KB | 8.3 KB | 9.4 KB |
-| layers | 10,014 | 20,139 | 23,222 (x2.32) |
+| | plain | whole-shape strokes | per-run trims | now |
+|---|---:|---:|---:|---:|
+| raw | 23.5 MB | 44.2 MB | 55.5 MB | 67.0 MB (x2.85) |
+| gzipped, which is what goes over the wire | 2.71 MB | 3.81 MB | 4.36 MB | 4.78 MB (+76%) |
+| gzipped per file | 5.9 KB | 8.3 KB | 9.4 KB | 10.4 KB |
+| layers | 10,014 | 20,139 | 23,222 | 26,994 (x2.70) |
 | build, four files in the shipped player | 15.8 ms | | 32.3 ms |
 | per frame, per avatar | 0.025 ms | | 0.046 ms |
 
@@ -365,17 +410,20 @@ border rules:
 
 - **A shape the still borders that the animation has no unit for at all.** The commonest by far.
   Either the emotion animation genuinely does not hold that piece, or the match did not find it.
-- **The 66 merge-paths shapes** get no line. Some are real pieces, a shirt for instance. Doing them
-  needs the border nested inside the group that holds the fill, and a way to tell which sub-path is
-  the visible outline.
-- **123 matte sources**, which are never drawn; their visible twin gets the line.
+- **112 matte sources**, which are never drawn; their visible twin gets the line.
 - **The pose difference.** Frame 0 is close to the base still but not identical: 3,000 to 19,000 px
   of the drawing itself differs on the files above, before any border is considered.
 
 Also open:
 
-- **49 shapes fall back to the ownership rule**, because their outline and their part's sit more than
+- **50 shapes fall back to the ownership rule**, because their outline and their part's sit more than
   a unit apart, so a trim could not be placed safely. They are stroked whole or not at all as before.
+- **`ManGeek_lose` and `ManMan11_lose` open mid-motion** and settle by frame 22, so frame 0 is not
+  their rest pose. A constant cannot fix that; it is how the clip is authored.
+- **`WomanSuperMom`, `AnimalCat`, `RobotBoy8`, `OtherChristmasTree` and about twenty more are simply
+  drawn differently** in the animation than in the still, part by part rather than by any transform:
+  one similarity explains 85% of WomanSuperMom and 55% of OtherRose. Nothing in this pass can close
+  that; the two assets have diverged.
 - **Two files were regraded**: `OtherJackOLantern3` and `OtherJackOLantern4` are a different green in
   the animation than in the still. Not a border problem, but the two assets have diverged.
 - **Cutting a layer still moves Chrome's antialiasing.** With the added layers hidden, a bordered

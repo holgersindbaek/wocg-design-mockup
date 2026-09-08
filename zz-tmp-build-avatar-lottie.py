@@ -107,6 +107,7 @@ TRIM_TOL = float(os.environ.get("AB_TRIM_TOL", "1.1"))    # a sample this near a
 TRIM_PAD = float(os.environ.get("AB_TRIM_PAD", "1.4"))    # the still's 5-wide round-capped eraser
 TRIM_GATE = float(os.environ.get("AB_TRIM_GATE", "1.0"))  # how far the two outlines may sit apart
 TRIM_MIN = float(os.environ.get("AB_TRIM_MIN", "0.004"))  # a stretch shorter than this is not drawn
+DO_DEEP = os.environ.get("AB_DEEP", "1") == "1"   # merge-paths units get a matte pair
 DO_TWIN = os.environ.get("AB_TWIN", "0") == "1"   # let an unmatched shape copy a matched twin
 OP, MOUTH_OP = 15, 35  # black, per cent
 COMP_PER_UNIT = 10.0   # a 1600-unit comp over the 160-unit drawing
@@ -1613,6 +1614,52 @@ def rebuild_layer(layer, groups, ind_from):
         else: ind_from += 1; x["ind"] = ind_from
     return out, ind_from
 
+def make_deep_matte(layer, gpath, ind):
+    """the unit as it paints, kept whole: nested groups and all, never drawn itself.
+
+    A merge-paths unit holds its geometry in one sub-group per path and its fill at the level
+    above, so there is nothing to prune to and nothing to write as a mask. The whole subtree is
+    cloned instead and used as an alpha matte."""
+    M = copy.deepcopy(layer)
+    M["nm"] = "ab-nbr"
+    for k in ("tt", "tp", "hasMask", "masksProperties"): M.pop(k, None)
+    M["td"] = 1
+    def rebuild(items):
+        out = copy.deepcopy(items)
+        for x in out:
+            if x.get("ty") == "fl": x["o"] = {"a": 0, "k": 100, "ix": x.get("o", {}).get("ix", 5)}
+            if x.get("ty") == "tr": x["o"] = {"a": 0, "k": 100, "ix": x.get("o", {}).get("ix", 7)}
+        return out
+    M["shapes"] = _clone_chain(layer.get("shapes", []), gpath, rebuild)
+    M.setdefault("ks", {})["o"] = {"a": 0, "k": 100, "ix": 11}
+    M["ind"] = ind
+    return M
+
+def make_deep_line(layer, gpath, op, w, ind, matte_ind):
+    """the same subtree with the fill swapped for a stroke, matted to the shape it paints.
+
+    The stroke goes exactly where the fill was, so it paints every path the fill painted, nested
+    groups included, and the matte keeps the inner half."""
+    L = copy.deepcopy(layer)
+    L["nm"] = "ab-line"
+    for k in ("td", "tt", "tp", "hasMask", "masksProperties"): L.pop(k, None)
+    def rebuild(items):
+        out, put = [], False
+        for x in items:
+            if x.get("ty") in STYLES:
+                if x.get("ty") == "fl" and not put:
+                    out.append(stroke_item(op, copy.deepcopy(w))); put = True
+                continue
+            out.append(copy.deepcopy(x))
+        if not put:
+            idx = _find_tr(out)
+            out.insert(len(out) if idx is None else idx, stroke_item(op, copy.deepcopy(w)))
+        return out
+    L["shapes"] = _clone_chain(layer.get("shapes", []), gpath, rebuild)
+    L["tt"] = 1; L["tp"] = matte_ind
+    L["ind"] = ind
+    return L
+
 def make_matte(layer, gpath, geoms, fill, ind):
     """the ab-matte layer: the unit as it paints, kept opaque, never drawn itself"""
     M = copy.deepcopy(layer)
@@ -2040,6 +2087,7 @@ START_SHIFT = {                 # avatar: (dx, dy) in the 160-unit box, added to
     "ManBoy2":       (0.0, -4.0),
     "ManChefPizza":  (0.0, -4.0),
     "ManCowboy":     (0.0, -4.0),
+    "OtherRose":     (0.0,  3.0),   # the worst of the set: silhouette IoU 0.856 against her still
 }
 
 def _shift_prop(prop, dx, dy):
@@ -2066,6 +2114,77 @@ def _shift_scalar(prop, d):
         k = prop.get("k")
         if isinstance(k, (int, float)): prop["k"] = k + d
         elif isinstance(k, list) and k: k[0] += d
+
+START_STRETCH = {               # avatar: (the rig scale to undo, where the branches land)
+    # ManClown is the only file in the set whose ARTWORK carries a non-uniform scale at rest.
+    # Three of his layers hold ks.s = 994.768, 1037.839 and a fourth the exact inverse
+    # (100.526, 96.354), so at every rest frame he is 3.8% taller and 0.5% narrower than his still
+    # and his head sinks 6.3 units into his collar. It is not an intro that has not settled: the
+    # scale is static over the whole clip and the composite passes through 1 for one frame only,
+    # at f18, mid-squash. Measured three ways (bounding box, polygon moments, affine ICP on
+    # resampled contours) the scale agrees to six decimals with the number in the file.
+    # (the scale, the offset every branch takes, the branches that take a different one). The head
+    # and the body land differently, so one correction about the null cannot do both: registered on
+    # the body the head comes out 5.8 units wrong. "Group 2" here is the layer parented to the
+    # emotion's null, his shoulders; the layer of the same name deeper in the tree is the mouth and
+    # only its counter-scale is dropped.
+    "ManClown": ((0.994768, 1.037839), (0.003, -57.808), {"Group 2": (0.006, 0.003)}),
+}
+
+def _scale_prop(prop, dx, dy, kx, ky):
+    """p -> diag(dx, dy) . p + (kx, ky), over every keyframe value and its tangents"""
+    if prop is None: return
+    if prop.get("a"):
+        for kf in prop.get("k", []):
+            for side in ("s", "e"):
+                v = kf.get(side)
+                if isinstance(v, list) and v and not isinstance(v[0], dict):
+                    v[0] = v[0]*dx + kx; v[1] = v[1]*dy + ky
+            for side in ("to", "ti"):
+                v = kf.get(side)
+                if isinstance(v, list) and len(v) >= 2:
+                    v[0] *= dx; v[1] *= dy
+    else:
+        k = prop.get("k")
+        if isinstance(k, list) and len(k) >= 2:
+            k[0] = k[0]*dx + kx; k[1] = k[1]*dy + ky
+
+def apply_start_stretch(doc, stem):
+    """undo a rig scale baked into the animation's own layers, and re-register the branches.
+
+    Two steps. Every layer whose static scale is the stretch, or its exact inverse, goes back to its
+    round base, which fixes the shape. That moves each branch, because the scale ran about the
+    layer's own anchor, so every direct child of the root null is then put back where the still
+    draws it: p -> diag(d).p + k with d = 1/r. The offsets were measured by registering the
+    animation's parts against the still's, three ways that agree to six decimals."""
+    base = stem.rsplit("_", 1)[0] if "_" in stem else stem
+    ent = START_STRETCH.get(base)
+    if not ent: return False
+    (rx, ry), k0, per = ent
+    dx, dy = 1.0/rx, 1.0/ry
+    def rounded(v):
+        b = 1000.0 if max(v[0], v[1]) > 316 else 100.0
+        return b, (v[0]/b, v[1]/b)
+    rigs = set()
+    for L in doc["layers"]:
+        sc = L.get("ks", {}).get("s")
+        if sc is None or is_animated(sc): continue
+        v = val(sc, 0.0)
+        if not isinstance(v, list) or len(v) < 2: continue
+        b, r = rounded(v)
+        if abs(r[0]-rx) < 2e-3 and abs(r[1]-ry) < 2e-3:
+            sc["k"] = [b, b, v[2] if len(v) > 2 else 100]
+            rigs.add(L.get("parent"))
+        elif abs(r[0]-dx) < 2e-3 and abs(r[1]-dy) < 2e-3:
+            sc["k"] = [b, b, v[2] if len(v) > 2 else 100]
+    # Only the rig that carries the stretch. The three emotions share one file, so the other two
+    # rigs hang from their own nulls and must not move: correcting them as well pushed a hidden
+    # think layer 14 units up and into the picture.
+    for L in doc["layers"]:
+        if L.get("parent") not in rigs: continue
+        kx, ky = per.get(L.get("nm"), k0)
+        _scale_prop(L.get("ks", {}).get("p"), dx, dy, kx, ky)
+    return True
 
 def apply_start_shift(doc, stem):
     """move the whole animation so it starts where the still stands"""
@@ -2269,12 +2388,25 @@ def border_file(doc, svg_name, stats=None):
             # 105 units of seam it must not draw, so the gate dropped it and the line round her
             # face went missing.
             banded = bool(plan.get(uid, {}).get("band"))
-            band_to = (top_neighbour(nb, "out")[0]
-                       if (band > 0 and (banded or band > BAND_RATIO * bare)) else None)
+            # Every neighbour the still bands onto, not only the biggest. A band gets exactly one
+            # track matte, so one neighbour meant the stretches lying on the others were clipped
+            # away: WomanWomanTrenchCoat's earrings band onto her hair AND her face, and only 18 of
+            # their 34 units were drawn. Corpus-wide that is 8,966 units, 71% of the band this pass
+            # was still losing. One layer per neighbour, each matted to its own and drawn directly
+            # above it, so where two neighbours overlap the upper one covers the lower one's band
+            # and nothing is painted twice.
+            band_to = None
+            if band > 0 and (banded or band > BAND_RATIO * bare):
+                outs = sorted(((c.get("out", 0.0), n) for n, c in nb.items() if c.get("out", 0.0) > 3.0),
+                              reverse=True)
+                band_to = [n for _l, n in outs] or ([top_neighbour(nb, "out")[0]]
+                                                    if top_neighbour(nb, "out")[0] is not None else None)
             if cut is not None: cut = (src, cut)
-            if band_to is not None: band_to = (src, band_to)
+            if band_to is not None: band_to = [(src, n) for n in band_to]
             if band_to is not None and uid in seen and seen[uid]["band"]:
-                band_to = seen[uid]["band"]        # a uid, not an SVG part: matte_for takes both
+                # a uid, not an SVG part: matte_for takes both. The render's answer goes first
+                # because it is about this drawing rather than about the still.
+                band_to = [seen[uid]["band"]] + [b for b in band_to]
             if want and uid in plan:
                 # The still's cut is carried stretch by stretch now, so the ownership rule is not
                 # needed and not wanted: a shape is stroked where the still strokes it and left
@@ -2361,8 +2493,29 @@ def border_file(doc, svg_name, stats=None):
             items, _chain = _descend(layer.get("shapes", []), gpath)
             geoms, keep = outer_geoms(items, t0)
             if meta["deep"]:
-                stats["skip-deep"] += 1
-                audit[uid] = dict(d, done=None, why="the style paints geometry in nested groups")
+                # merge-paths: the fill sits above the sub-groups that hold the paths, so there is
+                # no single outer path to prune to and no mask to write. Clone the whole subtree
+                # twice instead: once with the fill kept, as an alpha matte, once with the fill
+                # swapped for a stroke. The matte keeps the inner half, the same as the mask does.
+                # This is the largest class of line the animation was missing, 24,836 units over
+                # 15 avatars: every stripe of AnimalPenguin, RobotNeutral's whole head shell.
+                dfills = [x for x in items if x.get("ty") == "fl"]
+                if not DO_DEEP or layer.get("tt") or not dfills:
+                    stats["skip-deep"] += 1
+                    audit[uid] = dict(d, done=None, why="the style paints geometry in nested groups")
+                    continue
+                wprop, w = width_prop(unit_scales(doc, layer, gpath, by_ind))
+                if wprop.get("a"): stats["width-follows-the-scale"] += 1
+                op = MOUTH_OP if d["mouth"] else OP
+                next_ind += 1
+                dmat = make_deep_matte(layer, gpath, next_ind)
+                extra.append(dmat)
+                next_ind += 1
+                dline = make_deep_line(layer, gpath, op, wprop, next_ind, dmat["ind"])
+                before[meta["layer_idx"]].append((gpath, [dline]))
+                stats["deep-matte-pair"] += 1
+                audit[uid] = dict(d, done="deep-matte-pair", w=round(w, 3), op=op,
+                                  inds=[dline["ind"]], band=False)
                 continue
             if not keep:
                 stats["skip-no-geometry"] += 1
@@ -2449,16 +2602,18 @@ def border_file(doc, svg_name, stats=None):
                 # also get an inset rim. That is what put a grey ring on ManBoy2's white teeth: the
                 # mouth is exempt from the ownership rule, and the exemption was letting an inset
                 # line through on a mouth that has no inner line at all.
-                band_layer = None
+                bands = []
                 want_band = (pl["band"] if pl is not None else d["band_to"] is not None)
-                if DO_BAND and free and inv_mask is not None and want_band and d["band_to"] is not None:
-                    onto = matte_for(d["band_to"])
-                    if onto is not None:
+                if DO_BAND and free and inv_mask is not None and want_band and d["band_to"]:
+                    for nb_key in d["band_to"]:
+                        onto = matte_for(nb_key)
+                        if onto is None: continue
                         next_ind += 1
-                        band_layer = make_line(layer, gpath, keep, op, wprop, inv_mask, onto, next_ind,
-                                               tt=1, nm="ab-band", trims=btrims)
+                        bands.append((nb_key, make_line(layer, gpath, keep, op, wprop, inv_mask, onto,
+                                                        next_ind, tt=1, nm="ab-band", trims=btrims)))
                         stats["band-onto-the-piece-below"] += 1
                         if btrims: stats["band-trimmed-to-its-stretches"] += 1
+                    if len(bands) > 1: stats["band-onto-more-than-one-neighbour"] += 1
                 # a mouth is exempt from the ownership ratio, not from having an inner line at all:
                 # drawing one inside a shape whose line the still draws outside it puts a grey rim
                 # on white teeth, which is worse than no line
@@ -2472,12 +2627,12 @@ def border_file(doc, svg_name, stats=None):
                     if itrims: stats["line-trimmed-to-its-stretches"] += 1
                     if cut_ind is not None: stats["cut-by-its-neighbour"] += 1
 
-                if not made and band_layer is None:
+                if not made and not bands:
                     stats["skip-nothing-to-draw"] += 1
                     audit[uid] = dict(d, done=None, why="nothing left to draw")
                     continue
                 if made: before[meta["layer_idx"]].append((gpath, made))
-                if band_layer is not None:
+                for nb_key, band_layer in bands:
                     # A band is the line the still draws on the piece BELOW this shape, so it goes
                     # directly ABOVE that piece, wherever that piece lives. Nothing between the
                     # neighbour and the band can then cover it, and everything drawn over the
@@ -2488,15 +2643,15 @@ def border_file(doc, svg_name, stats=None):
                     # landed under the hair and never showed. Above its own layer is wrong the other
                     # way: ManBoy2's mouth came out half brown on the face and half grey on the other
                     # white half of his smile.
-                    nb = ent.get(uid_of(d["band_to"]))
-                    nbm = nb["meta"] if nb else None
+                    nbu = ent.get(uid_of(nb_key))
+                    nbm = nbu["meta"] if nbu else None
                     if nbm is not None and not layers[nbm["layer_idx"]].get("td"):
                         before[nbm["layer_idx"]].append((nbm["gpath"], [band_layer]))
                     else:
                         after[meta["layer_idx"]].append(band_layer)
                 audit[uid] = dict(d, done="self-mask", w=round(w, 3), op=op,
-                                  inds=[x["ind"] for x in made] + ([band_layer["ind"]] if band_layer is not None else []),
-                                  band=band_layer is not None,
+                                  inds=[x["ind"] for x in made] + [b["ind"] for _k, b in bands],
+                                  band=len(bands),
                                   runs=([len(itrims or []), len(btrims or []), pl["res"]] if pl else None),
                                   cut=bool(d["cut"] is not None and any(x.get("tt") == 2 for x in made)))
             else:
@@ -2604,6 +2759,7 @@ def run_one(args):
     src = os.path.join(LOT, stem + ".json")
     doc = json.load(open(src))
     moved = apply_start_shift(doc, stem)
+    if apply_start_stretch(doc, stem): moved = True
     audit, stats = border_file(doc, stem)
     if moved: stats["moved-onto-its-still"] = stats.get("moved-onto-its-still", 0) + 1
     errs = validate(doc)
