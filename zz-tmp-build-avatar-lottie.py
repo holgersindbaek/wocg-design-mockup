@@ -1766,6 +1766,12 @@ def border_file(doc, svg_name, stats=None):
                             "rows": {r[0]: r for r in rws},
                             "area": {p["i"]: p["area"] for p in ps}})
         rows, flags, runs, area_of, unit_of_part = [], {}, {}, {}, {}
+        # a neighbour has to be findable whichever still named it, not only the one whose answer
+        # this shape took: ManBoy2's mouth is two white halves and the second half's band neighbour
+        # was named by the emotion still while the first half's answer came from the base
+        for si, src0 in enumerate(sources):
+            for uid0, r0 in src0["rows"].items():
+                if r0[1] is not None: unit_of_part.setdefault((si, r0[1]), uid0)
         for e in seq:
             uid = e["meta"]["uid"]
             best = min(sources, key=lambda s: s["rows"].get(uid, (uid, None, "none", 1e9))[3])
@@ -1777,7 +1783,7 @@ def border_file(doc, svg_name, stats=None):
                 if flags[key] is None: flags.pop(key)
                 if r[1] in best["runs"]: runs[key] = best["runs"][r[1]]
                 area_of[key] = best["area"].get(r[1])
-                if key not in unit_of_part: unit_of_part[key] = uid
+                unit_of_part[key] = uid
             rows.append((uid, key, r[2] if key is not None else "none"))
         stats["read-off-the-emotion-still"] += sum(1 for _u, k, _m in rows if k and k[0] == 1)
         seen = {}
@@ -1838,8 +1844,14 @@ def border_file(doc, svg_name, stats=None):
             # still does not have. Counting it against everything took ManBoy's hood, which is 200
             # units of silhouette against 123 of invisible seam, out of the border altogether.
             bare = bare + (0.0 if _is_dark(meta["fill"]) else FAR_WEIGHT) * far
+            # a neighbour index belongs to the still this shape's answer came from, so it has to
+            # carry that still's index with it: `part` is (which still, which element). Getting
+            # this wrong cost ManBoy2 his mouth band and gave him an inset rim instead.
+            src = part[0]
             cut = top_neighbour(nb, "none")[0] if bare > 0 else None
             band_to = top_neighbour(nb, "out")[0] if band > BAND_RATIO * bare else None
+            if cut is not None: cut = (src, cut)
+            if band_to is not None: band_to = (src, band_to)
             if band_to is not None and uid in seen and seen[uid]["band"]:
                 band_to = seen[uid]["band"]        # a uid, not an SVG part: matte_for takes both
             if want and not mouth:
@@ -1857,6 +1869,7 @@ def border_file(doc, svg_name, stats=None):
 
     next_ind = max((L.get("ind", 0) for L in layers), default=0)
     before = collections.defaultdict(list)
+    after = collections.defaultdict(list)      # bands, which belong UNDER the shape they came from
     extra = []
     mattes = {}
     audit = {}
@@ -1959,7 +1972,10 @@ def border_file(doc, svg_name, stats=None):
                         band_layer = make_line(layer, gpath, keep, op, wprop, inv_mask, onto, next_ind,
                                                tt=1, nm="ab-band")
                         stats["band-onto-the-piece-below"] += 1
-                if inner > 0 or (d["mouth"] and band_layer is None):
+                # a mouth is exempt from the ownership ratio, not from having an inner line at all:
+                # drawing one inside a shape whose line the still draws outside it puts a grey rim
+                # on white teeth, which is worse than no line
+                if inner > 0:
                     cut_ind = matte_for(d["cut"]) if (DO_CUT and free and d["cut"] is not None) else None
                     tp = cut_ind if cut_ind is not None else (layer.get("tp") if layer.get("tt") else None)
                     next_ind += 1
@@ -1967,14 +1983,22 @@ def border_file(doc, svg_name, stats=None):
                                           tt=2 if cut_ind is not None else 1))
                     stats["self-mask"] += 1
                     if cut_ind is not None: stats["cut-by-its-neighbour"] += 1
-                if band_layer is not None: made.append(band_layer)
-                if not made:
+
+                if not made and band_layer is None:
                     stats["skip-nothing-to-draw"] += 1
                     audit[uid] = dict(d, done=None, why="nothing left to draw")
                     continue
-                before[meta["layer_idx"]].append((gpath, made))
+                if made: before[meta["layer_idx"]].append((gpath, made))
+                if band_layer is not None:
+                    # the band is the line the still draws on the piece BELOW this shape, so it has
+                    # to be drawn below it: anything in this shape's own layer then covers the half
+                    # that falls on the shape itself or on a sibling of the same colour, and only
+                    # the half that lands on the neighbour shows. Drawn above, ManBoy2's mouth came
+                    # out half brown on the face and half grey on the other white half of his smile.
+                    after[meta["layer_idx"]].append(band_layer)
                 audit[uid] = dict(d, done="self-mask", w=round(w, 3), op=op,
-                                  band=any(x["nm"] == "ab-band" for x in made),
+                                  inds=[x["ind"] for x in made] + ([band_layer["ind"]] if band_layer is not None else []),
+                                  band=band_layer is not None,
                                   cut=bool(d["cut"] is not None and any(x.get("tt") == 2 for x in made)))
             else:
                 if layer.get("tt"):
@@ -1996,18 +2020,24 @@ def border_file(doc, svg_name, stats=None):
     for i, L in enumerate(layers):
         groups = before.get(i)
         if not groups:
-            out.append(L); continue
+            out.append(L)
+            out += after.pop(i, [])
+            continue
         rebuilt = None
         if not L.get("td"):
             rebuilt, next_ind = rebuild_layer(L, groups, next_ind)
         if not rebuilt:
             for _gp, ls in groups: out += ls
             out.append(L)
+            out += after.pop(i, [])
             stats["layers-kept-whole"] += 1
             continue
         out += rebuilt
+        out += after.pop(i, [])
         stats["layers-cut"] += 1
         stats["pieces"] += sum(1 for x in rebuilt if x.get("nm") not in ("ab-line", "ab-matte"))
+    for i in sorted(after):                      # a band whose layer drew nothing else
+        out += after[i]
     doc["layers"] = out + extra
     return audit, stats
 

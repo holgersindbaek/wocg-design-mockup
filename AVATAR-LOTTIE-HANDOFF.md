@@ -158,7 +158,7 @@ a shape whose scale is 0 at every frame, and the merge-paths family, 74 shapes w
 geometry in nested groups. Lottie has no merge-paths modifier at all, so those groups already render
 as a plain union and a stroke there draws sub-path edges the drawing does not have.
 
-## 4. The two traps found while building it
+## 4. The traps found while building it
 
 **A layer that fades cannot be cut.** Lottie flattens a layer's shapes and then applies the layer
 opacity, so two pieces at 50% show through each other where the one layer did not. 340 of the 8,095
@@ -172,6 +172,14 @@ does, draws its border nearly three times too wide at one end. 513 shapes sit on
 more than 10%, and the width is written as a curve for those: sampled at every frame where anything
 above them changes scale, plus midpoints, so the line is 2 units at every frame.
 
+**A band has to be drawn under the shape it came from.** A band is the line the still draws on the
+piece BELOW a shape: the same stroke on the same path, masked to the outer half instead of the inner
+one. Put above its own layer, the way the inset lines go, it also paints across whatever else that
+layer draws beside it. `ManBoy2`'s smile is two white pieces, and the band off the upper one landed
+on the lower one, so the mouth came out half brown on the face and half grey on the white. The band
+layer now goes below the layer it came from. The shape itself, and any sibling of the same colour,
+then cover the half that falls on them, and only the half that lands on the neighbour shows.
+
 **Cutting a layer moves Chrome's antialiasing.** With the added layers hidden, a bordered file
 renders pixel for pixel like the original on the files that were not cut, and within about 1% of it
 on the files that were, all of it a one pixel fringe on edges. The share halves as the render doubles
@@ -182,14 +190,14 @@ effect rather than a structural one. At the sizes an avatar is drawn, 96px and 6
 
 | | plain | bordered |
 |---|---|---|
-| raw | 23.5 MB | 43.0 MB (x1.83) |
-| gzipped, which is what goes over the wire | 2.71 MB | 3.72 MB (+37%) |
-| gzipped per file | 5.9 KB | 8.0 KB |
-| layers | 10,014 | 19,947 (x1.99) |
+| raw | 23.5 MB | 44.2 MB (x1.88) |
+| gzipped, which is what goes over the wire | 2.71 MB | 3.82 MB (+41%) |
+| gzipped per file | 5.9 KB | 8.3 KB |
+| layers | 10,014 | 20,139 (x2.01) |
 
-4,905 shapes carry a line, over all 473 files, 1,252 of them a band onto the piece below and 194 a
-mouth at 35%. Every file got at least one. The brief guessed 2.7 to 3.0 MB on the wire; it is 3.72,
-because the proof it was measured on bordered 5 shapes in one file and the real pass borders 10 per
+5,261 shapes carry a line, over all 473 files, 1,455 of them a band onto the piece below and 185 a
+mouth at 35%. Every file got at least one. The brief guessed 2.7 to 3.0 MB on the wire; it is 3.82,
+because the proof it was measured on bordered 5 shapes in one file and the real pass borders 11 per
 file.
 
 The lab copies are 35 MB, and the untouched copies for the plain option another 19 MB. They are the same drawings with the author-time keys After Effects
@@ -283,9 +291,14 @@ not at all, and the ownership rule decides which. That is why:
 
 Also open:
 
-- **The 74 merge-paths shapes** get no line. Some are real pieces, a shirt for instance. Doing them
+- **The 66 merge-paths shapes** get no line. Some are real pieces, a shirt for instance. Doing them
   needs the border nested inside the group that holds the fill, and a way to tell which sub-path is
   the visible outline.
+- **`ManBoy2`'s mouth line covers only part of the arc.** His smile is two white pieces and only the
+  one carries a band, so the line stops where the second piece starts. The still draws it round the
+  whole arc.
+- **`WomanLaptop` has no line along her forehead hairline.** Her fringe owns 144 units of outline
+  against 165 units of hair on hair, so the ownership rule leaves it unstroked.
 - **Two files were regraded**: `OtherJackOLantern3` and `OtherJackOLantern4` are a different green in
   the animation than in the still. Not a border problem, but the two assets have diverged.
 - Whether Holger wants the animations at all, given the border is still a proposal. Nothing has been
