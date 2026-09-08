@@ -115,6 +115,12 @@ a neighbour even where the two merely abutted, so 71 edges carried the line twic
 - `front` (`#avatarPairSolid`): the solid pair: the 1 px ring in solid `#252525` under the art, the 1 px inner rim at white 8% over it, no translucent shadows. `frontamb` keeps the frontpage's translucent pair with its ambient.
 - All in `game-settings-lab-3.html` only (uncommitted, other session's file). If Holger picks one, the shipping version goes into `_variables.scss` / `body_open.dust` in the app repo as `AVATAR-STUDY.md` section 11 describes.
 
+## 6b. The animations
+
+The border can be carried into the emotion Lottie files and it survives the movement; the mechanism,
+the cost and the work still to do are in `AVATAR-LOTTIE-HANDOFF.md`, with a working proof in
+`zz-tmp-lottie-borders.py`.
+
 ## 7. Open questions for Holger
 
 - Which coat: the true 1px game line (`game1`, or `game15` at 1.5px), or the solid pair (`front`: the ring in
