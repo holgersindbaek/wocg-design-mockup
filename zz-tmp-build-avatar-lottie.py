@@ -100,6 +100,7 @@ FAR_WEIGHT = float(os.environ.get("AB_FAR_WEIGHT", "1"))  # what a `far` seam co
 FAR_DARK_L = float(os.environ.get("AB_FAR_DARK_L", "30"))  # under this, a far seam costs nothing    # what a length of silhouette line is worth
                                                           # against a length of seam it must not draw
 DO_CUT = os.environ.get("AB_CUT", "0") == "1"     # cut the line where a neighbour owns it
+THIN = os.environ.get("AB_THIN", "1") == "1"    # thin the line on a shape too narrow to hold it
 DO_TRIM = os.environ.get("AB_TRIM", "1") == "1"   # carry the still's per-edge cut with trim paths
 TRIM_N = int(os.environ.get("AB_TRIM_N", "12"))       # samples per bezier segment
 TRIM_TOL = float(os.environ.get("AB_TRIM_TOL", "1.1"))    # a sample this near an erase polyline is cut
@@ -112,6 +113,8 @@ COMP_PER_UNIT = 10.0   # a 1600-unit comp over the 160-unit drawing
 FRAMES = 13            # frames sampled for the match and for the scale
 DE = 12.0              # the paint gate, CIE76; lets the two regraded files through
 CAP = 6.0              # a unit and a part further apart than this are not a pair
+KIND_COST = 1.0        # what pairing a stroked shape with a filled part costs
+BASE_FIRST = os.environ.get("AB_BASE_FIRST", "1")   # the base still answers whenever it can
 INTRINSIC_MIN_DIM = 30 # a shape with no part is only stroked when it is this big
 GEOM = ("sh", "el", "rc", "sr")
 MODIFIERS = ("tm", "rd", "pb", "rp", "zz")      # change the drawn geometry; we cannot clip to it
@@ -387,6 +390,23 @@ def lottie_units(doc, t=0.0, n=8):
                 bbox, area = bbox_of(subs)
                 f = fills[0] if fills else None
                 s0 = strokes[0] if strokes else None
+                # A shape drawn as a STROKE covers the bar the stroke paints, not the centreline it
+                # is written on, and the still draws the same shape as a filled path. Measured on
+                # the centreline, ManLeprechaun's eyebrow is 18.8 x 2.5 units of area 30.7 against
+                # the still's 21.3 x 5.0 of area 51.5, which no match survives. Measured as the bar
+                # it is 20.8 x 4.6 and 45.1, and it pairs.
+                sw = 0.0
+                if s0 is not None and f is None:
+                    sv = val(s0.get("w"), t)
+                    if isinstance(sv, list): sv = sv[0] if sv else 0.0
+                    sw = (sv or 0.0) * mscale(GM) / COMP_PER_UNIT
+                    if sw > 0 and bbox:
+                        r = sw / 2.0
+                        bbox = (bbox[0]-r, bbox[1]-r, bbox[2]+r, bbox[3]+r)
+                        per = sum(math.hypot(q[0]-p0[0], q[1]-p0[1])
+                                  for sp in subs for p0, q in zip(sp, sp[1:]))
+                        closed = all((item_path(g, t) or {}).get("c") for g in gitems)
+                        area = (area + per*r + math.pi*r*r) if closed else (2*per*r + math.pi*r*r)
                 fo = val(f.get("o"), t) if f else None
                 if isinstance(fo, list): fo = fo[0]
                 out.append({
@@ -396,7 +416,7 @@ def lottie_units(doc, t=0.0, n=8):
                     "tt": L.get("tt"), "td": L.get("td"), "tp": L.get("tp"),
                     "fill": hexof(f, t), "stroke": hexof(s0, t),
                     "fill_opacity": fo, "layer_opacity": lo, "group_opacity": op,
-                    "ngeom": len(gitems), "deep": bool(deep),
+                    "ngeom": len(gitems), "deep": bool(deep), "stroke_w": sw,
                     "subpaths": subs, "bbox": bbox, "area": area,
                 })
             for gi, g in enumerate(grs):
@@ -1068,7 +1088,11 @@ def modal_offset(seq, parts, abin=0.02, obin=0.25):
     if not votes: return []
     return [((d[0]*obin, d[1]*obin), round(nv, 1)) for d, nv in votes.most_common(6)]
 
-def geo_cost(e, p, off):
+def geo_cost(e, p, off, aw=20.0):
+    """`aw` is what the area difference is worth. It is lowered for a stroked shape against a filled
+    part, because the drawn bar's area is an estimate (2Lr + pi r^2) and the two assets do not always
+    agree on the thickness: WomanWomanTrenchCoat's eyebrow is 1.95 units thick in the animation and
+    2.5 in the still, which at the full weight costs 4.7 of a 6.0 budget and loses the pair."""
     best = None
     for fi, (bb, ar) in enumerate(zip(e["bb"], e["ar"])):
         if not bb or not p["bbox"]: continue
@@ -1076,7 +1100,7 @@ def geo_cost(e, p, off):
         d2 = bb[2]-off[0]-p["bbox"][2]; d3 = bb[3]-off[1]-p["bbox"][3]
         c = (abs(d0)+abs(d1)+abs(d2)+abs(d3))/4.0
         a = abs(ar - p["area"]) / max(ar, p["area"], 1e-6)
-        v = c + 20.0*a
+        v = c + aw*a
         if best is None or v < best[0]: best = (v, c, a, ((d0+d2)/2, (d1+d3)/2), fi)
     return best
 
@@ -1086,7 +1110,10 @@ def labc(h):
     return _LABC[h]
 
 def paint_ok(ku, kp, de=DE):
-    if ku is None or kp is None or ku[0] != kp[0]: return False
+    """The colour has to agree. Fill against stroke is allowed, because the same eyebrow is a filled
+    path in the still and a stroked centreline in the animation, but it carries a cost in `assign`
+    so a same-kind pair always wins."""
+    if ku is None or kp is None: return False
     if ku[1] == kp[1]: return True
     a, b = labc(ku[1]), labc(kp[1])
     return a is not None and b is not None and dE(a, b) <= de
@@ -1101,10 +1128,13 @@ def assign(seq, parts, off, names, name_bonus=2.0, cap=CAP):
         if not ku: continue
         for j, p in enumerate(parts):
             if not paint_ok(ku, paint_key(p)): continue
-            r = geo_cost(e, p, off)
+            cross = ku[0] != paint_key(p)[0]
+            r = geo_cost(e, p, off, 8.0 if cross else 20.0)
             if r is None: continue
             G[i, j] = r[0]; DX[i, j] = r[3][0]; DY[i, j] = r[3][1]
-            C[i, j] = max(0.0, r[0] - name_bonus) if (names[i] and p["id"] == names[i]) else r[0]
+            c = max(0.0, r[0] - name_bonus) if (names[i] and p["id"] == names[i]) else r[0]
+            if cross: c += KIND_COST
+            C[i, j] = c
     if not (HUNGARIAN and n and m): return {}, G
     sq = max(n, m)
     S = np.full((sq, sq), BIG); S[:n, :m] = C
@@ -1483,6 +1513,28 @@ def make_line(layer, gpath, keep, op, w, mask, matte_ind, ind, tt=1, nm="ab-line
     L["ind"] = ind
     return L
 
+def make_bar(layer, gpath, keep, st, ind, nm):
+    """the unit's own path stroked with one given stroke item, no fill and no clip.
+
+    This is how a shape the animation draws as a STROKE gets its border. The still draws the same
+    shape as a filled path and insets the line 2 units from each edge, so on a bar of width W the
+    result is a black ring 2 units wide down both sides and round both caps, with a W-4 core left
+    in the original colour. A mask cannot do that: the layer's path is the centreline, and clipping
+    to it clips nothing. Two strokes on the same centreline do it exactly instead, black at width W
+    below and the original colour at width W-4 above, and the caps come out right because a narrower
+    stroke with the same round cap IS the inset of the wider one."""
+    L = copy.deepcopy(layer)
+    L["nm"] = nm
+    for k in ("td", "tt", "tp", "hasMask", "masksProperties"): L.pop(k, None)
+    def rebuild(items):
+        out = _geom_indices(items, keep)
+        idx = _find_tr(out)
+        out.insert(len(out) if idx is None else idx, copy.deepcopy(st))
+        return out
+    L["shapes"] = _clone_chain(layer.get("shapes", []), gpath, rebuild)
+    L["ind"] = ind
+    return L
+
 def fully_opaque(prop):
     """an opacity property that is 100 at every frame"""
     if prop is None: return True
@@ -1556,7 +1608,7 @@ def rebuild_layer(layer, groups, ind_from):
     flush()
     first = True
     for x in out:
-        if x.get("nm") in ("ab-line", "ab-matte"): continue
+        if str(x.get("nm", "")).startswith("ab-"): continue
         if first: x["ind"] = layer.get("ind"); first = False
         else: ind_from += 1; x["ind"] = ind_from
     return out, ind_from
@@ -2094,7 +2146,14 @@ def border_file(doc, svg_name, stats=None):
                 if r0[1] is not None: unit_of_part.setdefault((si, r0[1]), uid0)
         for e in seq:
             uid = e["meta"]["uid"]
-            best = min(sources, key=lambda s: s["rows"].get(uid, (uid, None, "none", 1e9))[3])
+            # The BASE still is the drawing frame 0 has to match, so it wins whenever it found this
+            # shape at all; the emotion still is only there to answer for the shapes the base does
+            # not hold. Taking whichever fit better cost WomanWomanTrenchCoat her eyebrows: the base
+            # draws them as filled paths and borders them, the emotion still draws them as strokes
+            # and does not, and the same-kind pair scored better.
+            best = sources[0]
+            if BASE_FIRST != "1" or best["rows"].get(uid, (uid, None, "none", 1e9))[1] is None:
+                best = min(sources, key=lambda s: s["rows"].get(uid, (uid, None, "none", 1e9))[3])
             r = best["rows"].get(uid, (uid, None, "none", 1e9))
             key = None
             if r[1] is not None:
@@ -2149,7 +2208,7 @@ def border_file(doc, svg_name, stats=None):
             geo = svg_border_geom(src["name"]).get(part[1])
             if not geo or not geo["outline"]: continue
             meta = ent[uid]["meta"]
-            if meta["deep"]: continue
+            if meta["deep"] or (not meta["fill"] and meta.get("stroke_w")): continue
             layer = layers[meta["layer_idx"]]
             if layer.get("td") or layer_has_modifier(layer): continue
             try:
@@ -2203,7 +2262,15 @@ def border_file(doc, svg_name, stats=None):
             # this wrong cost ManBoy2 his mouth band and gave him an inset rim instead.
             src = part[0]
             cut = top_neighbour(nb, "none")[0] if bare > 0 else None
-            band_to = top_neighbour(nb, "out")[0] if band > BAND_RATIO * bare else None
+            # BAND_RATIO was there because a band used to be drawn along the WHOLE outline, so a
+            # shape whose outline is mostly bare got a band along the bare stretch too. The band is
+            # trimmed to the stretches the still bands now, so the gate is not needed and it costs
+            # real line: WomanWomanTrenchCoat's face shading bands 54 units onto her hair against
+            # 105 units of seam it must not draw, so the gate dropped it and the line round her
+            # face went missing.
+            banded = bool(plan.get(uid, {}).get("band"))
+            band_to = (top_neighbour(nb, "out")[0]
+                       if (band > 0 and (banded or band > BAND_RATIO * bare)) else None)
             if cut is not None: cut = (src, cut)
             if band_to is not None: band_to = (src, band_to)
             if band_to is not None and uid in seen and seen[uid]["band"]:
@@ -2237,10 +2304,15 @@ def border_file(doc, svg_name, stats=None):
     mattes = {}
     audit = {}
 
+    def uid_of(part_index):
+        """the band's neighbour as a unit id: it is named either as a uid or as an SVG part"""
+        if part_index is None: return None
+        return part_index if isinstance(part_index, str) else unit_of_part.get(part_index)
+
     def matte_for(part_index):
         """a hidden copy of a neighbouring shape, so a line can be cut by it or clipped onto it"""
         nonlocal next_ind
-        uid = part_index if isinstance(part_index, str) else unit_of_part.get(part_index)
+        uid = uid_of(part_index)
         if uid is None or uid not in ent: return None
         if uid in mattes: return mattes[uid]
         m = ent[uid]["meta"]
@@ -2275,7 +2347,8 @@ def border_file(doc, svg_name, stats=None):
             stats["skip-matte-source"] += 1
             audit[uid] = dict(d, done=None, why="matte source, never drawn")
             continue
-        if not meta["fill"]:
+        bar = bool(not meta["fill"] and meta.get("stroke") and meta.get("stroke_w", 0) > 0)
+        if not meta["fill"] and not bar:
             stats["skip-no-fill"] += 1
             audit[uid] = dict(d, done=None, why="no fill")
             continue
@@ -2296,13 +2369,19 @@ def border_file(doc, svg_name, stats=None):
                 audit[uid] = dict(d, done=None, why="no outer path")
                 continue
             fills = [x for x in items if x.get("ty") == "fl"]
-            if not fills:
+            bars = [x for x in items if x.get("ty") == "st"]
+            if not fills and not (bar and bars and len(keep) == 1):
                 stats["skip-no-fill-item"] += 1
                 audit[uid] = dict(d, done=None, why="no fill item at this level")
                 continue
             k = 1.0
             part = d["part"]
-            if part in runs and area_of.get(part):
+            # The thinning existed because a 2-unit inset from both sides of a narrow stripe leaves
+            # a solid bar, "which is what the still avoids by cutting the line". The still's cut is
+            # carried now, so on a shape with a plan the still's own width is what to draw: thinning
+            # it as well made WomanWomanTrenchCoat's necklace beads a hairline where the still rings
+            # them at the full 4 units.
+            if THIN and uid not in plan and part in runs and area_of.get(part):
                 visible = sum(runs[part][:4])
                 if visible > 0:
                     minor = 2.0 * area_of[part] / visible        # the width of the strip, roughly
@@ -2311,6 +2390,32 @@ def border_file(doc, svg_name, stats=None):
             if k < 1.0: stats["thinned-on-a-narrow-shape"] += 1
             if wprop.get("a"): stats["width-follows-the-scale"] += 1
             op = MOUTH_OP if d["mouth"] else OP
+            if bar:
+                base = bars[0]
+                if is_animated(base.get("w")) or wprop.get("a"):
+                    stats["skip-bar-width-moves"] += 1
+                    audit[uid] = dict(d, done=None, why="the bar's own width is animated")
+                    continue
+                bw = val(base.get("w"), t0)
+                if isinstance(bw, list): bw = bw[0] if bw else 0.0
+                bw = bw or 0.0
+                blk = copy.deepcopy(base)
+                blk["c"] = {"a": 0, "k": [0, 0, 0, 1], "ix": 3}
+                blk["o"] = {"a": 0, "k": op, "ix": 4}
+                blk["nm"] = "ab"
+                made = []
+                if bw - w > 0.05:
+                    core = copy.deepcopy(base)
+                    core["w"] = {"a": 0, "k": round(bw - w, 4), "ix": 5}
+                    next_ind += 1
+                    made.append(make_bar(layer, gpath, keep, core, next_ind, "ab-core"))
+                next_ind += 1
+                made.append(make_bar(layer, gpath, keep, blk, next_ind, "ab-bar"))
+                before[meta["layer_idx"]].append((gpath, made))
+                stats["stroke-drawn-shape"] += 1
+                audit[uid] = dict(d, done="bar", w=round(w, 3), op=op, bar=round(bw, 3),
+                                  inds=[x["ind"] for x in made])
+                continue
             mask = inv_mask = None
             if len(keep) == 1:
                 try:
@@ -2373,12 +2478,22 @@ def border_file(doc, svg_name, stats=None):
                     continue
                 if made: before[meta["layer_idx"]].append((gpath, made))
                 if band_layer is not None:
-                    # the band is the line the still draws on the piece BELOW this shape, so it has
-                    # to be drawn below it: anything in this shape's own layer then covers the half
-                    # that falls on the shape itself or on a sibling of the same colour, and only
-                    # the half that lands on the neighbour shows. Drawn above, ManBoy2's mouth came
-                    # out half brown on the face and half grey on the other white half of his smile.
-                    after[meta["layer_idx"]].append(band_layer)
+                    # A band is the line the still draws on the piece BELOW this shape, so it goes
+                    # directly ABOVE that piece, wherever that piece lives. Nothing between the
+                    # neighbour and the band can then cover it, and everything drawn over the
+                    # neighbour still covers it, which is right, because it covers the neighbour too.
+                    # Below this shape's own layer, which is where it went before, is only the same
+                    # thing when the neighbour is in a lower layer: WomanWomanTrenchCoat's hair and
+                    # the face shading that bands onto it are two groups of ONE layer, so the band
+                    # landed under the hair and never showed. Above its own layer is wrong the other
+                    # way: ManBoy2's mouth came out half brown on the face and half grey on the other
+                    # white half of his smile.
+                    nb = ent.get(uid_of(d["band_to"]))
+                    nbm = nb["meta"] if nb else None
+                    if nbm is not None and not layers[nbm["layer_idx"]].get("td"):
+                        before[nbm["layer_idx"]].append((nbm["gpath"], [band_layer]))
+                    else:
+                        after[meta["layer_idx"]].append(band_layer)
                 audit[uid] = dict(d, done="self-mask", w=round(w, 3), op=op,
                                   inds=[x["ind"] for x in made] + ([band_layer["ind"]] if band_layer is not None else []),
                                   band=band_layer is not None,
@@ -2419,7 +2534,7 @@ def border_file(doc, svg_name, stats=None):
         out += rebuilt
         out += after.pop(i, [])
         stats["layers-cut"] += 1
-        stats["pieces"] += sum(1 for x in rebuilt if x.get("nm") not in ("ab-line", "ab-matte"))
+        stats["pieces"] += sum(1 for x in rebuilt if not str(x.get("nm", "")).startswith("ab-"))
     for i in sorted(after):                      # a band whose layer drew nothing else
         out += after[i]
     doc["layers"] = out + extra
