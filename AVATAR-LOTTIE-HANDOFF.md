@@ -180,6 +180,17 @@ on the lower one, so the mouth came out half brown on the face and half grey on 
 layer now goes below the layer it came from. The shape itself, and any sibling of the same colour,
 then cover the half that falls on them, and only the half that lands on the neighbour shows.
 
+**lottie's inverted mask is cut off at the layer's origin.** A band is "the stroke, outside the
+shape", and the obvious way to write that is one additive mask with `inv: true`. lottie draws such a
+mask as a rectangle followed by the path, and the rectangle is `createLayerSolidPath()`: 0,0 to the
+comp's width and height **in the layer's own coordinates**, never moved. So the band of any shape
+that sits at negative layer coordinates is cut off along the layer's x or y axis. `ManBoy2`'s mouth
+runs from x -10.9 to 10.9 in its layer, so exactly the left half of its line was missing. The pass
+writes the same thing as a SUBTRACT mask instead: lottie gives a leading subtract mask a white
+rectangle of its own and carries that one with `getInverseMatrix()` of the layer's transform, so it
+really does cover the composition. Measured over 36 files at frame 0, that alone took LOST from
+85,544 px to 78,989 and moved STRAY by 370.
+
 **Cutting a layer moves Chrome's antialiasing.** With the added layers hidden, a bordered file
 renders pixel for pixel like the original on the files that were not cut, and within about 1% of it
 on the files that were, all of it a one pixel fringe on edges. The share halves as the render doubles
@@ -191,12 +202,12 @@ effect rather than a structural one. At the sizes an avatar is drawn, 96px and 6
 | | plain | bordered |
 |---|---|---|
 | raw | 23.5 MB | 44.2 MB (x1.88) |
-| gzipped, which is what goes over the wire | 2.71 MB | 3.82 MB (+41%) |
+| gzipped, which is what goes over the wire | 2.71 MB | 3.81 MB (+41%) |
 | gzipped per file | 5.9 KB | 8.3 KB |
 | layers | 10,014 | 20,139 (x2.01) |
 
 5,261 shapes carry a line, over all 473 files, 1,455 of them a band onto the piece below and 185 a
-mouth at 35%. Every file got at least one. The brief guessed 2.7 to 3.0 MB on the wire; it is 3.82,
+mouth at 35%. Every file got at least one. The brief guessed 2.7 to 3.0 MB on the wire; it is 3.81,
 because the proof it was measured on bordered 5 shapes in one file and the real pass borders 11 per
 file.
 
@@ -294,9 +305,6 @@ Also open:
 - **The 66 merge-paths shapes** get no line. Some are real pieces, a shirt for instance. Doing them
   needs the border nested inside the group that holds the fill, and a way to tell which sub-path is
   the visible outline.
-- **`ManBoy2`'s mouth line covers only part of the arc.** His smile is two white pieces and only the
-  one carries a band, so the line stops where the second piece starts. The still draws it round the
-  whole arc.
 - **`WomanLaptop` has no line along her forehead hairline.** Her fringe owns 144 units of outline
   against 165 units of hair on hair, so the ownership rule leaves it unstroked.
 - **Two files were regraded**: `OtherJackOLantern3` and `OtherJackOLantern4` are a different green in

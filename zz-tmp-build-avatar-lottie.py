@@ -51,11 +51,14 @@ loose gate. That reaches 78% of units and is right on 99.5% of them (735 pairs r
 compared). A unit with no part falls back to the generator's own gate read off the unit, which
 agrees with it on 96% of matched pairs. Fill hex alone would decide only 13%.
 
-The line is always drawn INSIDE the unit. v9 also draws an outer band onto the piece below, where
-the neighbour owns the edge but this piece covers it; that cut cannot be carried into Lottie
-without baking geometry, so those 16% of parts get their line one border-width in from where the
-still puts it. That is the trade the handoff asks for ("give the line to the shape that owns most
-of that edge, whole").
+The line is normally drawn INSIDE the unit. v9 also draws an outer band onto the piece below, where
+the neighbour owns the edge but this piece covers it, and that one is carried too: the same stroke,
+kept OUTSIDE the unit and clipped to the neighbour, on a layer that goes BELOW the unit's own layer
+so the unit and its same-coloured siblings cover the half that falls back on them. Outside is
+written as a subtract mask, never lottie's `inv` flag, whose rectangle is in layer space (see
+`mask_from`). What still cannot be carried is a per-EDGE cut: a layer has one matte and one mask
+and both are area operations, so a unit is stroked whole or not at all. That is the trade the
+handoff asks for ("give the line to the shape that owns most of that edge, whole").
 
 The mouth is stroked at 35% instead of 15%, read from the built v9 SVG (`class="abl abm"`, or
 `style="stroke-opacity:.35"` where svgo inlined the rule).
@@ -1032,6 +1035,16 @@ def mask_from(item, M, t, inv=False):
     kept only OUTSIDE the shape, and a track matte to a copy of that piece keeps it only where the
     piece is. Both clips carry real animated paths, so nothing is baked.
 
+    Inside out is written as a SUBTRACT mask, not as the `inv` flag, and that is not a style choice.
+    lottie draws an `inv` mask as "this path, preceded by a rectangle", and the rectangle it uses is
+    `createLayerSolidPath()`: 0,0 to the comp's width and height **in the layer's own space**. A
+    shape that sits at negative layer coordinates therefore has its band cut off at the layer's
+    origin. `ManBoy2`'s mouth spans x -10.9 to 10.9 in its layer, so exactly the left half of its
+    line went missing. A subtract mask that is first in the list gets a white rect instead, and
+    lottie carries that one with `getInverseMatrix()` of the layer's transform, so it really does
+    cover the composition. Same picture where the shape happens to sit inside 0,0..w,h; correct
+    everywhere else.
+
     The group transforms are static everywhere in the set, so this is an exact change of frame,
     not a bake: an animated path keeps all its keyframes and the border morphs with it."""
     ty = item.get("ty")
@@ -1052,7 +1065,7 @@ def mask_from(item, M, t, inv=False):
             pt = {"a": 1, "k": kfs, "ix": 1}
     else:
         raise Unsupported(ty or "?")
-    return {"inv": bool(inv), "mode": "a", "pt": pt, "o": {"a": 0, "k": 100, "ix": 3},
+    return {"inv": False, "mode": "s" if inv else "a", "pt": pt, "o": {"a": 0, "k": 100, "ix": 3},
             "x": {"a": 0, "k": 0, "ix": 4}, "nm": "ab-out" if inv else "ab-self"}
 
 def xform_path(p, M):
@@ -2063,11 +2076,15 @@ def validate(doc):
             errs.append("ind %s parent %s missing" % (x.get("ind"), x["parent"]))
         mp = x.get("masksProperties") or []
         if x.get("hasMask") and not mp: errs.append("ind %s hasMask with no mask" % x.get("ind"))
-        if len([m for m in mp if m["mode"] == "a"]) > 1:
-            errs.append("ind %s has more than one additive mask" % x.get("ind"))
+        if len(mp) > 1:
+            errs.append("ind %s has more than one mask" % x.get("ind"))
         for m in mp:
+            if m["mode"] not in ("a", "s"):
+                errs.append("ind %s mask mode %r" % (x.get("ind"), m["mode"]))
+            if m.get("inv"):
+                errs.append("ind %s uses inv, whose rect is in layer space" % x.get("ind"))
             if m["o"]["k"] != 100 or m["x"]["k"] != 0:
-                errs.append("ind %s mask would force a <mask> element" % x.get("ind"))
+                errs.append("ind %s mask opacity or expansion is not neutral" % x.get("ind"))
     return errs
 
 
