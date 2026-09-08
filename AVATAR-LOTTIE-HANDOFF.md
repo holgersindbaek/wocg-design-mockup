@@ -15,7 +15,9 @@ the test Holger asked for.
 - Its audit: `game-assets/avatars-lottie-v9/borders.json`, one entry per shape per file, saying what
   the pass decided and why. Useful when a shape looks wrong.
 - The lab copies: `game-assets/avatars-lottie-v9/js/*.js`, the same files wrapped so a `file://` page
-  can load them with a script tag. Only the lab uses these.
+  can load them with a script tag, and `js-plain/*.js`, the UNTOUCHED app animations wrapped the same
+  way so the lab's plain option plays what ships today rather than our file with the border taken
+  back out. Only the lab uses these.
 - The test: `avatar-borders-lab.html`. Hover an avatar and its three animations load. Click it and
   one plays in place of the still. Click again and it steps on, win to think to lose to win. The
   hover scale is off the avatars.
@@ -182,7 +184,7 @@ mouth at 35%. Every file got at least one. The brief guessed 2.7 to 3.0 MB on th
 because the proof it was measured on bordered 5 shapes in one file and the real pass borders 10 per
 file.
 
-The lab copies are 34.1 MB. They are the same drawings with the author-time keys After Effects
+The lab copies are 35 MB, and the untouched copies for the plain option another 19 MB. They are the same drawings with the author-time keys After Effects
 writes on shape items dropped (`ix`, `mn`, `nm`, `bm`, and `hd` where it is false), which is 16% off
 and, checked by render, 0 differing pixels. Rounding the numbers would take another 5% and was not
 done: it moves every edge by a fraction of a pixel and a rounded colour channel moves a whole face
@@ -202,9 +204,15 @@ by a level or two.
   `window.AB_LOTTIE[...]`. Script tags are not subject to CORS, so this works from `file://`, where
   `fetch` is refused.
 - The renderer settings are the app's: `renderer: "svg"`, `preserveAspectRatio: "xMidYMax meet"`.
-- **The border knob follows.** "plain" strips the `ab-line` layers back out of the same file, so the
-  still and the animation always agree. There is no v8 animation set, so the v8 option plays the v9
-  border.
+- **Everything preloads.** Four hundred milliseconds after the page draws, the lab walks all 141
+  avatars and pulls their three files one at a time, yielding between each, so no click ever waits.
+  422 files in under six seconds off a local disk, and it starts again for the other folder when the
+  border knob changes.
+- **The border knob follows.** "plain" plays `js-plain/`, the untouched animation that ships today,
+  so the two can be compared honestly; if that copy were missing it falls back to stripping the
+  border layers out of ours. There is no v8 animation set, so the v8 option plays the v9 border.
+- Each injected script carries a build stamp, because Chrome caches them from `file://` and a
+  rebuilt animation otherwise keeps showing the old border.
 - The coat and the picked green ring were written for `img` only, so an animated tile lost both. The
   twelve selectors now say `.pi :is(img,svg)`.
 - The still is hidden with `visibility: hidden`, never `display: none`: the tile has no height of its
@@ -216,6 +224,18 @@ Driven headlessly from `file://` and checked: 141 tiles, no hover transform, the
 1600x1600 in the tile, the still hides, the coat and the ring reach the `<svg>`, the three clicks
 give three different animations, `plain` gives 0 border layers, and `WomanWoman21`, the one avatar
 with no `_think`, skips it and plays `_lose`.
+
+## 6b. Some animations do not start on their still, and never did
+
+`ManBoy2` starts 11 px lower than `ManBoy2.svg` at a 460 px render, about 4 units in the 160-unit
+box. So does `ManBoy`. `AnimalCat` starts 7.5 px higher, `OtherRose` 2.5 px higher. Twelve of the
+sixteen checked start exactly on their still. **This is in the files as they ship**: it was measured
+on the untouched app JSON against the plain SVG, with no border anywhere near it
+(`/tmp/ablottie/pose.py`). The border pass does not move anything: with its added layers hidden a
+file renders pixel for pixel like the original bar a one pixel antialiasing fringe.
+
+It is worth knowing because it is the same jump a player sees at the table today, when the still is
+swapped for the animation. If it is worth fixing it is an art-side fix, not a border one.
 
 ## 7. What was checked, and what is still open
 

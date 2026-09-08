@@ -2063,11 +2063,15 @@ window.__settingsLab = { KN: KN, LAB: LAB, show: show, buildModal: buildModal, s
    still and the animation always show the same thing. There is no v8 animation set, so the v8
    option plays the v9 border. */
 (function () {
-  var DIR = "game-assets/avatars-lottie-v9/js/", PLAYER = "avatar-lab/lottie_light.min.js";
-  var AB_BUILD = "2026-09-08c";
+  var ROOT = "game-assets/avatars-lottie-v9/", PLAYER = "avatar-lab/lottie_light.min.js";
+  var AB_BUILD = "2026-09-08d";
   var EMO = ["win", "think", "lose"];
-  var pending = {}, missing = {}, warmed = {}, step = {}, mounted = [];
+  var pending = {}, missing = {}, step = {}, mounted = [];
   var playerState = 0, playerQueue = [];
+  /* the plain option plays the untouched animation, the one that ships today, not our file with
+     the border layers taken back out: they are not the same thing to compare against */
+  function shelf() { return KN.avborder === "plain" ? "AB_LOTTIE_PLAIN" : "AB_LOTTIE"; }
+  function dir() { return ROOT + (KN.avborder === "plain" ? "js-plain/" : "js/"); }
 
   function withPlayer(cb) {
     if (playerState === 2) return cb();
@@ -2082,36 +2086,55 @@ window.__settingsLab = { KN: KN, LAB: LAB, show: show, buildModal: buildModal, s
   }
 
   function load(key, cb) {
-    var have = window.AB_LOTTIE && window.AB_LOTTIE[key];
+    var g = shelf(), id = g + "/" + key;
+    var have = window[g] && window[g][key];
     if (have) return cb(have);
-    if (missing[key]) return cb(null);
-    if (pending[key]) { pending[key].push(cb); return; }
-    pending[key] = [cb];
+    if (missing[id]) return cb(null);
+    if (pending[id]) { pending[id].push(cb); return; }
+    pending[id] = [cb];
     function done() {
-      var d = (window.AB_LOTTIE && window.AB_LOTTIE[key]) || null;
-      if (!d) missing[key] = 1;
-      var q = pending[key] || []; delete pending[key];
+      var d = (window[g] && window[g][key]) || null;
+      if (!d) missing[id] = 1;
+      var q = pending[id] || []; delete pending[id];
       q.forEach(function (f) { f(d); });
     }
     var s = document.createElement("script");
     /* the lab is opened from file:// and Chrome caches these, so a rebuilt animation would keep
        showing the old border until the cache was cleared by hand */
-    s.src = DIR + key + ".js?v=" + AB_BUILD;
+    s.src = dir() + key + ".js?v=" + AB_BUILD;
     s.onload = done; s.onerror = done;
     document.head.appendChild(s);
   }
 
   /* the three files of one avatar, win first, so the first click is instant */
-  function warm(av) {
-    if (warmed[av]) return;
-    warmed[av] = 1;
+  function warm(av, cb) {
     var i = 0;
-    (function nextOne() { if (i >= EMO.length) return; load(av + "_" + EMO[i++], nextOne); })();
+    (function nextOne() {
+      if (i >= EMO.length) return cb && cb();
+      load(av + "_" + EMO[i++], function () { setTimeout(nextOne, 0); });
+    })();
+  }
+
+  /* every avatar, in the background, so no click ever waits. 141 avatars, three files each, off a
+     local disk. It runs one file at a time and yields between them, so the page stays responsive,
+     and it starts again for the other folder when the border knob changes. */
+  var preloading = false;
+  function preloadAll() {
+    if (preloading || typeof AVATARS === "undefined") return;
+    preloading = true;
+    var n = 0;
+    (function nextAv() {
+      if (n >= AVATARS.length) { preloading = false; return; }
+      warm(AVATARS[n++], function () { setTimeout(nextAv, 0); });
+    })();
   }
 
   function forKnob(data) {
     var d = JSON.parse(JSON.stringify(data));           /* lottie mutates what it is given */
-    if (KN.avborder === "plain") d.layers = d.layers.filter(function (L) { return L.nm !== "ab-line" && L.nm !== "ab-matte"; });
+    if (KN.avborder === "plain" && shelf() === "AB_LOTTIE") {
+      /* only if the untouched copy is missing: strip the border back out of ours */
+      d.layers = d.layers.filter(function (L) { return L.nm !== "ab-line" && L.nm !== "ab-band" && L.nm !== "ab-matte" && L.nm !== "ab-nbr"; });
+    }
     return d;
   }
 
@@ -2166,6 +2189,8 @@ window.__settingsLab = { KN: KN, LAB: LAB, show: show, buildModal: buildModal, s
     var t = tileOf(e);
     if (t) withPlayer(function () { warm(t.getAttribute("data-av")); });
   });
+  /* start the player and the preload as soon as the page has drawn */
+  setTimeout(function () { withPlayer(function () { }); preloadAll(); }, 400);
   document.addEventListener("click", function (e) {
     var t = tileOf(e);
     if (t) playNext(t, t.getAttribute("data-av"));
@@ -2174,7 +2199,12 @@ window.__settingsLab = { KN: KN, LAB: LAB, show: show, buildModal: buildModal, s
   /* show() empties #smLayer, so anything still playing has to be destroyed first or lottie keeps
      the detached animation and its frame loop alive */
   var innerShow = show;
-  show = function () { teardown(); innerShow.apply(this, arguments); };
+  var lastBorder = KN.avborder;
+  show = function () {
+    teardown();
+    innerShow.apply(this, arguments);
+    if (KN.avborder !== lastBorder) { lastBorder = KN.avborder; preloading = false; preloadAll(); }
+  };
 
   window.__abLottie = { warm: warm, playNext: playNext, mounted: mounted, missing: missing, teardown: teardown };
 })();

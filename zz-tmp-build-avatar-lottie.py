@@ -1853,7 +1853,19 @@ def border_file(doc, svg_name, stats=None):
             inner = (runs[part][0] + runs[part][1]) if part in runs else 1.0
             free = not layer.get("tt")          # the track matte slot, if the layer is not matted
             if mask is not None:
-                if inner > 0 or d["mouth"]:
+                # the band first, so a shape whose line the still draws entirely OUTSIDE it does not
+                # also get an inset rim. That is what put a grey ring on ManBoy2's white teeth: the
+                # mouth is exempt from the ownership rule, and the exemption was letting an inset
+                # line through on a mouth that has no inner line at all.
+                band_layer = None
+                if DO_BAND and free and inv_mask is not None and d["band_to"] is not None:
+                    onto = matte_for(d["band_to"])
+                    if onto is not None:
+                        next_ind += 1
+                        band_layer = make_line(layer, gpath, keep, op, wprop, inv_mask, onto, next_ind,
+                                               tt=1, nm="ab-band")
+                        stats["band-onto-the-piece-below"] += 1
+                if inner > 0 or (d["mouth"] and band_layer is None):
                     cut_ind = matte_for(d["cut"]) if (DO_CUT and free and d["cut"] is not None) else None
                     tp = cut_ind if cut_ind is not None else (layer.get("tp") if layer.get("tt") else None)
                     next_ind += 1
@@ -1861,13 +1873,7 @@ def border_file(doc, svg_name, stats=None):
                                           tt=2 if cut_ind is not None else 1))
                     stats["self-mask"] += 1
                     if cut_ind is not None: stats["cut-by-its-neighbour"] += 1
-                if DO_BAND and free and inv_mask is not None and d["band_to"] is not None:
-                    onto = matte_for(d["band_to"])
-                    if onto is not None:
-                        next_ind += 1
-                        made.append(make_line(layer, gpath, keep, op, wprop, inv_mask, onto, next_ind,
-                                              tt=1, nm="ab-band"))
-                        stats["band-onto-the-piece-below"] += 1
+                if band_layer is not None: made.append(band_layer)
                 if not made:
                     stats["skip-nothing-to-draw"] += 1
                     audit[uid] = dict(d, done=None, why="nothing left to draw")
@@ -1943,10 +1949,10 @@ def validate(doc):
 
 # ---------------------------------------------------------------- the driver
 
-def js_wrap(name, doc):
+def js_wrap(name, doc, glob="AB_LOTTIE"):
     body = json.dumps(doc, separators=(",", ":"))
     body = body.replace("\\", "\\\\").replace("</", "<\\/")
-    return 'window.AB_LOTTIE=window.AB_LOTTIE||{};window.AB_LOTTIE["%s"]=%s;\n' % (name, body)
+    return 'window.%s=window.%s||{};window.%s["%s"]=%s;\n' % (glob, glob, glob, name, body)
 
 SHAPE_DROP = ("ix", "mn", "ln", "cl", "np", "cix", "nm", "bm")
 
@@ -1975,8 +1981,11 @@ def run_one(args):
     dst = os.path.join(out_dir, stem + ".json")
     json.dump(doc, open(dst, "w"), separators=(",", ":"))
     if want_js:
-        jsdir = os.path.join(out_dir, "js")
-        open(os.path.join(jsdir, stem + ".js"), "w").write(js_wrap(stem, slim(doc)))
+        open(os.path.join(out_dir, "js", stem + ".js"), "w").write(js_wrap(stem, slim(doc)))
+        # the untouched animation as well, so the lab's "plain" option plays what ships today
+        # rather than our file with the border layers taken back out
+        open(os.path.join(out_dir, "js-plain", stem + ".js"), "w").write(
+            js_wrap(stem, slim(json.load(open(src))), "AB_LOTTIE_PLAIN"))
     return stem, dict(stats), errs, os.path.getsize(src), os.path.getsize(dst), audit
 
 
@@ -1997,7 +2006,9 @@ def main(argv):
         stems = [s for s in stems if s in keep or s.rsplit("_", 1)[0] in keep]
     if limit: stems = stems[:limit]
     os.makedirs(OUT, exist_ok=True)
-    if want_js: os.makedirs(os.path.join(OUT, "js"), exist_ok=True)
+    if want_js:
+        os.makedirs(os.path.join(OUT, "js"), exist_ok=True)
+        os.makedirs(os.path.join(OUT, "js-plain"), exist_ok=True)
 
     total = collections.Counter()
     audits = {}
