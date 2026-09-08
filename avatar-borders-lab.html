@@ -2064,6 +2064,7 @@ window.__settingsLab = { KN: KN, LAB: LAB, show: show, buildModal: buildModal, s
    option plays the v9 border. */
 (function () {
   var DIR = "game-assets/avatars-lottie-v9/js/", PLAYER = "avatar-lab/lottie_light.min.js";
+  var AB_BUILD = "2026-09-08c";
   var EMO = ["win", "think", "lose"];
   var pending = {}, missing = {}, warmed = {}, step = {}, mounted = [];
   var playerState = 0, playerQueue = [];
@@ -2093,7 +2094,9 @@ window.__settingsLab = { KN: KN, LAB: LAB, show: show, buildModal: buildModal, s
       q.forEach(function (f) { f(d); });
     }
     var s = document.createElement("script");
-    s.src = DIR + key + ".js";
+    /* the lab is opened from file:// and Chrome caches these, so a rebuilt animation would keep
+       showing the old border until the cache was cleared by hand */
+    s.src = DIR + key + ".js?v=" + AB_BUILD;
     s.onload = done; s.onerror = done;
     document.head.appendChild(s);
   }

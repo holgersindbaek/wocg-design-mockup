@@ -143,7 +143,11 @@ below, IS carried, by an inverted mask of the shape's own path plus a track matt
 the neighbour; 1,292 of them. The mouth is exempt from the ownership rule, because two thirds of the
 mouth lines in the still are bands and the smile is the one place the border is meant to be seen.
 
-Cost: 2.71 to 3.82 MB gzipped over the 473 files, 5.9 to 8.3 KB each. The whole record, the traps and
+The test to judge it by is frame 0 of the animation against the BASE still, not the emotion still:
+the table shows `ManCaveman.svg`, hides it and plays `ManCaveman_think.json` from frame 0, so that
+is the pose the border has to match or it pops the moment the animation starts.
+
+Cost: 2.71 to 3.72 MB gzipped over the 473 files, 5.9 to 8.0 KB each. The whole record, the traps and
 what is still open are in `AVATAR-LOTTIE-HANDOFF.md`. `avatar-borders-lab.html` plays them: hover an
 avatar to load its three files, click to play one, click again for the next.
 

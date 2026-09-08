@@ -89,7 +89,12 @@ OUT = os.path.join(HERE, "game-assets", "avatars-lottie-v9")
 
 W_UNITS = 4.0          # the v9 stroke width in the 160-unit box; the clip keeps the inner 2
 DO_BAND = os.environ.get("AB_BAND", "1") == "1"   # carry v9's outer band onto the piece below
-BAND_RATIO = float(os.environ.get("AB_BAND_RATIO", "2"))  # only where the band is the shape's main line
+BAND_RATIO = float(os.environ.get("AB_BAND_RATIO", "1"))  # only where the band is the shape's main line
+OWN_RATIO = float(os.environ.get("AB_OWN_RATIO", "1"))    # stroke a shape only when it owns this much
+                                                          # more of its outline than it does not
+BG_WEIGHT = float(os.environ.get("AB_BG_WEIGHT", "0.4"))
+FAR_WEIGHT = float(os.environ.get("AB_FAR_WEIGHT", "1"))  # v9 draws nothing on a far seam either    # what a length of silhouette line is worth
+                                                          # against a length of seam it must not draw
 DO_CUT = os.environ.get("AB_CUT", "0") == "1"     # cut the line where a neighbour owns it
 DO_TWIN = os.environ.get("AB_TWIN", "0") == "1"   # let an unmatched shape copy a matched twin
 OP, MOUTH_OP = 15, 35  # black, per cent
@@ -674,10 +679,10 @@ def part_runs(name):
         nb = collections.defaultdict(collections.Counter)
         for tag, ln in v["runs"]:
             kind = tag.split("@")[0].split(":")[0]
-            t[kind] += ln
             who = tag.partition("@")[2] or (tag.split(":")[1] if tag.startswith("out:") else "")
+            t["bg" if (kind == "in" and who == "bg") else kind] += ln
             if who and who != "bg": nb[int(who)][kind] += ln
-        out[int(k)] = (t["in"], t["out"], t["none"], t["far"], dict(nb))
+        out[int(k)] = (t["bg"], t["in"], t["out"], t["none"], t["far"], dict(nb))
     return out
 
 def top_neighbour(nb, kind):
@@ -887,12 +892,12 @@ def share_duplicates(parts, flags, runs):
         best, seen = None, -1.0
         for i in idx:
             if i not in flags: continue
-            vis = sum(runs.get(i, (0, 0, 0, 0))[:4])
+            vis = sum(runs.get(i, (0, 0, 0, 0, 0))[:5])
             if vis > seen: best, seen = i, vis
         if best is None: continue
         for i in idx:
             if i == best: continue
-            if i not in flags or sum(runs.get(i, (0, 0, 0, 0))[:4]) < seen:
+            if i not in flags or sum(runs.get(i, (0, 0, 0, 0, 0))[:5]) < seen:
                 f2[i] = flags[best]
                 if best in runs: r2[i] = runs[best]
                 shared += 1
@@ -1601,13 +1606,14 @@ def look_all(doc, stem):
         t = collections.Counter(); nb = collections.defaultdict(collections.Counter)
         for tag, ln in r["runs"]:
             kind = tag.split("@")[0].split(":")[0]
-            t[kind] += ln
             who = tag.partition("@")[2] or (tag.split(":")[1] if tag.startswith("out:") else "")
+            t["bg" if (kind == "in" and who == "bg") else kind] += ln
             if who and who != "bg": nb[int(who)][kind] += ln
         cut = top_neighbour(dict(nb), "none")[0]
         band = top_neighbour(dict(nb), "out")[0]
-        out[u["uid"]] = {"part": bool(r["part"]), "mouth": bool(r["mouth"]), "in": t["in"], "out": t["out"],
-                         "none": t["none"],
+        out[u["uid"]] = {"part": bool(r["part"]), "mouth": bool(r["mouth"]),
+                         "in": t["in"] + BG_WEIGHT * t["bg"], "any": t["in"] + t["bg"], "out": t["out"],
+                         "none": t["none"] + FAR_WEIGHT * t["far"],
                          "cut": units[cut]["uid"] if cut is not None else None,
                          "band": units[band]["uid"] if band is not None else None}
     return out
@@ -1633,7 +1639,9 @@ def look_unmatched(doc, stem, rows):
             out[u["uid"]] = (False, False); continue
         t = collections.Counter()
         for tag, ln in r["runs"]: t[tag.split("@")[0].split(":")[0]] += ln
-        out[u["uid"]] = (t["in"] > 0 and t["in"] >= t["none"], r["mouth"])
+        out[u["uid"]] = ((t["in"] + t["bg"]) > 0
+                         and (t["in"] + BG_WEIGHT * t["bg"])
+                             >= OWN_RATIO * (t["none"] + FAR_WEIGHT * t["far"]), r["mouth"])
     return out
 
 
@@ -1659,21 +1667,26 @@ def border_file(doc, svg_name, stats=None):
             t = collections.Counter(); nb = collections.defaultdict(collections.Counter)
             for tag, ln in r["runs"]:
                 kind = tag.split("@")[0].split(":")[0]
-                t[kind] += ln
                 who = tag.partition("@")[2] or (tag.split(":")[1] if tag.startswith("out:") else "")
+                t["bg" if (kind == "in" and who == "bg") else kind] += ln
                 if who and who != "bg": nb[int(who)][kind] += ln
-            runs[i] = (t["in"], t["out"], t["none"], t["far"], dict(nb))
+            runs[i] = (t["bg"], t["in"], t["out"], t["none"], t["far"], dict(nb))
             area_of[i] = r["area"]
             if r["part"] and (t["in"] > 0 or t["out"] > 0):
                 flags[i] = {"inner": t["in"] > 0, "outer": t["out"] > 0, "mouth": r["mouth"]}
             rows.append((u["uid"], i, "looked"))
         stats["looked-at"] += len(units)
     else:
-        parts = svg_parts(svg_name)
-        flags, runs, shared = share_duplicates(parts, v9_flags(svg_name), part_runs(svg_name))
+        # The still the animation replaces is the BASE avatar, not the emotion still: the table
+        # shows ManCaveman.svg, hides it, and plays ManCaveman_think.json from frame 0. Frame 0 is
+        # that pose, so that is the drawing whose border has to be reproduced, and matching against
+        # it is also much tighter than matching against a mid-clip pose.
+        base = svg_name.rsplit("_", 1)[0] if "_" in svg_name else svg_name
+        parts = svg_parts(base)
+        flags, runs, shared = share_duplicates(parts, v9_flags(base), part_runs(base))
         stats["decisions-shared-with-a-twin"] += shared
         area_of = {p["i"]: p["area"] for p in parts}
-        rows, seq, off = match_units(doc, svg_name, parts, frames)
+        rows, seq, off = match_units(doc, base, parts, frames)
         ent = {e["meta"]["uid"]: e for e in seq}
         unit_of_part = {}
         for (uid, part, _m) in rows:
@@ -1689,7 +1702,7 @@ def border_file(doc, svg_name, stats=None):
             # a shape the still cannot reach is guessed at by size, which is right about three
             # times in five. Render the animation and read that shape the way the generator reads
             # an SVG instead: it knows what lies around it, so it can answer properly.
-            look = {u: (v["part"] and v["in"] > 0 and v["in"] >= v["none"], v["mouth"])
+            look = {u: (v["part"] and v["any"] > 0 and v["in"] >= OWN_RATIO * v["none"], v["mouth"])
                     for u, v in seen.items()}
             stats["read-off-the-render"] += sum(1 for _u, p, _m in rows if p is None)
         else:
@@ -1727,7 +1740,10 @@ def border_file(doc, svg_name, stats=None):
             f = flags.get(part)
             want = bool(f)
             mouth = bool(f and f["mouth"])
-            inner, band, bare, _far, nb = runs.get(part, (1.0, 0.0, 0.0, 0.0, {}))
+            in_bg, in_n, band, bare, far, nb = runs.get(part, (1.0, 0.0, 0.0, 0.0, 0.0, {}))
+            inner = in_bg + in_n
+            owned = in_n + BG_WEIGHT * in_bg
+            bare = bare + FAR_WEIGHT * far
             cut = top_neighbour(nb, "none")[0] if bare > 0 else None
             band_to = top_neighbour(nb, "out")[0] if band > BAND_RATIO * bare else None
             if band_to is not None and uid in seen and seen[uid]["band"]:
@@ -1738,7 +1754,7 @@ def border_file(doc, svg_name, stats=None):
                 if inner <= 0 and not (DO_BAND and band_to is not None):
                     want = False
                     method = "the still draws this line outside the shape"
-                elif inner > 0 and inner < bare and not (DO_CUT and cut is not None and cut in unit_of_part):
+                elif inner > 0 and owned < OWN_RATIO * bare and not (DO_CUT and cut is not None and cut in unit_of_part):
                     want = False
                     method = "mostly not its line"
         decided[uid] = {"part": part, "method": method, "want": want, "mouth": mouth,
@@ -1834,7 +1850,7 @@ def border_file(doc, svg_name, stats=None):
                 except Unsupported:
                     mask = inv_mask = None
             made = []
-            inner = runs.get(part, (1.0,))[0] if part in runs else 1.0
+            inner = (runs[part][0] + runs[part][1]) if part in runs else 1.0
             free = not layer.get("tt")          # the track matte slot, if the layer is not matted
             if mask is not None:
                 if inner > 0 or d["mouth"]:

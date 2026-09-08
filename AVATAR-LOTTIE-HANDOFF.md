@@ -26,6 +26,27 @@ Holger's words for the test, which is what was built:
 > When I click an avatar then you play one of the lottie files and cycle through it. Remove the
 > hover effect on the avatar for now.
 
+## 1b. How to tell whether it is right
+
+**Frame 0 of the animation against the BASE still.** The table shows `ManCaveman.svg`, hides it and
+plays `ManCaveman_think.json` from frame 0, so frame 0 is that pose: measured, it differs from the
+base still by under 2% of pixels on every file checked. If the border does not match there, it pops
+the moment the animation starts, which is the whole thing this job exists to stop. Comparing against
+the emotion still (`ManCaveman_think.svg`) at a mid-clip frame, which is what the first two rounds
+did, mixes the pose difference in and hides the real faults.
+
+`/tmp/ablottie/first.py STEM OUT.png [folder]` draws it: the base still bordered, frame 0 bordered,
+and an overlay where green is a line only the still has and red a line only frame 0 has.
+`/tmp/ablottie/score0.py FOLDER STEMS.json` scores a set, and reports two numbers that matter more
+than the overlap:
+
+- **STRAY**: line in the animation with nothing in the still within 5 px. The visible fault, the
+  thing that reads as a line drawn on a face that should not have one.
+- **LOST**: line in the still with nothing in the animation within 5 px.
+
+Over 20 avatars: stray 7,459 and lost 34,789, against 18,306 and 28,030 for the round before. The
+stray line is down 59%.
+
 ## 2. The mechanism, as it ended up
 
 The proof (`zz-tmp-lottie-borders.py`) duplicated a whole layer twice, a track matte plus a stroked
@@ -82,7 +103,7 @@ That answers the 3,508 shapes the still cannot reach, where the alternative was 
 is right three times in five, and it names every neighbour as a Lottie shape, which is what makes
 the band in the next section possible. About four seconds a file, five minutes for the set.
 
-The rules on top:
+The rules on top, all tuned against the frame 0 test in section 1b:
 
 1. **A repeated shape shares the answer of the copy the generator could see.** Several of these
    drawings hold the same shape twice, a visible copy and one a later shape covers, and only the
@@ -92,7 +113,13 @@ The rules on top:
 2. **The shape must own its line, and own it on the inside.** v9 cuts the line where the neighbour
    owns the edge or the two are one material, and a Lottie stroke goes all the way round. So a shape
    is stroked whole, and only when the line v9 draws **inside** it is at least as long as the line
-   v9 deliberately leaves off it.
+   v9 deliberately leaves off it. Two weights make that judgement, and both were measured:
+   **a length of silhouette counts 0.4** (`AB_BG_WEIGHT`), because the silhouette line sits just
+   inside the coat and mostly reads as a slight thickening of it, so trading it one for one against
+   an interior seam is wrong: that is what put a line down the middle of the caveman's face.
+   **A `far` seam counts against the shape in full** (`AB_FAR_WEIGHT`), because v9 draws nothing
+   there either, and counting it as free is what drew a hairline across the businessman's head that
+   the still does not have. Together those two took the stray line down by 59%.
 3. **The band is drawn where it is the shape's main line.** v9 draws a fifth of its line OUTSIDE a
    shape, onto the darker piece below, and that is where the blonde's hairline and the chef's white
    hair live. It is carried by clipping the stroke with an **inverted** mask of the shape's own path
@@ -145,17 +172,17 @@ effect rather than a structural one. At the sizes an avatar is drawn, 96px and 6
 
 | | plain | bordered |
 |---|---|---|
-| raw | 23.5 MB | 45.1 MB (x1.92) |
-| gzipped, which is what goes over the wire | 2.71 MB | 3.82 MB (+41%) |
-| gzipped per file | 5.9 KB | 8.3 KB |
-| layers | 10,014 | 21,143 (x2.11) |
+| raw | 23.5 MB | 43.0 MB (x1.83) |
+| gzipped, which is what goes over the wire | 2.71 MB | 3.72 MB (+37%) |
+| gzipped per file | 5.9 KB | 8.0 KB |
+| layers | 10,014 | 19,947 (x1.99) |
 
-5,568 shapes carry a line, over all 473 files, 1,292 of them a band onto the piece below and 158 a
-mouth at 35%. Every file got at least one. The brief guessed 2.7 to 3.0 MB on the wire; it is 3.82,
-because the proof it was measured on bordered 5 shapes in one file and the real pass borders 12 per
+4,905 shapes carry a line, over all 473 files, 1,252 of them a band onto the piece below and 194 a
+mouth at 35%. Every file got at least one. The brief guessed 2.7 to 3.0 MB on the wire; it is 3.72,
+because the proof it was measured on bordered 5 shapes in one file and the real pass borders 10 per
 file.
 
-The lab copies are 35.8 MB. They are the same drawings with the author-time keys After Effects
+The lab copies are 34.1 MB. They are the same drawings with the author-time keys After Effects
 writes on shape items dropped (`ix`, `mn`, `nm`, `bm`, and `hd` where it is false), which is 16% off
 and, checked by render, 0 differing pixels. Rounding the numbers would take another 5% and was not
 done: it moves every edge by a fraction of a pixel and a rounded colour channel moves a whole face
@@ -233,8 +260,9 @@ python3 zz-tmp-build-avatar-lottie.py --out=avatars-lottie-v9 --js --jobs=8
 
 Five minutes for the set, most of it the render. The switches, all defaulting to what shipped:
 `AB_LOOK=2` reads the shapes the still cannot reach off the render (`1` reads everything off it,
-which measured worse, `0` turns it off), `AB_BAND=1` draws the band and `AB_BAND_RATIO=2` is the
-gate on it, `AB_CUT=1` clips a line away from a neighbour (built, measured, off: it removes the
+which measured worse, `0` turns it off), `AB_BAND=1` draws the band and `AB_BAND_RATIO=1` is the
+gate on it, `AB_BG_WEIGHT=0.4` and `AB_FAR_WEIGHT=1` are the two weights in the ownership rule and
+`AB_OWN_RATIO=1` its threshold, `AB_CUT=1` clips a line away from a neighbour (built, measured, off: it removes the
 whole line), `AB_TWIN=1` lets an unmatched shape copy a matched twin (off: superseded by the
 render).
 
