@@ -81,13 +81,15 @@ APP = os.path.normpath(os.path.join(HERE, "..", "..", "Programming", "wocg"))
 LOT = os.path.join(APP, "worldofcardgames", "static", "pieces", "avatar", "classic")
 CHROME = "/opt/homebrew/bin/chromium"
 LOOK_TMP = "/tmp/ablottie/look/"
-LOOK = os.environ.get("AB_LOOK", "0") == "1"   # decide from the animation's own render
+LOOK = os.environ.get("AB_LOOK", "2")            # "1" decide everything from the animation's own
+                                                 # render, "2" only the shapes the still cannot reach
 SVG = os.path.join(HERE, "game-assets", "avatars")
 BOR = os.path.join(HERE, "game-assets", "avatars-bordered-v9")
 OUT = os.path.join(HERE, "game-assets", "avatars-lottie-v9")
 
 W_UNITS = 4.0          # the v9 stroke width in the 160-unit box; the clip keeps the inner 2
-DO_BAND = os.environ.get("AB_BAND", "0") == "1"   # carry v9's outer band, see the handoff
+DO_BAND = os.environ.get("AB_BAND", "1") == "1"   # carry v9's outer band onto the piece below
+BAND_RATIO = float(os.environ.get("AB_BAND_RATIO", "2"))  # only where the band is the shape's main line
 DO_CUT = os.environ.get("AB_CUT", "0") == "1"     # cut the line where a neighbour owns it
 DO_TWIN = os.environ.get("AB_TWIN", "0") == "1"   # let an unmatched shape copy a matched twin
 OP, MOUTH_OP = 15, 35  # black, per cent
@@ -1340,14 +1342,27 @@ def look_page(doc, units, frame, out_html):
     open(out_html, "w").write(html)
     return len(cells)
 
-def look_shoot(html, png, cells):
+def look_shoot(html, png, cells, tries=3):
+    """Chromium drops a page now and then under load, and a missing render used to fall back to a
+    guess in silence. Retry, then say so."""
     rows = (cells + LOOK_COLS - 1) // LOOK_COLS
-    subprocess.run([CHROME, "--headless=new", "--disable-gpu", "--hide-scrollbars",
-                    "--default-background-color=00000000", "--force-color-profile=srgb",
-                    "--force-device-scale-factor=1", "--virtual-time-budget=20000",
-                    "--window-size=%d,%d" % (LOOK_COLS * LOOK_PX, rows * LOOK_PX),
-                    "--user-data-dir=" + tempfile.mkdtemp(),
-                    "--screenshot=" + png, "file://" + html], capture_output=True, timeout=300)
+    for n in range(tries):
+        try:
+            if os.path.exists(png): os.remove(png)
+        except OSError:
+            pass
+        try:
+            subprocess.run([CHROME, "--headless=new", "--disable-gpu", "--hide-scrollbars",
+                            "--default-background-color=00000000", "--force-color-profile=srgb",
+                            "--force-device-scale-factor=1", "--virtual-time-budget=25000",
+                            "--window-size=%d,%d" % (LOOK_COLS * LOOK_PX, rows * LOOK_PX),
+                            "--user-data-dir=" + tempfile.mkdtemp(),
+                            "--screenshot=" + png, "file://" + html],
+                           capture_output=True, timeout=600)
+        except subprocess.TimeoutExpired:
+            continue
+        if os.path.exists(png) and os.path.getsize(png) > 1000: return
+    raise Unsupported("the render page did not come back after %d tries" % tries)
 
 # ---------------------------------------------------------------- the generator's own rules
 
@@ -1481,10 +1496,10 @@ def analyse_look(png, units):
     for i in range(N):
         rec = {"fill": units[i]["fill"], "dim": round(dim[i], 1), "area": round(area[i], 1),
                "colour": [round(c, 1) for c in colour.get(i, (0, 0, 0))],
-               "part": is_part(i), "mouth": False, "runs": []}
+               "part": bool(is_part(i)), "mouth": False, "runs": []}
         out[i] = rec
         if not rec["part"]: continue
-        rec["mouth"] = mouth_of(i) is not None
+        rec["mouth"] = bool(mouth_of(i) is not None)
         runs = []
         for cont in skm.find_contours(masks[i].astype(float), 0.5):
             if len(cont) < 6: continue
@@ -1573,6 +1588,55 @@ def look_at(doc, stem, frames=None, keep=False):
 def _seen_outline(runs):
     return sum(ln for tag, ln in runs if tag != "hidden")
 
+def look_all(doc, stem):
+    """{uid: what the render says about this shape}: whether it owns an inside line, whether it is
+    a mouth, and which shape its line would be cut by or banded onto. The neighbours are Lottie
+    shapes, which is the whole point: the still names its neighbours as SVG elements and carrying
+    those across the match puts the band in the wrong place."""
+    units, rec = look_at(doc, stem)
+    out = {}
+    for i, u in enumerate(units):
+        r = rec.get(i)
+        if not r: continue
+        t = collections.Counter(); nb = collections.defaultdict(collections.Counter)
+        for tag, ln in r["runs"]:
+            kind = tag.split("@")[0].split(":")[0]
+            t[kind] += ln
+            who = tag.partition("@")[2] or (tag.split(":")[1] if tag.startswith("out:") else "")
+            if who and who != "bg": nb[int(who)][kind] += ln
+        cut = top_neighbour(dict(nb), "none")[0]
+        band = top_neighbour(dict(nb), "out")[0]
+        out[u["uid"]] = {"part": bool(r["part"]), "mouth": bool(r["mouth"]), "in": t["in"], "out": t["out"],
+                         "none": t["none"],
+                         "cut": units[cut]["uid"] if cut is not None else None,
+                         "band": units[band]["uid"] if band is not None else None}
+    return out
+
+def look_unmatched(doc, stem, rows):
+    """{uid: (stroke it, is it a mouth)} for the shapes the still could not be matched to.
+
+    The size rule these otherwise fall back on is right 53 to 64% of the time. Reading the drawing
+    itself is right by construction: it says what lies around the shape, so the generator's own
+    material and ownership rules apply, and the answer is about the animation and not about a still
+    that may not hold this shape at all."""
+    want = {uid for uid, part, _m in rows if part is None}
+    if not want: return {}
+    try:
+        units, rec = look_at(doc, stem)
+    except Exception:
+        return {}
+    out = {}
+    for i, u in enumerate(units):
+        if u["uid"] not in want: continue
+        r = rec.get(i)
+        if not r or not r["part"]:
+            out[u["uid"]] = (False, False); continue
+        t = collections.Counter()
+        for tag, ln in r["runs"]: t[tag.split("@")[0].split(":")[0]] += ln
+        out[u["uid"]] = (t["in"] > 0 and t["in"] >= t["none"], r["mouth"])
+    return out
+
+
 # ---------------------------------------------------------------- the pass over one file
 
 def border_file(doc, svg_name, stats=None):
@@ -1582,7 +1646,7 @@ def border_file(doc, svg_name, stats=None):
     by_ind = {L.get("ind"): L for L in doc["layers"]}
     layers = doc["layers"]
     t0 = frames[len(frames)//2]
-    if LOOK:
+    if LOOK == "1":
         # the animation is rendered and read the way the generator reads an SVG, so every
         # neighbour a run names is a Lottie shape and the answer is about this drawing, not the still
         units, rec = look_at(doc, svg_name, look_frames(doc))
@@ -1614,6 +1678,22 @@ def border_file(doc, svg_name, stats=None):
         unit_of_part = {}
         for (uid, part, _m) in rows:
             if part is not None and part not in unit_of_part: unit_of_part[part] = uid
+        seen = {}
+        if LOOK == "2":
+            try:
+                seen = look_all(doc, svg_name)
+            except Exception as ex:
+                stats["THE RENDER FAILED"] += 1
+                print("look failed on %s: %s" % (svg_name, ex), file=sys.stderr)
+        if LOOK == "2" and any(p is None for _u, p, _m in rows):
+            # a shape the still cannot reach is guessed at by size, which is right about three
+            # times in five. Render the animation and read that shape the way the generator reads
+            # an SVG instead: it knows what lies around it, so it can answer properly.
+            look = {u: (v["part"] and v["in"] > 0 and v["in"] >= v["none"], v["mouth"])
+                    for u, v in seen.items()}
+            stats["read-off-the-render"] += sum(1 for _u, p, _m in rows if p is None)
+        else:
+            look = {}
 
     # a shape that the still and the animation both hold twice: when only one copy was matched,
     # the other is the same piece of drawing and takes the same answer
@@ -1635,7 +1715,11 @@ def border_file(doc, svg_name, stats=None):
         e = ent[uid]; meta = e["meta"]
         if part is None and uid in twin:
             part, method = twin[uid], "same shape as a matched twin"
-        if part is None:
+        if part is None and uid in look:
+            want, mouth = look[uid]
+            cut, band_to = None, None
+            method = "read off the render" if want else "the render says it owns no line"
+        elif part is None:
             want = intrinsic_is_part(meta, e["ar"], e["bb"])
             mouth, cut, band_to = False, None, None
             method = "intrinsic" if want else "intrinsic-skip"
@@ -1645,7 +1729,9 @@ def border_file(doc, svg_name, stats=None):
             mouth = bool(f and f["mouth"])
             inner, band, bare, _far, nb = runs.get(part, (1.0, 0.0, 0.0, 0.0, {}))
             cut = top_neighbour(nb, "none")[0] if bare > 0 else None
-            band_to = top_neighbour(nb, "out")[0] if band > 0 else None
+            band_to = top_neighbour(nb, "out")[0] if band > BAND_RATIO * bare else None
+            if band_to is not None and uid in seen and seen[uid]["band"]:
+                band_to = seen[uid]["band"]        # a uid, not an SVG part: matte_for takes both
             if want and not mouth:
                 # the mouth is exempt: v9 draws two thirds of the mouth lines as a band onto the
                 # face, and the smile is the one place the border is meant to be seen
@@ -1668,8 +1754,8 @@ def border_file(doc, svg_name, stats=None):
     def matte_for(part_index):
         """a hidden copy of a neighbouring shape, so a line can be cut by it or clipped onto it"""
         nonlocal next_ind
-        uid = unit_of_part.get(part_index)
-        if uid is None: return None
+        uid = part_index if isinstance(part_index, str) else unit_of_part.get(part_index)
+        if uid is None or uid not in ent: return None
         if uid in mattes: return mattes[uid]
         m = ent[uid]["meta"]
         L = layers[m["layer_idx"]]

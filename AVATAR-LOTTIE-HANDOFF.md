@@ -65,50 +65,59 @@ resolves.
 
 ## 3. Which shapes get a line
 
-Every Lottie shape is matched to the SVG part the border generator decided about, **on geometry**:
-the shape's path through its transform chain, divided by 10, against the SVG element's bounding box
-and area, at the best of 13 sampled frames, one to one by Hungarian assignment, with the paint as a
-loose gate. That reaches 78% of shapes and is right on 99.5% of them, measured by rendering 735 pairs
-and comparing the masks. Fill hex, which the brief proposed, would decide only 13%: 76% of shapes
-share their fill with another shape in the same file. A shape with no part falls back to a gate read
-off the shape itself.
+Two sources, because neither alone is enough.
 
-Four rules on top of the generator's own decision, each one measured:
+**The still, for the shapes it can reach.** Every Lottie shape is matched to the SVG part the border
+generator decided about, **on geometry**: the shape's path through its transform chain, divided by
+10, against the SVG element's bounding box and area, at the best of 13 sampled frames, one to one by
+Hungarian assignment, with the paint as a loose gate. That reaches 78% of shapes and is right on
+99.5% of them, measured by rendering 735 pairs and comparing the masks. Fill hex, which the brief
+proposed, would decide only 13%: 76% of shapes share their fill with another shape in the same file.
+
+**The animation's own render, for the rest, and for every neighbour.** The generator does not read a
+drawing out of the file, it renders it: a label map with every shape in a flat id colour, the drawing
+as it is, and every shape on its own. The pass now does the same to each animation, at three frames,
+and runs the generator's own `same_material`, `owner` and mouth rules on the two colours as seen.
+That answers the 3,508 shapes the still cannot reach, where the alternative was a guess by size that
+is right three times in five, and it names every neighbour as a Lottie shape, which is what makes
+the band in the next section possible. About four seconds a file, five minutes for the set.
+
+The rules on top:
 
 1. **A repeated shape shares the answer of the copy the generator could see.** Several of these
    drawings hold the same shape twice, a visible copy and one a later shape covers, and only the
    visible one is bordered. The match is geometric, so it lands on whichever copy it likes: on
    `OtherVolcano_win` that left 76 of 87 shapes reading their answer off a hidden twin, 38 bordered
-   parts in the still against 5 lines in the animation. Parts with the same fill and the same
-   bounding box now share the answer of whichever of them the generator saw the most of.
+   parts in the still against 5 lines in the animation.
 2. **The shape must own its line, and own it on the inside.** v9 cuts the line where the neighbour
-   owns the edge or the two are one material, and it draws part of its line as a band OUTSIDE the
-   shape, onto the darker piece below. Neither can be carried into an animation without baking the
-   cut geometry. So a shape is stroked whole, and only when the line v9 draws **inside** it is at
-   least as long as the line v9 deliberately leaves off it. A band is not a reason to stroke: drawn
-   inside, it lands on the lighter side of the seam, which is exactly what the still's rule avoids.
-   That is what put a crisp grey rim on six white robot teeth. Measured over the 9,877 bordered
-   parts: this holds the line the still does not draw down to 8% of the true line and the band drawn
-   on the wrong side to 7%, against 10% and 18% for a rule that counts the band.
-3. **The mouth is exempt from rule 2, and is stroked at 35%.** Two thirds of the mouth lines in the
-   still are bands onto the face, so rule 2 would take the smile off every avatar that has one, and
-   the smile is the one place the border is meant to be seen. The flag is read from the built v9
-   SVG; svgo rewrites the `.abm` class into an inline `stroke-opacity:.35` when it matches a single
-   element, so both spellings are read. 158 mouth lines.
-4. **A shape with no part is only stroked when it is big.** Counted over all 13,365 parts the
-   generator judged, a part 30 units or more across owns an inside line 53 to 64% of the time
-   whatever its colour, and a smaller one only 18 to 47%. The small ones are the shapes whose line
-   the still draws onto the piece below, where it does not show. The generator's own floor of 10
-   units is right for a part it can cut the line on and wrong for a whole-shape stroke placed on a
-   guess.
+   owns the edge or the two are one material, and a Lottie stroke goes all the way round. So a shape
+   is stroked whole, and only when the line v9 draws **inside** it is at least as long as the line
+   v9 deliberately leaves off it.
+3. **The band is drawn where it is the shape's main line.** v9 draws a fifth of its line OUTSIDE a
+   shape, onto the darker piece below, and that is where the blonde's hairline and the chef's white
+   hair live. It is carried by clipping the stroke with an **inverted** mask of the shape's own path
+   and a track matte to a hidden copy of the neighbour, which is stroke(A) minus A intersected with
+   N. Both clips are real animated paths, so nothing is baked. The neighbour is read off the render,
+   never off the still: carrying an SVG part index across the match put a heavy line down the middle
+   of a face. It is drawn only when the band is at least twice the length of the stretch v9 leaves
+   bare, because a shape whose outline is mostly bare gets a band along the bare stretch too. 1,292
+   bands.
+4. **The mouth is exempt from rule 2, and is stroked at 35%.** Two thirds of the mouth lines in the
+   still are bands onto the face, so rule 2 would take the smile off every avatar that has one. The
+   flag is read from the built v9 SVG; svgo rewrites the `.abm` class into an inline
+   `stroke-opacity:.35` when it matches a single element, so both spellings are read. 158 mouths.
 
-And the line is thinned where it would swallow the shape. A 2-unit inset from both sides of a
-5-unit scarf stripe leaves a solid bar, which the still avoids by cutting; the width is scaled down
-so the inset keeps under 35% of the shape's width. 783 shapes.
+And the line is thinned where it would swallow the shape. A 2-unit inset from both sides of a 5-unit
+scarf stripe leaves a solid bar, which the still avoids by cutting; the width is scaled down so the
+inset keeps under 35% of the shape's width. 933 shapes.
+
+Measured against the stills over 36 files, line mask against line mask at the pose frame: the
+overlap is **0.235**, against 0.213 for the first build, which read everything off the still and
+drew no bands.
 
 Skipped, and why: a matte source (it is never drawn, and its visible twin gets the line), a layer
 carrying a shape modifier (`tm`, `rd`, `pb`, `rp`, `zz`, whose drawn geometry is not the raw path),
-a shape whose scale is 0 at every frame, and the merge-paths family, 64 shapes whose fill paints
+a shape whose scale is 0 at every frame, and the merge-paths family, 74 shapes whose fill paints
 geometry in nested groups. Lottie has no merge-paths modifier at all, so those groups already render
 as a plain union and a stroke there draws sub-path edges the drawing does not have.
 
@@ -136,16 +145,17 @@ effect rather than a structural one. At the sizes an avatar is drawn, 96px and 6
 
 | | plain | bordered |
 |---|---|---|
-| raw | 23.5 MB | 39.9 MB (x1.70) |
-| gzipped, which is what goes over the wire | 2.71 MB | 3.61 MB (+33%) |
-| gzipped per file | 5.9 KB | 7.8 KB |
-| layers | 10,014 | 18,599 (x1.86) |
+| raw | 23.5 MB | 45.1 MB (x1.92) |
+| gzipped, which is what goes over the wire | 2.71 MB | 3.82 MB (+41%) |
+| gzipped per file | 5.9 KB | 8.3 KB |
+| layers | 10,014 | 21,143 (x2.11) |
 
-5,051 shapes carry a line, over all 473 files. Every file got at least one. 158 of them are mouths,
-at 35%. The brief guessed 2.7 to 3.0 MB on the wire; it is 3.61, because the proof it was measured
-on bordered 5 shapes in one file and the real pass borders 11 per file.
+5,568 shapes carry a line, over all 473 files, 1,292 of them a band onto the piece below and 158 a
+mouth at 35%. Every file got at least one. The brief guessed 2.7 to 3.0 MB on the wire; it is 3.82,
+because the proof it was measured on bordered 5 shapes in one file and the real pass borders 12 per
+file.
 
-The lab copies are 31.6 MB. They are the same drawings with the author-time keys After Effects
+The lab copies are 35.8 MB. They are the same drawings with the author-time keys After Effects
 writes on shape items dropped (`ix`, `mn`, `nm`, `bm`, and `hd` where it is false), which is 16% off
 and, checked by render, 0 differing pixels. Rounding the numbers would take another 5% and was not
 done: it moves every edge by a fraction of a pixel and a rounded colour channel moves a whole face
@@ -182,29 +192,34 @@ with no `_think`, skips it and plays `_lose`.
 
 ## 7. What was checked, and what is still open
 
-The output was audited against the stills: 8,987 renders through the site's own player, a numeric
-screen over all 473 files, then 60 avatars looked at by eye across every pack. Nothing is broken.
-No shape vanished, no colour changed, nothing moved, no line is drawn outside a shape or floating in
-empty space, and the line follows the movement with no drift on every file stepped through frame by
-frame. Six defect classes came out of that audit; four of them are the rules in section 3 and the
-width curve in section 4, which is why they are there. What is left:
+The first build was audited against the stills: 8,987 renders, a numeric screen over all 473 files,
+then 60 avatars by eye across every pack. Nothing is broken. No shape vanished, no colour changed,
+nothing moved, no line is drawn outside a shape or floating in empty space, and the line follows the
+movement with no drift on every file stepped through frame by frame. Six defect classes came out of
+that audit and of Holger's own reading of the lab; all but one are now rules in section 3.
 
-- **The outer band.** v9 draws a fifth of its line as a band onto the piece below, and the pass does
-  not draw it at all (except on a mouth). About 20% of the still's line is therefore missing, most
-  visibly on the piece the still lines from the outside. Carrying it properly needs a second clip
-  per shape, an inverted track matte to a copy of the neighbour, which is buildable (the player
-  supports `tt: 2`) but needs the neighbour resolved from the SVG part index back to a Lottie shape.
-- **A line where the still cuts it short.** The pass strokes a whole outline where the still stops at
-  the edge the shape owns, so a shape can carry a line across a stretch the still leaves bare. It is
-  held to 8% of the true line by the ownership rule, and it is the commonest remaining difference.
-  `AlienLollipop_lose` is the loudest case, a dark bar down the middle of the body.
-- **The 64 merge-paths shapes** get no line. Some are real pieces, a shirt for instance. Doing them
+The one that is left is the shape of the whole problem, so it is worth stating plainly.
+
+**Per-edge cuts cannot be carried.** v9 decides edge by edge and stops the line where the neighbour
+owns it. Lottie gives a layer exactly two clips, a track matte and a layer mask, and both are AREA
+operations: they can keep a stroke inside a shape, outside it, inside a neighbour or outside a
+neighbour, but they cannot keep it along one stretch of an outline and not another. Clipping a line
+to "not the neighbour" was built and measured and it removes the whole line, because a shape that
+lies on its neighbour has its whole inset line inside that neighbour. So a shape is stroked whole or
+not at all, and the ownership rule decides which. That is why:
+
+- **A line can appear where the still cuts it short.** The commonest remaining difference, and the
+  one behind the extra line on a face's own shading. It is held down by only stroking a shape that
+  owns most of its outline, and by reading the neighbours off the animation rather than the still.
+- **A line can be missing** where the shape does not own enough of its outline to be stroked.
+  Measured on 36 files, the animation reproduces about a fifth of the still's line mask exactly, and
+  most of the rest is this and the pose difference between a still and a frame.
+
+Also open:
+
+- **The 74 merge-paths shapes** get no line. Some are real pieces, a shirt for instance. Doing them
   needs the border nested inside the group that holds the fill, and a way to tell which sub-path is
   the visible outline.
-- **A shape with no counterpart in the still is decided by a size rule**, which is right 53 to 64% of
-  the time. The honest fix is to work out its neighbours from the Lottie itself, the way the SVG
-  generator does from a render: one flat-colour render per file would give the label map and the
-  ownership could then be decided the same way for matched and unmatched shapes alike.
 - **Two files were regraded**: `OtherJackOLantern3` and `OtherJackOLantern4` are a different green in
   the animation than in the still. Not a border problem, but the two assets have diverged.
 - Whether Holger wants the animations at all, given the border is still a proposal. Nothing has been
@@ -215,6 +230,13 @@ width curve in section 4, which is why they are there. What is left:
 ```
 python3 zz-tmp-build-avatar-lottie.py --out=avatars-lottie-v9 --js --jobs=8
 ```
+
+Five minutes for the set, most of it the render. The switches, all defaulting to what shipped:
+`AB_LOOK=2` reads the shapes the still cannot reach off the render (`1` reads everything off it,
+which measured worse, `0` turns it off), `AB_BAND=1` draws the band and `AB_BAND_RATIO=2` is the
+gate on it, `AB_CUT=1` clips a line away from a neighbour (built, measured, off: it removes the
+whole line), `AB_TWIN=1` lets an unmatched shape copy a matched twin (off: superseded by the
+render).
 
 Add names to do one avatar (`ManBusinessman`) or one file (`ManBusinessman_win`). `--js` also writes
 the lab copies. It validates every file it writes: unique inds, no layer with both `tt` and `td`,

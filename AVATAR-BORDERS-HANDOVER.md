@@ -129,16 +129,21 @@ width has to be divided by the scale from the shape's own space to the comp (10 
 the groups, but 1 to 12 across the set), and a layer that holds several pieces has to be cut open at
 the point where a line goes in or the line paints over the pieces that were covering it.
 
-Which shapes get a line is decided by matching every Lottie shape to its SVG part on geometry, which
-reaches 78% of shapes and is right on 99.5% of them; fill hex, the first idea, would decide 13%. The
-per-edge cuts cannot be carried without baking geometry, so a shape is stroked whole, and only when
-the line v9 draws INSIDE it is at least as long as the line v9 leaves off it. The band v9 draws
-outside a shape, onto the darker piece below, is not carried at all: drawn inside it lands on the
-lighter side of the seam, which is what put a grey rim on white teeth. The mouth is exempt, because
-two thirds of the mouth lines in the still are bands and the smile is the one place the border is
-meant to be seen.
+Which shapes get a line comes from two places. A Lottie shape is matched to its SVG part on
+geometry, which reaches 78% of shapes and is right on 99.5% of them; fill hex, the first idea, would
+decide 13%. The 3,508 shapes the still cannot reach, and every neighbour, are read off the
+animation's OWN render: the pass renders each file the way the generator renders an SVG, a label map
+with every shape in a flat id colour plus each shape alone, and runs the generator's own material
+and ownership rules on it.
 
-Cost: 2.71 to 3.61 MB gzipped over the 473 files, 5.9 to 7.8 KB each. The whole record, the traps and
+The per-edge cuts cannot be carried: lottie gives a layer two clips and both are area operations, so
+a line is stroked whole or not at all. A shape is stroked when the line v9 draws INSIDE it is at
+least as long as the line v9 leaves off it. The band v9 draws outside a shape, onto the darker piece
+below, IS carried, by an inverted mask of the shape's own path plus a track matte to a hidden copy of
+the neighbour; 1,292 of them. The mouth is exempt from the ownership rule, because two thirds of the
+mouth lines in the still are bands and the smile is the one place the border is meant to be seen.
+
+Cost: 2.71 to 3.82 MB gzipped over the 473 files, 5.9 to 8.3 KB each. The whole record, the traps and
 what is still open are in `AVATAR-LOTTIE-HANDOFF.md`. `avatar-borders-lab.html` plays them: hover an
 avatar to load its three files, click to play one, click again for the next.
 
