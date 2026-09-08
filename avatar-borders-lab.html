@@ -332,13 +332,14 @@
   /* the choosers */
   .sm .pk { display: grid; grid-template-columns: repeat(var(--cols), 1fr); gap: 8px; padding: 8px 0 4px; }
   .sm .pk .pi { position: relative; cursor: pointer; border-radius: 8px; transition: transform 80ms; }
-  .sm .pk .pi:not(.on):hover { transform: scale(1.04); }
+  .sm .pk:not(.avs) .pi:not(.on):hover { transform: scale(1.04); }
   .sm .pk .pair { display: flex; gap: 2px; aspect-ratio: 1 / .72; border-radius: 8px; }
   .sm .pk .pair img { width: calc(50% - 1px); height: 100%; object-fit: cover; border-radius: 8px; box-shadow: inset 0 0 0 1px #343A40; background: #fff; }
   .sm .pk .sq { display: block; aspect-ratio: 1; border-radius: 8px; background: center / cover no-repeat; box-shadow: inset 0 0 0 1px #343A40; }
-  .sm .pk.avs .pi img { display: block; width: 100%; aspect-ratio: 1; filter: drop-shadow(1px 0 #252525) drop-shadow(-1px 0 #252525) drop-shadow(0 1px #252525) drop-shadow(0 -1px #252525); }
+  .sm .pk.avs .pi :is(img,svg) { display: block; width: 100%; aspect-ratio: 1; filter: drop-shadow(1px 0 #252525) drop-shadow(-1px 0 #252525) drop-shadow(0 1px #252525) drop-shadow(0 -1px #252525); }
   .sm .pk .pi.on .pair, .sm .pk .pi.on .sq { box-shadow: 0 0 0 4px #66A80F; }
-  .sm .pk.avs .pi.on img { filter: drop-shadow(1px 0 #252525) drop-shadow(-1px 0 #252525) drop-shadow(0 1px #252525) drop-shadow(0 -1px #252525) drop-shadow(0 -4px 0 #5C940D) drop-shadow(0 4px 0 #5C940D) drop-shadow(-4px 0 0 #5C940D) drop-shadow(4px 0 0 #5C940D); }
+  .sm .pk.avs .pi .ablot { position: absolute; inset: 0; }
+  .sm .pk.avs .pi.on :is(img,svg) { filter: drop-shadow(1px 0 #252525) drop-shadow(-1px 0 #252525) drop-shadow(0 1px #252525) drop-shadow(0 -1px #252525) drop-shadow(0 -4px 0 #5C940D) drop-shadow(0 4px 0 #5C940D) drop-shadow(-4px 0 0 #5C940D) drop-shadow(4px 0 0 #5C940D); }
   .sm .pk .pn { display: block; text-align: center; font-size: 14px; line-height: 20px; color: var(--sm-muted); margin-top: 4px; }
   .sm .strip { padding: 8px 0 4px; }
   .sm .strip .sh { padding-top: 8px; }
@@ -954,20 +955,20 @@
   .swkeys b { display: inline-block; min-width: 14px; padding: 0 4px; border: 1px solid #ccc; border-radius: 4px; text-align: center; color: #555; font-family: ui-monospace, Menlo, monospace; font-size: 10.5px; }
 
   /* ===== the avatar edge knob: the frontpage's open-table pair (index.html, 6 September): the inner rim at 8% and the ghost ring at 32%; with or without the frontpage's ambient; or the game's outline ===== */
-  body.avedge-game1 .avatar img, body.avedge-game1 #menuBar .userBar img.avatar, body.avedge-game1 .sm .pk.avs .pi img { filter: url(#avatarLine1); }
-  body.avedge-game1 .sm .pk.avs .pi.on img { filter: url(#avatarLine1) drop-shadow(0 -4px 0 #5C940D) drop-shadow(0 4px 0 #5C940D) drop-shadow(-4px 0 0 #5C940D) drop-shadow(4px 0 0 #5C940D); }
-  body.avedge-game15 .avatar img, body.avedge-game15 #menuBar .userBar img.avatar, body.avedge-game15 .sm .pk.avs .pi img { filter: url(#avatarLine15); }
-  body.avedge-game15 .sm .pk.avs .pi.on img { filter: url(#avatarLine15) drop-shadow(0 -4px 0 #5C940D) drop-shadow(0 4px 0 #5C940D) drop-shadow(-4px 0 0 #5C940D) drop-shadow(4px 0 0 #5C940D); }
-  body.avedge-gamein .avatar img, body.avedge-gamein #menuBar .userBar img.avatar, body.avedge-gamein .sm .pk.avs .pi img { filter: url(#avatarLineIn); }
-  body.avedge-gamein .sm .pk.avs .pi.on img { filter: url(#avatarLineIn) drop-shadow(0 -4px 0 #5C940D) drop-shadow(0 4px 0 #5C940D) drop-shadow(-4px 0 0 #5C940D) drop-shadow(4px 0 0 #5C940D); }
+  body.avedge-game1 .avatar img, body.avedge-game1 #menuBar .userBar img.avatar, body.avedge-game1 .sm .pk.avs .pi :is(img,svg) { filter: url(#avatarLine1); }
+  body.avedge-game1 .sm .pk.avs .pi.on :is(img,svg) { filter: url(#avatarLine1) drop-shadow(0 -4px 0 #5C940D) drop-shadow(0 4px 0 #5C940D) drop-shadow(-4px 0 0 #5C940D) drop-shadow(4px 0 0 #5C940D); }
+  body.avedge-game15 .avatar img, body.avedge-game15 #menuBar .userBar img.avatar, body.avedge-game15 .sm .pk.avs .pi :is(img,svg) { filter: url(#avatarLine15); }
+  body.avedge-game15 .sm .pk.avs .pi.on :is(img,svg) { filter: url(#avatarLine15) drop-shadow(0 -4px 0 #5C940D) drop-shadow(0 4px 0 #5C940D) drop-shadow(-4px 0 0 #5C940D) drop-shadow(4px 0 0 #5C940D); }
+  body.avedge-gamein .avatar img, body.avedge-gamein #menuBar .userBar img.avatar, body.avedge-gamein .sm .pk.avs .pi :is(img,svg) { filter: url(#avatarLineIn); }
+  body.avedge-gamein .sm .pk.avs .pi.on :is(img,svg) { filter: url(#avatarLineIn) drop-shadow(0 -4px 0 #5C940D) drop-shadow(0 4px 0 #5C940D) drop-shadow(-4px 0 0 #5C940D) drop-shadow(4px 0 0 #5C940D); }
   /* the seat's box clips nothing: the outline's bottom pixel must show under the flat-cut busts */
   .avatar, .avatar img { overflow: visible; }
   body.avedge-front .avatar, body.avedge-frontamb .avatar { filter: none; }
-  body.avedge-front .avatar img, body.avedge-front #menuBar .userBar img.avatar, body.avedge-front .sm .pk.avs .pi img { filter: url(#avatarPairSolid); }
-  body.avedge-front .sm .pk.avs .pi.on img { filter: url(#avatarPairSolid) drop-shadow(0 -4px 0 #5C940D) drop-shadow(0 4px 0 #5C940D) drop-shadow(-4px 0 0 #5C940D) drop-shadow(4px 0 0 #5C940D); }
-  body.avedge-frontamb .avatar img, body.avedge-frontamb #menuBar .userBar img.avatar, body.avedge-frontamb .sm .pk.avs .pi img {
+  body.avedge-front .avatar img, body.avedge-front #menuBar .userBar img.avatar, body.avedge-front .sm .pk.avs .pi :is(img,svg) { filter: url(#avatarPairSolid); }
+  body.avedge-front .sm .pk.avs .pi.on :is(img,svg) { filter: url(#avatarPairSolid) drop-shadow(0 -4px 0 #5C940D) drop-shadow(0 4px 0 #5C940D) drop-shadow(-4px 0 0 #5C940D) drop-shadow(4px 0 0 #5C940D); }
+  body.avedge-frontamb .avatar img, body.avedge-frontamb #menuBar .userBar img.avatar, body.avedge-frontamb .sm .pk.avs .pi :is(img,svg) {
     filter: url(#avatarEdgeLit8) drop-shadow(1px 0 rgba(0,0,0,.32)) drop-shadow(-1px 0 rgba(0,0,0,.32)) drop-shadow(0 1px rgba(0,0,0,.32)) drop-shadow(0 -1px rgba(0,0,0,.32)) drop-shadow(0 0 3px rgba(0,0,0,.20)) drop-shadow(0 0 9px rgba(0,0,0,.18)); }
-  body.avedge-frontamb .sm .pk.avs .pi.on img {
+  body.avedge-frontamb .sm .pk.avs .pi.on :is(img,svg) {
     filter: url(#avatarEdgeLit8) drop-shadow(1px 0 rgba(0,0,0,.32)) drop-shadow(-1px 0 rgba(0,0,0,.32)) drop-shadow(0 1px rgba(0,0,0,.32)) drop-shadow(0 -1px rgba(0,0,0,.32)) drop-shadow(0 0 3px rgba(0,0,0,.20)) drop-shadow(0 0 9px rgba(0,0,0,.18)) drop-shadow(0 -4px 0 #5C940D) drop-shadow(0 4px 0 #5C940D) drop-shadow(-4px 0 0 #5C940D) drop-shadow(4px 0 0 #5C940D); }
 </style>
 </head>
@@ -1065,7 +1066,7 @@
     <div class="swhead">The avatars</div>
     <label class="ctl"><span>Border inside the drawing</span><select id="kn-avborder"></select></label>
     <label class="ctl"><span>Outline around the avatar</span><select id="kn-avedge"></select></label>
-    <div class="swnote">The border is drawn into the SVG, on the seam wherever two materials meet. The outline is the coat around the whole avatar, drawn by a CSS filter.</div>
+    <div class="swnote">The border is drawn into the SVG, on the seam wherever two materials meet. The outline is the coat around the whole avatar, drawn by a CSS filter. Hover an avatar to load its win, think and lose animations; click it to play one and click again for the next. The animations carry the v9 border, and the plain option strips it back off.</div>
   </div>
   <div class="swgroup">
     <div class="swhead">Where you are</div>
@@ -1715,7 +1716,7 @@ function wallGroups(v, cols) {
 function avatarGrid(v, cols, n, from) {
   var list = AVATARS.slice(from || 0, n ? (from || 0) + n : AVATARS.length);
   return '<div class="pk avs" style="--cols:' + (cols || 5) + '">' + list.map(function (a, i) {
-    return '<div class="pi' + (a === "AnimalSheep" ? " on" : "") + '"><img src="' + AVDIR() + a + '.svg" alt=""></div>';
+    return '<div class="pi' + (a === "AnimalSheep" ? " on" : "") + '" data-av="' + a + '"><img src="' + AVDIR() + a + '.svg" alt=""></div>';
   }).join("") + '</div>';
 }
 function avatarGroups(v, cols) {
@@ -2057,6 +2058,130 @@ if (document.fonts && document.fonts.ready) document.fonts.ready.then(function (
 var resizeTimer = null;
 window.addEventListener("resize", function () { clearTimeout(resizeTimer); resizeTimer = setTimeout(function () { render(); show(); }, 60); });
 window.__settingsLab = { KN: KN, LAB: LAB, show: show, buildModal: buildModal, spec: specNow, get layout() { return LAYOUT; } };
+/* ===== the emotion animations, so the border can be watched moving =====
+   Hover an avatar and its win, think and lose files load, once each. Click it and one plays in
+   place of the still; click again and it steps to the next, win -> think -> lose -> win. The
+   animation ends by putting the still back, which is what the table does.
+   The lab is opened from file://, where the page's origin is null and fetch is refused, so each
+   animation ships as a .js that assigns window.AB_LOTTIE["<Name>_<emotion>"]. A script tag is not
+   subject to CORS, so an injected one works. game-assets/avatars-lottie-v9/js/, written by
+   zz-tmp-build-avatar-lottie.py.
+   The border knob follows: "plain" strips the border layers back out of the same file, so the
+   still and the animation always show the same thing. There is no v8 animation set, so the v8
+   option plays the v9 border. */
+(function () {
+  var DIR = "game-assets/avatars-lottie-v9/js/", PLAYER = "avatar-lab/lottie_light.min.js";
+  var EMO = ["win", "think", "lose"];
+  var pending = {}, missing = {}, warmed = {}, step = {}, mounted = [];
+  var playerState = 0, playerQueue = [];
+
+  function withPlayer(cb) {
+    if (playerState === 2) return cb();
+    playerQueue.push(cb);
+    if (playerState) return;
+    playerState = 1;
+    var s = document.createElement("script");
+    s.src = PLAYER;
+    s.onload = function () { playerState = 2; playerQueue.splice(0).forEach(function (f) { f(); }); };
+    s.onerror = function () { playerState = 0; playerQueue.length = 0; console.warn("lottie player did not load from " + PLAYER); };
+    document.head.appendChild(s);
+  }
+
+  function load(key, cb) {
+    var have = window.AB_LOTTIE && window.AB_LOTTIE[key];
+    if (have) return cb(have);
+    if (missing[key]) return cb(null);
+    if (pending[key]) { pending[key].push(cb); return; }
+    pending[key] = [cb];
+    function done() {
+      var d = (window.AB_LOTTIE && window.AB_LOTTIE[key]) || null;
+      if (!d) missing[key] = 1;
+      var q = pending[key] || []; delete pending[key];
+      q.forEach(function (f) { f(d); });
+    }
+    var s = document.createElement("script");
+    s.src = DIR + key + ".js";
+    s.onload = done; s.onerror = done;
+    document.head.appendChild(s);
+  }
+
+  /* the three files of one avatar, win first, so the first click is instant */
+  function warm(av) {
+    if (warmed[av]) return;
+    warmed[av] = 1;
+    var i = 0;
+    (function nextOne() { if (i >= EMO.length) return; load(av + "_" + EMO[i++], nextOne); })();
+  }
+
+  function forKnob(data) {
+    var d = JSON.parse(JSON.stringify(data));           /* lottie mutates what it is given */
+    if (KN.avborder === "plain") d.layers = d.layers.filter(function (L) { return L.nm !== "ab-line" && L.nm !== "ab-matte"; });
+    return d;
+  }
+
+  function unmount(m) {
+    try { m.anim.destroy(); } catch (e) { }
+    if (m.box.parentNode) m.box.parentNode.removeChild(m.box);
+    if (m.img) m.img.style.visibility = "";
+  }
+  function teardown() { mounted.splice(0).forEach(unmount); }
+
+  function mount(tile, data) {
+    teardown();
+    var img = tile.querySelector("img");
+    var box = document.createElement("div");
+    box.className = "ablot";
+    tile.appendChild(box);
+    if (img) img.style.visibility = "hidden";
+    var m = { tile: tile, box: box, img: img, anim: null };
+    m.anim = lottie.loadAnimation({
+      container: box, renderer: "svg", loop: false, autoplay: true,
+      animationData: forKnob(data),
+      rendererSettings: { preserveAspectRatio: "xMidYMax meet" }
+    });
+    mounted.push(m);
+    m.anim.addEventListener("complete", function () {
+      var i = mounted.indexOf(m);
+      if (i >= 0) mounted.splice(i, 1);
+      unmount(m);
+    });
+  }
+
+  /* click: play the next emotion this avatar has, skipping any it is missing */
+  function playNext(tile, av) {
+    var tried = 0;
+    withPlayer(function attempt() {
+      if (tried++ >= EMO.length) return;
+      var i = step[av] || 0;
+      step[av] = (i + 1) % EMO.length;
+      load(av + "_" + EMO[i], function (d) {
+        if (!d) return attempt();
+        mount(tile, d);
+      });
+    });
+  }
+
+  function tileOf(e) {
+    var t = e.target;
+    while (t && t.nodeType !== 1) t = t.parentNode;
+    return t && t.closest ? t.closest(".pk.avs .pi[data-av]") : null;
+  }
+  document.addEventListener("mouseover", function (e) {
+    var t = tileOf(e);
+    if (t) withPlayer(function () { warm(t.getAttribute("data-av")); });
+  });
+  document.addEventListener("click", function (e) {
+    var t = tileOf(e);
+    if (t) playNext(t, t.getAttribute("data-av"));
+  });
+
+  /* show() empties #smLayer, so anything still playing has to be destroyed first or lottie keeps
+     the detached animation and its frame loop alive */
+  var innerShow = show;
+  show = function () { teardown(); innerShow.apply(this, arguments); };
+
+  window.__abLottie = { warm: warm, playNext: playNext, mounted: mounted, missing: missing, teardown: teardown };
+})();
 </script>
 </body>
 </html>

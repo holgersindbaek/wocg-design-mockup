@@ -29,6 +29,7 @@ Status doc for the avatar work in this design repo (`Design/WoCG-3/`). Written 2
 | the chooser | `avatar-borders-lab.html`: the knobs are a section of their own, **The avatars** — `avborder` (bordered-v9 / bordered / plain) and `avedge` (game1 / game15 / gamein / game / front / frontamb). It opens on the Design tab, the Avatar page, on v9 with the game's true 1px outline. Hover or click the **Chooser** handle at the right edge; `z` flips the last knob, up and down step it. `game-settings-lab-3.html` is stale: it has no avatar knobs, no outline and points at the plain folder. |
 | the published box | `game-settings.html` (another session's, tracked): the settled copy, chooser hidden and keyboard knobs off. Its defaults now open on the Design tab with the bordered avatars. Do not commit it. |
 | the frontpage pair's source | `index.html` filter `#avatarEdge-litrim8` (erode 1px, white 8% rim) + `body.avsh-ghostramp32` (four 1px black 32% drop-shadows) |
+| the emotion animations | `zz-tmp-build-avatar-lottie.py` writes `game-assets/avatars-lottie-v9/` (473 bordered JSONs, the copies the app would take), its `borders.json` audit, and `js/` for the lab. Written up in `AVATAR-LOTTIE-HANDOFF.md` |
 | judging harness (not in git) | `/tmp/avjudge3/` : `shots.py NAME...` (one plate per avatar: plain, bordered, and a red map of where the line fell, plus 96 and 48px under the coat), `sheet.py OUT.png SIZE COLS names...` (contact sheet, plain beside bordered, coat on), `facts.py NAME...` (what the generator decided, in words), `ledger.py` (every edge in the set, flagging doubled, missing and partial ones), `material.py probe` (the shade/tint test on known pairs) |
 | older scratch | `/tmp/avstudy/` : `v7/render/` (the generator's own render pages), earlier QA sheets |
 | headless browser | `/opt/homebrew/bin/chromium --headless=new --screenshot=... --window-size=... --force-device-scale-factor=N`; Firefox headless also used for cross-checks |
@@ -115,11 +116,31 @@ a neighbour even where the two merely abutted, so 71 edges carried the line twic
 - `front` (`#avatarPairSolid`): the solid pair: the 1 px ring in solid `#252525` under the art, the 1 px inner rim at white 8% over it, no translucent shadows. `frontamb` keeps the frontpage's translucent pair with its ambient.
 - All in `game-settings-lab-3.html` only (uncommitted, other session's file). If Holger picks one, the shipping version goes into `_variables.scss` / `body_open.dust` in the app repo as `AVATAR-STUDY.md` section 11 describes.
 
-## 6b. The animations
+## 6b. The animations, done 8 September
 
-The border can be carried into the emotion Lottie files and it survives the movement; the mechanism,
-the cost and the work still to do are in `AVATAR-LOTTIE-HANDOFF.md`, with a working proof in
-`zz-tmp-lottie-borders.py`.
+All 473 emotion Lottie files now carry the same border, and it survives the movement. Per bordered
+shape the pass adds one layer: the layer cloned, pruned to that shape, its fill replaced by a stroke,
+and one additive mask carrying the shape's own path, which keeps the inner half of the stroke. The
+stroke and the mask are the same path, so a morphing mouth morphs its border with it.
+
+Three things the proof had wrong or left open, all settled by measurement: the stroke is 4 units wide
+and not 8 (the v9 SVGs mask half of a 4-unit stroke away, so the line the eye sees is 2 units), the
+width has to be divided by the scale from the shape's own space to the comp (10 for four fifths of
+the groups, but 1 to 12 across the set), and a layer that holds several pieces has to be cut open at
+the point where a line goes in or the line paints over the pieces that were covering it.
+
+Which shapes get a line is decided by matching every Lottie shape to its SVG part on geometry, which
+reaches 78% of shapes and is right on 99.5% of them; fill hex, the first idea, would decide 13%. The
+per-edge cuts cannot be carried without baking geometry, so a shape is stroked whole, and only when
+the line v9 draws INSIDE it is at least as long as the line v9 leaves off it. The band v9 draws
+outside a shape, onto the darker piece below, is not carried at all: drawn inside it lands on the
+lighter side of the seam, which is what put a grey rim on white teeth. The mouth is exempt, because
+two thirds of the mouth lines in the still are bands and the smile is the one place the border is
+meant to be seen.
+
+Cost: 2.71 to 3.61 MB gzipped over the 473 files, 5.9 to 7.8 KB each. The whole record, the traps and
+what is still open are in `AVATAR-LOTTIE-HANDOFF.md`. `avatar-borders-lab.html` plays them: hover an
+avatar to load its three files, click to play one, click again for the next.
 
 ## 7. Open questions for Holger
 
@@ -128,7 +149,8 @@ the cost and the work still to do are in `AVATAR-LOTTIE-HANDOFF.md`, with a work
 - The silhouette line is 53% of everything the border draws. It sits just inside the coat and mostly reads as a
   slight thickening of it. Keep it, or let the coat do the outside alone and keep the border for the seams only?
   Cheap to try: it is one branch in `analyse()`.
-- Lottie: the masked inset borders cannot be carried into the emotion animations; only plain centred strokes can
-  (`lottie_strokes()`). Decide before shipping.
+- Lottie: settled. The masked inset border IS carried into the emotion animations, by a per-shape layer mask
+  rather than a centred stroke. Section 6b. What is left is the outer band, the 130 merge-paths shapes and
+  the 9% of the still's line that the whole-shape rule drops; all three are in `AVATAR-LOTTIE-HANDOFF.md` section 7.
 - 30 of the 190 base avatars are a raster PNG in an SVG wrapper (one placeholder dog repeated under 30 names).
   They cannot take a border. Redraw them, or leave them?
