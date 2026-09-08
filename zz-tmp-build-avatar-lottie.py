@@ -82,6 +82,9 @@ BOR = os.path.join(HERE, "game-assets", "avatars-bordered-v9")
 OUT = os.path.join(HERE, "game-assets", "avatars-lottie-v9")
 
 W_UNITS = 4.0          # the v9 stroke width in the 160-unit box; the clip keeps the inner 2
+DO_BAND = os.environ.get("AB_BAND", "0") == "1"   # carry v9's outer band, see the handoff
+DO_CUT = os.environ.get("AB_CUT", "0") == "1"     # cut the line where a neighbour owns it
+DO_TWIN = os.environ.get("AB_TWIN", "0") == "1"   # let an unmatched shape copy a matched twin
 OP, MOUTH_OP = 15, 35  # black, per cent
 COMP_PER_UNIT = 10.0   # a 1600-unit comp over the 160-unit drawing
 FRAMES = 13            # frames sampled for the match and for the scale
@@ -661,10 +664,22 @@ def part_runs(name):
     for k, v in ent.items():
         if v.get("runs") is None: continue
         t = collections.Counter()
+        nb = collections.defaultdict(collections.Counter)
         for tag, ln in v["runs"]:
-            t[tag.split("@")[0].split(":")[0]] += ln
-        out[int(k)] = (t["in"], t["out"], t["none"], t["far"])
+            kind = tag.split("@")[0].split(":")[0]
+            t[kind] += ln
+            who = tag.partition("@")[2] or (tag.split(":")[1] if tag.startswith("out:") else "")
+            if who and who != "bg": nb[int(who)][kind] += ln
+        out[int(k)] = (t["in"], t["out"], t["none"], t["far"], dict(nb))
     return out
+
+def top_neighbour(nb, kind):
+    """the neighbour this part shares the most of `kind` with, and how much of that kind it is"""
+    if not nb: return None, 0.0
+    tot = sum(c.get(kind, 0.0) for c in nb.values())
+    if tot <= 0: return None, 0.0
+    n = max(nb, key=lambda j: nb[j].get(kind, 0.0))
+    return n, nb[n].get(kind, 0.0) / tot
 
 
 _USE = re.compile(r'<use\b[^>]*/?>')
@@ -865,12 +880,12 @@ def share_duplicates(parts, flags, runs):
         best, seen = None, -1.0
         for i in idx:
             if i not in flags: continue
-            vis = sum(runs.get(i, (0, 0, 0)))
+            vis = sum(runs.get(i, (0, 0, 0, 0))[:4])
             if vis > seen: best, seen = i, vis
         if best is None: continue
         for i in idx:
             if i == best: continue
-            if i not in flags or sum(runs.get(i, (0, 0, 0))) < seen:
+            if i not in flags or sum(runs.get(i, (0, 0, 0, 0))[:4]) < seen:
                 f2[i] = flags[best]
                 if best in runs: r2[i] = runs[best]
                 shared += 1
@@ -994,8 +1009,12 @@ def outer_geoms(items, t):
         keep.append(g)
     return geoms, keep
 
-def mask_from(item, M, t):
-    """one additive mask carrying the item's own path, moved into layer space.
+def mask_from(item, M, t, inv=False):
+    """one mask carrying the item's own path, moved into layer space.
+
+    `inv` turns it inside out, which is how the band onto the piece below is drawn: the stroke is
+    kept only OUTSIDE the shape, and a track matte to a copy of that piece keeps it only where the
+    piece is. Both clips carry real animated paths, so nothing is baked.
 
     The group transforms are static everywhere in the set, so this is an exact change of frame,
     not a bake: an animated path keeps all its keyframes and the border morphs with it."""
@@ -1017,8 +1036,8 @@ def mask_from(item, M, t):
             pt = {"a": 1, "k": kfs, "ix": 1}
     else:
         raise Unsupported(ty or "?")
-    return {"inv": False, "mode": "a", "pt": pt, "o": {"a": 0, "k": 100, "ix": 3},
-            "x": {"a": 0, "k": 0, "ix": 4}, "nm": "ab-self"}
+    return {"inv": bool(inv), "mode": "a", "pt": pt, "o": {"a": 0, "k": 100, "ix": 3},
+            "x": {"a": 0, "k": 0, "ix": 4}, "nm": "ab-out" if inv else "ab-self"}
 
 def xform_path(p, M):
     return {"i": [mvec(M, x) for x in p["i"]], "o": [mvec(M, x) for x in p["o"]],
@@ -1109,10 +1128,10 @@ def width_prop(samples, k=1.0):
         kfs.append(kf)
     return {"a": 1, "k": kfs, "ix": 5}, med
 
-def make_line(layer, gpath, keep, op, w, mask, matte_ind, ind):
-    """the ab-line layer: the unit's own paths, no fill, one stroke, clipped to itself"""
+def make_line(layer, gpath, keep, op, w, mask, matte_ind, ind, tt=1, nm="ab-line"):
+    """the ab-line layer: the unit's own paths, no fill, one stroke, clipped"""
     L = copy.deepcopy(layer)
-    L["nm"] = "ab-line"
+    L["nm"] = nm
     for k in ("td", "tt", "tp", "hasMask", "masksProperties"): L.pop(k, None)
     def rebuild(items):
         out = _geom_indices(items, keep)
@@ -1124,7 +1143,7 @@ def make_line(layer, gpath, keep, op, w, mask, matte_ind, ind):
         L["hasMask"] = True
         L["masksProperties"] = [mask]
     if matte_ind is not None:
-        L["tt"] = 1; L["tp"] = matte_ind
+        L["tt"] = tt; L["tp"] = matte_ind
     L["ind"] = ind
     return L
 
@@ -1237,34 +1256,85 @@ def border_file(doc, svg_name, stats=None):
     by_ind = {L.get("ind"): L for L in doc["layers"]}
     layers = doc["layers"]
     t0 = frames[len(frames)//2]
+    ent = {e["meta"]["uid"]: e for e in seq}
+    unit_of_part = {}
+    for (uid, part, _m) in rows:
+        if part is not None and part not in unit_of_part: unit_of_part[part] = uid
+
+    # a shape that the still and the animation both hold twice: when only one copy was matched,
+    # the other is the same piece of drawing and takes the same answer
+    twin = {}
+    matched = [(uid, p) for uid, p, _m in rows if p is not None]
+    for uid, part, _m in rows:
+        if not DO_TWIN: break
+        if part is not None: continue
+        a = ent[uid]["meta"]
+        if not a["bbox"] or not a["fill"]: continue
+        for uid2, p2 in matched:
+            b = ent[uid2]["meta"]
+            if b["fill"] != a["fill"] or not b["bbox"]: continue
+            if max(abs(x - y) for x, y in zip(a["bbox"], b["bbox"])) > 1.5: continue
+            twin[uid] = p2; break
 
     decided = {}
-    for (uid, part, method), e in zip(rows, seq):
-        meta = e["meta"]
+    for (uid, part, method) in rows:
+        e = ent[uid]; meta = e["meta"]
+        if part is None and uid in twin:
+            part, method = twin[uid], "same shape as a matched twin"
         if part is None:
             want = intrinsic_is_part(meta, e["ar"], e["bb"])
-            mouth = False
+            mouth, cut, band_to = False, None, None
             method = "intrinsic" if want else "intrinsic-skip"
         else:
             f = flags.get(part)
             want = bool(f)
             mouth = bool(f and f["mouth"])
+            inner, band, bare, _far, nb = runs.get(part, (1.0, 0.0, 0.0, 0.0, {}))
+            cut = top_neighbour(nb, "none")[0] if bare > 0 else None
+            band_to = top_neighbour(nb, "out")[0] if band > 0 else None
             if want and not mouth:
                 # the mouth is exempt: v9 draws two thirds of the mouth lines as a band onto the
                 # face, and the smile is the one place the border is meant to be seen
-                inner, band, bare, _far = runs.get(part, (1.0, 0.0, 0.0, 0.0))
-                if inner <= 0:
+                if inner <= 0 and not (DO_BAND and band_to is not None):
                     want = False
                     method = "the still draws this line outside the shape"
-                elif inner < bare:
+                elif inner > 0 and inner < bare and not (DO_CUT and cut is not None and cut in unit_of_part):
                     want = False
                     method = "mostly not its line"
         decided[uid] = {"part": part, "method": method, "want": want, "mouth": mouth,
+                        "cut": cut, "band_to": band_to,
                         "fill": meta["fill"], "gpath": meta["gpath"], "layer": meta["layer_idx"]}
 
     next_ind = max((L.get("ind", 0) for L in layers), default=0)
     before = collections.defaultdict(list)
+    extra = []
+    mattes = {}
     audit = {}
+
+    def matte_for(part_index):
+        """a hidden copy of a neighbouring shape, so a line can be cut by it or clipped onto it"""
+        nonlocal next_ind
+        uid = unit_of_part.get(part_index)
+        if uid is None: return None
+        if uid in mattes: return mattes[uid]
+        m = ent[uid]["meta"]
+        L = layers[m["layer_idx"]]
+        if L.get("td") or layer_has_modifier(L) or m["deep"]: 
+            mattes[uid] = None; return None
+        try:
+            items, _c = _descend(L.get("shapes", []), m["gpath"])
+            geoms = [x for x in items if x.get("ty") in GEOM]
+            fl = [x for x in items if x.get("ty") == "fl"]
+            if not geoms or not fl:
+                mattes[uid] = None; return None
+            next_ind += 1
+            md = make_matte(L, m["gpath"], geoms, fl[0], next_ind)
+            md["nm"] = "ab-nbr"
+            extra.append(md)
+            mattes[uid] = md["ind"]
+            return md["ind"]
+        except Unsupported:
+            mattes[uid] = None; return None
 
     for e in seq:
         meta = e["meta"]
@@ -1307,7 +1377,7 @@ def border_file(doc, svg_name, stats=None):
             k = 1.0
             part = d["part"]
             if part in runs and area_of.get(part):
-                visible = sum(runs[part])
+                visible = sum(runs[part][:4])
                 if visible > 0:
                     minor = 2.0 * area_of[part] / visible        # the width of the strip, roughly
                     k = min(1.0, 0.7 * minor / W_UNITS)          # the inset keeps under 35% of it
@@ -1315,19 +1385,41 @@ def border_file(doc, svg_name, stats=None):
             if k < 1.0: stats["thinned-on-a-narrow-shape"] += 1
             if wprop.get("a"): stats["width-follows-the-scale"] += 1
             op = MOUTH_OP if d["mouth"] else OP
-            mask = None
+            mask = inv_mask = None
             if len(keep) == 1:
                 try:
                     GM = group_matrix_to_layer(layer.get("shapes", []), gpath, t0)
                     mask = mask_from(keep[0], GM, t0)
+                    inv_mask = mask_from(keep[0], GM, t0, inv=True)
                 except Unsupported:
-                    mask = None
+                    mask = inv_mask = None
+            made = []
+            inner = runs.get(part, (1.0,))[0] if part in runs else 1.0
+            free = not layer.get("tt")          # the track matte slot, if the layer is not matted
             if mask is not None:
-                next_ind += 1
-                line = make_line(layer, gpath, keep, op, wprop, mask, layer.get("tp") if layer.get("tt") else None, next_ind)
-                before[meta["layer_idx"]].append((gpath, [line]))
-                stats["self-mask"] += 1
-                audit[uid] = dict(d, done="self-mask", w=round(w, 3), op=op)
+                if inner > 0 or d["mouth"]:
+                    cut_ind = matte_for(d["cut"]) if (DO_CUT and free and d["cut"] is not None) else None
+                    tp = cut_ind if cut_ind is not None else (layer.get("tp") if layer.get("tt") else None)
+                    next_ind += 1
+                    made.append(make_line(layer, gpath, keep, op, wprop, mask, tp, next_ind,
+                                          tt=2 if cut_ind is not None else 1))
+                    stats["self-mask"] += 1
+                    if cut_ind is not None: stats["cut-by-its-neighbour"] += 1
+                if DO_BAND and free and inv_mask is not None and d["band_to"] is not None:
+                    onto = matte_for(d["band_to"])
+                    if onto is not None:
+                        next_ind += 1
+                        made.append(make_line(layer, gpath, keep, op, wprop, inv_mask, onto, next_ind,
+                                              tt=1, nm="ab-band"))
+                        stats["band-onto-the-piece-below"] += 1
+                if not made:
+                    stats["skip-nothing-to-draw"] += 1
+                    audit[uid] = dict(d, done=None, why="nothing left to draw")
+                    continue
+                before[meta["layer_idx"]].append((gpath, made))
+                audit[uid] = dict(d, done="self-mask", w=round(w, 3), op=op,
+                                  band=any(x["nm"] == "ab-band" for x in made),
+                                  cut=bool(d["cut"] is not None and any(x.get("tt") == 2 for x in made)))
             else:
                 if layer.get("tt"):
                     stats["skip-matted-pair"] += 1
@@ -1360,7 +1452,7 @@ def border_file(doc, svg_name, stats=None):
         out += rebuilt
         stats["layers-cut"] += 1
         stats["pieces"] += sum(1 for x in rebuilt if x.get("nm") not in ("ab-line", "ab-matte"))
-    doc["layers"] = out
+    doc["layers"] = out + extra
     return audit, stats
 
 
