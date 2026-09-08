@@ -64,10 +64,12 @@ Skipped, as the SVG rule skips them: no fill, translucent, line art (a near-blac
 small), under 10 units across, a matte source (it is never drawn; its visible twin gets the line),
 and any layer carrying a shape modifier (tm/rd/pb/rp/zz) whose drawn geometry is not the raw path.
 """
-import os, re, sys, json, copy, math, collections
+import os, re, sys, json, copy, math, subprocess, tempfile, collections
 from concurrent.futures import ProcessPoolExecutor
 
 import numpy as np
+from PIL import Image
+from skimage import measure as skm
 try:
     from scipy.optimize import linear_sum_assignment
     HUNGARIAN = True
@@ -77,6 +79,9 @@ except Exception:
 HERE = os.path.dirname(os.path.abspath(__file__))
 APP = os.path.normpath(os.path.join(HERE, "..", "..", "Programming", "wocg"))
 LOT = os.path.join(APP, "worldofcardgames", "static", "pieces", "avatar", "classic")
+CHROME = "/opt/homebrew/bin/chromium"
+LOOK_TMP = "/tmp/ablottie/look/"
+LOOK = os.environ.get("AB_LOOK", "0") == "1"   # decide from the animation's own render
 SVG = os.path.join(HERE, "game-assets", "avatars")
 BOR = os.path.join(HERE, "game-assets", "avatars-bordered-v9")
 OUT = os.path.join(HERE, "game-assets", "avatars-lottie-v9")
@@ -1242,24 +1247,373 @@ def make_matte(layer, gpath, geoms, fill, ind):
     return M
 
 
+# ---------------------------------------------------------------- looking at the animation itself
+#
+# The border generator does not read the drawing out of the file, it renders it: one page per SVG
+# holding a label map (every shape in a flat id colour), the drawing as it is, and every shape on
+# its own. From those it knows, at every point of every outline, which shape is visible outside it,
+# and it decides the line from the two colours as seen. Borrowing those decisions across to the
+# animation is what goes wrong: the neighbour a run names is an SVG element, and carrying it over a
+# geometric match puts the line in the wrong place often enough to be worse than not drawing it.
+#
+# So the animation is rendered and read the same way. Every neighbour is then a Lottie shape by
+# construction, which is what lets the line be cut where the neighbour owns it, and drawn as a band
+# onto the piece below, without baking any geometry.
+
+LOOK_S = 3                       # pixels per unit in the 160-unit box, as the generator uses
+LOOK_PX = 160 * LOOK_S
+LOOK_COLS = 8
+T_L, T_C, T_GREY, T_GREY_L = 18, 8, 10, 22
+SPREAD, K_LO, K_HI, T_LO, T_HI = 0.09, 0.45, 1.0, 0.0, 0.40
+PALE_L, LIGHT_L, MARK_AREA, MARK_RING, MARK_DE = 88, 75, 0.5, 0.75, 24
+INK_DIM, INK_AREA = 24, 250
+DARK_L, FAR = 25, 40
+MOUTH_RING, MOUTH_AREA, MOUTH_L = 0.6, 0.06, 12
+MIN_DIM, MIN_RUN = 10, 2.0
+
+def idcol(i):
+    """id colours 8 apart per channel: a screenshot drifts by a level or two through the profile"""
+    return [0.0, ((i // 32) * 8) / 255.0, ((i % 32) * 8 + 4) / 255.0, 1.0]
+
+def decode_labels(lm):
+    g = np.rint(lm[..., 1] / 8).astype(int)
+    b = np.rint((lm[..., 2] - 4) / 8).astype(int)
+    return np.where(lm[..., 3] > 0, g * 32 + b, -1)
+
+def _paint_here(items, col):
+    for x in items:
+        if x.get("ty") in ("fl", "st"):
+            x["c"] = {"a": 0, "k": list(col), "ix": 3}
+
+def _unit_items(items):
+    """the unit's own contents: its geometry and styles, minus any nested group that paints itself"""
+    out = []
+    for x in items:
+        if x.get("ty") == "gr":
+            if any(y.get("ty") in STYLES for y in x.get("it", [])): continue
+        out.append(copy.deepcopy(x))
+    return out
+
+def label_doc(doc, units):
+    d = copy.deepcopy(doc)
+    for n, u in enumerate(units):
+        try:
+            items, _c = _descend(d["layers"][u["layer_idx"]].get("shapes", []), u["gpath"])
+        except Unsupported:
+            continue
+        _paint_here(items, idcol(n))
+    return d
+
+def alone_doc(doc, u):
+    """the unit on its own, in white, with everything else emptied but the transforms left alone"""
+    d = copy.deepcopy(doc)
+    for i, L in enumerate(d["layers"]):
+        if L.get("ty") != 4 or L.get("td"): continue
+        if i != u["layer_idx"]:
+            L["shapes"] = []
+            continue
+        try:
+            L["shapes"] = _clone_chain(L.get("shapes", []), u["gpath"], _unit_items)
+        except Unsupported:
+            L["shapes"] = []
+            continue
+        L.pop("tt", None); L.pop("tp", None)      # its own outline, not the part a matte leaves
+        try:
+            items, _c = _descend(L["shapes"], u["gpath"])
+            _paint_here(items, [1.0, 1.0, 1.0, 1.0])
+        except Unsupported:
+            pass
+    return d
+
+def look_page(doc, units, frame, out_html):
+    cells = [label_doc(doc, units), doc] + [alone_doc(doc, u) for u in units]
+    mounts = "".join('<div class=m id="m%d"></div>' % i for i in range(len(cells)))
+    js = "".join('lottie.loadAnimation({container:document.getElementById("m%d"),renderer:"svg",loop:false,'
+                 'autoplay:false,animationData:D[%d]}).goToAndStop(%d,true);' % (i, i, frame)
+                 for i in range(len(cells)))
+    data = json.dumps(cells, separators=(",", ":")).replace("\\", "\\\\").replace("</", "<\\/")
+    html = ('<!doctype html><meta charset=utf-8><style>html,body{margin:0;background:transparent}'
+            '.g{display:grid;grid-template-columns:repeat(%d,%dpx)}.m{width:%dpx;height:%dpx}'
+            '.m svg{shape-rendering:crispEdges}</style><div class=g>%s</div>'
+            '<script src="file://%s/avatar-lab/lottie_light.min.js"></script>'
+            '<script>var D=%s;%s</script>') % (LOOK_COLS, LOOK_PX, LOOK_PX, LOOK_PX, mounts, HERE, data, js)
+    open(out_html, "w").write(html)
+    return len(cells)
+
+def look_shoot(html, png, cells):
+    rows = (cells + LOOK_COLS - 1) // LOOK_COLS
+    subprocess.run([CHROME, "--headless=new", "--disable-gpu", "--hide-scrollbars",
+                    "--default-background-color=00000000", "--force-color-profile=srgb",
+                    "--force-device-scale-factor=1", "--virtual-time-budget=20000",
+                    "--window-size=%d,%d" % (LOOK_COLS * LOOK_PX, rows * LOOK_PX),
+                    "--user-data-dir=" + tempfile.mkdtemp(),
+                    "--screenshot=" + png, "file://" + html], capture_output=True, timeout=300)
+
+# ---------------------------------------------------------------- the generator's own rules
+
+def _lin(v): return v / 12.92 if v <= 0.04045 else ((v + 0.055) / 1.055) ** 2.4
+
+def lab3(r, g, b):
+    r, g, b = _lin(r), _lin(g), _lin(b)
+    X = (0.4124*r + 0.3576*g + 0.1805*b) / 0.95047
+    Y = 0.2126*r + 0.7152*g + 0.0722*b
+    Z = (0.0193*r + 0.1192*g + 0.9505*b) / 1.08883
+    t = lambda v: v ** (1/3) if v > 0.008856 else 7.787*v + 16/116
+    return (116*t(Y) - 16, math.hypot(500*(t(X)-t(Y)), 200*(t(Y)-t(Z))),
+            math.degrees(math.atan2(200*(t(Y)-t(Z)), 500*(t(X)-t(Y)))) % 360)
+
+def dE3(a, b):
+    La, Ca, Ha = a; Lb, Cb, Hb = b
+    aa, ab = Ca*math.cos(math.radians(Ha)), Ca*math.sin(math.radians(Ha))
+    ba, bb = Cb*math.cos(math.radians(Hb)), Cb*math.sin(math.radians(Hb))
+    return math.sqrt((La-Lb)**2 + (aa-ba)**2 + (ab-bb)**2)
+
+def one_step(A, B):
+    k = [b/a for a, b in zip(A, B) if a >= 24]
+    if len(k) >= 2 and max(k)-min(k) <= SPREAD and K_LO <= sum(k)/len(k) <= K_HI: return True
+    t = [(a-b)/(255-b) for a, b in zip(A, B) if b <= 231]
+    return len(t) >= 2 and max(t)-min(t) <= SPREAD and T_LO <= sum(t)/len(t) <= T_HI
+
+def same_material(ca, cb, ra, rb):
+    La, Ca, _ = ca; Lb, Cb, _ = cb
+    ga, gb = Ca < T_GREY, Cb < T_GREY
+    if ga and gb: return abs(La-Lb) <= T_GREY_L
+    if ga != gb: return False
+    if dE3(ca, cb) < 3: return True
+    A, B = (ra, rb) if sum(ra) >= sum(rb) else (rb, ra)
+    return one_step(A, B)
+
+def owns(a, b, a_on_top):
+    La, Ca, _ = a; Lb, Cb, _ = b
+    ga, gb = Ca < T_GREY, Cb < T_GREY
+    if ga != gb: return La < Lb
+    if abs(La-Lb) > T_L: return La < Lb
+    if abs(Ca-Cb) > T_C: return Ca > Cb
+    return a_on_top
+
+def analyse_look(png, units):
+    """The generator's own analysis, run on the animation's render.
+
+    Returns one record per unit: the colour it is SEEN in, its size, and its outline cut into runs
+    of one decision each, exactly as `decisions.json` records them for the SVGs, except that the
+    neighbour a run names is a Lottie unit and not an SVG element."""
+    im = np.asarray(Image.open(png).convert("RGBA")).astype(int)
+    N = len(units)
+    def cell(n):
+        r, c = divmod(n, LOOK_COLS)
+        return im[r*LOOK_PX:(r+1)*LOOK_PX, c*LOOK_PX:(c+1)*LOOK_PX]
+    lm, real = cell(0), cell(1)
+    label = decode_labels(lm)
+    bad = (lm[..., 3] > 0) & ((label < 0) | (label >= N))
+    label[bad] = -2
+    for _ in range(3):                          # anti-aliased seams take a neighbour's label
+        ys, xs = np.nonzero(label == -2)
+        if not len(ys): break
+        for y, x in zip(ys, xs):
+            nb = label[max(0, y-1):y+2, max(0, x-1):x+2].ravel(); nb = nb[nb >= 0]
+            if len(nb): label[y, x] = np.bincount(nb).argmax()
+    label[label == -2] = -1
+    masks = [cell(2+i)[..., 3] > 0 for i in range(N)]
+
+    colour, seen, dim, area = {}, {}, {}, {}
+    for i in range(N):
+        ys, xs = np.nonzero(masks[i])
+        dim[i] = (max(xs.max()-xs.min(), ys.max()-ys.min()) + 1)/LOOK_S if len(xs) else 0
+        area[i] = float(masks[i].sum())/(LOOK_S*LOOK_S)
+        vis = label == i
+        if vis.sum() < 4: continue
+        er = vis & np.roll(vis,1,0) & np.roll(vis,-1,0) & np.roll(vis,1,1) & np.roll(vis,-1,1)
+        px = real[er if er.sum() >= 4 else vis]
+        med = np.median(px[:, :3], axis=0)/255
+        colour[i] = lab3(*med); seen[i] = tuple(float(v)*255 for v in med)
+
+    ring, bb, cy = {}, {}, {}
+    for i in range(N):
+        v = label == i
+        if v.any():
+            out = (np.roll(v,1,0) | np.roll(v,-1,0) | np.roll(v,1,1) | np.roll(v,-1,1)) & ~v
+            n = float(out.sum()); nb = label[out]; nb = nb[nb >= 0]
+            c = np.bincount(nb, minlength=N).astype(float) if (n and nb.size) else None
+            ring[i] = {int(j): c[j]/n for j in np.nonzero(c)[0]} if c is not None else {}
+        else:
+            ring[i] = {}
+        ys, xs = np.nonzero(masks[i])
+        if len(ys): bb[i] = (ys.min(), ys.max()); cy[i] = float(ys.mean())
+
+    def mouth_of(i):
+        if i not in colour or i not in cy: return None
+        r = ring.get(i, {})
+        if not r: return None
+        j, share = max(r.items(), key=lambda kv: kv[1])
+        if share < MOUTH_RING or j not in colour or j not in bb: return None
+        if area[i] > MOUTH_AREA*area[j]: return None
+        y0, y1 = bb[j]
+        if cy[i] < (y0+y1)/2: return None
+        if colour[i][0] >= PALE_L or colour[i][0] <= colour[j][0] - MOUTH_L: return j
+        return None
+
+    def one_material(i, j):
+        if same_material(colour[i], colour[j], seen[i], seen[j]): return True
+        if mouth_of(i) == j or mouth_of(j) == i: return False
+        for a, b in ((i, j), (j, i)):
+            if not (colour[a][0] >= PALE_L and colour[a][1] < T_GREY): continue
+            if area[a] >= MARK_AREA*area[b]: continue
+            if ring.get(a, {}).get(b, 0) >= MARK_RING: return True
+            if colour[b][0] >= LIGHT_L and dE3(colour[a], colour[b]) < MARK_DE: return True
+        return False
+
+    def is_part(i):
+        u = units[i]
+        if not u["fill"] or i not in colour: return False
+        if u["fill_opacity"] not in (None, 100): return False
+        if u.get("group_opacity", 1) < 0.99 or (u.get("layer_opacity") or 100) < 99.5: return False
+        if lum(u["fill"]) < 0.03 and not (dim[i] >= INK_DIM and area[i] >= INK_AREA): return False
+        return dim[i] >= MIN_DIM or (dim[i] >= 6 and colour[i][0] > 92)
+
+    def material(i):
+        if i < 0 or i not in colour: return None
+        u = units[i]
+        if not u["fill"] and not u["stroke"]: return None
+        if dim[i] < 6: return None
+        return colour[i]
+
+    out = {}
+    for i in range(N):
+        rec = {"fill": units[i]["fill"], "dim": round(dim[i], 1), "area": round(area[i], 1),
+               "colour": [round(c, 1) for c in colour.get(i, (0, 0, 0))],
+               "part": is_part(i), "mouth": False, "runs": []}
+        out[i] = rec
+        if not rec["part"]: continue
+        rec["mouth"] = mouth_of(i) is not None
+        runs = []
+        for cont in skm.find_contours(masks[i].astype(float), 0.5):
+            if len(cont) < 6: continue
+            dec = []
+            for y, x in cont:
+                y0, x0 = int(math.floor(y)), int(math.floor(x))
+                y1, x1 = min(LOOK_PX-1, int(math.ceil(y))), min(LOOK_PX-1, int(math.ceil(x)))
+                cand = {(y0, x0), (y0, x1), (y1, x0), (y1, x1)}
+                ins = [c for c in cand if masks[i][c]]; outs = [c for c in cand if not masks[i][c]]
+                if not ins or not outs: dec.append("hidden"); continue
+                if not any(label[c] == i for c in ins): dec.append("hidden"); continue
+                nbs = [label[c] for c in outs]; nb = max(set(nbs), key=nbs.count)
+                m = material(nb)
+                if m is None: dec.append("in@bg"); continue
+                if one_material(i, nb): dec.append("none@%d" % nb); continue
+                if min(colour[i][0], m[0]) < DARK_L and dE3(colour[i], m) > FAR:
+                    dec.append("far@%d" % nb); continue
+                if owns(colour[i], m, i > nb): dec.append("in@%d" % nb); continue
+                dec.append(("out:%d" % nb) if any(masks[nb][c] for c in ins) else "none@%d" % nb)
+            r = []
+            for k, v in enumerate(dec):
+                if r and r[-1][0] == v: r[-1][2] = k+1
+                else: r.append([v, k, k+1])
+            def run_units(rr):
+                return sum(np.hypot(*(cont[k+1]-cont[k])) for k in range(rr[1], min(rr[2], len(cont))-1))/LOOK_S
+            for _ in range(4):
+                changed = False; k = 0
+                while k < len(r) and len(r) > 1:
+                    if run_units(r[k]) < MIN_RUN:
+                        prev = r[k-1] if k > 0 else None
+                        nxt = r[k+1] if k+1 < len(r) else None
+                        target = prev if (prev and (not nxt or run_units(prev) >= run_units(nxt))) else nxt
+                        if target is prev: prev[2] = r[k][2]
+                        else: nxt[1] = r[k][1]
+                        del r[k]; changed = True; continue
+                    k += 1
+                if not changed: break
+            for v, a, b in r:
+                if b - a < 2: continue
+                runs.append([v, round(float(run_units([v, a, b])), 1)])
+        rec["runs"] = runs
+    return out
+
+def look_frames(doc, n=3):
+    """the frames to read the drawing at.
+
+    One frame is not enough: a shape the hand covers at the middle of a think is hidden there and
+    would lose its line for the whole clip. The runs are summed over these, so a stretch of outline
+    that the shape owns at any of them counts."""
+    ip, op = int(doc.get("ip", 0)), int(doc.get("op", 60))
+    if op <= ip: return [ip]
+    return sorted(set(int(round(ip + (op - ip) * i / (n - 1) * 0.98)) for i in range(n)))
+
+def look_at(doc, stem, frames=None, keep=False):
+    """render the animation the way the generator renders an SVG, at each frame, and read it"""
+    os.makedirs(LOOK_TMP, exist_ok=True)
+    if frames is None: frames = look_frames(doc)
+    if isinstance(frames, int): frames = [frames]
+    units = lottie_units(doc, float(frames[0]))
+    merged = None
+    for fr in frames:
+        html = os.path.join(LOOK_TMP, "%s_%d.html" % (stem, fr))
+        png = os.path.join(LOOK_TMP, "%s_%d.png" % (stem, fr))
+        n = look_page(doc, units, fr, html)
+        look_shoot(html, png, n)
+        if not os.path.exists(png): raise Unsupported("the render page did not come back")
+        rec = analyse_look(png, units)
+        if not keep:
+            for f in (html, png):
+                try: os.remove(f)
+                except OSError: pass
+        if merged is None:
+            merged = {i: dict(r, runs=list(r["runs"])) for i, r in rec.items()}
+            continue
+        for i, r in rec.items():
+            m = merged[i]
+            m["part"] = m["part"] or r["part"]
+            m["mouth"] = m["mouth"] or r["mouth"]
+            m["dim"] = max(m["dim"], r["dim"]); m["area"] = max(m["area"], r["area"])
+            if r["area"] > 0 and not m["colour"][0]: m["colour"] = r["colour"]
+            # the frame where this shape shows the most of its own outline, not the sum: a shape
+            # that a hand covers at two frames of three would otherwise read as hidden all through
+            if _seen_outline(r["runs"]) > _seen_outline(m["runs"]): m["runs"] = list(r["runs"])
+    return units, merged
+
+def _seen_outline(runs):
+    return sum(ln for tag, ln in runs if tag != "hidden")
+
 # ---------------------------------------------------------------- the pass over one file
 
 def border_file(doc, svg_name, stats=None):
     """add the border to a loaded animation, in place. Returns the per-unit audit."""
     stats = collections.Counter() if stats is None else stats
-    parts = svg_parts(svg_name)
-    flags, runs, shared = share_duplicates(parts, v9_flags(svg_name), part_runs(svg_name))
-    stats["decisions-shared-with-a-twin"] += shared
-    area_of = {p["i"]: p["area"] for p in parts}
     frames = frame_grid(doc)
-    rows, seq, off = match_units(doc, svg_name, parts, frames)
     by_ind = {L.get("ind"): L for L in doc["layers"]}
     layers = doc["layers"]
     t0 = frames[len(frames)//2]
-    ent = {e["meta"]["uid"]: e for e in seq}
-    unit_of_part = {}
-    for (uid, part, _m) in rows:
-        if part is not None and part not in unit_of_part: unit_of_part[part] = uid
+    if LOOK:
+        # the animation is rendered and read the way the generator reads an SVG, so every
+        # neighbour a run names is a Lottie shape and the answer is about this drawing, not the still
+        units, rec = look_at(doc, svg_name, look_frames(doc))
+        seq = [{"meta": u, "ar": [0.0], "bb": [u["bbox"]]} for u in units]
+        ent = {u["uid"]: e for u, e in zip(units, seq)}
+        unit_of_part = {i: u["uid"] for i, u in enumerate(units)}
+        rows, flags, runs, area_of = [], {}, {}, {}
+        for i, u in enumerate(units):
+            r = rec[i]
+            t = collections.Counter(); nb = collections.defaultdict(collections.Counter)
+            for tag, ln in r["runs"]:
+                kind = tag.split("@")[0].split(":")[0]
+                t[kind] += ln
+                who = tag.partition("@")[2] or (tag.split(":")[1] if tag.startswith("out:") else "")
+                if who and who != "bg": nb[int(who)][kind] += ln
+            runs[i] = (t["in"], t["out"], t["none"], t["far"], dict(nb))
+            area_of[i] = r["area"]
+            if r["part"] and (t["in"] > 0 or t["out"] > 0):
+                flags[i] = {"inner": t["in"] > 0, "outer": t["out"] > 0, "mouth": r["mouth"]}
+            rows.append((u["uid"], i, "looked"))
+        stats["looked-at"] += len(units)
+    else:
+        parts = svg_parts(svg_name)
+        flags, runs, shared = share_duplicates(parts, v9_flags(svg_name), part_runs(svg_name))
+        stats["decisions-shared-with-a-twin"] += shared
+        area_of = {p["i"]: p["area"] for p in parts}
+        rows, seq, off = match_units(doc, svg_name, parts, frames)
+        ent = {e["meta"]["uid"]: e for e in seq}
+        unit_of_part = {}
+        for (uid, part, _m) in rows:
+            if part is not None and part not in unit_of_part: unit_of_part[part] = uid
 
     # a shape that the still and the animation both hold twice: when only one copy was matched,
     # the other is the same piece of drawing and takes the same answer
