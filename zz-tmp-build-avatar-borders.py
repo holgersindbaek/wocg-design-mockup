@@ -33,7 +33,8 @@ mask: the inner line is a stroked <use> of the shape masked to the shape minus b
 band is the same stroke masked to white polylines minus the shape. Both are placed right after the shape so
 later shapes cover them.
 Reads game-assets/avatars/*.svg, writes game-assets/avatars-bordered/*.svg and decisions.json next to them.
-Usage: zz-tmp-build-avatar-borders.py [--base] [names...]   (--base: only files without _win/_think/_lose)"""
+Usage: zz-tmp-build-avatar-borders.py [--base] [--min] [--out=DIR] [names...]
+  --base: only files without _win/_think/_lose;  --min: run svgo over the result (build time only)"""
 import re, os, json, subprocess, math, sys, base64
 import numpy as np
 from PIL import Image
@@ -376,4 +377,13 @@ if __name__ == "__main__":
         n_in += sum(1 for r in result.values()); n_out += sum(1 for r in result.values() if r["keeps"])
         grow.append((os.path.getsize(SRC + info["file"]), os.path.getsize(OUT + info["file"])))
     json.dump(decisions, open(OUT + "decisions.json", "w"))
+    if "--min" in args:
+        # svgo, build time only: about a third off the raw size, sub-pixel rounding only (floatPrecision 2)
+        cfg = os.path.join(HERE, "zz-avatar-svgo.config.mjs")
+        before = sum(os.path.getsize(OUT + f) for f in files)
+        r = subprocess.run(["npx", "--yes", "svgo@3", "-q", "-f", OUT.rstrip("/"), "-o", OUT.rstrip("/"),
+                            "--config", cfg], capture_output=True, text=True)
+        if r.returncode: print("svgo failed:", r.stderr[-400:])
+        else: print("svgo: %.0f KB -> %.0f KB (%.0f%%)" % (before / 1024, sum(os.path.getsize(OUT + f) for f in files) / 1024,
+                                                           100 * (sum(os.path.getsize(OUT + f) for f in files) / before - 1)))
     print("files", len(files), "bordered parts", n_in, "with outer bands", n_out, "size mean +%.1f%%" % (100 * sum(b / a - 1 for a, b in grow) / len(grow)))
