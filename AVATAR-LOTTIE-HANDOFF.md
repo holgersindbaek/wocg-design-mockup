@@ -48,12 +48,12 @@ than the overlap:
 
 Over the 36-stem set, `/tmp/ablottie/_work/stems.json`:
 
-| | whole-shape strokes | per-run trims | + the eight fixes below |
-|---|---:|---:|---:|
-| overlap | 0.363 | 0.506 | **0.726** |
-| line in both | 176,877 | 221,280 | 282,368 |
-| STRAY | 13,954 | 4,575 | **4,121** |
-| LOST | 78,989 | 56,344 | **11,942** |
+| | whole-shape strokes | per-run trims | + the fixes in 3b | + the stills of 3c |
+|---|---:|---:|---:|---:|
+| overlap | 0.363 | 0.506 | 0.726 | **0.769** |
+| line in both | 176,877 | 221,280 | 282,368 | 291,743 |
+| STRAY | 13,954 | 4,575 | 4,121 | **3,342** |
+| LOST | 78,989 | 56,344 | 11,942 | **9,954** |
 
 Named avatars: `ManClown_win` 0.331 to 0.876, `AnimalPenguin_win` 0.447 to 0.852, `ManBoy_win` 0.540
 to 0.838, `ManLeprechaun_win` 0.824 to 0.921, `WomanWomanTrenchCoat_win` 0.560 to 0.824,
@@ -245,6 +245,56 @@ as a plain union and a stroke there draws sub-path edges the drawing does not ha
    composite passes through 1 for one frame only, at f18. `apply_start_stretch` puts every layer
    carrying it back to its round base and re-registers the branches, which takes the drawing itself
    from IoU 0.911 to 0.993 against his still.
+
+## 3c. Eighteen stills re-cut from their own animation
+
+Some avatars are simply drawn differently in the animation than in the still, part by part rather
+than by any transform, and no rule in this pass can close that. Holger chose to re-cut the still from
+the animation for every avatar under 0.97 silhouette agreement: eighteen of the hundred and
+fifty-eight.
+
+`zz-tmp-lottie-to-still.py` does it. Not a capture of the player's DOM: lottie's SVG output keeps its
+layers in `<defs>` behind `<use>` and its track mattes as `<mask>`, and the border generator reads
+none of that, so run over a captured DOM it found ONE part per file instead of a hundred. The tool
+walks the animation itself at frame 0 and writes one `<path>` per drawable piece, in paint order,
+with the whole transform chain baked into the control points and divided by ten into the 160-unit
+box. Beziers, not sampled polylines. Five things had to be right, each found by render:
+
+- **The paint goes in a `<style>` block, not in attributes.** The border generator strips a class and
+  re-adds the stroke and clip properties it read from it, so written as attributes they come out
+  twice and the label page is not valid XML. That alone was the one-part-per-file fault.
+- **A `d:3` shape is wound the other way.** WomanCowgirl's spectacle rims are two ellipses under one
+  fill with the inner one reversed, so the non-zero rule makes a ring; drawn both the same way they
+  make a disc and her tinted lenses come out white.
+- **A merge-paths level draws the union of the sub-groups below its fill**, since lottie_light has no
+  merge-paths modifier. Without that RobotNeutral lost a third of his drawing.
+- **An alpha track matte becomes a `<clipPath>`**, or RobotBoy8's mouth bar is drawn whole.
+- **A trim reaches every path below it**, not only its own level.
+- **An open stroke is written as the shape it paints**, offset both ways and capped, because the
+  generator only borders filled parts: left as strokes, AnimalFoxRockstar went from 23 bordered
+  parts to 9. The animation still draws it as a stroke and gets its line from the bar construction,
+  and its band from the same stroke two units wider drawn under it.
+
+Every file is checked by render against the animation's own frame 0 before it is written, and the
+gate was set from the measured floor: an SVG rasterised in an `<img>` and a live lottie SVG in the
+DOM disagree on 1 to 3% of pixels at 620 px, all of it a one-pixel fringe, so the check matches each
+differing pixel against a 2-pixel neighbourhood first. All eighteen came in between 0.03% and 0.98%;
+the two real faults found while building it scored 1.6% and 2.0% before they were fixed.
+
+Measured on those eighteen, frame 0 against the base still:
+
+| | their own stills | re-cut from the animation |
+|---|---:|---:|
+| overlap | 0.641 | **0.714** |
+| STRAY | 4,742 | **2,373** |
+| LOST | 11,478 | **5,263** |
+
+Both halved. The bordered stills were regenerated from them with `zz-tmp-build-avatar-borders.py`
+and merged in, and the border count went up rather than down, 414 bordered parts to 423.
+
+**These eighteen stills are changed artwork.** `game-assets/avatars/` is byte-identical to
+`worldofcardgames/static/pieces/avatar/classic/`, so the app's own copies would have to be updated
+with them for the app to see the change. Nothing was written into the app.
 
 ## 4. The traps found while building it
 

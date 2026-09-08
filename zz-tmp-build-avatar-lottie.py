@@ -2566,6 +2566,25 @@ def border_file(doc, svg_name, stats=None):
                 made.append(make_bar(layer, gpath, keep, blk, next_ind, "ab-bar"))
                 before[meta["layer_idx"]].append((gpath, made))
                 stats["stroke-drawn-shape"] += 1
+                # The band on a bar is the same trick the other way round: the black stroke two
+                # units WIDER on each side, drawn under the bar so the bar covers the middle and a
+                # ring is left outside, and matted to the piece it lands on. Without it a whisker
+                # keeps the line the still draws inside it and loses the one the still draws around
+                # it, and on a white whisker over a brown face the still draws the outside one.
+                for nb_key in (d["band_to"] or []):
+                    nbu = ent.get(uid_of(nb_key))
+                    nbm = nbu["meta"] if nbu else None
+                    if nbm is None or layers[nbm["layer_idx"]].get("td"): continue
+                    onto = matte_for(nb_key)
+                    if onto is None: continue
+                    wide = copy.deepcopy(blk)
+                    wide["w"] = {"a": 0, "k": round(bw + w, 4), "ix": 5}
+                    next_ind += 1
+                    bl = make_bar(layer, gpath, keep, wide, next_ind, "ab-band")
+                    bl["tt"] = 1; bl["tp"] = onto
+                    before[nbm["layer_idx"]].append((nbm["gpath"], [bl]))
+                    stats["band-round-a-stroke-drawn-shape"] += 1
+                    break
                 audit[uid] = dict(d, done="bar", w=round(w, 3), op=op, bar=round(bw, 3),
                                   inds=[x["ind"] for x in made])
                 continue
