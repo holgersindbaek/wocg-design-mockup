@@ -100,6 +100,12 @@ FAR_WEIGHT = float(os.environ.get("AB_FAR_WEIGHT", "1"))  # what a `far` seam co
 FAR_DARK_L = float(os.environ.get("AB_FAR_DARK_L", "30"))  # under this, a far seam costs nothing    # what a length of silhouette line is worth
                                                           # against a length of seam it must not draw
 DO_CUT = os.environ.get("AB_CUT", "0") == "1"     # cut the line where a neighbour owns it
+DO_TRIM = os.environ.get("AB_TRIM", "1") == "1"   # carry the still's per-edge cut with trim paths
+TRIM_N = int(os.environ.get("AB_TRIM_N", "12"))       # samples per bezier segment
+TRIM_TOL = float(os.environ.get("AB_TRIM_TOL", "1.1"))    # a sample this near an erase polyline is cut
+TRIM_PAD = float(os.environ.get("AB_TRIM_PAD", "1.4"))    # the still's 5-wide round-capped eraser
+TRIM_GATE = float(os.environ.get("AB_TRIM_GATE", "1.0"))  # how far the two outlines may sit apart
+TRIM_MIN = float(os.environ.get("AB_TRIM_MIN", "0.004"))  # a stretch shorter than this is not drawn
 DO_TWIN = os.environ.get("AB_TWIN", "0") == "1"   # let an unmatched shape copy a matched twin
 OP, MOUTH_OP = 15, 35  # black, per cent
 COMP_PER_UNIT = 10.0   # a 1600-unit comp over the 160-unit drawing
@@ -723,6 +729,281 @@ def v9_flags(name):
     return out
 
 
+# ------------------------------------------- what the still actually draws, edge by edge
+
+_BGEO = {}
+_MASKEL = re.compile(r'<mask id="(a[mo])(\d+)"[^>]*>(.*?)</mask>', re.S)
+_POLYEL = re.compile(r'<polyline\b((?:"[^"]*"|[^>])*?)/?>', re.S)
+
+def svg_border_geom(name):
+    """Per part, the line the still draws and the stretches it leaves out, read off the v9 SVG.
+
+    v9 puts the border down as `<use class="abl" href="#ab{i}" mask="url(#am{i})">`, and the mask is
+    where the per-edge decision lives:
+
+        am{i}   the shape filled WHITE, so the 4-wide stroke keeps its inner half, plus BLACK
+                `.abc` polylines laid over every stretch this part does not draw inside
+        ao{i}   the mirror: WHITE `.abk` polylines over the stretches drawn OUTSIDE, and the shape
+                in black so the inside is erased. That is the band onto the piece below.
+
+    A part can carry both, and then the two polyline sets are the same stretches: what `am` erases,
+    `ao` keeps. The polylines and the shape are in the frame of the `<use>`, and `<use>` renders the
+    referenced shape with only its OWN transform, so both are put into that frame and can be
+    compared with a Lottie unit's outline directly.
+
+    This reads the line itself rather than the audit that produced it, and that is the whole point.
+    The `runs` in decisions.json are traced from a raster mask of the shape: 88.5% of them do not
+    start at the path's first vertex, a quarter run backwards, several contours are concatenated
+    with no separator, and the lengths are each 0.2 units short. Used as fractions they scored
+    worse than drawing the whole outline. The polylines carry the positions themselves.
+
+    Returns {part index: {"outline", "cut", "band", "op", "inner", "outer"}}."""
+    if name in _BGEO: return _BGEO[name]
+    path = os.path.join(BOR, name + ".svg")
+    if not os.path.exists(path): path = os.path.join(BOR, name + "2.svg")
+    if not os.path.exists(path):
+        _BGEO[name] = {}
+        return _BGEO[name]
+    s = open(path).read()
+    _, body = split_body(s)
+    marks = {}
+    for kind, num, inner in _MASKEL.findall(body):
+        pl = []
+        for attrs in _POLYEL.findall(inner):
+            at = dict(re.findall(r'([\w:-]+)="([^"]*)"', attrs))
+            v = [float(x) for x in NUM.findall(at.get("points", ""))]
+            if len(v) >= 4: pl.append((at.get("class", ""), list(zip(v[0::2], v[1::2]))))
+        marks[(kind, int(num))] = pl
+    shapes, uses, stack = {}, [], [IDM]
+    for m in TAG.finditer(body):
+        close, tag, attrs, selfclose = m.groups()
+        if close:
+            if len(stack) > 1: stack.pop()
+            continue
+        tr = re.search(r'transform="([^"]*)"', attrs)
+        own = svg_matrix(tr.group(1)) if tr else IDM
+        M = mmul(stack[-1], own)
+        idm = re.search(r'\sid="ab(\d+)"', attrs)
+        if idm and tag in ("path", "ellipse", "rect", "circle", "polygon", "polyline"):
+            shapes[int(idm.group(1))] = (own, m.group(0))
+        if tag == "use" and "abl" in (re.search(r'\bclass="([^"]*)"', attrs) or _EMPTY).group(1).split():
+            h = re.search(r'href="#ab(\d+)"', attrs)
+            k = re.search(r'mask="url\(#(a[mo])(\d+)\)"', attrs)
+            if h and k:
+                st = re.search(r'\bstyle="([^"]*)"', attrs)
+                cl = re.search(r'\bclass="([^"]*)"', attrs)
+                mouth = ((cl and "abm" in cl.group(1).split())
+                         or (st and "stroke-opacity:.35" in st.group(1).replace(" ", "")))
+                uses.append((int(h.group(1)), k.group(1), int(k.group(2)), M, bool(mouth)))
+        if not selfclose: stack.append(M)
+    out = {}
+    for i, kind, num, MU, mouth in uses:
+        sh = shapes.get(i)
+        if sh is None: continue
+        r = out.get(i)
+        if r is None:
+            subs = [mapply(mmul(MU, sh[0]), sp) for sp in elem_points(sh[1], 24)]
+            r = out[i] = {"outline": subs, "cut": [], "band": [], "op": OP,
+                          "inner": False, "outer": False}
+        if mouth: r["op"] = MOUTH_OP
+        for cls, pts in marks.get((kind, num), ()):
+            c = cls.split()
+            q = mapply(MU, pts)
+            if kind == "am" and "abc" in c: r["cut"].append(q)
+            elif kind == "ao" and "abk" in c: r["band"].append(q)
+        r["inner" if kind == "am" else "outer"] = True
+    _BGEO[name] = out
+    return out
+
+
+class _Empty(object):
+    def group(self, _n): return ""
+_EMPTY = _Empty()
+
+
+# ------------------------------------------- carrying those stretches onto the Lottie path
+
+def _near(P, polys):
+    """(N,) the distance from each point to the nearest of the polylines"""
+    best = np.full(len(P), np.inf)
+    for q in polys:
+        A = np.asarray(q, float)
+        if len(A) < 2:
+            best = np.minimum(best, np.sqrt(((P - A[0])**2).sum(1)))
+            continue
+        a, b = A[:-1], A[1:]
+        ab = b - a
+        dd = np.maximum((ab*ab).sum(1), 1e-12)
+        ap = P[:, None, :] - a[None, :, :]
+        t = np.clip((ap*ab[None, :, :]).sum(2)/dd[None, :], 0.0, 1.0)
+        pr = a[None, :, :] + t[:, :, None]*ab[None, :, :]
+        best = np.minimum(best, np.sqrt(((P[:, None, :]-pr)**2).sum(2)).min(1))
+    return best
+
+def _runs_circ(b):
+    """[(i0, i1)] the maximal circular runs of True, as inclusive index pairs"""
+    n = len(b)
+    if n == 0: return []
+    if b.all(): return [(0, n-1)]
+    if not b.any(): return []
+    z = int(np.argmin(b))
+    r = np.roll(b, -z)
+    out, i = [], 0
+    while i < n:
+        if r[i]:
+            j = i
+            while j+1 < n and r[j+1]: j += 1
+            out.append(((i+z) % n, (j+z) % n))
+            i = j+1
+        else:
+            i += 1
+    return out
+
+def _grow(mask, cum, pad):
+    """the True stretches lengthened by `pad` along the path, both ways, wrapping at the seam.
+
+    The still cuts with a polyline stroked 5 units wide and round-capped, so the erase runs about
+    2.5 units past each end of the polyline. Reproducing the still means growing the same way."""
+    n = len(mask)
+    if pad <= 0 or not mask.any() or mask.all(): return mask
+    total = cum[n]
+    out = mask.copy()
+    for i0, i1 in _runs_circ(mask):
+        a, b = cum[i0] - pad, cum[i1] + pad
+        d = cum[:n]
+        out |= (d >= a) & (d <= b)
+        if a < 0: out |= d >= a + total
+        if b > total: out |= d <= b - total
+    return out
+
+def _cum(item, t, n):
+    pts = geom_points(item, t, n)
+    if len(pts) < 4: return None, None
+    a = np.asarray(pts, float)
+    d = np.sqrt(((a[1:]-a[:-1])**2).sum(1))
+    return a, np.concatenate([[0.0], np.cumsum(d)])
+
+def _frac(cum, i0, i1, n):
+    """the run as a pair of fractions of the path, taking the boundary between two samples"""
+    total = cum[n]
+    if total <= 0: return None
+    mid = (cum[:n] + cum[1:n+1]) / 2.0
+    a = mid[i0-1] if i0 > 0 else mid[n-1] - total
+    b = mid[i1]
+    fa, fb = a/total, b/total
+    if fa < 0: fa += 1.0
+    return fa, fb
+
+def _prop(vals, times, ix):
+    """a lottie property: one number when it holds still, keyframes when the path morphs"""
+    if len(vals) == 1 or max(vals) - min(vals) < 1e-4:
+        return {"a": 0, "k": round(float(vals[0]), 4), "ix": ix}
+    kfs = []
+    for j, (t, v) in enumerate(zip(times, vals)):
+        kf = {"t": int(t), "s": [round(float(v), 4)]}
+        if j < len(vals) - 1:
+            kf["i"] = {"x": [0.833], "y": [0.833]}
+            kf["o"] = {"x": [0.167], "y": [0.167]}
+        kfs.append(kf)
+    return {"a": 1, "k": kfs, "ix": ix}
+
+def trim_item(runs, item, n, times):
+    """one `tm` per kept stretch, as a fraction of the path so a morph carries it.
+
+    lottie clamps s and e to 0..100 before adding the offset and swaps them if s > e, so a stretch
+    that crosses the path's own start vertex cannot be written as s..e. It is written as the offset
+    form instead, o = 360*a with s = 0 and e = 100*(1-a+b), which lottie turns into the two segments
+    and joins them because the source path is closed. Two groups instead leave a notch: two butt
+    caps meet at the seam."""
+    out = []
+    for i0, i1 in runs:
+        fas, fbs = [], []
+        for t in times:
+            _p, cum = _cum(item, t, TRIM_N)
+            if cum is None: return None
+            f = _frac(cum, i0, i1, len(cum)-1)
+            if f is None: return None
+            fas.append(f[0]); fbs.append(f[1])
+        wrap = any(a > b for a, b in zip(fas, fbs))
+        if wrap:
+            s = _prop([0.0]*len(times), times, 1)
+            e = _prop([100.0*(1.0 - a + b) for a, b in zip(fas, fbs)], times, 2)
+            o = _prop([360.0*a for a in fas], times, 3)
+        else:
+            s = _prop([100.0*a for a in fas], times, 1)
+            e = _prop([100.0*b for b in fbs], times, 2)
+            o = _prop([0.0]*len(times), times, 3)
+        out.append({"ty": "tm", "s": s, "e": e, "o": o, "m": 1, "ix": 1,
+                    "nm": "ab-run", "mn": "ADBE Vector Filter - Trim", "hd": False})
+    return out
+
+def path_key_times(item, doc):
+    """the frames a morphing path is keyed at, so a trim can be re-measured at each of them"""
+    if item.get("ty") != "sh": return [0.0]
+    k = item.get("ks", {})
+    if not k.get("a"): return [0.0]
+    ts = sorted({int(kf.get("t", 0)) for kf in k.get("k", []) if "t" in kf})
+    return [float(t) for t in ts] or [0.0]
+
+def best_frame(layer, gpath, item, by_ind, geo, frames):
+    """the frame where the unit is in the pose its part was drawn in.
+
+    Only a third of the units match their part best at frame 0, and 22.6% of them take their answer
+    from the EMOTION still, which is a mid-clip pose: read at the wrong frame, ManSantaWaving's
+    `L4/0/10` projected 78 units out."""
+    a = np.concatenate([np.asarray(sp, float) for sp in geo["outline"] if len(sp) > 1])
+    pw, ph = a[:, 0].ptp(), a[:, 1].ptp()
+    best, bt = None, float(frames[len(frames)//2])
+    for f in frames:
+        try:
+            M = mmul(chain_matrix(layer, f, by_ind),
+                     group_matrix_to_layer(layer.get("shapes", []), gpath, f))
+        except Unsupported:
+            continue
+        pts = geom_points(item, f, 4)
+        if len(pts) < 3: continue
+        q = np.asarray(mapply(M, pts), float) / COMP_PER_UNIT
+        c = abs(q[:, 0].ptp() - pw) + abs(q[:, 1].ptp() - ph)
+        if best is None or c < best: best, bt = c, float(f)
+    return bt
+
+def unit_runs(doc, layer, gpath, item, by_ind, geo, t):
+    """(inner runs, band runs, residual) for one unit against its part's own border.
+
+    Every sample of the Lottie outline is tested against the still's erase and keep polylines, so
+    the direction the outline is listed in, which vertex it starts at and how many contours the
+    generator traced never come into it. The residual is how far the two outlines sit apart, and a
+    unit whose part is not really the same curve is refused by it."""
+    P0, cum = _cum(item, t, TRIM_N)
+    if cum is None or cum[-1] <= 0: return None
+    n = len(cum) - 1
+    M = mmul(chain_matrix(layer, t, by_ind), group_matrix_to_layer(layer.get("shapes", []), gpath, t))
+    P = np.asarray(mapply(M, [tuple(x) for x in P0[:n]]), float) / COMP_PER_UNIT
+    out = [np.asarray(sp, float) for sp in geo["outline"] if len(sp) > 1]
+    if not out: return None
+    # A shape usually sits exactly where its part does, and then no alignment is wanted at all.
+    # Where it does not, because the animation starts off its still or the part came from the
+    # emotion still, the two boxes are lined up. Never the centroids: the two outlines are sampled
+    # at different densities and the centroid follows the sampling, which moved WomanLaptop's hair
+    # 8.9 units and threw away seven good units of eleven.
+    A = np.concatenate(out)
+    box = np.array([(A[:, 0].min() + A[:, 0].max())/2 - (P[:, 0].min() + P[:, 0].max())/2,
+                    (A[:, 1].min() + A[:, 1].max())/2 - (P[:, 1].min() + P[:, 1].max())/2])
+    r0 = float(np.median(_near(P, out)))
+    r1 = float(np.median(_near(P + box, out)))
+    if r1 < r0: P, res = P + box, r1
+    else: res = r0
+    if res > TRIM_GATE: return None
+    cut = _grow(_near(P, geo["cut"]) <= TRIM_TOL, cum, TRIM_PAD) if geo["cut"] else np.zeros(n, bool)
+    band = _grow(_near(P, geo["band"]) <= TRIM_TOL, cum, TRIM_PAD) if geo["band"] else np.zeros(n, bool)
+    def keepers(m):
+        total = cum[n]
+        return [(a, b) for a, b in _runs_circ(m)
+                if (cum[b+1] - cum[a] if b >= a else cum[n] - cum[a] + cum[b+1]) >= TRIM_MIN * total]
+    return (keepers(~cut) if geo["inner"] else [], keepers(band) if geo["outer"] else [], res, n)
+
+
+
 # ---------------------------------------------------------------- colour
 
 def _lin(v): return v/12.92 if v <= 0.04045 else ((v+0.055)/1.055)**2.4
@@ -988,10 +1269,20 @@ def _clone_inner(items, gpath, rebuild):
     if not out: raise Unsupported("gpath")
     return out
 
-def stroke_item(op, w):
+def stroke_item(op, w, lc=2):
+    """`lc` is 1, butt, on a trimmed stretch. A round cap overshoots each end by half the stroke,
+    which is a whole border width once the mask has kept half of it, and it lands in the stretch
+    the still deliberately leaves bare. The v9 SVGs never declare stroke-linecap on `.abl`, so the
+    still uses butt too. A whole closed outline has no ends, so it keeps the round join."""
     return {"ty": "st", "c": {"a": 0, "k": [0, 0, 0, 1], "ix": 3}, "o": {"a": 0, "k": op, "ix": 4},
-            "w": w, "lc": 2, "lj": 2, "ml": 4, "bm": 0,
+            "w": w, "lc": lc, "lj": 2, "ml": 4, "bm": 0,
             "nm": "ab", "mn": "ADBE Vector Graphic - Stroke", "hd": False}
+
+def _id_tr():
+    return {"ty": "tr", "p": {"a": 0, "k": [0, 0], "ix": 2}, "a": {"a": 0, "k": [0, 0], "ix": 1},
+            "s": {"a": 0, "k": [100, 100], "ix": 3}, "r": {"a": 0, "k": 0, "ix": 6},
+            "o": {"a": 0, "k": 100, "ix": 7}, "sk": {"a": 0, "k": 0, "ix": 4},
+            "sa": {"a": 0, "k": 0, "ix": 5}, "nm": "Transform"}
 
 def _geom_indices(items, keep):
     """items rebuilt to hold only the geometry objects in `keep` (by identity), plus the tr"""
@@ -1157,13 +1448,29 @@ def width_prop(samples, k=1.0):
         kfs.append(kf)
     return {"a": 1, "k": kfs, "ix": 5}, med
 
-def make_line(layer, gpath, keep, op, w, mask, matte_ind, ind, tt=1, nm="ab-line"):
-    """the ab-line layer: the unit's own paths, no fill, one stroke, clipped"""
+def make_line(layer, gpath, keep, op, w, mask, matte_ind, ind, tt=1, nm="ab-line", trims=None):
+    """the ab-line layer: the unit's own paths, no fill, one stroke, clipped.
+
+    With `trims`, one nested group per stretch the still draws, each holding its own copy of the
+    path, its own `tm` and its own stroke. A `tm` reaches every path at a lower index in its own
+    item list and descends into nested groups, but it never escapes upward and never touches a
+    sibling group, so one group per stretch is what keeps them apart. Two trims in one group would
+    compose instead: the second reads the first one's output."""
     L = copy.deepcopy(layer)
     L["nm"] = nm
     for k in ("td", "tt", "tp", "hasMask", "masksProperties"): L.pop(k, None)
     def rebuild(items):
         out = _geom_indices(items, keep)
+        if trims:
+            geoms = [x for x in out if x.get("ty") in GEOM]
+            rest = [x for x in out if x.get("ty") not in GEOM]
+            gs = []
+            for tm in trims:
+                gs.append({"ty": "gr", "np": len(geoms)+3, "cix": 2, "bm": 0, "nm": "ab-run",
+                           "mn": "ADBE Vector Group", "hd": False,
+                           "it": copy.deepcopy(geoms) + [tm, stroke_item(op, copy.deepcopy(w), lc=1),
+                                                         _id_tr()]})
+            return gs + rest
         idx = _find_tr(out)
         out.insert(len(out) if idx is None else idx, stroke_item(op, w))
         return out
@@ -1831,6 +2138,40 @@ def border_file(doc, svg_name, stats=None):
             if max(abs(x - y) for x, y in zip(a["bbox"], b["bbox"])) > 1.5: continue
             twin[uid] = p2; break
 
+    # What the still draws on each shape, stretch by stretch, carried onto that shape's own path.
+    # This has to be worked out before the decisions, because it is what decides them: a shape no
+    # longer has to own most of its outline to be worth stroking.
+    plan = {}
+    if DO_TRIM and LOOK != "1":
+        for (uid, part, _m) in rows:
+            if part is None: continue
+            src = sources[part[0]]
+            geo = svg_border_geom(src["name"]).get(part[1])
+            if not geo or not geo["outline"]: continue
+            meta = ent[uid]["meta"]
+            if meta["deep"]: continue
+            layer = layers[meta["layer_idx"]]
+            if layer.get("td") or layer_has_modifier(layer): continue
+            try:
+                items, _c = _descend(layer.get("shapes", []), meta["gpath"])
+                _g, keep = outer_geoms(items, t0)
+                if len(keep) != 1: continue
+                tf = best_frame(layer, meta["gpath"], keep[0], by_ind, geo, frames)
+                r = unit_runs(doc, layer, meta["gpath"], keep[0], by_ind, geo, tf)
+            except Unsupported:
+                continue
+            except Exception as ex:
+                stats["trim-read-failed"] += 1
+                continue
+            if r is None:
+                stats["trim-outlines-too-far-apart"] += 1
+                continue
+            inner, band, res, n = r
+            if not inner and not band: continue
+            plan[uid] = {"inner": inner, "band": band, "res": round(res, 3), "n": n,
+                         "frame": tf, "op": geo["op"]}
+        stats["per-run"] += len(plan)
+
     decided = {}
     for (uid, part, method) in rows:
         e = ent[uid]; meta = e["meta"]
@@ -1867,7 +2208,16 @@ def border_file(doc, svg_name, stats=None):
             if band_to is not None: band_to = (src, band_to)
             if band_to is not None and uid in seen and seen[uid]["band"]:
                 band_to = seen[uid]["band"]        # a uid, not an SVG part: matte_for takes both
-            if want and not mouth:
+            if want and uid in plan:
+                # The still's cut is carried stretch by stretch now, so the ownership rule is not
+                # needed and not wanted: a shape is stroked where the still strokes it and left
+                # alone where the still leaves it alone. That rule was a compromise for a whole
+                # shape, and it went wrong both ways. WomanLaptop's fringe is 144 units of hairline
+                # against 165 of invisible seam into the hair behind it, so it was dropped and her
+                # forehead had no line at all. ManSantaWaving's face shadow is 168 against 128, so
+                # it was stroked whole and a line ran down the middle of his face.
+                method = method + ", per-run"
+            elif want and not mouth:
                 # the mouth is exempt: v9 draws two thirds of the mouth lines as a band onto the
                 # face, and the smile is the one place the border is meant to be seen
                 if inner <= 0 and not (DO_BAND and band_to is not None):
@@ -1972,19 +2322,38 @@ def border_file(doc, svg_name, stats=None):
             made = []
             inner = (runs[part][0] + runs[part][1]) if part in runs else 1.0
             free = not layer.get("tt")          # the track matte slot, if the layer is not matted
+            # one `tm` per stretch the still draws, so the line stops where the still stops it
+            pl = plan.get(uid)
+            itrims = btrims = None
+            if pl is not None:
+                whole = [(0, pl["n"] - 1)]
+                inner = 1.0 if pl["inner"] else 0.0
+                try:
+                    times = path_key_times(keep[0], doc)
+                    if pl["inner"] and pl["inner"] != whole:
+                        itrims = trim_item(pl["inner"], keep[0], pl["n"], times)
+                    if pl["band"] and pl["band"] != whole:
+                        btrims = trim_item(pl["band"], keep[0], pl["n"], times)
+                    if len(times) > 1: stats["trim-follows-the-morph"] += len(itrims or []) + len(btrims or [])
+                except Exception:
+                    stats["trim-write-failed"] += 1
+                    pl = None; itrims = btrims = None
+                    inner = (runs[part][0] + runs[part][1]) if part in runs else 1.0
             if mask is not None:
                 # the band first, so a shape whose line the still draws entirely OUTSIDE it does not
                 # also get an inset rim. That is what put a grey ring on ManBoy2's white teeth: the
                 # mouth is exempt from the ownership rule, and the exemption was letting an inset
                 # line through on a mouth that has no inner line at all.
                 band_layer = None
-                if DO_BAND and free and inv_mask is not None and d["band_to"] is not None:
+                want_band = (pl["band"] if pl is not None else d["band_to"] is not None)
+                if DO_BAND and free and inv_mask is not None and want_band and d["band_to"] is not None:
                     onto = matte_for(d["band_to"])
                     if onto is not None:
                         next_ind += 1
                         band_layer = make_line(layer, gpath, keep, op, wprop, inv_mask, onto, next_ind,
-                                               tt=1, nm="ab-band")
+                                               tt=1, nm="ab-band", trims=btrims)
                         stats["band-onto-the-piece-below"] += 1
+                        if btrims: stats["band-trimmed-to-its-stretches"] += 1
                 # a mouth is exempt from the ownership ratio, not from having an inner line at all:
                 # drawing one inside a shape whose line the still draws outside it puts a grey rim
                 # on white teeth, which is worse than no line
@@ -1993,8 +2362,9 @@ def border_file(doc, svg_name, stats=None):
                     tp = cut_ind if cut_ind is not None else (layer.get("tp") if layer.get("tt") else None)
                     next_ind += 1
                     made.append(make_line(layer, gpath, keep, op, wprop, mask, tp, next_ind,
-                                          tt=2 if cut_ind is not None else 1))
+                                          tt=2 if cut_ind is not None else 1, trims=itrims))
                     stats["self-mask"] += 1
+                    if itrims: stats["line-trimmed-to-its-stretches"] += 1
                     if cut_ind is not None: stats["cut-by-its-neighbour"] += 1
 
                 if not made and band_layer is None:
@@ -2012,6 +2382,7 @@ def border_file(doc, svg_name, stats=None):
                 audit[uid] = dict(d, done="self-mask", w=round(w, 3), op=op,
                                   inds=[x["ind"] for x in made] + ([band_layer["ind"]] if band_layer is not None else []),
                                   band=band_layer is not None,
+                                  runs=([len(itrims or []), len(btrims or []), pl["res"]] if pl else None),
                                   cut=bool(d["cut"] is not None and any(x.get("tt") == 2 for x in made)))
             else:
                 if layer.get("tt"):

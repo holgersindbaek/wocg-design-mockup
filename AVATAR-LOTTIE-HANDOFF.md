@@ -46,8 +46,19 @@ than the overlap:
   thing that reads as a line drawn on a face that should not have one.
 - **LOST**: line in the still with nothing in the animation within 5 px.
 
-Over 20 avatars: stray 7,459 and lost 34,789, against 18,306 and 28,030 for the round before. The
-stray line is down 59%.
+Over the 36-stem set, `/tmp/ablottie/_work/stems.json`:
+
+| | whole-shape strokes | per-run trims |
+|---|---:|---:|
+| overlap | 0.363 | **0.506** |
+| line in both | 176,877 | 221,280 |
+| STRAY | 13,954 | **4,575** |
+| LOST | 78,989 | **56,344** |
+
+Every one of eight avatars picked because it was among the worst improved, none regressed:
+RobotGirl_win 0.410 to 0.597, WomanSuperGirl2_win 0.431 to 0.599, OtherRaceCar_win 0.481 to 0.593,
+AnimalPenguin_win 0.447 to 0.478, ManBoy_lose 0.286 to 0.429, WomanWoman4_win 0.694 to 0.812,
+AnimalAlligator_win 0.630 to 0.796, ManGeek_win 0.491 to 0.801.
 
 ## 2. The mechanism, as it ended up
 
@@ -86,6 +97,34 @@ through the hair. The pass cuts the layer at the points where a line goes in, on
 than one per piece, and the first piece keeps the layer's `ind` so anything parented to it still
 resolves.
 
+**The line stops where the still stops it.** v9 decides edge by edge: a stretch of a shape's outline
+is drawn inside it, drawn outside it onto the piece below, or left alone because the neighbour owns
+it or the two are one material. For three rounds this pass could not carry that, because a layer has
+one track matte and one layer mask and both are area operations. It carries it now, with lottie's
+trim-paths modifier: one nested group per stretch the still draws, each holding its own copy of the
+path, its own `tm` and its own stroke. A trim is a fraction of the path, so it is not baked either:
+where the path morphs, `s` and `e` are keyed at the path's own keyframe times and the stretch stays
+on the same part of the shape.
+
+**Where the stretches come from.** Not from `decisions.json`. Its `runs` are traced from a raster
+mask of the shape, so 88.5% of them do not start at the path's first vertex, a quarter run backwards,
+several contours are concatenated with no separator and every run is 0.2 units short. Used as
+fractions they scored *worse* than stroking the whole outline (IoU 0.444 against 0.526 on Santa's
+face shadow). The stretches are read off the SVG itself instead, from the mask that draws the border:
+
+```
+<mask id="am5"><use fill="#fff" href="#ab5"/><polyline class="abc" .../>...</mask>   the inner line
+<mask id="ao5"><polyline class="abk" .../>...<use href="#ab5"/></mask>               the band
+<use class="abl" href="#ab5" mask="url(#am5)"/>
+```
+
+`am` is the shape in white, so the 4-wide stroke keeps its inner half, with BLACK `.abc` polylines
+over every stretch this part does not draw. `ao` is the mirror: WHITE `.abk` polylines over the
+stretches drawn OUTSIDE, and the shape in black so the inside goes. Those polylines are the line
+itself, positions and all. Every sample of the Lottie outline is tested against them, so which vertex
+the path starts at, which way round it is listed and how many contours the generator traced never
+come into it.
+
 ## 3. Which shapes get a line
 
 Two sources, because neither alone is enough.
@@ -116,10 +155,15 @@ The rules on top, all tuned against the frame 0 test in section 1b:
    visible one is bordered. The match is geometric, so it lands on whichever copy it likes: on
    `OtherVolcano_win` that left 76 of 87 shapes reading their answer off a hidden twin, 38 bordered
    parts in the still against 5 lines in the animation.
-2. **The shape must own its line, and own it on the inside.** v9 cuts the line where the neighbour
-   owns the edge or the two are one material, and a Lottie stroke goes all the way round. So a shape
-   is stroked whole, and only when the line v9 draws **inside** it is at least as long as the line
-   v9 deliberately leaves off it. Two weights make that judgement, and both were measured:
+2. **The shape must own its line, and own it on the inside. The fallback only, now.** This was the
+   rule for three rounds and it is still there for the 49 shapes whose outline does not sit close
+   enough to its part to trim (`AB_TRIM_GATE`, one unit) and for anything the still cannot reach at
+   all. Everywhere else the still's own cut is carried stretch by stretch and the shape is stroked
+   where the still strokes it, so nothing has to be traded. The rule went wrong both ways, which is
+   why it had to go: `WomanLaptop`'s fringe is 144 units of forehead hairline against 165 of
+   invisible seam into the hair behind it, so it was dropped and her forehead had no line at all;
+   `ManSantaWaving`'s face shadow is 168 against 128, so it was stroked whole and a line ran down
+   the middle of his face. Two weights make the judgement when it is used, and both were measured:
    **a length of silhouette counts 0.4** (`AB_BG_WEIGHT`), because the silhouette line sits just
    inside the coat and mostly reads as a slight thickening of it, so trading it one for one against
    an interior seam is wrong: that is what put a line down the middle of the caveman's face.
@@ -130,15 +174,13 @@ The rules on top, all tuned against the frame 0 test in section 1b:
    against everything drew a hairline across the businessman's head; counting it against nothing
    took ManBoy's hood, 200 units of silhouette against 123 of invisible seam, out of the border
    altogether.
-3. **The band is drawn where it is the shape's main line.** v9 draws a fifth of its line OUTSIDE a
-   shape, onto the darker piece below, and that is where the blonde's hairline and the chef's white
-   hair live. It is carried by clipping the stroke with an **inverted** mask of the shape's own path
-   and a track matte to a hidden copy of the neighbour, which is stroke(A) minus A intersected with
-   N. Both clips are real animated paths, so nothing is baked. The neighbour is read off the render,
-   never off the still: carrying an SVG part index across the match put a heavy line down the middle
-   of a face. It is drawn only when the band is at least twice the length of the stretch v9 leaves
-   bare, because a shape whose outline is mostly bare gets a band along the bare stretch too. 1,292
-   bands.
+3. **The band is drawn on the stretches the still bands.** v9 draws a fifth of its line OUTSIDE a
+   shape, onto the darker piece below, and that is where the chef's white hair lives. It is carried
+   by clipping the stroke with a SUBTRACT mask of the shape's own path and a track matte to a hidden
+   copy of the neighbour, which is stroke(A) minus A intersected with N, and it is trimmed to the
+   `.abk` stretches like the inner line. Both clips are real animated paths, so nothing is baked.
+   The neighbour is read off the render, never off the still: carrying an SVG part index across the
+   match put a heavy line down the middle of a face. 1,539 bands, 1,263 of them trimmed.
 4. **The mouth is exempt from rule 2, and is stroked at 35%.** Two thirds of the mouth lines in the
    still are bands onto the face, so rule 2 would take the smile off every avatar that has one. The
    flag is read from the built v9 SVG; svgo rewrites the `.abm` class into an inline
@@ -148,13 +190,14 @@ And the line is thinned where it would swallow the shape. A 2-unit inset from bo
 scarf stripe leaves a solid bar, which the still avoids by cutting; the width is scaled down so the
 inset keeps under 35% of the shape's width. 933 shapes.
 
-Measured against the stills over 36 files, line mask against line mask at the pose frame: the
-overlap is **0.235**, against 0.213 for the first build, which read everything off the still and
-drew no bands.
+Counts over the 473 files: 7,184 shapes have a per-run plan, 3,413 inner lines and 1,263 bands are
+actually trimmed (the rest are drawn all the way round because the still draws them all the way
+round), 578 trims are keyed to follow a morphing path, and 49 shapes fall back to the ownership rule
+because their outline and their part's are more than a unit apart.
 
 Skipped, and why: a matte source (it is never drawn, and its visible twin gets the line), a layer
 carrying a shape modifier (`tm`, `rd`, `pb`, `rp`, `zz`, whose drawn geometry is not the raw path),
-a shape whose scale is 0 at every frame, and the merge-paths family, 74 shapes whose fill paints
+a shape whose scale is 0 at every frame, and the merge-paths family, 66 shapes whose fill paints
 geometry in nested groups. Lottie has no merge-paths modifier at all, so those groups already render
 as a plain union and a stroke there draws sub-path edges the drawing does not have.
 
@@ -180,6 +223,26 @@ on the lower one, so the mouth came out half brown on the face and half grey on 
 layer now goes below the layer it came from. The shape itself, and any sibling of the same colour,
 then cover the half that falls on them, and only the half that lands on the neighbour shows.
 
+**A trim is not where its run says it is.** Four things had to be got right before a trimmed
+stretch landed on the right part of the drawing, all four measured against the shipped player:
+`s` and `e` are percentages of the path's arc length from vertex 0 in the order the vertices are
+listed, and lottie clamps them to 0..100 and swaps them if `s > e`, so a stretch that crosses the
+start vertex has to be written as the offset form, `o = 360a` with `s = 0` and `e = 100(1-a+b)`,
+which lottie turns into two segments and rejoins because the path is closed. Two groups instead
+leave a notch where two butt caps meet. A `tm` reaches every path at a lower index in its own item
+list and descends into nested groups, but never escapes upward and never touches a sibling group, so
+one group per stretch is the shape that works; two trims in one group compose, the second reading
+the first one's output. And the cap has to be **butt**: `.abl` never declares `stroke-linecap` in the
+v9 SVGs, so the still uses butt, while a round cap overshoots each end by half the stroke, which is a
+whole border width once the mask has kept half of it, landing in the stretch the still leaves bare.
+
+**Aligning on centroids threw away the good units.** A shape usually sits exactly where its part
+does, and the residual is then 0.0 to 0.15 units. Lining the two centroids up moved `WomanLaptop`'s
+hair by 8.9 units, because the two outlines are sampled at different densities and the centroid
+follows the sampling; seven of her eleven usable shapes failed the gate. The pass now tries no
+alignment and a bounding-box alignment and keeps whichever sits closer, which matters for the 22.6%
+of shapes whose answer comes from the emotion still and so from a mid-clip pose.
+
 **lottie's inverted mask is cut off at the layer's origin.** A band is "the stroke, outside the
 shape", and the obvious way to write that is one additive mask with `inv: true`. lottie draws such a
 mask as a rectangle followed by the path, and the rectangle is `createLayerSolidPath()`: 0,0 to the
@@ -199,19 +262,26 @@ effect rather than a structural one. At the sizes an avatar is drawn, 96px and 6
 
 ## 5. The numbers
 
-| | plain | bordered |
-|---|---|---|
-| raw | 23.5 MB | 44.2 MB (x1.88) |
-| gzipped, which is what goes over the wire | 2.71 MB | 3.81 MB (+41%) |
-| gzipped per file | 5.9 KB | 8.3 KB |
-| layers | 10,014 | 20,139 (x2.01) |
+| | plain | whole-shape strokes | per-run trims |
+|---|---:|---:|---:|
+| raw | 23.5 MB | 44.2 MB | 55.5 MB (x2.36) |
+| gzipped, which is what goes over the wire | 2.71 MB | 3.81 MB | 4.36 MB (+61%) |
+| gzipped per file | 5.9 KB | 8.3 KB | 9.4 KB |
+| layers | 10,014 | 20,139 | 23,222 (x2.32) |
+| build, four files in the shipped player | 15.8 ms | | 32.3 ms |
+| per frame, per avatar | 0.025 ms | | 0.046 ms |
 
-5,261 shapes carry a line, over all 473 files, 1,455 of them a band onto the piece below and 185 a
-mouth at 35%. Every file got at least one. The brief guessed 2.7 to 3.0 MB on the wire; it is 3.81,
-because the proof it was measured on bordered 5 shapes in one file and the real pass borders 11 per
-file.
+7,727 shapes carry a line, over all 473 files, 1,539 of them a band onto the piece below. Every file
+got at least one. The brief guessed 2.7 to 3.0 MB on the wire; it is 4.36, because the proof it was
+measured on bordered 5 shapes in one file and the real pass borders 16 per file, several of them run
+by run.
 
-The lab copies are 35 MB, and the untouched copies for the plain option another 19 MB. They are the same drawings with the author-time keys After Effects
+The per-frame cost is worth stating plainly, because a trim is not free: lottie re-measures the
+bezier lengths every frame, even on a path that does not move. Four avatars playing at once cost
+0.18 ms of a 16.6 ms frame. A file trimmed run by run everywhere would be 4.2x, but only 3,413 of
+6,188 lines need a trim at all and most of those need one or two.
+
+The lab copies are 45 MB, and the untouched copies for the plain option another 19 MB. They are the same drawings with the author-time keys After Effects
 writes on shape items dropped (`ix`, `mn`, `nm`, `bm`, and `hd` where it is false), which is 16% off
 and, checked by render, 0 differing pixels. Rounding the numbers would take another 5% and was not
 done: it moves every edge by a fraction of a pixel and a rounded colour channel moves a whole face
@@ -283,32 +353,35 @@ nothing moved, no line is drawn outside a shape or floating in empty space, and 
 movement with no drift on every file stepped through frame by frame. Six defect classes came out of
 that audit and of Holger's own reading of the lab; all but one are now rules in section 3.
 
-The one that is left is the shape of the whole problem, so it is worth stating plainly.
+**Per-edge cuts CAN be carried, and are.** This section used to say the opposite, and it was wrong
+for the same reason the band was wrong: a misreading of what the player can do. Lottie's trim-paths
+modifier stops a stroke partway along an outline, so the still's own decision is now carried stretch
+by stretch (section 2). What remains is not that.
 
-**Per-edge cuts cannot be carried.** v9 decides edge by edge and stops the line where the neighbour
-owns it. Lottie gives a layer exactly two clips, a track matte and a layer mask, and both are AREA
-operations: they can keep a stroke inside a shape, outside it, inside a neighbour or outside a
-neighbour, but they cannot keep it along one stretch of an outline and not another. Clipping a line
-to "not the neighbour" was built and measured and it removes the whole line, because a shape that
-lies on its neighbour has its whole inset line inside that neighbour. So a shape is stroked whole or
-not at all, and the ownership rule decides which. That is why:
+Measured over the 36-stem set, the still draws 265,624 px of line at frame 0 and the animation draws
+267,729. 221,280 of it matches. STRAY, line in the animation with nothing in the still within 5 px,
+is 4,575; LOST, the reverse, is 56,344. Most of LOST is now one of four things, none of them the
+border rules:
 
-- **A line can appear where the still cuts it short.** The commonest remaining difference, and the
-  one behind the extra line on a face's own shading. It is held down by only stroking a shape that
-  owns most of its outline, and by reading the neighbours off the animation rather than the still.
-- **A line can be missing** where the shape does not own enough of its outline to be stroked.
-  Measured on 36 files, the animation reproduces about a fifth of the still's line mask exactly, and
-  most of the rest is this and the pose difference between a still and a frame.
-
-Also open:
-
+- **A shape the still borders that the animation has no unit for at all.** The commonest by far.
+  Either the emotion animation genuinely does not hold that piece, or the match did not find it.
 - **The 66 merge-paths shapes** get no line. Some are real pieces, a shirt for instance. Doing them
   needs the border nested inside the group that holds the fill, and a way to tell which sub-path is
   the visible outline.
-- **`WomanLaptop` has no line along her forehead hairline.** Her fringe owns 144 units of outline
-  against 165 units of hair on hair, so the ownership rule leaves it unstroked.
+- **123 matte sources**, which are never drawn; their visible twin gets the line.
+- **The pose difference.** Frame 0 is close to the base still but not identical: 3,000 to 19,000 px
+  of the drawing itself differs on the files above, before any border is considered.
+
+Also open:
+
+- **49 shapes fall back to the ownership rule**, because their outline and their part's sit more than
+  a unit apart, so a trim could not be placed safely. They are stroked whole or not at all as before.
 - **Two files were regraded**: `OtherJackOLantern3` and `OtherJackOLantern4` are a different green in
   the animation than in the still. Not a border problem, but the two assets have diverged.
+- **Cutting a layer still moves Chrome's antialiasing.** With the added layers hidden, a bordered
+  file renders within 0.5% of the original at 512 px, and the share halves as the render doubles
+  (4.8% at 256, 2.1% at 512, 1.2% at 1024, 0.5% at 2048), which is a one-pixel fringe and not a
+  structural change. 1,413 layers are cut now, up from 1,334.
 - Whether Holger wants the animations at all, given the border is still a proposal. Nothing has been
   put in the app.
 
@@ -323,13 +396,19 @@ Five minutes for the set, most of it the render. The switches, all defaulting to
 which measured worse, `0` turns it off), `AB_BAND=1` draws the band and `AB_BAND_RATIO=1` is the
 gate on it, `AB_BG_WEIGHT=0.4` and `AB_FAR_WEIGHT=1` are the two weights in the ownership rule and
 `AB_OWN_RATIO=1` its threshold, `AB_CUT=1` clips a line away from a neighbour (built, measured, off: it removes the
-whole line), `AB_TWIN=1` lets an unmatched shape copy a matched twin (off: superseded by the
-render).
+whole line, and per-run trimming replaces it), `AB_TWIN=1` lets an unmatched shape copy a matched
+twin (off: superseded by the render).
+
+The per-run switches: `AB_TRIM=0` turns trimming off and puts the ownership rule back in charge,
+`AB_TRIM_TOL=1.1` is how near an erase polyline a sample has to be to count as cut, `AB_TRIM_PAD=1.4`
+lengthens each cut to match the still's 5-wide round-capped eraser, `AB_TRIM_GATE=1` is how far a
+shape's outline may sit from its part's before the trim is refused, `AB_TRIM_N=12` is the samples per
+bezier segment and `AB_TRIM_MIN=0.004` the shortest stretch worth a group.
 
 Add names to do one avatar (`ManBusinessman`) or one file (`ManBusinessman_win`). `--js` also writes
 the lab copies. It validates every file it writes: unique inds, no layer with both `tt` and `td`,
-every `tt` with a `tp` that resolves to a matte source, every parent resolving, one additive mask per
-layer.
+every `tt` with a `tp` that resolves to a matte source, every parent resolving, one mask per layer,
+and no mask using lottie's `inv`.
 
 The verification harness is not in this repo, it is under `/tmp/ablottie/`:
 `render.py` (one frame through the site's own player), `compare.py` (two animations side by side with
