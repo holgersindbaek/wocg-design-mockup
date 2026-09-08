@@ -90,7 +90,11 @@ resolves.
 
 Two sources, because neither alone is enough.
 
-**The still, for the shapes it can reach.** Every Lottie shape is matched to the SVG part the border
+**Two stills, for the shapes they can reach.** The BASE still is the drawing the animation replaces
+and the one frame 0 has to match, so it is the reference; but an emotion adds shapes the base does
+not have, ManBoy's win sparkles for instance, and matched against the base alone those get paired
+with whatever is nearest and read the wrong answer. So the emotion still is matched too and the
+better pairing wins, shape by shape. Every Lottie shape is matched to the SVG part the border
 generator decided about, **on geometry**: the shape's path through its transform chain, divided by
 10, against the SVG element's bounding box and area, at the best of 13 sampled frames, one to one by
 Hungarian assignment, with the paint as a loose gate. That reaches 78% of shapes and is right on
@@ -119,9 +123,13 @@ The rules on top, all tuned against the frame 0 test in section 1b:
    **a length of silhouette counts 0.4** (`AB_BG_WEIGHT`), because the silhouette line sits just
    inside the coat and mostly reads as a slight thickening of it, so trading it one for one against
    an interior seam is wrong: that is what put a line down the middle of the caveman's face.
-   **A `far` seam counts against the shape in full** (`AB_FAR_WEIGHT`), because v9 draws nothing
-   there either, and counting it as free is what drew a hairline across the businessman's head that
-   the still does not have. Together those two took the stray line down by 59%.
+   **A `far` seam counts against a LIGHT shape and costs a dark one nothing** (`AB_FAR_WEIGHT`,
+   `AB_FAR_DARK_L`). `far` is the seam v9 suppresses because the owner is too dark to show a line,
+   so whether drawing it costs anything depends on which side the line goes inside: on dark hair it
+   cannot be seen and it is free, on a pale face it is a line the still does not have. Counting it
+   against everything drew a hairline across the businessman's head; counting it against nothing
+   took ManBoy's hood, 200 units of silhouette against 123 of invisible seam, out of the border
+   altogether.
 3. **The band is drawn where it is the shape's main line.** v9 draws a fifth of its line OUTSIDE a
    shape, onto the darker piece below, and that is where the blonde's hairline and the chef's white
    hair live. It is carried by clipping the stroke with an **inverted** mask of the shape's own path
@@ -225,17 +233,28 @@ Driven headlessly from `file://` and checked: 141 tiles, no hover transform, the
 give three different animations, `plain` gives 0 border layers, and `WomanWoman21`, the one avatar
 with no `_think`, skips it and plays `_lose`.
 
-## 6b. Some animations do not start on their still, and never did
+## 6b. Five animations did not start on their still, and now they do
 
-`ManBoy2` starts 11 px lower than `ManBoy2.svg` at a 460 px render, about 4 units in the 160-unit
-box. So does `ManBoy`. `AnimalCat` starts 7.5 px higher, `OtherRose` 2.5 px higher. Twelve of the
-sixteen checked start exactly on their still. **This is in the files as they ship**: it was measured
-on the untouched app JSON against the plain SVG, with no border anywhere near it
-(`/tmp/ablottie/pose.py`). The border pass does not move anything: with its added layers hidden a
-file renders pixel for pixel like the original bar a one pixel antialiasing fringe.
+`ManBoy2`'s animation sat exactly **4.00 units low**, in all three emotions, at both ends of the
+clip, so the drawing jumped the moment the table swapped the still for it. That was in the files as
+they ship, not something the border did: measured on the untouched app JSON against the plain SVG
+with no border in the comparison at all.
 
-It is worth knowing because it is the same jump a player sees at the table today, when the still is
-swapped for the animation. If it is worth fixing it is an art-side fix, not a border one.
+Aligning frame 0 to the base still over all 141 avatars (`/tmp/ablottie/shifts.py`) found seven that
+do not start on their still and five that are a clean, round shift:
+
+| avatar | shift | how much of the difference it explains |
+|---|---|---|
+| `ManConflicted` | 8 units up | 81% |
+| `ManBoy` | 4 units up | 74% |
+| `ManBoy2` | 4 units up | 77% |
+| `ManChefPizza` | 4 units up | 80% |
+| `ManCowboy` | 4 units up | 75% |
+
+`START_SHIFT` in the pass moves those, by adding the offset to every parentless layer's position, and
+they then align with no shift left at all. The other two the measurement turns up are **not** shifted
+and must not be: `OtherRose` (a shift explains only 44% of its difference) and `ManClown` (17%). Those
+are drawn differently, not placed differently.
 
 ## 7. What was checked, and what is still open
 

@@ -93,7 +93,8 @@ BAND_RATIO = float(os.environ.get("AB_BAND_RATIO", "1"))  # only where the band 
 OWN_RATIO = float(os.environ.get("AB_OWN_RATIO", "1"))    # stroke a shape only when it owns this much
                                                           # more of its outline than it does not
 BG_WEIGHT = float(os.environ.get("AB_BG_WEIGHT", "0.4"))
-FAR_WEIGHT = float(os.environ.get("AB_FAR_WEIGHT", "1"))  # v9 draws nothing on a far seam either    # what a length of silhouette line is worth
+FAR_WEIGHT = float(os.environ.get("AB_FAR_WEIGHT", "1"))  # what a `far` seam costs a LIGHT shape
+FAR_DARK_L = float(os.environ.get("AB_FAR_DARK_L", "30"))  # under this, a far seam costs nothing    # what a length of silhouette line is worth
                                                           # against a length of seam it must not draw
 DO_CUT = os.environ.get("AB_CUT", "0") == "1"     # cut the line where a neighbour owns it
 DO_TWIN = os.environ.get("AB_TWIN", "0") == "1"   # let an unmatched shape copy a matched twin
@@ -865,8 +866,8 @@ def match_units(doc, svg_name, parts=None, frames=None):
     rows = []
     for i, e in enumerate(seq):
         v = a.get(i)
-        if v is None: rows.append((e["uid"], None, "none"))
-        else: rows.append((e["uid"], v[0], "geom-exact" if v[2] < 0.5 else ("geom-close" if v[2] < 1.5 else "geom-loose")))
+        if v is None: rows.append((e["uid"], None, "none", 1e9))
+        else: rows.append((e["uid"], v[0], "geom-exact" if v[2] < 0.5 else ("geom-close" if v[2] < 1.5 else "geom-loose"), v[2]))
     return rows, seq, off
 
 
@@ -903,6 +904,9 @@ def share_duplicates(parts, flags, runs):
                 shared += 1
     return f2, r2, shared
 
+
+def _is_dark(fill):
+    return bool(fill) and lab_of(fill)[0] < FAR_DARK_L
 
 def intrinsic_is_part(meta, areas, bboxes):
     """the generator's own gate read off a Lottie unit, for a unit with no SVG part.
@@ -1613,7 +1617,7 @@ def look_all(doc, stem):
         band = top_neighbour(dict(nb), "out")[0]
         out[u["uid"]] = {"part": bool(r["part"]), "mouth": bool(r["mouth"]),
                          "in": t["in"] + BG_WEIGHT * t["bg"], "any": t["in"] + t["bg"], "out": t["out"],
-                         "none": t["none"] + FAR_WEIGHT * t["far"],
+                         "none": t["none"] + (0.0 if _is_dark(u["fill"]) else FAR_WEIGHT) * t["far"],
                          "cut": units[cut]["uid"] if cut is not None else None,
                          "band": units[band]["uid"] if band is not None else None}
     return out
@@ -1639,10 +1643,72 @@ def look_unmatched(doc, stem, rows):
             out[u["uid"]] = (False, False); continue
         t = collections.Counter()
         for tag, ln in r["runs"]: t[tag.split("@")[0].split(":")[0]] += ln
+        far_w = 0.0 if _is_dark(u["fill"]) else FAR_WEIGHT
         out[u["uid"]] = ((t["in"] + t["bg"]) > 0
                          and (t["in"] + BG_WEIGHT * t["bg"])
-                             >= OWN_RATIO * (t["none"] + FAR_WEIGHT * t["far"]), r["mouth"])
+                             >= OWN_RATIO * (t["none"] + far_w * t["far"]), r["mouth"])
     return out
+
+
+# ---------------------------------------------------------------- the ones that start off their still
+#
+# Five avatars' animations do not begin on the still they replace: they sit a round number of units
+# low, in all three emotions, at both ends of the clip, so the drawing jumps the moment the table
+# swaps the still for the animation. It is in the files as they ship and has nothing to do with the
+# border, but it is a one line fix here and it is the same jump a player sees.
+#
+# Measured by aligning frame 0 to the base still over all 141 avatars (/tmp/ablottie/shifts.py):
+# the shift below accounts for 74 to 81% of every differing pixel, and what is left is the ordinary
+# difference between a still and a frame. Two more avatars come up in that measurement and are NOT
+# here: OtherRose (a shift explains only 44% of it) and ManClown (17%). Those are drawn differently,
+# not placed differently, and shifting them would make them worse.
+START_SHIFT = {                 # avatar: (dx, dy) in the 160-unit box, added to the animation
+    "ManConflicted": (0.0, -8.0),
+    "ManBoy":        (0.0, -4.0),
+    "ManBoy2":       (0.0, -4.0),
+    "ManChefPizza":  (0.0, -4.0),
+    "ManCowboy":     (0.0, -4.0),
+}
+
+def _shift_prop(prop, dx, dy):
+    if not isinstance(prop, dict): return
+    if prop.get("a"):
+        for kf in prop.get("k", []):
+            for side in ("s", "e"):
+                v = kf.get(side)
+                if isinstance(v, list) and len(v) >= 2 and not isinstance(v[0], dict):
+                    v[0] += dx; v[1] += dy
+    else:
+        k = prop.get("k")
+        if isinstance(k, list) and len(k) >= 2: k[0] += dx; k[1] += dy
+
+def _shift_scalar(prop, d):
+    if not isinstance(prop, dict): return
+    if prop.get("a"):
+        for kf in prop.get("k", []):
+            for side in ("s", "e"):
+                v = kf.get(side)
+                if isinstance(v, list) and v and not isinstance(v[0], dict): v[0] += d
+                elif isinstance(v, (int, float)): kf[side] = v + d
+    else:
+        k = prop.get("k")
+        if isinstance(k, (int, float)): prop["k"] = k + d
+        elif isinstance(k, list) and k: k[0] += d
+
+def apply_start_shift(doc, stem):
+    """move the whole animation so it starts where the still stands"""
+    base = stem.rsplit("_", 1)[0] if "_" in stem else stem
+    d = START_SHIFT.get(base)
+    if not d: return False
+    dx, dy = d[0] * COMP_PER_UNIT, d[1] * COMP_PER_UNIT
+    for L in doc["layers"]:
+        if L.get("parent") is not None: continue      # a child follows its parent
+        ks = L.get("ks", {})
+        if "px" in ks or "py" in ks:
+            _shift_scalar(ks.get("px"), dx); _shift_scalar(ks.get("py"), dy)
+        else:
+            _shift_prop(ks.get("p"), dx, dy)
+    return True
 
 
 # ---------------------------------------------------------------- the pass over one file
@@ -1681,16 +1747,39 @@ def border_file(doc, svg_name, stats=None):
         # shows ManCaveman.svg, hides it, and plays ManCaveman_think.json from frame 0. Frame 0 is
         # that pose, so that is the drawing whose border has to be reproduced, and matching against
         # it is also much tighter than matching against a mid-clip pose.
+        # Two stills, and each shape takes whichever fits it better. The BASE still is the drawing
+        # the animation replaces and the one frame 0 has to match, so it is the reference; but an
+        # emotion adds shapes the base does not have, ManBoy's win sparkles for instance, and
+        # matched against the base alone those get paired with whatever is nearest and read the
+        # wrong answer. The emotion still holds them, so it is matched too and the better pairing
+        # wins, shape by shape.
         base = svg_name.rsplit("_", 1)[0] if "_" in svg_name else svg_name
-        parts = svg_parts(base)
-        flags, runs, shared = share_duplicates(parts, v9_flags(base), part_runs(base))
-        stats["decisions-shared-with-a-twin"] += shared
-        area_of = {p["i"]: p["area"] for p in parts}
-        rows, seq, off = match_units(doc, base, parts, frames)
-        ent = {e["meta"]["uid"]: e for e in seq}
-        unit_of_part = {}
-        for (uid, part, _m) in rows:
-            if part is not None and part not in unit_of_part: unit_of_part[part] = uid
+        sources, seq, ent = [], None, None
+        for name in ([base, svg_name] if svg_name != base else [base]):
+            ps = svg_parts(name)
+            fl, rn, shared = share_duplicates(ps, v9_flags(name), part_runs(name))
+            stats["decisions-shared-with-a-twin"] += shared
+            rws, sq, _off = match_units(doc, name, ps, frames)
+            if seq is None:
+                seq = sq; ent = {e["meta"]["uid"]: e for e in sq}
+            sources.append({"name": name, "parts": ps, "flags": fl, "runs": rn,
+                            "rows": {r[0]: r for r in rws},
+                            "area": {p["i"]: p["area"] for p in ps}})
+        rows, flags, runs, area_of, unit_of_part = [], {}, {}, {}, {}
+        for e in seq:
+            uid = e["meta"]["uid"]
+            best = min(sources, key=lambda s: s["rows"].get(uid, (uid, None, "none", 1e9))[3])
+            r = best["rows"].get(uid, (uid, None, "none", 1e9))
+            key = None
+            if r[1] is not None:
+                key = (sources.index(best), r[1])           # keep the two stills' indices apart
+                flags[key] = best["flags"].get(r[1])
+                if flags[key] is None: flags.pop(key)
+                if r[1] in best["runs"]: runs[key] = best["runs"][r[1]]
+                area_of[key] = best["area"].get(r[1])
+                if key not in unit_of_part: unit_of_part[key] = uid
+            rows.append((uid, key, r[2] if key is not None else "none"))
+        stats["read-off-the-emotion-still"] += sum(1 for _u, k, _m in rows if k and k[0] == 1)
         seen = {}
         if LOOK == "2":
             try:
@@ -1743,7 +1832,12 @@ def border_file(doc, svg_name, stats=None):
             in_bg, in_n, band, bare, far, nb = runs.get(part, (1.0, 0.0, 0.0, 0.0, 0.0, {}))
             inner = in_bg + in_n
             owned = in_n + BG_WEIGHT * in_bg
-            bare = bare + FAR_WEIGHT * far
+            # `far` is the seam v9 suppresses because the owner is too dark to show a line. Whether
+            # drawing it anyway costs anything depends on which side we are drawing INSIDE: on a
+            # dark shape the line cannot be seen and it is free, on a light one it is a line the
+            # still does not have. Counting it against everything took ManBoy's hood, which is 200
+            # units of silhouette against 123 of invisible seam, out of the border altogether.
+            bare = bare + (0.0 if _is_dark(meta["fill"]) else FAR_WEIGHT) * far
             cut = top_neighbour(nb, "none")[0] if bare > 0 else None
             band_to = top_neighbour(nb, "out")[0] if band > BAND_RATIO * bare else None
             if band_to is not None and uid in seen and seen[uid]["band"]:
@@ -1976,7 +2070,9 @@ def run_one(args):
     stem, out_dir, want_js = args
     src = os.path.join(LOT, stem + ".json")
     doc = json.load(open(src))
+    moved = apply_start_shift(doc, stem)
     audit, stats = border_file(doc, stem)
+    if moved: stats["moved-onto-its-still"] = stats.get("moved-onto-its-still", 0) + 1
     errs = validate(doc)
     dst = os.path.join(out_dir, stem + ".json")
     json.dump(doc, open(dst, "w"), separators=(",", ":"))
