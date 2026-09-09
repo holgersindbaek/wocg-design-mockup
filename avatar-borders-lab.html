@@ -365,9 +365,9 @@
      line round it, and its green for the tick. --band #f4eee5, --canvas #f9f6f2, --card #fff,
      --edge #d2cfca, --p4 #43a038. */
   body:is(.avpick-bandedge, .avpick-bandgreen, .avpick-bandonly, .avpick-canvasedge, .avpick-cardedge, .avpick-cardlift) .sm .pk.avs .pi.on::before { inset: -6px; border-radius: 10px; }
-  /* bandedge is what shipped: the band is pulled in at the TOP so it sits behind the face rather
-     than floating above the hair, and only reaches past the cell at the sides and the foot. */
-  body.avpick-bandedge .sm .pk.avs .pi.on::before { inset: 9% -2px -2px; border-radius: 10px; }
+  /* bandedge is what shipped: the square meets the foot of the drawing and stands 8px over its
+     head, so it reads as ground under the avatar rather than as a box drawn round the art. */
+  body.avpick-bandedge .sm .pk.avs .pi.on::before { inset: -8px -2px 0; border-radius: 10px; }
   body:is(.avpick-bandedge, .avpick-bandgreen, .avpick-bandonly) .sm .pk.avs .pi.on::before { background: #f4eee5; }
   body.avpick-canvasedge .sm .pk.avs .pi.on::before { background: #f9f6f2; }
   body:is(.avpick-cardedge, .avpick-cardlift) .sm .pk.avs .pi.on::before { background: #fff; }
@@ -376,6 +376,54 @@
   body.avpick-cardlift .sm .pk.avs .pi.on::before { box-shadow: inset 0 0 0 1px #d2cfca, 0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09); }
   body:is(.avpick-bandedge, .avpick-bandgreen, .avpick-canvasedge, .avpick-cardedge, .avpick-cardlift) .sm .pk.avs .pi.on::after { right: -3px; bottom: -3px; width: 32%; height: 32%; border-radius: 50%; background: #43a038; box-shadow: 0 0 0 2px var(--sm-paper); }
   body:is(.avpick-bandedge, .avpick-bandgreen, .avpick-canvasedge, .avpick-cardedge, .avpick-cardlift) .sm .pk.avs .pi.on .tk { display: block; right: -1px; bottom: -1px; }
+
+  /* ===== the pointer: an avatar does not grow under it, it shows the square it would sit on ===== */
+  .sm .pk.avs .pi::before { content: ""; position: absolute; z-index: 0; }
+  .sm .pk.avs .pi:not(.on):hover::before { inset: -8px -2px 0; border-radius: 10px; background: #f4eee5; }
+
+  /* ===== round three: the mark on its own =====
+     The square says "picked" quietly, and quiet is the complaint: the mark is competing with 190
+     drawings for the eye. Three levers are being pulled here, one at a time. How big the mark is.
+     Whether it separates from whatever colour is under it, which is why an ink disc and a white
+     disc are in the set: a green disc on the green monster is nearly gone. And whether anything
+     else on the grid is turned down, which is what tkfade does and nothing else does.
+     The tick is the disc's own background image, so one number sizes the whole mark. */
+  .sm { --tkw: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4.5 12.5l5 5 10-11' fill='none' stroke='%23fff' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+        --tkg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4.5 12.5l5 5 10-11' fill='none' stroke='%2343a038' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); }
+  body:is(.avpick-tkbig, .avpick-tkhuge, .avpick-tkink, .avpick-tkpaper, .avpick-tklift, .avpick-tkplate,
+          .avpick-tkcentre, .avpick-tkscrim, .avpick-tkfoot, .avpick-tkfade, .avpick-tktop, .avpick-tkbare,
+          .avpick-tkbandbig) .sm .pk.avs .pi.on .tk { display: none; }
+
+  /* one: the same disc, half again as big */
+  body.avpick-tkbig .sm .pk.avs .pi.on::after { right: -3px; bottom: -3px; width: 44%; height: 44%; border-radius: 50%; background: #43a038 var(--tkw) center / 58% no-repeat; box-shadow: 0 0 0 2px var(--sm-paper); }
+  /* two: as big as a 67px cell can carry */
+  body.avpick-tkhuge .sm .pk.avs .pi.on::after { right: -4px; bottom: -4px; width: 56%; height: 56%; border-radius: 50%; background: #43a038 var(--tkw) center / 58% no-repeat; box-shadow: 0 0 0 3px var(--sm-paper); }
+  /* three: ink, not green. The green disc disappears on the green monster and the leprechaun */
+  body.avpick-tkink .sm .pk.avs .pi.on::after { right: -3px; bottom: -3px; width: 40%; height: 40%; border-radius: 50%; background: #252525 var(--tkw) center / 58% no-repeat; box-shadow: 0 0 0 2px var(--sm-paper); }
+  /* four: the other way round, a white disc with a green tick */
+  body.avpick-tkpaper .sm .pk.avs .pi.on::after { right: -3px; bottom: -3px; width: 40%; height: 40%; border-radius: 50%; background: #fff var(--tkg) center / 58% no-repeat; box-shadow: inset 0 0 0 1px #d2cfca, 0 1px 3px rgba(60,45,25,.28); }
+  /* five: a real shadow instead of a flat ring, so the mark sits above the drawing */
+  body.avpick-tklift .sm .pk.avs .pi.on::after { right: -3px; bottom: -3px; width: 40%; height: 40%; border-radius: 50%; background: #43a038 var(--tkw) center / 58% no-repeat; box-shadow: 0 1px 2px rgba(0,0,0,.24), 0 3px 8px rgba(0,0,0,.28); }
+  /* six: a plate, not a disc, so it echoes the square */
+  body.avpick-tkplate .sm .pk.avs .pi.on::after { right: -3px; bottom: -3px; width: 40%; height: 40%; border-radius: 7px; background: #43a038 var(--tkw) center / 58% no-repeat; box-shadow: 0 0 0 2px var(--sm-paper); }
+  /* seven: dead centre, over the face. Nobody can miss it, and nobody can see the face */
+  body.avpick-tkcentre .sm .pk.avs .pi.on::after { left: 50%; top: 50%; width: 46%; height: 46%; transform: translate(-50%, -50%); border-radius: 50%; background: #43a038 var(--tkw) center / 58% no-repeat; box-shadow: 0 0 0 2px var(--sm-paper); }
+  /* eight: the tile goes pale and the tick sits on the pale */
+  body.avpick-tkscrim .sm .pk.avs .pi.on::before { inset: -8px -2px 0; border-radius: 10px; background: rgba(255,255,255,.66); box-shadow: inset 0 0 0 1px #d2cfca; z-index: 2; }
+  body.avpick-tkscrim .sm .pk.avs .pi.on::after { left: 50%; top: 50%; width: 54%; height: 54%; transform: translate(-50%, -50%); border-radius: 50%; background: #43a038 var(--tkw) center / 58% no-repeat; }
+  /* nine: a bar across the foot with the tick in it, the way a tab is underlined */
+  body.avpick-tkfoot .sm .pk.avs .pi.on::after { left: 12%; right: 12%; bottom: -8px; height: 18px; border-radius: 9px; background: #43a038 var(--tkw) center / auto 13px no-repeat; box-shadow: 0 0 0 2px var(--sm-paper); }
+  /* ten: nothing changes about the mark, everything else is turned down */
+  body.avpick-tkfade .sm .pk.avs .pi:not(.on) { opacity: .38; }
+  body.avpick-tkfade .sm .pk.avs .pi:not(.on):hover { opacity: 1; }
+  body.avpick-tkfade .sm .pk.avs .pi.on::after { right: -3px; bottom: -3px; width: 36%; height: 36%; border-radius: 50%; background: #43a038 var(--tkw) center / 58% no-repeat; box-shadow: 0 0 0 2px var(--sm-paper); }
+  /* eleven: top right, where a badge usually goes, and away from the shoulders */
+  body.avpick-tktop .sm .pk.avs .pi.on::after { right: -3px; top: -3px; width: 44%; height: 44%; border-radius: 50%; background: #43a038 var(--tkw) center / 58% no-repeat; box-shadow: 0 0 0 2px var(--sm-paper); }
+  /* twelve: no disc at all. The tick itself, cased in white so it holds on any colour */
+  body.avpick-tkbare .sm .pk.avs .pi.on .tk { display: block; right: -2px; bottom: -2px; width: 42%; height: 42%; color: #43a038; filter: drop-shadow(0 0 2px #fff) drop-shadow(0 0 2px #fff) drop-shadow(0 0 2px #fff) drop-shadow(0 0 1px #fff); }
+  /* thirteen: keep the square that shipped, and only make the mark louder */
+  body.avpick-tkbandbig .sm .pk.avs .pi.on::before { inset: -8px -2px 0; border-radius: 10px; background: #f4eee5; box-shadow: inset 0 0 0 1px #d2cfca; }
+  body.avpick-tkbandbig .sm .pk.avs .pi.on::after { right: -3px; bottom: -3px; width: 44%; height: 44%; border-radius: 50%; background: #43a038 var(--tkw) center / 58% no-repeat; box-shadow: 0 0 0 2px var(--sm-paper); }
   .sm .pk .pn { display: block; text-align: center; font-size: 14px; line-height: 20px; color: var(--sm-muted); margin-top: 4px; }
   .sm .strip { padding: 8px 0 4px; }
   .sm .strip .sh { padding-top: 8px; }
@@ -2066,7 +2114,20 @@ buildSel("kn-avpick", [
   ["canvasedge", "Frontpage: the canvas, a hairline edge and a tick"],
   ["cardedge", "Frontpage: a white tile, a hairline edge and a tick"],
   ["cardlift", "Frontpage: a white tile that lifts, and a tick"],
-  ["bandonly", "Frontpage: the warm band and a hairline edge, no tick"]], "avpick");
+  ["bandonly", "Frontpage: the warm band and a hairline edge, no tick"],
+  ["tkbig", "Only a tick: the same disc, half again as big"],
+  ["tkhuge", "Only a tick: as big as the cell can carry"],
+  ["tkink", "Only a tick: an ink disc, which reads on every colour"],
+  ["tkpaper", "Only a tick: a white disc with a green tick"],
+  ["tklift", "Only a tick: a green disc with a real shadow under it"],
+  ["tkplate", "Only a tick: a plate instead of a disc"],
+  ["tkcentre", "Only a tick: dead centre, over the face"],
+  ["tkscrim", "Only a tick: the tile goes pale and the tick sits on it"],
+  ["tkfoot", "Only a tick: a green bar across the foot with the tick in it"],
+  ["tkfade", "Only a tick: every other avatar is turned down"],
+  ["tktop", "Only a tick: bigger, top right"],
+  ["tkbare", "Only a tick: no disc, the tick cased in white"],
+  ["tkbandbig", "The square that shipped, with the bigger tick"]], "avpick");
 buildSel("kn-sub", [["avatar", "Avatar"], ["wallpaper", "Wallpaper"], ["deck", "Deck"]], "sub", function () { KN.page = "look"; aimAtThePick(); syncSelects(); });
 /* up and down step the last knob touched. On the avatar page that should be the mark on the chosen
    one, so the arrows are pointed at it whenever that page comes up and nothing else has been
