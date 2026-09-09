@@ -2049,6 +2049,25 @@
   .divhead .su svg { width: 100%; height: 100%; display: block; }
   .divhead .gapln { z-index: 0; will-change: opacity; }
   .divhead .ttl { position: absolute; white-space: nowrap; font-size: 26px; line-height: 26px; color: var(--ink); }
+  /* the title explainer (section-intro-lab.html, "Hint on the title" and its round two fixes): point at a seam
+     title, or tab to it, and one short sentence fades in under it. The line hangs off the title inside .divhead,
+     which is an overlay out of the flow, so the section's height is the same whether the line shows or not. It
+     sits 8px under the title's box and stands 22px tall, inside the 47px of clear air above the game bar. It
+     waits .25s before it comes, so crossing a title on the way somewhere else never fires it, and it holds .45s
+     after the pointer leaves, so a small movement does not flicker it. Off by default. */
+  .divhead .ttlsub { position: absolute; top: 100%; margin-top: 8px; white-space: nowrap;
+    font-family: "BuloRounded", "Verdana", "Arial", "Helvetica", sans-serif;
+    font-size: 15px; line-height: 22px; font-weight: normal; color: var(--muted);
+    opacity: 0; pointer-events: none; transition: opacity .16s ease .45s; }
+  body:is(.hint-center, .hint-grid) .divhead .ttl:not(.halo):has(> .ttlsub) { pointer-events: auto; }
+  body.hint-center .divhead .ttlsub { left: 50%; transform: translateX(-50%); }
+  body.hint-grid .divhead .ttlsub { left: var(--hintx, 0px); }
+  body:is(.hint-center, .hint-grid) .divhead .ttl:hover .ttlsub,
+  body:is(.hint-center, .hint-grid) .divhead .ttl:focus-visible .ttlsub { opacity: 1; transition-delay: .25s; }
+  body:is(.hint-center, .hint-grid) .divhead .ttl:focus { outline: none; }
+  body:is(.hint-center, .hint-grid) .divhead .ttl:focus-visible { outline: 2px solid #1665AD; outline-offset: 4px; }
+  /* a phone has no pointer to wait for, and the line would land on the game bar in a narrow column, so touch gets nothing */
+  @media (hover: none) { .divhead .ttlsub { display: none; } }
   body:not(.div-parted):not(.div-swelled):not(.div-toprow):not(.div-toprow14):not(.div-toprowflush):not(.div-toprowgap):not(.div-toprowends):not(.div-toprowindent):not(.div-toprowcells) .divhead { display: none; }
   body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells).sect-waveband #openTablesTop::before, body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells).sect-waveband #openTablesTop::after,
   body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) #liveTablesTop::before, body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) #sec-tt::before, body:is(.div-parted, .div-swelled, .div-toprow, .div-toprow14, .div-toprowflush, .div-toprowgap, .div-toprowends, .div-toprowindent, .div-toprowcells) #sec-rummy::before,
@@ -3405,6 +3424,7 @@
     <label class="ctl"><span>Game bar colours</span><select id="sel-otcolor"></select></label>
     <label class="ctl"><span>Section spacing</span><select id="sel-sgap"></select></label>
     <label class="ctl"><span>Game bar hover</span><select id="sel-othover"></select></label>
+    <label class="ctl"><span>Title explainer</span><select id="sel-hint"></select></label>
   </div>
   <details class="swadv">
     <summary>Advanced — settled settings</summary>
@@ -4464,6 +4484,11 @@
   /* what a cell of the games bar does under the pointer */
   var OTHOVERS = [["fill", "The whole segment fills, a shade darker than the tray"], ["ink", "Only the ink darkens, no fill"]];
   var curOtHover = "fill";
+
+  /* the title explainer: nothing at rest, one line under the seam title while it is pointed at or focused. The two
+     on values are the same sentence placed two ways, centred under the title or set to the column's left edge. */
+  var TITLEHINTS = [["off", "Off"], ["center", "One line under the title, centred on it"], ["grid", "One line under the title, left with the grid"]];
+  var curHint = "off";
   var SECTS = [
     ["none", "Sections on the canvas (as today)"],
     ["contained", "Open tables in the Evernote container"],
@@ -5776,7 +5801,7 @@
   }
   function applyBody() {
     var scene = curLayout.indexOf("sc") === 0;
-    document.body.className = curBase + " play-" + curPlay + " layout-" + curLayout + (scene ? " scenehero" : "") + " font-" + curFont + " shadow-" + curShadow + " edge-" + curEdge + " tex-" + curTexture + " cat-" + curCatalog + " stats-" + curStats + " menu-" + curMenu + " counter-" + curCounter + " rail-" + curRail + " playbtn-" + curPlayBtn + " avedge-" + curAvedge + " avsh-" + curAvshadow + " cnav-" + curCnav + " foot-" + curFooter + " viewer-" + curViewer + " sect-" + curSect + " div-" + curDivider + " cbtn-" + curCbtn + " bfin-" + curBfin + " today-" + curToday + " otc-" + curOtColor + " sgap-" + curSgap + " othover-" + curOtHover + " lhover-" + curLhover + " tilebg-" + curTileBg + " pinpair-" + curPinPair + " tint-" + curTint + (palShown ? " show-palette" : "");
+    document.body.className = curBase + " play-" + curPlay + " layout-" + curLayout + (scene ? " scenehero" : "") + " font-" + curFont + " shadow-" + curShadow + " edge-" + curEdge + " tex-" + curTexture + " cat-" + curCatalog + " stats-" + curStats + " menu-" + curMenu + " counter-" + curCounter + " rail-" + curRail + " playbtn-" + curPlayBtn + " avedge-" + curAvedge + " avsh-" + curAvshadow + " cnav-" + curCnav + " foot-" + curFooter + " viewer-" + curViewer + " sect-" + curSect + " div-" + curDivider + " cbtn-" + curCbtn + " bfin-" + curBfin + " today-" + curToday + " otc-" + curOtColor + " sgap-" + curSgap + " othover-" + curOtHover + " hint-" + curHint + " lhover-" + curLhover + " tilebg-" + curTileBg + " pinpair-" + curPinPair + " tint-" + curTint + (palShown ? " show-palette" : "");
     applyTints();
     var ht = document.getElementById("herotitle"), hs = document.getElementById("herosub");
     if (scene) {
@@ -5811,6 +5836,7 @@
     if (document.getElementById("sel-otcolor")) document.getElementById("sel-otcolor").value = curOtColor;
     if (document.getElementById("sel-sgap")) document.getElementById("sel-sgap").value = curSgap;
     if (document.getElementById("sel-othover")) document.getElementById("sel-othover").value = curOtHover;
+    if (document.getElementById("sel-hint")) document.getElementById("sel-hint").value = curHint;
     document.getElementById("sel-counter").value = curCounter;
     document.getElementById("sel-rail").value = curRail;
     document.getElementById("sel-pinpair").value = curPinPair;
@@ -6098,6 +6124,7 @@
   buildSel("sel-otcolor", OTCOLORS, function (v) { curOtColor = v; });
   buildSel("sel-sgap", SGAPS, function (v) { curSgap = v; });
   buildSel("sel-othover", OTHOVERS, function (v) { curOtHover = v; });
+  buildSel("sel-hint", TITLEHINTS, function (v) { curHint = v; });
   buildSel("sel-stats", STATSLINES, function (v) { curStats = v; });
   buildSel("sel-cbtn", CBTNS, function (v) { curCbtn = v; });
   buildSel("sel-bfin", BFINS, function (v) { curBfin = v; });
@@ -8581,6 +8608,83 @@
     timers.push(setTimeout(play, REST));
   });
 })();
+</script>
+
+<script>
+  /* ── the title explainer, from section-intro-lab.html ("Hint on the title", with the round two fixes for wait,
+     hold, keyboard and touch). The seam script draws each section title as a .ttl span inside its .divhead
+     overlay. This hangs one short sentence off that span. The overlay is out of the flow, so a section stands
+     exactly as tall with the line showing as without it. The switcher is off by default, and off means the
+     sentences are not in the page at all. ── */
+  (function () {
+    /* one sentence per seam title, and only where a sentence adds something the title does not already say.
+       Classic games and Behind the games get none: four named tiles and a paragraph of prose say it themselves. */
+    var LINES = {
+      "Join a table": "Every one of these tables has a seat free. Real people are sitting at them now.",
+      "Watch a game": "These games are under way and every seat is taken. Follow one to learn a game.",
+      "Leaderboard & daily deal": "Both follow the game you pick. The deal is a new hand every day.",
+      "Trick-taking games": "A trick is one card from each player. The best card takes them all.",
+      "Rummy games": "You collect matching cards into sets and runs, then lay them down."
+    };
+    var HOSTS = ["#openTablesTop", "#liveTablesTop", "#sec-tt", "#sec-rummy", "#sec-classic", "#sec-about"];
+    var seq = 0;
+
+    function mode() {
+      var c = document.body.classList;
+      return c.contains("hint-center") ? "center" : (c.contains("hint-grid") ? "grid" : null);
+    }
+    function applyHeadHints() {
+      var on = mode();
+      document.querySelectorAll(".divhead .ttl:not(.halo)").forEach(function (ttl) {
+        /* the old line comes off first, so the title's own words are what the copy is looked up by */
+        var old = ttl.querySelector(".ttlsub"); if (old) old.remove();
+        var text = LINES[ttl.textContent.replace(/\s+/g, " ").trim()];
+        if (!on || !text) {
+          ttl.removeAttribute("tabindex"); ttl.removeAttribute("aria-describedby");
+          ttl.style.removeProperty("--hintx");
+          return;
+        }
+        var sub = document.createElement("span");
+        sub.className = "ttlsub"; sub.id = "ttlsub-" + (++seq); sub.textContent = text;
+        ttl.appendChild(sub);
+        /* the title answers a keyboard as well as a pointer, and a reader gets the sentence as its description */
+        ttl.setAttribute("tabindex", "0");
+        ttl.setAttribute("aria-describedby", sub.id);
+        if (on === "grid") {
+          var host = ttl.closest(".lobbyscope, .gamesec");
+          var cs = host ? getComputedStyle(host) : null;
+          var gridLeft = host ? host.getBoundingClientRect().left + parseFloat(cs.paddingLeft) : 0;
+          ttl.style.setProperty("--hintx", (gridLeft - ttl.getBoundingClientRect().left) + "px");
+        } else {
+          ttl.style.removeProperty("--hintx");
+        }
+      });
+    }
+    var pending = 0;
+    function schedule() {
+      if (pending) return;
+      pending = requestAnimationFrame(function () { pending = 0; applyHeadHints(); });
+    }
+    /* the seam throws its heads away and measures them again when the fonts land, on a resize and on a Divider
+       change, which takes the line with them. Each host is watched for a fresh .divhead so the line comes back. */
+    HOSTS.forEach(function (sel) {
+      var host = document.querySelector(sel); if (!host) return;
+      new MutationObserver(function (recs) {
+        for (var i = 0; i < recs.length; i++) {
+          for (var j = 0; j < recs[i].addedNodes.length; j++) {
+            var n = recs[i].addedNodes[j];
+            if (n.nodeType === 1 && n.classList && n.classList.contains("divhead")) { schedule(); return; }
+          }
+        }
+      }).observe(host, { childList: true });
+    });
+    if (typeof window.applyBody === "function") {
+      var origApplyBody = window.applyBody;
+      window.applyBody = function () { var r = origApplyBody.apply(this, arguments); schedule(); return r; };
+    }
+    window.addEventListener("resize", schedule); /* the grid offset is measured, so it follows the window */
+    schedule();
+  })();
 </script>
 
 <script>
