@@ -360,6 +360,19 @@
   body:is(.avpick-tick, .avpick-tintticktr) .sm .pk.avs .pi.on .tk { display: block; right: -1px; top: -1px; }
   body.avpick-tinttick .sm .pk.avs .pi.on .tk { display: block; right: -1px; bottom: -1px; }
   body.avpick-bar .sm .pk.avs .pi.on::after { left: 16%; right: 16%; bottom: -7px; height: 3px; border-radius: 2px; background: var(--sm-accent); }
+
+  /* The same idea in the frontpage's own colours: its warm surfaces for the tile, its edge for the
+     line round it, and its green for the tick. --band #f4eee5, --canvas #f9f6f2, --card #fff,
+     --edge #d2cfca, --p4 #43a038. */
+  body:is(.avpick-bandedge, .avpick-bandgreen, .avpick-bandonly, .avpick-canvasedge, .avpick-cardedge, .avpick-cardlift) .sm .pk.avs .pi.on::before { inset: -6px; border-radius: 10px; }
+  body:is(.avpick-bandedge, .avpick-bandgreen, .avpick-bandonly) .sm .pk.avs .pi.on::before { background: #f4eee5; }
+  body.avpick-canvasedge .sm .pk.avs .pi.on::before { background: #f9f6f2; }
+  body:is(.avpick-cardedge, .avpick-cardlift) .sm .pk.avs .pi.on::before { background: #fff; }
+  body:is(.avpick-bandedge, .avpick-bandonly, .avpick-canvasedge, .avpick-cardedge) .sm .pk.avs .pi.on::before { box-shadow: inset 0 0 0 1px #d2cfca; }
+  body.avpick-bandgreen .sm .pk.avs .pi.on::before { box-shadow: inset 0 0 0 2px #43a038; }
+  body.avpick-cardlift .sm .pk.avs .pi.on::before { box-shadow: inset 0 0 0 1px #d2cfca, 0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09); }
+  body:is(.avpick-bandedge, .avpick-bandgreen, .avpick-canvasedge, .avpick-cardedge, .avpick-cardlift) .sm .pk.avs .pi.on::after { right: -3px; bottom: -3px; width: 32%; height: 32%; border-radius: 50%; background: #43a038; box-shadow: 0 0 0 2px var(--sm-paper); }
+  body:is(.avpick-bandedge, .avpick-bandgreen, .avpick-canvasedge, .avpick-cardedge, .avpick-cardlift) .sm .pk.avs .pi.on .tk { display: block; right: -1px; bottom: -1px; }
   .sm .pk .pn { display: block; text-align: center; font-size: 14px; line-height: 20px; color: var(--sm-muted); margin-top: 4px; }
   .sm .strip { padding: 8px 0 4px; }
   .sm .strip .sh { padding-top: 8px; }
@@ -1728,11 +1741,16 @@ function wallGroups(v, cols) {
   if (typeof WALL_GROUPS === "undefined") return sectionHTML("Fabrics", wallGrid(v, cols, 6)) + sectionHTML("Assorted", wallGrid(v, cols));
   return WALL_GROUPS.filter(function (g) { return g[2] > g[1]; }).map(function (g) { return sectionHTML(g[0], wallGrid(v, cols, g[2] - g[1], g[1])); }).join("");
 }
+/* Which avatar is the chosen one. A click moves it, a knob step keeps it. The grid used to mark
+   AnimalSheep, which is the name in the menu bar and is NOT one of the 141 in the picker, so
+   nothing was ever marked; the fallback makes that impossible to repeat silently. */
+var CHOSEN = "ManBoyScientist";
+function chosenAvatar() { return (typeof AVATARS !== "undefined" && AVATARS.indexOf(CHOSEN) < 0) ? AVATARS[0] : CHOSEN; }
 var TICKMARK = '<svg class="tk" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 12.5l5 5 10-11" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 function avatarGrid(v, cols, n, from) {
   var list = AVATARS.slice(from || 0, n ? (from || 0) + n : AVATARS.length);
   return '<div class="pk avs" style="--cols:' + (cols || 5) + '">' + list.map(function (a, i) {
-    return '<div class="pi' + (a === "AnimalSheep" ? " on" : "") + '" data-av="' + a + '"><img src="' + AVDIR() + a + '.svg" alt="">' + TICKMARK + '</div>';
+    return '<div class="pi' + (a === chosenAvatar() ? " on" : "") + '" data-av="' + a + '"><img src="' + AVDIR() + a + '.svg" alt="">' + TICKMARK + '</div>';
   }).join("") + '</div>';
 }
 function avatarGroups(v, cols) {
@@ -2039,8 +2057,21 @@ buildSel("kn-avpick", [
   ["disc", "A disc behind"],
   ["bar", "A bar underneath"],
   ["sil", "A thin ring on the drawing itself"],
-  ["today", "The ring the site has today, 4px olive on the drawing"]], "avpick");
-buildSel("kn-sub", [["avatar", "Avatar"], ["wallpaper", "Wallpaper"], ["deck", "Deck"]], "sub", function () { KN.page = "look"; syncSelects(); });
+  ["today", "The ring the site has today, 4px olive on the drawing"],
+  ["bandedge", "Frontpage: the warm band, a hairline edge and a tick"],
+  ["bandgreen", "Frontpage: the warm band, a green edge and a tick"],
+  ["canvasedge", "Frontpage: the canvas, a hairline edge and a tick"],
+  ["cardedge", "Frontpage: a white tile, a hairline edge and a tick"],
+  ["cardlift", "Frontpage: a white tile that lifts, and a tick"],
+  ["bandonly", "Frontpage: the warm band and a hairline edge, no tick"]], "avpick");
+buildSel("kn-sub", [["avatar", "Avatar"], ["wallpaper", "Wallpaper"], ["deck", "Deck"]], "sub", function () { KN.page = "look"; aimAtThePick(); syncSelects(); });
+/* up and down step the last knob touched. On the avatar page that should be the mark on the chosen
+   one, so the arrows are pointed at it whenever that page comes up and nothing else has been
+   touched since. */
+function aimAtThePick() {
+  if (KN.sub !== "avatar") return;
+  LASTKNOB = { key: "avpick", id: "kn-avpick", prev: KN.avpick, next: KN.avpick, after: null };
+}
 buildSel("kn-player", [["guest", "A guest"], ["registered", "A registered player"], ["subscriber", "A subscriber (no ads)"], ["arkadium", "A guest in the Arkadium embed"]], "player");
 buildSel("kn-close", [["out", "Outside, the white cross (today)"], ["outround", "Outside, a white round button on the corner"], ["in", "Inside, at the end of the tab row"], ["inround", "Inside, a round button in the corner"]], "close");
 buildSel("kn-pad", [["12", "12px, as the front page tiles"], ["16", "16px"], ["20", "20px"]], "pad");
@@ -2080,6 +2111,7 @@ document.addEventListener("keydown", function (e) {
 (function () {
   location.search.slice(1).split("&").forEach(function (p) { var kv = p.split("="); if (kv[0] && kv[0] in KN && kv[1] !== undefined) KN[kv[0]] = isNaN(+kv[1]) ? decodeURIComponent(kv[1]) : +kv[1]; });
   syncSelects();
+  aimAtThePick();
   render();
   show();
 })();
@@ -2227,9 +2259,18 @@ window.__settingsLab = { KN: KN, LAB: LAB, show: show, buildModal: buildModal, s
   });
   /* start the player and the preload as soon as the page has drawn */
   setTimeout(function () { withPlayer(function () { }); preloadAll(); }, 400);
+  /* a click both chooses the avatar and plays its next emotion, so the mark can be judged on
+     whichever one is on screen and it stays there while the knob is stepped */
   document.addEventListener("click", function (e) {
     var t = tileOf(e);
-    if (t) playNext(t, t.getAttribute("data-av"));
+    if (!t) return;
+    var av = t.getAttribute("data-av");
+    if (CHOSEN !== av) {
+      CHOSEN = av;
+      document.querySelectorAll(".pk.avs .pi.on").forEach(function (n) { n.classList.remove("on"); });
+      document.querySelectorAll('.pk.avs .pi[data-av="' + av + '"]').forEach(function (n) { n.classList.add("on"); });
+    }
+    playNext(t, av);
   });
 
   /* show() empties #smLayer, so anything still playing has to be destroyed first or lottie keeps
