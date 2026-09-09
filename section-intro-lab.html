@@ -763,6 +763,61 @@
     box-shadow: inset 0 0 0 1px var(--edge, #d2cfca), var(--liftshadow); }
   .emptyPanel b { font-size: 20px; line-height: 28px; color: #212529; }
   .emptyPanel p { font-size: 15px; line-height: 21px; color: var(--muted); margin: 0; max-width: 30em; }
+
+  /* ===== round two, family two: the hint that survives the pointer =====
+     Every rule here rides on the .subfloat .subsection pair above, which is
+     the line that is not there until the section is pointed at. Each class
+     works on its own, so one fix can be judged at a time and then stacked. */
+
+  /* it holds on the way out, so moving around inside the same section never
+     blinks it away. The hold is on the resting rule, so the hover rule has to
+     put the delay back to nothing, or the hold would delay it coming in too */
+  .pstage.hout450 .shead .sub { transition-delay: .45s; }
+  .pstage.hout450 .psec:hover .shead .sub { transition-delay: 0s; }
+  /* and it waits before it comes, so crossing a section on the way somewhere
+     else never brings it up. These two come last, so a stage that asks for a
+     wait and a hold gets the wait on the way in and the hold on the way out */
+  .pstage.hin250 .psec:hover .shead .sub { transition-delay: .25s; }
+  .pstage.hin600 .psec:hover .shead .sub { transition-delay: .6s; }
+
+  /* the version that moves the tiles instead of floating over them */
+  .pstage.subgrow .shead .sub { display: none; }
+  .pstage.subgrow .psec:hover .shead .sub { display: block; }
+  body.showhidden .pstage.subgrow .shead .sub { display: block; }
+
+  /* pinned above the section rather than under the seam */
+  .pstage.hinttop { padding-top: 26px; }
+  .pstage.hinttop .shead .sub { top: auto; bottom: 100%; margin: 0 0 6px; }
+
+  /* on the seam's own line, after the title; the words hold their width at
+     rest, which is why nothing moves when they arrive */
+  .pstage.hinttail .seam .ttl .tail { opacity: 0; transition: opacity .16s ease; }
+  .pstage.hinttail .psec:hover .seam .ttl .tail { opacity: 1; transition-delay: .25s; }
+  body.showhidden .pstage.hinttail .seam .ttl .tail { opacity: 1; }
+
+  /* one look as the section arrives on screen, then it fades on its own */
+  .pstage.hintpeek .shead .sub { transition-duration: .5s; }
+  .pstage.hintpeek .psec.peek .shead .sub { opacity: 1; transition-delay: 0s; }
+
+  /* a keyboard brings the same line, and the tile shows where the focus is */
+  .pstage.hintkeys .psec:focus-within .shead .sub { opacity: 1; transition-delay: 0s; }
+  .pstage.hintkeys .ltCard:focus-visible, .pstage.hintkeys .gtile:focus-visible {
+    outline: 2px solid #1665AD; outline-offset: 3px; }
+
+  /* the two touch answers that are not the peek */
+  @media (hover: none) {
+    .pstage.hinttouchperm .shead .sub { position: static; opacity: 1; pointer-events: auto; margin-top: 6px; }
+    .pstage.hintnotouch .shead .sub { display: none; }
+  }
+  /* the lab has a mouse, so the switch at the top stands in for a phone */
+  body.showhidden .pstage.hinttouchperm .shead .sub { position: static; margin-top: 6px; }
+
+  /* it stops teaching once the visits are counted out */
+  .pstage.hintwears.spent .shead .sub { display: none; }
+
+  /* the readout beside the two visit buttons */
+  .hintcount { font-size: 12.5px; color: #8a857c; }
+  .hintcount b { color: #141414; }
 </style>
 </head>
 <body class="evernote play-raph font-gelicamd shadow-capsule edge-softlight counter-ghostdot avsh-hover animlab" id="top">
@@ -849,6 +904,24 @@
   <h2>Nine &middot; the row says it, not the head</h2>
   <p class="desc">Leave the head alone and let the tiles do the explaining, either in a word on the tile or in a caption under the row.</p>
   <div id="secRow"></div>
+</div>
+
+<div class="asec" id="wrapVerb">
+  <h2>Ten &middot; a verb where a verb is natural</h2>
+  <p class="desc">Holger read the verb titles in family three and said this. <i>&ldquo;I kind of like the verb titles. Except for the games sections. There they feel unnatural.&rdquo;</i> He is right about the games sections. A catalog heading names a kind of game, and a kind is a noun. So this family leaves all three catalog headings exactly as they are and turns only the two table sections into verbs. Every card says which searchable words leave the heading, because the site lives on search traffic, so a heading that drops the word tables pays for it somewhere.</p>
+  <div id="secVerb"></div>
+</div>
+
+<div class="asec" id="wrapHint">
+  <h2>Eleven &middot; the hint that survives the pointer</h2>
+  <p class="desc">Holger read the hint that comes from anywhere in the section and said this. <i>&ldquo;Hint on the whole section is interesting as well.&rdquo;</i> That card works, and the notes in that family list three faults. It blinks while the pointer travels, it does not exist on touch, and a newcomer has no reason to point at all. Each card below fixes one fault, so the fixes can be judged apart, and the last card stacks the ones that survive. Use the switch at the top to see them standing still.</p>
+  <div class="abar">
+    <span class="alab">The visit count, for the card that wears off</span>
+    <button class="abtn" id="visitAdd" type="button">Count another visit</button>
+    <button class="abtn" id="visitReset" type="button">Forget the visits</button>
+    <span class="hintcount" id="visitOut">visits <b>0</b></span>
+  </div>
+  <div id="secHint"></div>
 </div>
 
 <script>
@@ -1000,7 +1073,7 @@
       return '<div class="lobbyscope otscope llscope">' + barHTML(cfg.counts ? 9 : 0, " games in play") +
         '<div class="llRow">' + LL_CARDS.map(function (c) { return '<div class="llCard ltCard">' + feltHTML(c) + "</div>"; }).join("") + "</div></div>";
     }
-    return '<div class="ttrow">' + TT_TILES.map(tileHTML).join("") + "</div>";
+    return '<div class="ttrow">' + (CAT_TILES[sec.key] || TT_TILES).map(tileHTML).join("") + "</div>";
   }
 
   function stageHTML(cfg) {
@@ -1012,7 +1085,7 @@
       }).join("") + "</div>";
     }
     return '<div class="pstage ' + (cfg.cls || "") + '">' + top +
-      SECTIONS.map(function (sec) {
+      (cfg.sections || SECTIONS).map(function (sec) {
         var foot = cfg.under && pick(cfg.subs, sec.key) ? '<p class="undersub">' + cfg.subs[sec.key] + "</p>" : "";
         return '<div class="psec">' + headHTML(sec, cfg) + bodyHTML(sec, cfg) + foot + "</div>";
       }).join("") + "</div>";
@@ -1026,6 +1099,25 @@
   var DOTS = { open: "Every tile is a real table with a free seat. Click a seat and you are in the game.",
                live: "These games are running now. Click a tile to watch from behind the table.",
                tt: "Trick-taking games are the ones where each round is a trick and the best card takes it." };
+
+  /* ===== round two: the copy, the two extra catalog rows, the whole page ===== */
+  var TAILS_HINT = { open: "with a free seat", live: "already in play", tt: "ten of them" };
+  var CAT_TILES = {
+    sh: [{ logo: "crazyeights_logo.png", alt: "Crazy Eights", t: "t6", n: 96 },
+         { logo: "gofish_logo.png", alt: "Go Fish", t: "t5", n: 74 },
+         { logo: "oldmaid_logo.png", alt: "Old Maid", t: "t2", n: 51 }],
+    rm: [{ logo: "ginrummy_logo.png", alt: "Gin Rummy", t: "t7", n: 188 },
+         { logo: "rummy_logo.png", alt: "Rummy", t: "t1", n: 143 },
+         { logo: "canasta_logo.png", alt: "Canasta", t: "t9", n: 88 }]
+  };
+  /* five heads instead of three, so the rhythm of the real page can be read */
+  var PAGE_SECTIONS = [
+    { key: "open", title: "Open tables" },
+    { key: "live", title: "Live tables" },
+    { key: "tt", title: "Trick-taking games" },
+    { key: "sh", title: "Shedding games" },
+    { key: "rm", title: "Rummy games" }
+  ];
 
   var VARIANTS = [
     { sec: "secZero", name: "The page today", tag: "now", tagcls: "now",
@@ -1121,7 +1213,107 @@
       cfg: { emptyWord: "Sit here" } },
     { sec: "secRow", name: "The line under the row",
       note: "The same sentence under the tiles instead of over them, so the tiles are read first and the line explains what was just seen. Costs <b>31px per section and 93px on the page</b>, more than the line above. It reads as a caption, which many people skip, and it is permanent.",
-      copy: SUB_FULL, cfg: { cls: "subunder", under: true, subs: SUB_FULL } }
+      copy: SUB_FULL, cfg: { cls: "subunder", under: true, subs: SUB_FULL } },
+
+    /* ===== round two, family one: a verb only where a verb is natural ===== */
+    { sec: "secVerb", name: "Join a table, Watch a game", tag: "pick", tagcls: "pick",
+      note: "The two verbs Holger liked, with the catalog heading left exactly as it was. Costs <b>no vertical space</b>, and it survives every visit because it is the title. The instruction only turns up where an instruction is true, since a table with a free seat is a thing you can act on and a kind of game is not. For search the two headings lose <b>open</b>, <b>live</b> and the plural <b>tables</b>, and keep table, join, watch and game.",
+      copy: { open: "Join a table", live: "Watch a game", tt: "Trick-taking games, left alone" },
+      cfg: { titles: { open: "Join a table", live: "Watch a game" } } },
+    { sec: "secVerb", name: "Sit at a table",
+      note: "The same pair with a softer verb on the first head. Costs no vertical space and survives every visit. Sitting is what actually happens, so it reads as an invitation rather than an order. It says <b>table</b>, so the noun is still in the heading. For search it loses <b>join</b> on top of open, live and tables, and join is the word people use for getting into a game.",
+      copy: { open: "Sit at a table", live: "Watch a game", tt: "Trick-taking games, left alone" },
+      cfg: { titles: { open: "Sit at a table", live: "Watch a game" } } },
+    { sec: "secVerb", name: "Take a seat",
+      note: "The warmest of the seat wordings. Costs no vertical space and survives every visit. It says <b>seat</b>, which is the same word the empty seats use in the Sit here card above, so the head and the felt teach each other one idea instead of two. The price is that the heading no longer names a table at all. For search <b>table</b>, <b>tables</b>, <b>open</b> and <b>join</b> all leave the heading, and seat is not a word anybody types into Google.",
+      copy: { open: "Take a seat", live: "Watch a game", tt: "Trick-taking games, left alone" },
+      cfg: { titles: { open: "Take a seat", live: "Watch a game" } } },
+    { sec: "secVerb", name: "Join a game",
+      note: "The plainest wording and the least exact. Costs no vertical space and survives every visit. Game is what a newcomer calls the thing, so this is the easiest of them to read cold. It also collides with the head under it, because Join a game over Watch a game is two headings one word apart, which is the problem the page started with. For search it loses <b>table</b> and <b>tables</b> from the first heading.",
+      copy: { open: "Join a game", live: "Watch a game", tt: "Trick-taking games, left alone" },
+      cfg: { titles: { open: "Join a game", live: "Watch a game" } } },
+    { sec: "secVerb", name: "Pull up a chair",
+      note: "The friendliest wording and the loosest. Costs no vertical space and survives every visit. It sounds like a person wrote it, and it says the least about what the tiles under it are. Somebody who does not read English every day will not know the phrase at all. For search it loses <b>table</b>, <b>tables</b>, <b>open</b> and <b>join</b>, and puts <b>chair</b> in a heading, which nobody searches for.",
+      copy: { open: "Pull up a chair", live: "Watch a game", tt: "Trick-taking games, left alone" },
+      cfg: { titles: { open: "Pull up a chair", live: "Watch a game" } } },
+    { sec: "secVerb", name: "Watch a table",
+      note: "The live head turned to the same noun as the head above it, so the two rhyme. Costs no vertical space and survives every visit. Watching a table is slightly wrong though, because the thing you watch is the game and the table is the furniture. For search the pair keeps <b>table</b> in both headings and loses <b>game</b> from the live one, along with open, live and tables.",
+      copy: { open: "Join a table", live: "Watch a table", tt: "Trick-taking games, left alone" },
+      cfg: { titles: { open: "Join a table", live: "Watch a table" } } },
+    { sec: "secVerb", name: "Look in on a game",
+      note: "The gentlest live wording. Costs no vertical space and survives every visit. It sounds like dropping by rather than staring, which fits a table you are not playing at, and it lowers the bar for a player who feels rude watching. It is an idiom, so it travels badly, and it is the second longest of these wordings. For search it loses <b>watch</b>, which is the word a person types when they want to watch a game, along with live and tables.",
+      copy: { open: "Join a table", live: "Look in on a game", tt: "Trick-taking games, left alone" },
+      cfg: { titles: { open: "Join a table", live: "Look in on a game" } } },
+    { sec: "secVerb", name: "See a game in play",
+      note: "The most literal live wording. Costs no vertical space and survives every visit. In play is the phrase the tiles and the bar already use, so nothing has to be learned twice. It is the longest of the plain wordings here and it opens the seam wide, which the drawing shows. For search it loses <b>watch</b> and <b>live</b> and keeps game.",
+      copy: { open: "Join a table", live: "See a game in play", tt: "Trick-taking games, left alone" },
+      cfg: { titles: { open: "Join a table", live: "See a game in play" } } },
+    { sec: "secVerb", name: "One verb and one noun, on purpose",
+      note: "Take a seat over Games in play, so the two table heads do not match each other. Costs no vertical space and survives every visit. Read against the cards above it, this is the test of whether the two heads have to be the same shape, and the answer is that they do. An instruction followed by a label reads as an edit somebody left half done, and the eye finds the join immediately. For search this is the worst score in the family, because <b>table</b>, <b>tables</b>, <b>join</b>, <b>watch</b> and <b>live</b> all leave the two headings.",
+      copy: { open: "Take a seat", live: "Games in play", tt: "Trick-taking games, left alone" },
+      cfg: { titles: { open: "Take a seat", live: "Games in play" } } },
+    { sec: "secVerb", name: "The verb carries its count",
+      note: "The plain pair with the live number after it on the seam, small and bold, the way the count in the seam card runs it. Costs <b>no vertical space</b>. The head now says what to do and how much of it there is, and it stays true on every visit because the number is live. The seam opening grows by the width of the number. For search the same words leave as in the plain pair, and a number is worth nothing to search either way, so this is a reader gain and not a ranking one.",
+      copy: { open: "Join a table &nbsp; 46 free seats", live: "Watch a game &nbsp; 9 running now", tt: "Trick-taking games, left alone" },
+      cfg: { titles: { open: "Join a table", live: "Watch a game" },
+             cnts: { open: "46 free seats", live: "9 running now" } } },
+    { sec: "secVerb", name: "The count inside the heading",
+      note: "The same number written into the head at head size instead of hung off it. Costs no vertical space and survives every visit. It reads as one sentence rather than a title with a badge, and it is loud, because 46 is now 26px of Gelica in the middle of the seam. The opening is wide enough here to leave the rules on either side short, which the drawing shows. For search the same words leave as in the plain pair.",
+      copy: { open: "Join a table with 46 free seats", live: "Watch a game, 9 are in play", tt: "Trick-taking games, left alone" },
+      cfg: { titles: { open: "Join a table with 46 free seats", live: "Watch a game, 9 are in play" } } },
+    { sec: "secVerb", name: "The noun stays and the verb goes quiet", tag: "free", tagcls: "free",
+      note: "The head is left as it is and two small words follow it on the seam's own line. Costs <b>no vertical space</b> and survives every visit. This is the answer for the case where losing the searchable noun is not acceptable, because <b>nothing leaves the heading</b>. Open tables and Live tables are both still there in full and the verb is added after them in the muted grey. The price is width, since the seam opening grows by the width of the words, and a small grey verb is much easier to skip than a heading.",
+      copy: { open: "Open tables &nbsp; join one", live: "Live tables &nbsp; watch one", tt: "Trick-taking games, left alone" },
+      cfg: { tails: { open: "join one", live: "watch one" } } },
+    { sec: "secVerb", name: "The whole page as it runs now", tag: "reference",
+      note: "Five heads instead of three, so the rhythm of the real page can be read rather than guessed. Two table sections and three catalog rows, all of them nouns, which is the page today. Costs nothing and teaches nothing. The badge beside the name counts the two extra rows drawn here, not a cost. The badge on the card under this one is the same number, which is the point of drawing the pair.",
+      cfg: { sections: PAGE_SECTIONS } },
+    { sec: "secVerb", name: "The whole page, two verbs and three nouns",
+      note: "The same five heads with the two table sections turned into verbs. Read straight down it, and the honest answer is that it does not read as inconsistent. It reads as two kinds of thing, which is what it is. The two verbs sit together at the top and both name something you can do this second. The three nouns under them name shelves. The change of shape lands exactly where the page already changes subject, so it marks the break instead of fighting it. It would read as a mistake only if one verb turned up in the middle of the catalog. Costs <b>no vertical space</b>, and the badge matching the card above it is the proof. For search, open, live and tables leave the two table heads and all three catalog heads keep every word they had.",
+      copy: { open: "Join a table", live: "Watch a game", tt: "Trick-taking games, Shedding games, Rummy games" },
+      cfg: { sections: PAGE_SECTIONS, titles: { open: "Join a table", live: "Watch a game" } } },
+
+    /* ===== round two, family two: the hint that survives the pointer ===== */
+    { sec: "secHint", name: "It waits a quarter of a second",
+      note: "The section hint with a 250ms wait in front of it. Costs <b>no vertical space</b> and nothing on a second visit. Crossing a section on the way to the menu no longer brings it, because the pointer has gone before the wait is up. Stop inside a section and it is there almost at once, which is short enough that it still feels like an answer. Point at a section and hold still.",
+      copy: SUB_FULL, cfg: { cls: "subfloat subsection hin250", subs: SUB_FULL } },
+    { sec: "secHint", name: "It waits six tenths of a second",
+      note: "The same wait made long. Costs no vertical space and nothing on a second visit. Nothing crossing the page can trigger it now, so the resting page is completely safe, and the answer feels late. A player who stopped on purpose has time to wonder whether anything is coming, and some of them move on first. Point at a section and hold still to feel the difference against the card above.",
+      copy: SUB_FULL, cfg: { cls: "subfloat subsection hin600", subs: SUB_FULL } },
+    { sec: "secHint", name: "It holds on the way out",
+      note: "No wait coming in, but once it is up it stays 450ms after the pointer has left. Costs no vertical space and nothing on a second visit. This is the fix for the gap between two sections, which is 43px of clear space belonging to neither of them. A pointer walking down the page used to drop the line every time it crossed one. The hold covers the gap. On its own it still fires when you only pass through, because nothing was added at the front.",
+      copy: SUB_FULL, cfg: { cls: "subfloat subsection hout450", subs: SUB_FULL } },
+    { sec: "secHint", name: "It waits, and it holds",
+      note: "Both fixes at once, 250ms in and 450ms out. Costs no vertical space and nothing on a second visit. A section you only crossed never speaks, and a section you stayed in keeps talking while you move around inside it. The cost of the hold is that the line you are leaving is still up while the next one arrives. For a moment two lines are on screen, which the drawing shows if you walk the pointer down it slowly.",
+      copy: SUB_FULL, cfg: { cls: "subfloat subsection hin250 hout450", subs: SUB_FULL } },
+    { sec: "secHint", name: "The line that pushes the tiles down",
+      note: "The same hint in the flow instead of floating, so the section grows the moment it is pointed at and everything under the head moves. Costs <b>nothing at rest and 27px in the section being pointed at</b>, and nothing on a second visit. It is the clearest reading of the three, because nothing overlaps anything. It also moves the page under a pointer that is on its way to a tile, which is the one thing a lobby must not do. Moving one section moves every section below it. Point at a section and watch the row jump.",
+      copy: SUB_FULL, cfg: { cls: "subsection subgrow", subs: SUB_FULL } },
+    { sec: "secHint", name: "Beside the title, on the seam's own line",
+      note: "The hint arrives as a few words after the title instead of a sentence under it. Costs <b>no vertical space ever</b> and nothing on a second visit, and nothing moves in any direction when it comes. The catch is horizontal. The words hold their width while they are invisible. The opening in the seam is permanently as wide as the longest hint, and the rules on either side are permanently shorter, which you can see standing still. It also fits far less, so the hint shrinks to four words.",
+      copy: TAILS_HINT, cfg: { cls: "subsection hinttail", tails: TAILS_HINT } },
+    { sec: "secHint", name: "Pinned above the section",
+      note: "The line sits over the seam instead of under it, in the clear space the page already keeps between two sections. Costs <b>30px once at the top of the page</b>, because the first section has nothing above it to borrow, and nothing anywhere else. Nothing on a second visit. The reading order goes wrong though, because the line arrives above the title it belongs to, so the eye has already passed the place where the answer appears.",
+      copy: SUB_FULL, cfg: { cls: "subfloat subsection hinttop hin250 hout450", subs: SUB_FULL } },
+    { sec: "secHint", name: "One look as the section arrives",
+      note: "The line shows itself for about two and a half seconds when the section first scrolls into view, then fades over half a second. Costs <b>no vertical space</b>, because it floats in the clear space under the seam. This is the only touch answer that teaches anything, since a phone has no pointer to wait for, and it works the same for a mouse. It fires once per section per page load, so a second visit is taught again unless it is paired with the wear off card below. Scrolling down to this card is what fires it, so reload and come back if you missed it.",
+      copy: SUB_FULL, cfg: { cls: "subfloat subsection hintpeek", subs: SUB_FULL } },
+    { sec: "secHint", name: "On touch the line is simply there",
+      note: "There is no pointer on a phone, so the line stops hiding and sits under every title in the flow. Costs <b>27px per section on a phone and nothing on a desktop</b>, and it does not survive a second visit, because a returning phone player reads the same three lines forever. On a narrow screen 27px is a bigger share of the first screenful than it is here. The badge beside the name measures the desktop, where this costs nothing. The lab has a mouse, so the switch at the top stands in for the phone.",
+      copy: SUB_FULL, cfg: { cls: "subfloat subsection hinttouchperm hin250 hout450", subs: SUB_FULL } },
+    { sec: "secHint", name: "On touch it never shows",
+      note: "One media query and the line is gone wherever there is no pointer. Costs <b>no vertical space anywhere</b> and nothing on any visit, on any device. It is also an admission that a phone player is taught nothing at all. The section names then have to stand up on their own there, which is an argument for the verb heads in the family above.",
+      copy: SUB_FULL, cfg: { cls: "subfloat subsection hintnotouch hin250 hout450", subs: SUB_FULL } },
+    { sec: "secHint", name: "Tab into the section and it shows",
+      note: "The same line on focus, so the section answers a keyboard as well as a pointer. A screen reader user who tabs into a row of tiles gets the sentence that says what the row is. Costs no vertical space and nothing on a second visit. Every tile in this drawing is made focusable so it can be tried, which the real page gets for free because its tiles and its seats are already buttons. Click just above a section and press tab to walk into it.",
+      copy: SUB_FULL, cfg: { cls: "subfloat subsection hintkeys hin250 hout450", subs: SUB_FULL } },
+    { sec: "secHint", name: "It stops after the third visit",
+      note: "A count kept in localStorage. The hint behaves like the wait and hold card for three visits and then never appears again. Costs no vertical space at any point, and it is the one card here that answers the second visit question with a plain no. It costs about ten lines of script and one stored key. The count lives on the device, so the same person on a phone and a laptop is taught twice. Anybody who clears their storage starts again at zero, which is a small price for a line that was free to begin with. The two buttons above this section move the count.",
+      copy: SUB_FULL, cfg: { cls: "subfloat subsection hintwears hin250 hout450", subs: SUB_FULL } },
+    { sec: "secHint", name: "The settled answer", tag: "pick", tagcls: "pick",
+      note: "Everything above that survived, in one card. It floats, so no tile ever moves. It waits 250ms, so crossing the page never brings it. It holds 450ms, so moving around inside a section never blinks it. It answers a keyboard the same way it answers a pointer. It shows itself once as the section arrives on screen, which is what a phone gets in place of a hover, and on a mouse the hover takes over from there. And it counts three visits and then stops for good. Costs <b>no vertical space at all</b> and it is gone by the fourth visit. Use the two buttons above to walk it past three.",
+      copy: SUB_FULL,
+      cfg: { cls: "subfloat subsection hin250 hout450 hintpeek hintkeys hintwears", subs: SUB_FULL } }
   ];
 
   /* ===== draw ===== */
@@ -1188,6 +1380,47 @@
       btn.textContent = document.body.classList.contains("shrunk") ? "Back to full size" : "Shrink every stage";
     });
   }
+
+  /* ===== round two: the three hint behaviours that need script ===== */
+  /* one look as a section arrives on screen, once per section per page load */
+  var peekSecs = document.querySelectorAll(".pstage.hintpeek .psec");
+  if (peekSecs.length && window.IntersectionObserver) {
+    var io = new IntersectionObserver(function (entries, obs) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        obs.unobserve(en.target);
+        var sec = en.target;
+        sec.classList.add("peek");
+        setTimeout(function () { sec.classList.remove("peek"); }, 2600);
+      });
+    }, { threshold: 0.35 });
+    peekSecs.forEach(function (sec) { io.observe(sec); });
+  }
+
+  /* the keyboard stages: the real page's tiles and seats are buttons already,
+     the ones drawn here are not, so they are given a tab stop */
+  document.querySelectorAll(".pstage.hintkeys .ltCard, .pstage.hintkeys .gtile").forEach(function (el) {
+    el.setAttribute("tabindex", "0");
+  });
+
+  /* the visit count that wears the hint off, and the two buttons that move it */
+  var VISIT_KEY = "wocg3-section-hint-visits";
+  function visitCount() {
+    try { return parseInt(window.localStorage.getItem(VISIT_KEY), 10) || 0; } catch (e) { return 0; }
+  }
+  function visitWrite(n) { try { window.localStorage.setItem(VISIT_KEY, String(n)); } catch (e) {} }
+  function visitPaint() {
+    var n = visitCount(), out = document.getElementById("visitOut");
+    document.querySelectorAll(".pstage.hintwears").forEach(function (stage) {
+      stage.classList.toggle("spent", n >= 3);
+    });
+    if (out) out.innerHTML = "visits <b>" + n + "</b>, " + (n >= 3 ? "the hint is spent" : "the hint still shows");
+  }
+  var vAdd = document.getElementById("visitAdd");
+  if (vAdd) vAdd.addEventListener("click", function () { visitWrite(visitCount() + 1); visitPaint(); });
+  var vReset = document.getElementById("visitReset");
+  if (vReset) vReset.addEventListener("click", function () { visitWrite(0); visitPaint(); });
+  visitPaint();
 }());
 </script>
 </body>

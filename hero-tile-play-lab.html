@@ -3567,6 +3567,117 @@
   @media (max-width: 860px) {
     .labstage .pos-a { grid-column: auto !important; }
   }
+
+  /* ===== round two, the bottom row: the count keeps the left corner and a button arrives on the right =====
+     Holger: "Would it be most natural to have the x playing to the left also on hover and then the play
+     button to the bottom right?" The count fades out on hover today, both for the pointer and for the
+     clip, so a stage that keeps the corner has to outweigh both of those rules. */
+  .labstage.holdcount .gimg:hover .gchip,
+  .labstage.holdcount .gtile.videoOn .gchip { opacity: 1; }
+
+  /* the count is not there at all until the pointer is */
+  .labstage.countin .gchip { opacity: 0; }
+  .labstage.countin .gimg:hover .gchip,
+  .labstage.countin .gtile.videoOn .gchip { opacity: 1; }
+
+  /* the count comes in from its own edge as the button comes in from the other one */
+  .labstage.countslide .gchip { opacity: 0; transform: translateX(-14px);
+    transition: opacity .2s ease, transform .2s ease; }
+  .labstage.countslide .gimg:hover .gchip,
+  .labstage.countslide .gtile.videoOn .gchip { opacity: 1; transform: none; }
+
+  /* the right hand end of the row. A fixed height keeps every button weight on the
+     count's own centre line, 17px up from the bottom edge */
+  .labstage .hrb { position: absolute; right: 10px; bottom: 5px; z-index: 5; height: 24px;
+    display: flex; align-items: center; gap: 6px; }
+  .labstage .small .hrb { right: 8px; }
+  .labstage .hrb.stack { height: auto; flex-direction: column; align-items: flex-end; gap: 4px; }
+  .labstage .hrb.fade { opacity: 0; transition: opacity .18s ease; }
+  .labstage .gimg:hover .hrb.fade { opacity: 1; }
+  .labstage .gimg:hover .hrb.late { transition-delay: .35s; }
+  .labstage .hrb.slide { opacity: 0; transform: translateX(12px);
+    transition: opacity .18s ease, transform .18s ease; }
+  .labstage .gimg:hover .hrb.slide { opacity: 1; transform: none; }
+
+  /* the whole row as one element, for the version with no plate under it */
+  .labstage .hrrow { position: absolute; left: 0; right: 0; bottom: 5px; z-index: 5; height: 24px;
+    display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 10px 0 12px; }
+  .labstage .small .hrrow { padding: 0 8px 0 12px; }
+  .labstage .hrrow.fade { opacity: 0; transition: opacity .18s ease; }
+  .labstage .gimg:hover .hrrow.fade { opacity: 1; }
+  .labstage .hrct { display: inline-flex; align-items: center; font-size: 14px; font-weight: bold; color: #fff;
+    text-shadow: -1px -1px 0 rgba(0,0,0,.32), 1px -1px 0 rgba(0,0,0,.32),
+      -1px 1px 0 rgba(0,0,0,.32), 1px 1px 0 rgba(0,0,0,.32); }
+  .labstage .hrct::before { content: ""; flex: none; width: 6px; height: 6px; border-radius: 50%;
+    margin-right: 4px; background: #fff; }
+
+  /* the two plates the row can sit on. Both clear the clip, which sits at z-index 2 */
+  .labstage .hrbar, .labstage .hrglass { position: absolute; left: 0; right: 0; bottom: 0; height: 40px;
+    z-index: 3; pointer-events: none; }
+  .labstage .small .hrbar, .labstage .small .hrglass { height: 34px; }
+  .labstage .hrbar { background: linear-gradient(rgba(0,0,0,0), rgba(0,0,0,.40) 45%, rgba(0,0,0,.56)); }
+  .labstage .hrglass { background: rgba(255,255,255,.14);
+    backdrop-filter: blur(8px) saturate(1.1); -webkit-backdrop-filter: blur(8px) saturate(1.1);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.28); }
+  .labstage .hrbar.fade, .labstage .hrglass.fade { opacity: 0; transition: opacity .18s ease; }
+  .labstage .gimg:hover .hrbar.fade, .labstage .gimg:hover .hrglass.fade { opacity: 1; }
+
+  /* the button weights the row can carry */
+  .labstage .hbtn.pill { font-size: 13px; height: 20px; line-height: 20px; padding: 0 10px; border-radius: 999px; }
+  .labstage .hbtn.white { background-color: #fff; color: #3d6608; text-shadow: none;
+    box-shadow: inset 0 0 0 1px rgba(20,20,20,.14), 0 1px 3px rgba(0,0,0,.28); }
+  .labstage .hbtn.white:hover { background-color: #f1f7e6; }
+  .labstage .hbtn.quiet { background-color: rgba(20,20,20,.52); color: #fff; text-shadow: none;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.55); }
+  .labstage .hbtn.quiet:hover { background-color: rgba(20,20,20,.66); }
+  .labstage .hbtn.more { padding: 0 9px; letter-spacing: 1px; }
+  .labstage .hbtn.disc { width: 24px; padding: 0; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center; }
+  .labstage .hbtn.disc svg { width: 9px; height: 11px; display: block; margin-left: 2px; }
+
+  /* one control with a main action and a small arrow, the shape the cards below the mosaic use */
+  .labstage .hsplit { display: inline-flex; align-items: center; height: 24px;
+    border-radius: var(--radius-md, 6px); corner-shape: squircle; overflow: hidden;
+    background-color: var(--triogreen);
+    box-shadow: inset 0 0 0 1px var(--triogreenring), 0 2px 4px rgba(0,0,0,.06); }
+  .labstage .hsplit:hover { background-color: var(--triogreenhover); }
+  .labstage .hsplit button { font-family: inherit; font-weight: bold; color: #fff; background: transparent;
+    border: none; cursor: pointer; height: 24px; padding: 0; }
+  .labstage .hsplit .hsmain { font-size: 16px; padding: 0 10px;
+    text-shadow: -1px -1px 0 var(--triogreenring), 1px -1px 0 var(--triogreenring),
+      -1px 1px 0 var(--triogreenring), 1px 1px 0 var(--triogreenring); }
+  .labstage .hsplit .hsmore { width: 22px; border-left: 1px solid var(--triogreenring);
+    display: inline-flex; align-items: center; justify-content: center; }
+  .labstage .hscar { width: 0; height: 0; border-style: solid; border-width: 5px 4px 0 4px;
+    border-color: #fff transparent transparent transparent; }
+
+  /* the count made into the second action */
+  .labstage .clink { cursor: pointer; }
+  .labstage .clink:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+  /* the row moved off the art and under it, where it can never cover the clip */
+  .labstage .gmeta.rfoot { flex-direction: row; align-items: center; justify-content: space-between; gap: 8px; }
+  .labstage .gmeta.rfoot .ftCount { line-height: 24px; }
+
+  /* ===== round three, the whole mosaic in one card, so every button can be judged at once =====
+     Three columns, not four, because that is the shape the page actually draws: the big tile takes
+     the first two columns and the first two rows, two small tiles stack down the third column beside
+     it, and the last three sit across the bottom. Measured off index.html running layout-scrab,
+     where the big tile is 448 by 338 and the five small ones are 215 to 224 wide. */
+  .vcard.wide { grid-column: 1 / -1; }
+  .labstage.mos { grid-template-columns: repeat(3, 168px); grid-auto-rows: 126px; }
+  /* the stage starts its rows at the top, so a mosaic tile has to be told to fill the row it spans */
+  .labstage.mos .gtile { align-self: stretch; }
+  .labstage.mos .gtile.big { height: auto; grid-column: 1 / 3; grid-row: 1 / 3; }
+  .labstage.mos .gtile.small { height: auto; }
+  /* the button on every tile at once, without nine pointers */
+  .labstage.allon .hrb.fade, .labstage.allon .hrrow.fade,
+  .labstage.allon .hrbar.fade, .labstage.allon .hrglass.fade { opacity: 1; }
+  .labstage.allon .hrb.slide { opacity: 1; transform: none; }
+  @media (max-width: 1180px) {
+    .labstage.mos { grid-template-columns: repeat(2, 168px); }
+    .labstage.mos .gtile.big { grid-column: 1 / 3; grid-row: 1 / 3; }
+  }
 </style>
 </head>
 <body class="evernote play-raph font-gelicamd shadow-capsule edge-softlight tex-grainbal cat-split stats-capsule2 menu-centerwave counter-ghostdot rail-suitscool playbtn-triogreen avedge-litrim8 avsh-hover cnav-sub-suits foot-wavyline viewer-anon sect-waveband div-toprowcells cbtn-official bfin-asis today-inkcanvas otc-warmdarkergreen sgap-56 othover-fill lhover-lineplain tilebg-cardroomcusp pinpair-violet tint-l95ringeven animlab">
@@ -3616,6 +3727,32 @@
     return '<div class="gmeta"><h3 class="gtitle">' + g.alt + '</h3><div class="gbtns">'
       + (withCount ? '<span class="ftCount">' + g.n + ' playing</span>' : '')
       + (withBtn ? gplay() : '') + '</div></div>';
+  }
+
+  /* ===== the pieces the bottom row and the button counts are built from (rounds two and three) ===== */
+  function rbtn(cls, label, msg, aria) {
+    return '<button type="button" class="hbtn ' + cls + '"'
+      + (msg ? ' data-flash="' + msg + '"' : "")
+      + (aria ? ' aria-label="' + aria + '"' : "") + '>' + label + '</button>';
+  }
+  function pbtn(cls) { return rbtn("sm" + (cls ? " " + cls : ""), "Play"); }
+  function tbtn(cls) { return rbtn("sm" + (cls ? " " + cls : ""), "Tables", "The open tables for this game."); }
+  function hostbtn() { return rbtn("sm quiet", "Host", "A table of your own opens here."); }
+  function discbtn() { return rbtn("sm disc", TRI, "", "Play"); }
+  function rowr(mode, inner) { return '<div class="hrb ' + mode + '">' + inner + '</div>'; }
+  function plate(kind, mode) { return '<div class="' + kind + ' ' + mode + '"></div>'; }
+  function rowfull(g, big, mode) {
+    return '<div class="hrrow ' + mode + '"><span class="hrct">' + (big ? g.n + " playing" : g.n) + '</span>'
+      + pbtn() + '</div>';
+  }
+  function rowfoot(g, big) {
+    return '<div class="gmeta rfoot"><span class="ftCount">' + (big ? g.n + " playing" : g.n) + '</span>'
+      + pbtn() + '</div>';
+  }
+  function splitbtn() {
+    return '<span class="hsplit"><button type="button" class="hsmain">Play</button>'
+      + '<button type="button" class="hsmore" aria-label="The other ways to play"'
+      + ' data-flash="The other ways to play open here."><span class="hscar"></span></button></span>';
   }
 
   /* ===== the variants ===== */
@@ -3754,17 +3891,130 @@
           art: function (g) { return tri(); },
           foot: function (g) { return foot(g, false, true); } }
       ]
+    },
+    {
+      title: "The bottom row, count left and button right",
+      desc: "Holger, after round one: \"In the hero tiles, I like the idea of showing a button on hover. Would it be most natural to have the x playing to the left also on hover and then the play button to the bottom right?\" This family builds exactly that. The count keeps the corner it already has and a Play button arrives opposite it, so the two share the bottom edge and the art above them stays clear. It changes one thing that is true today, because the count fades out on hover to get out of the clip's way and here it has to stay. Every card says how much of the clip the row covers, and every card says what a phone gets.",
+      list: [
+        { id: "brplain", name: "Count holds its corner, Play arrives", his: true, touch: false, stage: "holdcount",
+          note: "The plain form of his idea. The count stops fading out and a green Play button fades in opposite it. On the big tile the two marks cover about a twentieth of the clip and on the small one nearer a tenth, and all of it is in the corners. The middle of the art stays clear. It reads at both sizes, and the small tile still has room between the number and the button. A phone sees none of it, so the tile there stays as it is today.",
+          art: function (g) { return rowr("fade", pbtn()); } },
+        { id: "brbtnonly", name: "Only the button arrives", touch: false,
+          note: "The count still steps aside on hover, as it does today, and only the button comes in. The button alone covers about a fortieth of the big tile's clip, the least of anything here. The bottom left goes empty for as long as the pointer is there, which is a lot of movement to buy one button, and the tile you are pointing at is the one tile whose count you can no longer read. A phone sees none of it.",
+          art: function (g) { return rowr("fade", pbtn()); } },
+        { id: "brbothin", name: "Count and button arrive together", touch: false, stage: "countin",
+          note: "The resting tile is bare art with no count at all, and hover brings in the count and the button as one row. The mosaic at rest is very quiet. The live proof goes with it, which is a real loss on a page whose main claim is that people are here right now. On the big tile the two marks cover about a twentieth of the clip and on the small one nearer a tenth, and all of it is in the corners. A phone sees neither, so the count never shows at all.",
+          art: function (g) { return rowr("fade", pbtn()); } },
+        { id: "brslide", name: "The button slides in from the right", touch: false, stage: "holdcount",
+          note: "The count is already in place and only the button moves, in from the right edge. The movement points at the corner it lands in, so the eye follows it there. It is also a second moving thing over a clip that has just started. On the big tile the two marks cover about a twentieth of the clip and on the small one nearer a tenth, and all of it is in the corners. A phone sees none of it.",
+          art: function (g) { return rowr("slide", pbtn()); } },
+        { id: "brtwoslide", name: "Both slide in from their own edge", touch: false, stage: "countslide",
+          note: "The count comes in from the left as the button comes in from the right, so the row builds itself. It looks deliberate and it makes the bottom edge read as one thing. It is the most motion in the family and the resting tile loses its count. On the big tile the two marks cover about a twentieth of the clip and on the small one nearer a tenth, and all of it is in the corners. A phone sees none of it.",
+          art: function (g) { return rowr("slide", pbtn()); } },
+        { id: "brbar", name: "Both on a dark bar", touch: false, stage: "holdcount",
+          note: "A dark bar fades in under the row and the two marks sit on it. Neither has to carry its own outline, so white text is safe over any art and over any frame of the clip. The bar covers the bottom sixth of the big tile's clip and the bottom quarter of the small one's, the most of any hover answer here. It holds up at both sizes and it is 34 pixels tall on the small tile. A phone sees none of it.",
+          art: function (g) { return plate("hrbar", "fade") + rowr("fade", pbtn()); } },
+        { id: "brglass", name: "Both on frosted glass", touch: false, stage: "holdcount",
+          note: "The same bar with a blur instead of a fill, so the art still shows through it. It is softer than the dark bar and it costs the same sixth of the big tile's clip. A blur over a playing video is the most expensive thing on this page to draw, and the mosaic would have nine of them. A phone sees none of it.",
+          art: function (g) { return plate("hrglass", "fade") + rowr("fade", pbtn()); } },
+        { id: "brnobar", name: "A row with no plate", touch: false, nochip: true,
+          note: "The same row across the whole bottom edge with nothing behind it, so the count and the button float on the art and carry their own outline and shadow. The count is part of the row here, so the resting tile shows no count at all. On the big tile the two marks cover about a twentieth of the clip and on the small one nearer a tenth, and all of it is in the corners. Over pale art the white count leans hard on its outline, which is the work the bar was doing for free. A phone sees none of it.",
+          art: function (g, kind) { return rowfull(g, kind === "big", "fade"); } },
+        { id: "brsmallpill", name: "A smaller pill", touch: false, stage: "holdcount",
+          note: "The same layout with a 20 pixel pill instead of the site's small button. It sits lighter on the art and nine of them across the mosaic is far calmer than nine full buttons. It also stops matching the buttons on the cards below the mosaic, and on the small tile it is near the limit of what is worth reading. On the big tile the two marks cover about a twentieth of the clip and on the small one nearer a tenth, and all of it is in the corners. A phone sees none of it.",
+          art: function (g) { return rowr("fade", pbtn("pill")); } },
+        { id: "brwhite", name: "A white button with the green word", touch: false, stage: "holdcount",
+          note: "White beats every tile colour we have, so this one button reads the same on all six tiles, and it does not add a seventh patch of green above the fold. White is also the colour of every other resting thing on the page, so it says button less firmly than the green one does. On the big tile the two marks cover about a twentieth of the clip and on the small one nearer a tenth, and all of it is in the corners. A phone sees none of it.",
+          art: function (g) { return rowr("fade", pbtn("white")); } },
+        { id: "brdisc", name: "The word on the big tile, a triangle on the small one", touch: false, stage: "holdcount",
+          note: "The hero tile gets the word and the small tiles get a round green button with a triangle in it, so the row stays readable when the tile is 168 pixels wide. A triangle promises a video as easily as it promises a game, which is the same doubt the corner triangle above has. On a small tile the round button covers about a fortieth of the clip, half what the word costs. A phone sees none of it.",
+          art: function (g, kind) { return rowr("fade", kind === "big" ? pbtn() : discbtn()); } },
+        { id: "brlate", name: "The row waits a beat", touch: false, stage: "holdcount",
+          note: "The same row, held back a third of a second, so sweeping across the mosaic does not set off nine rows in a row. If you meant to click at once, the tile feels slow to answer, and the count sitting still through the wait makes the delay easier to notice. On the big tile the two marks cover about a twentieth of the clip and on the small one nearer a tenth, and all of it is in the corners. The button is not there until the wait is over. A phone sees none of it.",
+          art: function (g) { return rowr("fade late", pbtn()); } },
+        { id: "brstay", name: "The row that never leaves", touch: true, stage: "holdcount",
+          note: "The bar and the button are there at rest, on every device, so nobody has to find them. The bottom sixth of the art is covered for good and the clip plays under a bar the whole time it runs. Nine green buttons sit above the fold at once, which is the loudest the mosaic gets. A phone gets exactly this, which is the point of it.",
+          art: function (g) { return plate("hrbar", "stay") + rowr("stay", pbtn()); } },
+        { id: "brfoot", name: "The row under the art", touch: true, footCount: true,
+          note: "The count and the button move off the art into a white foot, so the clip is never covered at all. It is the only answer in this family that costs the clip nothing, and it is the only one a phone gets in full. Every tile grows by about 48 pixels and the mosaic stops being edge to edge art, which is the thing that makes the top of the page look like a card room.",
+          foot: function (g, kind) { return rowfoot(g, kind === "big"); } }
+      ]
+    },
+    {
+      title: "How many buttons",
+      desc: "Holger, after round one: \"Should I have multiple buttons?\" There is data. One full day of tile clicks in July 2026, 33,292 of them. Browse tables took 33.4 percent and was the single most clicked control on the tile. Play a robot took 32.4 percent. Play took 24.8 percent. Ranked took 4.1, host 2.8, join a private table 1.1, options 0.6 and learn 0.35. Browse is a returning player habit, 58 percent of the clicks from signed in players on a desktop, while guests go straight for the robots, 47 percent of theirs. And 95.3 percent of all games started are solo against robots.<br><br><b>What those numbers are not.</b> They come from the old tile, where those were the buttons on offer. They say which offered button was taken. They do not say what people would want if the tile offered something else. Read them as a record of the old menu, not as demand.",
+      list: [
+        { id: "nbone", name: "One button. Play.", touch: false, stage: "holdcount",
+          note: "One green button and the count, and nothing else. There is one obvious thing to do on every tile and the row is short enough for the small tile with room to spare. Everything else a player might want, the open tables, ranked, a table of his own, is one step further in. This is the answer the rest of this family has to beat. A phone sees none of it and taps the tile.",
+          art: function (g) { return rowr("fade", pbtn()); } },
+        { id: "nbtwo", name: "Play and Tables, the same weight", touch: false, stage: "holdcount",
+          note: "Two green buttons of equal weight, because browse and play sit within one point of each other in the numbers above. The returning player gets the thing he clicks most without a step in between. Two equal buttons means no obvious first move, and the pair is 117 pixels wide, so on the small tile it runs right up against the count. That collision is the finding, not a drawing mistake. A phone sees neither.",
+          art: function (g) { return rowr("fade", pbtn() + tbtn()); } },
+        { id: "nbweight", name: "A solid Play and a quiet Tables", touch: false, stage: "holdcount",
+          note: "The same two actions with clearly different weight. Play is the site's green button and Tables is a quiet dark one, so the page still has one obvious thing to do and the second action is there for the player who wants it. It is the cheapest way to hold both without a fight. The pair still crowds the small tile. A phone sees neither.",
+          art: function (g) { return rowr("fade", pbtn() + tbtn("quiet")); } },
+        { id: "nbstack", name: "Stacked, not side by side", touch: false, stage: "holdcount",
+          note: "The two buttons sit one above the other in the bottom right. The row stays narrow, so the small tile keeps its count and nothing collides. The stack is 52 pixels tall and it reaches nearly half way up the small tile, so it eats more of the clip than any other two button answer, and it reads as a small menu rather than as two controls. A phone sees neither.",
+          art: function (g) { return rowr("fade stack", pbtn() + tbtn("quiet")); } },
+        { id: "nbthree", name: "Three buttons", touch: false, stage: "holdcount",
+          note: "Play, Tables and Host, so the cost of going further is drawn rather than argued. On the big tile it is busy. On the small tile it does not fit at all, so the small tile here shows the two that matter and drops the third, which is already a rule to remember. Host is 2.8 percent of clicks and it is taking a third of the row. A phone sees none of it.",
+          art: function (g, kind) { return rowr("fade", kind === "big" ? pbtn() + tbtn("quiet") + hostbtn() : pbtn() + tbtn("quiet")); } },
+        { id: "nbmore", name: "One button and a small overflow", touch: false, stage: "holdcount",
+          note: "Play, and a small control beside it for everything else. The tile keeps one obvious action and the rest is one tap away instead of gone. Three dots say nothing about what is behind them, and it is a second thing to aim at in a 24 pixel target. A phone sees neither.",
+          art: function (g) { return rowr("fade", pbtn() + rbtn("sm more quiet", "&middot;&middot;&middot;", "The other ways to play open here.", "The other ways to play")); } },
+        { id: "nbsplit", name: "One split control", touch: false, stage: "holdcount",
+          note: "One control with the word and a small arrow beside it, the shape the game cards below the mosaic already use. To the eye it is one button, and it still holds the other ways to play behind the arrow. The arrow is a small target, and a control whose two halves do different things is a control people click wrong. A phone sees none of it.",
+          art: function (g) { return rowr("fade", splitbtn()); } },
+        { id: "nbhero", name: "Two on the big tile, one on the small ones", touch: false, stage: "holdcount",
+          note: "The hero tile carries Play and Tables and the five small tiles carry Play alone. Each tile gets what fits it and the page keeps one loud button. Two tiles that behave differently is a rule to remember, and the game on the hero tile changes with the day, so the second action moves around with it. A phone sees neither.",
+          art: function (g, kind) { return rowr("fade", kind === "big" ? pbtn() + tbtn("quiet") : pbtn()); } },
+        { id: "nbcount", name: "The count is the second action", touch: "part", stage: "holdcount",
+          note: "One button, and the count next to it becomes clickable. 341 playing takes you to the tables those people are at, which is the browse action, without adding a button. Nothing new lands on the art. The count does not look like a control until the pointer is on it, so most people will never find it. A phone can tap the count, which is the only part of this family a phone gets.",
+          art: function (g) { return rowr("fade", pbtn()); },
+          chip: function (g, kind) {
+            return '<span class="clink" data-flash="The tables those people are at.">'
+              + (kind === "big" ? count(g) : "<b>" + g.n + "</b>") + '</span>';
+          } },
+        { id: "nbbot", name: "One button, named for what happens", touch: false, stage: "holdcount",
+          note: "One button, with the truth on it. 95.3 percent of games started are solo against a robot, so Play a robot describes what a click does better than Play does. It is a long label on a small tile, and it argues against the count sitting next to it, which is there to say that real people are here. A phone sees none of it.",
+          art: function (g) { return rowr("fade", rbtn("sm", "Play a robot")); } },
+        { id: "nbmosone", name: "Six tiles, one button", touch: false, stage: "holdcount", mosaic: true,
+          note: "The whole mosaic at the size the page draws it, with one button per tile. Point at any tile to see one answer, or press the button below to put every button on at once, which is the only way to judge the weight of the page. One green button at a time is quiet and the mosaic still reads as art.",
+          art: function (g) { return rowr("fade", pbtn()); },
+          ctrl: '<button type="button" class="abtn" data-act="allon">Show every button at once</button>' },
+        { id: "nbmostwo", name: "Six tiles, two buttons", touch: false, stage: "holdcount", mosaic: true,
+          note: "The same mosaic with the solid Play and the quiet Tables on every tile. Turn them all on and the bottom edge of the page becomes a row of controls, and on the five small tiles the pair reaches the count. That is what two buttons costs when it is drawn six times instead of once.",
+          art: function (g) { return rowr("fade", pbtn() + tbtn("quiet")); },
+          ctrl: '<button type="button" class="abtn" data-act="allon">Show every button at once</button>' }
+      ]
     }
+
+  ];
+
+  /* The mosaic as the page actually draws it. index.html carries nine tiles in
+     its markup but the layout it runs, layout-scrab, shows six: one at 448px and
+     five at 215 to 224px, with pos-c, pos-g and pos-i at zero width. The app's
+     own fp_hero.dust has six. These are those six games, their real counts and
+     their real artwork classes, so a card that asks what a button weighs across
+     the whole mosaic is asking about six buttons and not nine. */
+  var MOSAIC = [
+    { alt: "Hearts", logo: "hearts_logo.png", t: "t6", pos: "pos-a", n: 341, cls: "big" },
+    { alt: "Euchre", logo: "euchre_logo.png", t: "t3", pos: "pos-b", n: 173, cls: "small" },
+    { alt: "Spades", logo: "spades_logo.png", t: "t4", pos: "pos-b", n: 212, cls: "small" },
+    { alt: "Double Deck Pinochle", logo: "ddpinochle_logo.png", t: "t5", pos: "pos-b", n: 96, cls: "small" },
+    { alt: "Hand & Foot", logo: "handfoot_logo.png", t: "t7", pos: "pos-b", n: 128, cls: "small" },
+    { alt: "Gin Rummy", logo: "ginrummy_logo.png", t: "t2", pos: "pos-b", n: 45, cls: "small" }
   ];
 
   /* ===== build ===== */
   function tileHTML(kind, v) {
-    var g = GAMES[kind];
+    var g = GAMES[kind] || kind;
+    var cls = g.cls || kind;
     var inner = v.chip ? v.chip(g, kind) : count(g);
     var hasFoot = !!v.foot;
-    var html = '<div class="gtile ' + g.pos + ' ' + kind + (hasFoot ? " hasfoot" : "") + '" data-game="' + g.alt + '">'
+    var html = '<div class="gtile ' + g.pos + ' ' + cls + (hasFoot ? " hasfoot" : "") + '" data-game="' + g.alt + '">'
       + '<div class="gimg ' + g.t + '">'
-      + (v.footCount ? "" : chip(inner))
+      + (v.footCount || v.nochip ? "" : chip(inner))
       + '<img class="glogo" src="' + g.logo + '" alt="' + g.alt + '">'
       + (v.art ? (v.art(g, kind) || "") : "")
       + '</div>'
@@ -3784,11 +4034,15 @@
   }
 
   function cardHTML(v) {
-    return '<div class="vcard" id="card-' + v.id + '">'
+    return '<div class="vcard' + (v.mosaic ? " wide" : "") + '" id="card-' + v.id + '">'
       + '<h3>' + v.name + tagsHTML(v) + '</h3>'
       + '<p class="vnote">' + v.note + '</p>'
       + (v.ctrl ? '<div class="abar">' + v.ctrl + '</div>' : '')
-      + '<div class="labstage v-' + v.id + '">' + tileHTML("big", v) + tileHTML("small", v) + '</div>'
+      + '<div class="labstage ' + (v.mosaic ? "mos " : "") + (v.stage ? v.stage + " " : "") + 'v-' + v.id + '">'
+      + (v.mosaic
+          ? MOSAIC.map(function (m) { return tileHTML(m, v); }).join("")
+          : tileHTML("big", v) + tileHTML("small", v))
+      + '</div>'
       + '</div>';
   }
 
@@ -3864,6 +4118,8 @@
       var zone = e.target.closest(".gpzone");
       var x = e.target.closest(".hintx");
       if (x) { return; }
+      var said = e.target.closest("[data-flash]");
+      if (said) { flash(game + ". " + said.getAttribute("data-flash")); return; }
       if (zone) { flash(game + ". The other ways to play open here."); return; }
       flash(game + ". A click here deals you in.");
     });
@@ -3925,6 +4181,16 @@
     var on = phoneStage.classList.toggle("phone");
     this.classList.toggle("on", on);
     this.textContent = on ? "Show the pointer version" : "Show the phone version";
+  });
+
+  /* ===== the mosaic cards: every button on at once, because nine of them is the thing to judge ===== */
+  document.querySelectorAll('[data-act="allon"]').forEach(function (b) {
+    b.addEventListener("click", function () {
+      var stage = b.closest(".vcard").querySelector(".labstage");
+      var on = stage.classList.toggle("allon");
+      b.classList.toggle("on", on);
+      b.textContent = on ? "Hide the buttons again" : "Show every button at once";
+    });
   });
 }());
 </script>
