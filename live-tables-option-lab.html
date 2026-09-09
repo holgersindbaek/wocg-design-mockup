@@ -3939,5 +3939,207 @@
 }());
 
 </script>
+<style>
+  /* ===== the chooser on the game bar (the section at the foot of this lab) =====
+     The head row goes away and the Open and Live cells ride beside the game bar instead,
+     8px from it. Both trays sit in one flex row, so the 8px is the row's gap and nothing
+     else, and the vertical rhythm the game bar had on its own is moved onto the row. */
+  .fullpic .fpBarRow { display: flex; align-items: flex-start; gap: 8px; margin: 2px 0 8px; }
+  .fullpic .fpBarRow > .otFilter { margin: 0; }
+  .fullpic .fpBarRow > .otFilter.fpGameBar { flex: 1 1 auto; min-width: 0; }
+  .fullpic .fpBarRow > .otFilter.segOnly { flex: 0 0 auto; }
+
+  /* the two ways to keep the second control from reading as more cells of the first */
+  .fullpic .fpBarRow.fpRuled { gap: 16px; }
+  .fullpic .fpBarRow.fpAir { gap: 24px; }
+  .fullpic .fpBarRow .fpBarSep { flex: 0 0 1px; align-self: stretch; background: #c9c0ae; }
+
+  /* a drawing at a column the lab is not, so the break can be seen */
+  .fullpic.fpCut { max-width: none; }
+</style>
+<div class="asec">
+  <h2>The chooser on the game bar, and a longer title in the seam</h2>
+  <p class="desc">The two drawings this section starts from are still above, so the head row version and the game bar version can be read one against the other. Here the Open and Live cells move out of the head row and onto the game bar, 8px to the right of it, and the title in the seam becomes <b>Open &amp; live tables</b>. Every drawing below is a copy of the first drawing above with those changes made to it, so the seam, the bar and the tables are the same markup and the same chooser. Click Live in any of them and the tiles swap for live ones with a Watch button. Every number was measured in Chrome at 1440 wide.</p>
+  <p class="desc"><b>Read this before the numbers below.</b> The game bar in this lab is a fixed row of eight cells written into the markup, so it has slack and the drawings say no game cell is lost. The real bar has none. On the page it fits itself: <code>index.html</code> hides cells from the right one at a time while the track still overflows, and the ones it hides go into More. So it is always exactly full, whatever the width. Measured on the running mockup at a 1064px bar, the cells come to <b>1060px</b>, which is <b>4px</b> of slack and not 215px, and it shows seven games rather than the six drawn here, because Twenty-Nine still fits.</p>
+  <p class="desc">So the move does cost a game cell on the page. The chooser needs <b>107px</b> and the gap needs <b>8px</b>, and games on that bar are between <b>90px</b> and <b>188px</b> wide, so <b>115px</b> takes one of them, and at the right hand end that is Twenty-Nine at 128px. Everything below is still worth reading for the height, the seam and the 8px, all of which are true. Only the game cell count is the lab's own bar talking, not the page's.</p>
+  <div class="fpBarCards"></div>
+</div>
+<script>
+(function () {
+  "use strict";
+
+  /* the drawing this section copies: the first full page picture in the lab, the one with the
+     chooser in a head row of its own. Read before anything is added, so it is always that one. */
+  var TPL = document.querySelectorAll(".vstage.fullpic")[0];
+  var HOST = document.querySelector(".fpBarCards");
+  if (!TPL || !HOST) { return; }
+
+  var LONG = "Open & live tables";
+
+  /* every drawing here is one of these. The renderer under it does the work. */
+  var CARDS = [
+    {
+      h3: "Two words, one grid, on the game bar",
+      tag: "asked for",
+      note: "The title in the seam says <b>Open &amp; live tables</b> and the Open and Live cells sit at the right end of the game bar, <b>8px</b> from it. The head row is gone, because nothing was left in it. The section costs <b>424px</b> from the centre of one rule to the centre of the next, against <b>458px</b> for the same drawing above, so the move gives back <b>34px</b>. That is the 28px row and the 6px under it, and it is the whole of what the move buys. The gap cut in the rule grows from <b>108px</b> to <b>248px</b>, which is the longer title and not the move. The bar still shows <b>All games, six games and More</b>, the same eight cells as above, so nothing is lost at this column. The measured space between the two trays is <b>8px</b>. The Open cell starts <b>2px</b> inside its own tray, which is the same 2px that sits between the last game cell and the end of the game bar, so cell to cell the space reads as 10px. The six game cells here are written into the markup, but the site's bar fills itself. Its game cells run from <b>87px</b> to <b>184px</b> and average <b>115px</b>, and the move spends <b>115px</b>, so on the site this costs about one game cell.",
+      draw: [ { title: LONG } ]
+    },
+    {
+      h3: "Counts in the chooser, on the game bar",
+      note: "The same drawing with <b>46</b> and <b>43</b> inside the cells. The height is the same <b>424px</b> and the seam gap is the same <b>248px</b>, because a count rides inside a cell that was there already. What a count costs is width. The chooser grows from <b>107px</b> to <b>160px</b>, so the game bar falls from <b>1013px</b> to <b>960px</b>. Still no game cell is lost, but the slack falls from <b>101px</b> to <b>47px</b>. That is the number to watch. A count that reaches three figures, or a browser one notch narrower, spends it.",
+      draw: [ { title: LONG, counts: true } ]
+    },
+    {
+      h3: "The same, at a column narrow enough to break",
+      note: "The bar and the chooser stop fitting under <b>1028px</b>. That number is the cells' own width of <b>909px</b>, the tray's <b>4px</b> of padding, the <b>8px</b> gap and the chooser's <b>107px</b>. The first drawing is <b>1028px</b>, the last whole pixel that fits, and every cell is at its own width with <b>0.8px</b> of slack left. At 1027px the cells are already a fifth of a pixel too wide. The second drawing is <b>980px</b>, where the cells cannot give up any more, so they need <b>47px</b> more than the tray has and More slides in under the chooser. Nothing wraps and nothing hides, because the game cells in this lab are written into the markup. On the site the bar chooses how many cells to draw, so <b>1028px</b> is the width at which it would start dropping them. The seam gap is <b>248px</b> in both and the space between the two trays is <b>8px</b> in both. The heights read <b>399px</b> and <b>387px</b> against <b>424px</b> above, but that is the table cards being square in a narrower column and has nothing to do with the chooser.",
+      draw: [
+        { title: LONG, width: 1028, label: "1028px, the last width that fits." },
+        { title: LONG, width: 980, label: "980px, where it comes apart. Watch the right end of the bar." }
+      ]
+    },
+    {
+      h3: "A rule between the two, against 8px of air",
+      note: "Two controls on one row with only 8px between them can read as one control with too many cells. Three answers, drawn at the lab's own <b>1128px</b>. All three cost the same <b>424px</b> and cut the same <b>248px</b> gap, because the row is 28px tall whatever sits in it. They differ only in width. The <b>8px</b> version leaves the game bar <b>1013px</b>, the rule with 16px on each side leaves it <b>988px</b>, and the plain 24px gap leaves it <b>997px</b>. No game cell is lost in any of them at this column, so the difference here is what the eye does, not what fits. The rule is the only one of the three that says the two trays are separate things before you read them.",
+      draw: [
+        { title: LONG, label: "8px, nothing between. This is what was asked for." },
+        { title: LONG, sep: "rule", label: "A 1px rule, 16px of air on each side of it." },
+        { title: LONG, sep: "air", label: "24px of air and nothing in it." }
+      ]
+    },
+    {
+      h3: "Two ways to pay, drawn at 980px",
+      note: "At <b>980px</b> the row is <b>47px</b> short and something has to go. There are two ways to find it. The first drops the <b>More</b> cell, which gives back <b>71px</b> and keeps all six games on the bar. The bar then has no way out to the games that are not on it. The second keeps More and drops the last game cell, <b>Gin Rummy</b>, which gives back <b>118px</b> and puts that game at the top of the More list where it can still be reached. Both fit. The first ends with <b>24px</b> of slack and the second with <b>71px</b>, so the second could give up a second cell later without redrawing anything. Both are <b>387px</b> tall at this column, which is the narrow table cards and not the chooser, and both cut a <b>248px</b> gap. So the move costs one game cell, or it costs the way out to the rest of them.",
+      draw: [
+        { title: LONG, width: 980, noMore: true, label: "More dropped, six games kept." },
+        { title: LONG, width: 980, drop: 1, label: "More kept, one game cell dropped." }
+      ]
+    },
+    {
+      h3: "The title at both lengths, nothing else changed",
+      note: "The same drawing twice, with only the words in the gap different. <b>Tables</b> cuts a <b>108px</b> gap and leaves each side of the rule <b>510px</b>. <b>Open &amp; live tables</b> cuts a <b>248px</b> gap and leaves each side <b>440px</b>, so each side gives up <b>70px</b>, about a seventh of its run. The height does not move at all. Both are <b>424px</b> and both seam rows are 26px tall, because the title never wraps and the rule only shortens. So the longer title costs width in the rule and nothing in height. What it buys is that the head names both states. <b>Tables</b> names neither, and a newcomer reading it has to look at the cells under it to learn that watching is a thing.",
+      draw: [
+        { title: "Tables", label: "Tables. A 108px gap." },
+        { title: LONG, label: "Open & live tables. A 248px gap." }
+      ]
+    }
+  ];
+
+  /* ── the renderer ── */
+
+  function setTitle(stage, words) {
+    stage.querySelector(".fpSec.fpUnder .seam .ttl").textContent = words;
+  }
+
+  function addCount(cell, n) {
+    var i = document.createElement("i");
+    i.setAttribute("data-n", n);
+    i.textContent = n;
+    cell.querySelector("span").appendChild(i);
+  }
+
+  function moveToBar(stage, sep) {
+    var sec = stage.querySelector(".fpSec.fpUnder");
+    var head = sec.querySelector(".lobbyhead");
+    var seg = head.querySelector(".otFilter.segOnly");
+    var games = sec.querySelector('.otFilter[aria-label="Games"]');
+    var row = document.createElement("div");
+    row.className = "fpBarRow" + (sep === "rule" ? " fpRuled" : sep === "air" ? " fpAir" : "");
+    games.classList.add("fpGameBar");
+    games.parentNode.insertBefore(row, games);
+    row.appendChild(games);
+    if (sep === "rule") {
+      var line = document.createElement("span");
+      line.className = "fpBarSep";
+      row.appendChild(line);
+    }
+    row.appendChild(seg);
+    head.parentNode.removeChild(head);
+    return seg;
+  }
+
+  function dropCells(stage, howMany) {
+    var track = stage.querySelector(".otFilter.fpGameBar .track");
+    var list = track.querySelector(".ovlist");
+    var cells = track.querySelectorAll(":scope > .s[data-g]");
+    for (var k = 0; k < howMany; k++) {
+      var cell = cells[cells.length - 1 - k];
+      if (!cell) { break; }
+      var inner = cell.querySelector("span");
+      var num = inner.querySelector("i");
+      var li = document.createElement("li");
+      li.className = "mi";
+      li.setAttribute("data-g", cell.getAttribute("data-g"));
+      li.textContent = inner.childNodes[0].textContent;
+      var tail = document.createElement("i");
+      tail.textContent = num ? num.textContent : "";
+      li.appendChild(tail);
+      list.insertBefore(li, list.firstChild);
+      cell.parentNode.removeChild(cell);
+    }
+  }
+
+  function dropMore(stage) {
+    var ov = stage.querySelector(".otFilter.fpGameBar .track .ov");
+    if (ov) { ov.parentNode.removeChild(ov); }
+  }
+
+  function build(cfg) {
+    var stage = TPL.cloneNode(true);
+    stage.setAttribute("data-show", "open");
+    var seg = moveToBar(stage, cfg.sep);
+    setTitle(stage, cfg.title);
+    if (cfg.counts) {
+      var cells = seg.querySelectorAll(".track > .s");
+      addCount(cells[0], "46");
+      addCount(cells[1], "43");
+    }
+    if (cfg.noMore) { dropMore(stage); }
+    if (cfg.drop) { dropCells(stage, cfg.drop); }
+    if (cfg.width) {
+      stage.classList.add("fpCut");
+      stage.style.width = cfg.width + "px";
+    }
+    return stage;
+  }
+
+  CARDS.forEach(function (card) {
+    var el = document.createElement("div");
+    el.className = "vcard";
+    var h3 = document.createElement("h3");
+    h3.textContent = card.h3;
+    if (card.tag) {
+      var tag = document.createElement("span");
+      tag.className = "tag";
+      tag.textContent = card.tag;
+      h3.appendChild(document.createTextNode(" "));
+      h3.appendChild(tag);
+    }
+    el.appendChild(h3);
+    var note = document.createElement("p");
+    note.className = "vnote";
+    note.innerHTML = card.note;
+    el.appendChild(note);
+
+    if (card.draw.length === 1) {
+      el.appendChild(build(card.draw[0]));
+    } else {
+      var two = document.createElement("div");
+      two.className = "fpTwo";
+      card.draw.forEach(function (cfg) {
+        var one = document.createElement("div");
+        one.className = "fpOne";
+        var lbl = document.createElement("p");
+        lbl.className = "fpLbl";
+        lbl.textContent = cfg.label || "";
+        one.appendChild(lbl);
+        one.appendChild(build(cfg));
+        two.appendChild(one);
+      });
+      el.appendChild(two);
+    }
+    HOST.appendChild(el);
+  });
+}());
+</script>
 </body>
 </html>
