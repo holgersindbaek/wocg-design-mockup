@@ -3678,6 +3678,85 @@
     .labstage.mos { grid-template-columns: repeat(2, 168px); }
     .labstage.mos .gtile.big { grid-column: 1 / 3; grid-row: 1 / 3; }
   }
+
+  /* ===== round four, the play menu's two buttons in the open tables yellow =====
+     Holger, after round three: "On the frontpage we have two main buttons under the play button
+     right? What are they? Can you make a version of that with the yellow button from the open
+     tables hover in index.html?" The two are the cells at the top of the play menu, Join table and
+     Play solo. The yellow is the one an open table tile shows on hover, body.cbtn-official in
+     index.html, copied colour for colour. */
+  .labstage .yb { font-family: inherit; font-weight: bold; font-size: 16px; height: 24px; line-height: 24px;
+    padding: 0 10px; border: none; border-radius: var(--radius-md, 6px); corner-shape: squircle; cursor: pointer;
+    white-space: nowrap; background-color: #FFD75A; color: #5C3A00; text-shadow: none;
+    box-shadow: 0 0 0 1px rgba(92,58,0,.70), 0 1px 2px rgba(0,0,0,.30);
+    transition: background-color 24ms ease-out, transform 80ms ease-out; }
+  .labstage .yb:hover { background-color: #FFD43B; box-shadow: 0 0 0 1px rgba(92,58,0,.70), 0 2px 4px rgba(0,0,0,.35); }
+  .labstage .yb:active { background-color: #FCC419; box-shadow: 0 0 0 1px rgba(92,58,0,.70); }
+
+  /* the same pair in the site's Play green, for the card that draws both colours at once */
+  .labstage .yb.gr { background-color: var(--triogreen); color: #fff;
+    box-shadow: inset 0 0 0 1px var(--triogreenring), 0 1px 2px rgba(0,0,0,.30);
+    text-shadow: -1px -1px 0 var(--triogreenring), 1px -1px 0 var(--triogreenring),
+      -1px 1px 0 var(--triogreenring), 1px 1px 0 var(--triogreenring); }
+  .labstage .yb.gr:hover { background-color: var(--triogreenhover);
+    box-shadow: inset 0 0 0 1px var(--triogreenring), 0 2px 4px rgba(0,0,0,.35); }
+
+  /* the two line cell, the play menu's own shape: 48 tall, an 18px label, a 12px meta line under it */
+  .labstage .yb.two { height: 48px; line-height: 1; padding: 0 10px;
+    display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; }
+  .labstage .yb .dl { font-size: 18px; font-weight: bold; line-height: 20px; }
+  .labstage .yb .dm { font-size: 12px; font-weight: bold; line-height: 15px; opacity: .78; }
+  /* the compact weight, for the pair that has to answer to a 215px tile */
+  .labstage .yb.pill { font-size: 14px; height: 20px; line-height: 20px; border-radius: 999px; }
+
+  /* the pair in the bottom right corner, on the count's own centre line */
+  .labstage .ypr { position: absolute; right: 10px; bottom: 5px; z-index: 5; display: flex; align-items: center; gap: 6px; }
+  .labstage .small .ypr { right: 8px; }
+  .labstage .ypr.slide { opacity: 0; transform: translateX(16px); transition: opacity .18s ease, transform .18s ease; }
+  .labstage .gimg:hover .ypr.slide { opacity: 1; transform: none; }
+  /* each button from its own side, against the pair arriving as one block */
+  .labstage .ypr.meet { opacity: 0; transition: opacity .18s ease; }
+  .labstage .ypr.meet .yb { transition: transform .22s ease; }
+  .labstage .ypr.meet .yb:first-child { transform: translateX(-24px); }
+  .labstage .ypr.meet .yb:last-child { transform: translateX(24px); }
+  .labstage .gimg:hover .ypr.meet { opacity: 1; }
+  .labstage .gimg:hover .ypr.meet .yb { transform: none; }
+  /* the corner an open table tile actually keeps its yellow buttons in */
+  .labstage .ypr.top { top: 8px; right: 8px; bottom: auto; }
+  .labstage .small .ypr.top { top: 6px; right: 6px; }
+  /* the second row, for the card that draws the green pair over the yellow one */
+  .labstage .ypr.up { bottom: 35px; }
+
+  /* the pair across the whole bottom edge, each half the width */
+  .labstage .yfl { position: absolute; left: 0; right: 0; bottom: 0; z-index: 5;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1px; }
+  .labstage .yfl .yb { width: 100%; min-width: 0; height: 34px; line-height: 34px;
+    border-radius: 0; box-shadow: none; overflow: hidden; text-overflow: ellipsis; }
+  .labstage .small .yfl .yb { height: 30px; line-height: 30px; font-size: 15px; padding: 0 6px; }
+  .labstage .yfl.uneven { grid-template-columns: 1.45fr 1fr; }
+  /* the loose form: a gap between them and a ring on each, so neither needs a plate */
+  .labstage .yfl.loose { gap: 6px; padding: 0 8px 8px; }
+  .labstage .yfl.loose .yb { height: 28px; line-height: 28px; border-radius: var(--radius-md, 6px);
+    corner-shape: squircle; box-shadow: 0 0 0 1px rgba(92,58,0,.70), 0 2px 4px rgba(0,0,0,.35); }
+  .labstage .yfl.fade { opacity: 0; transition: opacity .18s ease; }
+  .labstage .gimg:hover .yfl.fade { opacity: 1; }
+  .labstage .yfl.rise { opacity: 0; transform: translateY(100%); transition: opacity .18s ease, transform .2s ease; }
+  .labstage .gimg:hover .yfl.rise { opacity: 1; transform: none; }
+  /* the plate the full width pair can sit on, so the labels are safe over any frame of the clip */
+  .labstage .ybar { position: absolute; left: 0; right: 0; bottom: 0; height: 46px; z-index: 3; pointer-events: none;
+    background: linear-gradient(rgba(0,0,0,0), rgba(0,0,0,.40) 45%, rgba(0,0,0,.56)); }
+  .labstage .small .ybar { height: 40px; }
+  .labstage .ybar.fade { opacity: 0; transition: opacity .18s ease; }
+  .labstage .gimg:hover .ybar.fade { opacity: 1; }
+
+  /* a full width pair covers the count's corner, so on the two cards that keep the count it moves up a line */
+  .labstage.v-yfullcount .gchip, .labstage.v-yfullstay .gchip { bottom: 44px; }
+  .labstage.v-yfullcount .small .gchip, .labstage.v-yfullstay .small .gchip { bottom: 40px; }
+
+  /* every button on at once, the way the round three mosaics already do it */
+  .labstage.allon .ypr.slide, .labstage.allon .ypr.meet { opacity: 1; transform: none; }
+  .labstage.allon .ypr.meet .yb { transform: none; }
+  .labstage.allon .yfl.fade, .labstage.allon .yfl.rise, .labstage.allon .ybar.fade { opacity: 1; transform: none; }
 </style>
 </head>
 <body class="evernote play-raph font-gelicamd shadow-capsule edge-softlight tex-grainbal cat-split stats-capsule2 menu-centerwave counter-ghostdot rail-suitscool playbtn-triogreen avedge-litrim8 avsh-hover cnav-sub-suits foot-wavyline viewer-anon sect-waveband div-toprowcells cbtn-official bfin-asis today-inkcanvas otc-warmdarkergreen sgap-56 othover-fill lhover-lineplain tilebg-cardroomcusp pinpair-violet tint-l95ringeven animlab">
@@ -3754,6 +3833,30 @@
       + '<button type="button" class="hsmore" aria-label="The other ways to play"'
       + ' data-flash="The other ways to play open here."><span class="hscar"></span></button></span>';
   }
+
+  /* ===== the pieces round four is built from: the play menu's two cells, in the open tables yellow ===== */
+  function openTables(g) { return Math.max(1, Math.round(g.n / 8)); }
+  function ycell(label, meta, cls, msg) {
+    return '<button type="button" class="yb' + (cls ? " " + cls : "") + '" data-flash="' + msg + '">'
+      + (meta ? '<span class="dl">' + label + '</span><span class="dm">' + meta + '</span>' : label)
+      + '</button>';
+  }
+  function ypair(cls, mode) {
+    return '<div class="ypr ' + mode + '">'
+      + ycell("Join table", "", cls, "Joining a table with people.")
+      + ycell("Play solo", "", cls, "A solo table, the bots fill the seats.") + '</div>';
+  }
+  function ypairmeta(g, mode) {
+    return '<div class="ypr ' + mode + '">'
+      + ycell("Join table", openTables(g) + " open", "two", "Joining a table with people.")
+      + ycell("Play solo", "Instant", "two", "A solo table, the bots fill the seats.") + '</div>';
+  }
+  function yfull(cls, mode) {
+    return '<div class="yfl ' + cls + ' ' + mode + '">'
+      + ycell("Join table", "", "", "Joining a table with people.")
+      + ycell("Play solo", "", "", "A solo table, the bots fill the seats.") + '</div>';
+  }
+  function plateY(mode) { return '<div class="ybar ' + mode + '"></div>'; }
 
   /* ===== the variants ===== */
   var SECTIONS = [
@@ -3987,8 +4090,63 @@
           art: function (g) { return rowr("fade", pbtn() + tbtn("quiet")); },
           ctrl: '<button type="button" class="abtn" data-act="allon">Show every button at once</button>' }
       ]
+    },
+    {
+      title: "The play menu's two buttons, in the open tables yellow",
+      desc: "Holger, after round three: \"I think I like the version where the play button comes in from the side. I'm still not sure whether we should have several buttons though. On the frontpage we have two main buttons under the play button right? What are they? Can you make a version of that with the yellow button from the open tables hover in index.html?\"<br><br><b>The two buttons are these.</b> They are the two big cells at the top of the play menu, the panel that opens when you press the split Play button on a game card. The first says <b>Join table</b> with the number of open tables under it, so on Hearts it reads <b>43 open</b>, and it takes you into a table with people. The second says <b>Play solo</b> with <b>Instant</b> under it, and it deals a table where bots fill the seats. They sit side by side in a two column grid, each 48 pixels tall, with the label at 18 pixels and the meta line at 12 under it. Six quieter items follow below them, Open tables, Play ranked, Host table, Join private, Options and Rules. The open count is the tile's own number divided by eight, so Hearts at 341 playing reads 43 open and Gin Rummy at 45 reads 6 open.<br><br><b>The yellow.</b> It is the button an open table tile shows on hover, #FFD75A with a brown label and a brown ring, going to #FFD43B under the pointer and #FCC419 when it is pressed. Every card below uses it, copied colour for colour.<br><br><b>The motion.</b> The first six cards use the one he picked. The count is already in place and only the buttons move, in from the right edge. The seventh card starts his other idea, where the count fades out and the two buttons take the whole bottom edge. A pair that spans the tile has no side to come in from, so those cards fade in, and one of them rises out of the edge instead. Four later cards keep the count on purpose and each says why.<br><br><b>The measurements.</b> Every width below is the real rendered width in this page, not an estimate. A small tile on the page is 215 pixels wide and 161 tall. The count sits 12 pixels in from the left and is 34 pixels wide, and the buttons are inset 8 pixels from the right, so a small tile has 161 pixels free for whatever arrives on the right. This lab draws the tiles smaller than the page, 344 and 168 instead of 448 and 215, so read the numbers for the fit and the picture for the idea. On the small tile here a corner pair is cut at the left edge and hides the count outright, where on the page it would cross the count by ten pixels.",
+      list: [
+        { id: "ypair", name: "Join table and Play solo, in from the right", his: true, touch: false, stage: "holdcount",
+          note: "The baseline of this family, and the plain answer to his question. The two cells from the top of the play menu arrive together from the right edge while the count holds its corner. The tile now names both of the things a click can start, so the menu is no longer the only place to read them. <b>The pair measures 171 pixels and a small tile has 161 free, so it does not fit. It runs into the count by ten pixels.</b> That collision is the finding, not a drawing mistake. It covers about a fortieth of the big tile's clip and about an eighth of the small one's, all of it along the bottom edge. A phone sees none of it and taps the tile.",
+          art: function (g) { return ypair("", "slide"); } },
+        { id: "ypairmeta", name: "The same pair with its meta lines", touch: false, stage: "holdcount",
+          note: "The play menu's own shape kept whole, with 43 open under Join table and Instant under Play solo. The extra line is the honest half of the offer, because the number of open tables is the reason to join people instead of dealing a solo table. It costs height and width. <b>The pair measures 186 pixels against the 161 a small tile has free, so it does not fit and it buries the count.</b> The cell is 48 pixels tall, which is nearly a third of the height of a small tile. It covers about a sixteenth of the big tile's clip and about a quarter of the small one's. A phone sees none of it.",
+          art: function (g) { return ypairmeta(g, "slide"); } },
+        { id: "ypaircompact", name: "The same pair, smaller", touch: false, stage: "holdcount",
+          note: "Labels only, at 14 pixels in a 20 pixel pill, which is the smallest this pair can be drawn and still be worth reading. <b>It measures 155 pixels against the 161 free, so it is the only two button answer in this family that fits a small tile without touching the count, and it clears the count by six pixels with nothing to spare.</b> Six pixels is not air, it is luck, and a longer game name or a four digit count takes it back. It also stops matching the buttons on the cards below the mosaic, which is the shape the site teaches everywhere else. It covers about a fiftieth of the big tile's clip and about a tenth of the small one's. A phone sees none of it.",
+          art: function (g) { return ypair("pill", "slide"); } },
+        { id: "ypairmeet", name: "Each button in from its own side", touch: false, stage: "holdcount",
+          note: "The card above brings the pair in as one block. This one gives each button its own direction, so Join table comes in from the left as Play solo comes in from the right and the two close together. It looks made rather than dropped, and it makes the pair read as one control. It is also two moving things over a clip that has just started, and the eye is pulled to the seam in the middle instead of to either button. <b>The pair measures 171 pixels against the 161 free, the same as the baseline, so it fits a small tile no better and still crosses the count.</b> It covers about a fortieth of the big tile's clip and about an eighth of the small one's. A phone sees none of it.",
+          art: function (g) { return ypair("", "meet"); } },
+        { id: "ypairgreen", name: "The Play green over the yellow, on the same art", touch: false, stage: "holdcount",
+          note: "The only card here that draws two pairs at once, so the two colours can be judged on the same artwork. The green pair sits above the yellow one and only one of them would ever ship. The green is the site's Play colour, so it says press me in the site's own words, and it is a seventh patch of saturated colour on art that is already a solid colour with a logo on it. The yellow is the one the page can afford. It is used nowhere else above the fold, it holds up on all six tile colours, and the page already teaches it on the open table tiles further down, so the tile would be teaching one habit instead of two. <b>Each pair measures 171 pixels against the 161 free, so neither fits a small tile without touching the count.</b> Two rows cover about a twentieth of the big tile's clip and about a quarter of the small one's, which is twice what one row costs. A phone sees none of it.",
+          art: function (g) { return ypair("gr", "up slide") + ypair("", "slide"); } },
+        { id: "yone", name: "One yellow button, Play", touch: false, stage: "holdcount",
+          note: "The one button form, and the thing the rest of this family has to beat. One yellow Play arrives from the right and everything else stays one step further in, behind the menu. There is no question about where to click. <b>The button measures 48 pixels against the 161 free, so it fits a small tile with 113 pixels of clear air between it and the count, the only answer here with real room to spare.</b> What it gives up is the thing he is asking about, because Join table and Play solo are two different games and one word cannot promise both. It covers less than a hundredth of the big tile's clip and about a thirtieth of the small one's. A phone sees none of it and taps the tile.",
+          art: function (g) { return '<div class="ypr slide">' + ycell("Play", "", "", "A click here deals you in.") + '</div>'; } },
+        { id: "yfull", name: "The count fades out, the pair takes the bottom edge", touch: false,
+          note: "<b>The second baseline, and his other idea.</b> The count steps aside on hover exactly as it does today, and the two buttons fill the whole bottom edge, half each, joined by a one pixel line like the play menu's own grid. <b>Nothing is cramped at any size, because the pair is as wide as the tile is. On a 215 pixel tile each half is 107 pixels and the wider label needs 86, so both fit. The fit question does not arise, because the pair does not sit beside the count, it replaces it.</b> This lab draws the small tile at 168, so what you see here is tighter than the page and it still reads. The price is that the tile you are pointing at is the one tile whose number you can no longer see, which is the same trade the page already makes for the clip. It covers the bottom tenth of the big tile's clip and the bottom fifth of the small one's. A phone sees none of it and keeps its count.",
+          art: function (g) { return yfull("", "fade"); } },
+        { id: "yfullbar", name: "The same pair on a dark bar", touch: false,
+          note: "A dark bar fades in behind the pair and stands twelve pixels taller than it, so the yellow band comes out of a shadow instead of off a hard line. The labels sit on opaque yellow either way, so what the bar buys is the join between the band and the art, not readability. <b>The pair is the width of the tile, so each half is 107 pixels on a 215 tile and both labels fit, and the count is gone while the pointer is there rather than crowded.</b> The bar is 46 pixels on the big tile and 40 on the small one, so it covers the bottom seventh of the big tile's clip and the bottom quarter of the small one's, the most of anything in this family. A phone sees none of it.",
+          art: function (g) { return plateY("fade") + yfull("", "fade"); } },
+        { id: "yfullloose", name: "The same pair with a gap and its own ring", touch: false,
+          note: "No bar at all. The two buttons pull in from the edges, keep a gap between them and each carries the open table ring and drop shadow, which is exactly how the yellow buttons are drawn on the open table tiles. It is lighter than the bar and it never dims the art. <b>On a 215 tile each button is 96 pixels wide and the wider label needs 86, so it fits with ten pixels to spare, and the count is gone rather than crowded.</b> The ring has to do all the work over a moving clip, which is the job the bar was doing for free. The small tile here cuts the first label short, because this lab draws it at 168 pixels and the page draws it at 215. It covers the bottom ninth of the big tile's clip and nearly a quarter of the small one's. A phone sees none of it.",
+          art: function (g) { return yfull("loose", "fade"); } },
+        { id: "yfulluneven", name: "An uneven split, Join table wider", touch: false,
+          note: "The same full width pair with the edge split about three fifths to two fifths, because the two are not equally likely. <b>On a 215 tile that is 127 pixels for Join table and 87 for Play solo, and the labels need 86 and 79, so both still fit, with eight pixels of margin on the narrow half. The count is gone rather than crowded.</b> The split is the cheapest way to say which one the site expects, and turning it around is one number in the grid. Which way round it should be is a real question, because 95 percent of the games started here are solo against bots, and the site's own claim is that people are here right now. It covers the bottom tenth of the big tile's clip and the bottom fifth of the small one's. A phone sees none of it.",
+          art: function (g) { return yfull("uneven", "fade"); } },
+        { id: "yfullup", name: "The pair rises from the bottom edge", touch: false,
+          note: "The same full width pair, sliding up out of the bottom edge instead of in from the right. It is the motion this shape asks for, because a bar that spans the tile has no side to come from. It reads as a drawer opening, which promises more behind it rather than one press. It is also the most movement at the exact moment the clip starts. <b>The pair is the width of the tile, each half 107 pixels on a 215 tile against a label that needs 86, and the count is replaced rather than crowded.</b> It covers the bottom tenth of the big tile's clip and the bottom fifth of the small one's. A phone sees none of it.",
+          art: function (g) { return yfull("", "rise"); } },
+        { id: "yfullcount", name: "The pair with the count kept above it", touch: false, stage: "holdcount",
+          note: "The cost of keeping the number, drawn. The count stops fading out and moves up a line to sit clear of the buttons, so the tile holds the proof and the offer at the same time. <b>The pair still fits at any size, 107 pixels a half on a 215 tile, and the count is never touched because it has moved.</b> What it costs is that the number now floats in the middle of the art with nothing under it, and on a small tile it lands on the logo. The bottom third of a small tile is then doing three jobs at once. It covers the bottom sixth of the big tile's clip and the bottom third of the small one's once the count is counted with it. A phone sees the count in its new place and none of the buttons.",
+          art: function (g) { return yfull("", "fade"); } },
+        { id: "yfullstay", name: "The pair that never leaves", touch: true, stage: "holdcount",
+          note: "The full width pair drawn at rest, on every device, with the count moved up a line for good. Nobody has to find anything and a phone gets exactly what a desktop gets, which is the only way this family survives with no pointer at all. <b>It fits every tile, 107 pixels a half on a 215 tile, and the count is never touched because it lives above the pair now.</b> The bottom tenth of the big tile's art is covered for all time, and the bottom fifth of the small one's, and the clip plays behind a pair of yellow buttons the whole time it runs. Twelve buttons sit above the fold across the six tiles, which is the loudest the mosaic gets.",
+          art: function (g) { return yfull("", "stay"); } },
+        { id: "ytop", name: "The pair at the top right, where it already lives", touch: false, stage: "holdcount",
+          note: "On an open table tile this yellow pair sits in the top right corner and shows on hover, so putting it in the same corner here means the page teaches one habit instead of two. <b>The pair measures 171 pixels and it fits without touching the count, because the count is in the other corner and it is never crowded at all.</b> The 171 pixels do fill four fifths of the top edge of a 215 tile, and the top of the tile is where the logo has its air, so the pair lands on the artwork rather than beside it. It covers about a fortieth of the big tile's clip and about an eighth of the small one's. A phone sees none of it.",
+          art: function (g) { return ypair("", "top slide"); } },
+        { id: "ymospair", name: "Six tiles, the pair in the corner", touch: false, stage: "holdcount", mosaic: true,
+          note: "The whole mosaic in one card, with the corner pair on every tile. Point at any tile for one answer, or press the button below to put all twelve buttons on at once, which is the only way to judge the weight of the page. <b>The pair is 171 pixels and the five small tiles have 161 free, so every one of the five shows the collision at once, while the big tile carries it easily.</b> That gap between the two sizes is the real result of this card. Twelve yellow buttons is also a lot of yellow for one screen. Each pair covers about a fortieth of the big tile's clip and about an eighth of a small one's. A phone sees none of it and taps a tile.",
+          art: function (g) { return ypair("", "slide"); },
+          ctrl: '<button type="button" class="abtn" data-act="allon">Show every button at once</button>' },
+        { id: "ymosfull", name: "Six tiles, the pair on the bottom edge", touch: false, mosaic: true,
+          note: "The same mosaic with the full width pair. Turn them all on and the bottom edge of every tile becomes a yellow band, which is more colour than the corner pair above, and all six counts go at once. Turn them off and the mosaic is exactly as it is today, because nothing here sits on the art at rest. <b>It fits every tile at both sizes, 107 pixels a half on a 215 tile, and no count is ever crowded because none of them is there.</b> It covers the bottom tenth of the big tile's clip and the bottom fifth of each small one's. A phone sees none of it and keeps all six counts. Judge this against the card above it, because those two are the answers this family really has.",
+          art: function (g) { return yfull("", "fade"); },
+          ctrl: '<button type="button" class="abtn" data-act="allon">Show every button at once</button>' }
+      ]
     }
-
   ];
 
   /* The mosaic as the page actually draws it. index.html carries nine tiles in
