@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Saying what each section is, without adding noise</title>
+<style>
+  /* ===== index.html 18-55: the font faces ===== */
+  @font-face {
+    font-family: 'BuloRounded';
+    src: url("BuloRounded-Regular.woff2") format('woff2');
+    font-style: normal; font-weight: normal; font-display: swap;
+  }
+  @font-face {
+    font-family: 'BuloRounded';
+    src: url("BuloRounded-Bold.woff2") format('woff2');
+    font-style: normal; font-weight: bold; font-display: swap;
+  }
+  @font-face {
+    font-family: 'BuloRounded';
+    src: url("BuloRounded-Italic.otf") format('opentype');
+    font-style: italic; font-weight: normal; font-display: swap;
+  }
+  @font-face {
+    font-family: 'BuloRounded';
+    src: url("BuloRounded-BoldItalic.otf") format('opentype');
+    font-style: italic; font-weight: bold; font-display: swap;
+  }
+
+  /* ===== local premium trials ===== */
+  @font-face { font-family: "Recoleta"; src: url("Recoleta-Regular.otf") format("opentype"); font-display: swap; }
+  @font-face { font-family: "P22 Mackinac"; src: url("Mackinac-Bold.otf") format("opentype"); font-display: swap; }
+  @font-face { font-family: "Canela"; src: url("Canela-Medium.otf") format("opentype"); font-display: swap; }
+  @font-face { font-family: "GT Super"; src: url("GTSuper-Medium.otf") format("opentype"); font-display: swap; }
+  @font-face { font-family: "PP Editorial New"; src: url("PPEditorialNew-Regular.otf") format("opentype"); font-display: swap; }
+  @font-face { font-family: "PP Editorial Old"; src: url("PPEditorialOld-Regular.woff") format("woff"); font-display: swap; }
+  @font-face { font-family: "Poynter Old Style Display"; src: url("PoynterOSDisp-Semibold.woff2") format("woff2"); font-weight: 600; font-display: swap; }
+  @font-face { font-family: "Poynter Old Style Display"; src: url("PoynterOSDisp-Bold.woff2") format("woff2"); font-weight: 700; font-display: swap; }
+  @font-face { font-family: "Tiempos Fine"; src: url("TiemposFine-Medium.otf") format("opentype"); font-display: swap; }
+  @font-face { font-family: "Argesta Headline"; src: url("Argesta-Headline.otf") format("opentype"); font-display: swap; }
+  @font-face { font-family: "Gooper"; src: url("Gooper-SemiBold.otf") format("opentype"); font-display: swap; }
+  @font-face { font-family: "Quincy"; src: url("Quincy-Regular.ttf") format("truetype"); font-display: swap; }
+  @font-face { font-family: "Rza"; src: url("Rza-Medium.woff2") format("woff2"); font-weight: 500; font-display: swap; }
+  @font-face { font-family: "Gelica"; src: url("Gelica-Regular.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+  @font-face { font-family: "Gelica"; src: url("Gelica-Medium.woff2") format("woff2"); font-weight: 500; font-display: swap; }
+  @font-face { font-family: "Gelica"; src: url("Gelica-SemiBold.woff2") format("woff2"); font-weight: 600; font-display: swap; }
+
+  /* ===== index.html 180-185 and 206: the scheme and the nine tile colours ===== */
+  body.evernote {
+    --canvas:#f9f6f2; --band:#f4eee5; --surface:#ffffff; --card:#ffffff;
+    --ink:#141414; --ink-soft:#262626; --muted:#4e4d4c; --hairline:#e7e7e7; --edge:#d2cfca;
+    --accent:#00a82d; --accent-deep:#008a25; --accent-ink:#ffffff; --second:#4d64ff;
+    --p1:#f4c360; --p2:#ef9eb2; --p3:#4d64ff; --p4:#00a82d; --p5:#e8862f; --p6:#9a6df0; --p7:#5bb4d0; --p8:#e54e40; --p9:#d1548f; --pfg:#ffffff;
+  }
+  body.play-raph     { --p1:#f5b81e; --p2:#e370b5; --p3:#1f87e8; --p4:#43a038; --p5:#ef7f27; --p6:#8a3fd0; --p7:#18a89d; --p8:#e33d3a; --p9:#cf3f92; --pfg:#ffffff; }
+
+  /* ===== index.html 1242-1275: the suit seam and wave tiles ===== */
+  body {
+    --squiggle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 202 12' preserveAspectRatio='none'%3E%3Cpath d='m14.8 3.3c60.8 2.6 121.6 1.9 182.3-2.3l-177.7 10 181.6-4.8c-66.7 2.4-133.3-.3-200 2.1' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    /* Slate.com's nav underline: a closed filled outline, so the stroke has
+       real marker thick-thin variation instead of an even pen line */
+    --brushstroke: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120.349 7.836' preserveAspectRatio='none'%3E%3Cpath fill='white' d='M.02 5.79c.13-1.199.645-2.63 1.944-2.95a24.63 24.63 0 0 1 3.873-.34q4.377-.338 8.757-.647 9.063-.64 18.136-1.139C40.604.292 48.478.002 56.364 0q5.48-.001 10.959.008 8.967.015 17.933.055 9.205.045 18.41.143c4.195.051 8.398.078 12.59.273 1.506.07 3.462.041 3.975 1.856a3.776 3.776 0 0 1-.695 3.312c-.828.818-2.524.435-3.57.4q-4.258-.142-8.515-.278-17.636-.562-35.276-.994C66.298 4.64 60.419 4.508 54.54 4.5c-6.019-.007-12.043.41-18.051.723-5.985.311-11.968.647-17.947 1.045-5.589.372-11.171.78-16.72 1.544C.49 7.996-.12 7.073.018 5.79z'/%3E%3C/svg%3E");
+    /* the divider wave shared by the footer and the centerwave menu: the
+       stroke, plus filled cut tiles so the band color itself ends along the
+       wave (above the curve for the menu, below it for the footer) */
+    --wavedivider: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 8'%3E%3Cpath d='M0 4C2.5 1 7.5 1 10 4C12.5 7 17.5 7 20 4' fill='none' stroke='white' stroke-width='2'/%3E%3C/svg%3E");
+    --wavecutdown: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 8'%3E%3Cpath d='M0 4C2.5 1 7.5 1 10 4C12.5 7 17.5 7 20 4L20 0L0 0Z' fill='white'/%3E%3C/svg%3E");
+    --wavecutdownfine: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 7 7'%3E%3Cpath d='M0 5C1.4 5 2.1 2 3.5 2C4.9 2 5.6 5 7 5L7 0L0 0Z' fill='white'/%3E%3C/svg%3E");
+    --wavecutup: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 8'%3E%3Cpath d='M0 4C2.5 1 7.5 1 10 4C12.5 7 17.5 7 20 4L20 8L0 8Z' fill='white'/%3E%3C/svg%3E");
+    /* the section band's edges: band fill and stroke in one tile so the
+       background always reaches the wavy line exactly (menu = same look,
+       built from wavecut + divider layers) */
+    --wavebandtop: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 8'%3E%3Cpath d='M0 4C2.5 1 7.5 1 10 4C12.5 7 17.5 7 20 4L20 8L0 8Z' fill='%23F4EEE5'/%3E%3Cpath d='M0 4C2.5 1 7.5 1 10 4C12.5 7 17.5 7 20 4' fill='none' stroke='%23D9D2C4' stroke-width='2'/%3E%3C/svg%3E");
+    --wavebandbottom: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 8'%3E%3Cpath d='M0 4C2.5 1 7.5 1 10 4C12.5 7 17.5 7 20 4L20 0L0 0Z' fill='%23F4EEE5'/%3E%3Cpath d='M0 4C2.5 1 7.5 1 10 4C12.5 7 17.5 7 20 4' fill='none' stroke='%23D9D2C4' stroke-width='2'/%3E%3C/svg%3E");
+    /* the fine subtitle wave, phase-shifted to start at its lowest point */
+    --wavetrough: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 7 7'%3E%3Cpath d='M0 5C1.4 5 2.1 2 3.5 2C4.9 2 5.6 5 7 5' fill='none' stroke='white' stroke-width='1.5'/%3E%3C/svg%3E");
+    /* the divider lab's suit-thread finalists (76, 77, 83), drawn with the
+       suit wallpaper's own icon paths; each tile's hairline runs at its
+       vertical middle so the strip straddles whichever seam it dresses */
+    --divblush: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 12'%3E%3Cg fill='%23D9D2C4'%3E%3Crect y='5.5' width='16' height='1'/%3E%3Crect x='32' y='5.5' width='32' height='1'/%3E%3Crect x='80' y='5.5' width='32' height='1'/%3E%3Crect x='128' y='5.5' width='32' height='1'/%3E%3Crect x='176' y='5.5' width='16' height='1'/%3E%3C/g%3E%3Cg transform='translate(19.4 1.4) scale(.115)'%3E%3Cpath d='M39.95,9 C39.95,9 69.97,20.85 70,43.08 C70.01,52.75 62.13,60.61 52.39,60.62 C49.42,60.63 46.62,59.90 44.16,58.61 L48,71.00 L32,71.00 L35.82,58.65 C33.38,59.93 30.60,60.65 27.64,60.66 C17.91,60.67 10.01,52.83 10,43.16 C9.96,20.92 39.95,9 39.95,9 Z' fill='%23262626' fill-opacity='.32'/%3E%3C/g%3E%3Cg transform='translate(67.4 1.4) scale(.115)'%3E%3Cpath d='M52.34,13.99 C56.93,13.99 61.08,15.95 64.09,19.13 C67.12,22.32 68.99,26.74 69.00,31.62 C69.02,53.20 43.52,65.35 40.04,66.90 C37.71,65.85 26.39,60.44 18.57,50.99 C14.26,45.79 11.00,39.34 10.99,31.70 C10.99,26.82 12.85,22.40 15.87,19.19 C18.87,16.01 23.02,14.03 27.60,14.03 C32.15,14.02 36.26,15.95 39.26,19.07 C39.51,19.33 39.75,19.60 39.98,19.87 C40.21,19.60 40.46,19.33 40.70,19.07 C43.70,15.94 47.80,14.00 52.34,13.99 Z' fill='%23B54A3F' fill-opacity='.35'/%3E%3C/g%3E%3Cg transform='translate(115.4 1.4) scale(.115)'%3E%3Cpath d='M39.99,11 C47.76,11 54.06,17.3 54.06,25.06 C54.06,28.79 52.61,32.18 50.24,34.70 C51.98,33.93 53.90,33.50 55.93,33.50 C63.70,33.50 70,39.80 70,47.57 C70,55.33 63.70,61.63 55.93,61.63 C50.95,61.63 46.57,59.04 44.08,55.13 C44.14,55.40 44.21,55.66 44.27,55.93 L44.44,56.61 C44.47,56.73 44.49,56.84 44.52,56.96 L44.69,57.65 L44.85,58.33 C46.17,63.81 47.36,69 47.36,69 L32.93,69 C32.93,69 33.93,64.19 35.11,58.95 L35.27,58.26 L35.35,57.92 L35.51,57.23 C35.69,56.45 35.87,55.68 36.05,54.91 C33.57,58.94 29.13,61.63 24.06,61.63 C16.29,61.63 10,55.33 10,47.57 C10,39.80 16.29,33.50 24.06,33.50 C26.09,33.50 28.01,33.93 29.76,34.70 C27.38,32.19 25.93,28.80 25.93,25.06 C25.93,17.3 32.23,11 39.99,11 Z' fill='%23262626' fill-opacity='.32'/%3E%3C/g%3E%3Cg transform='translate(163.4 1.4) scale(.115)'%3E%3Cpath d='M40,3.68 L66.75,40.00 L40,76.31 L13.24,40.00 L40,3.68 Z' fill='%23B54A3F' fill-opacity='.35'/%3E%3C/g%3E%3C/svg%3E");
+    --divlong: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 384 14'%3E%3Cg fill='%23D9D2C4'%3E%3Crect y='6.5' width='38' height='1'/%3E%3Crect x='58' y='6.5' width='76' height='1'/%3E%3Crect x='154' y='6.5' width='76' height='1'/%3E%3Crect x='250' y='6.5' width='76' height='1'/%3E%3Crect x='346' y='6.5' width='38' height='1'/%3E%3C/g%3E%3Cg transform='translate(42 1) scale(.15)'%3E%3Cpath d='M39.95,9 C39.95,9 69.97,20.85 70,43.08 C70.01,52.75 62.13,60.61 52.39,60.62 C49.42,60.63 46.62,59.90 44.16,58.61 L48,71.00 L32,71.00 L35.82,58.65 C33.38,59.93 30.60,60.65 27.64,60.66 C17.91,60.67 10.01,52.83 10,43.16 C9.96,20.92 39.95,9 39.95,9 Z' fill='%23262626' fill-opacity='.45'/%3E%3C/g%3E%3Cg transform='translate(138 1) scale(.15)'%3E%3Cpath d='M52.34,13.99 C56.93,13.99 61.08,15.95 64.09,19.13 C67.12,22.32 68.99,26.74 69.00,31.62 C69.02,53.20 43.52,65.35 40.04,66.90 C37.71,65.85 26.39,60.44 18.57,50.99 C14.26,45.79 11.00,39.34 10.99,31.70 C10.99,26.82 12.85,22.40 15.87,19.19 C18.87,16.01 23.02,14.03 27.60,14.03 C32.15,14.02 36.26,15.95 39.26,19.07 C39.51,19.33 39.75,19.60 39.98,19.87 C40.21,19.60 40.46,19.33 40.70,19.07 C43.70,15.94 47.80,14.00 52.34,13.99 Z' fill='%23B54A3F' fill-opacity='.5'/%3E%3C/g%3E%3Cg transform='translate(234 1) scale(.15)'%3E%3Cpath d='M39.99,11 C47.76,11 54.06,17.3 54.06,25.06 C54.06,28.79 52.61,32.18 50.24,34.70 C51.98,33.93 53.90,33.50 55.93,33.50 C63.70,33.50 70,39.80 70,47.57 C70,55.33 63.70,61.63 55.93,61.63 C50.95,61.63 46.57,59.04 44.08,55.13 C44.14,55.40 44.21,55.66 44.27,55.93 L44.44,56.61 C44.47,56.73 44.49,56.84 44.52,56.96 L44.69,57.65 L44.85,58.33 C46.17,63.81 47.36,69 47.36,69 L32.93,69 C32.93,69 33.93,64.19 35.11,58.95 L35.27,58.26 L35.35,57.92 L35.51,57.23 C35.69,56.45 35.87,55.68 36.05,54.91 C33.57,58.94 29.13,61.63 24.06,61.63 C16.29,61.63 10,55.33 10,47.57 C10,39.80 16.29,33.50 24.06,33.50 C26.09,33.50 28.01,33.93 29.76,34.70 C27.38,32.19 25.93,28.80 25.93,25.06 C25.93,17.3 32.23,11 39.99,11 Z' fill='%23262626' fill-opacity='.45'/%3E%3C/g%3E%3Cg transform='translate(330 1) scale(.15)'%3E%3Cpath d='M40,3.68 L66.75,40.00 L40,76.31 L13.24,40.00 L40,3.68 Z' fill='%23B54A3F' fill-opacity='.5'/%3E%3C/g%3E%3C/svg%3E");
+    --divlongopt: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 384 14'%3E%3Cg fill='%23D9D2C4'%3E%3Crect y='6.5' width='38' height='1'/%3E%3Crect x='58' y='6.5' width='76' height='1'/%3E%3Crect x='154' y='6.5' width='76' height='1'/%3E%3Crect x='250' y='6.5' width='76' height='1'/%3E%3Crect x='346' y='6.5' width='38' height='1'/%3E%3C/g%3E%3Cg transform='translate(42.32 1.32) scale(.142)'%3E%3Cpath d='M39.95,9 C39.95,9 69.97,20.85 70,43.08 C70.01,52.75 62.13,60.61 52.39,60.62 C49.42,60.63 46.62,59.90 44.16,58.61 L48,71.00 L32,71.00 L35.82,58.65 C33.38,59.93 30.60,60.65 27.64,60.66 C17.91,60.67 10.01,52.83 10,43.16 C9.96,20.92 39.95,9 39.95,9 Z' fill='%23262626' fill-opacity='.45'/%3E%3C/g%3E%3Cg transform='translate(138.08 1.08) scale(.148)'%3E%3Cpath d='M52.34,13.99 C56.93,13.99 61.08,15.95 64.09,19.13 C67.12,22.32 68.99,26.74 69.00,31.62 C69.02,53.20 43.52,65.35 40.04,66.90 C37.71,65.85 26.39,60.44 18.57,50.99 C14.26,45.79 11.00,39.34 10.99,31.70 C10.99,26.82 12.85,22.40 15.87,19.19 C18.87,16.01 23.02,14.03 27.60,14.03 C32.15,14.02 36.26,15.95 39.26,19.07 C39.51,19.33 39.75,19.60 39.98,19.87 C40.21,19.60 40.46,19.33 40.70,19.07 C43.70,15.94 47.80,14.00 52.34,13.99 Z' fill='%23B54A3F' fill-opacity='.5'/%3E%3C/g%3E%3Cg transform='translate(233.88 .88) scale(.153)'%3E%3Cpath d='M39.99,11 C47.76,11 54.06,17.3 54.06,25.06 C54.06,28.79 52.61,32.18 50.24,34.70 C51.98,33.93 53.90,33.50 55.93,33.50 C63.70,33.50 70,39.80 70,47.57 C70,55.33 63.70,61.63 55.93,61.63 C50.95,61.63 46.57,59.04 44.08,55.13 C44.14,55.40 44.21,55.66 44.27,55.93 L44.44,56.61 C44.47,56.73 44.49,56.84 44.52,56.96 L44.69,57.65 L44.85,58.33 C46.17,63.81 47.36,69 47.36,69 L32.93,69 C32.93,69 33.93,64.19 35.11,58.95 L35.27,58.26 L35.35,57.92 L35.51,57.23 C35.69,56.45 35.87,55.68 36.05,54.91 C33.57,58.94 29.13,61.63 24.06,61.63 C16.29,61.63 10,55.33 10,47.57 C10,39.80 16.29,33.50 24.06,33.50 C26.09,33.50 28.01,33.93 29.76,34.70 C27.38,32.19 25.93,28.80 25.93,25.06 C25.93,17.3 32.23,11 39.99,11 Z' fill='%23262626' fill-opacity='.45'/%3E%3C/g%3E%3Cg transform='translate(329.64 .64) scale(.159)'%3E%3Cpath d='M40,3.68 L66.75,40.00 L40,76.31 L13.24,40.00 L40,3.68 Z' fill='%23B54A3F' fill-opacity='.5'/%3E%3C/g%3E%3C/svg%3E");
+    /* the long deal in the site's own suit order (utils.SUITS: club, diamond, spade, heart), red at 65% */
+    --divorder: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 384 14'%3E%3Cg fill='%23D9D2C4'%3E%3Crect y='6.5' width='38' height='1'/%3E%3Crect x='58' y='6.5' width='76' height='1'/%3E%3Crect x='154' y='6.5' width='76' height='1'/%3E%3Crect x='250' y='6.5' width='76' height='1'/%3E%3Crect x='346' y='6.5' width='38' height='1'/%3E%3C/g%3E%3CclipPath id='c0'%3E%3Cpath d='M39.99,11 C47.76,11 54.06,17.3 54.06,25.06 C54.06,28.79 52.61,32.18 50.24,34.70 C51.98,33.93 53.90,33.50 55.93,33.50 C63.70,33.50 70,39.80 70,47.57 C70,55.33 63.70,61.63 55.93,61.63 C50.95,61.63 46.57,59.04 44.08,55.13 C44.14,55.40 44.21,55.66 44.27,55.93 L44.44,56.61 C44.47,56.73 44.49,56.84 44.52,56.96 L44.69,57.65 L44.85,58.33 C46.17,63.81 47.36,69 47.36,69 L32.93,69 C32.93,69 33.93,64.19 35.11,58.95 L35.27,58.26 L35.35,57.92 L35.51,57.23 C35.69,56.45 35.87,55.68 36.05,54.91 C33.57,58.94 29.13,61.63 24.06,61.63 C16.29,61.63 10,55.33 10,47.57 C10,39.80 16.29,33.50 24.06,33.50 C26.09,33.50 28.01,33.93 29.76,34.70 C27.38,32.19 25.93,28.80 25.93,25.06 C25.93,17.3 32.23,11 39.99,11 Z'/%3E%3C/clipPath%3E%3Cg transform='translate(41.88 0.88) scale(0.153)'%3E%3Cpath d='M39.99,11 C47.76,11 54.06,17.3 54.06,25.06 C54.06,28.79 52.61,32.18 50.24,34.70 C51.98,33.93 53.90,33.50 55.93,33.50 C63.70,33.50 70,39.80 70,47.57 C70,55.33 63.70,61.63 55.93,61.63 C50.95,61.63 46.57,59.04 44.08,55.13 C44.14,55.40 44.21,55.66 44.27,55.93 L44.44,56.61 C44.47,56.73 44.49,56.84 44.52,56.96 L44.69,57.65 L44.85,58.33 C46.17,63.81 47.36,69 47.36,69 L32.93,69 C32.93,69 33.93,64.19 35.11,58.95 L35.27,58.26 L35.35,57.92 L35.51,57.23 C35.69,56.45 35.87,55.68 36.05,54.91 C33.57,58.94 29.13,61.63 24.06,61.63 C16.29,61.63 10,55.33 10,47.57 C10,39.80 16.29,33.50 24.06,33.50 C26.09,33.50 28.01,33.93 29.76,34.70 C27.38,32.19 25.93,28.80 25.93,25.06 C25.93,17.3 32.23,11 39.99,11 Z' fill='%23262626' fill-opacity='.45'/%3E%3Cpath d='M39.99,11 C47.76,11 54.06,17.3 54.06,25.06 C54.06,28.79 52.61,32.18 50.24,34.70 C51.98,33.93 53.90,33.50 55.93,33.50 C63.70,33.50 70,39.80 70,47.57 C70,55.33 63.70,61.63 55.93,61.63 C50.95,61.63 46.57,59.04 44.08,55.13 C44.14,55.40 44.21,55.66 44.27,55.93 L44.44,56.61 C44.47,56.73 44.49,56.84 44.52,56.96 L44.69,57.65 L44.85,58.33 C46.17,63.81 47.36,69 47.36,69 L32.93,69 C32.93,69 33.93,64.19 35.11,58.95 L35.27,58.26 L35.35,57.92 L35.51,57.23 C35.69,56.45 35.87,55.68 36.05,54.91 C33.57,58.94 29.13,61.63 24.06,61.63 C16.29,61.63 10,55.33 10,47.57 C10,39.80 16.29,33.50 24.06,33.50 C26.09,33.50 28.01,33.93 29.76,34.70 C27.38,32.19 25.93,28.80 25.93,25.06 C25.93,17.3 32.23,11 39.99,11 Z' fill='none' stroke='%23262626' stroke-opacity='.24' stroke-width='9' clip-path='url(%23c0)'/%3E%3C/g%3E%3CclipPath id='c1'%3E%3Cpath d='M40,3.68 L66.75,40.00 L40,76.31 L13.24,40.00 L40,3.68 Z'/%3E%3C/clipPath%3E%3Cg transform='translate(137.64 0.64) scale(0.159)'%3E%3Cpath d='M40,3.68 L66.75,40.00 L40,76.31 L13.24,40.00 L40,3.68 Z' fill='%23B54A3F' fill-opacity='.65'/%3E%3Cpath d='M40,3.68 L66.75,40.00 L40,76.31 L13.24,40.00 L40,3.68 Z' fill='none' stroke='%23B54A3F' stroke-opacity='.32' stroke-width='9' clip-path='url(%23c1)'/%3E%3C/g%3E%3CclipPath id='c2'%3E%3Cpath d='M39.95,9 C39.95,9 69.97,20.85 70,43.08 C70.01,52.75 62.13,60.61 52.39,60.62 C49.42,60.63 46.62,59.90 44.16,58.61 L48,71.00 L32,71.00 L35.82,58.65 C33.38,59.93 30.60,60.65 27.64,60.66 C17.91,60.67 10.01,52.83 10,43.16 C9.96,20.92 39.95,9 39.95,9 Z'/%3E%3C/clipPath%3E%3Cg transform='translate(234.32 1.32) scale(0.142)'%3E%3Cpath d='M39.95,9 C39.95,9 69.97,20.85 70,43.08 C70.01,52.75 62.13,60.61 52.39,60.62 C49.42,60.63 46.62,59.90 44.16,58.61 L48,71.00 L32,71.00 L35.82,58.65 C33.38,59.93 30.60,60.65 27.64,60.66 C17.91,60.67 10.01,52.83 10,43.16 C9.96,20.92 39.95,9 39.95,9 Z' fill='%23262626' fill-opacity='.45'/%3E%3Cpath d='M39.95,9 C39.95,9 69.97,20.85 70,43.08 C70.01,52.75 62.13,60.61 52.39,60.62 C49.42,60.63 46.62,59.90 44.16,58.61 L48,71.00 L32,71.00 L35.82,58.65 C33.38,59.93 30.60,60.65 27.64,60.66 C17.91,60.67 10.01,52.83 10,43.16 C9.96,20.92 39.95,9 39.95,9 Z' fill='none' stroke='%23262626' stroke-opacity='.24' stroke-width='9' clip-path='url(%23c2)'/%3E%3C/g%3E%3CclipPath id='c3'%3E%3Cpath d='M52.34,13.99 C56.93,13.99 61.08,15.95 64.09,19.13 C67.12,22.32 68.99,26.74 69.00,31.62 C69.02,53.20 43.52,65.35 40.04,66.90 C37.71,65.85 26.39,60.44 18.57,50.99 C14.26,45.79 11.00,39.34 10.99,31.70 C10.99,26.82 12.85,22.40 15.87,19.19 C18.87,16.01 23.02,14.03 27.60,14.03 C32.15,14.02 36.26,15.95 39.26,19.07 C39.51,19.33 39.75,19.60 39.98,19.87 C40.21,19.60 40.46,19.33 40.70,19.07 C43.70,15.94 47.80,14.00 52.34,13.99 Z'/%3E%3C/clipPath%3E%3Cg transform='translate(330.08 1.08) scale(0.148)'%3E%3Cpath d='M52.34,13.99 C56.93,13.99 61.08,15.95 64.09,19.13 C67.12,22.32 68.99,26.74 69.00,31.62 C69.02,53.20 43.52,65.35 40.04,66.90 C37.71,65.85 26.39,60.44 18.57,50.99 C14.26,45.79 11.00,39.34 10.99,31.70 C10.99,26.82 12.85,22.40 15.87,19.19 C18.87,16.01 23.02,14.03 27.60,14.03 C32.15,14.02 36.26,15.95 39.26,19.07 C39.51,19.33 39.75,19.60 39.98,19.87 C40.21,19.60 40.46,19.33 40.70,19.07 C43.70,15.94 47.80,14.00 52.34,13.99 Z' fill='%23B54A3F' fill-opacity='.65'/%3E%3Cpath d='M52.34,13.99 C56.93,13.99 61.08,15.95 64.09,19.13 C67.12,22.32 68.99,26.74 69.00,31.62 C69.02,53.20 43.52,65.35 40.04,66.90 C37.71,65.85 26.39,60.44 18.57,50.99 C14.26,45.79 11.00,39.34 10.99,31.70 C10.99,26.82 12.85,22.40 15.87,19.19 C18.87,16.01 23.02,14.03 27.60,14.03 C32.15,14.02 36.26,15.95 39.26,19.07 C39.51,19.33 39.75,19.60 39.98,19.87 C40.21,19.60 40.46,19.33 40.70,19.07 C43.70,15.94 47.80,14.00 52.34,13.99 Z' fill='none' stroke='%23B54A3F' stroke-opacity='.32' stroke-width='9' clip-path='url(%23c3)'/%3E%3C/g%3E%3C/svg%3E");
+    /* the same rule without suits (for the swept seam's ink layer) and unbroken (for its faint rule at rest) */
+    --divrule: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 384 14'%3E%3Cg fill='%23D9D2C4'%3E%3Crect y='6.5' width='38' height='1'/%3E%3Crect x='58' y='6.5' width='76' height='1'/%3E%3Crect x='154' y='6.5' width='76' height='1'/%3E%3Crect x='250' y='6.5' width='76' height='1'/%3E%3Crect x='346' y='6.5' width='38' height='1'/%3E%3C/g%3E%3C/svg%3E");
+    /* the unbroken rule that stretches to any width, for the plain stretches either side of a centred tile */
+    --divrulestretch: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 384 14' preserveAspectRatio='none'%3E%3Crect y='6.5' width='384' height='1' fill='%23D9D2C4'/%3E%3C/svg%3E");
+    --divrulefull: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 384 14'%3E%3Crect y='6.5' width='384' height='1' fill='%23D9D2C4'/%3E%3C/svg%3E");
+    --divlongmono: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 384 14'%3E%3Cg fill='%23D9D2C4'%3E%3Crect y='6.5' width='38' height='1'/%3E%3Crect x='58' y='6.5' width='76' height='1'/%3E%3Crect x='154' y='6.5' width='76' height='1'/%3E%3Crect x='250' y='6.5' width='76' height='1'/%3E%3Crect x='346' y='6.5' width='38' height='1'/%3E%3C/g%3E%3Cg transform='translate(42.32 1.32) scale(.142)'%3E%3Cpath d='M39.95,9 C39.95,9 69.97,20.85 70,43.08 C70.01,52.75 62.13,60.61 52.39,60.62 C49.42,60.63 46.62,59.90 44.16,58.61 L48,71.00 L32,71.00 L35.82,58.65 C33.38,59.93 30.60,60.65 27.64,60.66 C17.91,60.67 10.01,52.83 10,43.16 C9.96,20.92 39.95,9 39.95,9 Z' fill='%23262626' fill-opacity='.45'/%3E%3C/g%3E%3Cg transform='translate(138.08 1.08) scale(.148)'%3E%3Cpath d='M52.34,13.99 C56.93,13.99 61.08,15.95 64.09,19.13 C67.12,22.32 68.99,26.74 69.00,31.62 C69.02,53.20 43.52,65.35 40.04,66.90 C37.71,65.85 26.39,60.44 18.57,50.99 C14.26,45.79 11.00,39.34 10.99,31.70 C10.99,26.82 12.85,22.40 15.87,19.19 C18.87,16.01 23.02,14.03 27.60,14.03 C32.15,14.02 36.26,15.95 39.26,19.07 C39.51,19.33 39.75,19.60 39.98,19.87 C40.21,19.60 40.46,19.33 40.70,19.07 C43.70,15.94 47.80,14.00 52.34,13.99 Z' fill='%23262626' fill-opacity='.45'/%3E%3C/g%3E%3Cg transform='translate(233.88 .88) scale(.153)'%3E%3Cpath d='M39.99,11 C47.76,11 54.06,17.3 54.06,25.06 C54.06,28.79 52.61,32.18 50.24,34.70 C51.98,33.93 53.90,33.50 55.93,33.50 C63.70,33.50 70,39.80 70,47.57 C70,55.33 63.70,61.63 55.93,61.63 C50.95,61.63 46.57,59.04 44.08,55.13 C44.14,55.40 44.21,55.66 44.27,55.93 L44.44,56.61 C44.47,56.73 44.49,56.84 44.52,56.96 L44.69,57.65 L44.85,58.33 C46.17,63.81 47.36,69 47.36,69 L32.93,69 C32.93,69 33.93,64.19 35.11,58.95 L35.27,58.26 L35.35,57.92 L35.51,57.23 C35.69,56.45 35.87,55.68 36.05,54.91 C33.57,58.94 29.13,61.63 24.06,61.63 C16.29,61.63 10,55.33 10,47.57 C10,39.80 16.29,33.50 24.06,33.50 C26.09,33.50 28.01,33.93 29.76,34.70 C27.38,32.19 25.93,28.80 25.93,25.06 C25.93,17.3 32.23,11 39.99,11 Z' fill='%23262626' fill-opacity='.45'/%3E%3C/g%3E%3Cg transform='translate(329.64 .64) scale(.159)'%3E%3Cpath d='M40,3.68 L66.75,40.00 L40,76.31 L13.24,40.00 L40,3.68 Z' fill='%23262626' fill-opacity='.45'/%3E%3C/g%3E%3C/svg%3E");
+    --divmorse: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 224 10'%3E%3Cg fill='%23D9D2C4'%3E%3Ccircle cx='4' cy='5' r='.8'/%3E%3Ccircle cx='12' cy='5' r='.8'/%3E%3Ccircle cx='20' cy='5' r='.8'/%3E%3Ccircle cx='36' cy='5' r='.8'/%3E%3Ccircle cx='44' cy='5' r='.8'/%3E%3Ccircle cx='52' cy='5' r='.8'/%3E%3Ccircle cx='60' cy='5' r='.8'/%3E%3Ccircle cx='68' cy='5' r='.8'/%3E%3Ccircle cx='76' cy='5' r='.8'/%3E%3Ccircle cx='92' cy='5' r='.8'/%3E%3Ccircle cx='100' cy='5' r='.8'/%3E%3Ccircle cx='108' cy='5' r='.8'/%3E%3Ccircle cx='116' cy='5' r='.8'/%3E%3Ccircle cx='124' cy='5' r='.8'/%3E%3Ccircle cx='132' cy='5' r='.8'/%3E%3Ccircle cx='148' cy='5' r='.8'/%3E%3Ccircle cx='156' cy='5' r='.8'/%3E%3Ccircle cx='164' cy='5' r='.8'/%3E%3Ccircle cx='172' cy='5' r='.8'/%3E%3Ccircle cx='180' cy='5' r='.8'/%3E%3Ccircle cx='188' cy='5' r='.8'/%3E%3Ccircle cx='204' cy='5' r='.8'/%3E%3Ccircle cx='212' cy='5' r='.8'/%3E%3Ccircle cx='220' cy='5' r='.8'/%3E%3C/g%3E%3Cg transform='translate(22.8 -0.2) scale(.13)'%3E%3Cpath d='M52.34,13.99 C56.93,13.99 61.08,15.95 64.09,19.13 C67.12,22.32 68.99,26.74 69.00,31.62 C69.02,53.20 43.52,65.35 40.04,66.90 C37.71,65.85 26.39,60.44 18.57,50.99 C14.26,45.79 11.00,39.34 10.99,31.70 C10.99,26.82 12.85,22.40 15.87,19.19 C18.87,16.01 23.02,14.03 27.60,14.03 C32.15,14.02 36.26,15.95 39.26,19.07 C39.51,19.33 39.75,19.60 39.98,19.87 C40.21,19.60 40.46,19.33 40.70,19.07 C43.70,15.94 47.80,14.00 52.34,13.99 Z' fill='%23B54A3F' fill-opacity='.5'/%3E%3C/g%3E%3Cg transform='translate(78.8 -0.2) scale(.13)'%3E%3Cpath d='M39.95,9 C39.95,9 69.97,20.85 70,43.08 C70.01,52.75 62.13,60.61 52.39,60.62 C49.42,60.63 46.62,59.90 44.16,58.61 L48,71.00 L32,71.00 L35.82,58.65 C33.38,59.93 30.60,60.65 27.64,60.66 C17.91,60.67 10.01,52.83 10,43.16 C9.96,20.92 39.95,9 39.95,9 Z' fill='%23262626' fill-opacity='.4'/%3E%3C/g%3E%3Cg transform='translate(134.8 -0.2) scale(.13)'%3E%3Cpath d='M40,3.68 L66.75,40.00 L40,76.31 L13.24,40.00 L40,3.68 Z' fill='%23B54A3F' fill-opacity='.5'/%3E%3C/g%3E%3Cg transform='translate(190.8 -0.2) scale(.13)'%3E%3Cpath d='M39.99,11 C47.76,11 54.06,17.3 54.06,25.06 C54.06,28.79 52.61,32.18 50.24,34.70 C51.98,33.93 53.90,33.50 55.93,33.50 C63.70,33.50 70,39.80 70,47.57 C70,55.33 63.70,61.63 55.93,61.63 C50.95,61.63 46.57,59.04 44.08,55.13 C44.14,55.40 44.21,55.66 44.27,55.93 L44.44,56.61 C44.47,56.73 44.49,56.84 44.52,56.96 L44.69,57.65 L44.85,58.33 C46.17,63.81 47.36,69 47.36,69 L32.93,69 C32.93,69 33.93,64.19 35.11,58.95 L35.27,58.26 L35.35,57.92 L35.51,57.23 C35.69,56.45 35.87,55.68 36.05,54.91 C33.57,58.94 29.13,61.63 24.06,61.63 C16.29,61.63 10,55.33 10,47.57 C10,39.80 16.29,33.50 24.06,33.50 C26.09,33.50 28.01,33.93 29.76,34.70 C27.38,32.19 25.93,28.80 25.93,25.06 C25.93,17.3 32.23,11 39.99,11 Z' fill='%23262626' fill-opacity='.4'/%3E%3C/g%3E%3C/svg%3E"); }
+
+  /* ===== index.html 1599-1604: the section title and the tile grid ===== */
+  .popular { flex: 1; width: 100%; max-width: 1160px; margin: 0 auto; padding: 6px 24px 34px; }
+  /* section titles: attached to their section (12px below), separated from
+     what precedes (28px above) - proximity does the grouping */
+  .pophead { font-size: 24px; font-weight: bold; margin: 28px 0 8px; color: var(--ink); }
+  .samphead .pophead { margin: 0; }
+  .games { display: grid; gap: 16px; }
+
+  /* ===== index.html 1668-1711: the game tile and its art box ===== */
+  .gtile {
+    display: flex; flex-direction: column;
+    background: var(--card);
+    border-radius: 20px;
+    corner-shape: squircle;
+    box-shadow: 0 2px 8px 0 rgba(0,0,0,0.24);
+    position: relative; z-index: 0; cursor: pointer;
+    transition: transform .18s ease, box-shadow .18s ease;
+  }
+  .gtile:hover { z-index: 2; }
+  .gtile:active:not(:has(button:active)) { transform: scale(0.99); }
+  /* catalog tiles: the text zone is inert (no pointer, no pressed shrink),
+     but the art is the join-a-table shortcut and keeps the pointer */
+  .catgrid .gtile { cursor: default; }
+  .catgrid .gtile:active:not(:has(button:active)) { transform: none; }
+  .catgrid .gtile .gimg { cursor: pointer; }
+
+  .gimg {
+    position: relative; overflow: hidden;
+    border-radius: 20px;
+    corner-shape: squircle;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    width: 100%; height: 100%; flex: 1;
+    color: var(--pfg);
+  }
+  .gimg::after {
+    content: ""; position: absolute; inset: 0; border-radius: 20px;
+    corner-shape: squircle;
+    box-shadow: inset 0 0 0 1px rgba(52,58,64,0.4);
+    pointer-events: none; z-index: 3;
+  }
+  .gimg.t1 { background: var(--p1); } .gimg.t2 { background: var(--p2); }
+  .gimg.t3 { background: var(--p3); } .gimg.t4 { background: var(--p4); }
+  .gimg.t5 { background: var(--p5); } .gimg.t6 { background: var(--p6); }
+  .gimg.t7 { background: var(--p7); } .gimg.t8 { background: var(--p8); }
+  .gimg.t9 { background: var(--p9); }
+  .glogo { max-width: 64%; max-height: 72%; width: auto; height: auto; z-index: 1; }
+  .pos-a .glogo, .pos-d .glogo, .pos-g .glogo { max-width: 48%; max-height: 80%; }
+  .ghost { display: none; }
+  .gimg::before {
+    content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='72' height='72'><g fill='black' fill-opacity='0.08'><path transform='translate(1,2) scale(0.3)' d='M52.34,13.99 C56.93,13.99 61.08,15.95 64.09,19.13 C67.12,22.32 68.99,26.74 69.00,31.62 C69.02,53.20 43.52,65.35 40.04,66.90 C37.71,65.85 26.39,60.44 18.57,50.99 C14.26,45.79 11.00,39.34 10.99,31.70 C10.99,26.82 12.85,22.40 15.87,19.19 C18.87,16.01 23.02,14.03 27.60,14.03 C32.15,14.02 36.26,15.95 39.26,19.07 C39.51,19.33 39.75,19.60 39.98,19.87 C40.21,19.60 40.46,19.33 40.70,19.07 C43.70,15.94 47.80,14.00 52.34,13.99 Z'/><path transform='translate(37,2) scale(0.3)' d='M39.95,9 C39.95,9 69.97,20.85 70,43.08 C70.01,52.75 62.13,60.61 52.39,60.62 C49.42,60.63 46.62,59.90 44.16,58.61 L48,71.00 L32,71.00 L35.82,58.65 C33.38,59.93 30.60,60.65 27.64,60.66 C17.91,60.67 10.01,52.83 10,43.16 C9.96,20.92 39.95,9 39.95,9 Z'/><path transform='translate(19,38) scale(0.3)' d='M40,3.68 L66.75,40.00 L40,76.31 L13.24,40.00 L40,3.68 Z'/><path transform='translate(55,38) scale(0.3)' d='M39.99,11 C47.76,11 54.06,17.3 54.06,25.06 C54.06,28.79 52.61,32.18 50.24,34.70 C51.98,33.93 53.90,33.50 55.93,33.50 C63.70,33.50 70,39.80 70,47.57 C70,55.33 63.70,61.63 55.93,61.63 C50.95,61.63 46.57,59.04 44.08,55.13 C44.14,55.40 44.21,55.66 44.27,55.93 L44.44,56.61 C44.47,56.73 44.49,56.84 44.52,56.96 L44.69,57.65 L44.85,58.33 C46.17,63.81 47.36,69 47.36,69 L32.93,69 C32.93,69 33.93,64.19 35.11,58.95 L35.27,58.26 L35.35,57.92 L35.51,57.23 C35.69,56.45 35.87,55.68 36.05,54.91 C33.57,58.94 29.13,61.63 24.06,61.63 C16.29,61.63 10,55.33 10,47.57 C10,39.80 16.29,33.50 24.06,33.50 C26.09,33.50 28.01,33.93 29.76,34.70 C27.38,32.19 25.93,28.80 25.93,25.06 C25.93,17.3 32.23,11 39.99,11 Z'/><path transform='translate(-17,38) scale(0.3)' d='M39.99,11 C47.76,11 54.06,17.3 54.06,25.06 C54.06,28.79 52.61,32.18 50.24,34.70 C51.98,33.93 53.90,33.50 55.93,33.50 C63.70,33.50 70,39.80 70,47.57 C70,55.33 63.70,61.63 55.93,61.63 C50.95,61.63 46.57,59.04 44.08,55.13 C44.14,55.40 44.21,55.66 44.27,55.93 L44.44,56.61 C44.47,56.73 44.49,56.84 44.52,56.96 L44.69,57.65 L44.85,58.33 C46.17,63.81 47.36,69 47.36,69 L32.93,69 C32.93,69 33.93,64.19 35.11,58.95 L35.27,58.26 L35.35,57.92 L35.51,57.23 C35.69,56.45 35.87,55.68 36.05,54.91 C33.57,58.94 29.13,61.63 24.06,61.63 C16.29,61.63 10,55.33 10,47.57 C10,39.80 16.29,33.50 24.06,33.50 C26.09,33.50 28.01,33.93 29.76,34.70 C27.38,32.19 25.93,28.80 25.93,25.06 C25.93,17.3 32.23,11 39.99,11 Z'/></g></svg>");
+    background-size: 72px 72px;
+  }
+
+  /* ===== index.html 1716-1721: the shadow coat the page runs ===== */
+  body.shadow-soft .gtile { box-shadow: var(--liftshadow-lg); }
+  /* the capsule's shadow on the hero tiles: the same small warm lift, no ring; on hover the
+     lift grows as in the soft coat */
+  body.shadow-capsule .gtile { box-shadow: var(--liftshadow); }
+  body.shadow-capsule .gtile:hover { box-shadow: 0 2px 4px rgba(60,45,25,.08), 0 6px 12px rgba(60,45,25,.10), 0 14px 26px rgba(60,45,25,.12); }
+  body.shadow-soft .gtile:hover { box-shadow: 0 2px 4px rgba(60,45,25,.08), 0 6px 12px rgba(60,45,25,.10), 0 14px 26px rgba(60,45,25,.12); }
+
+  /* ===== index.html 1736: the inner edge coat the page runs ===== */
+  body.edge-overlay .gimg::after, body.edge-overlay .lobbyscope .tableListing .header::after { box-shadow: inset 0 0 0 1px rgba(255,255,255,.65); mix-blend-mode: overlay; }
+  body.edge-softlight .gimg::after, body.edge-softlight .lobbyscope .tableListing .header::after { box-shadow: inset 0 0 0 1px rgba(0,0,0,.75); mix-blend-mode: soft-light; }
+
+  /* ===== index.html 1743-1792: the playing count on a tile ===== */
+  /* the live count on the art, bottom-left, all bold, text aligned 12px
+     from the edge like the meta text below; three toggleable coats
+     (Live counter switcher) - every one steps aside on hover for the clip */
+  .gchip {
+    position: absolute; z-index: 4; transition: opacity .22s ease;
+    font-size: 14px; font-weight: bold; color: #fff;
+  }
+  body.counter-tab .gchip { left: 0; bottom: 0; background: rgba(0, 0, 0, .4);
+    line-height: 24px; padding: 0 12px; border-radius: 0 8px 0 0; }
+  body.counter-scrim .gchip { left: 12px; bottom: 10px; background: rgba(0, 0, 0, .35);
+    color: rgba(255, 255, 255, .95); line-height: 1; padding: 5px 9px 6px; border-radius: 7px; }
+  /* the naked ghost: solid white text on top; only its border blends.
+     An invisible underlay copy carries the art's inner-edge recipe
+     (soft-light, .75 black) as a four-way text outline behind the fill */
+  body.counter-ghost .gchip { left: 12px; bottom: 10px; line-height: 1; }
+  .gchip .gunder { position: absolute; inset: 0; z-index: -1; color: transparent; white-space: nowrap; }
+  /* .32 per shadow: the four copies overlap two-deep along the outline
+     and composite to 1-(1-.32)^2 = .54, a softer border than the ring */
+  body.counter-ghost .gchip .gunder { mix-blend-mode: soft-light;
+    text-shadow: -1px -1px 0 rgba(0,0,0,.32), 1px -1px 0 rgba(0,0,0,.32),
+      -1px 1px 0 rgba(0,0,0,.32), 1px 1px 0 rgba(0,0,0,.32); }
+  .gchip b { display: inline-block; text-align: center; font-variant-numeric: tabular-nums; }
+  /* ghost-dot: the naked number with a still white dot as the live signal -
+     no word, no ping. The chip's font collapses to zero so the "playing"
+     text node vanishes; the number comes back at 14. Flex centers the dot
+     on the digits; the underlay clone runs the same flex so its blended
+     outline stays aligned, and its dot box carries the ghost border as a
+     soft-light ring just outside the white fill (matching the text
+     outline's composited .54). */
+  body.counter-ghostdot .gchip { left: 12px; bottom: 10px; line-height: 1; font-size: 0; display: inline-flex; align-items: center; }
+  body.counter-ghostdot .gchip b { font-size: 14px; }
+  /* the big hero tile keeps its word: "341 playing" there teaches what
+     the naked dot-numbers on every other tile mean */
+  body.counter-ghostdot .games .pos-a .gchip { font-size: 14px; }
+  /* ghost-num: the naked number alone, no dot, no word - except the big
+     hero tile, which keeps "x playing" as the legend */
+  body.counter-ghostnum .gchip { left: 12px; bottom: 10px; line-height: 1; font-size: 0; }
+  body.counter-ghostnum .gchip b { font-size: 14px; }
+  body.counter-ghostnum .gchip .gunder { mix-blend-mode: soft-light;
+    text-shadow: -1px -1px 0 rgba(0,0,0,.32), 1px -1px 0 rgba(0,0,0,.32),
+      -1px 1px 0 rgba(0,0,0,.32), 1px 1px 0 rgba(0,0,0,.32); }
+  body.counter-ghostnum .games .pos-a .gchip { font-size: 14px; }
+  body.counter-ghostdot .gchip::before, body.counter-ghostdot .gchip .gunder::before {
+    content: ""; flex: none; width: 6px; height: 6px; border-radius: 50%;
+    margin-right: 4px; background: #fff; }
+  body.counter-ghostdot .gchip .gunder { mix-blend-mode: soft-light; display: flex; align-items: center;
+    text-shadow: -1px -1px 0 rgba(0,0,0,.32), 1px -1px 0 rgba(0,0,0,.32),
+      -1px 1px 0 rgba(0,0,0,.32), 1px 1px 0 rgba(0,0,0,.32); }
+  body.counter-ghostdot .gchip .gunder::before { background: transparent; box-shadow: 0 0 0 1px rgba(0,0,0,.54); }
+  .gimg:hover .gchip { opacity: 0; }
+
+  /* ===== index.html 2159-2196: the lobby shell and its buttons ===== */
+  /* ── Lobby panels ported from dev (lobby-build), scoped under .lobbyscope ── */
+  .lobbyscope { width: 100%; max-width: 1160px; margin: 0 auto; padding: 0 24px 34px; box-sizing: border-box;
+    display: flex; flex-direction: column; gap: 8px;
+    font-family: "BuloRounded","Verdana","Arial","Helvetica",sans-serif; color: #212529; }
+  .lobbyscope h3, .lobbyscope p { margin: 0; }
+  .lobbyscope button { font-family: inherit; }
+  /* every button wears the tile buttons' chrome: radius-md squircle plus an
+     inset ring cut from its own fill and one soft drop (the .gbtn recipe) */
+  /* the lobby buttons wear the tile family's colors: green is the Play
+     button's trio green (--p4 with the playbtn-triogreen ring and hover:
+     78% and 92% toward black), blue is the trick-taking trio blue (#298ae9,
+     the green's OKLCH depth at hue 252, see #sec-tt), and light blue is
+     the old Mantine blue-2/3 fill and ring turned to that hue in OKLCH;
+     the fill keeps blue-2's chroma (.076) at the highest lightness the
+     sRGB gamut allows there (.852 instead of .860), the ring turns as is
+     (L .76), and the text keeps the old blue-8 ink, which already sits on
+     the family hue. The light red is the light blue's fill at the tile
+     red's hue (26.4, --p8 in the Raphael scheme; the old plate red already
+     sat at 26.5). */
+  body { --triogreen: var(--p4); --triogreenring: color-mix(in srgb, var(--p4) 78%, black); --triogreenhover: color-mix(in srgb, var(--p4) 92%, black);
+    --trioblue: #298ae9; --triobluering: color-mix(in srgb, #298ae9 78%, black); --triobluehover: color-mix(in srgb, #298ae9 92%, black);
+    --triolight: #abd2ff; --triolightring: #83b5ef; --triolightink: #1971C2; --triolighthover: #a3ccfb; --triolightline: #72b0f6;
+    --trioredlight: #fcbcb4; }
+  .lobbyscope .button, .cattabs .button { border-radius: var(--radius-md, 6px); corner-shape: squircle; text-decoration: none; color: #fff; font-weight: bold; font-size: 20px;
+    height: 32px; line-height: 32px; display: inline-block; text-align: center; padding: 0 8px; box-sizing: border-box;
+    cursor: pointer; border: none; transition: background-color 24ms ease-out, box-shadow 24ms ease-out, transform 80ms ease-out; }
+  .lobbyscope .button:active, .cattabs .button:active { transform: scale(0.98); }
+  .lobbyscope .button.small, .cattabs .button.small { font-size: 16px; height: 24px; line-height: 24px; padding: 0 10px; }
+  .lobbyscope .button.green { background-color: var(--triogreen); box-shadow: inset 0 0 0 1px var(--triogreenring), 0 2px 4px rgba(0, 0, 0, .06);
+    text-shadow: -1px -1px 0 var(--triogreenring), 1px -1px 0 var(--triogreenring), -1px 1px 0 var(--triogreenring), 1px 1px 0 var(--triogreenring); }
+  .lobbyscope .button.green:hover { background-color: var(--triogreenhover); }
+  .lobbyscope .button.blue, .cattabs .button.blue { background-color: var(--trioblue); box-shadow: inset 0 0 0 1px var(--triobluering), 0 2px 4px rgba(0, 0, 0, .06);
+    text-shadow: -1px -1px 0 var(--triobluering), 1px -1px 0 var(--triobluering), -1px 1px 0 var(--triobluering), 1px 1px 0 var(--triobluering); }
+  .lobbyscope .button.blue:hover, .cattabs .button.blue:hover { background-color: var(--triobluehover); }
+  .lobbyscope .button.lightblue, .cattabs .button.lightblue { background-color: var(--triolight); box-shadow: inset 0 0 0 1px var(--triolightring), 0 2px 4px rgba(0, 0, 0, .06); color: var(--triolightink); text-shadow: none; }
+  .lobbyscope .button.lightblue:hover, .cattabs .button.lightblue:hover { background-color: var(--triolighthover); }
+
+  .lobbyscope .lobbyTopBand { display: flex; flex-wrap: wrap; gap: 16px; width: 100%; }
+
+  /* ===== index.html 2298-2361: the table card, the felt and the seats ===== */
+  .lobbyscope .lobbyTablesPanel, .lobbyscope .lobbyLiveTables { width: 100%; }
+  .lobbyscope .ltHeader, .lobbyscope .lsHeader { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 12px; }
+  .lobbyscope .lsBody { padding: 0; }
+  .lobbyscope .ltHeaderLeft { display: flex; align-items: center; gap: 12px; min-width: 0; }
+  .lobbyscope .ltTitle, .lobbyscope .llTitle { font-size: 20px; line-height: 28px; font-weight: bold; color: #212529; }
+  .lobbyscope .llTitle { display: flex; align-items: center; gap: 6px; }
+  .lobbyscope .ltSeeAll { flex-shrink: 0; white-space: nowrap; }
+  .lobbyscope .ltFilterBox .ldMore { display: inline-block; }
+
+  .lobbyscope .ltGrid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 16px; }
+  .lobbyscope .llRow { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 16px; }
+  .lobbyscope .ltCard, .lobbyscope .llCard { display: flex; flex-direction: column; background-color: #fff;
+    border-radius: 20px; corner-shape: squircle;
+    /* inset ring like the game tiles: the felt header covers it up top, so
+       the line only wraps the white lower half */
+    box-shadow: inset 0 0 0 1px var(--edge, var(--panelline)), var(--liftshadow); overflow: hidden; cursor: pointer; }
+  .lobbyscope .ltCard:hover, .lobbyscope .llCard:hover { background-color: #F8F7F4; }
+  .lobbyscope .ltCard.isNew { cursor: default; }
+
+  .lobbyscope .tableListing { width: 100%; position: relative; }
+  .lobbyscope .tableListing.isTeamGame .playernumber1 .playerNameContainer,
+  .lobbyscope .tableListing.isTeamGame .playernumber3 .playerNameContainer { background-color: var(--trioredlight); color: #B52626; }
+  /* a set of seats on its way out keeps the colour it arrived with while the listing already wears the next game's class (5 September) */
+  .lobbyscope .tableListing .playersContainer.teamSeats .playernumber1 .playerNameContainer,
+  .lobbyscope .tableListing .playersContainer.teamSeats .playernumber3 .playerNameContainer { background-color: var(--trioredlight); color: #B52626; }
+  .lobbyscope .tableListing .playersContainer.soloSeats .playernumber1 .playerNameContainer,
+  .lobbyscope .tableListing .playersContainer.soloSeats .playernumber3 .playerNameContainer { background-color: var(--triolight); color: #1665AD; }
+  .lobbyscope .tableListing .header { position: absolute; overflow: hidden; top: 0; width: 100%; padding-top: 75%;
+    background: #327333 url("green-felt.jpg") repeat; background-size: 300px 300px; }
+  @media (min-resolution: 2dppx) { .lobbyscope .tableListing .header { background-size: 100px 100px; } }
+  .lobbyscope .tableListing .header::before { content: ""; display: block; position: absolute; top: 0; left: 0;
+    width: 100%; height: 100%; mix-blend-mode: overlay; opacity: 1;
+    background: radial-gradient(circle farthest-corner at 50% 50%, rgba(255,255,255,0.32) 0%, rgba(255,255,255,0) 100%),
+      radial-gradient(circle closest-side at 50% 50%, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0) 100%);
+    border-radius: 20px 20px 0 0; }
+  /* the felt's inner ring, pulled out of the faded glow layer above so it
+     actually reads: the same overlay as the game-tile art ring (.gimg::after),
+     same squircle radius, and it follows the Tile edge switcher */
+  .lobbyscope .tableListing .header::after { content: ""; position: absolute; inset: 0; z-index: 1;
+    border-radius: 20px 20px 0 0; corner-shape: squircle; pointer-events: none;
+    box-shadow: inset 0 0 0 1px rgba(52,58,64,0.4); }
+  .lobbyscope .playersContainer { position: absolute; top: 8px; left: 12px; right: 12px; bottom: 12px; display: flex; flex-wrap: wrap; }
+  .lobbyscope .spacer30 { flex-basis: 30%; max-width: 30%; }
+  .lobbyscope .spacer20 { flex-basis: 20%; max-width: 20%; }
+  .lobbyscope .player { position: relative; text-align: center; flex-basis: 40%; max-width: 40%; height: 33.3%; }
+  .lobbyscope .player img { height: calc(100% - 20px); width: auto; margin-top: 1px;
+    filter: url(#avatarInnerEdge) var(--avshadow);
+    transform-origin: center bottom; transition: transform 80ms ease-in-out, filter 80ms ease-in-out; }
+  .lobbyscope .player.seatAvailable:hover img, .lobbyscope .player.isEmpty:hover img { transform: scale(1.12); }
+  /* nameplates on dark felt: shadows alone barely read on a dark ground, so
+     the pop comes from three layers working together: a 1px dark OUTER contour
+     hugging the shape (the crisp core of the shadow, not a drawn border), the
+     soft drops beneath it, and a faint light inner top edge so the plate reads
+     lit from above */
+  .lobbyscope .playerNameContainer { background-color: var(--triolight); color: #1665AD;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 0 0 1px rgba(0,0,0,.30),
+      0 1px 3px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25);
+    border-radius: var(--radius-md, 6px); corner-shape: squircle;
+    height: 20px; position: absolute; bottom: 0; width: 100%; }
+  .lobbyscope .playerName { font-size: 14px; font-weight: bold; line-height: 20px; white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis; padding: 0 6px; }
+  .lobbyscope .playerBadge { display: block; width: 20px; height: 20px; position: absolute; left: -10px; top: -10px; }
+  .lobbyscope .playerBadge.isBot { background: url("botBadge.png") no-repeat center / 16px 16px; }
+  .lobbyscope .playerBadge.isLiked { background: url("likedBadge.png") no-repeat center / 16px 16px; }
+
+  /* ===== index.html 2471-2478: the live card and its hidden button row ===== */
+  .lobbyscope .llGame { font-size: 16px; font-weight: bold; color: #212529; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  /* A live table is the same object as an open table, so it is drawn the same way: the whole tile is
+     the felt, the status sits in the clock's slot, and the button row is gone. Watching is what the
+     tile does, and the tile says so on hover. */
+  .llscope.llscope.llscope .llCard .content, .llscope.llscope.llscope .llBtns { display: none; }
+  .llscope.llscope.llscope .llRow { align-items: start; }
+  .lobbyscope .llBtns { display: flex; gap: 8px; margin: auto 12px 12px; }
+  .lobbyscope .llBtns .button { flex: 1; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
+
+  /* ===== index.html 2799-2826: the radius and shadow tokens ===== */
+  /* bottom spacing comes solely from .lobbyscope's 8px flex gap - every header
+     sits exactly 8px above its section */
+  .lobbyscope .lobbyhead { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 32px 0 0; }
+  .lobbyscope .lobbyhead .pophead { margin: 0; display: flex; align-items: center; gap: 9px; }
+  .lobbyscope .lhctrls { display: flex; align-items: center; gap: 8px; }
+  .lobbyscope .lobbycol { width: calc(50% - 8px); box-sizing: border-box; display: flex; flex-direction: column; gap: 8px; }
+
+  /* the site's radius token: 6px, doubled to 12 where squircles render */
+  body { --radius-md: 6px; }
+  @supports (corner-shape: squircle) { body { --radius-md: 12px; } }
+  body { --tileshadow: 0 2px 8px 0 rgba(0,0,0,0.24); --panelline: rgba(60,45,25,0.15);
+    /* edge-deep: the scheme's border grey deepened one step with its own
+       muted ink (80/20), the missing rung between --edge and --muted */
+    --edge-deep: color-mix(in srgb, var(--edge, #d2cfca) 80%, var(--muted, #4e4d4c));
+    /* muted-soft: helper-text grey derived from the scheme itself, the
+       muted ink faded 45% toward the canvas */
+    --muted-soft: color-mix(in srgb, var(--muted, #4e4d4c) 55%, var(--canvas, #f9f6f2));
+    /* the design's one chrome: the scheme's --edge draws the line, and the
+       soft layers run warm and visible on cream (the old ElevenLabs 4%
+       neutrals sank under cream + grain). Everything that wears btnshadow
+       - tiles, rail containers, pills, chips, capsule, menu mark - shares
+       this recipe */
+    --liftshadow: 0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09);
+    /* the same warm material scaled for big surfaces (hero art tiles):
+       a pill-sized blur vanishes under a 300px block */
+    --liftshadow-lg: 0 2px 5px rgba(60,45,25,.07), 0 8px 18px rgba(60,45,25,.10);
+    --btnshadow: 0 0 0 1px var(--edge, var(--panelline)), var(--liftshadow);
+    --ringshadow: var(--btnshadow); }
+
+  /* ===== index.html 3641-3797: the all felt tile in both table sections ===== */
+  /* ── the open-table tile (open-tables-lab c27, "bare essentials"): the whole tile is the 4:3 felt.
+     The seats are the way in, so there is no white bottom and no button. Top left the game's own tile
+     art, bottom left the time with a small ring, bottom right a white mark for ranked or private. ── */
+  /* The section is a column flex with an 8px gap. When the divider draws the section title, the head
+     is left with nothing in it, but it is still a flex item and still takes that gap, so the tiles sat
+     8px lower than the 48px of clear space above the line. Keyed off the divider actually being in the
+     section, so it follows whichever divider style is chosen rather than naming them. */
+  .otscope.otscope.otscope:has(> .divhead) .lobbyhead { display: none; }
+
+  .otscope.otscope.otscope .ltCard { background-color: #327333; }
+  .otscope.otscope.otscope .ltCard:hover { background-color: #327333; }
+  .otscope.otscope.otscope .ltCard .tableListing { padding-top: 75%; }
+  .otscope.otscope.otscope .ltCard .tableListing .header { padding-top: 0; inset: 0; }
+  .otscope.otscope.otscope .ltCard .tableListing .header::before,
+  .otscope.otscope.otscope .ltCard .tableListing .header::after { border-radius: 20px; }
+  /* a 3 seat felt puts its two players where a 4 seat table's left and right seats sit, so the top row stays free for the art */
+  .otscope.otscope.otscope .players3 .playersContainer > .verticalSpacer:nth-child(1) { height: 33.3%; }
+  .otscope.otscope.otscope .players3 .playersContainer > .verticalSpacer:nth-child(5),
+  .otscope.otscope.otscope .players3 .playersContainer > .verticalSpacer:nth-child(9) { height: 0; }
+
+  /* the game's own tile art, top left, on the open tiles and the live ones; a few games get more height so their lettering reads the same */
+  .otscope.otscope.otscope .ltArt { position: absolute; z-index: 3; top: 0; left: -2px; display: block; height: 44px; width: auto;
+    max-width: 26%; object-fit: contain; filter: drop-shadow(0 1px 2px rgba(0,0,0,.45)); }
+  .otscope.otscope.otscope .ltArt.art-ginrummy { height: 62px; }
+  .otscope.otscope.otscope .ltArt.art-pinochle, .otscope.otscope.otscope .ltArt.art-canasta { height: 48px; }
+
+  /* the ghost text recipe from the game tiles' playing count: bold white with a soft outline, no plate */
+  .otscope.otscope.otscope .ltTime { position: absolute; z-index: 3; left: 0; bottom: 0; display: inline-flex; align-items: center; gap: 5px;
+    height: 20px; line-height: 20px; font-size: 14px; font-weight: bold; color: #fff; white-space: nowrap; max-width: 30%;
+    font-variant-numeric: tabular-nums;
+    text-shadow: -1px -1px 0 rgba(0,0,0,.32), 1px -1px 0 rgba(0,0,0,.32), -1px 1px 0 rgba(0,0,0,.32), 1px 1px 0 rgba(0,0,0,.32); }
+  .otscope.otscope.otscope .ltCard.isNew .ltTime { max-width: 60%; }
+  .otscope.otscope.otscope .ltTime svg { flex: none; width: 9.5px; height: 9.5px; position: relative; top: -.5px;
+    filter: drop-shadow(0 0 1px rgba(0,0,0,.55)) drop-shadow(0 1px 1px rgba(0,0,0,.25)); }
+
+  /* Hovering a tile trades the clock for the invitation. The invitation lives in the clock's OWN
+     parent and carries the clock's box, so the two share one slot exactly; a layer pinned to .header
+     would sit 12px low, because .playersContainer is inset inside it. No max-width: a time needs one
+     and an invitation does not. Neither may carry a transition, because the hand over runs on the Web
+     Animations API and a transition would fight it whenever one is cancelled on reversal. */
+  .otscope.otscope.otscope .hvClock { position: absolute; z-index: 3; left: 0; bottom: 0;
+    display: inline-flex; align-items: center; height: 20px; line-height: 20px;
+    font-size: 14px; font-weight: bold; color: #fff; white-space: nowrap; opacity: 0;
+    pointer-events: none;
+    text-shadow: -1px -1px 0 rgba(0,0,0,.32), 1px -1px 0 rgba(0,0,0,.32),
+                 -1px 1px 0 rgba(0,0,0,.32), 1px 1px 0 rgba(0,0,0,.32); }
+  .otscope.otscope.otscope .ltTime, .otscope.otscope.otscope .hvClock { transition: none !important; }
+
+  /* The corner buttons (5 September, from the open tables hover lab). The clock stays a clock; on hover the tile's
+     verbs arrive as real buttons in the felt's top right, 12px from its edges as the nameplates keep from the sides:
+     Join on a table you can sit at, Host and Options on the host tile (in place of the gear), Watch and Queue on a
+     live table (Watch alone when it is ranked, which the queue refuses). Hidden at rest, dealt in on the arriving
+     curve with no wait, out on the leaving curve. The Corner buttons switcher picks the coat; the game's own yellow
+     button, as base.scss draws it, is the default. */
+  .otscope.otscope.otscope .cbtn { position: absolute; z-index: 4; top: 4px; right: 0; display: flex; gap: 6px;
+    opacity: 0; pointer-events: none; }
+  .otscope.otscope.otscope .ltCard:hover .cbtn { pointer-events: auto; }
+  /* a live table's two verbs stack, Watch over Queue, the pair as wide as its wider word */
+  .llscope.llscope.llscope .cbtn { flex-direction: column; align-items: stretch; }
+  /* felt only: the flat official button on the buttons inside the open and live tiles: no satin, no highlight, a see-through ring
+     in the ink colour at 70% and a 1px drop shadow, drawn by a pseudo-element under the label so no coat's own rings are touched */
+  body.bfin-felt .ltCard .button { position: relative; isolation: isolate; }
+  body.bfin-felt .ltCard .button::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; corner-shape: inherit; pointer-events: none;
+    box-shadow: 0 0 0 1px color-mix(in srgb, currentColor 70%, transparent), 0 1px 2px rgba(0,0,0,.30); }
+  body.bfin-felt .ltCard .button:active::before { box-shadow: 0 0 0 1px color-mix(in srgb, currentColor 70%, transparent); }
+  body.bfin-felt.cbtn-gameyellow .otscope.otscope.otscope .cbtn .button { background-color: #FFD75A; color: #5C3A00; box-shadow: none; }
+  body.bfin-felt.cbtn-gameyellow .otscope.otscope.otscope .cbtn .button:hover { background-color: #FFD43B; }
+  body.bfin-felt.cbtn-gameyellow .otscope.otscope.otscope .cbtn .button:active { background-color: #FCC419; }
+  .otscope.otscope.otscope .cbtn .button { height: 24px; line-height: 24px; font-size: 16px; padding: 0 10px;
+    box-shadow: 0 0 0 1px rgba(0,0,0,.16); transition: background-color 24ms ease-out; }
+  body.cbtn-gameyellow .cbtn .button { background-color: #FFE066; color: #C96800; text-shadow: none; }
+  /* the official in-game button, final 6 September (game-button-lab.html tile 108, flat); scoped like the geometry rule so its ring wins */
+  body.cbtn-official .otscope.otscope.otscope .cbtn .button { background-color: #FFD75A; color: #5C3A00; text-shadow: none;
+    box-shadow: 0 0 0 1px rgba(92,58,0,.70), 0 1px 2px rgba(0,0,0,.30); }
+  body.cbtn-official .otscope.otscope.otscope .cbtn .button:hover { background-color: #FFD43B; box-shadow: 0 0 0 1px rgba(92,58,0,.70), 0 2px 4px rgba(0,0,0,.35); }
+  body.cbtn-official .otscope.otscope.otscope .cbtn .button:active { background-color: #FCC419; box-shadow: 0 0 0 1px rgba(92,58,0,.70); }
+  body.cbtn-gameyellow .cbtn .button:hover { background-color: color-mix(in srgb, #FFE066 92%, #E67700 8%); }
+  body.cbtn-gameyellow .cbtn .button:active { background-color: #FCC419; } /* the game's pressed yellow */
+  body.cbtn-triogreen .cbtn .button { background-color: var(--triogreen); color: #fff;
+    text-shadow: -1px -1px 0 var(--triogreenring), 1px -1px 0 var(--triogreenring), -1px 1px 0 var(--triogreenring), 1px 1px 0 var(--triogreenring); }
+  body.cbtn-triogreen .cbtn .button:hover { background-color: var(--triogreenhover); }
+  body.cbtn-evergreen .cbtn .button { background-color: #00a82d; color: #fff;
+    text-shadow: -1px -1px 0 color-mix(in srgb, #00a82d 78%, black), 1px -1px 0 color-mix(in srgb, #00a82d 78%, black), -1px 1px 0 color-mix(in srgb, #00a82d 78%, black), 1px 1px 0 color-mix(in srgb, #00a82d 78%, black); }
+  body.cbtn-evergreen .cbtn .button:hover { background-color: color-mix(in srgb, #00a82d 92%, black); }
+  body.cbtn-lightblue .cbtn .button { background-color: var(--triolight); color: var(--triolightink); text-shadow: none; }
+  body.cbtn-lightblue .cbtn .button:hover { background-color: var(--triolighthover); }
+  body.cbtn-blue .cbtn .button { background-color: var(--trioblue); color: #fff;
+    text-shadow: -1px -1px 0 var(--triobluering), 1px -1px 0 var(--triobluering), -1px 1px 0 var(--triobluering), 1px 1px 0 var(--triobluering); }
+  body.cbtn-blue .cbtn .button:hover { background-color: var(--triobluehover); }
+
+  /* the options gear, top right, on your own table only. It sits in the one corner every tile
+     leaves empty, and away from the marks, so a row of status marks never looks clickable. */
+  /* The glyph is 16px, under the 18px marks, so the control sits quieter than the facts. The button
+     box stays 24px and centres it, so the glyph still lands flush in the corner but the hit target is
+     bigger than the thing you can see. */
+  .otscope.otscope.otscope .ltGear { position: absolute; z-index: 4; right: -4px; top: -4px; width: 24px; height: 24px;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0; border: 0; background: none; cursor: pointer; opacity: .88;
+    filter: drop-shadow(0 0 1px rgba(0,0,0,.6)) drop-shadow(0 1px 1px rgba(0,0,0,.3));
+    transition: opacity 140ms linear, transform 180ms cubic-bezier(.22,1,.36,1); }
+  .otscope.otscope.otscope .ltGear:hover { opacity: 1; transform: rotate(35deg); }
+  .otscope.otscope.otscope .ltGear svg { display: block; width: 16px; height: 16px; }
+  /* the host tile has no clock to show, so the slot carries what it IS rather than how far along */
+  /* the plus is 1.5px wider than the clock's ring, which pushed "New table" right of every other
+     tile's label; the slot is pulled back so the label starts left of them instead */
+  .otscope.otscope.otscope .ltCard.isNew .ltTime { left: -2px; gap: 4px; }
+  .otscope.otscope.otscope .ltCard.isNew .ltPlus { flex: none; width: 11px; height: 11px; position: relative; top: 1.5px;
+    filter: drop-shadow(0 0 1px rgba(0,0,0,.55)) drop-shadow(0 1px 1px rgba(0,0,0,.25)); }
+  /* On a team game the seat you take decides which side you are on, so those seats behave exactly
+     as an open table's do. On a solo-scored game one empty chair is the same as another, so nothing
+     there is a target. */
+  /* A slot with no table to put in it holds BARE FELT: the same green, the same rounded box, and
+     nothing on it at all. It keeps the section's shape and texture where an empty cell would leave a
+     hole, and it says a table could be here without pretending one is. Nothing on it is clickable.
+     The opacity transition is what lets a table fade out into felt, and felt fade up into a table, on
+     the same 260ms the deal uses. */
+  .otscope.otscope.otscope .ltCard { transition: opacity 260ms cubic-bezier(.22,1,.36,1); }
+  .otscope.otscope.otscope .ltCard.ltBlank { opacity: .56; cursor: default; }
+  /* The reading order is tables, then the one you can start, then the felt: everything you can do
+     comes before everything you cannot. Done with grid order rather than by moving nodes, so a table
+     that clears to felt drops to the end without the DOM churn, and it self-corrects wherever a blank
+     appears. */
+  .otscope.otscope.otscope .ltGrid > .ltCard { order: 1; }
+  .otscope.otscope.otscope .ltGrid > .ltCard.isNew { order: 2; }
+  .otscope.otscope.otscope .ltGrid > .ltCard.ltBlank { order: 3; }
+  /* These are the resting arrangement only. A change of game sets style.order on every tile in ONE
+     frame before any deal starts, because .ltBlank goes on and off as each deal begins: left to the
+     classes, every tile would jump to its new place the moment its own deal started, and with a 70ms
+     stagger the grid would rearrange five times over. That is what read as blinking. */
+  .otscope.otscope.otscope .ltCard.ltBlank .tableListing .header::before,
+  .otscope.otscope.otscope .ltCard.ltBlank .tableListing .header::after { box-shadow: none; }
+
+  .otscope.otscope.otscope .ltCard.isNew .tableListing:not(.isTeamGame) .player { cursor: default; }
+
+  /* the marks: white, bottom right, with the same soft outline */
+  .otscope.otscope.otscope .ltMarks { position: absolute; z-index: 3; right: 0; bottom: 1px; display: inline-flex; align-items: center; gap: 6px; }
+  .otscope.otscope.otscope .ltMark { display: block; width: 18px; height: 18px;
+    filter: drop-shadow(0 0 1px rgba(0,0,0,.6)) drop-shadow(0 1px 1px rgba(0,0,0,.3)); }
+
+  /* the finish badge, as the production listing draws it: the green badge from 70% with ten finished games, gold at 100% */
+  .otscope.otscope.otscope .completionBadge { display: flex; align-items: center; justify-content: center; width: 20px; height: 20px;
+    position: absolute; right: -10px; top: -10px; background: url("cleanMeldBadge.png") no-repeat center / 20px 20px;
+    color: #4F800B; font-size: 12px; font-weight: 900; letter-spacing: -1px; padding-right: 1px; padding-top: 1px; }
+  /* the 100% badge on the success surface, #C0EB75 with the check in #4F800B, the same pair the numbered badge wears (5 September); the
+     production image sits one step deeper on the lime scale, an action colour used as a surface, with the check in the pressed step */
+  .otscope.otscope.otscope .completionBadge.is100 { background-image: url("highReputationBadge-success.png"); }
+
+  /* The section is live: seats fill and empty, and a table that stops being listed is replaced WITHOUT
+     the tile moving at all. The felt stays exactly where it is and only what sits on it changes, so
+     nothing in the grid can shift and there is no blur on the tile to pay for. */
+  .otscope.otscope.otscope .ltTime span.ltTick { animation: ltTick .3s ease both; }
+  @keyframes ltTick { 0% { opacity: 0; } 100% { opacity: 1; } }
+
+  /* the tile itself is not a target, so it shows no hand (5 September): only a seat you can take and the corner
+     buttons do. The placeholder is an ordinary waiting table with every seat empty; on a team game its seats are
+     the way in and keep the hand, on a solo game nothing on it is a target until the buttons arrive. */
+  .otscope.otscope.otscope .ltCard, .otscope.otscope.otscope .llCard, .otscope.otscope.otscope .ltCard.isNew { cursor: default; }
+
+  /* ===== index.html 3803-3911: the game filter bar ===== */
+     with its wall and triangle, opening on hover as the leaderboard's does. The colours are variables so the
+     options panel can recolour the bar. The default is the Evernote scheme with the tray a shade darker than the
+     band (#e4ddd0, the ring and the lines #c9c0ae) and the Play button's green as the thumb, set here so the first
+     paint has it too. ── */
+  .lobbyTopBand > .otFilter { flex: 0 0 100%; width: 100%; margin: 0; } /* the bar over both cards: the full row, the cards 16px under it, the row's own gap, as the tiles are under the open tables' bar */
+  .otFilter { --ot-outline: -1px -1px 0 var(--ot-thumbring), 1px -1px 0 var(--ot-thumbring), -1px 1px 0 var(--ot-thumbring), 1px 1px 0 var(--ot-thumbring);
+    position: relative; margin: 2px 0 8px; font-family: "BuloRounded", "Verdana", "Arial", sans-serif; --thspd: 220ms; --thease: cubic-bezier(.645,.045,.355,1);
+    --ot-tray: #e4ddd0; --ot-ring: #c9c0ae; --ot-line: #c9c0ae; --ot-ink: #4e4d4c; --ot-hover: #dcd4c5;
+    --ot-listrow: var(--canvas, #f9f6f2); --ot-listline: #e6e0d6; --ot-listhover: color-mix(in srgb, var(--ot-listrow), var(--ot-tray));
+    --ot-listshadow: 0 2px 4px rgba(60,45,25,.06), 0 8px 20px rgba(60,45,25,.12);
+    --ot-thumb: var(--triogreen); --ot-thumbring: var(--triogreenring); --ot-thumbink: #fff; --ot-thumbshadow: var(--ot-outline); }
+  /* the leaderboard's own blue: the light blue tray with the solid blue thumb and white outlined text */
+  body.otc-blue .otFilter { --ot-tray: var(--triolight); --ot-ring: var(--triolightring); --ot-ink: var(--triolightink); --ot-hover: var(--triolighthover); --ot-line: var(--triolightline);
+    --ot-thumb: var(--trioblue); --ot-thumbring: var(--triobluering); --ot-thumbink: #fff; --ot-thumbshadow: var(--ot-outline); }
+  /* the greens the page already plays with: the Play button's own green, and Evernote's */
+  body.otc-green .otFilter { --ot-tray: #dcefc9; --ot-ring: #b6d894; --ot-ink: #4F800B; --ot-hover: #d1e8ba; --ot-line: #a4cf7e; --ot-thumb: var(--triogreen); --ot-thumbring: var(--triogreenring); --ot-thumbink: #fff; --ot-thumbshadow: var(--ot-outline); }
+  body.otc-evergreen .otFilter { --ot-tray: #d4f1dc; --ot-ring: #a3dcb5; --ot-ink: #0d6b2a; --ot-hover: #c6ead0; --ot-line: #8fd2a5; --ot-thumb: #00a82d; --ot-thumbring: #008a25; --ot-thumbink: #fff; --ot-thumbshadow: var(--ot-outline); }
+  /* the game's yellow: the corner buttons' #FFE066 with the pressed #FCC419 as the thumb, dark ink and no outline */
+  body.otc-yellow .otFilter { --ot-tray: #FFF3C2; --ot-ring: #F0DA8A; --ot-ink: #8A5A00; --ot-hover: #FCECA8; --ot-line: #E8CB6A; --ot-thumb: #FFD43B; --ot-thumbring: #E6B92B; --ot-thumbink: #5C3D00; --ot-thumbshadow: none; }
+  /* the Evernote scheme: the page's warm band as the tray, so the bar does not stand out, and the ring and the lines in the
+     divider's own colour, #D9D2C4. A white card or the ink as the thumb. Then the same with the tray a shade darker, and a shade lighter. */
+  body.otc-warm .otFilter { --ot-tray: var(--band, #f0eee6); --ot-ring: #D9D2C4; --ot-line: #D9D2C4; --ot-ink: #4e4d4c; --ot-hover: color-mix(in srgb, var(--band, #f0eee6) 88%, #D9D2C4); --ot-thumb: #fff; --ot-thumbring: #D9D2C4; --ot-thumbink: #141414; --ot-thumbshadow: none; }
+  body.otc-warmdarker .otFilter { --ot-thumb: #fff; --ot-thumbring: #c9c0ae; --ot-thumbink: #141414; --ot-thumbshadow: none; }
+  body.otc-warmlighter .otFilter { --ot-tray: #fff; --ot-ring: #D9D2C4; --ot-line: #D9D2C4; --ot-ink: #4e4d4c; --ot-hover: var(--band, #f0eee6); --ot-thumb: #fff; --ot-thumbring: #D9D2C4; --ot-thumbink: #141414; --ot-thumbshadow: 0 0 0 transparent; }
+  body.otc-warmlighter .otFilter .track .thumb { box-shadow: inset 0 0 0 1px var(--ot-thumbring), 0 2px 4px rgba(0,0,0,.1); }
+  body.otc-warmdark .otFilter { --ot-tray: var(--band, #f0eee6); --ot-ring: #D9D2C4; --ot-line: #D9D2C4; --ot-ink: #4e4d4c; --ot-hover: color-mix(in srgb, var(--band, #f0eee6) 88%, #D9D2C4); --ot-thumb: #3d3d3a; --ot-thumbring: #2a2a28; --ot-thumbink: #fff; --ot-thumbshadow: none; }
+  body.otc-warmgreen .otFilter { --ot-tray: var(--band, #f0eee6); --ot-ring: #D9D2C4; --ot-line: #D9D2C4; --ot-ink: #4e4d4c; --ot-hover: color-mix(in srgb, var(--band, #f0eee6) 88%, #D9D2C4); --ot-thumb: var(--triogreen); --ot-thumbring: var(--triogreenring); --ot-thumbink: #fff; --ot-thumbshadow: var(--ot-outline); }
+
+  .otFilter .track { position: relative; display: flex; align-items: center; flex-wrap: nowrap; width: 100%; box-sizing: border-box; gap: 0; padding: 2px;
+    border-radius: calc(var(--radius-md, 6px) + 2px); corner-shape: squircle; background: var(--ot-tray);
+    box-shadow: inset 0 0 0 1px var(--ot-ring); z-index: 5; will-change: transform; }
+  /* the bar sits on its own compositor layer: without it every frame of the move re-rastered the avatars below,
+     with their edge filter and drop shadows, at 2x (218 ms of GPU work a click; 53 ms with the layer) */
+  .otFilter .track > .s { position: relative; z-index: 2; flex: 1 1 auto; display: inline-flex; align-items: center; justify-content: center; height: 24px; padding: 0 10px;
+    border-radius: var(--radius-md, 6px); corner-shape: squircle; font: bold 16px/24px "BuloRounded", "Verdana", "Arial", sans-serif; color: var(--ot-ink);
+    cursor: pointer; user-select: none; white-space: nowrap; transition: background-color 24ms ease-out; }
+  .otFilter .track > .s > span { display: inline-flex; align-items: baseline; gap: 6px; }
+  .otFilter .track > .s i { font-style: normal; font-size: 12.3px; line-height: 1; font-weight: bold; color: var(--ot-ink); }
+  .otFilter .track > .s i::before { content: "\00B7"; margin-right: 5px; }
+  /* the word: a real element whose width grows with the move, kept in step by the script; it shows only in the white copy */
+  .otFilter .track > .s i .w { display: inline-block; width: 0; overflow: visible; clip-path: inset(0); white-space: pre; vertical-align: baseline; font-style: normal; opacity: 0;
+    transition: width var(--thspd) var(--thease); }
+  /* hover: the whole segment, not the button's shape. A pseudo behind the text fills the cell edge to edge and reaches 1px
+     above and below it into the tray's padding, up to the ring, with square corners; the two end segments, All games and
+     More, follow the tray's inner corner. Never on the picked cell. A game with no tables is not dimmed: it can be picked. */
+  .otFilter .track:not(.tcopy) > .s:not(.on):hover::after, .otFilter .track:not(.tcopy) .ov:not(.on) .ovbtn:hover::after { content: ""; position: absolute; left: 0; right: 0; top: -1px; bottom: -1px; z-index: -1; background: var(--ot-hover); }
+  .otFilter .track:not(.tcopy) > .s:first-child:not(.on):hover::after { border-radius: calc(var(--radius-md, 6px) + 1px) 0 0 calc(var(--radius-md, 6px) + 1px); corner-shape: squircle; }
+  .otFilter .track:not(.tcopy) .ov:not(.on) .ovbtn:hover::after { border-radius: 0 calc(var(--radius-md, 6px) + 1px) calc(var(--radius-md, 6px) + 1px) 0; corner-shape: squircle; }
+  /* the other hover, from the Game bar hover option: no fill at all, only the ink going to the page's dark, the count and the triangle with it */
+  body.othover-ink .otFilter .track:not(.tcopy) > .s:not(.on):hover::after, body.othover-ink .otFilter .track:not(.tcopy) .ov:not(.on) .ovbtn:hover::after { display: none; }
+  body.othover-ink .otFilter .track:not(.tcopy) > .s:not(.on):hover, body.othover-ink .otFilter .track:not(.tcopy) > .s:not(.on):hover i,
+  body.othover-ink .otFilter .track:not(.tcopy) .ov:not(.on) .ovbtn:hover, body.othover-ink .otFilter .track:not(.tcopy) .ov:not(.on) .ovbtn:hover .ovlab i { color: #141414; }
+  body.othover-ink .otFilter .track:not(.tcopy) .ov:not(.on) .ovbtn:hover .zone svg path { fill: #141414; stroke: #141414; }
+  /* the lines: one on the left of every cell after the first and on More, the two beside the pick faded on the thumb's clock */
+  .otFilter .track > .s + .s::before, .otFilter .track > .s + .ov::before { content: ""; position: absolute; left: 0; top: -2px; bottom: -2px; width: 1px; background: var(--ot-ring); pointer-events: none;
+    transition: opacity var(--thspd) var(--thease); }
+  .otFilter .track > .s.on::before, .otFilter .track > .nextpick::before, .otFilter .track > .ov.on::before { opacity: 0; }
+  /* More: the leaderboard's dropdown button, fused on the end. The word sits 3px from the wall, the triangle 2px after it.
+     Its hover bridge reaches down through the tray's padding and the 8px gap, so the pointer can travel to the list. */
+  .otFilter .track .ov { position: relative; z-index: 2; flex: 0 0 auto; margin-left: auto; }
+  .otFilter .track .ov::after { content: ""; position: absolute; left: 0; right: -2px; top: 100%; height: 12px; }
+  .otFilter .track .ov .ovbtn { position: relative; display: inline-flex; align-items: center; height: 24px; padding: 0 0 0 10px; border-radius: var(--radius-md, 6px); corner-shape: squircle;
+    font: bold 16px/24px "BuloRounded", "Verdana", "Arial", sans-serif; color: var(--ot-ink); cursor: pointer; user-select: none; white-space: nowrap; transition: background-color 24ms ease-out; }
+  .otFilter .track .ov .ovbtn .ovlab { padding-right: 3px; }
+  .otFilter .track .ov .ovbtn .wall { width: 1px; align-self: stretch; background: transparent; }
+  .otFilter .track .ov .ovbtn .zone { width: 22px; padding-left: 2px; box-sizing: border-box; align-self: stretch; display: flex; align-items: center; justify-content: flex-start; }
+  .otFilter .track .ov .ovbtn .zone svg { width: 8px; height: 7px; display: block; }
+  .otFilter .track .ov .ovbtn .zone svg path { fill: var(--ot-ink); stroke: var(--ot-ink); }
+  /* the list: the leaderboard's, light blue rows on a blue frame, with the tray's corners, 8px under the tray and flush with its right edge */
+  .otFilter .ovlist { display: none; position: absolute; z-index: 30; top: calc(100% + 10px); right: -2px; min-width: 100%; box-sizing: border-box; margin: 0; padding: 0; list-style: none;
+    background: #fff; border: 1px solid var(--ot-line); border-radius: calc(var(--radius-md, 6px) + 2px); corner-shape: squircle; overflow: hidden; box-shadow: var(--ot-listshadow); }
+  .otFilter .ov:hover .ovlist, .otFilter .ov.open .ovlist { display: block; }
+  .otFilter .ov.picked:hover .ovlist { display: none; }
+  .otFilter .ovlist .mi { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 0 12px; font-size: 16px; line-height: 24px; font-weight: bold;
+    color: var(--ot-ink); background: var(--ot-listrow); border-bottom: 1px solid var(--ot-listline); cursor: pointer; white-space: nowrap; }
+  .otFilter .ovlist .mi:last-child, .otFilter .ovlist .mi:has(+ .foot) { border-bottom: 0; }
+  .otFilter .ovlist .mi:hover { background: var(--ot-listhover); }
+  /* the foot of the Open tables list (6 September): how many tables the grid shows at a time. The rows sit on the canvas with a
+     line a step darker than it; the foot is a 28px strip of the tray on the tray's ring colour, Show: in the list's ink at the
+     numbers' size, and the numbers as cells as wide as their text with the bar's corner, the chosen one on the thumb. */
+  .otFilter .ovlist .foot { display: flex; align-items: center; gap: 2px; padding: 2px; background: var(--ot-tray); border-top: 1px solid var(--ot-ring); }
+  .otFilter .ovlist .foot .lab { flex: 0 0 auto; padding: 0 4px 0 10px; height: 24px; font: bold 16px/24px "BuloRounded", "Verdana", "Arial", sans-serif; color: var(--ot-ink); cursor: default; user-select: none; }
+  .otFilter .ovlist .foot i { flex: 0 0 auto; padding: 0 10px; height: 24px; font: bold 16px/24px "BuloRounded", "Verdana", "Arial", sans-serif; font-style: normal; color: var(--ot-ink); border-radius: var(--radius-md, 6px); corner-shape: squircle; cursor: pointer; user-select: none; transition: background-color 24ms ease-out; }
+  .otFilter .ovlist .foot i:not(.on):hover { background: var(--ot-hover); }
+  .otFilter .ovlist .foot i.on { color: var(--ot-thumbink); background: var(--ot-thumb); box-shadow: inset 0 0 0 1px var(--ot-thumbring), 0 2px 4px rgba(0,0,0,.06); text-shadow: var(--ot-thumbshadow); cursor: default; }
+  .otFilter .ovlist .mi i { font-style: normal; font-size: 13px; opacity: .75; }
+  /* the thumb: the site's blue button, sliding. It carries the button's shadow; the tray, being a recess, has only its ring */
+  .otFilter .track .thumb { position: absolute; z-index: 1; left: 0; top: 0; width: 0; height: 0; pointer-events: none; opacity: 0;
+    border-radius: var(--radius-md, 6px); corner-shape: squircle; background: var(--ot-thumb); box-shadow: inset 0 0 0 1px var(--ot-thumbring), 0 2px 4px rgba(0,0,0,.06);
+    transition: left var(--thspd) var(--thease), width var(--thspd) var(--thease), top var(--thspd) var(--thease), height var(--thspd) var(--thease), opacity calc(var(--thspd) / 2) linear; }
+  /* the white copy: the whole bar again in white, clipped to the thumb's window, so the text is white exactly where the thumb is */
+  .otFilter .tcopy { position: absolute; inset: 0; z-index: 6; margin: 0; pointer-events: none; background: transparent; box-shadow: none;
+    clip-path: inset(0 100% 0 0); transition: clip-path var(--thspd) var(--thease), opacity calc(var(--thspd) / 2) linear; }
+  .otFilter .tcopy > .s, .otFilter .tcopy > .s i, .otFilter .tcopy .ov .ovbtn { color: var(--ot-thumbink); text-shadow: var(--ot-thumbshadow); }
+  .otFilter .tcopy > .s + .s::before, .otFilter .tcopy > .s + .ov::before { display: none; }
+  .otFilter .tcopy > .s, .otFilter .tcopy .ov .ovbtn { background: transparent !important; opacity: 1; }
+  .otFilter .tcopy .ov .ovbtn .zone svg path { fill: var(--ot-thumbink); stroke: var(--ot-thumbink); }
+  .otFilter .tcopy > .s i .w { opacity: 1; }
+  /* before the script has placed the thumb, the picked cell paints itself, so the bar is complete on the very first frame */
+  .otFilter:not(.ready) .track > .s.on { background: var(--ot-thumb); color: var(--ot-thumbink); text-shadow: var(--ot-thumbshadow); box-shadow: inset 0 0 0 1px var(--ot-thumbring), 0 2px 4px rgba(0,0,0,.06); }
+  .otFilter:not(.ready) .track > .s.on i { color: var(--ot-thumbink); }
+  .otFilter:not(.ready) .track > .s.on i .w { width: auto !important; opacity: 1; }
+  .otFilter:not(.ready) .track > .s.on + .s::before, .otFilter:not(.ready) .track > .s.on + .ov::before { opacity: 0; }
+  .otFilter .track.still, .otFilter .track.still *, .otFilter .thumb.still, .otFilter .tcopy.still, .otFilter .track.nofx, .otFilter .track.nofx *, .otFilter .track.nofx *::before { transition: none !important; }
+  .otFilter .track.measuring > .s, .otFilter .track.measuring > .ov { flex: 0 0 auto !important; min-width: 0 !important; transition: none !important; }
+  @media (prefers-reduced-motion: reduce) { .otFilter .thumb, .otFilter .tcopy, .otFilter .track > .s i .w, .otFilter .track > .s::before, .otFilter .track > .ov::before { transition: none !important; } }
+  /* the host tile's two verbs stack, Host over Options, as the live tables' Watch and Queue do */
+  .otscope.otscope.otscope .ltCard.isNew .cbtn { flex-direction: column; align-items: stretch; }
+</style>
+</style>
+<style>
+  /* ===== the avatar shadow the page runs (index.html 992 and 996) ===== */
+  body { --avshadow: drop-shadow(1px 0 rgba(0,0,0,.12)) drop-shadow(-1px 0 rgba(0,0,0,.12)) drop-shadow(0 1px rgba(0,0,0,.12)) drop-shadow(0 -1px rgba(0,0,0,.12)) drop-shadow(0 1px 1px rgba(0,0,0,.14)) drop-shadow(0 2px 3px rgba(0,0,0,.14)) drop-shadow(0 5px 9px rgba(0,0,0,.18)); }
+  body.avsh-hover { --avshadow: drop-shadow(1px 0 rgba(0,0,0,.32)) drop-shadow(-1px 0 rgba(0,0,0,.32)) drop-shadow(0 1px rgba(0,0,0,.32)) drop-shadow(0 -1px rgba(0,0,0,.32)) drop-shadow(0 0 3px rgba(0,0,0,.20)) drop-shadow(0 0 9px rgba(0,0,0,.18)); }
+  /* the heading face the page runs (index.html 96), and the seam title, which the
+     real page gives the same face by copying the hidden .pophead's computed style */
+  body.font-gelicamd .pophead, body.font-gelicamd .seam .ttl { font-family: "Gelica", "Georgia", serif; font-weight: 500; }
+
+  /* ===== lab chrome (open-tables-more-lab.html) ===== */
+  body.animlab { padding: 28px 24px 140px !important; background: #f9f6f2 !important; }
+  .animlab h1 { font-size: 22px; margin: 0 0 4px; font-family: "BuloRounded", Verdana, sans-serif; }
+  .animlab p.note { font-size: 13px; color: #8a857c; margin: 0 0 10px; max-width: 980px; line-height: 1.5; }
+  .animlab p.note b, .animlab .desc b { color: #141414; }
+  .animlab code { font-family: ui-monospace, Menlo, monospace; font-size: 12px; background: #fff; padding: 0 4px;
+    border-radius: 4px; box-shadow: inset 0 0 0 1px #d2cfca; }
+  .asec { margin: 0 0 46px; max-width: 1160px; }
+  .asec > h2 { font-size: 17px; margin: 26px 0 4px; padding-top: 16px; border-top: 1px solid #e9e4db;
+    font-family: "BuloRounded", Verdana, sans-serif; }
+  .asec .desc { font-size: 13px; color: #8a857c; margin: 0 0 14px; max-width: 980px; line-height: 1.5; }
+  .abar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 22px; }
+  .abtn { font-family: inherit; font-size: 13px; font-weight: bold; color: #333; background: #fff;
+    border: 1px solid #ddd; border-radius: 8px; corner-shape: squircle; padding: 6px 12px; cursor: pointer; }
+  .abtn:hover { background: #f4eee5; }
+  .abtn.on { box-shadow: inset 0 0 0 2px #1665AD; border-color: #1665AD; color: #1665AD; }
+  .alab { font-size: 11.5px; color: #8a857c; margin-right: 2px; }
+
+  .vcard { background: #fff; border-radius: 14px; corner-shape: squircle;
+    box-shadow: 0 0 0 1px #e4e0d9, 0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09);
+    padding: 14px 16px 20px; margin: 0 0 16px; }
+  .vcard h3 { font-size: 14.5px; margin: 0 0 3px; font-family: "BuloRounded", Verdana, sans-serif; }
+  .vcard h3 .tag { font-size: 10.5px; font-weight: bold; padding: 1px 7px; border-radius: 10px;
+    background: #f4eee5; color: #4e4d4c; margin-left: 7px; vertical-align: 1px; text-transform: none; }
+  .vcard h3 .tag.now { background: #FFDBD9; color: #B52626; }
+  .vcard h3 .tag.pick { background: #C0EB75; color: #4F800B; }
+  .vcard h3 .tag.free { background: #D0EBFF; color: #1665AD; }
+  .vcard .vnote { font-size: 12.5px; color: #8a857c; margin: 0 0 14px; line-height: 1.45; max-width: 1000px; }
+  .vcard .vnote b { color: #141414; }
+  .vcard .vcopy { font-size: 12.5px; color: #4e4d4c; margin: 0 0 14px; line-height: 1.45; max-width: 1000px; }
+  .vcard .vcopy i { font-style: normal; color: #8a857c; }
+  .vmeas { font-family: ui-monospace, Menlo, monospace; font-size: 11px; color: #4e4d4c;
+    background: #f9f6f2; border-radius: 6px; box-shadow: inset 0 0 0 1px #e4e0d9; padding: 2px 7px; margin-left: 7px;
+    vertical-align: 1px; white-space: nowrap; }
+
+  /* ===== the stage: three sections of the real page, one under the other ===== */
+  .pstage { width: 1112px; margin: 0 auto; box-sizing: border-box; color: #212529;
+    font-family: "BuloRounded","Verdana","Arial","Helvetica",sans-serif; }
+  .pstage .lobbyscope { display: block; width: 100%; max-width: none; margin: 0; padding: 0; gap: 0; }
+  body.shrunk .pstage { zoom: .56; }
+
+  /* the head: the section title sitting in the suit seam, which is how the page runs it */
+  .shead { position: relative; margin: 0 0 43px; }
+  .pstage .psec + .psec .shead { margin-top: 43px; }
+  .pstage .psec:first-of-type .shead { margin-top: 4px; }
+  .seam { display: flex; align-items: center; height: 26px; }
+  .seam .ln { flex: 1 1 auto; height: 14px; min-width: 24px;
+    background: var(--divorder) 0 0 / 384px 14px repeat-x; }
+  .seam .ln.r { background-position: right center; }
+  .seam .ttl { flex: 0 0 auto; padding: 0 16px; font-size: 26px; line-height: 26px; color: var(--ink); white-space: nowrap; }
+
+  /* the same three heads with no seam, left in the flow, for reference */
+  .pstage.headplain .seam { height: 32px; }
+  .pstage.headplain .seam .ln { display: none; }
+  .pstage.headplain .seam .ttl { padding: 0; font-size: 24px; line-height: 32px; font-weight: bold; }
+  .pstage.headplain .shead { margin: 0 0 8px; }
+  .pstage.headplain .psec + .psec .shead { margin-top: 28px; }
+  .pstage.headplain .sub { text-align: left; }
+
+  /* the sub-line */
+  .shead .sub { margin: 6px 0 0; text-align: center; font-size: 15px; line-height: 21px; color: var(--muted); }
+  .pstage.subsmall .shead .sub { font-size: 13.5px; line-height: 19px; color: var(--muted-soft); }
+  .pstage.subloud .shead .sub { font-size: 16px; line-height: 24px; color: var(--ink-soft); }
+  .pstage.subabove .shead { display: flex; flex-direction: column; }
+  .pstage.subabove .shead .sub { order: -1; margin: 0 0 6px; font-size: 13.5px; line-height: 19px; color: var(--muted-soft); }
+  .sub .subx { margin-left: 6px; border: 0; background: none; padding: 0 3px; cursor: pointer;
+    color: var(--muted-soft); font: bold 15px/1 "BuloRounded", Verdana, sans-serif; }
+  .sub .subx:hover { color: var(--ink); }
+
+  /* a few words after the title, on the title's own line */
+  .seam .ttl .tail { margin-left: 10px; font-family: "BuloRounded","Verdana","Arial",sans-serif;
+    font-size: 15px; font-weight: normal; color: var(--muted); }
+  .seam .ttl .cnt { margin-left: 10px; font-family: "BuloRounded","Verdana","Arial",sans-serif;
+    font-size: 14px; font-weight: bold; color: var(--muted); }
+
+  /* the line that is not there until you point at it */
+  .pstage.subfloat .shead .sub { position: absolute; left: 0; right: 0; top: 100%; margin-top: 8px;
+    opacity: 0; pointer-events: none; transition: opacity .16s ease; }
+  .pstage.subhover .shead:hover .sub, .pstage.subhover .shead:focus-within .sub { opacity: 1; }
+  .pstage.subsection .psec:hover .shead .sub { opacity: 1; }
+
+  /* the dot beside the title */
+  .qwrap { position: relative; display: inline-block; }
+  .qdot { display: inline-flex; align-items: center; justify-content: center; width: 19px; height: 19px;
+    margin-left: 9px; padding: 0 0 1px; border: 0; cursor: pointer; vertical-align: 3px;
+    border-radius: 50%; background: #fff; box-shadow: inset 0 0 0 1px var(--edge, #d2cfca);
+    color: var(--muted); font: bold 12px/19px "BuloRounded", Verdana, sans-serif; }
+  .qdot:hover, .qdot:focus-visible { background: var(--band); color: var(--ink); }
+  .qbub { position: absolute; z-index: 20; left: 50%; top: calc(100% + 11px); width: 300px; box-sizing: border-box;
+    transform: translateX(-50%) translateY(4px); opacity: 0; visibility: hidden;
+    transition: opacity .1s linear, transform .2s cubic-bezier(.22,1,.36,1), visibility 0s .1s;
+    background: #F9F6F2; color: #262626; font-family: "BuloRounded","Verdana","Arial",sans-serif;
+    font-size: 13px; line-height: 18px; font-weight: normal; text-align: left; white-space: normal;
+    padding: 7px 11px 8px; border-radius: var(--radius-md, 6px); corner-shape: squircle;
+    box-shadow: inset 0 0 0 1px #d2cfca, var(--liftshadow); }
+  .qwrap:hover .qbub, .qwrap:focus-within .qbub { opacity: 1; visibility: visible;
+    transform: translateX(-50%) translateY(0); transition: opacity .1s linear, transform .22s cubic-bezier(.22,1,.36,1), visibility 0s; }
+  .pstage.qpush .shead .sub { display: none; }
+  .pstage.qpush .shead.isOpen .sub { display: block; }
+
+  /* lab only: four of the cards show nothing until you point at something, so
+     standing still they are the page as it is today. This switch draws the area
+     each one listens to and opens the line that is waiting behind it. */
+  body.showhidden .pstage.subhover .shead,
+  body.showhidden .pstage.subsection .psec { outline: 1px dashed #c9c0ae; outline-offset: 8px; }
+  body.showhidden .pstage.subfloat .shead .sub { opacity: 1; }
+  body.showhidden .pstage .psec:first-of-type .qbub { opacity: 1; visibility: visible; transform: translateX(-50%); }
+  body.showhidden .pstage.qpush .psec:first-of-type .shead .sub { display: block; }
+
+  /* one line, or three chips, for the whole page */
+  .toporient { max-width: 720px; margin: 0 auto 39px; text-align: center; font-size: 16px; line-height: 24px; color: var(--muted); }
+  .topstrip { display: flex; justify-content: center; gap: 8px; margin: 0 0 39px; }
+  .topstrip a { display: inline-flex; align-items: baseline; gap: 7px; height: 32px; padding: 0 13px; box-sizing: border-box;
+    border-radius: var(--radius-md, 6px); corner-shape: squircle; text-decoration: none; line-height: 32px;
+    background: #fff; box-shadow: inset 0 0 0 1px var(--edge, #d2cfca), var(--liftshadow);
+    font-size: 15px; font-weight: bold; color: #212529; }
+  .topstrip a em { font-style: normal; font-size: 13.5px; font-weight: normal; color: var(--muted); }
+  .topstrip a:hover { background: #F8F7F4; }
+
+  /* the line under the row instead of over it */
+  .undersub { margin: 12px 0 0; text-align: center; font-size: 13.5px; line-height: 19px; color: var(--muted-soft); }
+
+  /* the catalog row and the empty panel */
+  .ttrow { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 16px; }
+  .ttrow .gtile { height: 150px; }
+  .emptyPanel { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px;
+    height: 150px; box-sizing: border-box; padding: 0 24px; text-align: center;
+    border-radius: 20px; corner-shape: squircle; background: #fff;
+    box-shadow: inset 0 0 0 1px var(--edge, #d2cfca), var(--liftshadow); }
+  .emptyPanel b { font-size: 20px; line-height: 28px; color: #212529; }
+  .emptyPanel p { font-size: 15px; line-height: 21px; color: var(--muted); margin: 0; max-width: 30em; }
+</style>
+</head>
+<body class="evernote play-raph font-gelicamd shadow-capsule edge-softlight counter-ghostdot avsh-hover animlab" id="top">
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- the inner rim on every seated avatar, from index.html 3442-3458 -->
+    <filter id="avatarInnerEdge" x="-2%" y="-2%" width="104%" height="104%" color-interpolation-filters="sRGB">
+      <feMorphology in="SourceAlpha" operator="erode" radius="1" result="eroded"/>
+      <feComposite in="SourceAlpha" in2="eroded" operator="out" result="ring"/>
+      <feFlood flood-color="#000000" flood-opacity="0.64"/>
+      <feComposite in2="ring" operator="in" result="ringInk"/>
+      <feComposite in="ringInk" in2="SourceGraphic" operator="over"/>
+    </filter>
+  </defs>
+</svg>
+
+<h1>Saying what each section is, without adding noise</h1>
+<p class="note">Every section on the frontpage is announced by two or three words sitting in a suit seam. A player who has been here before knows what they mean. A player who has not reads <b>Open tables</b> and has to work out from the tiles that those are real tables with a free seat, and reads <b>Live tables</b> and has to work out that those are other people&rsquo;s games that you can watch. The two names are one word apart and mean different things.</p>
+<p class="note">The constraint is that the page has to stay as quiet as it is now. The frontpage carries seven of these titles, so a line under every one of them is seven lines, and the page stops being something you scan. So every variation below is judged on two things. <b>What it costs in vertical space</b>, measured on the stage and printed beside the name. And <b>whether it survives a second visit</b>, because a returning player should not be taught the same thing every time they come back.</p>
+<p class="note">Every variation draws the same three sections one under the other, at full size and full width, so the rhythm can be judged instead of one head in isolation. The three are Open tables, Live tables, and Trick-taking games, which stands in for the three catalog sections. Each table section shows one row rather than two, to keep this page walkable, and the seam runs to the edge of the column here rather than the edge of the window.</p>
+
+<div class="abar">
+  <span class="alab">All stages</span>
+  <button class="abtn" id="shrinkBtn" type="button">Shrink every stage</button>
+  <button class="abtn" id="hiddenBtn" type="button">Show what is hidden</button>
+</div>
+
+<div class="asec" id="wrapZero">
+  <h2>Zero &middot; where this stands</h2>
+  <p class="desc">The page as it runs now, and the same three heads with no seam under them.</p>
+  <div id="secZero"></div>
+</div>
+
+<div class="asec" id="wrapLine">
+  <h2>One &middot; a quiet line under the title</h2>
+  <p class="desc">One short sentence per section. The family that works for everybody and costs the most, in six weights and positions.</p>
+  <div id="secLine"></div>
+</div>
+
+<div class="asec" id="wrapEarns">
+  <h2>Two &middot; only where it earns its place</h2>
+  <p class="desc">A row of game tiles explains itself. Four seats on green felt does not. So put the line only where a player has to guess.</p>
+  <div id="secEarns"></div>
+</div>
+
+<div class="asec" id="wrapTitle">
+  <h2>Three &middot; the title carries the meaning</h2>
+  <p class="desc">Nothing is added to the page. The two or three words are simply chosen better.</p>
+  <div id="secTitle"></div>
+</div>
+
+<div class="asec" id="wrapHover">
+  <h2>Four &middot; the line arrives on hover</h2>
+  <p class="desc">The resting page stays exactly as it is now, and the section explains itself when it is pointed at. Hover the stages to see these two work. Standing still they are the page today, so the switch at the top draws the area each one listens to.</p>
+  <div id="secHover"></div>
+</div>
+
+<div class="asec" id="wrapDot">
+  <h2>Five &middot; a mark you can ask</h2>
+  <p class="desc">A small question mark on the seam. Nothing is said until somebody asks for it. The two look the same at rest, so click a dot, or use the switch at the top to open the first one in each.</p>
+  <div id="secDot"></div>
+</div>
+
+<div class="asec" id="wrapCount">
+  <h2>Six &middot; the count already there</h2>
+  <p class="desc">The bar under Open tables already prints a number. Give that number a few words and it explains the section for nothing. The live bar prints no number today, so that one has to be added.</p>
+  <div id="secCount"></div>
+</div>
+
+<div class="asec" id="wrapOnce">
+  <h2>Seven &middot; once, not forever</h2>
+  <p class="desc">Teach on the first visit and then stop, or teach only when the section is empty and has the room to talk.</p>
+  <div id="secOnce"></div>
+</div>
+
+<div class="asec" id="wrapOne">
+  <h2>Eight &middot; one line for the whole page</h2>
+  <p class="desc">Instead of a line per section, one line near the top that names them all.</p>
+  <div id="secOne"></div>
+</div>
+
+<div class="asec" id="wrapRow">
+  <h2>Nine &middot; the row says it, not the head</h2>
+  <p class="desc">Leave the head alone and let the tiles do the explaining, either in a word on the tile or in a caption under the row.</p>
+  <div id="secRow"></div>
+</div>
+
+<script>
+/* ===== the three sections, built from the mockup's own markup ===== */
+(function () {
+  "use strict";
+
+  var OT_CARDS = [
+    { game: "hearts", art: "hearts_logo@2x.png", alt: "Hearts", time: "0 min", mark: "cup",
+      seats: [null,
+              { name: "Marge", img: "WomanGirl2.svg", badge: "97" },
+              { name: "carl52", img: "ManMan3.svg", badge: "91" },
+              null] },
+    { game: "spades", art: "spades_logo@2x.png", alt: "Spades", time: "6 min", mark: "star", team: true,
+      seats: [{ name: "Dan", img: "ManChef.svg" },
+              { name: "Rita", img: "WomanCowgirl.svg", badge: "88" },
+              null,
+              null] },
+    { game: "euchre", art: "euchre_logo@2x.png", alt: "Euchre", time: "18 min", team: true,
+      seats: [{ name: "Tom", img: "ManGeek2.svg" },
+              { name: "Bea", img: "AnimalBee.svg" },
+              null,
+              { name: "Zoe", img: "WomanScientist.svg", badge: "94" }] }
+  ];
+
+  var LL_CARDS = [
+    { game: "handfoot", art: "handfoot_logo@2x.png", alt: "Hand & Foot", team: true,
+      seats: [{ name: "Carol", img: "AnimalCat.svg", liked: true },
+              { name: "GinTonic", img: "AnimalBee.svg" },
+              { name: "Marta", img: "AnimalCow.svg" },
+              { name: "cardShark52", img: "AlienBlue.svg" }] },
+    { game: "hearts", art: "hearts_logo@2x.png", alt: "Hearts", mark: "star cup",
+      seats: [{ name: "Nils", img: "ManCowboy.svg", badge: "91" },
+              { name: "Fern", img: "AnimalFox.svg" },
+              { name: "Ada", img: "WomanBusinesswoman.svg" },
+              { name: "pipsqueak", img: "AlienMartian.svg" }] },
+    { game: "bridge", art: "bridge_logo@2x.png", alt: "Bridge", team: true,
+      seats: [{ name: "Hank", img: "AnimalBeaver.svg" },
+              { name: "Robot", img: "AnimalDragon.svg", bot: true },
+              { name: "Lou", img: "WomanSuperGirl2.svg" },
+              { name: "Petra", img: "AnimalBird.svg", badge: "76" }] }
+  ];
+
+  var TT_TILES = [
+    { logo: "hearts_logo.png", alt: "Hearts", t: "t8", n: 341 },
+    { logo: "spades_logo.png", alt: "Spades", t: "t3", n: 212 },
+    { logo: "euchre_logo.png", alt: "Euchre", t: "t4", n: 173 }
+  ];
+
+  var MARKS = {
+    cup: '<svg class="ltMark" viewBox="0 0 18 18" aria-hidden="true"><path d="M9 3.4v11.2M4.15 6.2l9.7 5.6M13.85 6.2l-9.7 5.6" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg>',
+    star: '<svg class="ltMark" viewBox="0 0 18 18" aria-hidden="true"><path d="M9 2.4l1.95 4.2 4.55.6-3.35 3.15.85 4.5L9 12.7l-4 2.15.85-4.5L2.5 7.2l4.55-.6z" fill="#fff"/></svg>'
+  };
+
+  function seatHTML(p, n, emptyWord) {
+    if (!p) {
+      return '<div class="player playernumber' + n + ' isEmpty"><img width="32" height="32" src="avatarEmpty.png" alt="">' +
+        '<div class="playerNameContainer"><p class="playerName">' + (emptyWord || "Empty") + '</p></div></div>';
+    }
+    var extra = "";
+    if (p.badge) extra += '<span class="completionBadge">' + p.badge + '</span>';
+    if (p.liked) extra += '<span class="playerBadge isLiked"></span>';
+    if (p.bot) extra += '<span class="playerBadge isBot"></span>';
+    return '<div class="player playernumber' + n + '"><img width="32" height="32" src="' + p.img + '" alt="">' +
+      '<div class="playerNameContainer"><p class="playerName">' + p.name + '</p>' + extra + '</div></div>';
+  }
+
+  function feltHTML(c, emptyWord) {
+    var marks = "";
+    if (c.mark) {
+      c.mark.split(" ").forEach(function (m) { marks += MARKS[m] || ""; });
+      marks = '<div class="ltMarks">' + marks + '</div>';
+    }
+    var time = c.time
+      ? '<div class="ltTime"><svg class="ltRing" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="#fff" stroke-width="2"/></svg><span>' + c.time + '</span></div>'
+      : "";
+    return '<div class="tableListing ' + c.game + (c.team ? " isTeamGame" : "") + ' players4"><div class="header"><div class="playersContainer">' +
+      '<div class="spacer30"></div>' + seatHTML(c.seats[1], 1, emptyWord) + '<div class="spacer30"></div>' +
+      seatHTML(c.seats[0], 0, emptyWord) + '<div class="spacer20"></div>' + seatHTML(c.seats[2], 2, emptyWord) +
+      '<div class="spacer30"></div>' + seatHTML(c.seats[3], 3, emptyWord) + '<div class="spacer30"></div>' +
+      '<img class="ltArt art-' + c.game + '" src="' + c.art + '" alt="' + c.alt + '">' +
+      time + marks + '</div></div></div>';
+  }
+
+  var OT_BAR_GAMES = [["hearts", "Hearts", 12], ["spades", "Spades", 9], ["euchre", "Euchre", 8],
+                      ["pinochledd", "Double Deck Pinochle", 5], ["handfoot", "Hand &amp; Foot", 4]];
+
+  function barHTML(counts, allWord) {
+    var h = '<div class="otFilter" aria-label="Games"><div class="track">';
+    h += '<span class="s on" data-g="all"><span>All games';
+    if (counts) h += '<i data-n="' + counts + '">' + counts + '<em class="w">' + allWord + '</em></i>';
+    h += '</span></span>';
+    OT_BAR_GAMES.forEach(function (g) {
+      h += '<span class="s" data-g="' + g[0] + '"><span>' + g[1];
+      if (counts) h += '<i data-n="' + g[2] + '">' + g[2] + '<em class="w"></em></i>';
+      h += '</span></span>';
+    });
+    h += '<div class="ov"><span class="ovbtn"><span class="ovlab">More</span><span class="wall"></span>' +
+      '<span class="zone"><svg viewBox="0 0 8 7" aria-hidden="true"><path d="M1.2 1h5.6L4 6z" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></svg></span></span>' +
+      '<ul class="ovlist"><li class="mi" data-g="ginrummy">Gin Rummy' + (counts ? "<i>3</i>" : "") + '</li>' +
+      '<li class="mi" data-g="rummy">Rummy' + (counts ? "<i>2</i>" : "") + '</li>' +
+      '<li class="mi" data-g="canasta">Canasta' + (counts ? "<i>1</i>" : "") + '</li></ul></div>';
+    h += '<span class="thumb still"></span></div></div>';
+    return h;
+  }
+
+  function tileHTML(t) {
+    return '<div class="gtile"><div class="gimg ' + t.t + '">' +
+      '<span class="gchip"><b>' + t.n + '</b> playing<span class="gunder" aria-hidden="true"><b>' + t.n + '</b> playing</span></span>' +
+      '<img class="glogo" src="' + t.logo + '" alt="' + t.alt + '"></div></div>';
+  }
+
+  var SECTIONS = [
+    { key: "open", title: "Open tables" },
+    { key: "live", title: "Live tables" },
+    { key: "tt", title: "Trick-taking games" }
+  ];
+
+  function pick(map, key) { return map && map[key] ? map[key] : ""; }
+
+  function headHTML(sec, cfg) {
+    var t = pick(cfg.titles, sec.key) || sec.title, extra = "";
+    if (pick(cfg.tails, sec.key)) extra += '<span class="tail">' + cfg.tails[sec.key] + "</span>";
+    if (pick(cfg.cnts, sec.key)) extra += '<span class="cnt">' + cfg.cnts[sec.key] + "</span>";
+    if (pick(cfg.dots, sec.key)) {
+      extra += cfg.push
+        ? '<button class="qdot qpush" type="button" aria-label="What is this section">?</button>'
+        : '<span class="qwrap"><button class="qdot" type="button" aria-label="What is this section">?</button>' +
+          '<span class="qbub" role="note">' + cfg.dots[sec.key] + "</span></span>";
+    }
+    var line = cfg.under ? "" : (pick(cfg.subs, sec.key) || (cfg.push ? pick(cfg.dots, sec.key) : ""));
+    var sub = line
+      ? '<p class="sub">' + line + (cfg.once ? ' <button class="subx" type="button" aria-label="Hide this line">&times;</button>' : "") + "</p>"
+      : "";
+    return '<div class="shead"><div class="seam"><span class="ln"></span><span class="ttl">' + t + extra +
+      '</span><span class="ln r"></span></div>' + sub + "</div>";
+  }
+
+  function bodyHTML(sec, cfg) {
+    if (sec.key === "open") {
+      return '<div class="lobbyscope otscope">' + barHTML(46, cfg.counts ? " tables with a free seat" : " tables") +
+        '<div class="ltGrid">' + OT_CARDS.map(function (c) { return '<div class="ltCard">' + feltHTML(c, cfg.emptyWord) + "</div>"; }).join("") + "</div></div>";
+    }
+    if (sec.key === "live") {
+      if (cfg.emptyLive) {
+        return '<div class="lobbyscope otscope llscope">' + barHTML(0, "") +
+          '<div class="emptyPanel"><b>' + cfg.emptyHead + "</b><p>" + cfg.emptyBody + "</p></div></div>";
+      }
+      return '<div class="lobbyscope otscope llscope">' + barHTML(cfg.counts ? 9 : 0, " games in play") +
+        '<div class="llRow">' + LL_CARDS.map(function (c) { return '<div class="llCard ltCard">' + feltHTML(c) + "</div>"; }).join("") + "</div></div>";
+    }
+    return '<div class="ttrow">' + TT_TILES.map(tileHTML).join("") + "</div>";
+  }
+
+  function stageHTML(cfg) {
+    var top = "";
+    if (cfg.topline) top = '<p class="toporient">' + cfg.topline + "</p>";
+    if (cfg.topstrip) {
+      top = '<div class="topstrip">' + cfg.topstrip.map(function (c) {
+        return '<a href="#top">' + c[0] + " <em>" + c[1] + "</em></a>";
+      }).join("") + "</div>";
+    }
+    return '<div class="pstage ' + (cfg.cls || "") + '">' + top +
+      SECTIONS.map(function (sec) {
+        var foot = cfg.under && pick(cfg.subs, sec.key) ? '<p class="undersub">' + cfg.subs[sec.key] + "</p>" : "";
+        return '<div class="psec">' + headHTML(sec, cfg) + bodyHTML(sec, cfg) + foot + "</div>";
+      }).join("") + "</div>";
+  }
+
+  /* ===== the copy, in one place ===== */
+  var SUB_FULL = { open: "Tables with a free seat. Click one to sit down.",
+                   live: "Games already in play. Click one to watch.",
+                   tt: "Ten games where you win tricks." };
+  var SUB_SHORT = { open: "A free seat is waiting.", live: "Watch a game in play.", tt: "Ten games about tricks." };
+  var DOTS = { open: "Every tile is a real table with a free seat. Click a seat and you are in the game.",
+               live: "These games are running now. Click a tile to watch from behind the table.",
+               tt: "Trick-taking games are the ones where each round is a trick and the best card takes it." };
+
+  var VARIANTS = [
+    { sec: "secZero", name: "The page today", tag: "now", tagcls: "now",
+      note: "The title alone on the suit seam, which is what the mockup runs. Costs <b>nothing</b>, teaches <b>nothing</b>. A returning player never has to read it, and a first time player has to guess what an open table is.",
+      cfg: {} },
+    { sec: "secZero", name: "The same titles with no seam", tag: "reference",
+      note: "The three titles left in the flow at 24px, for reference. It is <b>about 39px shorter per section</b> than the seam, so the seam is already spending space to look calm. Says the same nothing on every visit. Every variation below is drawn on the seam, because that is what the page runs.",
+      cfg: { cls: "headplain" } },
+
+    { sec: "secLine", name: "Quiet line", tag: "pick", tagcls: "pick",
+      note: "One short sentence under each title, 15px in the muted grey. Costs <b>27px per section and 81px on the page</b>. It never goes away, so a returning player reads the same three sentences forever.",
+      copy: SUB_FULL, cfg: { subs: SUB_FULL } },
+    { sec: "secLine", name: "Small line",
+      note: "The same sentences at 13.5px in the faded grey. Costs <b>25px per section and 75px on the page</b>. Quieter, still permanent, and small enough that some people will not read it at all.",
+      copy: SUB_FULL, cfg: { cls: "subsmall", subs: SUB_FULL } },
+    { sec: "secLine", name: "Line at reading size",
+      note: "16px in the softer ink, near body size. Costs <b>30px per section and 90px on the page</b>. It reads as a real sentence, which is both the point and the price, because three of them start to make the page look like an article. Permanent.",
+      copy: SUB_FULL, cfg: { cls: "subloud", subs: SUB_FULL } },
+    { sec: "secLine", name: "Short line",
+      note: "Four words instead of a sentence. Costs <b>27px per section and 81px on the page</b>, the same as the quiet line, because a line is a line. It says less, so it is easier to skip on a second visit, but it is still there.",
+      copy: SUB_SHORT, cfg: { subs: SUB_SHORT } },
+    { sec: "secLine", name: "Line above the title",
+      note: "A small line over the title with the title still the loud thing. Costs <b>25px per section and 75px on the page</b>. Some read the small line first and some jump straight to the title, so the order is not reliable. Permanent.",
+      copy: { open: "Room at these tables", live: "Running right now", tt: "Ten games about tricks" },
+      cfg: { cls: "subabove", subs: { open: "Room at these tables", live: "Running right now", tt: "Ten games about tricks" } } },
+    { sec: "secLine", name: "Line beside the title", tag: "free", tagcls: "free",
+      note: "A few words after the title on the title's own line. Costs <b>no vertical space at all</b>. The price is width, because the opening in the seam grows by the width of the words and the seam is already the busiest line on the page. Permanent.",
+      copy: { open: "with a free seat", live: "already in play", tt: "ten of them" },
+      cfg: { tails: { open: "with a free seat", live: "already in play", tt: "ten of them" } } },
+
+    { sec: "secEarns", name: "Two of the three", tag: "pick", tagcls: "pick",
+      note: "A line on Open tables and Live tables, nothing on Trick-taking, because a row of game tiles explains itself. Costs <b>54px on the page instead of 81px</b>. The rhythm goes uneven, which you can see here, and the two lines are permanent.",
+      copy: { open: SUB_FULL.open, live: SUB_FULL.live },
+      cfg: { subs: { open: SUB_FULL.open, live: SUB_FULL.live } } },
+    { sec: "secEarns", name: "One line only",
+      note: "Only Live tables gets a line, because watching a game you are not in is the one thing nobody guesses. Costs <b>27px on the page</b>. It is permanent, but it is one line, which is cheap to keep forever.",
+      copy: { live: SUB_FULL.live },
+      cfg: { subs: { live: SUB_FULL.live } } },
+
+    { sec: "secTitle", name: "Longer titles", tag: "free", tagcls: "free",
+      note: "The title does the work. Costs <b>no vertical space</b>. The seam opening grows, the short names people use in conversation go away, and Trick-taking games was already clear so it does not change. It survives every visit because it is the title.",
+      copy: { open: "Tables you can join", live: "Games in play, watch one", tt: "Trick-taking games" },
+      cfg: { titles: { open: "Tables you can join", live: "Games in play, watch one" } } },
+    { sec: "secTitle", name: "Verb titles",
+      note: "The title becomes an instruction. Costs <b>no vertical space</b>. The page starts to read as a list of commands, and the words a player would search for are gone from the headings. Permanent, for better and worse.",
+      copy: { open: "Join a table", live: "Watch a game", tt: "Browse trick-taking games" },
+      cfg: { titles: { open: "Join a table", live: "Watch a game", tt: "Browse trick-taking games" } } },
+
+    { sec: "secHover", name: "Hint on the title", tag: "free", tagcls: "free",
+      note: "Nothing at rest. Point at a title, or tab to it, and the sentence fades in under the seam. Costs <b>no space ever</b> and nothing on a second visit. It also does not exist on a touch screen, and a newcomer has no reason to point at a title. Hover a title to see it.",
+      copy: SUB_FULL, cfg: { cls: "subfloat subhover", subs: SUB_FULL } },
+    { sec: "secHover", name: "Hint on the whole section",
+      note: "The same line, but pointing anywhere in the section brings it. Costs <b>no space</b> and nothing on a second visit. It fires on the way to a tile, so it blinks on and off while you move, and it still does not exist on touch. Hover anywhere in a section to see it.",
+      copy: SUB_FULL, cfg: { cls: "subfloat subsection", subs: SUB_FULL } },
+
+    { sec: "secDot", name: "A dot you can ask", tag: "free", tagcls: "free",
+      note: "A small question mark after the title. Point at it or tab to it and one sentence opens over the page. Costs <b>no vertical space</b> and nothing on a second visit. Most people never ask, so most people never learn, and it puts one more object on the seam.",
+      copy: DOTS, cfg: { dots: DOTS } },
+    { sec: "secDot", name: "A dot that opens in place",
+      note: "The same dot, but the sentence opens under the seam and pushes the section down <b>27px while it is open</b>. Costs nothing at rest and nothing on a second visit. The page moves when it is used, which is the price. Click a dot to open it.",
+      copy: DOTS, cfg: { cls: "qpush", push: true, dots: DOTS } },
+
+    { sec: "secCount", name: "The count says it", tag: "pick", tagcls: "pick",
+      note: "The bar under Open tables already carries a count, so let the count say what the tables are. Costs <b>no vertical space</b>, because the bar is there either way. The live bar has no count today, so that number is a new one. It only works on the two sections that have a bar, and it stays true on every visit because it is a live number.",
+      copy: { open: "All games &middot; 46 tables with a free seat", live: "All games &middot; 9 games in play" },
+      cfg: { counts: true } },
+    { sec: "secCount", name: "The count in the seam",
+      note: "A small bold count after the title on the rule. Costs <b>no vertical space</b>. It says how many, not what they are, so it answers half the question. Cheap, permanent, and it works on the catalog sections too.",
+      copy: { open: "46 with a free seat", live: "9 running now", tt: "10 games" },
+      cfg: { cnts: { open: "46 with a free seat", live: "9 running now", tt: "10 games" } } },
+
+    { sec: "secOnce", name: "A line that shows once",
+      note: "The same sentence with a small cross. It shows on a first visit and never comes back once it is closed, or once the player has finished a game. Costs <b>27px per section on the first visit and nothing after</b>. It needs a stored flag, and a player who closed it too fast can never read it again. Click a cross to close one.",
+      copy: SUB_FULL, cfg: { once: true, subs: SUB_FULL } },
+    { sec: "secOnce", name: "The empty section teaches",
+      note: "When a section has nothing in it, the panel that fills the hole says what the section is for. Costs <b>no space</b> when the page is busy, and the stage measures shorter than today only because the live row is empty in this drawing. It also never wears out, because it only ever speaks when there is nothing else to read. The trouble is that it teaches at the wrong moment, because a full page teaches nobody and an empty page teaches everybody.",
+      copy: { live: "No game is running right now.<br>Live tables are games you can watch while they play. Look again in a few minutes." },
+      cfg: { emptyLive: true, emptyHead: "No game is running right now",
+             emptyBody: "Live tables are games you can watch while they play. Look again in a few minutes." } },
+
+    { sec: "secOne", name: "One line for the whole page",
+      note: "One sentence near the top that names all three sections. Costs <b>63px once</b>, the line and the clear space it needs, instead of 81px spread over the page. It sits far from the thing it names, so by the time you scroll to Live tables you have forgotten it. Permanent.",
+      copy: { top: "Below you find tables with a free seat, games in play you can watch, and all our games sorted by kind." },
+      cfg: { topline: "Below you find tables with a free seat, games in play you can watch, and all our games sorted by kind." } },
+    { sec: "secOne", name: "Three chips at the top",
+      note: "Three small chips at the top, one per section, each a link down the page. Costs <b>71px once</b>. It teaches and it navigates at the same time, and the price is that it says every section name twice on one screen. Permanent.",
+      copy: { top: "Open tables, a free seat &middot; Live tables, watch one &middot; All games, by kind" },
+      cfg: { topstrip: [["Open tables", "a free seat"], ["Live tables", "watch one"], ["All games", "by kind"]] } },
+
+    { sec: "secRow", name: "Sit here on every empty seat", tag: "free", tagcls: "free",
+      note: "Nothing is added to the head. The empty seats read Sit here instead of Empty, so the row says what an open table is at the moment a player is already looking at it. Costs <b>no vertical space</b> and nothing on a second visit, because it is a label on a thing, not a lesson. It only speaks in the section that has empty seats, so Live tables is left exactly as it was.",
+      copy: { open: "Sit here, on every empty seat, instead of Empty" },
+      cfg: { emptyWord: "Sit here" } },
+    { sec: "secRow", name: "The line under the row",
+      note: "The same sentence under the tiles instead of over them, so the tiles are read first and the line explains what was just seen. Costs <b>31px per section and 93px on the page</b>, more than the line above. It reads as a caption, which many people skip, and it is permanent.",
+      copy: SUB_FULL, cfg: { cls: "subunder", under: true, subs: SUB_FULL } }
+  ];
+
+  /* ===== draw ===== */
+  function copyBlock(v) {
+    if (!v.copy) return "";
+    var rows = [];
+    ["top", "open", "live", "tt"].forEach(function (k) {
+      if (!v.copy[k]) return;
+      var lab = k === "top" ? "The line" : (k === "open" ? "Open tables" : (k === "live" ? "Live tables" : "Trick-taking"));
+      rows.push("<i>" + lab + "</i> &nbsp;" + v.copy[k]);
+    });
+    return '<p class="vcopy">' + rows.join("<br>") + "</p>";
+  }
+
+  VARIANTS.forEach(function (v, i) {
+    var host = document.getElementById(v.sec);
+    if (!host) return;
+    var card = document.createElement("div");
+    card.className = "vcard";
+    card.innerHTML = '<h3>' + v.name + (v.tag ? ' <span class="tag ' + (v.tagcls || "") + '">' + v.tag + "</span>" : "") +
+      '<span class="vmeas" data-i="' + i + '">measuring</span></h3>' +
+      '<p class="vnote">' + v.note + "</p>" + copyBlock(v) + stageHTML(v.cfg);
+    host.appendChild(card);
+  });
+
+  /* the dot that opens in place, and the cross that closes a first visit line */
+  document.addEventListener("click", function (e) {
+    var d = e.target.closest(".qdot.qpush");
+    if (d) { d.closest(".shead").classList.toggle("isOpen"); return; }
+    var x = e.target.closest(".subx");
+    if (x) { x.closest(".sub").style.display = "none"; }
+  });
+
+  /* how much taller each variation makes the page, measured rather than guessed */
+  function measure() {
+    var stages = document.querySelectorAll(".pstage");
+    if (!stages.length) return;
+    var base = stages[0].getBoundingClientRect().height;
+    document.querySelectorAll(".vmeas").forEach(function (m) {
+      var stage = m.closest(".vcard").querySelector(".pstage");
+      if (!stage) { m.textContent = ""; return; }
+      var d = Math.round(stage.getBoundingClientRect().height - base);
+      m.textContent = d === 0 ? "same height as today" : (d > 0 ? "+" + d + "px on the page" : d + "px on the page");
+    });
+  }
+  if (document.fonts && document.fonts.ready) { document.fonts.ready.then(measure); } else { window.addEventListener("load", measure); }
+  setTimeout(measure, 1200);
+
+  /* one button: every stage shrunk, so the rhythm of all of them can be scanned at once */
+  var hb = document.getElementById("hiddenBtn");
+  if (hb) {
+    hb.addEventListener("click", function () {
+      document.body.classList.toggle("showhidden");
+      hb.classList.toggle("on");
+      hb.textContent = document.body.classList.contains("showhidden") ? "Hide it again" : "Show what is hidden";
+    });
+  }
+
+  var btn = document.getElementById("shrinkBtn");
+  if (btn) {
+    btn.addEventListener("click", function () {
+      document.body.classList.toggle("shrunk");
+      btn.classList.toggle("on");
+      btn.textContent = document.body.classList.contains("shrunk") ? "Back to full size" : "Shrink every stage";
+    });
+  }
+}());
+</script>
+</body>
+</html>
