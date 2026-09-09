@@ -338,7 +338,28 @@
   .sm .pk .sq { display: block; aspect-ratio: 1; border-radius: 8px; background: center / cover no-repeat; box-shadow: inset 0 0 0 1px #343A40; }
   .sm .pk.avs .pi :is(img,svg) { display: block; width: 100%; aspect-ratio: 1; filter: drop-shadow(1px 0 #252525) drop-shadow(-1px 0 #252525) drop-shadow(0 1px #252525) drop-shadow(0 -1px #252525); }
   .sm .pk .pi.on .pair, .sm .pk .pi.on .sq { box-shadow: 0 0 0 4px #66A80F; }
-  .sm .pk.avs .pi .ablot { position: absolute; inset: 0; }
+  .sm .pk.avs .pi .ablot { position: absolute; inset: 0; z-index: 1; }
+
+  /* Which one is chosen. The knob picks the treatment; the tile sits behind the drawing, the tick
+     in front of it, so a playing animation is marked the same way the still is. */
+  .sm { --sm-tint: #e0f5e6; }
+  .sm .pk.avs .pi > img { position: relative; z-index: 1; }
+  .sm .pk.avs .pi .tk { display: none; position: absolute; z-index: 3; width: 26%; height: 26%; color: #fff; }
+  .sm .pk.avs .pi.on::before { content: ""; position: absolute; z-index: 0; }
+  .sm .pk.avs .pi.on::after { content: ""; position: absolute; z-index: 2; }
+
+  body.avpick-today .sm .pk.avs .pi.on img { filter: drop-shadow(1px 0 #252525) drop-shadow(-1px 0 #252525) drop-shadow(0 1px #252525) drop-shadow(0 -1px #252525) drop-shadow(0 -4px 0 #5C940D) drop-shadow(0 4px 0 #5C940D) drop-shadow(-4px 0 0 #5C940D) drop-shadow(4px 0 0 #5C940D); }
+  body.avpick-sil .sm .pk.avs .pi.on img { filter: drop-shadow(1px 0 #252525) drop-shadow(-1px 0 #252525) drop-shadow(0 1px #252525) drop-shadow(0 -1px #252525) drop-shadow(0 -2px 0 var(--sm-accent)) drop-shadow(0 2px 0 var(--sm-accent)) drop-shadow(-2px 0 0 var(--sm-accent)) drop-shadow(2px 0 0 var(--sm-accent)); }
+  body:is(.avpick-tint, .avpick-tinttick, .avpick-tintticktr) .sm .pk.avs .pi.on::before { inset: -6px; border-radius: 10px; background: var(--sm-tint); }
+  body.avpick-tintring .sm .pk.avs .pi.on::before { inset: -6px; border-radius: 10px; background: var(--sm-tint); box-shadow: inset 0 0 0 2px var(--sm-accent); }
+  body.avpick-ring .sm .pk.avs .pi.on::before { inset: -6px; border-radius: 10px; box-shadow: inset 0 0 0 2px var(--sm-accent); }
+  body.avpick-ringink .sm .pk.avs .pi.on::before { inset: -6px; border-radius: 10px; box-shadow: inset 0 0 0 2px var(--sm-ink); }
+  body.avpick-disc .sm .pk.avs .pi.on::before { inset: -5px; border-radius: 50%; background: var(--sm-tint); }
+  body:is(.avpick-tick, .avpick-tintticktr) .sm .pk.avs .pi.on::after { right: -3px; top: -3px; width: 32%; height: 32%; border-radius: 50%; background: var(--sm-accent); box-shadow: 0 0 0 2px var(--sm-paper); }
+  body.avpick-tinttick .sm .pk.avs .pi.on::after { right: -3px; bottom: -3px; width: 32%; height: 32%; border-radius: 50%; background: var(--sm-accent); box-shadow: 0 0 0 2px var(--sm-paper); }
+  body:is(.avpick-tick, .avpick-tintticktr) .sm .pk.avs .pi.on .tk { display: block; right: -1px; top: -1px; }
+  body.avpick-tinttick .sm .pk.avs .pi.on .tk { display: block; right: -1px; bottom: -1px; }
+  body.avpick-bar .sm .pk.avs .pi.on::after { left: 16%; right: 16%; bottom: -7px; height: 3px; border-radius: 2px; background: var(--sm-accent); }
   .sm .pk .pn { display: block; text-align: center; font-size: 14px; line-height: 20px; color: var(--sm-muted); margin-top: 4px; }
   .sm .strip { padding: 8px 0 4px; }
   .sm .strip .sh { padding-top: 8px; }
@@ -1059,6 +1080,7 @@
     <div class="swhead">The avatars</div>
     <label class="ctl"><span>Border inside the drawing</span><select id="kn-avborder"></select></label>
     <label class="ctl"><span>Outline around the avatar</span><select id="kn-avedge"></select></label>
+    <label class="ctl"><span>How the chosen one is marked</span><select id="kn-avpick"></select></label>
     <div class="swnote">The border is drawn into the SVG, on the seam wherever two materials meet. The outline is the coat around the whole avatar, drawn by a CSS filter. Hover an avatar to load its win, think and lose animations; click it to play one and click again for the next. The animations carry the v9 border, and the plain option strips it back off.</div>
   </div>
   <div class="swgroup">
@@ -1706,10 +1728,11 @@ function wallGroups(v, cols) {
   if (typeof WALL_GROUPS === "undefined") return sectionHTML("Fabrics", wallGrid(v, cols, 6)) + sectionHTML("Assorted", wallGrid(v, cols));
   return WALL_GROUPS.filter(function (g) { return g[2] > g[1]; }).map(function (g) { return sectionHTML(g[0], wallGrid(v, cols, g[2] - g[1], g[1])); }).join("");
 }
+var TICKMARK = '<svg class="tk" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 12.5l5 5 10-11" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 function avatarGrid(v, cols, n, from) {
   var list = AVATARS.slice(from || 0, n ? (from || 0) + n : AVATARS.length);
   return '<div class="pk avs" style="--cols:' + (cols || 5) + '">' + list.map(function (a, i) {
-    return '<div class="pi' + (a === "AnimalSheep" ? " on" : "") + '" data-av="' + a + '"><img src="' + AVDIR() + a + '.svg" alt=""></div>';
+    return '<div class="pi' + (a === "AnimalSheep" ? " on" : "") + '" data-av="' + a + '"><img src="' + AVDIR() + a + '.svg" alt="">' + TICKMARK + '</div>';
   }).join("") + '</div>';
 }
 function avatarGroups(v, cols) {
@@ -1915,7 +1938,7 @@ function buildModal(v, lab) {
 /* ===== round three: one base box, and knobs in the chooser at the right (hover the bottom right) ===== */
 var FBTNS = [["original", "Today's: #FFE066, orange ink, 16% ring"], ["official", "Official (6 Sep 2026): flat #FFD75A, leather ink, 70% ring"]];
 var curFbtn = "official", curDesign = "current";
-var KN = { avborder: "bordered-v9", avedge: "game1", page: "look", sub: "avatar", player: "guest", tabs: "traybig", heads: "cardabove", lines: "short", sw: "seg2", bd: "black64blur4", width: 640, dnav: "cardsflat", tiles: 88, rankname: "Leaderboards", guestrank: "grey", pt: "rise", rows: "tighter", names: "exact", ranknote: "headright", rankcols: "two12", xy: "edge", name: "Game", frame: "desk", cap: "off", modal: "on", close: "out", pad: 12, cardr: 16, trayc: "band" };
+var KN = { avborder: "bordered-v9", avedge: "game1", avpick: "tinttick", page: "look", sub: "avatar", player: "guest", tabs: "traybig", heads: "cardabove", lines: "short", sw: "seg2", bd: "black64blur4", width: 640, dnav: "cardsflat", tiles: 88, rankname: "Leaderboards", guestrank: "grey", pt: "rise", rows: "tighter", names: "exact", ranknote: "headright", rankcols: "two12", xy: "edge", name: "Game", frame: "desk", cap: "off", modal: "on", close: "out", pad: 12, cardr: 16, trayc: "band" };
 var LAB = { player: "guest", page: "table", lookPage: "avatar", rerender: function () { show(); } };
 /* the avatars' folder: the files as they ship, or the copies with the faint border baked into the SVG (avatar-svg-lab.html, the softer set's row 13: a 2-unit centred stroke, black at 15%, on the parts; shading, ink and tiny shapes left alone) */
 function AVDIR() { return KN.avborder === "plain" ? "game-assets/avatars/" : "game-assets/avatars-" + KN.avborder + "/"; }
@@ -1946,6 +1969,7 @@ function applyBody() {
   if (KN.modal === "off" || curDesign === "original") cls.push("modal-off");
   if (KN.cap === "off") cls.push("cap-off");
   if (KN.avedge !== "game") cls.push("avedge-" + KN.avedge);
+  cls.push("avpick-" + KN.avpick);
   document.body.className = cls.join(" ");
   var t = document.getElementById("design-toggle");
   t.innerHTML = curDesign === "original" ? "Showing the table alone<small>click to show the settings box</small>" : "Showing the settings box<small>click to see the table alone</small>";
@@ -2000,10 +2024,22 @@ function flipLastKnob() {
   KN[LASTKNOB.key] = KN[LASTKNOB.key] === LASTKNOB.next ? LASTKNOB.prev : LASTKNOB.next;
   syncSelects(); if (LASTKNOB.after) LASTKNOB.after(); show();
 }
-function syncSelects() { ["avborder", "avedge", "page", "sub", "player", "tabs", "heads", "lines", "sw", "bd", "width", "dnav", "name", "frame", "cap", "modal", "close", "pad", "cardr"].forEach(function (k) { var el = document.getElementById("kn-" + k); if (el) el.value = String(KN[k]); }); }
+function syncSelects() { ["avborder", "avedge", "avpick", "page", "sub", "player", "tabs", "heads", "lines", "sw", "bd", "width", "dnav", "name", "frame", "cap", "modal", "close", "pad", "cardr"].forEach(function (k) { var el = document.getElementById("kn-" + k); if (el) el.value = String(KN[k]); }); }
 buildSel("kn-page", [["table", "Options"], ["look", "Design"], ["account", "Account"]], "page");
 buildSel("kn-avedge", [["game1", "The game's outline as one true 1px line (blur 1 cut at 1.0px out: measured 1.0 to 1.2px; round, the same width all round)"], ["game15", "The same line at 1.5px"], ["gamein", "The game's line inside the silhouette (1px, the shape does not grow)"], ["game", "The game's outline as today (four 1px shadows, which double up at the diagonals)"], ["front", "The frontpage's pair, solid: the 1px ring in solid #252525 and the inner rim at white 8%, no translucent shadow"], ["frontamb", "The frontpage's pair as on the frontpage: the rim at 8%, the ghost ring at 32%, its ambient shadow"]], "avedge", function () { applyBody(); });
 buildSel("kn-avborder", [["bordered-v9", "v9: the darker side even when it is the grey, a heavier line round the mouth, and a tighter read of what counts as one material"], ["bordered", "v8: the border on the seam wherever two materials meet, on the darker side"], ["plain", "As they ship today, no border"]], "avborder", function () { render(); });
+buildSel("kn-avpick", [
+  ["tinttick", "A tinted tile and a tick, bottom right"],
+  ["tintticktr", "A tinted tile and a tick, top right"],
+  ["tick", "A tick, top right, nothing else"],
+  ["tintring", "A tinted tile with an outline"],
+  ["ring", "An outline round the tile"],
+  ["tint", "A tinted tile"],
+  ["ringink", "An outline round the tile, in ink"],
+  ["disc", "A disc behind"],
+  ["bar", "A bar underneath"],
+  ["sil", "A thin ring on the drawing itself"],
+  ["today", "The ring the site has today, 4px olive on the drawing"]], "avpick");
 buildSel("kn-sub", [["avatar", "Avatar"], ["wallpaper", "Wallpaper"], ["deck", "Deck"]], "sub", function () { KN.page = "look"; syncSelects(); });
 buildSel("kn-player", [["guest", "A guest"], ["registered", "A registered player"], ["subscriber", "A subscriber (no ads)"], ["arkadium", "A guest in the Arkadium embed"]], "player");
 buildSel("kn-close", [["out", "Outside, the white cross (today)"], ["outround", "Outside, a white round button on the corner"], ["in", "Inside, at the end of the tab row"], ["inround", "Inside, a round button in the corner"]], "close");
