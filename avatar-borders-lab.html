@@ -1076,12 +1076,17 @@
   </filter>
   <!-- the same line, cut at the same 1.0px out, with the alpha's corners rounded before the cut:
        the blur is fatter and the slope rises with it so the cut stays as hard and the line as thin.
-       A bust's foot then finishes on a curve instead of a right angle. 1.8 is as far as it goes:
-       past about 2.5 the blur takes the line off whiskers and hair ends, which are thin enough to
-       fall under the threshold on their own. This is what the settings picker ships. -->
+       A bust's foot then finishes on a curve instead of a right angle. This is what the settings
+       picker ships.
+
+       1.35 is the ceiling, and the number that sets it is 0.25. The ink is the blurred alpha cut
+       at a level, and a right-angled convex corner only ever reaches a quarter of full coverage,
+       so any cut above 0.25 leaves that corner bare. The art is merged over the ink, so what shows
+       there is the drawing itself, outside its own line. 1.35 cuts at 0.229. 1.8 cut at 0.289, and
+       on magenta you could see a shoulder tip and the end of a hair mass jut straight out. -->
   <filter id="avatarLineRound" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB">
-    <feGaussianBlur in="SourceAlpha" stdDeviation="1.8" result="blur"/>
-    <feComponentTransfer in="blur" result="fat"><feFuncA type="linear" slope="21.27" intercept="-5.654"/></feComponentTransfer>
+    <feGaussianBlur in="SourceAlpha" stdDeviation="1.35" result="blur"/>
+    <feComponentTransfer in="blur" result="fat"><feFuncA type="linear" slope="17.99" intercept="-3.628"/></feComponentTransfer>
     <feFlood flood-color="#252525" result="inkf"/><feComposite in="inkf" in2="fat" operator="in" result="outline"/>
     <feMerge><feMergeNode in="outline"/><feMergeNode in="SourceGraphic"/></feMerge>
   </filter>
@@ -2120,7 +2125,7 @@ function flipLastKnob() {
 }
 function syncSelects() { ["avborder", "avedge", "avpick", "page", "sub", "player", "tabs", "heads", "lines", "sw", "bd", "width", "dnav", "name", "frame", "cap", "modal", "close", "pad", "cardr"].forEach(function (k) { var el = document.getElementById("kn-" + k); if (el) el.value = String(KN[k]); }); }
 buildSel("kn-page", [["table", "Options"], ["look", "Design"], ["account", "Account"]], "page");
-buildSel("kn-avedge", [["game1", "The game's outline as one true 1px line (blur 1 cut at 1.0px out: measured 1.0 to 1.2px; round, the same width all round)"], ["round", "The same line with the corners rounded before the cut (blur 1.8, the slope raised to match; a bust's foot finishes on a curve; what the settings picker ships)"], ["game15", "The same line at 1.5px"], ["gamein", "The game's line inside the silhouette (1px, the shape does not grow)"], ["game", "The game's outline as today (four 1px shadows, which double up at the diagonals)"], ["front", "The frontpage's pair, solid: the 1px ring in solid #252525 and the inner rim at white 8%, no translucent shadow"], ["frontamb", "The frontpage's pair as on the frontpage: the rim at 8%, the ghost ring at 32%, its ambient shadow"]], "avedge", function () { applyBody(); });
+buildSel("kn-avedge", [["game1", "The game's outline as one true 1px line (blur 1 cut at 1.0px out: measured 1.0 to 1.2px; round, the same width all round)"], ["round", "The same line with the corners rounded before the cut (blur 1.35, the slope raised to match; a bust's foot finishes on a curve; what the settings picker ships. Past 1.35 the cut passes 0.25 and a right-angled corner is left bare, so the art shows outside its own line)"], ["game15", "The same line at 1.5px"], ["gamein", "The game's line inside the silhouette (1px, the shape does not grow)"], ["game", "The game's outline as today (four 1px shadows, which double up at the diagonals)"], ["front", "The frontpage's pair, solid: the 1px ring in solid #252525 and the inner rim at white 8%, no translucent shadow"], ["frontamb", "The frontpage's pair as on the frontpage: the rim at 8%, the ghost ring at 32%, its ambient shadow"]], "avedge", function () { applyBody(); });
 buildSel("kn-avborder", [["bordered-v9", "v9: the darker side even when it is the grey, a heavier line round the mouth, and a tighter read of what counts as one material"], ["bordered", "v8: the border on the seam wherever two materials meet, on the darker side"], ["plain", "As they ship today, no border"]], "avborder", function () { render(); });
 buildSel("kn-avpick", [
   ["tinttick", "A tinted tile and a tick, bottom right"],
