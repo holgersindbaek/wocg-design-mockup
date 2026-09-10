@@ -2052,9 +2052,9 @@
   /* the title explainer (section-intro-lab.html, "Hint on the title" and its round two fixes): point at a seam
      title, or tab to it, and one short sentence fades in under it. The line hangs off the title inside .divhead,
      which is an overlay out of the flow, so the section's height is the same whether the line shows or not. It
-     sits 8px under the title's box and stands 22px tall, inside the 47px of clear air above the game bar. It
-     comes the moment the pointer lands, and it holds .45s after the pointer leaves, so a small movement does
-     not flicker it. Off by default. */
+     sits 8px under the title's box and stands 22px tall, inside the clear air under the seam: 47px above a game
+     bar, 45px above the game tiles and above the about prose. It comes the moment the pointer lands, and it
+     holds .45s after the pointer leaves, so a small movement does not flicker it. Off by default. */
   .divhead .ttlsub { position: absolute; top: 100%; margin-top: 8px; white-space: nowrap;
     font-family: "BuloRounded", "Verdana", "Arial", "Helvetica", sans-serif;
     font-size: 15px; line-height: 22px; font-weight: normal; color: var(--muted);
@@ -8617,14 +8617,16 @@
      exactly as tall with the line showing as without it. The switcher is off by default, and off means the
      sentences are not in the page at all. ── */
   (function () {
-    /* one sentence per seam title, and only where a sentence adds something the title does not already say.
-       Classic games and Behind the games get none: four named tiles and a paragraph of prose say it themselves. */
+    /* one sentence per seam title, keyed by the title's own words. Every seam title carries one, Classic games
+       and Behind the games included. */
     var LINES = {
-      "Join a table": "Real people, and a seat free.",
-      "Watch a game": "Already under way. Just watch.",
-      "Leaderboard & daily deal": "Both follow the game you pick.",
-      "Trick-taking games": "The best card takes the trick.",
-      "Rummy games": "Collect sets and runs."
+      "Join a table": "Real tables with a free seat.",
+      "Watch a game": "Watch a game or queue for a seat.",
+      "Leaderboard & daily deal": "Rankings and today's deal.",
+      "Trick-taking games": "One card each. Best card wins.",
+      "Rummy games": "Collect matching sets and runs.",
+      "Classic games": "Games you probably already know.",
+      "Behind the games": "How it works and who made it."
     };
     var HOSTS = ["#openTablesTop", "#liveTablesTop", "#sec-tt", "#sec-rummy", "#sec-classic", "#sec-about"];
     var seq = 0;
