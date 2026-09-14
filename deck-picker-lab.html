@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Deck picker lab &middot; six ways to show a deck in the settings</title>
+<!--
+  The Design page shows a deck as one queen of hearts with its back behind, in a 192px tile, three
+  to a row. Six ways of showing the same seven decks, all at the real tile width so the comparison
+  is honest. Card art from static/pieces/card, copied into deck-lab-assets/.
+  Press a number 1-6 to see one on its own; 0 shows them all.
+-->
+<style>
+  :root {
+    --paper: #F8F9FA; --ink: #212529; --muted: #868E96; --line: #DEE2E6;
+    --tile: 192px;                 /* the real deck tile: three columns in the settings card */
+    --radius: 12px;
+    --felt: url("deck-lab-assets/felt.jpg");
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink);
+         font: 14px/1.5 -apple-system, "Helvetica Neue", Arial, sans-serif; }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 28px 20px 80px; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  .sub { color: var(--muted); margin: 0 0 28px; }
+  section { margin: 0 0 40px; }
+  section.hidden { display: none; }
+  h2 { font-size: 15px; margin: 0 0 2px; }
+  h2 b { color: var(--muted); font-weight: 400; margin-left: 6px; }
+  .note { color: var(--muted); font-size: 12.5px; margin: 0 0 14px; max-width: 620px; }
+  .grid { display: grid; grid-template-columns: repeat(3, var(--tile)); gap: 14px; }
+  .tile { width: var(--tile); aspect-ratio: 1; position: relative; border-radius: var(--radius);
+          background: #fff; box-shadow: 0 0 0 1px rgba(0,0,0,.14); overflow: hidden; cursor: pointer; }
+  .tile .nm { position: absolute; left: 0; right: 0; bottom: 0; padding: 4px 8px; font-size: 11px;
+              font-weight: 600; color: #fff; background: rgba(0,0,0,.45); text-align: center; }
+  .card { position: absolute; border-radius: 7px; background: 50% 50% / 100% 100% no-repeat;
+          box-shadow: rgba(0,0,0,.28) 0 2px 6px, rgba(0,0,0,.18) 0 0 0 1px inset; }
+
+  /* 1 today */
+  .t1 .card.face { width: 58%; left: 8%;  top: 14%; aspect-ratio: 318/444; }
+  .t1 .card.back { width: 58%; right: 8%; top: 22%; aspect-ratio: 318/444; z-index: -1; }
+  .t1 .tile { background: #E9ECEF; }
+
+  /* 2 fan of four */
+  .t2 .tile { background: #E9ECEF; }
+  .t2 .fan { position: absolute; inset: 0; }
+  .t2 .card { width: 46%; aspect-ratio: 318/444; top: 50%; left: 50%; transform-origin: 50% 120%; }
+
+  /* 3 the four aces */
+  .t3 .tile { background: #E9ECEF; display: flex; align-items: center; justify-content: center; gap: 2px; padding: 10px; }
+  .t3 .card { position: static; width: 23%; aspect-ratio: 318/444; box-shadow: rgba(0,0,0,.22) 0 1px 3px; }
+
+  /* 4 face and back, tilted */
+  .t4 .tile { background: #E9ECEF; }
+  .t4 .card { width: 52%; aspect-ratio: 318/444; top: 16%; }
+  .t4 .card.back { left: 8%;  transform: rotate(-9deg); }
+  .t4 .card.face { right: 8%; transform: rotate(7deg); }
+
+  /* 5 on the felt */
+  .t5 .tile { background: #327333 var(--felt) 0 0 / 120px 120px repeat; }
+  .t5 .fan { position: absolute; inset: 0; }
+  .t5 .card { width: 46%; aspect-ratio: 318/444; top: 50%; left: 50%; transform-origin: 50% 120%; }
+
+  /* 6 one court card, large */
+  .t6 .tile { background: #E9ECEF; }
+  .t6 .card.face { width: 64%; aspect-ratio: 318/444; left: 50%; top: 46%; transform: translate(-50%, -50%); }
+  .t6 .card.back { width: 26%; aspect-ratio: 318/444; right: 7%; bottom: 16%; }
+
+  .keys { position: fixed; left: 12px; bottom: 12px; background: rgba(255,255,255,.94); padding: 8px 11px;
+          border-radius: 9px; font-size: 12px; box-shadow: 0 1px 6px rgba(0,0,0,.25); }
+  .keys b { font-family: ui-monospace, Menlo, monospace; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Showing a deck in the settings</h1>
+  <p class="sub">The same seven decks, six ways, every tile at the real 192px the Design page gives it.</p>
+  <div id="out"></div>
+</div>
+<div class="keys"><b>1-6</b> one on its own &nbsp; <b>0</b> all &nbsp; <b>f</b> felt behind everything</div>
+<script>
+var DECKS = [
+  ["classic", "Classic"], ["anglo", "Anglo-American"], ["egypt", "Egypt"],
+  ["ornamental", "Ornamental"], ["tango", "Tango"], ["torres", "Torres"], ["ninaste", "Ninaste"]
+];
+var OPTIONS = [
+  { cls: "t1", title: "1. Today", note: "One queen of hearts with the back behind it. Reads as two rectangles; the face is small enough that the court art, which is what separates these decks, is hard to judge.",
+    draw: function (d) { return card(d, "12h", "face") + card(d, "back", "back"); } },
+  { cls: "t2", title: "2. A fan of four", note: "The deck as a hand. Shows four faces and the back together, and the pips and court art at the size a hand of cards actually reads.",
+    draw: function (d) { return fan(d, ["back", "1s", "13h", "10d"]); } },
+  { cls: "t3", title: "3. The four aces", note: "Every suit, so the red and the black of a deck are both visible. Good for telling two similar decks apart, weak on court art.",
+    draw: function (d) { return card(d, "1s") + card(d, "1h") + card(d, "1d") + card(d, "1c"); } },
+  { cls: "t4", title: "4. Face and back, tilted", note: "Today's pair, but turned and lifted so both read as cards rather than as panels. The smallest change from what is there now.",
+    draw: function (d) { return card(d, "back", "back") + card(d, "13h", "face"); } },
+  { cls: "t5", title: "5. The fan, on the felt", note: "The same fan on the table's own cloth, which is where the deck is judged. Costs nothing: the felt is already loaded.",
+    draw: function (d) { return fan(d, ["back", "1s", "13h", "10d"]); } },
+  { cls: "t6", title: "6. One court card, large", note: "A single king at 64% of the tile, with the back as a corner chip. The most detail on the art, the least on the spread.",
+    draw: function (d) { return card(d, "13h", "face") + card(d, "back", "back"); } }
+];
+function url(deck, id) { return "deck-lab-assets/" + deck + "/" + id + ".png"; }
+function card(deck, id, cls) { return '<i class="card ' + (cls || "") + '" style="background-image:url(' + url(deck, id) + ')"></i>'; }
+function fan(deck, ids) {
+  var span = 17, n = ids.length, html = '<div class="fan">';
+  ids.forEach(function (id, i) {
+    var a = (i - (n - 1) / 2) * span;
+    html += '<i class="card" style="background-image:url(' + url(deck, id) + ');z-index:' + i +
+            ';transform:translate(-50%,-62%) rotate(' + a + 'deg)"></i>';
+  });
+  return html + "</div>";
+}
+function render() {
+  document.getElementById("out").innerHTML = OPTIONS.map(function (o, i) {
+    return '<section class="' + o.cls + '" data-n="' + (i + 1) + '"><h2>' + o.title + '</h2>' +
+      '<p class="note">' + o.note + '</p><div class="grid">' +
+      DECKS.map(function (d) {
+        return '<div class="tile">' + o.draw(d[0]) + '<span class="nm">' + d[1] + '</span></div>';
+      }).join("") + "</div></section>";
+  }).join("");
+}
+render();
+document.addEventListener("keydown", function (e) {
+  if (e.key === "f" || e.key === "F") {
+    document.querySelectorAll("section:not(.t5) .tile").forEach(function (t) {
+      t.style.background = t.style.background ? "" : "#327333 url(deck-lab-assets/felt.jpg) 0 0 / 120px 120px repeat";
+    });
+    return;
+  }
+  if (!/^[0-6]$/.test(e.key)) return;
+  var n = +e.key;
+  document.querySelectorAll("section").forEach(function (s) {
+    s.classList.toggle("hidden", n !== 0 && +s.getAttribute("data-n") !== n);
+  });
+});
+</script>
+</body>
+</html>

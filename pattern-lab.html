@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pattern lab &middot; the new wallpapers on the table, one key at a time</title>
+<!--
+  The pattern lab. The table is game.html (the settled seated table, laid out by the port of the
+  game's own layout engine); the felt under it is one of the new patterns from ~/Downloads/Patterns.
+
+    left / right   the pattern before, the pattern after
+    up             choose this one (a tick shows bottom right)
+    down           un-choose it
+    [ and ]        the repeat, smaller and larger (tiles only); 0 puts it back
+    f              all / tiles only / full images only / chosen only
+    g and G        the next group, the group before
+    Home / End     the first pattern, the last one. Anything added later is at the end.
+    v              the table's spotlight and vignette off and on
+    e              the export sheet: the chosen list, to copy
+    h              this help
+
+  Where you are, the filter and the repeat you set are kept in localStorage, so a reload
+  opens on the same pattern; the chosen list is kept there too and comes out of the export sheet.
+
+  The assets are pattern-assets/ (gitignored; zz-tmp-build-patterns.py rebuilds them from
+  ~/Downloads/Patterns). A tile is a 1536x1536 master drawn at the repeat the HUD shows, so every
+  rung of the ladder up to 768 is exact on a retina screen. A full image is a 2560x1600 centre crop,
+  which is all a landscape table ever shows of an A3 sheet. 183 tiles, 94 full images.
+
+  The HUD's "ships" figure is what the site would have to send at the repeat now set: twice the
+  repeat in pixels, so a big repeat is a big file. Today's wallpapers are 10 to 20 KB.
+
+  What the site needs for each kind (both are small changes, neither exists yet):
+    a tile        ship it at twice the chosen repeat (a 255px repeat wants a 512x512 jpg) and write
+                  that repeat as background-size. Theme.js swapWallpaper only writes a size for
+                  green-felt and arkadium-felt today and gives every other wallpaper "inherit", so
+                  a wallpaper's repeat is whatever its own pixel size happens to be; a 2x asset
+                  needs C.WALLPAPERS to carry the repeat and Theme.js to write it.
+    a full image  background-size: cover, no-repeat, centred, and one asset about 1920px wide.
+                  That wants a flag on the item (cover: true) which swapWallpaper reads.
+-->
+<link rel="preload" href="BuloRounded-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="BuloRounded-Bold.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+  @font-face { font-family: 'BuloRounded'; src: url("BuloRounded-Regular.woff2") format('woff2'); font-style: normal; font-weight: normal; font-display: swap; }
+  @font-face { font-family: 'BuloRounded'; src: url("BuloRounded-Bold.woff2") format('woff2'); font-style: normal; font-weight: bold; font-display: swap; }
+
+  :root {
+    /* the game's tokens, as computed on the live page */
+    --font: BuloRounded, Verdana, Arial, Helvetica, sans-serif;
+    --felt: url("green-felt.jpg");
+    --felt-size: 100px 100px;
+    --felt-pos: 0 0;
+    --felt-repeat: repeat;
+    --felt-bg: #327333;   /* the felt colour under the image, as base.scss has it */
+    --paper: #F8F9FA;          /* menu bar, table bar, score board */
+    --ink: #212529;            /* table bar labels, user name */
+    --ink-menu: #343A40;       /* menu links, the 1px outlines */
+    --ink-muted: #868E96;      /* disabled labels, the "Score" title */
+    --team1-bg: #A5D8FF;       /* our team: plates, message box, score cell */
+    --team1-ink: #1665AD;
+    --team2-bg: #FFC1BF;       /* the opponents */
+    --team2-ink: #B52626;
+    --button-bg: #FFE066;
+    --button-ink: #C96800;
+    --card-ink: #252525;       /* the card's 1px inset outline */
+    --outline: 0 0 0 1px var(--ink-menu) inset;
+    --ambient: 0 0 8px rgba(0, 0, 0, .24);
+    --radius: 8px;             /* --radius-lg; doubles to 16px on squircle browsers, see below */
+    --radius-button: 10px;     /* the official button's corner (GAME-BUTTON-STUDY.md section 15): 20px squircle on desktop, 16px compact */
+    --radius-sm: 6px;          /* the frontpage's --radius-md, the small buttons' corner: 12px squircle */
+    --menu-h: 32px;
+    --ad-w: 336px;             /* set by the layout: 336px from 1024px wide, 160px below */
+  }
+  @supports (corner-shape: squircle) {
+    :root { --radius: 16px; --radius-button: 20px; --radius-sm: 12px; }
+    @media (max-width: 640px), (max-height: 640px) { :root { --radius: 12px; --radius-button: 16px; } }
+    body *, body *::before, body *::after { corner-shape: squircle; }
+  }
+
+  html, body { margin: 0; height: 100%; }
+  body {
+    position: relative; font-family: var(--font); font-size: 16px; color: #fff;
+    background: var(--felt-bg) var(--felt) var(--felt-pos) / var(--felt-size) var(--felt-repeat);
+    overflow: hidden; user-select: none; -webkit-user-select: none;
+    /* the game's text rendering (base.scss html, body): greyscale antialiasing, no ligatures, the .01 shadow nudge */
+    text-shadow: rgba(0, 0, 0, .01) 0 0 1px;
+    -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility; font-variant-ligatures: none;
+  }
+  * { box-sizing: border-box; }
+  /* the game's spotlight (overlay blend, shifted left by half the ad rail) and vignette, with a 6% band behind the rail */
+  body::before {
+    content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none; mix-blend-mode: overlay;
+    background:
+      radial-gradient(circle closest-side at calc(50% - var(--ad-w) / 2) 50%, rgba(255, 255, 255, .16) 0%, rgba(255, 255, 255, 0) 100%),
+      radial-gradient(circle min(25vw - var(--ad-w) / 4, 25vh) at calc(50% - var(--ad-w) / 2) 50%, rgba(255, 255, 255, .08) 0%, rgba(255, 255, 255, 0) 100%);
+  }
+  body::after {
+    content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none;
+    box-shadow: inset 0 0 8vw rgba(0, 0, 0, .12); border-right: var(--ad-w) solid rgba(0, 0, 0, .06);
+  }
+  .sizer { position: absolute; left: -2000px; top: -2000px; }   /* FitText's measuring span */
+
+  /* ===== the site's menu bar (32px) ===== */
+  #menuBar {
+    position: absolute; left: 0; top: 0; right: 0; height: var(--menu-h); z-index: 9201;
+    background: var(--paper); box-shadow: var(--ink-menu) 0 1px 0 0, var(--ambient);
+    line-height: var(--menu-h); color: var(--ink-menu); display: flex; align-items: center;
+  }
+  #menuBar .logo { width: 38px; height: 32px; margin-left: 16px; overflow: hidden; flex: none; }
+  #menuBar .logo img { width: 170px; height: 32px; display: block; }
+  #menuBar ul { list-style: none; margin: 0 0 0 8px; padding: 0; display: flex; }
+  #menuBar li { margin-right: 8px; white-space: nowrap; cursor: pointer; }
+  #menuBar li a { color: inherit; text-decoration: none; }
+  #menuBar li a.active { font-weight: bold; }
+  #menuBar li.dropdown { padding-right: 13px; margin-right: 10px; background: url("game-assets/ui/arrowDown.png") right 50% / 13px 13px no-repeat; }
+  #menuBar .games { display: none; margin-left: 8px; font-weight: bold; cursor: pointer; }   /* the burger label under 924px */
+  @media (max-width: 924px) { #menuBar ul { display: none; } #menuBar .games { display: block; } }
+  #menuBar .userBar { margin-left: auto; margin-right: 8px; display: flex; align-items: center; font-weight: bold; color: var(--ink); }
+  #menuBar .userBar img.icon { width: 40px; height: 32px; display: block; cursor: pointer; }
+  #menuBar .userBar img.friends { margin-right: 8px; }
+  #menuBar .userBar img.avatar { width: 28px; height: 28px; display: block; }
+  #menuBar .userBar .userName { margin-left: 8px; white-space: nowrap; }
+
+  /* ===== the ad rail (336px from 1024px wide, 160px below; top, bottom and width come from the layout) ===== */
+  #ad {
+    position: absolute; right: 0; z-index: 9200;
+    background: rgba(0, 0, 0, .08); border-radius: var(--radius) 0 0 var(--radius);
+    box-shadow: rgba(0, 0, 0, .08) 0 0 0 1px inset;
+  }
+  #ad .slots { position: absolute; left: 0; right: 0; top: 1px; bottom: 24px; padding-bottom: 169px; overflow: hidden; } /* the live rail clips the slots above the docked video */
+  #ad .slot { width: 300px; margin: 0 auto; display: block; }
+  #ad .slot img { display: block; width: 300px; }
+  #ad .slot + .slot { margin-top: 8px; }
+  #ad .video { position: absolute; left: 18px; bottom: 24px; width: 300px; }
+  #ad .video img { display: block; width: 300px; }
+  body.ad160 #ad .slots, body.ad160 #ad .video { display: none; }
+  #ad .hideAds {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 24px; line-height: 24px; padding: 0 8px;
+    text-align: center; font-weight: bold; color: #fff; background: rgba(0, 0, 0, .08);
+    border-radius: 0 0 0 var(--radius); box-shadow: rgba(0, 0, 0, .08) 0 1px 0 0 inset; cursor: pointer; white-space: nowrap;
+  }
+
+  /* ===== the playspace: the game's box under the menu bar; every piece sits in it at its resolved position ===== */
+  #playspace { position: absolute; left: 0; top: var(--menu-h); z-index: 1; }
+  .piece { position: absolute; }
+
+  /* cards: a .card box that rotates around its centre, the face inside */
+  .card .face {
+    position: absolute; inset: 0; border-radius: var(--r); overflow: hidden; background: #fff center / 100% 100% no-repeat;
+    box-shadow: var(--card-ink) 0 0 0 1px inset, rgba(0, 0, 0, .2) 0 0 8px 0;
+  }
+
+  /* name plates */
+  .namePlate { border-radius: var(--radius); box-shadow: var(--outline), var(--ambient); overflow: hidden; z-index: 4001; }
+  .namePlate.team1, .scorePlate.team1 { background: var(--team1-bg); }
+  .namePlate.team2, .scorePlate.team2 { background: var(--team2-bg); }
+  .scorePlate { border-radius: 0 0 var(--radius) var(--radius); z-index: 4001; }
+  .scorePlate.side { box-shadow: var(--ink-menu) 1px 0 0 0, var(--ink-menu) 0 1px 0 0, var(--ink-menu) -1px 0 0 0, var(--ambient); clip-path: inset(0 -5px -5px -5px); }
+  .scorePlate.inline { background: none; }
+  .text { z-index: 4002; font-weight: bold; text-align: center; white-space: nowrap; }
+  .text.team1 { color: var(--team1-ink); }
+  .text.team2 { color: var(--team2-ink); }
+  .avatar { z-index: 4002; filter: drop-shadow(0 0 8px rgba(0, 0, 0, .24)); }
+  .avatar.side { z-index: 4000; }   /* the side plates lie over the avatar's chin */
+  .avatar img, #menuBar .userBar img.avatar { filter: drop-shadow(1px 0 var(--card-ink)) drop-shadow(-1px 0 var(--card-ink)) drop-shadow(0 1px var(--card-ink)) drop-shadow(0 -1px var(--card-ink)); }
+  .avatar img { width: 100%; height: 100%; display: block; }
+  .chip { z-index: 4002; background: url("game-assets/ui/dealer.png") center / 100% 100% no-repeat; filter: drop-shadow(0 0 8px rgba(0, 0, 0, .24)); }
+  body.ps-compact .chip { background-image: url("game-assets/ui/dealerSmall.png"); }
+
+  /* the buttons on the felt (size, line-height and font size come from the layout) */
+  .button {
+    z-index: 8001; text-align: center; white-space: nowrap;
+    font-weight: bold; color: var(--button-ink); background: var(--button-bg); border-radius: var(--radius);
+    box-shadow: rgba(0, 0, 0, .16) 0 0 0 1px, rgba(0, 0, 0, .24) 0 0 4px 0; cursor: pointer;
+    transition: background-color 24ms ease-out, box-shadow 24ms ease-out;
+  }
+  .button:hover { background: color-mix(in srgb, var(--button-bg) 92%, #E67700 8%); box-shadow: rgba(0, 0, 0, .24) 0 0 0 1px, rgba(0, 0, 0, .40) 0 0 6px 0; }
+  .button:active { transform: scale(.98); }
+
+  /* the message box, top left (position and max-width come from the layout; content-box like the game) */
+  .messageBox {
+    position: absolute; box-sizing: content-box; min-width: 80px; max-width: 320px; padding: 12px; z-index: 4800;
+    background: var(--team1-bg); color: var(--team1-ink); font-size: 20px; line-height: 24px; font-weight: normal; text-align: left; white-space: normal;
+    border-radius: var(--radius); box-shadow: var(--outline), var(--ambient); overflow-wrap: break-word;
+  }
+  body.ps-compact .messageBox { padding: 8px; font-size: 16px; line-height: 20px; }
+
+  /* the score board, top right */
+  .scoreBoard { position: absolute; z-index: 3999; background: var(--paper); border-radius: var(--radius); text-align: center; white-space: nowrap; width: max-content; }
+  .scoreBoard::after { content: ""; position: absolute; inset: 0; border-radius: inherit; box-shadow: var(--outline), var(--ambient); pointer-events: none; }
+  .scoreBoard .cell { padding: 0 12px; height: 38px; line-height: 38px; font-size: 24px; font-weight: bold; }
+  .scoreBoard .cell.team1 { background: var(--team1-bg); color: var(--team1-ink); border-radius: var(--radius) var(--radius) 0 0; box-shadow: var(--ink-menu) -1px 0 0 0 inset, var(--ink-menu) 0 -1px 0 0 inset; }
+  .scoreBoard .cell.team2 { background: var(--team2-bg); color: var(--team2-ink); border-radius: 0 0 var(--radius) var(--radius); box-shadow: var(--ink-menu) -1px 0 0 0 inset, var(--ink-menu) 0 1px 0 0 inset; }
+  .scoreBoard .title { height: 20px; line-height: 20px; font-size: 12px; font-weight: bold; color: var(--ink-muted); padding: 0 4px; box-shadow: var(--ink-menu) -1px 0 0 0 inset; }   /* the game's cells carry an inner right line (base.scss #scoreBoard tr td) */
+  body.ps-compact .scoreBoard .cell { height: 24px; line-height: 24px; font-size: 16px; padding: 0 8px; }
+  body.ps-compact .scoreBoard .title { padding: 0 8px; }
+
+  /* the table bar, bottom centre (or a 58px column at the playspace's right edge when the window is 576px tall or less) */
+  .tableBar {
+    position: absolute; width: 400px; height: 56px; padding: 0 11px; z-index: 9975;
+    background: var(--paper); border-radius: var(--radius); box-shadow: var(--outline), var(--ambient);
+  }
+  .tableBar ul { list-style: none; margin: 0; padding: 0; height: 56px; display: flex; align-items: flex-end; justify-content: space-evenly; }
+  .tableBar li {
+    width: 54px; padding: 22px 0 6px; text-align: center; font-size: 16px; line-height: 16px; font-weight: bold; color: var(--ink); cursor: pointer;
+    background: var(--icon) 50% 0 / 20px 20px no-repeat;
+  }
+  .tableBar li.play { padding-top: 32px; background-size: 40px 32px; }
+  .tableBar li.disabled { color: var(--ink-muted); cursor: default; }
+  .tableBar.side { width: 58px; padding: 12px 0; }
+  .tableBar.side ul { flex-direction: column; align-items: center; height: 100%; width: 58px; }
+  .tableBar.side li { padding: 24px 0 4px; }
+  .tableBar.side li:last-child { padding-bottom: 0; }
+
+  /* ===== design options: each option is a body class; body.design-original carries none of them ===== */
+  /* Felt buttons: the official in-game button (6 Sep 2026, game-button-lab.html tile 108): flat warm lemon,
+     leather ink, a see-through 1px ring in the ink colour at 70% with a 1px drop shadow, a 20px squircle (16px compact) */
+  body:is(.fbtn-official, .fbtn-matched, .fbtn-yellow4) .button {
+    --fbtn-ring: var(--edge, rgba(92, 58, 0, .70));      /* the outer 1px line: the shared edge colour when an Edge line is chosen */
+    --fbtn-inset: transparent;              /* an inner 1px line, for the inset and keyline options */
+    --fbtn-drop: rgba(0, 0, 0, .30) 0 1px 2px;
+    background: #FFD75A; color: #5C3A00; border-radius: var(--radius-button);
+    box-shadow: var(--fbtn-ring) 0 0 0 1px, var(--fbtn-inset) 0 0 0 1px inset, var(--fbtn-drop);
+  }
+  body:is(.fbtn-official, .fbtn-matched, .fbtn-yellow4) .button:hover { background: #FFD43B; box-shadow: var(--fbtn-ring) 0 0 0 1px, var(--fbtn-inset) 0 0 0 1px inset, rgba(0, 0, 0, .35) 0 2px 4px; }
+  body:is(.fbtn-official, .fbtn-matched, .fbtn-yellow4) .button:active { background: #FCC419; box-shadow: var(--fbtn-ring) 0 0 0 1px, var(--fbtn-inset) 0 0 0 1px inset; transform: scale(.98); }
+  /* the ink matched to the plates: #67440E is the leather ink lifted to the tile-20b inks' OKLCH lightness (.416), 6.3:1 on the fill; the ring follows the ink */
+  body.fbtn-matched .button { color: #67440E; }
+  /* 48 Yellow-4 (game-button-lab.html tile 48, added 7 Sep 2026): Open Color yellow-4 with the walnut ink and its own 55% ring; the ladder is one stop deeper on hover, two when pressed */
+  body.fbtn-yellow4 .button { --fbtn-ring: var(--edge, rgba(61, 43, 0, .55)); background: #FFD43B; color: #3D2B00; }
+  /* hover lights the button half an Open Color stop up (between yellow-4 and yellow-3; a whole stop read too light); a press only scales it down and drops the shadow, no third colour */
+  body.fbtn-yellow4 .button:hover, body.fbtn-yellow4 .button:active { background: #FFDA53; }
+  /* Edge line (7 Sep 2026): one line for the buttons, the name plates and the score tabs. Solid or see-through colours set --edge,
+     the outer 1px line; the plates then draw their line outside like the button instead of the inset outline. Blend options draw the
+     line on a layer over the edge with a mix-blend-mode, so it takes its colour from what is under it (felt outside, the piece inside). */
+  body[class*="edge-"] .namePlate { box-shadow: var(--edge) 0 0 0 1px, var(--ambient); }
+  /* the tab paints above the plate and covers the plate's bottom line, so the tab draws the seam itself: a 1px line inside its top edge */
+  body[class*="edge-"] .scorePlate.side { box-shadow: var(--seam, var(--edge)) 0 1px 0 0 inset, var(--edge) 1px 0 0 0, var(--edge) 0 1px 0 0, var(--edge) -1px 0 0 0, var(--ambient); }
+  body:is(.team-t49, .team-t49rose, .team-t49coral, .team-t49rosedeep) .scorePlate.side { --seam: transparent; }   /* tile 49 draws its own seam in the team ink */
+  body.edge-plates { --edge: #343A40; }
+  body.edge-nearblack { --edge: #212529; }
+  body.edge-plates70 { --edge: rgba(52, 58, 64, .70); }
+  body.edge-black70 { --edge: rgba(0, 0, 0, .70); }
+  body.edge-black50 { --edge: rgba(0, 0, 0, .50); }
+  body.edge-black30 { --edge: rgba(0, 0, 0, .30); }
+  body.edge-feltshade { --edge: #123A12; }
+  body.edge-feltshade70 { --edge: rgba(18, 58, 18, .70); }
+  body.edge-none { --edge: transparent; }
+  body.edge-noneflat { --edge: transparent; --ambient: 0 0 0 0 transparent; }
+  body.edge-noneflat .button { --fbtn-drop: 0 0 0 0 transparent; }
+  body[class*="edge-blend"] { --edge: transparent; }
+  body[class*="edge-blend"] .namePlate { overflow: visible; }
+  body[class*="edge-blend"] :is(.button, .namePlate, .scorePlate.side)::after {
+    content: ""; position: absolute; inset: -1px; border-radius: inherit; pointer-events: none; border: 1px solid; }
+  body[class*="edge-blend"] .scorePlate.side::after { top: 0; }   /* the top border lands on the tab's own top row: the seam */
+  body[class*="edge-blend"]:is(.team-t49, .team-t49rose, .team-t49coral, .team-t49rosedeep) .scorePlate.side::after { border-top: 0; }
+  body.edge-blendmult45 :is(.button, .namePlate, .scorePlate.side)::after { border-color: rgba(0, 0, 0, .45); mix-blend-mode: multiply; }
+  body.edge-blendmult70 :is(.button, .namePlate, .scorePlate.side)::after { border-color: rgba(0, 0, 0, .70); mix-blend-mode: multiply; }
+  body.edge-blendmultin :is(.button, .namePlate, .scorePlate.side)::after { inset: 0; border-color: rgba(0, 0, 0, .35); mix-blend-mode: multiply; }
+  body.edge-blendoverlay :is(.button, .namePlate, .scorePlate.side)::after { border-color: rgba(0, 0, 0, .60); mix-blend-mode: overlay; }
+  body.edge-blendsoft :is(.button, .namePlate, .scorePlate.side)::after { border-color: #000; mix-blend-mode: soft-light; }
+  body.edge-blendfelt :is(.button, .namePlate, .scorePlate.side)::after { border-color: #123A12; mix-blend-mode: multiply; }
+
+  /* Team colours: the red and blue pairs Holger picked in game-plate-lab.html (7 Sep 2026). Only the two team
+     fills and inks move; the message box and the score board follow team 1 as they do in the game today. */
+  body.team-t49 { --team1-bg: #A5D8FF; --team1-ink: #00406B; --team2-bg: #FFB5AC; --team2-ink: #6F1916;
+    --team1-ring: rgba(0, 64, 107, .70); --team2-ring: rgba(111, 25, 22, .70); }
+  /* tile 49: the plates and the tabs keep the normal outline; the team's ink draws the seam line along the top of the score tab.
+     The tab rises 1px so that line replaces the plate's own black outline row where the two meet (the tab paints above the plate). */
+  body:is(.team-t49, .team-t49rose, .team-t49coral, .team-t49rosedeep) .scorePlate.side { box-sizing: content-box; margin-top: -1px; border-top: 1px solid var(--team1-ink); }
+  body:is(.team-t49, .team-t49rose, .team-t49coral, .team-t49rosedeep) .scorePlate.side.team2 { border-top-color: var(--team2-ink); }
+  /* tile 49's red at other hues (the same lightness, the sRGB chroma ceiling, an ink of the fill's own hue): a rose off the skin band, a coral, and the rose one stock deeper */
+  body.team-t49rose { --team1-bg: #A5D8FF; --team1-ink: #00406B; --team2-bg: #FFB3BB; --team2-ink: #6E172C; }
+  body.team-t49coral { --team1-bg: #A5D8FF; --team1-ink: #00406B; --team2-bg: #FFB6A0; --team2-ink: #6E1D00; }
+  body.team-t49rosedeep { --team1-bg: #A5D8FF; --team1-ink: #00406B; --team2-bg: #FFA8B2; --team2-ink: #6E172C; }
+  body.team-t20m { --team1-bg: #ABD2FF; --team1-ink: #0B4A78; --team2-bg: #FCBCB4; --team2-ink: #851215; }
+  body.team-t20b { --team1-bg: #ABD2FF; --team1-ink: #124F7E; --team2-bg: #FCBCB4; --team2-ink: #8B1A1A; }
+  /* 20b a step or two more vivid (7 Sep 2026): the same hues, a little darker so the gamut allows more chroma; the 20b inks stay */
+  body.team-v1 { --team1-bg: #99C7FA; --team1-ink: #124F7E; --team2-bg: #FBABA1; --team2-ink: #8B1A1A; }
+  body.team-shot { --team1-bg: #A4D8FF; --team1-ink: #013D6F; --team2-bg: #FF9F91; --team2-ink: #62090D; } /* sampled from Holger's screenshot of 7 Sep 2026 */
+  body.team-v2 { --team1-bg: #85BCF9; --team1-ink: #124F7E; --team2-bg: #FA998E; --team2-ink: #8B1A1A; }
+  body.team-t11 { --team1-bg: #A5D8FF; --team1-ink: #10456F; --team2-bg: #FFB3B1; --team2-ink: #7A1E1E; }
+  body.team-t20 { --team1-bg: #ABD2FF; --team1-ink: #0B4A78; --team2-bg: #FCBCB4; --team2-ink: #8B1A1A; }
+  body.team-t26 { --team1-bg: #A5D8FF; --team1-ink: #0B4F8A; --team2-bg: #FFC1BF; --team2-ink: #8E1F1F; }
+
+  /* Plate corners (7 Sep 2026): the 40px name plate takes the 40px button's corner, and the 24px score tab takes the
+     frontpage's small-button corner (half its height, the rule the button follows at 40px). The message box and the score board keep --radius-lg. */
+  body.prad-buttons .namePlate { border-radius: var(--radius-button); }
+  body.prad-buttons .scorePlate { border-radius: 0 0 var(--radius-sm) var(--radius-sm); }
+  /* the other way round: the buttons take the plates' corner (--radius-lg: 8px, 16px squircle, 12px under 640px) */
+  body.prad-plates .button { border-radius: var(--radius); }
+
+  /* Message box (7 Sep 2026, game-notice-lab.html): the top-left message in a material of its own instead of team 1's plate.
+     The chosen ones draw the plates' outside line like every other piece; the card draws the card's own line. */
+  body[class*="msg-"] .messageBox { background: var(--msg-bg); color: var(--msg-ink); box-shadow: 0 0 0 1px var(--msg-line, var(--ink-menu)), var(--ambient); }
+  body.msg-canvas { --msg-bg: #F9F6F2; --msg-ink: #141414; }          /* lab tile 3: the frontpage's canvas */
+  body.msg-band { --msg-bg: #F4EEE5; --msg-ink: #141414; }            /* lab tile 4: the frontpage's band */
+  body.msg-card { --msg-bg: #FFFFFF; --msg-ink: #252525; --msg-line: var(--card-ink); }   /* lab tile 6: a card, with the card's line */
+  body.msg-lemonlight { --msg-bg: #FFF3BF; --msg-ink: #5C3A00; }      /* a notice version of the button: Open Color yellow-1 with the leather ink, 8.6:1 */
+
+  /* ===== the pattern lab's own chrome ===== */
+  .pl-arrow {
+    position: fixed; top: 50%; transform: translateY(-50%); z-index: 9980;
+    width: 56px; height: 96px; display: flex; align-items: center; justify-content: center;
+    background: rgba(0, 0, 0, .28); color: #fff; font-size: 34px; line-height: 1; cursor: pointer;
+    border: 0; border-radius: 12px; opacity: .55; transition: opacity .15s ease, background-color .15s ease;
+    font-family: -apple-system, "Helvetica Neue", Arial, sans-serif; text-shadow: none;
+  }
+  .pl-arrow:hover { opacity: 1; background: rgba(0, 0, 0, .44); }
+  .pl-prev { left: 10px; }
+  .pl-next { right: calc(var(--ad-w) + 10px); }
+
+  .pl-hud {
+    position: fixed; right: calc(var(--ad-w) + 12px); bottom: 12px; z-index: 9990; width: 300px;
+    padding: 12px 14px; border-radius: 12px; pointer-events: auto; cursor: default;
+    background: rgba(255, 255, 255, .94); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, .3); color: #222; text-shadow: none;
+    font-family: -apple-system, "Helvetica Neue", Arial, sans-serif;
+  }
+  .pl-hud .pl-name { font-size: 15px; font-weight: 700; line-height: 1.25; padding-right: 40px; }
+  .pl-hud .pl-meta { font-size: 12px; color: #666; margin-top: 3px; }
+  .pl-hud .pl-count { font-size: 12px; color: #666; margin-top: 8px; padding-top: 8px; border-top: 1px solid #e5e5e5; display: flex; justify-content: space-between; }
+  .pl-hud .pl-chosen { font-weight: 700; color: #2B8A3E; }
+  .pl-hud .pl-warn { display: none; margin-top: 6px; font-size: 12px; font-weight: 700; color: #C92A2A; }
+  .pl-hud.is-seamy .pl-warn { display: block; }
+  .pl-tick {
+    position: absolute; right: 12px; top: 10px; width: 30px; height: 30px; border-radius: 50%;
+    background: #2B8A3E; color: #fff; font-size: 19px; line-height: 30px; text-align: center; font-weight: 700;
+    opacity: 0; transform: scale(.6); transition: opacity .16s ease, transform .16s ease;
+  }
+  .pl-hud.is-on .pl-tick { opacity: 1; transform: scale(1); }
+  .pl-bar { height: 3px; margin-top: 10px; border-radius: 2px; background: #e5e5e5; overflow: hidden; }
+  .pl-bar i { display: block; height: 100%; background: #1665AD; }
+
+  .pl-help {
+    position: fixed; left: 12px; bottom: 12px; z-index: 9990; max-width: 330px; padding: 10px 12px; border-radius: 10px;
+    background: rgba(255, 255, 255, .92); color: #333; text-shadow: none; font-size: 12px; line-height: 1.6;
+    font-family: -apple-system, "Helvetica Neue", Arial, sans-serif; box-shadow: 0 1px 6px rgba(0, 0, 0, .25);
+  }
+  .pl-help.is-off { display: none; }
+  .pl-help b { display: inline-block; min-width: 74px; font-family: ui-monospace, Menlo, monospace; font-size: 11px; color: #111; }
+
+  .pl-export {
+    position: fixed; inset: 6vh 6vw; z-index: 9999; display: none; flex-direction: column; gap: 10px;
+    padding: 18px; border-radius: 14px; background: #fff; color: #222; text-shadow: none;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, .45); font-family: -apple-system, "Helvetica Neue", Arial, sans-serif;
+  }
+  .pl-export.is-on { display: flex; }
+  .pl-export h2 { margin: 0; font-size: 17px; }
+  .pl-export p { margin: 0; font-size: 13px; color: #666; }
+  .pl-export textarea { flex: 1; width: 100%; font-family: ui-monospace, Menlo, monospace; font-size: 12px; line-height: 1.5; padding: 10px; border: 1px solid #ddd; border-radius: 8px; resize: none; }
+  .pl-export .pl-row { display: flex; gap: 8px; align-items: center; }
+  .pl-export button { font: inherit; font-size: 13px; font-weight: 600; padding: 8px 14px; border: 0; border-radius: 8px; background: #1665AD; color: #fff; cursor: pointer; }
+  .pl-export button.ghost { background: #eee; color: #333; }
+  .pl-export .grow { margin-left: auto; }
+  body.pl-noveil::before, body.pl-noveil::after { display: none; }
+</style>
+</head>
+<body>
+
+<nav id="menuBar">
+  <a class="logo" href="#"><img src="game-assets/ui/logo.png" alt="World of Card Games" width="170" height="32"></a>
+  <div class="games">Games</div>
+  <ul>
+    <li><a href="#">Hearts</a></li>
+    <li><a href="#">Spades</a></li>
+    <li><a href="#" class="active">Euchre</a></li>
+    <li><a href="#">Gin Rummy</a></li>
+    <li><a href="#">Double Deck Pinochle</a></li>
+    <li><a href="#">Canasta</a></li>
+    <li><a href="#">Hand &amp; Foot</a></li>
+    <li class="dropdown"><span>All games</span></li>
+  </ul>
+  <div class="userBar">
+    <img class="icon" src="game-assets/ui/menuActivity.svg" alt="Activity" width="40" height="32">
+    <img class="icon friends" src="game-assets/ui/menuFriends.svg" alt="Friends" width="40" height="32">
+    <img class="avatar" id="menuAvatar" src="game-assets/avatars/AnimalSheep.svg" alt="" width="28" height="28">
+    <span class="userName" id="menuUserName">Guest #2,452</span>
+  </div>
+</nav>
+
+<div id="playspace"></div>
+<div class="messageBox" id="messageBox"></div>
+<div class="scoreBoard" id="scoreBoard"></div>
+<div class="tableBar" id="tableBar"></div>
+
+<div id="ad">
+  <div class="slots">
+    <div class="slot"><img src="adMedrec1.png" alt="" width="300" height="250"></div>
+    <div class="slot"><img src="adMedrec2.png" alt="" width="300" height="250"></div>
+  </div>
+  <div class="video"><img src="adVideo.png" alt="" width="300" height="170"></div>
+  <div class="hideAds">Hide ads</div>
+</div>
+
+<button type="button" class="pl-arrow pl-prev" id="pl-prev" aria-label="The pattern before">&#8249;</button>
+<button type="button" class="pl-arrow pl-next" id="pl-next" aria-label="The pattern after">&#8250;</button>
+
+<div class="pl-hud" id="pl-hud">
+  <div class="pl-tick">&#10003;</div>
+  <div class="pl-name" id="pl-name">&nbsp;</div>
+  <div class="pl-meta" id="pl-meta">&nbsp;</div>
+  <div class="pl-warn">The edges do not meet: this one shows a seam when it repeats.</div>
+  <div class="pl-count"><span id="pl-pos">&nbsp;</span><span>Chosen: <span class="pl-chosen" id="pl-num">0</span></span></div>
+  <div class="pl-bar"><i id="pl-bar"></i></div>
+</div>
+
+<div class="pl-help" id="pl-help">
+  <div><b>&#8592; &#8594;</b> the pattern before and after</div>
+  <div><b>&#8593; / &#8595;</b> choose it / un-choose it</div>
+  <div><b>[ ]</b> the repeat, smaller and larger &nbsp;<b>0</b> back to default</div>
+  <div><b>f</b> all / tiles / full images / chosen &nbsp;<b>g G</b> the next group</div>
+  <div><b>Home End</b> the first, the last. New patterns are always at the end</div>
+  <div><b>v</b> spotlight off &nbsp;<b>e</b> export &nbsp;<b>h</b> hide this</div>
+</div>
+
+<div class="pl-export" id="pl-export">
+  <h2>The patterns you chose</h2>
+  <p>Copy this and paste it back to me. It carries the id, the name, the repeat you set and the file it came from.</p>
+  <textarea id="pl-out" spellcheck="false"></textarea>
+  <div class="pl-row">
+    <button type="button" id="pl-copy">Copy</button>
+    <button type="button" class="ghost" id="pl-download">Download .json</button>
+    <button type="button" class="ghost" id="pl-clear">Clear every choice</button>
+    <button type="button" class="ghost grow" id="pl-close">Close</button>
+  </div>
+</div>
+
+<script src="pattern-assets/patterns.js"></script>
+<script>
+/* ===== the state on the table (edit here) ===== */
+var STATE = {
+  user: { name: "Guest #2,452", avatar: "AnimalSheep" },
+  message: "Accept card as trump suit or pass.",
+  score: [0, 0],                                  /* our team, their team */
+  upCard: "1c",                                   /* rank 1..13 + suit c d h s; "back" for face down */
+  hand: ["9c", "10d", "13c", "9h", "11h"],        /* the bottom hand, left to right */
+  botHands: [5, 5, 5],                            /* cards held by the left, top and right player */
+  dealer: 3,                                      /* seat: 0 bottom, 1 left, 2 top, 3 right */
+  buttons: ["Pass", "Accept", "Go alone"],
+  seats: [
+    { name: "Guest #2,452", avatar: "AnimalSheep", team: 1, handScore: "–" },
+    { name: "WALL-E",       avatar: "RobotBoy10",  team: 2, handScore: "–" },
+    { name: "R2-D2",        avatar: "RobotBoy4",   team: 1, handScore: "–" },
+    { name: "Tin Man",      avatar: "RobotBoy6",   team: 2, handScore: "–" }
+  ]
+};
+
+/* ===== the game's layout engine, ported =====
+   Playspace box: web/dust/common/playspace_layout_projection.dust. Spot resolution: static/js/wocg/Spot.js (resize).
+   Spot configs: static/js/wocg/Layout.js and game/euchre/euchre-layout.js. Fans: Spot.js calculateCoords, calcPieceXY.
+   Card size: piece/card.js. Buttons: piece/button.js and Layout.positionPlayAreaButtons. Text: FitText.js.
+   Chrome: Table.js (message box, score board, fanCardsWider), TableBar.js, AdWidget.js. All in playspace pixels
+   unless said otherwise; a spot publishes rounded integers, but positions itself with its own un-rounded size. */
+var RATIO = 0.71621622;
+var floor = Math.floor, round = Math.round;
+
+function isCompactSize(w, h, bp) { return (w >= h && h <= bp) || (w <= h && w <= bp); }
+
+/* the viewport -> the playspace box, the layout classes, the gutter and the ad rail width */
+function geometry(VW, VH) {
+  var userBar = 32;
+  var landscape = VW >= VH, portraitV = VW <= VH;
+  var mobile = (landscape && VH <= 640) || (portraitV && VW <= 640);
+  var adWidth = (mobile && landscape && VW >= 896) ? 336 : (VW >= 1024 ? 336 : 160);
+  var maxWidth = VW - adWidth, maxHeight = VH - userBar, lcw, lch;
+  var side = landscape && VH <= 576 && VW >= 480;                       /* the table bar becomes a column at the right */
+  if (side) { maxWidth -= 58 + 8; lcw = maxWidth; lch = maxHeight; }
+  else {
+    lcw = maxWidth; lch = maxHeight - 56 - 16;
+    maxHeight -= 56 + (isCompactSize(maxWidth, maxHeight - 56 - 16, 640) ? 8 : 16);
+  }
+  var compact = isCompactSize(lcw, lch, 640), small = isCompactSize(lcw, lch, 480);
+  return {
+    VW: VW, VH: VH, adWidth: adWidth, pw: maxWidth, ph: maxHeight, top: userBar,
+    compact: compact, small: small, portrait: maxWidth <= maxHeight, landscape: maxWidth >= maxHeight, side: side,
+    G: side ? 8 : (compact ? 8 : 16)                                    /* Y.wocg.playspaceGutter */
+  };
+}
+
+/* Math.js helpers used by the fans */
+function rotatedDimensions(deg, w, h) {
+  var a = deg * Math.PI / 180, s = Math.sin(a), c = Math.cos(a);
+  var xs = [0, c * w, -s * h, c * w - s * h], ys = [0, s * w, c * h, s * w + c * h];
+  return [floor(Math.max.apply(null, xs) - Math.min.apply(null, xs)), floor(Math.max.apply(null, ys) - Math.min.apply(null, ys))];
+}
+function rotatePointInBox(x, y, deg, w, h) {
+  var a = deg * Math.PI / 180, cx = w / 2, cy = h / 2, dx = x - cx, dy = y - cy;
+  var d = Math.sqrt(dx * dx + dy * dy), t = Math.atan2(dy, dx) + a;
+  return [Math.cos(t) * d + cx, Math.sin(t) * d + cy];
+}
+
+/* Spot.js calculateCoords: the cards on an arc */
+function calculateCoords(n, R, cw, ch, dir, spacing) {
+  var per = Math.atan((cw * spacing) / R) * 180 / Math.PI;
+  var start = { N: 270, S: 90, E: 0, W: 180 }[dir] - 0.5 * per * (n - 1);
+  var c = [], minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  for (var i = 0; i < n; i++) {
+    var deg = start + per * i, r = deg * Math.PI / 180;
+    var x = cw / 2 + Math.cos(r) * R, y = ch / 2 + Math.sin(r) * R;
+    minX = Math.min(minX, x); minY = Math.min(minY, y); maxX = Math.max(maxX, x); maxY = Math.max(maxY, y);
+    c.push({ x: x, y: y, angle: deg + 90 });
+  }
+  var rd = rotatedDimensions(c[0].angle, cw, ch), ox = 0, oy = 0;
+  var ewFix = ch - rotatePointInBox(0, 0, 270, cw, ch)[1];
+  if (dir === "N") { ox = -minX + (rd[0] - cw) / 2; oy = -minY; }
+  else if (dir === "S") { ox = -minX + (rd[0] - cw) / 2; oy = -maxY; }
+  else if (dir === "W") { oy = -minY + (rd[1] - ch) / 2; ox = -minX + ewFix; }
+  else if (dir === "E") { oy = -minY + (rd[1] - ch) / 2; ox = -maxX + ewFix; }
+  c.forEach(function (p) { p.x = round(p.x + ox); p.y = round(p.y + oy); p.angle = round(p.angle); });
+  return c;
+}
+function fullDimensions(cw, ch, c) {
+  var xs = c.map(function (p) { return p.x; }), ys = c.map(function (p) { return p.y; });
+  var f = rotatedDimensions(c[0].angle, cw, ch), l = rotatedDimensions(c[c.length - 1].angle, cw, ch);
+  return [Math.max.apply(null, xs) - Math.min.apply(null, xs) + cw + (f[0] - cw) / 2 + (l[0] - cw) / 2,
+          Math.max.apply(null, ys) - Math.min.apply(null, ys) + ch + (f[1] - ch) / 2];
+}
+
+/* one fan spot -> the cards' boxes (piece/card.js sizes the card from the spot's cross axis; Spot.js preUpdatePieces and calcPieceXY place it) */
+function layoutFan(spot, cfg) {
+  var base = (cfg.direction === "east" || cfg.direction === "west") ? floor(spot.h) : floor(spot.w);
+  var cw = floor(base * RATIO), ch = base;
+  var n = cfg.count;
+  if (!n) return [];
+  var peek = (20 * (cfg.peekModifier || 0.8)) / 100;
+  peek = Math.max(peek, cfg.compactPortrait ? 0.64 : 0.4);
+  if (cfg.fannable && typeof cfg.peekModifier === "number") peek *= (cfg.peekModifier || 1.0);
+  var containerWidth = (cfg.arcDirection === "E" || cfg.arcDirection === "W") ? spot.h : spot.w;
+  if (n > 1) peek = Math.min(peek, ((containerWidth - cw) / (n - 1)) / cw);
+  var coords = calculateCoords(n, cfg.arcRadius, cw, ch, cfg.arcDirection, peek);
+  var full = fullDimensions(cw, ch, coords);
+  var pd = cfg.rotate ? rotatedDimensions(cfg.rotate, cw, ch) : [cw, ch];
+  var vertical = cfg.arcDirection === "N" || cfg.arcDirection === "S";
+  var aw = vertical ? full[0] : pd[0], ah = vertical ? pd[1] : full[1];
+  return coords.map(function (c, i) {
+    var x = spot.x + c.x, y = spot.y + c.y;
+    if (cfg.alignX === "center") x += (spot.w - aw) / 2; else if (cfg.alignX === "right") x += spot.w - aw;
+    if (cfg.alignY === "center") y += (spot.h - ah) / 2; else if (cfg.alignY === "bottom") y += spot.h - ah;
+    var to = c.angle;                                                    /* Transition.js takes the short way round from 0deg */
+    if (0 < to && 360 - to < to) to = -(360 - to);
+    return { x: floor(x), y: floor(y), w: cw, h: ch, rotate: to, z: cfg.zBase + i };
+  });
+}
+
+/* the whole table for a viewport */
+function layoutTable(VW, VH) {
+  var g = geometry(VW, VH), pw = g.pw, ph = g.ph, compact = g.compact, portrait = g.portrait;
+  var gutter = compact ? 8 : 16;                                          /* Layout.responsiveGutter */
+  var plateH = compact ? 32 : 40, scorePlateH = compact ? 20 : 24, nameOffset = compact ? 12 : 24, nameMax = compact ? 20 : 24;
+  var chipSize = compact ? 24 : 32, btnH = compact ? 32 : 40, btnThreshold = compact ? 48 : 88, gap = 8;
+  var fallbackBottom = gutter + (compact ? 68 : 96), topPlateTop = fallbackBottom - plateH, avatarAvail = Math.max(0, fallbackBottom - gutter);
+  var nameTextH = round((plateH * 0.72) / 2) * 2;
+  var aspect = pw / ph;
+  var horizontalWidth = Math.max(floor(pw * 0.18), 64), verticalHeight = Math.max(floor(ph * 0.16), 40), verticalSmall = Math.min(floor(ph * 0.06), 40);
+  var avatarSize = aspect < 1 ? Math.min(Math.max(verticalSmall * 4, 60), horizontalWidth) : verticalHeight;
+  if (aspect < 1 && compact) avatarSize = Math.min(avatarSize, Math.max(48, floor(ph * 0.16)));
+  var playerAvatar = Math.min(avatarSize, avatarAvail);
+  var handMax = Math.min(pw * 0.72, ph * 0.44);                            /* the opponent hands' long side, a float */
+
+  var S = {};                                                             /* resolved spots: id -> {x, y, w, h}, published as integers */
+  var put = function (id, x, y, w, h) { S[id] = { x: round(x), y: round(y), w: round(w), h: round(h) }; return S[id]; };
+  var center = function () { var b = S.hand2.y + S.hand2.h; return b + (S.hand0.y - b) / 2; };   /* Layout.playspaceCenter, not rounded */
+
+  [0, 2, 1, 3].forEach(function (seat) {                                   /* the game's spot order: S, N, W, E */
+    var inl = seat === 0 || seat === 2, w, h, x, y, plate;
+    /* name plate */
+    if (seat === 0) { w = Math.min(400, Math.max(0, pw - 2 * gutter)); h = plateH; x = (pw - w) / 2; y = floor(ph) - h - gutter; }
+    else if (seat === 2) { w = Math.min(400, Math.max(240, floor(pw * 0.48))); h = plateH; x = (pw - w) / 2; y = topPlateTop; }
+    else {
+      w = Math.min(Math.max(floor(pw * 0.18), 88), 400); h = plateH;      /* minWidth 88, maxWidth 400, minHeight assigns the plate height */
+      if (w / 4 > h) w = h * 4; else h = w / 4;                             /* ensureRatio 4 */
+      w = Math.min(Math.max(w, 88), 400); h = plateH;                       /* the clamps run again after the ratio */
+      x = seat === 1 ? (compact ? 8 : 16) : floor(pw - w - (compact ? 8 : 16)); y = center();
+    }
+    plate = put("namePlate" + seat, x, y, w, h);
+    /* name text */
+    w = plate.w - nameOffset; h = nameTextH;
+    if (inl) { w -= floor(w * 0.7); x = plate.x + floor(w * 0.10); } else { x = plate.x + plate.w / 2 - w / 2; }
+    y = plate.y + plate.h / 2 - h / 2;
+    put("name" + seat, x, y, w, h);
+    /* score plate */
+    w = plate.w - (inl ? nameOffset : (!compact ? 40 : (portrait ? 16 : 24))); h = scorePlateH;
+    if (inl) { w -= floor(w * 0.7); y = plate.y + plate.h / 2 - h / 2; x = plate.x + plate.w - w - floor(w * 0.10); }
+    else { y = plate.y + plate.h; x = plate.x + plate.w / 2 - w / 2; }
+    var sp = put("scorePlate" + seat, x, y, w, h);
+    /* hand score text */
+    var inset = inl ? 0 : 4; w = Math.max(sp.w - inset * 2, 0); h = inl ? nameTextH : sp.h;
+    var yr = inl ? plate : sp; y = yr.y + yr.h / 2 - h / 2; x = sp.x + sp.w / 2 - w / 2;
+    put("handScore" + seat, x, y, w, h);
+    /* avatar */
+    w = h = playerAvatar; x = plate.x + plate.w / 2 - w / 2;
+    if (inl) { y = plate.y + plate.h - h; if (seat === 0) y += (compact ? 8 : 16); else y -= 1; }
+    else { y = plate.y - h; y -= floor(h * -0.01); }                      /* above the plate; the default -1% internal margin moves it 1px down */
+    var av = put("avatar" + seat, x, y, w, h);
+    /* hand spot */
+    if (seat === 0) {
+      w = floor(pw * 0.92); h = avatarSize; h += floor(h * 0.48); h = Math.min(h, 240);
+      if (w / h < 2.4) w = h * 2.4;                                         /* ensureMinRatio (the width grows, Spot.js:428-433) */
+      h = Math.min(h, 240);
+      y = av.y - floor(h * 0.44); x = av.x + av.w / 2 - w / 2;
+    } else if (seat === 2) {
+      w = S.hand0.w; h = S.hand0.h; w -= floor(w * 0.48); h -= floor(h * 0.48); w = Math.min(w, handMax);
+      y = plate.y + plate.h - h + floor(h * 0.16); x = plate.x + plate.w / 2 - w / 2;
+    } else {
+      w = S.hand0.h; h = S.hand0.w; w -= floor(w * 0.48); h -= floor(h * 0.48); h = Math.min(h, handMax);
+      if (seat === 1) x = plate.x + plate.w - w + floor(w * 0.16); else x = plate.x - floor(w * 0.16);
+      y = plate.y - floor(h * 0.5);
+    }
+    put("hand" + seat, x, y, w, h);
+    /* dealer chip */
+    w = h = chipSize;
+    x = seat === 3 ? plate.x + floor(w * -0.5) : plate.x + plate.w - w + floor(w * 0.5);
+    y = plate.y - h + floor(h * 0.5);
+    put("dealerChip" + seat, x, y, w, h);
+  });
+
+  /* the upcard and the bid buttons */
+  var up = put("upCard", (pw - S.hand0.w) / 2, center() - floor(S.hand0.h * 0.5), S.hand0.w, S.hand0.h);
+  var upW = floor(up.h * RATIO);
+  var upPiece = { x: floor(up.x + (up.w - upW) / 2), y: up.y, w: upW, h: up.h };
+  var cardSpotW = round(up.h * RATIO);
+  var bw = Math.min(Math.max(floor(pw * 0.16), Math.max(cardSpotW, btnThreshold)), cardSpotW >= btnThreshold ? cardSpotW : btnThreshold);
+  var acc = put("accept", (pw - bw) / 2, up.y + up.h + gap, bw, btnH);
+  put("pass", acc.x - bw - gap, acc.y, bw, btnH);
+  put("goAlone", acc.x + acc.w + gap, acc.y, bw, btnH);
+  var nBtn = STATE.buttons.length, total = nBtn * bw + gap * (nBtn - 1), bx = round((pw - total) / 2);   /* Layout.positionPlayAreaButtons */
+  var buttons = STATE.buttons.map(function (label, i) { var b = { label: label, x: bx, y: acc.y, w: bw, h: btnH }; bx += bw + gap; return b; });
+
+  /* the fans: hand0 gets the fanCardsWider peek, the bots the default */
+  var pm = Math.min(1.5, 1.5 * (pw / ph) * 0.8);
+  var cp = compact && portrait;
+  var fans = {
+    0: layoutFan(S.hand0, { direction: "east", arcDirection: "N", rotate: null, arcRadius: 1200, peekModifier: pm, fannable: true, count: STATE.hand.length, alignX: "center", alignY: "top", zBase: 3200, compactPortrait: cp }),
+    1: layoutFan(S.hand1, { direction: "south", arcDirection: "E", rotate: 90, arcRadius: 384, count: STATE.botHands[0], alignX: "right", alignY: "center", zBase: 3000, compactPortrait: cp }),
+    2: layoutFan(S.hand2, { direction: "west", arcDirection: "S", rotate: 180, arcRadius: 384, count: STATE.botHands[1], alignX: "center", alignY: "bottom", zBase: 3000, compactPortrait: cp }),
+    3: layoutFan(S.hand3, { direction: "north", arcDirection: "W", rotate: -90, arcRadius: 384, count: STATE.botHands[2], alignX: "left", alignY: "center", zBase: 3000, compactPortrait: cp })
+  };
+
+  /* the chrome, in viewport pixels (Table.js, TableBar.js, AdWidget) */
+  var G = g.G, msgPad = compact ? 8 : 12;
+  var msg = { x: G, y: g.top + G, maxWidth: null };
+  var plateLefts = [];
+  [0, 1, 2, 3].forEach(function (seat) { var p = S["namePlate" + seat]; if (p.y >= ph / 2 || p.x <= msg.x) return; plateLefts.push(p.x); });
+  if (plateLefts.length) { var mw = floor(Math.min.apply(null, plateLefts) - msg.x - G - 2 * msgPad); if (mw < 320 && mw >= 80) msg.maxWidth = mw; }
+  var chrome = {
+    message: msg,
+    scoreBoard: { y: g.top + G, xFor: function (boardW) { return Math.max(floor(G), floor(pw - boardW - G)); } },
+    tableBar: g.side ? { side: true, x: pw, y: g.top + G, h: Math.max(0, floor(ph - 2 * G)) } : { side: false, x: floor(pw / 2 - 200), bottom: G },
+    ad: { width: g.adWidth, top: g.top + G, bottom: G }
+  };
+  return { g: g, spots: S, fans: fans, upPiece: upPiece, buttons: buttons, chrome: chrome,
+           text: { nameMax: nameMax, scoreMaxInline: nameMax, scoreMaxSide: 16, buttonMax: compact ? 20 : 24 } };
+}
+
+/* FitText.js: the largest font size whose measured text stays inside the box, then the line height */
+var sizer = document.createElement("span"); sizer.className = "sizer"; document.body.appendChild(sizer);
+function fitText(text, maxWidth, maxHeight, opts) {
+  opts = opts || {};
+  sizer.style.fontWeight = opts.fontWeight || "normal"; sizer.style.lineHeight = ""; sizer.style.fontSize = ""; sizer.textContent = text;
+  var step = Math.max(1, Math.min(floor(maxHeight * 0.2), 6));
+  var grow = function (prop, start, stepSize, strict) {
+    var v = start; sizer.style[prop] = v + "px";
+    var inside = function () { var h = sizer.offsetHeight, w = sizer.offsetWidth; return strict ? (h < maxHeight && w < maxWidth) : (h <= maxHeight && w <= maxWidth); };
+    while (inside()) { v += stepSize; sizer.style[prop] = v + "px"; }
+    return v - stepSize;
+  };
+  var fs = grow("fontSize", 1, step, true); fs = grow("fontSize", fs, 1, true);
+  if (opts.maxSize) fs = Math.min(fs, opts.maxSize);
+  sizer.style.fontSize = fs + "px";
+  var lh = grow("lineHeight", 1, step, false); lh = grow("lineHeight", lh, 1, false);
+  if (fs == opts.maxSize) lh = NaN;                                      /* the game never passes maxLineHeight, so no line-height is written then */
+  if (opts.lineHeight) lh = opts.lineHeight;
+  return { fontSize: fs, lineHeight: lh };
+}
+
+/* ===== rendering ===== */
+var SQUIRCLE = window.CSS && CSS.supports && CSS.supports("corner-shape", "squircle");
+function px(n) { return n + "px"; }
+function el(cls, style, html) {
+  var d = document.createElement("div");
+  d.className = cls;
+  if (style) d.setAttribute("style", style);
+  if (html != null) d.innerHTML = html;
+  return d;
+}
+function box(b) { return "left:" + px(b.x) + ";top:" + px(b.y) + ";width:" + px(b.w) + ";height:" + px(b.h) + ";"; }
+function cardRadius(w) { var r = w < 40 ? 4 : (w < 100 ? 6 : 8); return SQUIRCLE ? r * 2 : r; }
+function card(id, b, spot) {
+  var c = el("piece card", box(b) + "rotate:" + (b.rotate || 0) + "deg;z-index:" + b.z + ";--r:" + px(cardRadius(b.w)));
+  c.setAttribute("data-spot", spot);
+  c.appendChild(el("face", "background-image:url(game-assets/cards/" + id + ".png)"));
+  return c;
+}
+function textPiece(cls, b, spot, text, opts) {
+  var fit = fitText(text, b.w, b.h, opts);
+  var st = box(b) + "font-size:" + px(fit.fontSize) + ";" + (isNaN(fit.lineHeight) ? "" : "line-height:" + px(fit.lineHeight) + ";");
+  var t = el("piece text " + cls, st, "<span>" + text + "</span>");
+  t.setAttribute("data-spot", spot);
+  return t;
+}
+
+var LAYOUT = null;
+function render() {
+  var L = LAYOUT = layoutTable(window.innerWidth, window.innerHeight);
+  var g = L.g, S = L.spots, s = STATE;
+  document.documentElement.style.setProperty("--ad-w", px(g.adWidth));
+
+  var ps = document.getElementById("playspace");
+  ps.innerHTML = "";
+  ps.style.width = px(g.pw); ps.style.height = px(g.ph); ps.style.top = px(g.top);
+
+  /* the hands */
+  L.fans[0].forEach(function (b, i) { ps.appendChild(card(s.hand[i], b, "hand0")); });
+  [1, 2, 3].forEach(function (seat) { L.fans[seat].forEach(function (b) { ps.appendChild(card("back", b, "hand" + seat)); }); });
+
+  /* the upcard and the bid buttons */
+  ps.appendChild(card(s.upCard, { x: L.upPiece.x, y: L.upPiece.y, w: L.upPiece.w, h: L.upPiece.h, rotate: 0, z: 3600 }, "upCard"));
+  L.buttons.forEach(function (b, i) {
+    var fit = fitText(b.label, b.w - 8, b.h, { maxSize: L.text.buttonMax });
+    var d = el("piece button", box(b) + "line-height:" + px(b.h) + ";font-size:" + px(fit.fontSize), b.label);
+    d.setAttribute("data-spot", ["pass", "accept", "goAlone"][i] || "button" + i);
+    ps.appendChild(d);
+  });
+
+  /* the players */
+  s.seats.forEach(function (p, seat) {
+    var team = "team" + p.team, inl = seat === 0 || seat === 2;
+    var plate = el("piece namePlate " + team, box(S["namePlate" + seat])); plate.setAttribute("data-spot", "namePlate" + seat); ps.appendChild(plate);
+    ps.appendChild(textPiece(team, S["name" + seat], "name" + seat, p.name, { maxSize: L.text.nameMax, fontWeight: "bold" }));
+    var sp = el("piece scorePlate " + team + (inl ? " inline" : " side"), box(S["scorePlate" + seat])); sp.setAttribute("data-spot", "scorePlate" + seat); ps.appendChild(sp);
+    ps.appendChild(textPiece(team, S["handScore" + seat], "handScore" + seat, p.handScore, { maxSize: inl ? L.text.scoreMaxInline : L.text.scoreMaxSide, lineHeight: S["handScore" + seat].h, fontWeight: "bold" }));
+    var av = el("piece avatar" + (inl ? "" : " side"), box(S["avatar" + seat]));
+    av.setAttribute("data-spot", "avatar" + seat);
+    av.innerHTML = '<img src="game-assets/avatars/' + p.avatar + '.svg" alt="">';
+    ps.appendChild(av);
+  });
+  var chip = el("piece chip", box(S["dealerChip" + s.dealer])); chip.setAttribute("data-spot", "dealerChip" + s.dealer); ps.appendChild(chip);
+
+  /* the message box, the score board, the table bar and the ad rail (viewport pixels) */
+  var mb = document.getElementById("messageBox");
+  mb.innerHTML = "<span>" + s.message + "</span>";
+  mb.style.left = px(L.chrome.message.x); mb.style.top = px(L.chrome.message.y);
+  mb.style.maxWidth = L.chrome.message.maxWidth ? px(L.chrome.message.maxWidth) : "";
+  var sb = document.getElementById("scoreBoard");
+  sb.innerHTML = '<div class="cell team1">' + s.score[0] + '</div><div class="title">Score</div><div class="cell team2">' + s.score[1] + '</div>';
+  sb.style.top = px(L.chrome.scoreBoard.y);
+  var tb = document.getElementById("tableBar");
+  tb.innerHTML = '<ul>' +
+    '<li style="--icon:url(game-assets/ui/tableMenu.png)">Info</li>' +
+    '<li class="disabled" style="--icon:url(game-assets/ui/pauseMenu.png)">Pause</li>' +
+    '<li class="disabled" style="--icon:url(game-assets/ui/chatMenu.png)">Chat</li>' +
+    '<li class="play" style="--icon:url(game-assets/ui/playMenu.png)">Play</li>' +
+    '<li style="--icon:url(game-assets/ui/hintMenu.png)">Hint</li>' +
+    '<li style="--icon:url(game-assets/ui/helpMenu.png)">Help</li>' +
+    '<li style="--icon:url(game-assets/ui/profileMenu.png)">Profile</li>' +
+    '</ul>';
+  var t = L.chrome.tableBar;
+  tb.classList.toggle("side", t.side);
+  if (t.side) { tb.style.left = px(t.x); tb.style.top = px(t.y); tb.style.bottom = "auto"; tb.style.height = px(t.h); }
+  else { tb.style.left = px(t.x); tb.style.top = "auto"; tb.style.bottom = px(t.bottom); tb.style.height = ""; }
+  var ad = document.getElementById("ad");
+  ad.style.width = px(L.chrome.ad.width); ad.style.top = px(L.chrome.ad.top); ad.style.bottom = px(L.chrome.ad.bottom);
+
+  document.getElementById("menuUserName").textContent = s.user.name;
+  document.getElementById("menuAvatar").src = "game-assets/avatars/" + s.user.avatar + ".svg";
+  applyBody();
+  sb.style.left = px(L.chrome.scoreBoard.xFor(sb.offsetWidth));            /* the board is content-sized, so it is measured after the styles apply */
+}
+
+/* ===== the design, fixed at what was settled (game.html's choosers are gone here) ===== */
+var curFbtn = "yellow4", curTeam = "t20b", curMsg = "band", curPrad = "plates", curEdge = "plates";
+var curDesign = "current";
+
+function applyBody() {
+  var cls = ["design-current", "fbtn-" + curFbtn, "team-" + curTeam, "prad-" + curPrad, "edge-" + curEdge, "msg-" + curMsg];
+  if (LAYOUT) {
+    var g = LAYOUT.g;
+    if (g.compact) cls.push("ps-compact");
+    if (g.small) cls.push("ps-small");
+    cls.push(g.portrait ? "ps-portrait" : "ps-landscape");
+    if (g.side) cls.push("ps-side");
+    if (g.adWidth === 160) cls.push("ad160");
+  }
+  if (!VEIL) cls.push("pl-noveil");
+  document.body.className = cls.join(" ");
+}
+
+/* ===== the patterns ===== */
+/* The sizes the repeat steps through. 100 is the green felt's and 255 is what nearly every
+   wallpaper on the site draws at today, so the ladder is built around those two and then goes
+   past them. It stops at 768 because the tile master is 1536, which is exactly 768 at 2x:
+   every rung is honest on a retina screen, none of them is an upscale. */
+var SIZES = [64, 80, 100, 128, 160, 192, 224, 255, 288, 320, 384, 448, 512, 640, 768];
+var FILTERS = [
+  { key: "all",    label: "All",          test: function () { return true; } },
+  { key: "tile",   label: "Tiles",        test: function (p) { return p.kind === "tile"; } },
+  { key: "sheet",  label: "Full images",  test: function (p) { return p.kind === "sheet"; } },
+  { key: "chosen", label: "Chosen",       test: function (p) { return !!chosen[p.id]; } }
+];
+
+var ALL = window.PATTERNS || [];
+var LS = "wocgPatternLab.";
+function load(key, fallback) {
+  try { var v = localStorage.getItem(LS + key); return v == null ? fallback : JSON.parse(v); }
+  catch (e) { return fallback; }
+}
+function save(key, value) { try { localStorage.setItem(LS + key, JSON.stringify(value)); } catch (e) {} }
+
+var chosen = load("chosen", {});          /* id -> { at, repeat } */
+var sizes  = load("sizes", {});           /* id -> repeat in CSS px */
+var VEIL   = load("veil", true);          /* the table's spotlight and vignette */
+var helpOn = load("help", true);
+var filterIx = Math.max(0, FILTERS.map(function (f) { return f.key; }).indexOf(load("filter", "all")));
+var list = ALL.slice();
+var ix = 0;
+var startAt = load("at", null);      /* the pattern we were on, by id, not by place in a list */
+var preloaded = {};
+
+function repeatOf(p) { return p.kind === "sheet" ? 0 : (sizes[p.id] || p.repeat || 255); }
+
+/* What this pattern would weigh on the site at the repeat now set: the asset has to be twice the
+   repeat for a retina screen, and the build weighed each tile at 512, 768, 1024 and 1536. */
+function shipKb(p) {
+  if (p.kind === "sheet") return p.kb;
+  if (!p.ship) return p.kb;
+  var want = repeatOf(p) * 2, keys = [512, 768, 1024, 1536], i;
+  for (i = 0; i < keys.length; i++) if (want <= keys[i]) break;
+  if (i === 0) return p.ship["512"];
+  if (i >= keys.length) return p.ship["1536"];
+  var lo = keys[i - 1], hi = keys[i];
+  return Math.round(p.ship[String(lo)] + (p.ship[String(hi)] - p.ship[String(lo)]) * (want - lo) / (hi - lo));
+}
+function weight(kb) { return kb >= 1024 ? (kb / 1024).toFixed(1) + " MB" : kb + " KB"; }
+
+function applyPattern() {
+  var p = list[ix];
+  if (!p) return;
+  var root = document.documentElement.style;
+  root.setProperty("--felt", 'url("pattern-assets/' + p.file + '")');
+  if (p.kind === "sheet") {
+    root.setProperty("--felt-size", "cover");
+    root.setProperty("--felt-repeat", "no-repeat");
+    root.setProperty("--felt-pos", "50% 50%");
+  } else {
+    var s = repeatOf(p);
+    root.setProperty("--felt-size", s + "px " + s + "px");
+    root.setProperty("--felt-repeat", "repeat");
+    root.setProperty("--felt-pos", "0 0");
+  }
+  drawHud();
+  preload(ix + 1); preload(ix + 2); preload(ix - 1);
+  save("at", p.id);
+  save("filter", FILTERS[filterIx].key);
+}
+
+function preload(i) {
+  var p = list[i];
+  if (!p || preloaded[p.id]) return;
+  preloaded[p.id] = true;
+  var im = new Image(); im.src = "pattern-assets/" + p.file;
+}
+
+function drawHud() {
+  var p = list[ix], hud = document.getElementById("pl-hud");
+  if (!p) {
+    document.getElementById("pl-name").textContent = "Nothing in this filter";
+    document.getElementById("pl-meta").textContent = FILTERS[filterIx].label;
+    document.getElementById("pl-pos").textContent = "0 / 0";
+    return;
+  }
+  var kind = p.kind === "sheet" ? "Full image" : (p.cut ? "Tile, cut from a photo" : "Tile");
+  var size = p.kind === "tile" ? (" · repeat " + repeatOf(p) + "px") : " · cover";
+  document.getElementById("pl-name").textContent = p.name;
+  document.getElementById("pl-meta").textContent = p.group + " · " + kind + size + " · ships " + weight(shipKb(p));
+  document.getElementById("pl-pos").textContent = (ix + 1) + " / " + list.length + (filterIx ? " · " + FILTERS[filterIx].label : "");
+  document.getElementById("pl-num").textContent = Object.keys(chosen).length;
+  document.getElementById("pl-bar").style.width = (100 * (ix + 1) / Math.max(1, list.length)) + "%";
+  hud.classList.toggle("is-on", !!chosen[p.id]);
+  // wrapH and wrapV are the honest measure, in grey levels the wrap is off by. The older ratio is
+  // only a fallback: it divides by the interior variation, so a banded plaid makes it explode on a
+  // mismatch nobody can see.
+  var seamy = p.wrapH != null ? Math.max(p.wrapH, p.wrapV) > 6 : (p.seamH > 2 || p.seamV > 2);
+  hud.classList.toggle("is-seamy", p.kind === "tile" && seamy);
+}
+
+function go(step) {
+  if (!list.length) return;
+  ix = (ix + step + list.length) % list.length;
+  applyPattern();
+}
+
+function choose(on) {
+  var p = list[ix];
+  if (!p) return;
+  if (on) chosen[p.id] = { at: Date.now(), repeat: repeatOf(p) };
+  else delete chosen[p.id];
+  save("chosen", chosen);
+  if (FILTERS[filterIx].key === "chosen" && !on) { setFilter(filterIx); return; }
+  drawHud();
+}
+
+function stepSize(dir) {
+  var p = list[ix];
+  if (!p || p.kind !== "tile") return;
+  var cur = repeatOf(p), i = 0;
+  while (i < SIZES.length - 1 && SIZES[i] < cur) i++;
+  if (dir === 0) delete sizes[p.id];
+  else sizes[p.id] = SIZES[Math.min(SIZES.length - 1, Math.max(0, i + dir))];
+  save("sizes", sizes);
+  if (chosen[p.id]) { chosen[p.id].repeat = repeatOf(p); save("chosen", chosen); }
+  applyPattern();
+}
+
+function setFilter(i, wantId) {
+  var here = wantId || (list[ix] && list[ix].id);
+  filterIx = (i + FILTERS.length) % FILTERS.length;
+  list = ALL.filter(FILTERS[filterIx].test);
+  if (!list.length) { list = ALL.slice(); filterIx = 0; }
+  var at = -1;
+  for (var k = 0; k < list.length; k++) if (list[k].id === here) { at = k; break; }
+  ix = at < 0 ? 0 : at;
+  applyPattern();
+}
+
+function jumpGroup(dir) {
+  if (!list.length) return;
+  var here = list[ix].group, i = ix;
+  for (var n = 0; n < list.length; n++) {
+    i = (i + dir + list.length) % list.length;
+    if (list[i].group !== here) {
+      if (dir < 0) {                                  /* walk back to that group's first one */
+        var g = list[i].group;
+        while (list[(i - 1 + list.length) % list.length].group === g) i = (i - 1 + list.length) % list.length;
+      }
+      ix = i; applyPattern(); return;
+    }
+  }
+}
+
+function exportText() {
+  var out = ALL.filter(function (p) { return chosen[p.id]; }).map(function (p) {
+    return { id: p.id, name: p.name, group: p.group, kind: p.kind,
+             repeat: p.kind === "tile" ? (chosen[p.id].repeat || repeatOf(p)) : null,
+             file: p.file, src: p.src };
+  });
+  return JSON.stringify({ chosen: out.length, patterns: out }, null, 2);
+}
+
+function showExport(on) {
+  var box = document.getElementById("pl-export");
+  if (on) document.getElementById("pl-out").value = exportText();
+  box.classList.toggle("is-on", on);
+}
+
+/* ===== the keys ===== */
+document.addEventListener("keydown", function (e) {
+  if (e.altKey || e.ctrlKey || e.metaKey) return;
+  if (e.target && /^(INPUT|TEXTAREA)$/.test(e.target.tagName)) return;
+  var k = e.key;
+  if (k === "Escape") { showExport(false); return; }
+  if (k === "Home") { e.preventDefault(); if (list.length) { ix = 0; applyPattern(); } return; }
+  if (k === "End")  { e.preventDefault(); if (list.length) { ix = list.length - 1; applyPattern(); } return; }
+  if (k === "ArrowLeft")  { e.preventDefault(); go(-1); return; }
+  if (k === "ArrowRight") { e.preventDefault(); go(1); return; }
+  if (k === "ArrowUp")    { e.preventDefault(); choose(true); return; }
+  if (k === "ArrowDown")  { e.preventDefault(); choose(false); return; }
+  if (k === "[") { e.preventDefault(); stepSize(-1); return; }
+  if (k === "]") { e.preventDefault(); stepSize(1); return; }
+  if (k === "0") { e.preventDefault(); stepSize(0); return; }
+  if (k === "f" || k === "F") { e.preventDefault(); setFilter(filterIx + 1); return; }
+  if (k === "g") { e.preventDefault(); jumpGroup(1); return; }
+  if (k === "G") { e.preventDefault(); jumpGroup(-1); return; }
+  if (k === "v" || k === "V") { e.preventDefault(); VEIL = !VEIL; save("veil", VEIL); applyBody(); return; }
+  if (k === "h" || k === "H") { e.preventDefault(); helpOn = !helpOn; save("help", helpOn); document.getElementById("pl-help").classList.toggle("is-off", !helpOn); return; }
+  if (k === "e" || k === "E") { e.preventDefault(); showExport(!document.getElementById("pl-export").classList.contains("is-on")); return; }
+});
+
+document.getElementById("pl-prev").addEventListener("click", function () { go(-1); });
+document.getElementById("pl-next").addEventListener("click", function () { go(1); });
+document.getElementById("pl-hud").addEventListener("click", function () { choose(!chosen[list[ix] && list[ix].id]); });
+document.getElementById("pl-close").addEventListener("click", function () { showExport(false); });
+document.getElementById("pl-copy").addEventListener("click", function () {
+  var t = document.getElementById("pl-out"); t.select();
+  try { document.execCommand("copy"); } catch (err) {}
+  if (navigator.clipboard) navigator.clipboard.writeText(t.value).catch(function () {});
+  this.textContent = "Copied"; var b = this; setTimeout(function () { b.textContent = "Copy"; }, 1200);
+});
+document.getElementById("pl-download").addEventListener("click", function () {
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([exportText()], { type: "application/json" }));
+  a.download = "chosen-patterns.json"; a.click();
+});
+document.getElementById("pl-clear").addEventListener("click", function () {
+  if (!window.confirm("Clear every choice?")) return;
+  chosen = {}; save("chosen", chosen); showExport(true); drawHud();
+});
+document.getElementById("pl-help").classList.toggle("is-off", !helpOn);
+
+render();
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(render);   /* the text sizes need the real font */
+var resizeTimer = null;
+window.addEventListener("resize", function () { clearTimeout(resizeTimer); resizeTimer = setTimeout(render, 60); });
+setFilter(filterIx, startAt);
+window.__patternLab = { ALL: ALL, get list() { return list; }, get chosen() { return chosen; }, exportText: exportText };
+window.__gameLab = { STATE: STATE, geometry: geometry, layoutTable: layoutTable, render: render, applyBody: applyBody, setDesign: function (d) { curDesign = d; applyBody(); }, get layout() { return LAYOUT; } };
+</script>
+</body>
+</html>
