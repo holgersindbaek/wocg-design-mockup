@@ -17555,6 +17555,13 @@
   min-width: 150px;
 }
 
+@media (max-width: 520px) {
+  :where(.site):is(div).wm #userBar .activityIcon .activityDropdown, :where(.site):is(div).wm #userBar .friendsIcon .friendsDropdown {
+    left: auto;
+    right: 0;
+    transform: none;
+  }
+}
 :where(.site):is(div).wm #userBar .activityIcon .activityDropdown, :where(.site):is(div).wm #userBar .friendsIcon .friendsDropdown {
   width: max-content;
   min-width: 254px;
@@ -18395,14 +18402,14 @@
 :where(.site):is(div).fp .sceneTxt.signedIn #herosub {
   max-width: 320px;
 }
-:where(.site):is(div).fp .sceneTxt .stats {
+:where(.site):is(div).fp .sceneTxt .statsCapsule {
   margin-top: 28px;
   justify-content: flex-start;
 }
 :where(.site):is(div).fp #herotitle.intro, :where(.site):is(div).fp #herotitle.greet {
   white-space: nowrap;
 }
-:where(.site):is(div).fp .stats {
+:where(.site):is(div).fp .statsCapsule {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -18584,7 +18591,7 @@
     margin-bottom: 8px;
     text-align: center;
   }
-  :where(.site):is(div).fp .sceneTxt .stats {
+  :where(.site):is(div).fp .sceneTxt .statsCapsule {
     justify-content: center;
   }
   :where(.site):is(div).fp .sceneTxt #herosub {
@@ -18597,7 +18604,7 @@
   :where(.site):is(div).fp #herotitle.intro, :where(.site):is(div).fp #herotitle.greet {
     white-space: normal;
   }
-  :where(.site):is(div).fp .sceneTxt .stats {
+  :where(.site):is(div).fp .sceneTxt .statsCapsule {
     margin-top: 16px;
   }
 }
@@ -25042,10 +25049,6 @@
   padding: var(--wm-pad) 0;
 }
 
-:where(.site) .wmSettings .wmPkDeck, :where(.site) .wmSettings .wmPkDeckBack {
-  --wm-cols: 3;
-}
-
 :where(.site) .wmSettings .wmTile {
   position: relative;
   z-index: 0;
@@ -25177,9 +25180,9 @@
   right: var(--wm-mark-in);
 }
 
-:where(.site) .wmSettings .wmPkDeck .wmTile.wmPicked .wmPickMark, :where(.site) .wmSettings .wmPkDeckBack .wmTile.wmPicked .wmPickMark {
-  top: calc(var(--wm-mark-in) + var(--wm-mark-line) - var(--wm-dk-sq));
-  right: calc(var(--wm-mark-in) + var(--wm-mark-line) - var(--wm-dk-sq));
+:where(.site) .wmSettings .wmPkDeck .wmTile.wmPicked .wmPickMark, :where(.site) .wmSettings .wmPkBack .wmTile.wmPicked .wmPickMark {
+  top: var(--wm-mark-in);
+  right: var(--wm-mark-in);
 }
 
 :where(.site) .wmSettings .wmPkAvatar .wmTile .cheer {
@@ -25198,85 +25201,141 @@
   box-shadow: var(--shadow-border-strong);
 }
 
-:where(.site) .wmSettings .wmPkDeck, :where(.site) .wmSettings .wmPkDeckBack {
-  --wm-dk-sq: 4px;
-  --wm-dk-gap: 0px;
-  gap: calc(var(--wm-dk-sq) * 2 + var(--wm-gap));
+:where(.site) .wmSettings .wmPkDeck, :where(.site) .wmSettings .wmPkBack {
+  --wm-cols: 6;
+  gap: 14px;
+  padding: 6px 0 12px;
 }
 
-:where(.site) .wmSettings .wmPkDeck .wmTile, :where(.site) .wmSettings .wmPkDeckBack .wmTile {
-  aspect-ratio: 1/0.86;
-}
-
-:where(.site) .wmSettings .wmPkDeck .wmTile::before, :where(.site) .wmSettings .wmPkDeckBack .wmTile::before {
-  content: "";
-  position: absolute;
-  z-index: -2;
-  inset: calc(-1 * var(--wm-dk-sq));
-  border-radius: calc(var(--wm-tile-radius) + var(--wm-dk-sq));
+:where(.site) .wmSettings .wmPkDeck .wmTile, :where(.site) .wmSettings .wmPkBack .wmTile {
+  aspect-ratio: 318/444;
+  border-radius: var(--wm-tile-radius);
   corner-shape: squircle;
-  opacity: 0;
-  background: var(--band);
-  box-shadow: inset 0 0 0 1px var(--rule);
 }
 
-@media (hover: hover) and (pointer: fine) {
-  :where(.site) .wmSettings .wmPkDeck .wmTile::before, :where(.site) .wmSettings .wmPkDeckBack .wmTile::before {
-    will-change: opacity;
-  }
-  :where(.site) .wmSettings .wmPkDeck .wmTile:hover::before, :where(.site) .wmSettings .wmPkDeckBack .wmTile:hover::before {
-    opacity: 1;
-  }
-}
-:where(.site) .wmSettings .wmPkDeck .wmTile.wmPicked::before, :where(.site) .wmSettings .wmPkDeckBack .wmTile.wmPicked::before {
-  opacity: 1;
-}
-
-:where(.site) .wmSettings .wmPkDeck .wmTile > span, :where(.site) .wmSettings .wmPkDeckBack .wmTile > span {
+:where(.site) .wmSettings .wmPkDeck .wmTile > span, :where(.site) .wmSettings .wmPkBack .wmTile > span {
   background-image: none;
 }
 
-:where(.site) .wmSettings .wmPkDeck .wmTile > span::before, :where(.site) .wmSettings .wmPkDeck .wmTile > span::after, :where(.site) .wmSettings .wmPkDeckBack .wmTile > span::before {
+:where(.site) .wmSettings .wmPkDeck .wmTile > span::after, :where(.site) .wmSettings .wmPkBack .wmTile > span::after {
   content: "";
   position: absolute;
-  top: 7%;
-  display: block;
-  width: 50%;
-  aspect-ratio: 318/444;
-  border-radius: 6px;
+  inset: 0;
+  border-radius: var(--wm-tile-radius);
   corner-shape: squircle;
-  background: var(--surface) center center/100% 100% no-repeat;
-  box-shadow: inset 0 0 0 1px var(--color-card-border), 0 2px 5px rgba(0, 0, 0, 0.26);
+  background: var(--surface) var(--wm-dk-front) center center/100% 100% no-repeat;
+  box-shadow: inset 0 0 0 1px var(--color-card-border);
 }
 
-@supports (corner-shape: squircle) {
-  :where(.site) .wmSettings .wmPkDeck .wmTile > span::before, :where(.site) .wmSettings .wmPkDeck .wmTile > span::after, :where(.site) .wmSettings .wmPkDeckBack .wmTile > span::before {
-    border-radius: 12px;
+@media (hover: hover) and (pointer: fine) {
+  :where(.site) .wmSettings .wmPkDeck .wmTile:not(.wmPicked):hover, :where(.site) .wmSettings .wmPkBack .wmTile:not(.wmPicked):hover {
+    transform: translateY(-2px);
   }
 }
-:where(.site) .wmSettings .wmPkDeck .wmTile > span::before, :where(.site) .wmSettings .wmPkDeckBack .wmTile > span::before {
-  left: 6%;
-  z-index: -1;
-  background-image: var(--wm-dk-rear);
-  transform: rotate(-9deg);
+:where(.site) .wmSettings .wmSwHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--wm-pad);
+  padding: 12px 0 0;
 }
 
-:where(.site) .wmSettings .wmPkDeck .wmTile > span::after, :where(.site) .wmSettings .wmPkDeckBack .wmTile > span::after {
-  right: 6%;
-  background-image: var(--wm-dk-front);
-  transform: rotate(7deg);
+:where(.site) .wmSettings .wmSwHead .wmRowTitle, :where(.site) .wmSettings .wmSwHead .wmRowLine {
+  display: block;
 }
 
-:where(.site) .wmSettings .wmPkDeckBack .wmTile > span::before {
-  top: 50%;
+:where(.site) .wmSettings .wmPk + .wmSwHead {
+  border-top: 1px solid var(--hairline);
+}
+
+:where(.site) .wmSettings .wmScene {
+  --wm-sc-big: 140px;
+  --wm-sc-small: 60px;
+  --wm-sc-pad: 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: var(--wm-pad);
+  padding: var(--wm-sc-pad);
+  border-radius: var(--wm-tile-radius);
+  corner-shape: squircle;
+  background: #327333 url("static/pieces/wallpaper/fabrics/green-felt.jpg") 0 0/100px 100px repeat;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.35);
+}
+
+:where(.site) .wmSettings .wmScene .wmC {
+  display: block;
+  aspect-ratio: 318/444;
+  background: #fff center center/100% 100% no-repeat;
+  box-shadow: inset 0 0 0 1px var(--color-card-border), 0 0 8px rgba(0, 0, 0, 0.2);
+  border-radius: 16px;
+  corner-shape: squircle;
+}
+
+:where(.site) .wmSettings .wmScene .wmScPile {
+  flex: 0 0 var(--wm-sc-big);
+  width: var(--wm-sc-big);
+}
+
+:where(.site) .wmSettings .wmScene .wmScHand {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  aspect-ratio: 1/0;
+  height: calc(var(--wm-sc-big) * 444 / 318);
+  margin-right: 8px;
+}
+
+:where(.site) .wmSettings .wmScene .wmScHand .wmC {
+  position: absolute;
+  top: 0;
+  width: var(--wm-sc-big);
+}
+
+:where(.site) .wmSettings .wmScene .wmScHand .wmScN0 {
+  left: 0;
+  z-index: 1;
+}
+
+:where(.site) .wmSettings .wmScene .wmScHand .wmScN1 {
   left: 50%;
-  width: 44%;
-  transform: translate(-50%, -50%);
-  z-index: 0;
+  transform: translateX(-50%);
+  z-index: 2;
 }
 
-:where(.site) .wmSettings .wmPkDeckBack .wmTile > span::after {
-  content: none;
+:where(.site) .wmSettings .wmScene .wmScHand .wmScN2 {
+  right: 0;
+  z-index: 3;
+}
+
+:where(.site) .wmSettings .wmScene .wmScCol {
+  position: relative;
+  flex: 0 0 var(--wm-sc-small);
+  width: var(--wm-sc-small);
+  height: calc(var(--wm-sc-big) * 444 / 318);
+}
+
+:where(.site) .wmSettings .wmScene .wmScCol .wmC {
+  position: absolute;
+  left: 0;
+  width: var(--wm-sc-small);
+  border-radius: 12px;
+}
+
+:where(.site) .wmSettings .wmScene .wmScCol .wmScN0 {
+  top: 0;
+  z-index: 1;
+}
+
+:where(.site) .wmSettings .wmScene .wmScCol .wmScN1 {
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+}
+
+:where(.site) .wmSettings .wmScene .wmScCol .wmScN2 {
+  bottom: 0;
+  z-index: 3;
 }
 
 :where(.site) .wmSettings .wmCard > .wmPk + .wmRow, :where(.site) .wmSettings .wmCard > .wmPk + .wmRowGroup {
@@ -25428,8 +25487,21 @@
   :where(.site) .wmSettings .wmPk {
     --wm-cols: 6;
   }
-  :where(.site) .wmSettings .wmPkDeck, :where(.site) .wmSettings .wmPkDeckBack {
-    --wm-cols: 2;
+  :where(.site) .wmSettings .wmPkDeck, :where(.site) .wmSettings .wmPkBack {
+    --wm-cols: 4;
+  }
+  :where(.site) .wmSettings .wmScene {
+    --wm-sc-big: 96px;
+    --wm-sc-small: 44px;
+    --wm-sc-pad: 12px;
+  }
+  :where(.site) .wmModal.wmSettings .wmRow.wmRowSmallCards {
+    flex-wrap: wrap;
+    height: auto;
+    min-height: 0;
+  }
+  :where(.site) .wmModal.wmSettings .wmRow.wmRowSmallCards .wmRowCtl {
+    flex: 1 1 100%;
   }
   :where(.site) .wmSettings .wmGames {
     grid-template-columns: 1fr;
