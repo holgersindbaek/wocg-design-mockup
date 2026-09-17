@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Deck picker lab 2 &middot; bigger cards, and the small-card version as a sub-option</title>
+<!--
+  The Card fronts section of Settings > Design, six ways, each drawn inside the real settings box (640px, the
+  site's own stylesheet through site.css) so the tile widths are honest. Two things are being judged:
+  1. the cards are bigger than the 93px the three-column tile gives them today;
+  2. a deck's small-card version (Classic has one: the Anglo art with the big corner marks, used automatically
+     when a card is drawn under about 90px wide) shows as a sub-option of the deck instead of as a deck of its own,
+     with one control for when it is used: Automatic, Always, Never.
+  Card art from static/pieces/card, copied into deck-lab-assets/. Czech, Poker, Russian and Renaissance are the new Adobe Stock decks,
+  and czech-small, poker-small and russian-small are the artist's own small-card versions of three of them.
+  Keys: 1-6 one on its own, 0 all, f felt behind everything. The url hash does the same (#3).
+  Clicks work: a tile, a swatch or a cell in a tray picks, and the big preview follows.
+-->
+<link rel="stylesheet" href="guide-fonts.css">
+<link rel="stylesheet" href="site.css">
+<style>
+  body { margin: 0; padding: 28px 20px 80px; background: #f9f6f2; color: #212529;
+         font: 14px/1.5 BuloRounded, -apple-system, "Helvetica Neue", Arial, sans-serif; }
+  body.felt { background: #327333 url("deck-lab-assets/felt.jpg") 0 0 / 120px 120px repeat; }
+  .site { display: block; }
+  .wrap { max-width: 640px; margin: 0 auto; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  .sub { color: #868E96; margin: 0 0 28px; }
+  body.felt h1, body.felt .sub, body.felt h2, body.felt .note { color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,.5); }
+  section.lab { margin: 0 0 44px; }
+  section.lab.hidden { display: none; }
+  h2 { font-size: 15px; margin: 0 0 2px; }
+  h2 b { color: #868E96; font-weight: 400; margin-left: 6px; }
+  .note { color: #868E96; font-size: 12.5px; margin: 0 0 12px; max-width: 620px; }
+  .keys { position: fixed; left: 12px; bottom: 12px; z-index: 9; background: rgba(255,255,255,.94); padding: 8px 11px;
+          border-radius: 9px; font-size: 12px; box-shadow: 0 1px 6px rgba(0,0,0,.25); }
+  .keys b { font-family: ui-monospace, Menlo, monospace; }
+
+  /* the settings box, laid flat on the page */
+  .lab .wmModal { position: static; display: block; opacity: 1; visibility: visible; pointer-events: auto; }
+  .lab .wmModal .wmScrim { display: none; }
+  .lab .wmModal .wmPanel { position: static; transform: none; width: 640px; max-height: none; }
+  .lab .wmModal .wmBox, .lab .wmModal .wmBody, .lab .wmModal .wmPage { height: auto !important; max-height: none !important; overflow: visible !important; }
+
+  /* the small-card row under a picker, and the tray in it */
+  .wmSettings .wmSmallRow { height: auto !important; min-height: 40px !important; }
+  .wmSettings .wmSmallRow .wmRowCtl { gap: 12px; }
+  .wmSettings .wmSmallRow .wmMini { display: inline-flex; gap: 3px; align-items: flex-end; }
+  .wmSettings .wmMini i { display: block; width: 26px; aspect-ratio: 318/444; border-radius: 3px;
+    background: var(--surface) center / 100% 100% no-repeat; box-shadow: inset 0 0 0 1px var(--color-card-border), 0 1px 2px rgba(0,0,0,.2); }
+
+  /* ---- 1  two across, the small version as a strip inside the tile ---- */
+  .wmSettings.v1 .wmPkDeck { --wm-cols: 2; }
+  .wmSettings.v1 .wmPkDeck .wmTile > span::before,
+  .wmSettings.v1 .wmPkDeck .wmTile > span::after { top: 3%; width: 46%; }
+  .wmSettings.v1 .wmPkDeck .wmTile > span::before { left: 8%; }
+  .wmSettings.v1 .wmPkDeck .wmTile > span::after { right: 8%; }
+  .wmSettings.v1 .wmSubStrip { position: absolute; left: 4%; right: 4%; bottom: 3%; height: 16%; z-index: 1;
+    display: flex; align-items: center; gap: 8px; padding: 0 10px; border-radius: 10px; corner-shape: squircle;
+    background: var(--band); box-shadow: inset 0 0 0 1px var(--rule); font-size: 13px; font-weight: bold; color: var(--ink); }
+  .wmSettings.v1 .wmSubStrip .wmMini i { width: 24px; }
+  .wmSettings.v1 .wmSubStrip small { font-weight: normal; color: var(--muted); margin-left: auto; }
+  .wmSettings.v1 .wmSubStrip.wmOn small { color: var(--wm-accent); }
+
+  /* ---- 2  three across, one big king, the phone-size card in the corner ---- */
+  .wmSettings.v2 .wmPkDeck .wmTile { aspect-ratio: 1 / 1.2; }
+  .wmSettings.v2 .wmPkDeck .wmTile > span::before { top: 12%; left: 30%; width: 60%; transform: rotate(8deg); }
+  .wmSettings.v2 .wmPkDeck .wmTile > span::after { top: 5%; left: 5%; right: auto; width: 64%; transform: rotate(-4deg); }
+  .wmSettings.v2 .wmPhone { position: absolute; right: 5%; bottom: 4%; width: 32%; z-index: 1; text-align: center; }
+  .wmSettings.v2 .wmPhone i { display: block; width: 100%; aspect-ratio: 318/444; border-radius: 6px; corner-shape: squircle;
+    background: var(--surface) center / 100% 100% no-repeat; box-shadow: inset 0 0 0 1px var(--color-card-border), 0 2px 5px rgba(0,0,0,.26); }
+  .wmSettings.v2 .wmPhone small { display: block; margin-top: 3px; font-size: 11px; line-height: 13px; color: var(--muted); }
+
+  /* ---- 3  the picked deck large, a swatch for every deck under it ---- */
+  .wmSettings .wmHero { position: relative; display: flex; align-items: center; gap: 16px; margin: var(--wm-pad) 0 0;
+    padding: 18px 18px 14px; border-radius: var(--wm-tile-radius); corner-shape: squircle;
+    background: var(--band); box-shadow: inset 0 0 0 1px var(--rule); }
+  .wmSettings .wmHero .wmFan { position: relative; flex: 1 1 auto; height: 250px; }
+  .wmSettings .wmHero .wmFan i { position: absolute; left: 50%; top: 50%; width: 150px; aspect-ratio: 318/444;
+    transform-origin: 50% 130%; border-radius: 12px; corner-shape: squircle;
+    background: var(--surface) center / 100% 100% no-repeat; box-shadow: inset 0 0 0 1px var(--color-card-border), 0 3px 8px rgba(0,0,0,.28); }
+  .wmSettings .wmHero .wmAt { flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; gap: 6px; width: 132px;
+    padding: 10px 8px 8px; border-radius: 10px; corner-shape: squircle; background: rgba(255,255,255,.55); box-shadow: inset 0 0 0 1px var(--rule); }
+  .wmSettings .wmHero .wmAt b { font-size: 12px; line-height: 14px; color: var(--ink); }
+  .wmSettings .wmHero .wmAt small { font-size: 11px; line-height: 13px; color: var(--muted); text-align: center; }
+  .wmSettings .wmHero .wmAt .wmMini i { width: 52px; border-radius: 5px; }
+  .wmSettings .wmHero .wmName { position: absolute; left: 18px; top: 12px; font-size: 13px; font-weight: bold; color: var(--ink); }
+  .wmSettings.v3 .wmPkDeckBack { --wm-cols: 7; --wm-dk-sq: 3px; }
+  .wmSettings.v3 .wmPkDeckBack .wmTile { aspect-ratio: 1 / 1.3; }
+  .wmSettings.v3 .wmPkDeckBack .wmTile > span::before { width: 84%; border-radius: 6px; }
+
+  /* ---- 4  a strip that scrolls sideways, one big card per deck ---- */
+  .wmSettings .wmStrip { display: flex; gap: 22px; padding: 16px 8px 14px; margin: 0 -4px; overflow-x: auto; scroll-snap-type: x proximity; }
+  .wmSettings .wmStrip .wmTile { flex: 0 0 176px; aspect-ratio: auto; height: 262px; scroll-snap-align: start; }
+  .wmSettings .wmStrip .wmTile > span { background-image: none; }
+  .wmSettings .wmStrip .wmTile > span::before, .wmSettings .wmStrip .wmTile > span::after { content: ""; position: absolute; top: 4%; width: 128px;
+    aspect-ratio: 318/444; border-radius: 12px; corner-shape: squircle; background: var(--surface) center / 100% 100% no-repeat;
+    box-shadow: inset 0 0 0 1px var(--color-card-border), 0 2px 5px rgba(0,0,0,.26); }
+  .wmSettings .wmStrip .wmTile > span::before { left: 0; z-index: -1; background-image: var(--wm-dk-rear); transform: rotate(-9deg); }
+  .wmSettings .wmStrip .wmTile > span::after { right: 0; background-image: var(--wm-dk-front); transform: rotate(7deg); }
+  .wmSettings .wmStrip .wmTile::before { content: ""; position: absolute; z-index: -2; inset: -6px; border-radius: 18px; corner-shape: squircle;
+    opacity: 0; background: var(--band); box-shadow: inset 0 0 0 1px var(--rule); }
+  .wmSettings .wmStrip .wmTile.wmPicked::before, .wmSettings .wmStrip .wmTile:hover::before { opacity: 1; }
+  .wmSettings .wmStrip .wmTile.wmPicked .wmPickMark { top: -1px; right: -1px; }
+  .wmSettings .wmStrip .wmCap { position: absolute; left: 0; right: 0; bottom: 0; text-align: center; font-size: 13px; font-weight: bold; color: var(--ink); }
+  .wmSettings .wmStrip .wmCap small { display: block; font-weight: normal; font-size: 11px; line-height: 13px; color: var(--muted); }
+
+  /* ---- 5  a row per deck, the small version as a row inside the row ---- */
+  .wmSettings .wmDeckRow { display: flex; align-items: center; gap: 20px; padding: 14px 0; border-bottom: 1px solid var(--hairline); cursor: pointer; }
+  .wmSettings .wmDeckRow:last-child { border-bottom: 0; }
+  .wmSettings .wmDeckRow .wmPair { position: relative; flex: 0 0 150px; height: 160px; }
+  .wmSettings .wmDeckRow .wmPair i { position: absolute; top: 4px; width: 104px; aspect-ratio: 318/444; border-radius: 12px; corner-shape: squircle;
+    background: var(--surface) center / 100% 100% no-repeat; box-shadow: inset 0 0 0 1px var(--color-card-border), 0 2px 5px rgba(0,0,0,.26); }
+  .wmSettings .wmDeckRow .wmPair i:first-child { left: 0; transform: rotate(-9deg); }
+  .wmSettings .wmDeckRow .wmPair i:last-child { right: 0; transform: rotate(7deg); }
+  .wmSettings .wmDeckRow .wmRowLab { flex: 1 1 auto; }
+  .wmSettings .wmDeckRow .wmSubRow { display: flex; align-items: center; gap: 10px; margin-top: 10px; padding: 8px 10px; border-radius: 10px; corner-shape: squircle;
+    background: var(--band); box-shadow: inset 0 0 0 1px var(--rule); }
+  .wmSettings .wmDeckRow .wmSubRow > span { flex: 1 1 auto; min-width: 0; }
+  .wmSettings .wmDeckRow .wmSubRow .wmRowTitle { font-size: 14px; white-space: nowrap; }
+  .wmSettings .wmDeckRow .wmSubRow .wmRowLine { font-size: 12px; line-height: 15px; }
+  .wmSettings .wmDeckRow .wmSubRow .wmSeg { margin-left: auto; }
+  .wmSettings .wmDeckRow .wmSubRow .wmSeg .wmCell { padding: 0 8px; }
+  .wmSettings .wmDeckRow .wmRadio { flex: 0 0 auto; width: 22px; aspect-ratio: 1; border-radius: 50%; box-shadow: inset 0 0 0 1.5px var(--rule); background: var(--surface); }
+  .wmSettings .wmDeckRow.wmPicked .wmRadio { background: var(--wm-accent)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4.5 12.5l5 5 10-11' fill='none' stroke='%23347d2c' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M4.5 12.5l5 5 10-11' fill='none' stroke='%23fff' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+    center / 82% no-repeat; box-shadow: 0 0 0 1px rgba(0,0,0,.64); }
+
+  /* ---- 6  today's grid, with the picked deck shown large above it ---- */
+  .wmSettings.v6 .wmHero { margin-bottom: 0; }
+  .wmSettings.v6 .wmHero .wmFan { height: 200px; }
+  .wmSettings.v6 .wmHero .wmFan i { width: 122px; }
+</style>
+</head>
+<body>
+<div class="site fp wm">
+<div class="wrap">
+  <h1>Card fronts, with bigger cards and the small version as a sub-option</h1>
+  <p class="sub">The same ten decks, six ways, inside the real 640px settings box. Classic, Czech, Poker and Russian have a small-card version; the other six do not.</p>
+  <div id="out"></div>
+</div>
+</div>
+<div class="keys"><b>1-6</b> one on its own &nbsp; <b>0</b> all &nbsp; <b>f</b> felt behind everything</div>
+<script>
+var DECKS = [
+  { id: "classic", name: "Classic", small: "anglo" },
+  { id: "czech", name: "Czech", small: "czech-small" },
+  { id: "poker", name: "Poker", small: "poker-small" },
+  { id: "russian", name: "Russian", small: "russian-small" },
+  { id: "renaissance", name: "Renaissance" },
+  { id: "egypt", name: "Egypt" },
+  { id: "ornamental", name: "Ornamental" },
+  { id: "tango", name: "Tango" },
+  { id: "torres", name: "Torres" },
+  { id: "ninaste", name: "Ninaste" }
+];
+var state = { picked: "classic", mode: "auto" };
+function url(deck, id) { return "url(deck-lab-assets/" + deck + "/" + id + ".png)"; }
+function esc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;"); }
+function byId(id) { for (var i = 0; i < DECKS.length; i++) if (DECKS[i].id === id) return DECKS[i]; }
+
+// the pieces
+function pickMark() { return '<i class="wmPickMark"></i>'; }
+function tile(d, extra, inner) {
+  return '<div class="wmTile' + (d.id === state.picked ? " wmPicked" : "") + '" role="radio" tabindex="0" data-deck="' + d.id + '">' +
+    '<span class="' + d.id + '" style="--wm-dk-rear:' + url(d.id, "10s") + ';--wm-dk-front:' + url(d.id, "13h") + '"></span>' +
+    (inner || "") + pickMark() + "</div>";
+}
+function mini(deck, ids) {
+  return '<span class="wmMini">' + ids.map(function (id) { return '<i style="background-image:' + url(deck, id) + '"></i>'; }).join("") + "</span>";
+}
+function tray(id) {
+  return '<span class="wmSeg" role="radiogroup" data-tray="' + id + '">' +
+    [["auto", "Automatic"], ["always", "Always"], ["never", "Never"]].map(function (c) {
+      return '<span class="wmCell' + (c[0] === state.mode ? " wmPicked" : "") + '" role="radio" tabindex="0" data-value="' + c[0] + '">' + c[1] + "</span>";
+    }).join("") + "</span>";
+}
+function smallRow(line) {
+  var d = byId(state.picked), s = d.small || d.id;
+  return '<div class="wmRow wmSmallRow"><span class="wmRowLab"><span class="wmRowTitle">Small-card version</span>' +
+    '<span class="wmRowLine">' + esc(line || (d.small ? d.name + " has one, with bigger corner marks. Automatic uses it when a card is drawn under 90px wide." : d.name + " has none, so its own art is used at every size.")) + "</span></span>" +
+    '<span class="wmRowCtl">' + mini(s, ["10s", "13h"]) + tray("row") + "</span></div>";
+}
+function fan(deck, ids, w) {
+  var span = 14, n = ids.length;
+  return '<div class="wmFan">' + ids.map(function (id, i) {
+    var a = (i - (n - 1) / 2) * span;
+    return '<i style="background-image:' + url(deck, id) + ';z-index:' + i + ';transform:translate(-50%,-58%) rotate(' + a + 'deg)"></i>';
+  }).join("") + "</div>";
+}
+function hero(d) {
+  var s = d.small || d.id;
+  return '<div class="wmHero"><span class="wmName">' + esc(d.name) + "</span>" + fan(d.id, ["back", "1s", "13h", "10d"]) +
+    '<div class="wmAt"><b>At phone size</b>' + mini(s, ["10s", "13h"]) +
+    "<small>" + (d.small ? "The small version, drawn when a card is under 90px" : "No small version: the same art, smaller") + "</small></div></div>";
+}
+function box(cls, inner, title) {
+  return '<div class="wmModal wmWide wmSettings ' + cls + '"><div class="wmPanel"><div class="wmBox"><div class="wmBody">' +
+    '<div class="wmSeg wmTabs" role="tablist"><span class="wmCell">Game</span><span class="wmCell wmPicked">Design</span><span class="wmCell">Account</span></div>' +
+    '<div class="wmPage wmOnPage"><div class="wmSh"><span class="wmShTitle">' + (title || "Card fronts") + '</span></div><div class="wmCard">' + inner + "</div></div>" +
+    "</div></div></div></div>";
+}
+function grid(cls, draw) {
+  return '<div class="wmPk ' + cls + ' unselectable" role="radiogroup">' + DECKS.map(draw).join("") + "</div>";
+}
+
+var OPTIONS = [
+  { n: 0, cls: "v0", title: "0. Today", sub: "cards 93px wide",
+    note: "Three to a row, the king and the ten of spades turned against each other. Every small-card version is a deck of its own in the grid, as Anglo-American is today, so ten decks show as fourteen tiles.",
+    draw: function () {
+      var all = [];
+      DECKS.forEach(function (d) { all.push(d); if (d.small) all.push({ id: d.small, name: d.name + " (small cards)" }); });
+      return box("v0", '<div class="wmPk wmPkDeck unselectable" role="radiogroup">' + all.map(function (d) { return tile(d); }).join("") + "</div>");
+    } },
+  { n: 1, cls: "v1", title: "1. Two across", sub: "cards 132px wide, 42% bigger",
+    note: "Two to a row makes the cards half as big again without changing what a tile is. The small version is a strip inside its deck's tile: two small cards and the word, green when it is in use. One tray under the grid says when it is used.",
+    draw: function () {
+      return box("v1", grid("wmPkDeck", function (d) {
+        var strip = d.small ? '<div class="wmSubStrip' + (state.mode !== "never" ? " wmOn" : "") + '">' + mini(d.small, ["10s", "13h"]) + "Small cards<small>" + ({ auto: "Automatic", always: "Always", never: "Off" })[state.mode] + "</small></div>" : "";
+        return tile(d, null, strip);
+      }) + smallRow());
+    } },
+  { n: 2, cls: "v2", title: "2. One big king", sub: "the king 120px wide, the phone card 60px",
+    note: "Still three to a row, but the tile is taller and the king takes two thirds of it, with the ten behind. In the corner, the same deck at the width a card has on a phone: for Classic that is the small version, for every other deck it is the same art shrunk, which is honest about what Automatic does.",
+    draw: function () {
+      return box("v2", grid("wmPkDeck", function (d) {
+        var s = d.small || d.id;
+        return tile(d, null, '<div class="wmPhone"><i style="background-image:' + url(s, "13h") + '"></i><small>' + (d.small ? "small version" : "on a phone") + "</small></div>");
+      }) + smallRow());
+    } },
+  { n: 3, cls: "v3", title: "3. The picked deck, large", sub: "a fan of 150px cards, swatches of 64px",
+    note: "The deck you have is shown big, as a hand of four on the band, next to it at phone size. Every deck is a swatch under it, one king each, and a click on a swatch swaps the fan. The most room for the art, the least for the spread of decks.",
+    draw: function () {
+      return box("v3", hero(byId(state.picked)) +
+        '<div class="wmPk wmPkDeckBack unselectable" role="radiogroup">' + DECKS.map(function (d) {
+          return '<div class="wmTile' + (d.id === state.picked ? " wmPicked" : "") + '" role="radio" tabindex="0" data-deck="' + d.id + '"><span style="--wm-dk-rear:' + url(d.id, "13h") + '"></span>' + pickMark() + "</div>";
+        }).join("") + "</div>" + smallRow());
+    } },
+  { n: 4, cls: "v4", title: "4. A strip that scrolls", sub: "cards 128px wide",
+    note: "One row of big pairs, scrolled sideways, each with its name under it. A deck with a small version says so under its name. The grid's three columns are gone, so the box does not grow with the number of decks; the eighth deck is just further along.",
+    draw: function () {
+      return box("v4", '<div class="wmStrip" role="radiogroup">' + DECKS.map(function (d) {
+        return tile(d, null, '<div class="wmCap">' + esc(d.name) + "<small>" + (d.small ? "has a small version" : "&nbsp;") + "</small></div>");
+      }).join("") + "</div>" + smallRow());
+    } },
+  { n: 5, cls: "v5", title: "5. A row per deck", sub: "cards 104px wide",
+    note: "A list rather than a grid: the pair, the name, and a tick. The small version is a row inside its deck's row, with its own two small cards and the tray right there. Clearest about what belongs to what, and the longest: seven decks are seven rows.",
+    draw: function () {
+      return box("v5", DECKS.map(function (d) {
+        var sub = d.small ? '<div class="wmSubRow">' + mini(d.small, ["10s", "13h"]) + '<span><span class="wmRowTitle">Small-card version</span><span class="wmRowLine">For cards under 90px</span></span>' + tray("row-" + d.id) + "</div>" : "";
+        return '<div class="wmDeckRow' + (d.id === state.picked ? " wmPicked" : "") + '" data-deck="' + d.id + '"><div class="wmPair"><i style="background-image:' + url(d.id, "10s") + '"></i><i style="background-image:' + url(d.id, "13h") + '"></i></div>' +
+          '<div class="wmRowLab"><span class="wmRowTitle">' + esc(d.name) + "</span>" + sub + '</div><span class="wmRadio"></span></div>';
+      }).join(""));
+    } },
+  { n: 6, cls: "v6", title: "6. Today's grid, the picked deck large above it", sub: "a fan of 122px cards over the 93px tiles",
+    note: "The grid stays as it is. Above it the deck you have is shown big, with the phone-size pair beside it. The smallest change that gives the art room; the tiles keep doing the choosing.",
+    draw: function () {
+      return box("v6", hero(byId(state.picked)) + grid("wmPkDeck", function (d) { return tile(d); }) + smallRow());
+    } }
+];
+
+function render() {
+  document.getElementById("out").innerHTML = OPTIONS.map(function (o) {
+    return '<section class="lab" data-n="' + o.n + '"><h2>' + o.title + "<b>" + o.sub + "</b></h2><p class=\"note\">" + o.note + "</p>" + o.draw() + "</section>";
+  }).join("");
+  document.querySelectorAll(".wmSeg").forEach(placeThumb);
+  isolate();
+}
+// the tray's thumb and white words, as ModalShell.placeSegThumb draws them
+function placeThumb(seg) {
+  var cells = seg.querySelectorAll(":scope > .wmCell"), picked = seg.querySelector(":scope > .wmCell.wmPicked");
+  var thumb = seg.querySelector(":scope > .wmSegThumb"), ink = seg.querySelector(":scope > .wmSegInk");
+  if (!thumb) {
+    thumb = document.createElement("i"); thumb.className = "wmSegThumb wmStill"; seg.insertBefore(thumb, seg.firstChild);
+    ink = document.createElement("span"); ink.className = "wmSegInk wmStill"; ink.setAttribute("aria-hidden", "true");
+    cells.forEach(function (c) { var copy = c.cloneNode(true); copy.className = "wmCell"; ink.appendChild(copy); });
+    seg.appendChild(ink);
+  }
+  if (!picked || !seg.offsetWidth) return;
+  var l = picked.offsetLeft, t = picked.offsetTop, w = picked.offsetWidth, h = picked.offsetHeight;
+  thumb.style.left = l + "px"; thumb.style.top = t + "px"; thumb.style.width = w + "px"; thumb.style.height = h + "px"; thumb.style.opacity = 1;
+  ink.style.clipPath = "inset(" + t + "px " + (seg.offsetWidth - l - w) + "px " + (seg.offsetHeight - t - h) + "px " + l + "px)";
+}
+function placeAll() { document.querySelectorAll(".wmSeg").forEach(placeThumb); }
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(placeAll);
+window.addEventListener("load", placeAll);
+function isolate() {
+  var n = location.hash.replace("#", "");
+  document.querySelectorAll("section.lab").forEach(function (s) {
+    s.classList.toggle("hidden", /^[1-6]$/.test(n) && s.getAttribute("data-n") !== n);
+  });
+}
+document.addEventListener("click", function (e) {
+  var cell = e.target.closest(".wmSeg[data-tray] .wmCell");
+  if (cell) { state.mode = cell.getAttribute("data-value"); render(); return; }
+  var t = e.target.closest("[data-deck]");
+  if (t && byId(t.getAttribute("data-deck"))) { state.picked = t.getAttribute("data-deck"); render(); }
+});
+document.addEventListener("keydown", function (e) {
+  if (e.key === "f" || e.key === "F") { document.body.classList.toggle("felt"); return; }
+  if (/^[0-6]$/.test(e.key)) { location.hash = e.key === "0" ? "" : e.key; isolate(); }
+});
+window.addEventListener("hashchange", isolate);
+render();
+</script>
+</body>
+</html>
