@@ -109,12 +109,12 @@
 <body>
 <div class="site fp wm">
 <div class="wrap">
-  <h1>The preview, four ways</h1>
-  <p class="sub">Variation 3 of the second lab, taken further: the chosen fronts and back shown on the table, at the size a card really has, with both choosers under it. Five decks now: the old five are retired.</p>
+  <h1>The Cards section of Settings</h1>
+  <p class="sub">The chosen fronts and back on the table at the size a card really has, the same three at phone size beside them, and both choosers under it. Six decks, eleven backs in blue or red.</p>
   <div id="out"></div>
 </div>
 </div>
-<div class="keys"><b>1-4</b> one on its own &nbsp; <b>0</b> all &nbsp; <b>f</b> felt behind the page</div>
+<div class="keys"><b>f</b> felt behind the page</div>
 <script>
 // The decks that remain after 17 September: Egypt, Ornamental, Tango, Torres and Ninaste are retired.
 var DECKS = [
@@ -142,12 +142,12 @@ var knobs = { hand: 0, labels: 0, tray: 0, arc: 0 };
 // one blue. Renaissance's other back is the red pattern in gold on black, so its blue is the red pattern in blue.
 // One tile per design; the tray beside the Backs head picks blue or red for all of them. Blue is the default.
 var BACKS = [
-  { id: "medallion", name: "Medallion" },
+  { id: "medallion", name: "Medallion" }, { id: "backa", name: "Holger A" },
   { id: "czech", name: "Czech" }, { id: "czech-lattice", name: "Czech lattice" },
   { id: "poker", name: "Poker" }, { id: "poker-lattice", name: "Poker lattice" },
   { id: "renaissance", name: "Renaissance" },
   { id: "baroque", name: "Baroque" }, { id: "damask", name: "Damask" }, { id: "diamond", name: "Diamond" },
-  { id: "backa", name: "Holger A" }, { id: "backa2", name: "Holger A2" }
+  { id: "backa2", name: "Holger A2" }
 ];
 function backUrl(id) { return "url(deck-lab-assets/backs/" + id + "-" + state.tone + ".png)"; }
 function toneTray() {
@@ -247,26 +247,7 @@ function nameLab(extra) {
 }
 
 var OPTIONS = [
-  { n: 1, cls: "va", title: "A. The table, with a phone in the corner", sub: "cards 100px wide, 34px on the phone",
-    note: "One piece of the table: the pile face down in the chosen back, the hand in the chosen fronts. The phone in the corner is the same scene at phone size, so what Automatic does is simply visible. The tray sits on the felt. Fronts and backs are two swatch rows under it, one section instead of two.",
-    draw: function () {
-      var h = 236;
-      return box("va", '<div class="wmScene" style="height:' + h + 'px;margin-top:12px">' + nameLab() +
-        scene({ w: 100, x: 16, y: 44 }) +
-        '<div class="wmPhoneFrame" style="right:14px;top:14px;width:132px;height:208px"><i class="wmNotch"></i><div class="wmScene">' +
-        '<div class="wmLab" style="left:8px;top:10px;font-size:10px">On a phone</div>' + scene({ w: 34, n: 3, x: 8, y: 56, phone: true }) + "</div></div>" +
-        chip(16, h - 48) + "</div>" + swatches("front") + swatches("back"));
-    } },
-  { n: 2, cls: "vb", title: "B. Two screens side by side", sub: "cards 76px wide, and 60px",
-    note: "The same scene twice: on this screen and on a phone, each on its own felt, so the two sizes stand next to each other at their real proportions. The tray is on the phone side, because that is where it acts.",
-    draw: function () {
-      var h = 210;
-      return box("vb", '<div style="display:flex;gap:8px;margin-top:12px">' +
-        '<div class="wmScene" style="flex:0 0 284px;height:' + h + 'px">' + nameLab("On this screen") + scene({ w: 76, n: 4, x: 14, y: 46 }) + "</div>" +
-        '<div class="wmScene" style="flex:1 1 auto;height:' + h + 'px">' + '<div class="wmLab">On a phone</div>' + scene({ w: 60, n: 4, x: 12, y: 46, phone: true }) +
-        chip(10, h - 46) + "</div></div>" + swatches("front") + swatches("back"));
-    } },
-  { n: 3, cls: "vc", title: "C. As big as the box allows", sub: "cards 140px wide, 60px in the phone column",
+  { n: 3, cls: "vc", title: "Cards", sub: "cards 140px wide, 60px in the phone column",
     note: "The pile in the chosen back and three cards of the hand; at the right the same three at phone size, standing in a column the way a side player's hand does, with no pile of their own because a back is one choice for every size. Six swatches to a row, Modern the sixth. Backs at a 24px gap, the four bought sheets included, Classic's back retired. Knobs, bottom right: h changes the hand, t where the tray sits, a bends the big hand on the table's arc.",
     draw: function () {
       var W = 592, big = 140, small = 60, hb = Math.round(big * 444 / 318);
@@ -278,16 +259,6 @@ var OPTIONS = [
         (onFelt ? '<div class="wmFeltTray" style="right:' + (PAD + small + ROW) + 'px;bottom:' + PAD + 'px">Small cards' + tray("felt") + "</div>" : "") + "</div>";
       return box("vc vc-l" + knobs.labels, felt + (onFelt ? "" : smallRow()) + swatches("front", true) + swatches("back", true));
     } },
-  { n: 4, cls: "vd", title: "D. One scene, two tabs", sub: "cards 110px wide, 60px on the phone tab",
-    note: "The scene has two tabs, this screen and phone, so the preview stays one big picture and the phone size is a click away. The tray keeps its place on the felt at the right.",
-    draw: function () {
-      var h = 240, phone = state.screen === "phone";
-      return box("vd", '<div class="wmScene" style="height:' + h + 'px;margin-top:12px">' +
-        '<span class="wmSeg wmSceneTabs" role="radiogroup" data-tabs="1"><span class="wmCell' + (phone ? "" : " wmPicked") + '" data-screen="desk">This screen</span><span class="wmCell' + (phone ? " wmPicked" : "") + '" data-screen="phone">Phone</span></span>' +
-        (phone ? scene({ w: 60, x: 16, y: 66, phone: true }) : scene({ w: 110, x: 16, y: 56 })) +
-        chip(14, 10, true) + '<div class="wmLab" style="left:auto;right:14px;top:auto;bottom:10px;text-align:right">' + esc(byId(state.front).name) + "<small>with the " + esc(backName()) + " back</small></div></div>" +
-        swatches("front") + swatches("back"));
-    } }
 ];
 
 function render() {
@@ -322,7 +293,7 @@ function readKnobs() {
 function isolate() {
   var n = location.hash.replace("#", "").split(",")[0];
   document.querySelectorAll("section.lab").forEach(function (s) {
-    s.classList.toggle("hidden", /^[1-4]$/.test(n) && s.getAttribute("data-n") !== n);
+    s.classList.toggle("hidden", false);
   });
 }
 document.addEventListener("click", function (e) {
@@ -348,7 +319,7 @@ document.addEventListener("keydown", function (e) {
   if (k === "t") { knobs.tray = (knobs.tray + 1) % TRAYS.length; render(); return; }
   if (k === "a") { knobs.arc = (knobs.arc + 1) % ARCS.length; render(); return; }
   if (e.key === "f" || e.key === "F") { document.body.classList.toggle("felt"); return; }
-  if (/^[0-4]$/.test(e.key)) { location.hash = e.key === "0" ? "" : e.key; isolate(); }
+
 });
 window.addEventListener("hashchange", function () { readKnobs(); render(); });
 readKnobs(); render();
