@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Deck picker lab 4 &middot; rounded frames and simple backs</title>
+<!--
+  Holger picked variation 3 of deck-picker-lab-2.html (the chosen deck shown large, swatches under it) and asked:
+  should the backs chooser be in there too, can the phone size be shown better, can the fronts be bigger, should the
+  small-card tray sit in the top part, and can the back be shown better in the preview. Four answers, each inside the
+  real 640px settings box (site.css). The preview is now a piece of the table itself: the felt, a face-down pile drawn
+  with the chosen back, and a hand drawn with the chosen fronts, at the size a card really has. Fronts and backs are
+  two swatch rows under it, so one section does the work of two.
+  The tray changes what the preview shows: Automatic and Always put the small version in the phone hand, Always puts
+  it in the big hand too, Never leaves both alone. Clicks pick. Keys: 1-4 one on its own, 0 all, f felt behind the page.
+-->
+<link rel="stylesheet" href="guide-fonts.css">
+<link rel="stylesheet" href="site.css">
+<style>
+  body { margin: 0; padding: 28px 20px 80px; background: #f9f6f2; color: #212529;
+         font: 14px/1.5 BuloRounded, -apple-system, "Helvetica Neue", Arial, sans-serif; }
+  body.felt { background: #327333 url("deck-lab-assets/felt.jpg") 0 0 / 120px 120px repeat; }
+  .site { display: block; }
+  .wrap { max-width: 640px; margin: 0 auto; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  .sub { color: #868E96; margin: 0 0 28px; }
+  body.felt h1, body.felt .sub, body.felt h2, body.felt .note { color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,.5); }
+  section.lab { margin: 0 0 44px; }
+  section.lab.hidden { display: none; }
+  h2 { font-size: 15px; margin: 0 0 2px; }
+  h2 b { color: #868E96; font-weight: 400; margin-left: 6px; }
+  .note { color: #868E96; font-size: 12.5px; margin: 0 0 12px; max-width: 620px; }
+  .keys { position: fixed; left: 12px; bottom: 12px; z-index: 9; background: rgba(255,255,255,.94); padding: 8px 11px;
+          border-radius: 9px; font-size: 12px; box-shadow: 0 1px 6px rgba(0,0,0,.25); }
+  .keys b { font-family: ui-monospace, Menlo, monospace; }
+
+  .lab .wmModal { position: static; display: block; opacity: 1; visibility: visible; pointer-events: auto; }
+  .lab .wmModal .wmScrim { display: none; }
+  .lab .wmModal .wmPanel { position: static; transform: none; width: 640px; max-height: none; }
+  .lab .wmModal .wmBox, .lab .wmModal .wmBody, .lab .wmModal .wmPage { height: auto !important; max-height: none !important; overflow: visible !important; }
+
+  /* a piece of the table: the felt, a pile and a hand, drawn with the card's own look from pieces.scss */
+  .wmSettings .wmScene { position: relative; display: block; padding: 0; overflow: hidden; border-radius: 12px; corner-shape: squircle;
+    background: #327333 url("deck-lab-assets/felt.jpg") 0 0 / 100px 100px repeat; box-shadow: inset 0 0 0 1px rgba(0,0,0,.35); }
+  .wmSettings .wmScene .wmLab { position: absolute; left: 12px; top: 9px; font-size: 12px; line-height: 14px; font-weight: bold; color: #fff;
+    text-shadow: 0 1px 2px rgba(0,0,0,.6); }
+  .wmSettings .wmScene .wmLab small { display: block; font-weight: normal; opacity: .85; }
+  .wmSettings .wmPile, .wmSettings .wmHand { position: absolute; }
+  .wmSettings .wmC { position: absolute; display: block; aspect-ratio: 318 / 444; background: #fff center / 100% 100% no-repeat;
+    box-shadow: inset 0 0 0 1px var(--color-card-border), 0 0 8px rgba(0,0,0,.2); corner-shape: squircle; }
+  /* the tray, when it sits on the felt */
+  .wmSettings .wmScene .wmSegChip { position: absolute; display: flex; align-items: center; gap: 8px; padding: 4px 4px 4px 10px; border-radius: 12px;
+    corner-shape: squircle; background: var(--wm-paper); box-shadow: 0 1px 4px rgba(0,0,0,.3); font-size: 13px; font-weight: bold; color: var(--ink); white-space: nowrap; }
+  .wmSettings .wmScene .wmSegChip .wmSeg { height: 28px; }
+  .wmSettings .wmScene .wmSegChip .wmSeg .wmCell { height: 22px; line-height: 22px; padding: 0 8px; font-size: 12px; }
+  /* the phone in the corner */
+  .wmSettings .wmPhoneFrame { position: absolute; border-radius: 18px; background: #1b1b1b; box-shadow: 0 4px 12px rgba(0,0,0,.4), inset 0 0 0 1px rgba(255,255,255,.18); }
+  .wmSettings .wmPhoneFrame .wmScene { position: absolute; inset: 6px; border-radius: 13px; box-shadow: none; }
+  .wmSettings .wmPhoneFrame .wmNotch { position: absolute; left: 50%; top: 9px; width: 34px; height: 4px; margin-left: -17px; border-radius: 2px; background: #000; z-index: 2; }
+  /* the two swatch rows: fronts and backs, ten to a row */
+  .wmSettings .wmSwHead { display: flex; align-items: baseline; justify-content: space-between; margin: 12px 0 -6px; font-size: 13px; font-weight: bold; color: var(--ink); }
+  .wmSettings.vc .wmSwHead { margin: 0; padding: 12px 0 0; font-size: var(--wm-t-body); line-height: 20px; }
+  .wmSettings.vc .wmSwGrid { padding: 6px 0 12px; }
+  .wmSettings.vc .wmSwHeadBacks { align-items: center; }
+  .wmSettings.vc .wmSwHeadBacks .wmRowTitle, .wmSettings.vc .wmSwHeadBacks .wmRowLine { display: block; }
+  .wmSettings.vc .wmSwHeadBacks .wmRowTitle { font-size: var(--wm-t-body); line-height: 20px; }
+  .wmSettings.vc .wmSwHeadBacks .wmRowLine { font-size: var(--wm-t-body); line-height: 20px; font-weight: normal; color: var(--muted); }
+  .wmSettings.vc .wmSwGrid + .wmSwHead { border-top: 1px solid var(--hairline); }
+  .wmSettings .wmSwHead small { font-weight: normal; color: var(--muted); }
+  .wmSettings .wmPk.wmSw { --wm-cols: 10; --wm-dk-sq: 3px; --wm-dk-gap: 0; gap: 8px; padding: 10px 0 6px; }
+  .wmSettings .wmPk.wmSw .wmTile { aspect-ratio: 1 / 1.34; }
+  .wmSettings .wmPk.wmSw .wmTile > span::before { width: 92%; border-radius: 5px; }
+  .wmSettings .wmPk.wmSw .wmTile.wmPicked .wmPickMark { --wm-mark-size: 16px; }
+  /* C: the heads in the row-title style, five swatches to a row */
+  .wmSettings.vc .wmSwHead small { display: none; }
+  .wmSettings.vc .wmPk.wmSw { --wm-cols: 5; --wm-dk-sq: 4px; gap: 16px; padding: 14px 0 8px; }
+  .wmSettings.vc .wmPk.wmSw .wmTile { aspect-ratio: 1 / 1.22; }
+  .wmSettings.vc .wmPk.wmSw .wmTile > span::before { width: 74%; border-radius: 8px; }
+  .wmSettings.vc .wmPk.wmSw .wmTile.wmPicked .wmPickMark { --wm-mark-size: 20px; }
+  /* C: the swatches are the cards themselves, five across, flush with both edges, the mark on the card */
+  .wmSettings .wmSwGrid { --wm-mark-size: 20px; --wm-mark-in: 8px; --wm-mark-line: 1px; display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; padding: 12px 0 10px; }
+  .wmSettings .wmSwGrid .wmTile { aspect-ratio: 318 / 444; border-radius: 12px; corner-shape: squircle; transition: transform 80ms ease-in-out; }
+  .wmSettings .wmSwGrid .wmTile > i.wmC { position: absolute; inset: 0; width: auto; border-radius: 12px; box-shadow: inset 0 0 0 1px var(--color-card-border); }
+  .wmSettings .wmSwGrid .wmTile.wmPicked .wmPickMark { top: 8px; right: 8px; }
+  @media (hover: hover) and (pointer: fine) { .wmSettings .wmSwGrid .wmTile:not(.wmPicked):hover { transform: translateY(-2px); } }
+  .wmSettings.vc-l1 .wmSwHead { font-size: 13px; line-height: 16px; font-weight: normal; color: var(--muted); margin: 10px 0 -8px; }
+  .wmSettings.vc-l2 .wmSwHead { display: none; }
+  .wmSettings.vc-l2 .wmSwGrid + .wmSwGrid { border-top: 1px solid var(--hairline); margin-top: 4px; padding-top: 16px; }
+  /* every back on the sheets: one row per deck, the cards 88px wide with a caption */
+  .wmSettings .wmBackRow { display: flex; align-items: flex-start; gap: 14px; padding: 12px 0; border-top: 1px solid var(--hairline); }
+  .wmSettings .wmBackRow:first-of-type { border-top: 0; }
+  .wmSettings .wmBackName { flex: 0 0 96px; padding-top: 4px; font-size: var(--wm-t-body); line-height: 20px; font-weight: bold; color: var(--ink); }
+  .wmSettings .wmBackOpt { --wm-mark-size: 20px; --wm-mark-in: 8px; --wm-mark-line: 1px; width: 88px; text-align: center; }
+  .wmSettings .wmBackOpt .wmTile { aspect-ratio: 318 / 444; border-radius: 12px; corner-shape: squircle; }
+  .wmSettings .wmBackOpt .wmTile > i.wmC { position: absolute; inset: 0; width: auto; border-radius: 12px; box-shadow: inset 0 0 0 1px var(--color-card-border); }
+  .wmSettings .wmBackOpt .wmTile.wmPicked .wmPickMark { top: 8px; right: 8px; }
+  .wmSettings .wmBackOpt small { display: block; margin-top: 4px; font-size: 12px; line-height: 14px; color: var(--muted); }
+  /* the tray on the felt without a paper chip, drawn like the tabs in D */
+  .wmSettings .wmScene .wmFeltTray { position: absolute; display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: bold; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,.6); }
+  .wmSettings .wmScene .wmFeltTray .wmSeg { height: 30px; padding: 2px; background: rgba(0,0,0,.35); box-shadow: inset 0 0 0 1px rgba(255,255,255,.25); }
+  .wmSettings .wmScene .wmFeltTray .wmSeg .wmCell { height: 24px; line-height: 24px; padding: 0 10px; font-size: 12px; color: #fff; }
+  .wmSettings .wmScene .wmFeltTray .wmSeg .wmCell + .wmCell::before { background: rgba(255,255,255,.25); }
+  /* the tabs on the preview (D) */
+  .wmSettings .wmScene .wmSceneTabs { position: absolute; left: 12px; top: 10px; height: 28px; padding: 2px; background: rgba(0,0,0,.35); box-shadow: inset 0 0 0 1px rgba(255,255,255,.25); }
+  .wmSettings .wmScene .wmSceneTabs .wmCell { height: 22px; line-height: 22px; padding: 0 10px; font-size: 12px; color: #fff; }
+  .wmSettings .wmScene .wmSceneTabs .wmSegInk .wmCell { color: #fff; }
+  .wmSettings .wmScene .wmSceneTabs .wmCell + .wmCell::before { background: rgba(255,255,255,.25); }
+</style>
+</head>
+<body>
+<div class="site fp wm">
+<div class="wrap">
+  <h1>The Cards section of Settings, with rounded frames and simple backs</h1>
+  <p class="sub">The same section as the third lab, with the court frames rounded to a corner like the card's (Modern, Russian, Renaissance), a thin rounded line round the Czech and Poker courts, the Russian and Renaissance lines 24px from every edge, and six plain backs after the six there were.</p>
+  <div id="out"></div>
+</div>
+</div>
+<div class="keys"><b>f</b> felt behind the page</div>
+<script>
+// The decks that remain after 17 September: Egypt, Ornamental, Tango, Torres and Ninaste are retired.
+// The rounded variants (-r): Modern's court ring, Russian's and Renaissance's frames and a new thin line round the
+// Czech and Poker courts all take a 12px (frames) or 10px (courts) corner; the Russian and Renaissance frame lines
+// sit 24px from every edge. Number cards and the small versions are the shipped ones.
+var DECKS = [
+  { id: "classic", name: "Classic", small: "anglo" },
+  { id: "modern-r", name: "Modern", small: "modern-small" },
+  { id: "czech-r", name: "Czech", small: "czech-small" },
+  { id: "poker-r", name: "Poker", small: "poker-small" },
+  { id: "russian-r", name: "Russian", small: "russian-small" },
+  { id: "renaissance-r", name: "Renaissance", small: "renaissance-small" }
+];
+var HAND = ["9c", "10d", "13h"];   // the king last, so it is the card that shows whole
+var state = { front: "classic", back: "medallion", tone: "blue", mode: "auto", screen: "desk" };   // the defaults: the first front, the first back
+// the choices are kept between reloads
+try {
+  var kept = JSON.parse(localStorage.getItem("wocgCardsLab4") || "{}");
+  ["front", "back", "tone", "mode"].forEach(function (k) { if (kept[k]) state[k] = kept[k]; });
+} catch (e) {}
+function keep() { try { localStorage.setItem("wocgCardsLab4", JSON.stringify({ front: state.front, back: state.back, tone: state.tone, mode: state.mode })); } catch (e) {} }
+// the knobs on C: h the hand, l the row labels, t where the tray sits, a the fan
+var HANDS = [
+  { key: "mix", name: "9 10 K: pips, the 10 index, the king", cards: ["9c", "10d", "13h"] },
+  { key: "straight", name: "J Q K in three suits", cards: ["11c", "12d", "13h"] },
+  { key: "aces", name: "A Q K", cards: ["1s", "12s", "13h"] },
+  { key: "ten", name: "10 A K", cards: ["10s", "1d", "13h"] },
+  { key: "pair", name: "the ten and the king, whole", cards: ["10s", "13h"], whole: true }
+];
+var knobs = { hand: 0, labels: 0, tray: 0, arc: 0 };
+// A back is a design in its own right, chosen once for every size: the sheets' backs, plus the recolours Holger asked
+// for (the Poker phone geometric in red and blue, the Poker lattice in blue, Renaissance in blue).
+// The Poker phone sheet's black back is its red lattice in black, so tinting it gives the lattice again: one red,
+// one blue. Renaissance's other back is the red pattern in gold on black, so its blue is the red pattern in blue.
+// One tile per design; the tray beside the Backs head picks blue or red for all of them. Blue is the default.
+var BACKS = [
+  { id: "medallion", name: "Medallion" }, { id: "backa", name: "Ornament" },
+  { id: "poker", name: "Poker" }, { id: "baroque", name: "Baroque" }, { id: "poker-lattice", name: "Poker lattice" }, { id: "renaissance", name: "Renaissance" },
+  { id: "plain", name: "Plain" }, { id: "plain-light", name: "Plain, light" }, { id: "frame", name: "Frame" },
+  { id: "pinstripe", name: "Pinstripe" }, { id: "dots", name: "Dots" }, { id: "lattice", name: "Lattice" }
+];
+if (!BACKS.some(function (b) { return b.id === state.back; })) state.back = BACKS[0].id;   // a back since removed
+function backUrl(id) { return "url(deck-lab-assets/backs/" + id + "-" + state.tone + ".png)"; }
+function toneTray() {
+  return '<span class="wmSeg" role="radiogroup" data-tone="1">' + [["blue", "Blue"], ["red", "Red"]].map(function (c) {
+    return '<span class="wmCell' + (c[0] === state.tone ? " wmPicked" : "") + '" role="radio" tabindex="0" data-value="' + c[0] + '">' + c[1] + "</span>";
+  }).join("") + "</span>";
+}
+var TRAYS = ["row under the felt", "on the felt"], ARCS = ["flat", "fanned like the table"];
+function url(deck, id) { return "url(deck-lab-assets/" + deck + "/" + id + ".png)"; }
+function esc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;"); }
+function byId(id) { for (var i = 0; i < DECKS.length; i++) if (DECKS[i].id === id) return DECKS[i]; }
+function radius(w) { return w >= 100 ? 16 : (w >= 40 ? 12 : 8); }
+function frontArt(phone) {
+  var d = byId(state.front);
+  if (!d.small) return d.id;
+  if (state.mode === "always") return d.small;
+  if (state.mode === "auto" && phone) return d.small;
+  return d.id;
+}
+// The chosen back is drawn at every size.
+function card(deck, id, w, x, y, z) {
+  return '<i class="wmC" style="width:' + w + 'px;left:' + x + 'px;top:' + y + 'px;z-index:' + (z || 0) + ';border-radius:' + radius(w) + 'px;background-image:' + url(deck, id) + '"></i>';
+}
+// The pile and a hand, cards w wide, at (x, y). The pile is one card: on the table a stock spot is a "stack"
+// arrangement, and a stack lays every card on the same spot, so it reads as a single card. The hand starts GAP
+// after the pile. With span, the hand's cards are spread so the last one ends at (right), the same margin as the
+// left; otherwise they peek the table's 40% (64% on a phone). With arc, the hand bends on the table's 400px radius.
+var PAD = 16, GAP = 8, ROW = 16;
+function cardT(deck, id, w, x, y, z, deg) {
+  return '<i class="wmC" style="width:' + w + 'px;left:' + x + 'px;top:' + y + 'px;z-index:' + z + ';border-radius:' + radius(w) + 'px;transform:rotate(' + deg + 'deg);background-image:' + url(deck, id) + '"></i>';
+}
+function backCard(w, x, y, z) {
+  return '<i class="wmC" style="width:' + w + 'px;left:' + x + 'px;top:' + y + 'px;z-index:' + (z || 0) + ';border-radius:' + radius(w) + 'px;background-image:' + backUrl(state.back) + '"></i>';
+}
+// A column: the same cards one under the other, each peeking out below the one before, as a side player's hand
+// stands on the table. Cards w wide at (x, y), peeking a share of their height.
+function column(opts) {
+  var w = opts.w, h = Math.round(w * 444 / 318), x = opts.x, y = opts.y, hand = opts.hand || HAND, n = hand.length;
+  var p = opts.total ? Math.floor((opts.total - h) / (n - 1)) : (opts.whole ? h + GAP : Math.round(h * 0.3)), fa = frontArt(true), html = "";
+  hand.forEach(function (id, i) { html += card(fa, id, w, x, y + i * p, 10 + i); });
+  return html;
+}
+function columnHeight(w, n, whole) { var h = Math.round(w * 444 / 318); return h + (n - 1) * (whole ? h + GAP : Math.round(h * 0.3)); }
+function scene(opts) {
+  var w = opts.w, x = opts.x, y = opts.y, phone = !!opts.phone;
+  var hand = opts.hand || HAND, n = hand.length, whole = !!opts.whole;
+  var hx = opts.noPile ? x : x + w + GAP;
+  var p = whole ? w + GAP : (opts.span ? Math.floor((opts.right - hx - w) / (n - 1)) : Math.round(w * (phone ? 0.64 : 0.4)));
+  var fa = frontArt(phone), html = opts.noPile ? "" : backCard(w, x, y, 0);
+  var arc = opts.arc && !whole, R = 400, per = arc ? Math.atan(p / R) * 180 / Math.PI : 0;
+  hand.forEach(function (id, i) {
+    var a = (i - (n - 1) / 2) * per, dy = arc ? Math.round(R * (1 - Math.cos(a * Math.PI / 180))) : 0;
+    html += cardT(fa, id, w, hx + i * p, y + dy, 10 + i, a.toFixed(2));
+  });
+  return html;
+}
+function tray(id, cls) {
+  return '<span class="wmSeg ' + (cls || "") + '" role="radiogroup" data-tray="' + id + '">' +
+    [["auto", "Automatic"], ["always", "Always"], ["never", "Never"]].map(function (c) {
+      return '<span class="wmCell' + (c[0] === state.mode ? " wmPicked" : "") + '" role="radio" tabindex="0" data-value="' + c[0] + '">' + c[1] + "</span>";
+    }).join("") + "</span>";
+}
+function chip(x, y, right) {
+  return '<div class="wmSegChip" style="' + (right ? "right:" : "left:") + x + "px;top:" + y + 'px">Small cards' + tray("chip") + "</div>";
+}
+function swatches(kind, flush) {
+  var picked = kind === "front" ? state.front : state.back;
+  var list = kind === "front" ? DECKS : BACKS;
+  var art = function (d) { return kind === "front" ? url(d.id, "13h") : backUrl(d.id); };
+  var head = kind === "front" ? '<div class="wmSwHead wmSwHeadBacks"><span><span class="wmRowTitle">Fronts</span><span class="wmRowLine">Each deck has its own small size cards</span></span></div>'
+    : '<div class="wmSwHead wmSwHeadBacks"><span><span class="wmRowTitle">Backs</span><span class="wmRowLine">Every back comes in blue or red</span></span>' + toneTray() + "</div>";
+  if (flush) {
+    return head + '<div class="wmSwGrid unselectable" role="radiogroup">' + list.map(function (d) {
+      return '<div class="wmTile' + (d.id === picked ? " wmPicked" : "") + '" role="radio" tabindex="0" title="' + esc(d.name) + '" data-' + kind + '="' + d.id + '"><i class="wmC" style="background-image:' + art(d) + '"></i><i class="wmPickMark"></i></div>';
+    }).join("") + "</div>";
+  }
+  return head + '<div class="wmPk wmPkDeckBack wmSw unselectable" role="radiogroup">' + list.map(function (d) {
+      return '<div class="wmTile' + (d.id === picked ? " wmPicked" : "") + '" role="radio" tabindex="0" data-' + kind + '="' + d.id + '"><span style="--wm-dk-rear:' + url(d.id, art) + '"></span><i class="wmPickMark"></i></div>';
+    }).join("") + "</div>";
+}
+function smallRow() {
+  var d = byId(state.front), s = d.small || d.id;
+  return '<div class="wmRow" style="height:auto;min-height:40px"><span class="wmRowLab"><span class="wmRowTitle">Small size cards</span>' +
+    '<span class="wmRowLine">' + (d.small ? "On cards drawn under 90px wide" : d.name + " has no small version") + "</span></span>" +
+    '<span class="wmRowCtl">' + tray("row") + "</span></div>";
+}
+function box(cls, inner, title) {
+  return '<div class="wmModal wmWide wmSettings ' + cls + '"><div class="wmPanel"><div class="wmBox"><div class="wmBody">' +
+    '<div class="wmSeg wmTabs" role="tablist"><span class="wmCell">Game</span><span class="wmCell wmPicked">Design</span><span class="wmCell">Account</span></div>' +
+    '<div class="wmPage wmOnPage"><div class="wmSh"><span class="wmShTitle">' + (title || "Cards") + '</span></div><div class="wmCard">' + inner + "</div></div>" +
+    "</div></div></div></div>";
+}
+function backName() { for (var i = 0; i < BACKS.length; i++) if (BACKS[i].id === state.back) return BACKS[i].name + ", " + state.tone; return state.back; }
+function nameLab(extra) {
+  var f = byId(state.front);
+  return '<div class="wmLab">' + esc(f.name) + " with the " + esc(backName()) + " back" + (extra ? "<small>" + extra + "</small>" : "") + "</div>";
+}
+
+var OPTIONS = [
+  { n: 3, cls: "vc", title: "Cards", sub: "cards 140px wide, 60px in the phone column",
+    note: "The pile in the chosen back and three cards of the hand; at the right the same three at phone size, standing in a column the way a side player's hand does, with no pile of their own because a back is one choice for every size. Six swatches to a row, Modern the sixth. Backs at a 24px gap, the four bought sheets included, Classic's back retired. Knobs, bottom right: h changes the hand, t where the tray sits, a bends the big hand on the table's arc.",
+    draw: function () {
+      var W = 592, big = 140, small = 60, hb = Math.round(big * 444 / 318);
+      var H = HANDS[knobs.hand], n = H.cards.length, arc = knobs.arc === 1, onFelt = knobs.tray === 1;
+      var sx = W - PAD - small, h = PAD + hb + PAD;
+      var felt = '<div class="wmScene" style="height:' + h + 'px;margin-top:12px">' +
+        scene({ w: big, x: PAD, y: PAD, span: true, right: sx - ROW, hand: H.cards, whole: H.whole, arc: arc }) +
+        column({ w: small, x: sx, y: PAD, hand: H.cards, total: hb }) +
+        (onFelt ? '<div class="wmFeltTray" style="right:' + (PAD + small + ROW) + 'px;bottom:' + PAD + 'px">Small cards' + tray("felt") + "</div>" : "") + "</div>";
+      return box("vc vc-l" + knobs.labels, felt + (onFelt ? "" : smallRow()) + swatches("front", true) + swatches("back", true));
+    } },
+];
+
+function render() {
+  document.getElementById("out").innerHTML = OPTIONS.map(function (o) {
+    return '<section class="lab" data-n="' + o.n + '"><h2>' + o.title + "<b>" + o.sub + "</b></h2><p class=\"note\">" + o.note + "</p>" + o.draw() + "</section>";
+  }).join("");
+  placeAll(); isolate(); knobPanel(); keep();
+}
+function placeThumb(seg) {
+  var cells = seg.querySelectorAll(":scope > .wmCell"), picked = seg.querySelector(":scope > .wmCell.wmPicked");
+  var thumb = seg.querySelector(":scope > .wmSegThumb"), ink = seg.querySelector(":scope > .wmSegInk");
+  if (!thumb) {
+    thumb = document.createElement("i"); thumb.className = "wmSegThumb wmStill"; seg.insertBefore(thumb, seg.firstChild);
+    ink = document.createElement("span"); ink.className = "wmSegInk wmStill"; ink.setAttribute("aria-hidden", "true");
+    cells.forEach(function (c) { var copy = c.cloneNode(true); copy.className = "wmCell"; ink.appendChild(copy); });
+    seg.appendChild(ink);
+  }
+  if (!picked || !seg.offsetWidth) return;
+  var l = picked.offsetLeft, t = picked.offsetTop, w = picked.offsetWidth, h = picked.offsetHeight;
+  thumb.style.left = l + "px"; thumb.style.top = t + "px"; thumb.style.width = w + "px"; thumb.style.height = h + "px"; thumb.style.opacity = 1;
+  ink.style.clipPath = "inset(" + t + "px " + (seg.offsetWidth - l - w) + "px " + (seg.offsetHeight - t - h) + "px " + l + "px)";
+}
+function placeAll() { document.querySelectorAll(".wmSeg").forEach(placeThumb); }
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(placeAll);
+window.addEventListener("load", placeAll);
+function readKnobs() {
+  location.hash.replace("#", "").split(",").slice(1).forEach(function (kv) {
+    var m = kv.match(/^([hta])=(\d)$/); if (!m) return;
+    knobs[{ h: "hand", l: "labels", t: "tray", a: "arc" }[m[1]]] = +m[2];
+  });
+}
+function isolate() {
+  var n = location.hash.replace("#", "").split(",")[0];
+  document.querySelectorAll("section.lab").forEach(function (s) {
+    s.classList.toggle("hidden", false);
+  });
+}
+document.addEventListener("click", function (e) {
+  var tone = e.target.closest(".wmSeg[data-tone] .wmCell");
+  if (tone) { state.tone = tone.getAttribute("data-value"); render(); return; }
+  var cell = e.target.closest(".wmSeg[data-tray] .wmCell");
+  if (cell) { state.mode = cell.getAttribute("data-value"); render(); return; }
+  var tab = e.target.closest(".wmSeg[data-tabs] .wmCell");
+  if (tab) { state.screen = tab.getAttribute("data-screen"); render(); return; }
+  var f = e.target.closest("[data-front]");
+  if (f) { state.front = f.getAttribute("data-front"); render(); return; }
+  var b = e.target.closest("[data-back]");
+  if (b) { state.back = b.getAttribute("data-back"); render(); }
+});
+function knobPanel() {
+  var el = document.getElementById("knobs");
+  if (!el) { el = document.createElement("div"); el.id = "knobs"; el.className = "keys"; el.style.left = "auto"; el.style.right = "12px"; document.body.appendChild(el); }
+  el.innerHTML = "<b>h</b> hand: " + HANDS[knobs.hand].name + " &nbsp; <b>t</b> tray: " + TRAYS[knobs.tray] + " &nbsp; <b>a</b> hand: " + ARCS[knobs.arc];
+}
+document.addEventListener("keydown", function (e) {
+  var k = e.key.toLowerCase();
+  if (k === "h") { knobs.hand = (knobs.hand + 1) % HANDS.length; render(); return; }
+  if (k === "t") { knobs.tray = (knobs.tray + 1) % TRAYS.length; render(); return; }
+  if (k === "a") { knobs.arc = (knobs.arc + 1) % ARCS.length; render(); return; }
+  if (e.key === "f" || e.key === "F") { document.body.classList.toggle("felt"); return; }
+
+});
+window.addEventListener("hashchange", function () { readKnobs(); render(); });
+readKnobs(); render();
+</script>
+</body>
+</html>
