@@ -39,7 +39,7 @@
   .lab .wmModal .wmBox, .lab .wmModal .wmBody, .lab .wmModal .wmPage { height: auto !important; max-height: none !important; overflow: visible !important; }
 
   /* a piece of the table: the felt, a pile and a hand, drawn with the card's own look from pieces.scss */
-  .wmSettings .wmScene { position: relative; overflow: hidden; border-radius: 12px; corner-shape: squircle;
+  .wmSettings .wmScene { position: relative; display: block; padding: 0; overflow: hidden; border-radius: 12px; corner-shape: squircle;
     background: #327333 url("deck-lab-assets/felt.jpg") 0 0 / 100px 100px repeat; box-shadow: inset 0 0 0 1px rgba(0,0,0,.35); }
   .wmSettings .wmScene .wmLab { position: absolute; left: 12px; top: 9px; font-size: 12px; line-height: 14px; font-weight: bold; color: #fff;
     text-shadow: 0 1px 2px rgba(0,0,0,.6); }
@@ -223,7 +223,7 @@ function swatches(kind, flush) {
   var picked = kind === "front" ? state.front : state.back;
   var list = kind === "front" ? DECKS : BACKS;
   var art = function (d) { return kind === "front" ? url(d.id, "13h") : backUrl(d.id); };
-  var head = kind === "front" ? '<div class="wmSwHead">Fronts</div>'
+  var head = kind === "front" ? '<div class="wmSwHead wmSwHeadBacks"><span><span class="wmRowTitle">Fronts</span><span class="wmRowLine">Each deck has its own small size cards</span></span></div>'
     : '<div class="wmSwHead wmSwHeadBacks"><span><span class="wmRowTitle">Backs</span><span class="wmRowLine">Every back comes in blue or red</span></span>' + toneTray() + "</div>";
   if (flush) {
     return head + '<div class="wmSwGrid unselectable" role="radiogroup">' + list.map(function (d) {
