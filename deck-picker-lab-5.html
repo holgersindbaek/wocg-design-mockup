@@ -147,9 +147,9 @@ var HANDS = [
   { key: "pair", name: "the ten and the king, whole", cards: ["10s", "13h"], whole: true }
 ];
 var knobs = { hand: 0, labels: 0, tray: 0, arc: 0, bold: 1 };
-// Modern with its rank glyphs outlined in their own ink: 0 the deck as it is, 1 a 1px stroke, 2 a 1.5px stroke (make_bold.py)
+// Modern with its rank glyphs outlined in their own ink and moved half a stroke in from the corner: 0 the deck as it is, 1 a 1px stroke, 2 a 1.5px stroke (2.1 and 3.15 on the small deck, whose rank is 2.1x bigger; make_bold.py)
 var BOLD = ["modern-r", "modern-b1", "modern-b2"], BOLD_NAMES = ["regular", "bold 1px", "bolder 1.5px"];
-function deckArt(deck) { return deck === "modern-r" ? BOLD[knobs.bold] : deck; }
+function deckArt(deck) { if (deck === "modern-r") return BOLD[knobs.bold]; if (deck === "modern-small" && knobs.bold) return "modern-small-b" + knobs.bold; return deck; }
 // A back is a design in its own right, chosen once for every size: the sheets' backs, plus the recolours Holger asked
 // for (the Poker phone geometric in red and blue, the Poker lattice in blue, Renaissance in blue).
 // The Poker phone sheet's black back is its red lattice in black, so tinting it gives the lattice again: one red,
