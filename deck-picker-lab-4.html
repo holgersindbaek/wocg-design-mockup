@@ -110,21 +110,22 @@
 <div class="site fp wm">
 <div class="wrap">
   <h1>The Cards section of Settings, with rounded frames and simple backs</h1>
-  <p class="sub">The same section as the third lab, with the court frames rounded to a corner like the card's (Modern, Russian, Renaissance), a thin rounded line round the Czech and Poker courts, the Russian and Renaissance lines 24px from every edge, and six plain backs after the six there were.</p>
+  <p class="sub">The same section as the third lab, with the court frames rounded where they have a corner (Modern, Russian, Renaissance), the Russian and Renaissance lines 24px from every edge and open at the index as before, three backs cut to a rounded corner, a darkened border on Ornament, and seven plain backs after the six there were.</p>
   <div id="out"></div>
 </div>
 </div>
 <div class="keys"><b>f</b> felt behind the page</div>
 <script>
 // The decks that remain after 17 September: Egypt, Ornamental, Tango, Torres and Ninaste are retired.
-// The rounded variants (-r): Modern's court ring, Russian's and Renaissance's frames and a new thin line round the
-// Czech and Poker courts all take a 12px (frames) or 10px (courts) corner; the Russian and Renaissance frame lines
-// sit 24px from every edge. Number cards and the small versions are the shipped ones.
+// The rounded variants (-r): Modern's court ring takes a 10px corner and sits 51px from every edge; the Russian and
+// Renaissance frame lines sit 24px from every edge, keep their gaps at the index, and round their two free corners
+// at 12px. Czech and Poker have no line, so they are the shipped decks. Number cards and the small versions are the
+// shipped ones.
 var DECKS = [
   { id: "classic", name: "Classic", small: "anglo" },
   { id: "modern-r", name: "Modern", small: "modern-small" },
-  { id: "czech-r", name: "Czech", small: "czech-small" },
-  { id: "poker-r", name: "Poker", small: "poker-small" },
+  { id: "czech", name: "Czech", small: "czech-small" },
+  { id: "poker", name: "Poker", small: "poker-small" },
   { id: "russian-r", name: "Russian", small: "russian-small" },
   { id: "renaissance-r", name: "Renaissance", small: "renaissance-small" }
 ];
@@ -150,11 +151,13 @@ var knobs = { hand: 0, labels: 0, tray: 0, arc: 0 };
 // The Poker phone sheet's black back is its red lattice in black, so tinting it gives the lattice again: one red,
 // one blue. Renaissance's other back is the red pattern in gold on black, so its blue is the red pattern in blue.
 // One tile per design; the tray beside the Backs head picks blue or red for all of them. Blue is the default.
+// Backs: Ornament with a darkened border; Poker, Baroque and Renaissance cut to a 12px corner with their outer line
+// closed round it; then the plain ones.
 var BACKS = [
-  { id: "medallion", name: "Medallion" }, { id: "backa", name: "Ornament" },
-  { id: "poker", name: "Poker" }, { id: "baroque", name: "Baroque" }, { id: "poker-lattice", name: "Poker lattice" }, { id: "renaissance", name: "Renaissance" },
-  { id: "plain", name: "Plain" }, { id: "plain-light", name: "Plain, light" }, { id: "frame", name: "Frame" },
-  { id: "pinstripe", name: "Pinstripe" }, { id: "dots", name: "Dots" }, { id: "lattice", name: "Lattice" }
+  { id: "medallion", name: "Medallion" }, { id: "backa-b", name: "Ornament" },
+  { id: "poker-r", name: "Poker" }, { id: "baroque-r", name: "Baroque" }, { id: "poker-lattice", name: "Poker lattice" }, { id: "renaissance-r", name: "Renaissance" },
+  { id: "plain", name: "Plain" }, { id: "plain-light", name: "Plain, light" }, { id: "frame", name: "Frame" }, { id: "double", name: "Double frame" },
+  { id: "suits", name: "Suits" }, { id: "corners", name: "Corners" }, { id: "gradient", name: "Gradient" }
 ];
 if (!BACKS.some(function (b) { return b.id === state.back; })) state.back = BACKS[0].id;   // a back since removed
 function backUrl(id) { return "url(deck-lab-assets/backs/" + id + "-" + state.tone + ".png)"; }
