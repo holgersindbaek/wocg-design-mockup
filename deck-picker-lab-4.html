@@ -129,7 +129,7 @@ var DECKS = [
   { id: "czech", name: "Czech", small: "czech-small" },
   { id: "poker", name: "Poker", small: "poker-small" }
 ];
-var HAND = ["9c", "10d", "12s", "13h"];   // the king last, so it is the card that shows whole
+var HAND = ["9c", "10d", "13h"];   // the king last, so it is the card that shows whole
 var state = { front: "classic", back: "medallion", tone: "blue", mode: "auto", screen: "desk" };   // the defaults: the first front, the first back
 // the choices are kept between reloads
 try {
@@ -139,7 +139,8 @@ try {
 function keep() { try { localStorage.setItem("wocgCardsLab4", JSON.stringify({ front: state.front, back: state.back, tone: state.tone, mode: state.mode })); } catch (e) {} }
 // the knobs on C: h the hand, l the row labels, t where the tray sits, a the fan
 var HANDS = [
-  { key: "mix", name: "9 10 Q K: pips of both colours, the 10 index, a black court and a red court", cards: ["9c", "10d", "12s", "13h"] },
+  { key: "mix", name: "9 10 K: pips of both colours, the 10 index, the king", cards: ["9c", "10d", "13h"] },
+  { key: "courts", name: "10 Q K: the 10 index, a black court and a red court", cards: ["10d", "12s", "13h"] },
   { key: "straight", name: "J Q K in three suits", cards: ["11c", "12d", "13h"] },
   { key: "aces", name: "A Q K", cards: ["1s", "12s", "13h"] },
   { key: "ten", name: "10 A K", cards: ["10s", "1d", "13h"] },
@@ -154,8 +155,8 @@ var knobs = { hand: 0, labels: 0, tray: 0, arc: 0 };
 // Backs: Ornament with a darkened border; Poker, Baroque and Renaissance cut to a 12px corner with their outer line
 // closed round it; then the plain ones.
 var BACKS = [
-  { id: "medallion", name: "Medallion" }, { id: "scroll", name: "Scroll" }, { id: "plain", name: "Plain" },
-  { id: "backa2", name: "Ornament" }, { id: "poker-lattice", name: "Poker lattice" }, { id: "baroque-r", name: "Baroque" }
+  { id: "medallion", name: "Medallion" }, { id: "scroll", name: "Scroll" }, { id: "backa2", name: "Ornament" },
+  { id: "poker-lattice", name: "Poker lattice" }, { id: "baroque-r", name: "Baroque" }, { id: "plain", name: "Plain" }
 ];
 if (!BACKS.some(function (b) { return b.id === state.back; })) state.back = BACKS[0].id;   // a back since removed
 function backUrl(id) { return "url(deck-lab-assets/backs/" + id + "-" + state.tone + ".png)"; }
