@@ -8,12 +8,15 @@
   One felt per back in blue and in red (the card alone, 140px wide) and one felt per front (the preview hand
   10 of diamonds, queen of spades, king of hearts, the same 98px step as the settings preview). Every felt sits at a fixed
   place so a script can cut the screenshot: backs at (20 + i*224, 20 + row*280), 204x260; fronts at (20 + i*420, 620),
-  400x260. Rendered by /tmp/decks/shots.py with chrome-headless-shell at 2x.
+  400x260. Then two blocks for the Pollfish poll, where an answer's picture is a small thumbnail on a phone: one king
+  of hearts per front at (20 + i*224, 900), 204x260, and the same hand at 80px wide in a deck's desktop and its
+  small-card version side by side at (20 + i*276, 1180), 256x176 each, the small one 20px further right.
+  Rendered by /tmp/decks/shots.py with chrome-headless-shell at 2x.
 -->
 <link rel="stylesheet" href="guide-fonts.css">
 <link rel="stylesheet" href="site.css">
 <style>
-  body { margin: 0; padding: 0; width: 2560px; height: 900px; background: #f9f6f2; position: relative; }
+  body { margin: 0; padding: 0; width: 3400px; height: 1400px; background: #f9f6f2; position: relative; }
   .site { display: block; }
   .wmSettings .wmScene { position: absolute; display: block; padding: 0; overflow: hidden; border-radius: 12px; corner-shape: squircle;
     background: #327333 url("deck-lab-assets/felt.jpg") 0 0 / 100px 100px repeat; box-shadow: inset 0 0 0 1px rgba(0,0,0,.35); }
@@ -39,6 +42,22 @@ FRONTS.forEach(function (f, i) {
     HAND.map(function (c, j) {
       return '<i class="wmC" style="left:' + (PAD + j * STEP) + 'px;top:' + TOP + 'px;z-index:' + (10 + j) + ';background-image:url(deck-lab-assets/' + f[0] + '/' + c + '.png)"></i>';
     }).join("") + "</div>";
+});
+// one king per front, for a thumbnail
+FRONTS.forEach(function (f, i) {
+  html += '<div class="wmScene" data-shot="king-' + f[1] + '" style="left:' + (20 + i * 224) + 'px;top:900px;width:204px;height:260px">' +
+    '<i class="wmC" style="left:' + PAD + 'px;top:' + TOP + 'px;background-image:url(deck-lab-assets/' + f[0] + '/13h.png)"></i></div>';
+});
+// the hand at 80px: a deck's desktop art beside its small-card version
+var SMALL = { classic: "anglo", "modern-r": "modern-small", "russian-r": "russian-small", "renaissance-r": "renaissance-small", czech: "czech-small", poker: "poker-small" };
+var SW = 80, SSTEP = 56, SH = SW * 444 / 318, STOP = (176 - SH) / 2;
+FRONTS.forEach(function (f, i) {
+  [f[0], SMALL[f[0]]].forEach(function (deck, j) {
+    html += '<div class="wmScene" data-shot="hand80-' + f[1] + (j ? "-small" : "") + '" style="left:' + (20 + (i * 2 + j) * 276) + 'px;top:1180px;width:256px;height:176px">' +
+      HAND.map(function (c, k) {
+        return '<i class="wmC" style="width:' + SW + 'px;border-radius:12px;left:' + (PAD + k * SSTEP) + 'px;top:' + STOP + 'px;z-index:' + (10 + k) + ';background-image:url(deck-lab-assets/' + deck + '/' + c + '.png)"></i>';
+      }).join("") + "</div>";
+  });
 });
 document.getElementById("out").innerHTML = html;
 </script>
