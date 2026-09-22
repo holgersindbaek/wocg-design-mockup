@@ -148,12 +148,12 @@
       }
       return d.replace(/^.*\//, '').replace(/\?.*$/, '');
     },
-    // a tray's thumb and the white copy of its words, built and placed the way ModalShell.placeSegThumb does it:
+    // a tray's thumb and the white copy of its words, built and placed the way ModalShell.placeTrayThumb does it:
     // the thumb goes in first, the copy of the cells last, and the copy is clipped to the thumb's box. The pick is a
     // class on a cell, which is all the site's own handlers set; a click moves it, and the thumb travels.
     seg: function (node, cls) {
       cls = cls || {};
-      var c = { cell: cls.cell || 'wmCell', picked: cls.picked || 'wmPicked', thumb: cls.thumb || 'wmSegThumb', ink: cls.ink || 'wmSegInk', still: cls.still || 'wmStill' };
+      var c = { cell: cls.cell || 'wmCell', picked: cls.picked || 'wmPicked', thumb: cls.thumb || 'wmTrayThumb', ink: cls.ink || 'wmTrayInk', still: cls.still || 'wmStill' };
       if (!node || node.querySelector(':scope > .' + c.thumb)) return null;
       var thumb = document.createElement('i');
       thumb.className = c.thumb + ' ' + c.still;

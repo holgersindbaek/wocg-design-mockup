@@ -6,7 +6,7 @@
 <script>
 /* Section 6's helpers. Ids repeat across demos, so every card measures with its own root's
    querySelector and never getElementById. The tray and the games bar are driven by the same
-   code the site uses: ModalShell.placeSegThumb, dailyRecordsGeneric's copy of it, and
+   code the site uses: ModalShell.placeTrayThumb, dailyRecordsGeneric's copy of it, and
    GameBar.js's render, measure, settle and paint. */
 (function () {
     /* The games bar, as GameBar.js writes and drives it. */
@@ -439,7 +439,7 @@
             <div class="wmPanel" style="position:static;transform:none;width:400px;max-height:none">
               <div class="wmBox">
                 <div class="wmBody">
-                  <span class="wmSeg" role="radiogroup" aria-label="Sound">
+                  <span class="wmTray" role="radiogroup" aria-label="Sound">
                     <span class="wmCell" role="radio" tabindex="0" aria-checked="false">Off</span>
                     <span class="wmCell wmPicked" role="radio" tabindex="0" aria-checked="true">Soft</span>
                     <span class="wmCell" role="radio" tabindex="0" aria-checked="false">On</span>
@@ -448,7 +448,7 @@
                     <div class="wmRow">
                       <span class="wmRowLab"><span class="wmRowTitle">Sound</span><span class="wmRowLine">How loud the table is.</span></span>
                       <span class="wmRowCtl">
-                        <span class="wmSeg" role="radiogroup" aria-label="Sound on a card">
+                        <span class="wmTray" role="radiogroup" aria-label="Sound on a card">
                           <span class="wmCell wmPicked" role="radio" tabindex="0" aria-checked="true">Off</span>
                           <span class="wmCell" role="radio" tabindex="0" aria-checked="false">Soft</span>
                           <span class="wmCell" role="radio" tabindex="0" aria-checked="false">On</span>
@@ -466,34 +466,34 @@
       (function () {
         var card = document.currentScript.closest('.card');
         var root = card.querySelector('[data-demo]');
-        var segs = root.querySelectorAll('.wmSeg');
-        var cls = { cell: 'wmCell', picked: 'wmPicked', thumb: 'wmSegThumb', ink: 'wmSegInk', still: 'wmStill' };
+        var segs = root.querySelectorAll('.wmTray');
+        var cls = { cell: 'wmCell', picked: 'wmPicked', thumb: 'wmTrayThumb', ink: 'wmTrayInk', still: 'wmStill' };
         var a = Lab.seg(segs[0], cls);
         var b = Lab.seg(segs[1], cls);
         var cellA = segs[0].querySelector('.wmCell');
         var second = segs[0].querySelectorAll('.wmCell')[1];
-        var inkCell = segs[0].querySelector('.wmSegInk .wmCell');
+        var inkCell = segs[0].querySelector('.wmTrayInk .wmCell');
         Lab.table(card, F6.trackRows(segs[0], cellA, { rad: '12px', tray: '#e4ddd0', ring: '#c9c0ae' }).concat([
           { what: 'cursor on the picked cell', got: Lab.cs(segs[0].querySelector('.wmCell.wmPicked'), 'cursor'), want: 'default, 7.4’s wish', tag: 'note' }
         ]), 'The tray on the box’s paper');
         Lab.table(card, [
-          { what: 'divider width', got: Lab.rule('.site .wmModal .wmSeg .wmCell + .wmCell::before', 'width', segs[0]), want: '1px', tag: 'rule' },
-          { what: 'divider top / bottom', got: Lab.rule('.site .wmModal .wmSeg .wmCell + .wmCell::before', 'top', segs[0]) + ' / ' + Lab.rule('.site .wmModal .wmSeg .wmCell + .wmCell::before', 'bottom', segs[0]), want: '-2px / -2px', tag: 'rule' },
-          { what: 'divider colour', got: Lab.rule('.site .wmModal .wmSeg .wmCell + .wmCell::before', 'background', segs[0]), want: '#c9c0ae', tag: 'rule' },
-          { what: 'divider beside the pick', got: Lab.rule('.site .wmModal .wmSeg .wmCell.wmPicked::before', 'opacity', segs[0]), want: '0', tag: 'rule' }
+          { what: 'divider width', got: Lab.rule('.site .wmModal .wmTray .wmCell + .wmCell::before', 'width', segs[0]), want: '1px', tag: 'rule' },
+          { what: 'divider top / bottom', got: Lab.rule('.site .wmModal .wmTray .wmCell + .wmCell::before', 'top', segs[0]) + ' / ' + Lab.rule('.site .wmModal .wmTray .wmCell + .wmCell::before', 'bottom', segs[0]), want: '-2px / -2px', tag: 'rule' },
+          { what: 'divider colour', got: Lab.rule('.site .wmModal .wmTray .wmCell + .wmCell::before', 'background', segs[0]), want: '#c9c0ae', tag: 'rule' },
+          { what: 'divider beside the pick', got: Lab.rule('.site .wmModal .wmTray .wmCell.wmPicked::before', 'opacity', segs[0]), want: '0', tag: 'rule' }
         ], 'The divider');
         Lab.table(card, F6.thumbRows(a.thumb, { rad: '12px', travel: 'left, width, top, height, opacity over 0.22s, 0.22s, 0.22s, 0.22s, 0.11s' }).concat([
           { what: 'the white copy’s ink', got: Lab.cs(inkCell, 'color'), want: '#ffffff' },
           { what: 'its outline', got: Lab.cs(inkCell, 'text-shadow'), want: '-1px -1px 0 #347d2c, 1px -1px 0 #347d2c, -1px 1px 0 #347d2c, 1px 1px 0 #347d2c' }
         ]), 'The thumb, and the words it turns white');
         Lab.table(card, F6.trackRows(segs[1], segs[1].querySelector('.wmCell'), { rad: '12px', tray: '#f4eee5', ring: '#d2cfca' }).slice(3, 5).concat([
-          { what: 'divider colour on a card', got: Lab.rule('.site .wmModal .wmCard .wmSeg .wmCell + .wmCell::before', 'background', segs[1]), want: '#d2cfca', tag: 'rule' }
+          { what: 'divider colour on a card', got: Lab.rule('.site .wmModal .wmCard .wmTray .wmCell + .wmCell::before', 'background', segs[1]), want: '#d2cfca', tag: 'rule' }
         ]), 'The same tray on a white card');
         Lab.table(card, [
           { what: 'the modal tray’s corner', got: Lab.cs(segs[0], 'border-radius'), want: '12px' },
           { what: 'the picked cell’s hand', got: Lab.cs(segs[0].querySelector('.wmCell.wmPicked'), 'cursor'), want: 'the games bar shows none; this one still does', tag: 'open' }
         ], 'Still open');
-        Lab.note(card, 'Both trays are live: click a cell and the thumb travels, the divider beside it fades and the words turn white only where the thumb has reached. The thumb and the white copy are built here by the same steps ModalShell.placeSegThumb takes.');
+        Lab.note(card, 'Both trays are live: click a cell and the thumb travels, the divider beside it fades and the words turn white only where the thumb has reached. The thumb and the white copy are built here by the same steps ModalShell.placeTrayThumb takes.');
       })();
       </script>
     </div>
@@ -585,7 +585,7 @@
             <div class="wmPanel" style="position:static;transform:none;width:640px;max-height:none">
               <div class="wmBox">
                 <div class="wmBody">
-                  <div class="wmSeg wmTabs" role="tablist" aria-label="Settings">
+                  <div class="wmTray wmTabs" role="tablist" aria-label="Settings">
                     <span class="wmCell wmPicked" role="tab" tabindex="0" aria-selected="true" data-page="game">Game</span>
                     <span class="wmCell" role="tab" tabindex="0" aria-selected="false" data-page="design">Design</span>
                     <span class="wmCell" role="tab" tabindex="0" aria-selected="false" data-page="account">Account</span>
@@ -600,8 +600,8 @@
       (function () {
         var card = document.currentScript.closest('.card');
         var root = card.querySelector('[data-demo]');
-        var tabs = root.querySelector('.wmSeg.wmTabs');
-        var t = Lab.seg(tabs, { cell: 'wmCell', picked: 'wmPicked', thumb: 'wmSegThumb', ink: 'wmSegInk', still: 'wmStill' });
+        var tabs = root.querySelector('.wmTray.wmTabs');
+        var t = Lab.seg(tabs, { cell: 'wmCell', picked: 'wmPicked', thumb: 'wmTrayThumb', ink: 'wmTrayInk', still: 'wmStill' });
         var cell = tabs.querySelector('.wmCell');
         Lab.table(card, F6.trackRows(tabs, cell, {
           rad: '12px', tray: '#e4ddd0', ring: '#c9c0ae', trackH: '36px', cellH: '32px', cellFont: '700 18px / 32px'
@@ -628,7 +628,7 @@
                 <div class="lbTables">
                   <div class="lbHead">
                     <h2 class="leaderboard-title"><span class="lbTitleText">Daily Leaderboard</span><span class="lbWhen">Today</span></h2>
-                    <div class="lbSeg" role="radiogroup" aria-label="Leaderboard period">
+                    <div class="lbTray" role="radiogroup" aria-label="Leaderboard period">
                       <span class="lbCell lbPicked" data-period="daily" role="radio" aria-checked="true" tabindex="0">Daily</span>
                       <span class="lbCell" data-period="weekly" role="radio" aria-checked="false" tabindex="0">Weekly</span>
                       <span class="lbCell" data-period="monthly" role="radio" aria-checked="false" tabindex="0">Monthly</span>
@@ -645,8 +645,8 @@
       (function () {
         var card = document.currentScript.closest('.card');
         var root = card.querySelector('[data-demo]');
-        var seg = root.querySelector('.lbSeg');
-        var t = Lab.seg(seg, { cell: 'lbCell', picked: 'lbPicked', thumb: 'lbSegThumb', ink: 'lbSegInk', still: 'lbStill' });
+        var seg = root.querySelector('.lbTray');
+        var t = Lab.seg(seg, { cell: 'lbCell', picked: 'lbPicked', thumb: 'lbTrayThumb', ink: 'lbTrayInk', still: 'lbStill' });
         var cell = seg.querySelector('.lbCell');
         Lab.table(card, F6.trackRows(seg, cell, { rad: '12px', tray: '#e4ddd0', ring: '#c9c0ae' }), 'The board’s tray');
         Lab.table(card, F6.thumbRows(t.thumb, { rad: '12px', travel: 'left, width, top, height, opacity over 0.22s, 0.22s, 0.22s, 0.22s, 0.11s' }).concat([
