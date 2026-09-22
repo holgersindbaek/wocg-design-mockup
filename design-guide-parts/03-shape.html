@@ -9,7 +9,7 @@
   #shape .rw { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 12px; padding: 12px; background: #f9f6f2; }
   #shape .rw.felt { background: #327333; }
   #shape .rw.tall { min-height: 210px; }
-  #shape .cap { font-size: 12px; color: #8a857c; margin: 0 0 4px; }
+  #shape .cap { font-size: 12px; color: var(--ink-quiet); margin: 0 0 4px; }
 </style>
 
 <script>
@@ -26,7 +26,7 @@
 
   <div class="card"><div class="body">
     <h3>The radius ladder, the box rung <span class="tag built">built</span></h3>
-    <p class="rule-text">A box: 20px on the modal box, a game tile, a felt table tile, a leaderboard card, a picture and a quote card and a dropdown panel. Since 22 Sep 2026 this is the only box corner: the paper boxes that drew 16 draw this one too (the next card). Every one is a squircle, since base.scss sets corner-shape on everything under the body.</p>
+    <p class="rule-text">A box: 20px on the modal box, a game tile, a felt table tile, a leaderboard card, a picture and a quote card and a dropdown panel. It is the only box corner: the paper boxes take it too (the next card). Every one is a squircle, since base.scss sets corner-shape on everything under the body.</p>
     <div class="demo"><div class="rw">
 
       <div class="site wm" style="width:250px">
@@ -175,7 +175,7 @@
 
   <div class="card"><div class="body">
     <h3>The radius ladder, the box rung on paper <span class="tag built">built</span></h3>
-    <p class="rule-text">The 16 rung is gone (Holger, 22 Sep 2026). A box of paper is a box: at a glance, the read next box, the rules directory, a boxed list, a code block, the leaderboard page's table and both notices all take the box rung. The one card that sits inside a box is the exception: it stands 12px in from the box's own edge, so it takes the control rung instead, one step tighter than the box around it. A playing card keeps its own 16, which is the card's art and not this ladder.</p>
+    <p class="rule-text">A box of paper is a box: at a glance, the read next box, the rules directory, a boxed list, a code block, the leaderboard page's table and both notices all take the box rung. The one card that sits inside a box is the exception: it stands 12px in from the box's own edge, so it takes the control rung instead, one step tighter than the box around it. A playing card keeps its own 16, which is the card's art and not this ladder.</p>
     <div class="demo"><div class="rw">
       <div class="site wm" style="width:250px">
         <div class="wmModal wmOpen modalInstant" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
@@ -221,14 +221,14 @@
         { what: '--radius-panel, the box rung the notice reads', got: Lab.token(q('#Notice'), '--radius-panel'), want: '20px' },
         { what: 'corner-shape, all three', got: [q('.wmCard'), q('.atAGlance'), q('#Notice')].map(function (e) { return Lab.cs(e, 'corner-shape'); }).filter(function (v, i, a) { return a.indexOf(v) === i; }).join(', '), want: 'superellipse(2)' }
       ]);
-      Lab.note(card, 'Until 22 Sep 2026 all three drew 16: the card had its own --radius-card token, now gone, and the notices read master’s --radius-lg, which falls to 12 on a window at or under 640px. They were the only corners on the site that changed with the window; both notices read --radius-panel now and hold at 20. This window is ' + window.innerWidth + ' by ' + window.innerHeight + '.');
+      Lab.note(card, 'Both notices read --radius-panel and hold at 20 at every window width. This window is ' + window.innerWidth + ' by ' + window.innerHeight + '.');
       Lab.note(card, 'The reading shell carries min-height 0 inline, since the page container is 100vh tall on a real page.');
     })();</script>
   </div></div>
 
   <div class="card"><div class="body">
     <h3>The radius ladder, the tray <span class="tag built">built</span></h3>
-    <p class="rule-text">The 14 rung is gone (Holger, 22 Sep 2026). It was never a size of its own: the games bar's track and its overflow list wrote calc(var(--radius) + 2px), the control rung plus the 2px the track pads its cells by. The modal's own tray has drawn the control rung flat, at 12 with the same 2px of padding, since it was built, and nobody could tell the two trays apart. Both read --radius now.</p>
+    <p class="rule-text">The games bar's track, its overflow list and the modal's tray all read --radius: the control rung, 12, with 2px of padding around the cells. The two trays cannot be told apart.</p>
     <div class="demo"><div class="rw tall">
       <div class="site fp wm" style="width:380px">
         <div class="lobbyscope" style="padding:0">
@@ -272,7 +272,7 @@
 
   <div class="card"><div class="body">
     <h3>The radius ladder, the 12 rung: the controls <span class="tag built">built</span></h3>
-    <p class="rule-text">Control: 12px, and 6px where corner-shape is unsupported, on every button, field, tray cell, thumb, the tooltip and the name plate. They all read --radius, the checkbox's box too (Holger, 22 Sep 2026).</p>
+    <p class="rule-text">Control: 12px, and 6px where corner-shape is unsupported, on every button, field, tray cell, thumb, the tooltip and the name plate. They all read --radius, the checkbox's box too.</p>
     <div class="demo"><div class="rw">
       <div class="site wm" style="width:250px">
         <div class="wmModal wmOpen modalInstant wmGameOptions" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
@@ -339,7 +339,7 @@
 
   <div class="card"><div class="body">
     <h3>The radius ladder, the 12 rung: the literals <span class="tag built">built</span></h3>
-    <p class="rule-text">A literal 12px, which does not fall to 6, on the yellow verbs, the author photo, the quote avatars and the settings picker tiles.</p>
+    <p class="rule-text">A literal 12px, which does not fall to 6, on the yellow buttons, the author photo, the quote avatars and the settings picker tiles.</p>
     <div class="demo"><div class="rw">
       <div class="site fp wm" style="width:250px">
         <div class="popular" style="padding:0;max-width:none">
@@ -396,13 +396,13 @@
         { what: '--wm-tile-radius', got: Lab.token(q('.wmPk'), '--wm-tile-radius'), want: '12px' },
         { what: 'corner-shape, all four', got: [q('.heroPlay'), q('.photo'), q('.av'), q('.wmTile > span')].map(function (e) { return Lab.cs(e, 'corner-shape'); }).filter(function (v, i, a) { return a.indexOf(v) === i; }).join(', '), want: 'superellipse(2)' }
       ]);
-      Lab.note(card, 'The yellow verb is hidden until the art is hovered, so the tile wears .videoOn, the tile’s own class for a clip playing under the pointer, which shows the verb at rest. The picker is given the deck picker’s three columns so the tiles are big enough to read.');
+      Lab.note(card, 'The yellow button is hidden until the art is hovered, so the tile wears .videoOn, the tile’s own class for a clip playing under the pointer, which shows the button at rest. The picker is given the deck picker’s three columns so the tiles are big enough to read.');
     })();</script>
   </div></div>
 
   <div class="card"><div class="body">
     <h3>The radius ladder, as round as the box goes <span class="tag built">built</span></h3>
-    <p class="rule-text">The 8 rung and the round 6 are gone as sizes (Holger, 22 Sep 2026). Every small number here is half the height of the thing it is on, which is the round rung wearing a number: a chip and a tag are 16 tall and write 8, the waiting bar is 12 tall and writes 6, the award strip is 8 tall and writes 4, the modal's scrollbar is 6 wide and writes 3. Measured, a chip at 8 and a chip written as round draw the same pixels, since a radius is clamped to half the side and the squircle is kept. The values stay in the sheet, because a chip that ever wrapped to two lines would go pill-shaped if it asked for round. What changes is the shape, not the size: the waiting bar asks for corner-shape round and is one of the three true arcs in the design; a chip keeps the squircle.</p>
+    <p class="rule-text">Every small number here is half the height of the thing it is on, which is the round rung wearing a number: a chip and a tag are 16 tall and write 8, the waiting bar is 12 tall and writes 6, the award strip is 8 tall and writes 4, the modal's scrollbar is 6 wide and writes 3. Measured, a chip at 8 and a chip written as round draw the same pixels, since a radius is clamped to half the side and the squircle is kept. The values stay in the sheet, because a chip that ever wrapped to two lines would go pill-shaped if it asked for round. What changes is the shape, not the size: the waiting bar asks for corner-shape round and is one of the three true arcs in the design; a chip keeps the squircle.</p>
     <div class="demo"><div class="rw">
       <div class="site fp wm" style="overflow:hidden;width:250px">
         <div class="lobbyscope" style="padding:0">
@@ -525,7 +525,7 @@
 <div class="grid g2">
 
   <div class="card"><div class="body">
-    <h3>Rings: the inset 1px edge <span class="tag built">built</span></h3>
+    <h3>Rings: the inset 1px line <span class="tag built">built</span></h3>
     <p class="rule-text">The default: box-shadow inset 0 0 0 1px var(--line) on cards, tiles, fields, chips, trays and buttons, each in its own ring colour. An inset ring paints below the element’s children, so art that runs edge to edge covers it.</p>
     <div class="demo"><div class="rw">
       <div class="site wm" style="width:250px">
@@ -642,7 +642,7 @@
 
   <div class="card"><div class="body">
     <h3>Rings drawn outside, and the focus ring <span class="tag built">built</span></h3>
-    <p class="rule-text">0 0 0 1px outside on the modal box (black 30%), the name plate on the felt (--color-table-edge #393939) and the author photo (black 12%). A focused field keeps a 1px ring and darkens it to --ink-quiet #8a857c, the deepest neutral in the border list (Holger, 22 Sep 2026: no 2px anywhere, and no green on a field).</p>
+    <p class="rule-text">0 0 0 1px outside on the modal box (the overlay ring, black 30%), the name plate on the felt (the felt line, #393939) and the author photo (black 12%). A focused field keeps a 1px ring and darkens it to --ink-mark, the mark grey: no 2px anywhere, and no green on a field.</p>
     <div class="demo"><div class="rw">
       <div class="site wm" style="width:250px">
         <div class="wmModal wmOpen modalInstant" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
@@ -719,7 +719,7 @@
   </div></div>
 
   <div class="card"><div class="body">
-    <h3>The edge over tile art <span class="tag built">built</span></h3>
+    <h3>The line over tile art <span class="tag built">built</span></h3>
     <p class="rule-text">inset 0 0 0 1px rgba(0,0,0,.75) with mix-blend-mode soft-light over tile art, drawn by the art box’s own ::after so it sits above the picture the inset ring would be under.</p>
     <div class="demo"><div class="rw">
       <div class="site fp wm" style="width:250px">
@@ -763,7 +763,7 @@
 
   <div class="card"><div class="body">
     <h3>Dividers <span class="tag built">built</span></h3>
-    <p class="rule-text">A row line is border-bottom 1px in the surface’s own divider token: --line-soft on white, --line on the band and the canvas, --line-tray in a chooser. A divider parts two regions of one colour and is never the border token.</p>
+    <p class="rule-text">A row line is border-bottom 1px in the surface’s own divider token: --line-soft on white, --line on the band and the canvas, --line-tray in a tray. A divider parts two regions of one colour and is never the border token.</p>
     <div class="demo"><div class="rw">
       <div class="site wm" style="width:250px">
         <div class="wmModal wmOpen modalInstant wmWide wmSettings" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
@@ -821,7 +821,7 @@
         { what: 'the cell line, top and bottom', got: Lab.cs(q('.baretray .wmCell + .wmCell'), 'top', '::before') + ' / ' + Lab.cs(q('.baretray .wmCell + .wmCell'), 'bottom', '::before'), want: '-2px / -2px' },
         { what: '.footerLegal border-top', got: Lab.cs(q('.footerLegal'), 'border-top'), want: '1px solid #d2cfca' }
       ]);
-      Lab.note(card, 'The chooser’s line runs 2px past the cell at each end, which is the tray’s own padding, so it reaches the tray’s inside edge rather than stopping at the words. On a white card the same line steps to --line.');
+      Lab.note(card, 'The tray’s line runs 2px past the cell at each end, which is the tray’s own padding, so it reaches the tray’s inside edge rather than stopping at the words. On a white card the same line steps to --line.');
       Lab.note(card, 'The leaderboard card’s rows are a table, so the line is the next row’s border-top rather than the first row’s border-bottom.');
     })();</script>
   </div></div>
@@ -1003,7 +1003,7 @@
         { what: '--lift-card', got: Lab.token(q('.wmModal'), '--lift-card'), want: '0 1px 2px rgba(60,45,25,.04), 0 2px 5px rgba(60,45,25,.05)' },
         { what: '.wmCard', got: Lab.cs(q('.wmCard'), 'box-shadow'), want: 'inset 0 0 0 1px #d2cfca, 0 1px 2px rgba(60,45,25,.04), 0 2px 5px rgba(60,45,25,.05)' },
         { what: '.wmBox', got: Lab.cs(q('.wmBox'), 'box-shadow'), want: '0 0 0 1px rgba(0,0,0,.30)' },
-        { what: '--wm-lift, removed 22 Sep 2026', got: Lab.token(q('.wmModal'), '--wm-lift'), want: '', tag: 'note' }
+        { what: '--wm-lift, removed', got: Lab.token(q('.wmModal'), '--wm-lift'), want: '', tag: 'note' }
       ]);
       Lab.note(card, 'The box on the page sits on the scrim, which carries its depth. The lab shows it on the canvas with the scrim flattened, so the ring is all there is to see. --wm-lift was declared on the modal root and nothing ever read it, so it went on 22 September 2026; the lift a modal\u2019s white card takes is --lift-card.');
     })();</script>
@@ -1011,7 +1011,7 @@
 
   <div class="card"><div class="body">
     <h3>Lift: the solid buttons and the thumbs <span class="tag built">built</span></h3>
-    <p class="rule-text">0 2px 4px rgba(0,0,0,.06) under the lobby’s solid buttons, the catalog’s Play and both tray thumbs, with the inset ring. A modal’s .wmBtn and the settings submit carry the ring alone. Guide 5.3 also says the yellow verbs carry 0 1px 2px rgba(0,0,0,.30).</p>
+    <p class="rule-text">0 2px 4px rgba(0,0,0,.06) under the lobby’s solid buttons, the catalog’s Play and both tray thumbs, with the inset ring. A modal’s .wmBtn and the settings submit carry the ring alone. Guide 5.3 also says the yellow buttons carry 0 1px 2px rgba(0,0,0,.30).</p>
     <div class="demo"><div class="rw">
       <div class="site fp wm" style="width:250px">
         <div class="lobbyscope" style="padding:0">
@@ -1061,7 +1061,7 @@
         { what: '.wmBtn.wmGo', got: Lab.cs(q('.wmBtn.wmGo'), 'box-shadow'), want: 'inset 0 0 0 1px #347d2c' },
         { what: '.heroPlay', got: Lab.cs(q('.heroPlay'), 'box-shadow'), want: 'inset 0 0 0 1px #f5af23' }
       ]);
-      Lab.note(card, 'The yellow verb carries its ring and no drop. It lost the drop when the felt verbs were settled on 13 September, and 3.4, 5.3 and 7.1 all give a verb on paper the ring alone (_fp-hero.scss:277).');
+      Lab.note(card, 'The yellow button carries its ring and no drop: 3.4, 5.3 and 7.1 all give a yellow button on paper the ring alone (_fp-hero.scss:277).');
       Lab.note(card, 'Both thumbs are placed the way ModalShell.placeSegThumb and GameBar measure a cell, with the white copy of the picked word on the tray’s. The tray is live: click a cell.');
     })();</script>
   </div></div>

@@ -55,8 +55,8 @@ window.Plain = {
    "lead": "All interface text is one of five sizes. Look at whether the steps are far enough apart to read as different sizes."
   },
   "Off-ladder sizes that ship": {
-   "title": "Five sizes that break the rule",
-   "lead": "Five places use a size that is not one of the five. They are gathered here so you can say whether to keep them."
+   "title": "Six sizes that break the rule",
+   "lead": "Six places use a size that is not one of the five. They are gathered here so you can say whether to keep them."
   },
   "Rules of the ladder": {
    "title": "What a heading never does",
@@ -64,7 +64,7 @@ window.Plain = {
   },
   "The display scale": {
    "title": "The heading sizes",
-   "lead": "The five sizes the heading font takes, from a page title down to a quote."
+   "lead": "The four sizes the heading font takes, from a page title down to a quote."
   },
   "Roles: running text and small print": {
    "title": "Text on a page",
@@ -86,11 +86,11 @@ window.Plain = {
   },
   "The radius ladder, the box rung on paper": {
    "title": "Corners: the paper boxes take it too",
-   "lead": "The reading pages' boxes and the notices used to be a touch tighter than the cards in the lobby. They are the same now. The one card that sits inside a box is tighter than the box around it."
+   "lead": "The reading pages' boxes and the notices take the same corner as the cards in the lobby. The one card that sits inside a box is tighter than the box around it."
   },
   "The radius ladder, the tray": {
    "title": "Corners: the tray round",
-   "lead": "A tray holding cells takes the same corner as the cells. It used to be two pixels rounder, which nobody could see."
+   "lead": "A tray holding cells takes the same corner as the cells."
   },
   "The radius ladder, the 12 rung: the controls": {
    "title": "Corners: the control round",
@@ -108,9 +108,9 @@ window.Plain = {
    "title": "Corners: fully round, and none at all",
    "lead": "Dots, badges and the live capsule are circles. The ad rail and the full width bands have no corner at all."
   },
-  "Rings: the inset 1px edge": {
+  "Rings: the inset 1px line": {
    "title": "The thin line around a piece",
-   "lead": "Most pieces are outlined by a hairline drawn just inside them. Look at whether the line is strong enough to hold the shape without being noticed."
+   "lead": "Most pieces are outlined by a 1px line drawn just inside them. Look at whether the line is strong enough to hold the shape without being noticed."
   },
   "Borders: a real 1px line": {
    "title": "Where the line is a real border instead",
@@ -120,7 +120,7 @@ window.Plain = {
    "title": "Lines drawn outside the piece",
    "lead": "The modal box, a name plate on the felt and the author photo wear their line outside. A field you are typing in keeps its thin line and darkens it."
   },
-  "The edge over tile art": {
+  "The line over tile art": {
    "title": "The line over a game tile's picture",
    "lead": "Art that runs to the edge would cover a line drawn beneath it, so the tile draws its line on top, softly."
   },
@@ -176,11 +176,11 @@ window.Plain = {
   },
   "Control heights: 56 and 40": {
    "title": "How tall: the big rows",
-   "lead": "The menu bar, a corner notice, a leaderboard row, and a settings row carrying a second line."
+   "lead": "The menu bar, a leaderboard row, a table row, and a settings row carrying a second line."
   },
   "Control heights: 32": {
-   "title": "How tall: a button and a field",
-   "lead": "The everyday control height. Look at whether a button and a field standing side by side line up."
+   "title": "How tall: a button, and the field at 34",
+   "lead": "The everyday control height. A button is 32. A field is 34, the same box plus the 2px its ring takes, and the search field in a table head is 26. Look at whether a button and a field standing side by side line up."
   },
   "Control heights: 28 and 24": {
    "title": "How tall: the small controls",
@@ -208,11 +208,11 @@ window.Plain = {
    "title": "The buttons inside a modal",
    "lead": "The same buttons in a dialog, flatter, with no drop under them."
   },
-  "The tray, the danger pair and the inert pill": {
+  "The quiet button, the danger pair and the inert pill": {
    "title": "The quiet one, the dangerous pair and the one already done",
-   "lead": "The plain button, the red pair for something you cannot undo, and the flat pill for an invite that has already gone out."
+   "lead": "The quiet button, the red pair for something you cannot undo, and the flat pill for an invite that has already gone out."
   },
-  "The yellow verb, on the felt": {
+  "The yellow button, on the felt": {
    "title": "The yellow button at the table",
    "lead": "The button that names what to do next in a game. Look at whether it stands out enough on the green felt."
   },
@@ -374,7 +374,7 @@ window.Plain = {
   },
   "The notice on the lobby and on the felt": {
    "title": "The notice",
-   "lead": "There is one notice, the toast, drawn on the lobby and over the felt. The update line and the maintenance countdown are toasts too now, said once each, where they used to sit in the bottom right corner."
+   "lead": "There is one notice, the toast, drawn on the lobby and over the felt."
   },
   "Avatars off the felt and on it": {
    "title": "The avatars",

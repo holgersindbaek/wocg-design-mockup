@@ -22,7 +22,7 @@ window.Spec = {
     { group: 'Lines', note: 'A border sits between two surfaces and is darker than both. A divider sits on one surface and is that surface one step down.', items: [
       { token: '--line', name: 'Line', use: 'Every 1px line the page draws: around a card, tile, field, chip, panel or dropdown, and along a section seam, under the bar and over the footer' },
       { token: '--line-soft', name: 'Soft line', use: 'The divider between two rows inside a white card' },
-      { token: '--line-tray', name: 'Tray line', root: 'modal', use: 'Around a tray or the games bar, and between its cells' },
+      { token: '--line-tray', name: 'Tray line', use: 'Around a tray or the games bar, and between its cells' },
       { token: '--color-table-edge', name: 'Felt line', use: 'A name plate and a notice over the felt' },
       { value: 'rgba(0, 0, 0, .30)', name: 'Overlay ring', use: 'The modal box, and any paper floating over the felt or the dark sheet' }
     ] },
@@ -37,7 +37,7 @@ window.Spec = {
     { group: 'Light plates', note: 'A pale fill with its own deep ink, used where a colour has to carry small words.', kind: 'plate', items: [
       { fill: '--plate-blue', ink: '--plate-blue-ink', name: 'Blue plate', use: 'A name plate at the table' },
       { fill: '--plate-red', ink: '#8b1a1a', name: 'Red plate', use: 'A rating that went down, the red team' },
-      { fill: '--plate-green', ink: '--plate-green-ink', name: 'Green plate', use: 'A rating that went up, a seat plate' },
+      { fill: '--plate-green', ink: '--plate-green-ink', name: 'Green plate', use: 'A rating that went up: the movement chip and .rankUp' },
       { fill: '--plate-tray', ink: '--ink-label', name: 'Tray paper', use: 'The track a tray or the games bar sits in, and a tag' }
     ] },
     { group: 'Accents', note: 'Two colours that only mark a rating.', items: [
@@ -62,12 +62,12 @@ window.Spec = {
       { size: '38px', line: '1.15', face: 'display', weight: 500, name: '38', use: 'The hero title, and nothing else' },
       { size: '26px', line: '1.2', face: 'display', weight: 500, name: '26', use: 'A section head, and a seam title' },
       { size: '21px', line: '28px', face: 'display', weight: 500, name: '21', use: 'An h3 anywhere: a reading page, the band, the about zone; the FAQ question' },
-      { size: '19px', line: '26px', face: 'display', weight: 500, name: '19', use: 'Display prose, never a heading: a quote card, a blockquote' }
+      { size: '19px', line: '1.45', face: 'display', weight: 500, name: '19', use: 'Display prose, never a heading: a quote card, a blockquote' }
     ] }
   ],
 
   shape: [
-    { group: 'Corners', note: 'Every corner is a squircle, not an arc, except the three noted. Two sizes, round, and none (Holger, 22 Sep 2026).', kind: 'corner', items: [
+    { group: 'Corners', note: 'Every corner is a squircle, not an arc, except the three noted. Two sizes, round, and none.', kind: 'corner', items: [
       { value: '20px', name: '20', use: 'Every box: a modal box, a game tile, a table tile, a leaderboard card, a dropdown panel, a picture, a reading page box and the notices' },
       { value: '12px', name: '12', use: 'Every control and everything inside a box: a button, field, tray, tray cell, checkbox, thumb, the tooltip, and the white card in a modal' },
       { value: '999px', round: true, name: 'Round', use: 'Dots, badges, the live capsule, and anything so small that half its height is the corner: a chip at 8, the waiting bar at 6, the award strip at 4' },
@@ -77,10 +77,10 @@ window.Spec = {
       { form: 'inset', name: 'Inside ring', use: 'The default: a card, tile, field, checkbox, tray or button' },
       { form: 'border', name: 'Real border', use: 'A fully round pill, a dropdown, a card whose text is padded in' },
       { form: 'outside', name: 'Outside ring', use: 'The modal box, a name plate on the felt, the author photo' },
-      { form: 'focus', name: 'Focus ring', use: 'A field you are typing in: the same 1px line, one soft step darker in --ink-mark (Holger, 22 Sep 2026)' },
-      { form: 'divider', name: 'Divider', use: 'Between two rows of one colour, in that surface\u2019s own divider colour: --line-soft on white, --line on the band and the canvas, --line-tray inside a chooser' }
+      { form: 'focus', name: 'Focus ring', use: 'A field you are typing in: the same 1px line, darkened to --ink-mark, the mark grey' },
+      { form: 'divider', name: 'Divider', use: 'Between two rows of one colour, in that surface\u2019s own divider colour: --line-soft on white, --line on the band and the canvas, --line-tray inside a tray' }
     ] },
-    { group: 'Shadows', note: 'How far a thing lifts off the page. Five steps and one special.', kind: 'shadow', items: [
+    { group: 'Shadows', note: 'How far a thing lifts off the page. Four steps.', kind: 'shadow', items: [
       { token: '--lift', name: 'Container lift', use: 'Every light container: a card, a panel, a dropdown, the tooltip. The frontpage draws a lighter copy, .04 and .06' },
       { token: '--lift-lg', name: 'Tile lift', use: 'A hero tile and a table tile, which sit higher than a card' },
       { token: '--lift-card', root: 'modal', name: 'Half lift', use: 'A white card inside a modal' },
@@ -104,10 +104,12 @@ window.Spec = {
     ] },
     { group: 'Heights', note: 'How tall a row or a control is.', kind: 'height', items: [
       { value: '56px', use: 'The menu bar' },
-      { value: '40px', use: 'A corner notice, a leaderboard row, a table row, a settings row with two lines' },
-      { value: '32px', use: 'A button, a field, the live capsule, a panel head strip' },
+      { value: '40px', use: 'A leaderboard row, a table row, a settings row with two lines' },
+      { value: '34px', use: 'A field: the button\u2019s 32 plus the 2px its ring takes' },
+      { value: '32px', use: 'A button, the live capsule, a panel head strip, a compact table row' },
       { value: '28px', use: 'A tray track, a settings row, a menu row' },
-      { value: '24px', use: 'A small button, a tray cell, a checkbox, the yellow verb' },
+      { value: '26px', use: 'The search field in a table head: the small control\u2019s 24 plus the 2px its ring takes' },
+      { value: '24px', use: 'A small button, a tray cell, a checkbox, the yellow button' },
       { value: '20px', use: 'A badge at a seat' },
       { value: '18px', use: 'A name plate on a tile' },
       { value: '16px', use: 'A tag, and a rating movement chip' }

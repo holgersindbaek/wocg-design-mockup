@@ -163,7 +163,7 @@
 
   <div class="card"><div class="body">
     <h3>The felt tile <span class="tag built">built</span></h3>
-    <p class="rule-text">A felt tile is a 20px squircle of felt #327333 with a 4:3 header, the seats' plates in --plate-blue with ink #124f7e (the red team #fcbcb4 on #8b1a1a) ringed 0 0 0 1px #393939 with 0 0 8px rgba(0,0,0,.24) on a 12px corner, 14 / 18 bold names, avatars under --lift-avatar, a 14px bold white ghost clock and the yellow verbs in the clock's corner. Guide 7.6 gives a game or felt tile --lift-lg.</p>
+    <p class="rule-text">A felt tile is a 20px squircle of felt #327333 with a 4:3 header, the seats' plates in --plate-blue with ink #124f7e (the red team #fcbcb4 on #8b1a1a) ringed 0 0 0 1px #393939 with 0 0 8px rgba(0,0,0,.24) on a 12px corner, 14 / 18 bold names, avatars under --lift-avatar, a 14px bold white ghost clock and the yellow buttons in the clock's corner. Guide 7.6 gives a game or felt tile --lift-lg.</p>
     <div class="demo"><div class="site fp wm" data-demo="fp">
       <div class="lobbyscope" id="openTablesTop"><div class="lobbyTablesPanel" id="lobbyTablesPanel">
         <div class="ltGrid" id="lobbyTablesGrid" style="grid-template-columns:minmax(0,1fr)">
@@ -254,8 +254,8 @@
       ], "The tile on the frontpage and its copy in a modal");
       Lab.note(card, "The tile lifts two ways, and 7.6 says so. On the frontpage it takes --lift-lg and no ring (_fp-open-tables.scss:423-430). The modal copy keeps the shared mixin's inset --line ring and the light --lift (_wm-shared.scss:62-64).");
       Lab.note(card, "The plate is 18px since 13 Sep, and 3.7 and 6.3 both say 18 now (_wm-shared.scss:180).");
-      Lab.note(card, "The verb carries the paper form of 7.1, an inset ring and no drop, on the felt. Guide 3.4 gives a verb on the felt the felt line outside plus a 0 1px 2px rgba(0,0,0,.30) drop, which this one does not draw.");
-      Lab.note(card, "The frontpage tile is drawn as it stands under the pointer: the lobby script deals the verbs in and takes the clock out, so Join is at opacity 1 and the clock at 0, both set inline. Every value in the table is the sheet's. The grid is one column where the lobby draws three.");
+      Lab.note(card, "The button carries the paper form of 7.1, an inset ring and no drop, on the felt. Guide 3.4 gives a yellow button on the felt the felt line outside plus a 0 1px 2px rgba(0,0,0,.30) drop, which this one does not draw.");
+      Lab.note(card, "The frontpage tile is drawn as it stands under the pointer: the lobby script deals the buttons in and takes the clock out, so Join is at opacity 1 and the clock at 0, both set inline. Every value in the table is the sheet's. The grid is one column where the lobby draws three.");
     })();</script>
   </div></div>
 
@@ -425,9 +425,9 @@
         { what: "page .aboutPhoto ring and lift", got: Lab.cs(aphoto, "box-shadow"), want: "0 0 0 1px rgba(0,0,0,.12), 0 2px 6px rgba(60,45,25,.18)" },
         { what: "page .signName", got: Lab.cs(sname, "display") + ", " + Lab.font(sname), want: "none, 400 16px/24px" }
       ], "The frontpage's cards, the about zone's paper and the page's author block");
-      Lab.note(card, "Two rows the guide caught up with. The quote plate rings --line-tray #c9c0ae, the chooser's own ring, which 7.6 names (_fp-about.scss:193). And 10.3 signs the author block with the frontpage's signature image and hides .signName, which the page keeps for the flag-off copy (_wm-read-info.scss:57, Holger's 14 Sep choice), so the name reads none at the body size.");
+      Lab.note(card, "Two rows the guide caught up with. The quote plate rings --line-tray #c9c0ae, the tray's own ring, which 7.6 names (_fp-about.scss:193). And 10.3 signs the author block with the frontpage's signature image and hides .signName, which the page keeps for the flag-off copy (_wm-read-info.scss:57), so the name reads none at the body size.");
       Lab.note(card, "Both quote forms are drawn: the name-first one the site ships, with the avatar and the name on the top line and a 40px plate, and under it the base form the sheet declares, quote first with the 44px plate 7.6 states. Only common/fp_about.dust:194 ships, and it carries qs-namefirst, so 44 is a value in the sheet that no page renders today.");
-      Lab.note(card, "The base form writes its credit as one faint line, so the demo sets it as one: the .qwho span that holds the place apart belongs to the name-first form, which stacks the two.");
+      Lab.note(card, "The base form writes its credit as one line in the quiet ink, so the demo sets it as one: the .qwho span that holds the place apart belongs to the name-first form, which stacks the two.");
       Lab.note(card, "These cards take a real 1px border, not an inset ring: an inset ring is drawn inside an antialiased curve at about half strength, and the board's own header row would paint over it.");
     })();</script>
   </div></div>
@@ -571,7 +571,7 @@
         { what: ".wtipBox border-radius", got: Lab.cs(tip, "border-radius"), want: "12px" },
         { what: ".wtipBox ring and lift", got: Lab.cs(tip, "box-shadow"), want: "inset 0 0 0 1px #d2cfca, " + lift }
       ], "The two panels, the toast and the tooltip");
-      Lab.note(card, "The toast rings --line #d2cfca, the band's own divider tone under the 14 Sep line rule, and 7.6 and 7.9 both name it (_wm-notices.scss). The two corner notices it used to stand beside are gone: the update line and the maintenance countdown are toasts now (Holger, 22 Sep 2026).");
+      Lab.note(card, "The toast rings --line #d2cfca, the band's own divider tone, and 7.6 and 7.9 both name it (_wm-notices.scss).");
       Lab.note(card, "Each panel hangs under the menubar on the site. Here the chain its rules read is kept, ul#menuBar > li.mgames and #userBarContainer > ul#userBar > li.userAvatarContainer, the two hosts are blocks so the panel stands in the flow, and each panel keeps its own box (relative, shrunk to its columns) so its head strip and rule stay inside it: the bar itself belongs to 8.1. The games panel is shown open with the hover rule's display and its 12px gap, the user cluster carries .open, the site's own class, and the toast and the tooltip keep everything but their fixed place.");
     })();</script>
   </div></div>

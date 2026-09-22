@@ -78,7 +78,7 @@
 
   <div class="card"><div class="body">
     <h3>The stats table in a modal <span class="tag built">built</span></h3>
-    <p class="rule-text">The stats table is a grid whose head row is padded 4px 0 8px over a hairline at 16 / 22 muted, body rows 40px at 16 / 32 with a hairline between and none under the last, figures right and tabular, yours bold in the ink and everyone's muted.</p>
+    <p class="rule-text">The stats table is a grid whose head row is padded 4px 0 8px over the soft line, at 16 / 22 in the label ink, body rows 40px at 16 / 32 with the soft line between and none under the last, figures right and tabular, yours bold in the ink and everyone's in the label ink.</p>
     <div class="demo">
       <div class="site wm" data-demo>
         <div class="wmModal wmStats wmWide wmOpen modalInstant" role="dialog" style="position:static;display:block;opacity:1">
@@ -143,7 +143,7 @@
 
   <div class="card"><div class="body">
     <h3>Settings rows <span class="tag built">built</span></h3>
-    <p class="rule-text">A settings row's content box is 28px, or 40 with a second line, at 12px 0 of padding, with a hairline under each but the last, a 16px bold title over a 16 / 20 muted line, and the control at the right 24px away, so the row measures 53 or 65.</p>
+    <p class="rule-text">A settings row's content box is 28px, or 40 with a second line, at 12px 0 of padding, with the soft line under each but the last, a 16px bold title over a 16 / 20 line (.wmRowLine, --ink-label), and the control at the right 24px away, so the row measures 53 or 65.</p>
     <div class="demo">
       <div class="site wm" data-demo>
         <div class="wmModal wmWide wmSettings wmOpen modalInstant" role="dialog" style="position:static;display:block;opacity:1">
@@ -197,13 +197,13 @@
         { what: 'the chevron', got: cs(opens.querySelector('.wmChev'), 'width') + ' by ' + cs(opens.querySelector('.wmChev'), 'height') + ', ' + cs(opens.querySelector('.wmChev'), 'color'), want: '8px by 12px, #4e4d4c' },
         { what: 'a row that opens, cursor', got: cs(opens, 'cursor'), want: 'pointer' }
       ]);
-      Lab.note(card, "The guide writes the second line as 16 / 20 muted and the sheet agrees, so a row with a line measures 65 and one without it 53. The tray's thumb and its white words are drawn here the way ModalShell.placeSegThumb draws them, since no script runs in the lab.");
+      Lab.note(card, "The second line, .wmRowLine, is 16 / 20 in --ink-label, and a row with one measures 65 where one without it measures 53. The tray's thumb and its white words are drawn here the way ModalShell.placeSegThumb draws them, since no script runs in the lab.");
     })();</script>
   </div></div>
 
   <div class="card"><div class="body">
     <h3>People rows <span class="tag built">built</span></h3>
-    <p class="rule-text">A people or table row is padded 8px 0 with a 12px gap and no fixed height, 59 with a second line, a hairline under each but the last, a 16 / 20 bold name over a 16 / 22 muted line, and a 40 by 40 avatar.</p>
+    <p class="rule-text">A people or table row is padded 8px 0 with a 12px gap and no fixed height, 59 with a second line, the soft line under each but the last, a 16 / 20 bold name over a 16 / 22 line in the label ink, and a 40 by 40 avatar.</p>
     <div class="demo">
       <div class="site wm" data-demo>
         <div class="wmModal wmOpen modalInstant" role="dialog" style="position:static;display:block;opacity:1">
@@ -251,14 +251,13 @@
         { what: "the avatar's foot", got: cs(av, 'clip-path') === 'none' ? 'none' : 'the rounded foot', want: 'the rounded foot', tag: 'note' },
         { what: 'the online dot', got: cs(dot, 'width') + ' by ' + cs(dot, 'height') + ', ' + cs(dot, 'background-color'), want: '8px by 8px, #43a038' }
       ]);
-      Lab.note(card, "The row is 59: 8 above, a 20px name, a 22px second line, 8 below and the hairline, which is what 7.7 states now (Modals.scss:488-512). Holger is to confirm it. The old 63, still in the sheet's own comment (_wm-people.scss:9), needs a 24px name line that nothing sets, so either the comment goes or the name takes 16 / 24.");
       Lab.note(card, "The line is the four drop shadows, not the SVG filter: the filter is asked for only under .wmAvLine, which ModalShell adds once its defs are in the document, and a filter url that names nothing would hide the picture. The row measures 59 because the kit's 16 / 20 name over a 16 / 22 line is a step taller than the lab's own 18 over 16 / 18.");
     })();</script>
   </div></div>
 
   <div class="card"><div class="body">
     <h3>The page table <span class="tag call">guide's call</span></h3>
-    <p class="rule-text">The stats table's rules inside a white card: a 40px head row on the band at 16 / 22 bold, body rows of 40px and 16 / 24 with the hairline under each sitting inside the box, so a row draws 41, none under the last, a hairline between the columns and the band's rule between the head cells, none after the last column, cells 0 12px, figures right and tabular, a row with a 56px avatar 64 and drawing 65 the same way, and a bare table drawing its edge as an outline inset by a pixel.</p>
+    <p class="rule-text">The stats table's rules inside a white card: a 40px head row on the band at 16 / 22 bold, body rows of 40px and 16 / 24 with the soft line under each sitting inside the box, so a row draws 41, none under the last, the soft line between the columns and --line between the head cells, none after the last column, cells 0 12px, figures right and tabular, a row with a 56px avatar 64 and drawing 65 the same way, and a bare table drawing its line as an outline inset by a pixel.</p>
     <div class="demo">
       <div class="site wm" data-demo-rules>
         <div id="mainContainer" class="general" style="min-height:0">
@@ -354,9 +353,9 @@
         { what: 'the last row', got: cs(lastTd, 'border-bottom-width'), want: '0' },
         { what: 'the name cell', got: cs(td, 'font-weight'), want: '700' },
         { what: 'figures', got: cs(a.querySelector('table'), 'font-variant-numeric'), want: 'tabular-nums' },
-        { what: 'a verb, height', got: cs(verb, 'height'), want: '24px' },
-        { what: 'a verb, type', got: cs(verb, 'font-weight') + ' ' + cs(verb, 'font-size') + ' / ' + cs(verb, 'line-height'), want: '700 16px / 24px' },
-        { what: 'a verb, fill', got: cs(verb, 'background-color'), want: '#298ae9' },
+        { what: 'a button, height', got: cs(verb, 'height'), want: '24px' },
+        { what: 'a button, type', got: cs(verb, 'font-weight') + ' ' + cs(verb, 'font-size') + ' / ' + cs(verb, 'line-height'), want: '700 16px / 24px' },
+        { what: 'a button, fill', got: cs(verb, 'background-color'), want: '#298ae9' },
         { what: 'Play, fill', got: cs(play, 'background-color'), want: '#43a038' },
         { what: 'Play, ink', got: cs(play, 'color'), want: '#ffffff' }
       ], 'The rules directory, on a reading page');
@@ -395,8 +394,8 @@
       var lastRow = c.querySelectorAll('tr');
       var lastCell = lastRow[lastRow.length - 1].querySelector('td');
       Lab.table(card, [
-        { what: 'the edge', got: cs(tab, 'outline-width') + ' ' + cs(tab, 'outline-style') + ' ' + cs(tab, 'outline-color'), want: '1px solid #d2cfca' },
-        { what: 'the edge, inset', got: cs(tab, 'outline-offset'), want: '-1px' },
+        { what: 'the line', got: cs(tab, 'outline-width') + ' ' + cs(tab, 'outline-style') + ' ' + cs(tab, 'outline-color'), want: '1px solid #d2cfca' },
+        { what: 'the line, inset', got: cs(tab, 'outline-offset'), want: '-1px' },
         { what: 'the radius', got: cs(tab, 'border-radius'), want: '20px' },
         { what: 'th height', got: cs(cth, 'height'), want: '40px' },
         { what: 'th padding', got: cs(cth, 'padding'), want: '8px 12px' },
@@ -411,14 +410,14 @@
         { what: 'figures right', got: cs(c.querySelector('td.numberFormat'), 'text-align'), want: 'right' }
       ], 'A bare table in a band');
       Lab.note(card, "A border-box cell's stated height has to hold the line under it, so a 64px leaderboard row draws 65 (the .player-cell is a flat 64 inside a 63px content box) and a 40px bare row draws 41 (24px of words and 16px of padding, then the line). Holger settled this on 14 Sep 2026: the guide states the drawn height, 41 and 65, and no cell gives the line its pixel back. The rules directory is clean either way, because its cells pad 0 and the 40 is a floor.");
-      Lab.note(card, "Three wells: the rules page's directory in its white card, the generated leaderboard page's table in the scrolling card that clips the head inside the corner, and a rules partial's .paddedTable, which has no wrapper and so draws its edge as an outline laid a pixel inside itself.");
+      Lab.note(card, "Three wells: the rules page's directory in its white card, the generated leaderboard page's table in the scrolling card that clips the head inside the corner, and a rules partial's .paddedTable, which has no wrapper and so draws its line as an outline laid a pixel inside itself.");
       Lab.note(card, "Each shell is the reading page's own: #mainContainer.general, .helpBox, .content. The shell's 100vh minimum is set to 0 inline so the card is only as tall as the table, and the band's .helpBox is made relative because a game page's band is out of flow. Neither touches a measured value. The leaderboard's .table-scroll is the wrapper the page script adds around the table.");
     })();</script>
   </div></div>
 
   <div class="card"><div class="body">
     <h3>The changelog rows <span class="tag built">built</span></h3>
-    <p class="rule-text">The frontpage's What's new is a flex row of a 16 / 24 entry with its tag, a 14px faint time at the right and 6px between rows with no rule between days. The changelog page keeps that rhythm on a definition list with a 16 bold date, 16 / 24 entries and the rule colour between days, a divider on the canvas.</p>
+    <p class="rule-text">The frontpage's What's new is a flex row of a 16 / 24 entry with its tag, a 14px time in the quiet ink at the right and 6px between rows with no rule between days. The changelog page keeps that rhythm on a definition list with a 16 bold date, 16 / 24 entries and --line between days, a divider on the canvas.</p>
     <div class="demo">
       <div class="site fp wm" data-demo-nw>
         <div id="sec-about" style="padding:16px 0">

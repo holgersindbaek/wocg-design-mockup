@@ -8,14 +8,14 @@
   /* The lab's own wells for the footer's container steps: a fixed width, nothing written on the piece. */
   #chrome .cqwells { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 12px; }
   #chrome .cqwell { overflow: hidden; box-shadow: inset 0 0 0 1px #d2cfca; background: #fff; }
-  #chrome .cqcap { margin: 0; padding: 6px 8px; color: #8a857c; font-size: 12px; }
+  #chrome .cqcap { margin: 0; padding: 6px 8px; color: var(--ink-quiet); font-size: 12px; }
 </style>
 
 <div class="grid g1">
 
 <div class="card"><div class="body">
 <h3>The bar <span class="tag built">built</span></h3>
-<p class="rule-text">The bar is 56px tall on #F4EEE5 with no border below and an 8px margin under it, padded 0 24px off the frontpage, 16px in the soft ink, the logo absolutely centred at 32px, three left links 18px apart at 16px bold and 56px tall with an 8 by 7 masked caret, master's per-game links hidden, and the user cluster at the right.</p>
+<p class="rule-text">The bar is 56px tall on #F4EEE5 with no border below and an 8px margin under it, padded 0 24px off the frontpage, 16px in the ink, the logo absolutely centred at 32px, three left links 18px apart at 16px bold and 56px tall with an 8 by 7 masked caret, master's per-game links hidden, and the user cluster at the right.</p>
 <div class="demo">
   <div class="site wm" data-wm>
     <nav id="menuBarContainer" class="mbcenter" aria-label="Main navigation">
@@ -129,7 +129,7 @@ Lab.note(card,'A game page shows no bar at all: body[data-table="true"] hides #m
 
 <div class="card"><div class="body">
 <h3>The footer <span class="tag built">built</span></h3>
-<p class="rule-text">The footer is #F4EEE5 with a 1px #D2CFCA rule above, a grid padded 20px 24px 14px in four auto columns spread 24px apart with no max width, heads 16 / 28 bold, links 16 / 28 with no underline, a full-width legal row under its own rule with three masked social marks at the right end, and Raptive's block at 14 / 24 muted.</p>
+<p class="rule-text">The footer is #F4EEE5 with a 1px rule above in --line #d2cfca, a grid padded 20px 24px 14px in four auto columns spread 24px apart with no max width, heads 16 / 28 bold, links 16 / 28 with no underline, a full-width legal row under its own rule with three masked social marks at the right end, and Raptive's block at 14 / 24 in the label ink.</p>
 <div class="demo">
   <div class="site wm" data-wm>
     <div id="mainContainer" class="general" style="min-height:0"><div class="helpBox">
@@ -399,7 +399,6 @@ Lab.table(card, wells.map(function (w) {
  {what:'the legal row in a 460px well',got:Lab.cs(wells[1].legal,'grid-column'),want:'1 / -1'}
 ]), 'The phone steps, read from the container');
 Lab.note(card,'The links are 16 / 28 where the mockup drew 14: open item 5 in the guide, not a fault of the build.');
-Lab.note(card,'The two red rows in Raptive\u2019s block are the sheet, not the guide, and they only show inside the reading shell: master\u2019s TableBar.scss styles .helpBox .footer-basic .footerRaptive .adthrive-footer-message with !important (16px, 28px lines, the ink, the partner note first and bold), and the design\u2019s own 14 / 24 --ink-label rule in _fp-footer.scss has no !important, so it loses on every page whose footer sits in .helpBox, which is every page but the frontpage. The frontpage copy below draws the guide\u2019s values.');
 Lab.note(card,'The four columns are auto tracks, so Chrome prints the width each one used rather than the word auto. The table counts them.');
 Lab.note(card,'One of the site’s own values cannot be computed: margin-left auto resolves to the pixels it used, so it is read from its rule.');
 Lab.note(card,'The two footers hold different links on purpose. This is common/fp_footer.dust; common/footer.dust ships beside it and CSS picks, and the loser is to be deleted before the flag retires.');
@@ -408,7 +407,7 @@ Lab.note(card,'The two footers hold different links on purpose. This is common/f
 
 <div class="card"><div class="body">
 <h3>The ad rail <span class="tag built">built</span></h3>
-<p class="rule-text">The frontpage's rail is a fixed full-height column at the right on the band paper with a 72 by 72 four-suit wallpaper at 4% black, a five-layer well shadow, an 8px inset for the slots, and a Hide ads pill 300 wide at most on the canvas in 14 / 24 bold, ringed inset 0 0 0 1px rgba(0,0,0,.25) plus three directionless blurs, hovering to the band at once.</p>
+<p class="rule-text">The frontpage's rail is a fixed full-height column at the right on the band paper with a 72 by 72 four-suit wallpaper at 4% black, a five-layer well shadow, an 8px inset for the slots, and a Hide ads pill 300 wide at most on the canvas in 16 / 24 bold in the ink, ringed inset 0 0 0 1px rgba(0,0,0,.25) plus three directionless blurs, hovering to the band at once.</p>
 <div class="demo" style="background:#f9f6f2">
   <div class="site fp wm adsVisible" data-rail style="position:relative;min-height:430px;background:transparent">
     <div id="gameSelectorContainer"></div>
@@ -456,7 +455,7 @@ Lab.table(card,[
  {what:'the column reserves',got:Lab.cs(col,'margin-right'),want:'336px'},
  {what:'from 640 it reserves',got:'160px',want:'160px',tag:'note'}
 ],'What the page gives up to it');
-Lab.note(card,'The rail paints the band --paper-band #F4EEE5, which 8.3 and 3.1 both name now (_fp-chrome.scss:588). The literal #EFEAE2 it drew until 13 Sep is gone.');
+Lab.note(card,'The rail paints the band --paper-band #F4EEE5, which 8.3 and 3.1 both name (_fp-chrome.scss:588).');
 Lab.note(card,'The widths are master’s: 336px from 1024 and 160px from 640. The sheet writes height auto and max-height none with !important, so the rail takes its height from its top and bottom and no inline height can cap it.');
 })();</script>
 </div></div>

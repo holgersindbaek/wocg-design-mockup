@@ -1,10 +1,26 @@
 // Opens design-audit.html headless: reports page errors, missing assets, empty cards, and every red row; one screenshot per section.
+// It also reads the guide's own words: the rows measure the code, but a card's rule text, a note, a plain lead or a
+// reference row can keep a retired name or value and still pass green. Every source line is read for one, and the
+// findings print under "prose". A line that has to keep a retired term carries the marker lint-keep.
 // Usage: node design-guide-parts/check-page.js [file]   (default design-audit.html)
 const path = require('path'), http = require('http'), fs = require('fs');
 const pw = require('/Users/holgersindbaek/.npm/_npx/705bc6b22212b352/node_modules/playwright');
 const DIR = path.resolve(__dirname, '..'); const file = process.argv[2] || 'design-audit.html';
 const mime = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.woff2': 'font/woff2', '.png': 'image/png', '.svg': 'image/svg+xml', '.jpg': 'image/jpeg', '.webp': 'image/webp', '.gif': 'image/gif' };
 const srv = http.createServer((q, r) => { const p = path.join(DIR, decodeURIComponent(q.url.split('?')[0])); fs.readFile(p, (e, d) => { if (e) { r.writeHead(404); r.end(); return; } r.writeHead(200, { 'Content-Type': mime[path.extname(p)] || 'application/octet-stream' }); r.end(d); }); });
+const RETIRED = ['#8a857c', '#d9d2c4', '#dad2c4', '--ink-soft', '--faint', '--muted', '--hairline', '--rule', '--edge', '--wm-paper', '--wm-ring',
+  '--wm-accent', '--panelline', '--wm-leather', '--wm-kill-soft', '--line-overlay', '--lift-btn', 'font-weight: 900', '12px 900', 'corner notice',
+  'green focus', 'segmented control', 'chooser', 'tick chip', 'soft ink', 'dark tray', 'quiet brown', 'tray button', 'hairline'];
+function proseLint() {
+  const files = fs.readdirSync(__dirname).filter(f => /^\d\d-.*\.html$|^head\.html$|^(plain|ref-spec|build-pieces)\.js$/.test(f)).sort();
+  const out = [];
+  for (const f of files) fs.readFileSync(path.join(__dirname, f), 'utf8').split('\n').forEach((ln, i) => {
+    if (ln.includes('lint-keep')) return;
+    const low = ln.toLowerCase(), hits = RETIRED.filter(t => low.includes(t));
+    for (const t of hits) if (!hits.some(u => u !== t && u.includes(t))) out.push({ file: f, line: i + 1, term: t });
+  });
+  return out;
+}
 (async () => {
   await new Promise(res => srv.listen(0, '127.0.0.1', res)); const port = srv.address().port; let b;
   try {
@@ -42,6 +58,6 @@ const srv = http.createServer((q, r) => { const p = path.join(DIR, decodeURIComp
     }
     await p.setViewportSize({ width: 1300, height: 900 }); await p.evaluate(() => window.scrollTo(0, 0));
     await p.screenshot({ path: '/tmp/wocg-lab-check/design-audit.png', fullPage: true });
-    console.log(JSON.stringify({ file, errors: errs, consoleErrors: cons, missingAssets: missing, ...rep }, null, 1));
+    console.log(JSON.stringify({ file, errors: errs, consoleErrors: cons, missingAssets: missing, prose: proseLint(), ...rep }, null, 1));
   } finally { if (b) await b.close(); srv.close(); }
 })();

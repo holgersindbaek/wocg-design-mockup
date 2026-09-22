@@ -8,7 +8,7 @@
      fixed columns so two can stand side by side; it never writes on a piece. */
   #space .rw { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 12px; padding: 12px; background: #f9f6f2; }
   #space .rw.plain { display: block; }
-  #space .cap { font-size: 12px; color: #8a857c; margin: 0 0 4px; }
+  #space .cap { font-size: 12px; color: var(--ink-quiet); margin: 0 0 4px; }
   #space .pf { overflow: hidden; box-shadow: inset 0 0 0 1px #d2cfca; background: #fff; }
   #space .pf iframe { border: 0; display: block; transform-origin: top left; }
   #space .frames { display: flex; flex-wrap: wrap; gap: 12px; padding: 12px; background: #f9f6f2; }
@@ -484,7 +484,7 @@
         { what: 'a settings row with a line, content box', got: Lab.cs(q('.wmRow.tworow'), 'height'), want: '40px' },
         { what: 'the same row, with its padding and line', got: oh('.wmRow.tworow'), want: '65px' }
       ]);
-      Lab.note(card, 'A settings row is content box, so its hairline sits outside the height: 40 of content, 12 above, 12 below and the 1px line is 65. A directory row is the same shape, 40 of cell with its line outside, so the box measures 41.');
+      Lab.note(card, 'A settings row is content box, so its soft line sits outside the height: 40 of content, 12 above, 12 below and the 1px line is 65. A directory row is the same shape, 40 of cell with its line outside, so the box measures 41.');
     })();</script>
   </div></div>
 
@@ -494,7 +494,7 @@
 
   <div class="card"><div class="body">
     <h3>Control heights: 32 <span class="tag built">built</span></h3>
-    <p class="rule-text">32 is a big button, a field, the lobby .button (the one 32px control at 20px bold), the catalog’s Play, the live capsule, a panel’s head strip and a compact table row.</p>
+    <p class="rule-text">32 is a big button, the lobby .button (the one 32px control at 20px bold), the catalog’s Play, the live capsule, a panel’s head strip and a compact table row. A field is 34, the 32 plus the 2px its ring takes, and the search field in a table head is 26.</p>
     <div class="demo"><div class="rw">
       <div class="site wm" style="width:250px">
         <div class="wmModal wmOpen modalInstant" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
@@ -558,7 +558,7 @@
 
   <div class="card"><div class="body">
     <h3>Control heights: 28 and 24 <span class="tag built">built</span></h3>
-    <p class="rule-text">28 is a tray (2px of padding around a 24px cell), a settings row’s content box and a menu row. 24 is a small button, a tray cell, a chip, the yellow verbs and the games bar’s cells.</p>
+    <p class="rule-text">28 is a tray (2px of padding around a 24px cell), a settings row’s content box and a menu row. 24 is a small button, a tray cell, a chip, the yellow buttons and the games bar’s cells.</p>
     <div class="demo"><div class="rw">
       <div class="site wm" style="width:250px">
         <div class="wmModal wmOpen modalInstant wmGameOptions" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
@@ -650,12 +650,12 @@
         { what: '.wmSeg .wmCell', got: oh('.wmCell'), want: '24px' },
         { what: '.wmChip', got: oh('.wmChip'), want: '24px' },
         { what: '.heroPlay', got: oh('.heroPlay'), want: '24px' },
-        { what: '.cbtn .button, a felt verb', got: oh('.cbtn .button'), want: '24px' },
+        { what: '.cbtn .button, a yellow button on the felt', got: oh('.cbtn .button'), want: '24px' },
         { what: '.track > .s, a games bar cell', got: oh('.track > .s'), want: '24px' },
         { what: '.player-search-input, 24 plus its ring', got: oh('.player-search-input'), want: '26px' },
         { what: '--size-tray and --size-small', got: Lab.token(q('.wmModal'), '--size-tray') + ' / ' + Lab.token(q('.wmModal'), '--size-small'), want: '28px / 24px' }
       ]);
-      Lab.note(card, 'A menu row is 24 of line with 2px above and below. The felt verb is hidden until the tile is hovered, so the lab gives it the opacity the hover gives it; the tile’s own verb and the leaderboard’s search field are the same 24px control 7.3 names.');
+      Lab.note(card, 'A menu row is 24 of line with 2px above and below. The yellow button is hidden until the tile is hovered, so the lab gives it the opacity the hover gives it; the tile’s own button and the leaderboard’s search field are the same 24px control 7.3 names.');
     })();</script>
   </div></div>
 
@@ -742,7 +742,7 @@
         ['max-width: 619px', 'table grids and the lobby cards go to one column'],
         ['max-width: 560px', 'the user name is dropped and every modal becomes a bottom sheet'],
         ['max-width: 520px', 'the catalog and about grids go to one column, and the gutter is 16'],
-        ['hover: none', 'tile verbs start visible and the seam explainer is hidden'],
+        ['hover: none', 'tile buttons start visible and the seam explainer is hidden'],
         ['prefers-reduced-motion: reduce', 'arrivals and sweeps drop, waiting states stay']
       ];
       Lab.table(card, qs.map(function (x) {
