@@ -148,7 +148,7 @@
       }
       return d.replace(/^.*\//, '').replace(/\?.*$/, '');
     },
-    // a tray's thumb and the white copy of its words, built and placed the way ModalShell.placeTrayThumb does it:
+    // a tray's thumb and the white copy of its words, built and placed (to the fraction) the way ModalShell.placeTrayThumb does it:
     // the thumb goes in first, the copy of the cells last, and the copy is clipped to the thumb's box. The pick is a
     // class on a cell, which is all the site's own handlers set; a click moves it, and the thumb travels.
     seg: function (node, cls) {
@@ -173,9 +173,14 @@
           thumb.style.opacity = '0'; ink.style.clipPath = 'inset(0 100% 0 0)';
           thumb.classList.add(c.still); ink.classList.add(c.still); return;
         }
-        var left = cell.offsetLeft, top = cell.offsetTop, w = cell.offsetWidth, h = cell.offsetHeight;
+        // to the fraction, as the site measures it: offsetLeft and offsetWidth round, which left the thumb 1px short
+        // of the track's end on a last cell. The scale divides out any transform the tray is drawn under.
+        var tb = node.getBoundingClientRect(), cb = cell.getBoundingClientRect(), scale = tb.width / node.offsetWidth || 1;
+        var tw = tb.width / scale, th = tb.height / scale;
+        var left = (cb.left - tb.left) / scale - node.clientLeft, top = (cb.top - tb.top) / scale - node.clientTop;
+        var w = cb.width / scale, h = cb.height / scale;
         thumb.style.left = left + 'px'; thumb.style.top = top + 'px'; thumb.style.width = w + 'px'; thumb.style.height = h + 'px'; thumb.style.opacity = '1';
-        ink.style.clipPath = 'inset(' + top + 'px ' + (node.offsetWidth - left - w) + 'px ' + (node.offsetHeight - top - h) + 'px ' + left + 'px)';
+        ink.style.clipPath = 'inset(' + top + 'px ' + (tw - left - w) + 'px ' + (th - top - h) + 'px ' + left + 'px)';
         if (thumb.classList.contains(c.still)) { void thumb.offsetWidth; thumb.classList.remove(c.still); ink.classList.remove(c.still); }
       }
       node.addEventListener('click', function (e) {

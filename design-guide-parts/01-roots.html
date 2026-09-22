@@ -107,6 +107,19 @@
         add('--plate-blue-ink', '#1971c2');
         add('--color-table-edge', '#393939');
         add('--radius', sq ? '12px' : '6px');
+        // the tray's pair is a calc() of other tokens, which a custom property hands back unworked, so it is read
+        // off a probe's corner
+        function corner(el, name) {
+          var p = document.createElement('span');
+          p.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden;border-top-left-radius:var(' + name + ')';
+          el.appendChild(p);
+          var v = Lab.cs(p, 'border-top-left-radius');
+          p.parentNode.removeChild(p);
+          return v;
+        }
+        add('--space-tray', '2px');
+        add('--radius-tray', sq ? '14px' : '8px', corner);
+        add('--radius-tray-cell', sq ? '10.5px' : '6px', corner);
         add('--lift', {
           'body.wm': '0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09)',
           'body.fp': '0 1px 2px rgba(60,45,25,.04), 0 2px 6px rgba(60,45,25,.06)',

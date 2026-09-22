@@ -74,7 +74,7 @@ const PIECES = [
   ['Lists and tables', 'The table in a dialog', '09-tables.html', 'The stats table in a modal',
     'A stats table in a dialog, with your own row in bold.'],
   ['Lists and tables', 'A settings row', '09-tables.html', 'Settings rows',
-    'A row with its title, a line of explanation and its control at the right.'],
+    'A row with its title, a line of explanation and its control at the right. When the words need the room, the control moves to the line under them and stays at the right, as the narrow box shows.'],
   ['Lists and tables', 'A row with a person', '09-tables.html', 'People rows',
     'The row the invite, profile and table lists are built from.'],
   ['Lists and tables', 'A table on a page', '09-tables.html', 'The page table',

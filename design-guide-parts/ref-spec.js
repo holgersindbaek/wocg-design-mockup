@@ -67,9 +67,10 @@ window.Spec = {
   ],
 
   shape: [
-    { group: 'Corners', note: 'Every corner is a squircle, not an arc, except the three noted. Two sizes, round, and none.', kind: 'corner', items: [
+    { group: 'Corners', note: 'Every corner is a squircle, not an arc, except the three noted. Two sizes, the tray’s pair, round, and none.', kind: 'corner', items: [
       { value: '20px', name: '20', use: 'Every box: a modal box, a game tile, a table tile, a leaderboard card, a dropdown panel, a picture, a reading page box and the notices' },
-      { value: '12px', name: '12', use: 'Every control and everything inside a box: a button, field, tray, tray cell, checkbox, thumb, the tooltip, and the white card in a modal' },
+      { value: '12px', name: '12', use: 'Every control and everything inside a box: a button, field, checkbox, the tooltip, and the white card in a modal' },
+      { value: '14px', cell: '10.5px', name: 'Tray', use: 'Every tray and the games bar. The track is 14 and its cells and thumb are 10.5, so the 2px gap between them holds round the corner as it does along a side. Where the browser draws no squircle the pair is 8 and 6' },
       { value: '999px', round: true, name: 'Round', use: 'Dots, badges, the live capsule, and anything so small that half its height is the corner: a chip at 8, the waiting bar at 6, the award strip at 4' },
       { value: '0', name: 'None', use: 'The ad rail, and any band that runs the full width' }
     ] },
@@ -94,7 +95,7 @@ window.Spec = {
       { value: '6px', use: 'Inside a chip, between the social marks' },
       { value: '8px', use: 'Where two hard edges meet' },
       { value: '10px', use: 'A sub-head to its text' },
-      { value: '12px', use: 'Inside a box, and inside a card' },
+      { value: '12px', use: 'Inside a box, inside a card, and a settings row’s words to a control that drops under them' },
       { value: '16px', use: 'Every grid on the page' },
       { value: '18px', use: 'Between the menu links' },
       { value: '24px', use: 'The page gutter, a settings row to its control, the footer columns' },
@@ -104,10 +105,10 @@ window.Spec = {
     ] },
     { group: 'Heights', note: 'How tall a row or a control is.', kind: 'height', items: [
       { value: '56px', use: 'The menu bar' },
-      { value: '40px', use: 'A leaderboard row, a table row, a settings row with two lines' },
+      { value: '40px', use: 'A leaderboard row, a table row, the least a settings row with two lines stands' },
       { value: '34px', use: 'A field: the button\u2019s 32 plus the 2px its ring takes' },
       { value: '32px', use: 'A button, the live capsule, a panel head strip, a compact table row' },
-      { value: '28px', use: 'A tray track, a settings row, a menu row' },
+      { value: '28px', use: 'A tray track, the least a settings row stands, a menu row' },
       { value: '26px', use: 'The search field in a table head: the small control\u2019s 24 plus the 2px its ring takes' },
       { value: '24px', use: 'A small button, a tray cell, a checkbox, the yellow button' },
       { value: '20px', use: 'A badge at a seat' },

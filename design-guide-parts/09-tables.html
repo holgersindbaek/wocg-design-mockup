@@ -143,7 +143,7 @@
 
   <div class="card"><div class="body">
     <h3>Settings rows <span class="tag built">built</span></h3>
-    <p class="rule-text">A settings row's content box is 28px, or 40 with a second line, at 12px 0 of padding, with the soft line under each but the last, a 16px bold title over a 16 / 20 line (.wmRowLine, --ink-label), and the control at the right 24px away, so the row measures 53 or 65.</p>
+    <p class="rule-text">A settings row's content box is at least 28px, or 40 with a second line, at 12px 0 of padding, with the soft line under each but the last, a 16px bold title over a 16 / 20 line (.wmRowLine, --ink-label), and the control at the right 24px away, so a row whose words fit on their lines measures 53 or 65. The 28 and 40 are floors: the row grows with its words. The words ask for 168px, or their own width when that is less. When they would have less than that beside the control, the control takes the line under them, 12px down and still at the right. On a phone a three-cell tray beside a line of words drops, a short title keeps its tray beside it, and Off / On stays beside.</p>
     <div class="demo">
       <div class="site wm" data-demo>
         <div class="wmModal wmWide wmSettings wmOpen modalInstant" role="dialog" style="position:static;display:block;opacity:1">
@@ -171,23 +171,58 @@
         </div>
       </div>
     </div>
+    <div class="demo">
+      <div class="site wm" data-narrow>
+        <div class="wmModal wmWide wmSettings wmOpen modalInstant" role="dialog" style="position:static;display:block;opacity:1">
+          <div class="wmScrim" style="position:static;height:0"></div>
+          <div class="wmPanel" style="position:static;transform:none;width:366px;max-height:none;margin:0 auto">
+            <div class="wmBox">
+              <div class="wmBody">
+                <div class="wmCard">
+                  <div class="wmRow">
+                    <span class="wmRowLab"><span class="wmRowTitle">Alert sounds</span><span class="wmRowLine">All adds players coming and going, and the music.</span></span>
+                    <span class="wmRowCtl"><span class="wmTray" role="radiogroup"><span class="wmCell" role="radio" tabindex="0" aria-checked="false">Off</span><span class="wmCell" role="radio" tabindex="0" aria-checked="false">Your turn</span><span class="wmCell wmPicked" role="radio" tabindex="0" aria-checked="true">All</span></span></span>
+                  </div>
+                  <div class="wmRow">
+                    <span class="wmRowLab"><span class="wmRowTitle">Animations</span></span>
+                    <span class="wmRowCtl"><span class="wmTray" role="radiogroup"><span class="wmCell" role="radio" tabindex="0" aria-checked="false">Off</span><span class="wmCell" role="radio" tabindex="0" aria-checked="false">Scores only</span><span class="wmCell wmPicked" role="radio" tabindex="0" aria-checked="true">All</span></span></span>
+                  </div>
+                  <div class="wmRow">
+                    <span class="wmRowLab"><span class="wmRowTitle">Game hints</span><span class="wmRowLine">Shows a good card when your time runs low.</span></span>
+                    <span class="wmRowCtl"><span class="wmTray" role="radiogroup"><span class="wmCell" role="radio" tabindex="0" aria-checked="false">Off</span><span class="wmCell wmPicked" role="radio" tabindex="0" aria-checked="true">On</span></span></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <script>(function () {
       var card = document.currentScript.closest('.card');
       var root = card.querySelector('[data-demo]');
       var cs = Lab.cs;
-      root.querySelectorAll('.wmTray').forEach(function (seg) { Lab.seg(seg); });
+      card.querySelectorAll('.wmTray').forEach(function (seg) { Lab.seg(seg); });
       var plain = root.querySelectorAll('.wmRow')[0];
       var lined = root.querySelectorAll('.wmRow')[1];
       var opens = root.querySelector('.wmRow.wmOpens');
+      var lab = plain.querySelector('.wmRowLab'), ctl = plain.querySelector('.wmRowCtl');
       Lab.table(card, [
         { what: '.wmRow box-sizing', got: cs(plain, 'box-sizing'), want: 'content-box' },
-        { what: '.wmRow height', got: cs(plain, 'height'), want: '28px' },
+        { what: '.wmRow min-height, the floor', got: cs(plain, 'min-height'), want: '28px' },
+        { what: '.wmRow height, one line of words', got: cs(plain, 'height'), want: '28px' },
         { what: '.wmRow padding', got: cs(plain, 'padding'), want: '12px 0' },
-        { what: '.wmRow gap', got: cs(plain, 'gap'), want: '24px' },
+        { what: '.wmRow gap, row and column', got: cs(plain, 'gap'), want: '12px 24px' },
+        { what: '.wmRow flex-wrap', got: cs(plain, 'flex-wrap'), want: 'wrap' },
         { what: '.wmRow line', got: cs(plain, 'border-bottom'), want: '1px solid #ebe7de' },
         { what: 'the row, measured', got: plain.offsetHeight + 'px', want: '53px' },
+        { what: 'with a second line, min-height', got: cs(lined, 'min-height'), want: '40px' },
         { what: 'with a second line, height', got: cs(lined, 'height'), want: '40px' },
         { what: 'with a second line, measured', got: lined.offsetHeight + 'px', want: '65px' },
+        { what: '.wmRowLab flex', got: cs(lab, 'flex-grow') + ' ' + cs(lab, 'flex-shrink') + ' ' + cs(lab, 'flex-basis'), want: '1 1 168px' },
+        { what: '.wmRowLab max-width', got: cs(lab, 'max-width'), want: 'max-content' },
+        { what: '.wmRow > .wmRowCtl shrink, wrap, justify', got: cs(ctl, 'flex-shrink') + ' ' + cs(ctl, 'flex-wrap') + ' ' + cs(ctl, 'justify-content'), want: '1 wrap flex-end' },
+        { what: '.wmRow > .wmRowCtl margin-left', got: Lab.rule('.site .wmModal .wmRow > .wmRowCtl', 'margin-left', plain), want: 'auto', tag: 'rule' },
         { what: 'the last row', got: cs(opens, 'border-bottom-width'), want: '0' },
         { what: '.wmRowTitle', got: cs(plain.querySelector('.wmRowTitle'), 'font-weight') + ' ' + cs(plain.querySelector('.wmRowTitle'), 'font-size') + ' / ' + cs(plain.querySelector('.wmRowTitle'), 'line-height'), want: '700 16px / 20px' },
         { what: '.wmRowTitle colour', got: cs(plain.querySelector('.wmRowTitle'), 'color'), want: '#141414' },
@@ -198,6 +233,21 @@
         { what: 'a row that opens, cursor', got: cs(opens, 'cursor'), want: 'pointer' }
       ]);
       Lab.note(card, "The second line, .wmRowLine, is 16 / 20 in --ink-label, and a row with one measures 65 where one without it measures 53. The tray's thumb and its white words are drawn here the way ModalShell.placeTrayThumb draws them, since no script runs in the lab.");
+      /* where a row's control stands against its words: beside them, or on the line under them, and how far in from the right */
+      var place = function (row) {
+        var l = row.querySelector('.wmRowLab').getBoundingClientRect(), c = row.querySelector('.wmRowCtl').getBoundingClientRect(), r = row.getBoundingClientRect();
+        return (c.top >= l.bottom - 0.5 ? 'under, ' + Math.round(c.top - l.bottom) + 'px down' : 'beside') + ', ' + Math.round(r.right - c.right) + 'px from the right';
+      };
+      function narrow() {
+        var rows = card.querySelectorAll('[data-narrow] .wmRow');
+        Lab.table(card, [
+          { what: 'a three-cell tray beside a line of words', got: place(rows[0]), want: 'under, 12px down, 0px from the right' },
+          { what: 'a short title with a three-cell tray', got: place(rows[1]), want: 'beside, 0px from the right' },
+          { what: 'Off / On beside a line of words', got: place(rows[2]), want: 'beside, 0px from the right' }
+        ], 'At a phone’s width');
+        Lab.note(card, 'The second demo is the settings box at 366px, a 390 phone less the 12px the box keeps from each side, with rows of the Game page. It is measured once the fonts are in, since where a line breaks is what decides where the control goes.');
+      }
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(narrow); else narrow();
     })();</script>
   </div></div>
 

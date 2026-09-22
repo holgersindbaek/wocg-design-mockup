@@ -83,9 +83,20 @@
       return b;
     },
     corner: function (item) {
-      var b = el('i', 'sw corner');
+      var b = el('i', 'sw corner' + (item.cell ? ' tray' : ''));
       b.style.borderRadius = item.value;
       b.style.cornerShape = item.round ? 'round' : 'squircle';
+      // the tray's pair: a track with a thumb standing 2px in, so the two corners are seen together
+      if (item.cell) {
+        b.style.background = colourOf(item, '--plate-tray');
+        b.style.boxShadow = 'inset 0 0 0 1px ' + colourOf(item, '--line-tray');
+        var t = el('i');
+        t.style.borderRadius = item.cell;
+        t.style.cornerShape = 'squircle';
+        t.style.background = colourOf(item, '--btn-green');
+        t.style.boxShadow = 'inset 0 0 0 1px ' + colourOf(item, '--btn-green-ring');
+        b.appendChild(t);
+      }
       return b;
     },
     line: function (item) {
@@ -138,6 +149,7 @@
     }
     if (kind === 'face') return item.weights;
     if (kind === 'size') return item.size + ' / ' + item.line + (item.weight === 700 ? ' bold' : '');
+    if (kind === 'corner' && item.cell) return 'track ' + item.value + ', cells and thumb ' + item.cell;
     if (kind === 'corner' || kind === 'gap' || kind === 'height' || kind === 'width') return item.value;
     if (kind === 'line') return { inset: 'inset 0 0 0 1px --line', border: '1px solid --line',
       outside: '0 0 0 1px rgba(0,0,0,.30)', focus: 'inset 0 0 0 1px --ink-mark',

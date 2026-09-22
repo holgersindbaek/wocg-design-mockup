@@ -90,11 +90,11 @@ window.Plain = {
   },
   "The radius ladder, the tray": {
    "title": "Corners: the tray round",
-   "lead": "A tray holding cells takes the same corner as the cells."
+   "lead": "A tray's track is a little rounder than the cells and the thumb inside it, so the gap between them stays the same all the way round the corner. Look at the corners of the green thumb at either end."
   },
   "The radius ladder, the 12 rung: the controls": {
    "title": "Corners: the control round",
-   "lead": "Every button, field, tray cell, checkbox and tooltip takes the same corner. Look at whether they read as one family."
+   "lead": "Every button, field, checkbox and tooltip takes the same corner. Look at whether they read as one family."
   },
   "The radius ladder, the 12 rung: the literals": {
    "title": "Corners: the ones written by hand",
@@ -328,7 +328,7 @@ window.Plain = {
   },
   "Settings rows": {
    "title": "A settings row",
-   "lead": "A row with its title, a line of explanation and its control at the right."
+   "lead": "A row with its title, a line of explanation and its control at the right. When the words need the room, the control moves to the line under them and stays at the right, as the narrow box shows."
   },
   "People rows": {
    "title": "A row with a person in it",

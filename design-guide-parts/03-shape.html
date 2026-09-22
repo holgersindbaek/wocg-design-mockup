@@ -1,7 +1,7 @@
 <section class="sec" id="shape">
 <h2>3 Shape, lines and lift</h2>
 <div class="rule"></div>
-<p class="desc">Guide 5.1 the radius ladder, 5.2 rings and borders, 5.3 lift. Every piece is the site's own markup under the site's own CSS, so the numbers are what a visitor gets. This browser draws squircles: <b class="cssup">checking</b>. Every modal here carries modalInstant, the site’s own class for a box that opens without its entrance, since that animation fills both ways and would otherwise hold the panel’s centring transform. Without that support the whole ladder reads 6px wherever the token is read, and only the literal twelves stay 12. Chrome prints the two keywords as numbers, so <b>squircle</b> measures superellipse(2) and <b>round</b> measures superellipse(1). Where a piece from the about zone stands beside another piece, its column is clipped: that zone paints a band the width of the window, and in a lab well it would paint over its neighbour.</p>
+<p class="desc">Guide 5.1 the radius ladder, 5.2 rings and borders, 5.3 lift. Every piece is the site's own markup under the site's own CSS, so the numbers are what a visitor gets. This browser draws squircles: <b class="cssup">checking</b>. Every modal here carries modalInstant, the site’s own class for a box that opens without its entrance, since that animation fills both ways and would otherwise hold the panel’s centring transform. Without that support the whole ladder reads 6px wherever the token is read, a tray's track reads 8 round its 6px cells, and only the literal twelves stay 12. Chrome prints the two keywords as numbers, so <b>squircle</b> measures superellipse(2) and <b>round</b> measures superellipse(1). Where a piece from the about zone stands beside another piece, its column is clipped: that zone paints a band the width of the window, and in a lab well it would paint over its neighbour.</p>
 
 <style>
   /* The lab's own layout for this section only. It never touches a piece: it lays the pieces out
@@ -228,7 +228,7 @@
 
   <div class="card"><div class="body">
     <h3>The radius ladder, the tray <span class="tag built">built</span></h3>
-    <p class="rule-text">The games bar's track, its overflow list and the modal's tray all read --radius: the control rung, 12, with 2px of padding around the cells. The two trays cannot be told apart.</p>
+    <p class="rule-text">Every tray takes the tray rung, a pair cut to the 2px gap between the track and its cells. The track reads --radius-tray, 14: the control's 12 plus the gap. The cells and the thumb read --radius-tray-cell, 10.5: the track less 1.75 times the gap, because a squircle turns later than an arc. So the gap holds at 2px round the corner as it does along a side. Where corner-shape is unsupported the pair is 8 round 6. A hover at either end of the games bar fills to the midpoint of the pair, 12.25. The games bar's overflow list is a dropdown, not a track, and keeps the control's 12. The games bar and the modal's tray cannot be told apart.</p>
     <div class="demo"><div class="rw tall">
       <div class="site fp wm" style="width:380px">
         <div class="lobbyscope" style="padding:0">
@@ -259,12 +259,27 @@
         thumb.style.left = cell.offsetLeft + 'px'; thumb.style.top = cell.offsetTop + 'px';
         thumb.style.width = cell.offsetWidth + 'px'; thumb.style.height = cell.offsetHeight + 'px'; thumb.style.opacity = '1';
       }());
+      /* a token that is a calc() of other tokens reads back unworked, so a probe is given it and its corner is read */
+      var px = function (expr) {
+        var p = document.createElement('span');
+        p.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden';
+        p.style.borderTopLeftRadius = expr;
+        q('.otFilter').appendChild(p);
+        var v = getComputedStyle(p).borderTopLeftRadius;
+        p.parentNode.removeChild(p);
+        return v;
+      };
+      var track = q('.track');
       Lab.table(card, [
-        { what: '.otFilter .track radius', got: Lab.cs(q('.track'), 'border-radius'), want: '12px' },
+        { what: '.otFilter .track radius', got: Lab.cs(track, 'border-radius'), want: '14px' },
+        { what: 'a cell inside, .track > .s', got: Lab.cs(q('.track > .s'), 'border-radius'), want: '10.5px' },
+        { what: 'the thumb', got: Lab.cs(q('.track .thumb'), 'border-radius'), want: '10.5px' },
+        { what: '--radius-tray / --radius-tray-cell', got: px('var(--radius-tray)') + ' / ' + px('var(--radius-tray-cell)'), want: '14px / 10.5px' },
+        { what: '--space-tray, the gap they are cut to', got: Lab.token(q('.otFilter'), '--space-tray'), want: '2px' },
+        { what: 'the hover at either end', got: px(Lab.rule('.site.fp .otFilter .track:not(.tcopy) > .s:first-child:not(.on):hover::after', '--wm-bar-end', track)), want: '12.25px', tag: 'rule' },
         { what: '.ovlist radius', got: Lab.cs(q('.ovlist'), 'border-radius'), want: '12px' },
         { what: '--radius, the control rung', got: Lab.token(q('.otFilter'), '--radius'), want: '12px' },
-        { what: 'a cell inside, .track > .s', got: Lab.cs(q('.track > .s'), 'border-radius'), want: '12px' },
-        { what: '.track corner-shape', got: Lab.cs(q('.track'), 'corner-shape'), want: 'superellipse(2)' }
+        { what: '.track corner-shape', got: Lab.cs(track, 'corner-shape'), want: 'superellipse(2)' }
       ]);
       Lab.note(card, 'The bar is the markup wocg.GameBar writes into its empty host. The overflow list carries .open so it is drawn, which is what a hover does on the page. The bar also carries isIn and isShown, the classes the script adds once its cells are built and revealed: without them the frontpage holds every cell at opacity 0.');
     })();</script>
@@ -272,7 +287,7 @@
 
   <div class="card"><div class="body">
     <h3>The radius ladder, the 12 rung: the controls <span class="tag built">built</span></h3>
-    <p class="rule-text">Control: 12px, and 6px where corner-shape is unsupported, on every button, field, tray cell, thumb, the tooltip and the name plate. They all read --radius, the checkbox's box too.</p>
+    <p class="rule-text">Control: 12px, and 6px where corner-shape is unsupported, on every button, field, the tooltip and the name plate. They all read --radius, the checkbox's box too. A tray's cells and its thumb are not on this rung: they take the tray's own 10.5 (the card above).</p>
     <div class="demo"><div class="rw">
       <div class="site wm" style="width:250px">
         <div class="wmModal wmOpen modalInstant wmGameOptions" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
@@ -321,13 +336,13 @@
       var pieces = [
         ['.wmBtn', q('.wmBtn')],
         ['.wmFld input', q('.wmFld input')],
-        ['.wmTray .wmCell', q('.wmCell')],
+        ['.wmTray .wmCell, on the tray rung', q('.wmCell'), '10.5px'],
         ['.wmCheck i, the checkbox', q('.wmCheck i')],
         ['#wtip .wtipBox', q('.wtipBox')],
         ['.playerNameContainer', q('.playerNameContainer')]
       ];
       var rows = pieces.map(function (p) {
-        return { what: p[0] + ' radius', got: Lab.cs(p[1], 'border-radius'), want: '12px' };
+        return { what: p[0] + ' radius', got: Lab.cs(p[1], 'border-radius'), want: p[2] || '12px' };
       });
       rows.push({ what: '--radius on the modal', got: Lab.token(q('.wmModal'), '--radius'), want: '12px' });
       rows.push({ what: '--radius on the frontpage', got: Lab.token(q('.site.fp'), '--radius'), want: '12px' });

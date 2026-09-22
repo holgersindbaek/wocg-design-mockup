@@ -35,14 +35,17 @@ window.MO = (function () {
       ink.classList.add(c.still);
       return;
     }
-    var left = picked.offsetLeft, top = picked.offsetTop, w = picked.offsetWidth, h = picked.offsetHeight;
+    /* to the fraction, as placeTrayThumb measures it: offsetLeft and offsetWidth round */
+    var tb = seg.getBoundingClientRect(), pb = picked.getBoundingClientRect(), scale = tb.width / seg.offsetWidth || 1;
+    var left = (pb.left - tb.left) / scale - seg.clientLeft, top = (pb.top - tb.top) / scale - seg.clientTop;
+    var w = pb.width / scale, h = pb.height / scale;
     thumb.style.left = left + 'px';
     thumb.style.top = top + 'px';
     thumb.style.width = w + 'px';
     thumb.style.height = h + 'px';
     thumb.style.opacity = '1';
-    ink.style.clipPath = 'inset(' + top + 'px ' + (seg.offsetWidth - left - w) + 'px ' +
-      (seg.offsetHeight - top - h) + 'px ' + left + 'px)';
+    ink.style.clipPath = 'inset(' + top + 'px ' + (tb.width / scale - left - w) + 'px ' +
+      (tb.height / scale - top - h) + 'px ' + left + 'px)';
     if (thumb.classList.contains(c.still)) {
       void thumb.offsetWidth;
       thumb.classList.remove(c.still);

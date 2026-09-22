@@ -164,7 +164,7 @@
 
   <div class="card"><div class="body">
     <h3>The rhythm: 12, 16 and 18 <span class="tag built">built</span></h3>
-    <p class="rule-text">12 is inside a box, between pieces and inside a card. 16 is every grid gap on the page. 18 is the gap between the menubar’s links, and a modal section title’s box to the card above it.</p>
+    <p class="rule-text">12 is inside a box, between pieces and inside a card, and it is a settings row’s words to a control that drops under them. 16 is every grid gap on the page. 18 is the gap between the menubar’s links, and a modal section title’s box to the card above it.</p>
     <div class="demo"><div class="rw plain">
       <div class="site wm">
         <nav id="menuBarContainer" class="mbcenter" aria-label="Main navigation">
@@ -412,7 +412,7 @@
 
   <div class="card"><div class="body">
     <h3>Control heights: 56 and 40 <span class="tag built">built</span></h3>
-    <p class="rule-text">56 is the menubar, its links and its user cluster. 40 is a leaderboard or stats row, a directory table row and a settings row’s content box when it carries a second line.</p>
+    <p class="rule-text">56 is the menubar, its links and its user cluster. 40 is a leaderboard or stats row, a directory table row and the floor of a settings row’s content box when it carries a second line.</p>
     <div class="demo"><div class="rw plain">
       <div class="site wm">
         <nav id="menuBarContainer" class="mbcenter" aria-label="Main navigation">
@@ -481,10 +481,11 @@
         { what: '#userBar > li.userAvatarContainer', got: oh('.userAvatarContainer'), want: '56px' },
         { what: '.wmMpr, a stats row', got: oh('.wmMpr'), want: '40px' },
         { what: '.rulesDirectory td, content box', got: Lab.cs(q('.rulesDirectory td'), 'height'), want: '40px' },
-        { what: 'a settings row with a line, content box', got: Lab.cs(q('.wmRow.tworow'), 'height'), want: '40px' },
+        { what: 'a settings row with a line, its floor', got: Lab.cs(q('.wmRow.tworow'), 'min-height'), want: '40px' },
+        { what: 'the same row, content box', got: Lab.cs(q('.wmRow.tworow'), 'height'), want: '40px' },
         { what: 'the same row, with its padding and line', got: oh('.wmRow.tworow'), want: '65px' }
       ]);
-      Lab.note(card, 'A settings row is content box, so its soft line sits outside the height: 40 of content, 12 above, 12 below and the 1px line is 65. A directory row is the same shape, 40 of cell with its line outside, so the box measures 41.');
+      Lab.note(card, 'A settings row is content box, so its soft line sits outside the height: 40 of content, 12 above, 12 below and the 1px line is 65. The 40 is a floor, so a row whose words run to more lines grows past it. A directory row is the same shape, 40 of cell with its line outside, so the box measures 41.');
     })();</script>
   </div></div>
 
@@ -558,7 +559,7 @@
 
   <div class="card"><div class="body">
     <h3>Control heights: 28 and 24 <span class="tag built">built</span></h3>
-    <p class="rule-text">28 is a tray (2px of padding around a 24px cell), a settings row’s content box and a menu row. 24 is a small button, a tray cell, a chip, the yellow buttons and the games bar’s cells.</p>
+    <p class="rule-text">28 is a tray (2px of padding around a 24px cell), the floor of a settings row’s content box and a menu row. 24 is a small button, a tray cell, a chip, the yellow buttons and the games bar’s cells.</p>
     <div class="demo"><div class="rw">
       <div class="site wm" style="width:250px">
         <div class="wmModal wmOpen modalInstant wmGameOptions" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
@@ -642,6 +643,7 @@
       }());
       Lab.table(card, [
         { what: '.wmTray, a tray', got: oh('.wmTray'), want: '28px' },
+        { what: '.wmRow min-height, its floor', got: Lab.cs(q('.wmRow.onerow'), 'min-height'), want: '28px' },
         { what: '.wmRow content box', got: Lab.cs(q('.wmRow.onerow'), 'height'), want: '28px' },
         { what: '.wmRow with its padding and line', got: oh('.wmRow.onerow'), want: '53px' },
         { what: '.otFilter .track', got: oh('.track'), want: '28px' },
