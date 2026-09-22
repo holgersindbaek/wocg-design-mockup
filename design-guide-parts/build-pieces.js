@@ -34,7 +34,7 @@ const PIECES = [
     'The box you type in. Click into it to see the focus ring.'],
   ['Fields and choosers', 'A field on white, and one with an error', '06-fields.html', 'The field on a white card, and a bad one',
     'On a white card the field changes its paper so it still reads. A field with a problem turns its ring red.'],
-  ['Fields and choosers', 'The small search field', '06-fields.html', 'The search field, at 24',
+  ['Fields and choosers', 'The small search field', '06-fields.html', 'The search field, at 26',
     'The smaller field that sits in a table head, on a leaderboard page.'],
   ['Fields and choosers', 'The tray', '06-fields.html', 'The tray, in a modal and on a white card',
     'Picking one option out of a few. Click a cell and the green thumb travels to it.'],

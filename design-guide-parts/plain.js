@@ -241,7 +241,7 @@ window.Plain = {
    "title": "A field on a white card, and one with an error",
    "lead": "On a white card the field changes its paper so it still reads. A field with a problem turns its ring red and says what is wrong."
   },
-  "The search field, at 24": {
+  "The search field, at 26": {
    "title": "The small search field",
    "lead": "The smaller field that sits in a table head. The one that ships is the player search on a per-game leaderboard."
   },
