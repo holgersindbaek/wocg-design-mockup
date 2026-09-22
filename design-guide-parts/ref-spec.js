@@ -11,12 +11,11 @@ window.Spec = {
       { token: '--surface', name: 'White', use: 'Cards, tiles, panels, dropdowns, fields, chips, the tooltip' },
       { value: '#327333', name: 'The felt', use: 'Behind a table: a table tile and the game table itself' }
     ] },
-    { group: 'Ink', note: 'The five darknesses text is written in, from the title down to a timestamp.', items: [
+    { group: 'Ink', note: 'The three darknesses text is written in, from the title down to a timestamp, and one tone that is not an ink at all.', items: [
       { token: '--ink', name: 'Ink', use: 'Titles, running text, names, figures, table cells' },
-      { token: '--ink-soft', name: 'Soft ink', use: 'The menu links, dropdown items, the tooltip, a long answer' },
-      { token: '--muted', name: 'Muted', use: 'The line under a title, an explainer, a table head, a tag' },
-      { token: '--muted-soft', name: 'Soft muted', use: 'An empty list, the small bullets, a presence dot when off' },
-      { token: '--faint', name: 'Faint', use: 'By-lines, timestamps, a quote attribution, the tooltip hint' }
+      { token: '--muted', name: 'Muted', use: 'The line under a title, an explainer, a tag, a placeholder' },
+      { token: '--muted-soft', name: 'Soft muted', use: 'Not an ink: the small bullets, a separator dot, the empty star\u2019s stroke' },
+      { token: '--faint', name: 'Faint', use: 'By-lines, timestamps, a quote attribution, the tooltip hint, an empty list' }
     ] },
     { group: 'Lines', note: 'A border sits between two surfaces and is darker than both. A divider sits on one surface and is that surface one step down.', items: [
       { token: '--edge', name: 'Edge', use: 'The 1px line around a card, tile, field, chip, panel or dropdown' },
@@ -29,10 +28,9 @@ window.Spec = {
     { group: 'Buttons', note: 'Each button is a fill, a ring one step darker, a hover, and its ink. Change the fill and the rest should be rebuilt from it.', kind: 'button', items: [
       { fill: '--triogreen', ring: '--triogreenring', ink: '#ffffff', outline: true, name: 'Action green', use: 'Every go-ahead button, the tray thumb, a picked chip' },
       { fill: '--trioblue', ring: '--triobluering', ink: '#ffffff', outline: true, name: 'Blue', use: 'The second solid action: Manage, and its kind' },
-      { fill: '--triolight', ring: '--triolightring', ink: '--triolightink', name: 'Light blue', use: 'A quiet action that reads like a link: See all, How to play' },
-      { fill: '--wm-tray', ring: '--wm-tray-ring', ink: '--ink', name: 'Tray', use: 'Cancel, Close, Got it: the button that does not commit you' },
+      { fill: '--wm-tray', ring: '--wm-tray-ring', ink: '--ink', root: 'modal', name: 'Quiet brown', use: 'Cancel, Close, Got it: the button that does not commit you' },
       { fill: '--wm-danger', ring: '--wm-danger-ring', ink: '#ffffff', outline: true, root: 'modal', name: 'Danger', use: 'Delete, Leave now, Cancel subscription' },
-      { fill: '--trioredlight', ring: '#e8958c', ink: '#b52626', name: 'Soft danger', use: 'Delete account, Change password: serious, not final' },
+      { fill: '--wm-tray-dark', ring: '--wm-tray-dark-ring', ink: '#ffffff', outline: true, name: 'Quiet brown, dark', use: 'The way back rather than the thing to do: the game over panel\u2019s dark button, and Back to table' },
       { fill: '#ffd43b', ring: '#f5af23', ink: '#3d2b00', name: 'Yellow verb', use: 'The table action: Play, Join, Watch, Accept' }
     ] },
     { group: 'Light plates', note: 'A pale fill with its own deep ink, used where a colour has to carry small words.', kind: 'plate', items: [
@@ -59,12 +57,11 @@ window.Spec = {
       { size: '14px', line: '20px', weight: 400, name: '14', use: 'A by-line, small print, a name plate on a tile' },
       { size: '12px', line: '16px', weight: 700, name: '12', use: 'A tag, a rating movement chip' }
     ] },
-    { group: 'Heading sizes', note: 'The display face takes five sizes, and no others.', kind: 'size', items: [
+    { group: 'Heading sizes', note: 'The display face takes four sizes, and no others: three for headings and one for prose.', kind: 'size', items: [
       { size: '38px', line: '1.15', face: 'display', weight: 500, name: '38', use: 'The hero title, and nothing else' },
       { size: '26px', line: '1.2', face: 'display', weight: 500, name: '26', use: 'A section head, and a seam title' },
-      { size: '23px', line: '30px', face: 'display', weight: 500, name: '23', use: 'The about sub-head' },
-      { size: '21px', line: '28px', face: 'display', weight: 500, name: '21', use: 'An h3 on a reading page' },
-      { size: '19px', line: '26px', face: 'display', weight: 400, name: '19', use: 'A question, a quote, the letter' }
+      { size: '21px', line: '28px', face: 'display', weight: 500, name: '21', use: 'An h3 anywhere: a reading page, the band, the about zone; the FAQ question' },
+      { size: '19px', line: '26px', face: 'display', weight: 400, name: '19', use: 'Display prose, never a heading: a quote, the letter' }
     ] }
   ],
 

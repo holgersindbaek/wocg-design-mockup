@@ -152,6 +152,17 @@
   .card:not([data-blur]) .wmScrim { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
 
   /* The system reference (design-guide.html): one row per value the design is built from. */
+  /* A use line names the pieces it draws. Where one of them is drawn in Examples the name is a
+     link, and pointing at it shows that example without leaving the row. */
+  .tkuse a.exref { color: #1971c2; text-decoration: none; border-bottom: 1px dotted currentColor; }
+  .tkuse a.exref:hover { border-bottom-style: solid; }
+
+  #expop { position: fixed; z-index: 60; display: none; max-width: 640px; padding: 9px 11px 11px;
+    background: var(--surface); border: 1px solid var(--edge); border-radius: 16px; box-shadow: var(--liftshadow-lg);
+    pointer-events: none; }
+  #expop .exhead { font: 700 12px/16px "Bulo", system-ui, sans-serif; color: var(--muted); margin: 0 0 7px; }
+  #expop .exbody { overflow: hidden; }
+
   /* The audit's own row, which the lifted line demos stand in. The fragments scope it to their own section
      id, which this page does not have, so the pieces stood in a column. The ground and the padding are the
      demo well's here, so the row sets nothing but the flow. */
@@ -226,7 +237,7 @@
     <div class="exg" data-sec="ex-fields-and-choosers"><a class="grp" href="#ex-fields-and-choosers">Fields and choosers</a>
       <div class="exl"><a class="leaf" href="#ex-fields-and-choosers-a-text-field">A text field</a><a class="leaf" href="#ex-fields-and-choosers-a-field-on-white-and-one-with-an-error">A field on white, and one with an error</a><a class="leaf" href="#ex-fields-and-choosers-the-small-search-field">The small search field</a><a class="leaf" href="#ex-fields-and-choosers-the-tray">The tray</a><a class="leaf" href="#ex-fields-and-choosers-the-settings-tabs">The settings tabs</a><a class="leaf" href="#ex-fields-and-choosers-the-games-bar">The games bar</a></div></div>
     <div class="exg" data-sec="ex-the-small-marks"><a class="grp" href="#ex-the-small-marks">The small marks</a>
-      <div class="exl"><a class="leaf" href="#ex-the-small-marks-the-tag">The tag</a><a class="leaf" href="#ex-the-small-marks-the-rating-up-and-down-chips">The rating up and down chips</a><a class="leaf" href="#ex-the-small-marks-the-tick-chip">The tick chip</a><a class="leaf" href="#ex-the-small-marks-the-presence-dots">The presence dots</a><a class="leaf" href="#ex-the-small-marks-the-player-count-on-a-tile">The player count on a tile</a><a class="leaf" href="#ex-the-small-marks-the-marks-at-a-seat">The marks at a seat</a></div></div>
+      <div class="exl"><a class="leaf" href="#ex-the-small-marks-the-tag">The tag</a><a class="leaf" href="#ex-the-small-marks-the-rating-up-and-down-chips">The rating up and down chips</a><a class="leaf" href="#ex-the-small-marks-the-checkbox">The checkbox</a><a class="leaf" href="#ex-the-small-marks-the-presence-dots">The presence dots</a><a class="leaf" href="#ex-the-small-marks-the-player-count-on-a-tile">The player count on a tile</a><a class="leaf" href="#ex-the-small-marks-the-marks-at-a-seat">The marks at a seat</a></div></div>
     <div class="exg" data-sec="ex-containers"><a class="grp" href="#ex-containers">Containers</a>
       <div class="exl"><a class="leaf" href="#ex-containers-the-white-card">The white card</a><a class="leaf" href="#ex-containers-a-game-tile">A game tile</a><a class="leaf" href="#ex-containers-a-table-tile">A table tile</a><a class="leaf" href="#ex-containers-the-other-cards">The other cards</a><a class="leaf" href="#ex-containers-the-modal-box">The modal box</a><a class="leaf" href="#ex-containers-the-panels-that-float">The panels that float</a></div></div>
     <div class="exg" data-sec="ex-lists-and-tables"><a class="grp" href="#ex-lists-and-tables">Lists and tables</a>
@@ -1629,9 +1640,9 @@ Lab.note = function () { return document.createElement("p"); };
     })();</script>
   </div></div>
 
-  <div class="card" id="ex-the-small-marks-the-tick-chip" data-ref="Examples › The small marks › The tick chip"><div class="body">
-    <h3>The tick chip</h3>
-    <p class="lead">A choice you can turn on, with its tick in a white round. Picked, it turns green.</p>
+  <div class="card" id="ex-the-small-marks-the-checkbox" data-ref="Examples › The small marks › The checkbox"><div class="body">
+    <h3>The checkbox</h3>
+    <p class="lead">A box you can tick, the height of a small button, with its number after it. Picked, it turns green and shows the tick.</p>
     <div class="demo scrim"><div class="site wm" data-demo="modal">
       <div class="wmModal wmGameOptions wmOpen modalInstant" role="dialog" style="position:static;display:block;opacity:1">
         <div class="wmScrim" style="position:static;height:0"></div>
@@ -1675,27 +1686,28 @@ Lab.note = function () { return document.createElement("p"); };
       Lab.table(card, [
         { what: "modal .wmChip height", got: Lab.cs(chip, "height"), want: "24px" },
         { what: "modal .wmChip font", got: Lab.font(chip), want: "700 16px/24px" },
-        { what: "modal .wmChip padding", got: Lab.cs(chip, "padding"), want: "0 10px 0 8px" },
-        { what: "modal .wmChip gap", got: Lab.cs(chip, "gap"), want: "6px" },
-        { what: "modal .wmChip border-radius", got: Lab.cs(chip, "border-radius"), want: "12px" },
-        { what: "modal .wmChip paper", got: Lab.cs(chip, "background-color"), want: "#f4eee5" },
-        { what: "modal .wmChip ring", got: Lab.cs(chip, "box-shadow"), want: "inset 0 0 0 1px #d9d2c4" },
+        { what: "modal .wmChip padding", got: Lab.cs(chip, "padding"), want: "0px" },
+        { what: "modal .wmChip gap, the word after its box", got: Lab.cs(chip, "gap"), want: "8px" },
+        { what: "modal .wmChip paper, none", got: Lab.cs(chip, "background-color"), want: "rgba(0, 0, 0, 0)" },
         { what: "modal .wmChip ink", got: Lab.cs(chip, "color"), want: "#141414" },
-        { what: "modal .wmChip i", got: Lab.cs(hold, "width") + " " + Lab.cs(hold, "height") + " " + Lab.cs(hold, "border-radius"), want: "14px 14px 50%" },
-        { what: "modal .wmChip i paper and ring", got: Lab.cs(hold, "background-color") + ", " + Lab.cs(hold, "box-shadow"), want: "#ffffff, inset 0 0 0 1px #d2cfca" },
-        { what: "picked .wmChip paper", got: Lab.cs(picked, "background-color"), want: "#43a038" },
-        { what: "picked .wmChip ring", got: Lab.cs(picked, "box-shadow"), want: "inset 0 0 0 1px " + ring },
-        { what: "picked .wmChip ink", got: Lab.cs(picked, "color"), want: "#ffffff" },
-        { what: "picked .wmChip outline", got: Lab.cs(picked, "text-shadow"), want: "-1px -1px 0 " + ring + ", 1px -1px 0 " + ring + ", -1px 1px 0 " + ring + ", 1px 1px 0 " + ring },
-        { what: "picked .wmChip i ring", got: Lab.cs(pickedHold, "box-shadow"), want: "none" },
+        { what: "between two checkboxes", got: Lab.cs(chip.parentNode.parentNode, "column-gap"), want: "16px" },
+        { what: "the box", got: Lab.cs(hold, "width") + " " + Lab.cs(hold, "height") + " " + Lab.cs(hold, "border-radius") + " " + Lab.cs(hold, "corner-shape"), want: "24px 24px 12px superellipse(2)" },
+        { what: "the box's paper and ring", got: Lab.cs(hold, "background-color") + ", " + Lab.cs(hold, "box-shadow"), want: "#f9f6f2, inset 0 0 0 1px #d2cfca" },
+        { what: "the box's inline svg", got: Lab.cs(hold.querySelector("svg"), "display"), want: "none" },
+        { what: "picked, the box's paper", got: Lab.cs(pickedHold, "background-color"), want: "#43a038" },
+        { what: "picked, the box's ring", got: Lab.cs(pickedHold, "box-shadow"), want: "inset 0 0 0 1px " + ring },
+        { what: "picked, the tick", got: (Lab.cs(pickedHold, "background-image", "::after").indexOf("data:image/svg+xml") > 0 ? "the pickers' tick" : Lab.cs(pickedHold, "background-image", "::after")) + " at " + Lab.cs(pickedHold, "background-size", "::after") + ", " + Lab.cs(pickedHold, "opacity", "::after") + " at scale " + Lab.cs(pickedHold, "transform", "::after"), want: "the pickers' tick at 20px auto, 1 at scale matrix(1, 0, 0, 1, 0, 0)" },
+        { what: "the tick arriving", got: Lab.cs(pickedHold, "transition-duration", "::after") + " on " + Lab.cs(pickedHold, "transition-timing-function", "::after"), want: "0.26s, 0.12s on cubic-bezier(0.22, 1, 0.36, 1), ease-out" },
+        { what: "the tick leaving", got: Lab.cs(hold, "opacity", "::after") + " at scale " + Lab.cs(hold, "transform", "::after") + ", " + Lab.cs(hold, "transition-duration", "::after") + " on " + Lab.cs(hold, "transition-timing-function", "::after"), want: "0 at scale matrix(0.4, 0, 0, 0.4, 0, 0), 0.19s, 0.19s on cubic-bezier(0.32, 0, 0.67, 0), cubic-bezier(0.32, 0, 0.67, 0)" },
+        { what: "picked, the word", got: Lab.cs(picked, "color") + ", " + (Lab.cs(picked, "text-shadow").indexOf("-1px") >= 0 ? "outlined" : "plain"), want: "#141414, plain" },
         { what: "page badge height and font", got: Lab.cs(badge, "height") + ", " + Lab.font(badge), want: "24px, 700 16px/24px", tag: "call" },
         { what: "page badge padding", got: Lab.cs(badge, "padding"), want: "0 10px 0 8px", tag: "call" },
         { what: "page badge paper and ring", got: Lab.cs(badge, "background-color") + ", " + Lab.cs(badge, "box-shadow"), want: "#43a038, inset 0 0 0 1px " + ring, tag: "call" },
         { what: "page badge holder", got: Lab.cs(badge, "width", "::before") + " " + Lab.cs(badge, "height", "::before") + " " + Lab.cs(badge, "border-radius", "::before") + " " + Lab.cs(badge, "background-color", "::before"), want: "14px 14px 50% #ffffff", tag: "call" },
         { what: "page badge tick", got: Lab.cs(badge, "width", "::after") + " " + Lab.cs(badge, "height", "::after") + ", " + Lab.cs(badge, "background-color", "::after"), want: "14px 14px, #43a038", tag: "call" }
       ], "The chip in a modal and the badge on a page");
-      Lab.note(card, "The reading page's Reading badge is guide 10.3's own call, built in the rollout against the modal's picked chip. It draws the tick as a masked asset over a white round, since a mask clips everything its element paints.");
-      Lab.note(card, "Hover a chip: the modal's picked cell and the chips keep the pointer, and a press scales to .98.");
+      Lab.note(card, "The reading page's Reading badge is guide 10.3's own call, built in the rollout against the modal's picked chip as it was until 22 Sep 2026: the action green with white outlined words and a white round holding the tick. The modal's chip became a checkbox that day; the badge stands, and is the one place the old form is still drawn.");
+      Lab.note(card, "The box is the settings pickers' mark squared off: the same two-stroke tick, white over the ring's green, at the same share of its box, but with the accent ring the buttons take rather than the black hairline the picker's disc wears over a drawing. A press scales the whole checkbox to .98; the keyboard's focus darkens the box's ring to --faint. Click a box: the fill lands and the tick arrives, and on the way out the tick leaves before the fill has gone.");
       Lab.note(card, "The box is drawn where it stands: the fixed positioning of .wmModal, .wmScrim and .wmPanel is neutralised inline, and the box carries .modalInstant, the site's own class for a box that opens with no entrance, so the panel is not held at the animation's first frame. The reading shell's 100vh floor is set to 0.");
     })();</script>
   </div></div>
@@ -1986,7 +1998,7 @@ Lab.note = function () { return document.createElement("p"); };
         { what: "catalog .gtitle", got: Lab.font(tt) + " " + Lab.cs(tt, "color"), want: "700 20px/28px #921f3c" },
         { what: "catalog .gsub", got: Lab.cs(sub, "font-size") + "/" + Lab.cs(sub, "line-height") + " " + Lab.cs(sub, "color"), want: "16px/21.6px #994f5a" },
         { what: "catalog .gbtns margin-top", got: Lab.cs(btns, "margin-top"), want: "8px" },
-        { what: "catalog .gplay height and font", got: Lab.cs(play, "height") + ", " + Lab.font(play), want: "32px, 700 18px/normal" },
+        { what: "catalog .gplay height and font", got: Lab.cs(play, "height") + ", " + Lab.font(play), want: "32px, 700 18px/32px" },
         { what: "catalog .gplay paper and ink", got: Lab.cs(play, "background-color") + ", " + Lab.cs(play, "color"), want: "#971f3e, #ffffff" },
         { what: "catalog .gplay ring and drop", got: Lab.cs(play, "box-shadow"), want: "inset 0 0 0 1px " + pring + ", 0 2px 4px rgba(0,0,0,.06)" },
         { what: "catalog .gplay outline", got: Lab.cs(play, "text-shadow"), want: "-1px -1px 0 " + pring + ", 1px -1px 0 " + pring + ", -1px 1px 0 " + pring + ", 1px 1px 0 " + pring },
@@ -3125,7 +3137,7 @@ Lab.note = function () { return document.createElement("p"); };
       Lab.table(card, [
         { what: '.wmCard', got: Lab.cs(q('.wmCard'), 'box-shadow'), want: 'inset 0 0 0 1px #d2cfca, 0 1px 2px rgba(60,45,25,.04), 0 2px 5px rgba(60,45,25,.05)' },
         { what: '.wmFld input', got: Lab.cs(q('.wmFld input'), 'box-shadow'), want: 'inset 0 0 0 1px #d2cfca' },
-        { what: '.wmChip', got: Lab.cs(q('.wmChip'), 'box-shadow'), want: 'inset 0 0 0 1px #d9d2c4' },
+        { what: '.wmChip i, the checkbox', got: Lab.cs(q('.wmChip i'), 'box-shadow'), want: 'inset 0 0 0 1px #d2cfca' },
         { what: '.wmSeg', got: Lab.cs(q('.wmSeg'), 'box-shadow'), want: 'inset 0 0 0 1px #c9c0ae' },
         { what: '.wmBtn', got: Lab.cs(q('.wmBtn'), 'box-shadow'), want: 'inset 0 0 0 1px #bfb5a1' },
         { what: '.fpic', got: Lab.cs(q('.fpic'), 'box-shadow'), want: 'inset 0 0 0 1px #d2cfca, 0 1px 2px rgba(60,45,25,.04), 0 2px 6px rgba(60,45,25,.06)' },
@@ -3624,11 +3636,11 @@ Lab.note = function () { return document.createElement("p"); };
         { what: '.pophead size', got: cs(pop, 'font-size'), want: '26 is the section head; this is the dead rule in _fp-hero.scss:28-35', tag: 'note' },
         { what: '.pophead face and weight', got: cs(pop, 'font-weight') + ' ' + cs(pop, 'font-family'), want: '500 GLCA, Georgia, serif' },
         { what: '.pophead in #popsec', got: cs(hidden, 'display'), want: 'none' },
-        { what: '#sec-about h3', got: cs(abouth3, 'font-size') + ' / ' + cs(abouth3, 'line-height'), want: '23px / 30px' },
+        { what: '#sec-about h3', got: cs(abouth3, 'font-size') + ' / ' + cs(abouth3, 'line-height'), want: '21px / 28px' },
         { what: '#sec-about h3 margin', got: cs(abouth3, 'margin'), want: '44px 0 10px' }
       ], 'The frontpage');
       Lab.note(card, "The .pophead size is a note, not a mismatch: the seam partial declares .pophead at the display head's 26, and the hero partial declares it again at 24 further down the sheet (_fp-hero.scss:28-35), so 24 wins. Nothing shows it: every .pophead the page carries is hidden, the seam draws the name instead. The guide never states a size for it, so the dead rule is a sweep, not a red row. The type section carries the same finding.");
-      Lab.note(card, "The two h2 and h3 steps are the guide's own call and are built as written. The about zone keeps its own 23 / 30 rank between the 26 head and the 21 sub-head.");
+      Lab.note(card, "The two h2 and h3 steps are the guide's own call and are built as written. The about zone's h3 is the same 21 / 28 as every other h3 since 22 Sep 2026; its own 23 / 30 rank is gone.");
     })();</script>
   </div></div>
 
@@ -4569,7 +4581,7 @@ Lab.table(card,[
  {what:'measure',got:Lab.cs(pill,'width'),want:'300px'},
  {what:'radius',got:Lab.cs(pill,'border-radius'),want:'12px'},
  {what:'paper',got:Lab.cs(pill,'background-color'),want:'#f9f6f2'},
- {what:'words',got:Lab.cs(pill,'font-weight')+' '+Lab.cs(pill,'font-size')+'/'+Lab.cs(pill,'line-height')+' '+Lab.cs(pill,'color'),want:'700 14px/24px #262626'},
+ {what:'words',got:Lab.cs(pill,'font-weight')+' '+Lab.cs(pill,'font-size')+'/'+Lab.cs(pill,'line-height')+' '+Lab.cs(pill,'color'),want:'700 16px/24px #262626'},
  {what:'ring and blurs',got:Lab.cs(pill,'box-shadow'),want:'inset 0 0 0 1px rgba(0,0,0,.25), 0 0 2px rgba(60,45,25,.08), 0 0 5px rgba(60,45,25,.08), 0 0 12px rgba(60,45,25,.08)'},
  {what:'no fade',got:Lab.cs(pill,'transition'),want:'none'},
  {what:'hover paper',got:Lab.rule('.site.fp #ad #rahl:hover','background-color',root),want:'#f4eee5',tag:'rule'},
@@ -4712,6 +4724,7 @@ Lab.note(card,'WomanGirl2 and ManCowboy are drawn because _avatar-feet.scss give
 </section>
 
 </div>
+<script>window.ExampleIndex = [{"id":"ex-buttons-and-links-the-buttons","t":"The buttons","g":"Buttons and links"},{"id":"ex-buttons-and-links-the-buttons-in-a-dialog","t":"The buttons in a dialog","g":"Buttons and links"},{"id":"ex-buttons-and-links-the-quiet-the-dangerous-and-the-done","t":"The quiet, the dangerous and the done","g":"Buttons and links"},{"id":"ex-buttons-and-links-the-yellow-button","t":"The yellow button","g":"Buttons and links"},{"id":"ex-buttons-and-links-what-a-button-does-when-you-touch-it","t":"What a button does when you touch it","g":"Buttons and links"},{"id":"ex-buttons-and-links-two-buttons-at-the-foot-of-a-dialog","t":"Two buttons at the foot of a dialog","g":"Buttons and links"},{"id":"ex-buttons-and-links-links","t":"Links","g":"Buttons and links"},{"id":"ex-buttons-and-links-the-menu-that-opens-from-a-play-button","t":"The menu that opens from a Play button","g":"Buttons and links"},{"id":"ex-fields-and-choosers-a-text-field","t":"A text field","g":"Fields and choosers"},{"id":"ex-fields-and-choosers-a-field-on-white-and-one-with-an-error","t":"A field on white, and one with an error","g":"Fields and choosers"},{"id":"ex-fields-and-choosers-the-small-search-field","t":"The small search field","g":"Fields and choosers"},{"id":"ex-fields-and-choosers-the-tray","t":"The tray","g":"Fields and choosers"},{"id":"ex-fields-and-choosers-the-settings-tabs","t":"The settings tabs","g":"Fields and choosers"},{"id":"ex-fields-and-choosers-the-games-bar","t":"The games bar","g":"Fields and choosers"},{"id":"ex-the-small-marks-the-tag","t":"The tag","g":"The small marks"},{"id":"ex-the-small-marks-the-rating-up-and-down-chips","t":"The rating up and down chips","g":"The small marks"},{"id":"ex-the-small-marks-the-checkbox","t":"The checkbox","g":"The small marks"},{"id":"ex-the-small-marks-the-presence-dots","t":"The presence dots","g":"The small marks"},{"id":"ex-the-small-marks-the-player-count-on-a-tile","t":"The player count on a tile","g":"The small marks"},{"id":"ex-the-small-marks-the-marks-at-a-seat","t":"The marks at a seat","g":"The small marks"},{"id":"ex-containers-the-white-card","t":"The white card","g":"Containers"},{"id":"ex-containers-a-game-tile","t":"A game tile","g":"Containers"},{"id":"ex-containers-a-table-tile","t":"A table tile","g":"Containers"},{"id":"ex-containers-the-other-cards","t":"The other cards","g":"Containers"},{"id":"ex-containers-the-modal-box","t":"The modal box","g":"Containers"},{"id":"ex-containers-the-panels-that-float","t":"The panels that float","g":"Containers"},{"id":"ex-lists-and-tables-the-table-in-a-lobby-card","t":"The table in a lobby card","g":"Lists and tables"},{"id":"ex-lists-and-tables-the-table-in-a-dialog","t":"The table in a dialog","g":"Lists and tables"},{"id":"ex-lists-and-tables-a-settings-row","t":"A settings row","g":"Lists and tables"},{"id":"ex-lists-and-tables-a-row-with-a-person","t":"A row with a person","g":"Lists and tables"},{"id":"ex-lists-and-tables-a-table-on-a-page","t":"A table on a page","g":"Lists and tables"},{"id":"ex-lists-and-tables-the-whats-new-rows","t":"The What’s new rows","g":"Lists and tables"},{"id":"ex-lines-and-dividers-a-divider-in-three-places","t":"A divider in three places","g":"Lines and dividers"},{"id":"ex-lines-and-dividers-the-plain-dividing-line","t":"The plain dividing line","g":"Lines and dividers"},{"id":"ex-lines-and-dividers-the-line-a-box-is-drawn-with","t":"The line a box is drawn with","g":"Lines and dividers"},{"id":"ex-lines-and-dividers-a-real-border","t":"A real border","g":"Lines and dividers"},{"id":"ex-lines-and-dividers-the-rings-drawn-outside-and-the-focus-ring","t":"The rings drawn outside, and the focus ring","g":"Lines and dividers"},{"id":"ex-lines-and-dividers-the-line-over-tile-art","t":"The line over tile art","g":"Lines and dividers"},{"id":"ex-headings-and-rules-the-section-title-with-the-seam","t":"The section title with the seam","g":"Headings and rules"},{"id":"ex-headings-and-rules-the-headings-on-a-page","t":"The headings on a page","g":"Headings and rules"},{"id":"ex-headings-and-rules-a-heading-in-a-dialog","t":"A heading in a dialog","g":"Headings and rules"},{"id":"ex-the-chrome-the-menu-bar","t":"The menu bar","g":"The chrome"},{"id":"ex-the-chrome-the-games-panel","t":"The games panel","g":"The chrome"},{"id":"ex-the-chrome-your-corner-of-the-bar","t":"Your corner of the bar","g":"The chrome"},{"id":"ex-the-chrome-the-tooltip","t":"The tooltip","g":"The chrome"},{"id":"ex-the-chrome-the-notices","t":"The notices","g":"The chrome"},{"id":"ex-the-chrome-the-footer","t":"The footer","g":"The chrome"},{"id":"ex-the-chrome-the-ad-column","t":"The ad column","g":"The chrome"},{"id":"ex-at-the-table-the-avatars","t":"The avatars","g":"At the table"}];</script>
 <script>
 (function () {
   var top = [].slice.call(document.querySelectorAll('#toc a.top'));
@@ -4787,7 +4800,9 @@ Lab.note(card,'WomanGirl2 and ManCowboy are drawn because _avatar-feet.scss give
     flashing = card;
     setTimeout(function () { card.classList.remove('copied'); }, 1400);
   });
+
 })();
 </script>
+<script src="design-guide-parts/exref.js"></script>
 </body>
 </html>
