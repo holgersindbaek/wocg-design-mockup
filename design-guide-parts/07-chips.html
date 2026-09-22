@@ -120,8 +120,8 @@
   </div></div>
 
   <div class="card"><div class="body">
-    <h3>The tick chip <span class="tag built">built</span></h3>
-    <p class="rule-text">A tick chip is 24px, 16 / 24 bold, --band with a #d9d2c4 ring and a 14px white round holder for the tick. Picked, it is the action green with its ring and white outlined words, and the reading page's current item wears the same chip.</p>
+    <h3>The checkbox <span class="tag built">built</span></h3>
+    <p class="rule-text">A checkbox is a 24px box, the height of a small button, with its word 16 / 24 bold 8px after it and 16px to the next. The box is an 8px squircle in the field's paper and ring; picked, it is the action green with the accent ring and the pickers' tick, white over the ring's colour, at 20px. Holger picked the row of checkboxes over the tick chip on 22 Sep 2026. The reading page's current item keeps its Reading badge, the old chip's picked form.</p>
     <div class="demo"><div class="site wm" data-demo="modal">
       <div class="wmModal wmGameOptions wmOpen modalInstant" role="dialog" style="position:static;display:block;opacity:1">
         <div class="wmScrim" style="position:static;height:0"></div>
@@ -165,27 +165,26 @@
       Lab.table(card, [
         { what: "modal .wmChip height", got: Lab.cs(chip, "height"), want: "24px" },
         { what: "modal .wmChip font", got: Lab.font(chip), want: "700 16px/24px" },
-        { what: "modal .wmChip padding", got: Lab.cs(chip, "padding"), want: "0 10px 0 8px" },
-        { what: "modal .wmChip gap", got: Lab.cs(chip, "gap"), want: "6px" },
-        { what: "modal .wmChip border-radius", got: Lab.cs(chip, "border-radius"), want: "12px" },
-        { what: "modal .wmChip paper", got: Lab.cs(chip, "background-color"), want: "#f4eee5" },
-        { what: "modal .wmChip ring", got: Lab.cs(chip, "box-shadow"), want: "inset 0 0 0 1px #d9d2c4" },
+        { what: "modal .wmChip padding", got: Lab.cs(chip, "padding"), want: "0px" },
+        { what: "modal .wmChip gap, the word after its box", got: Lab.cs(chip, "gap"), want: "8px" },
+        { what: "modal .wmChip paper, none", got: Lab.cs(chip, "background-color"), want: "rgba(0, 0, 0, 0)" },
         { what: "modal .wmChip ink", got: Lab.cs(chip, "color"), want: "#141414" },
-        { what: "modal .wmChip i", got: Lab.cs(hold, "width") + " " + Lab.cs(hold, "height") + " " + Lab.cs(hold, "border-radius"), want: "14px 14px 50%" },
-        { what: "modal .wmChip i paper and ring", got: Lab.cs(hold, "background-color") + ", " + Lab.cs(hold, "box-shadow"), want: "#ffffff, inset 0 0 0 1px #d2cfca" },
-        { what: "picked .wmChip paper", got: Lab.cs(picked, "background-color"), want: "#43a038" },
-        { what: "picked .wmChip ring", got: Lab.cs(picked, "box-shadow"), want: "inset 0 0 0 1px " + ring },
-        { what: "picked .wmChip ink", got: Lab.cs(picked, "color"), want: "#ffffff" },
-        { what: "picked .wmChip outline", got: Lab.cs(picked, "text-shadow"), want: "-1px -1px 0 " + ring + ", 1px -1px 0 " + ring + ", -1px 1px 0 " + ring + ", 1px 1px 0 " + ring },
-        { what: "picked .wmChip i ring", got: Lab.cs(pickedHold, "box-shadow"), want: "none" },
+        { what: "between two checkboxes", got: Lab.cs(chip.parentNode.parentNode, "column-gap"), want: "16px" },
+        { what: "the box", got: Lab.cs(hold, "width") + " " + Lab.cs(hold, "height") + " " + Lab.cs(hold, "border-radius") + " " + Lab.cs(hold, "corner-shape"), want: "24px 24px 8px superellipse(2)" },
+        { what: "the box's paper and ring", got: Lab.cs(hold, "background-color") + ", " + Lab.cs(hold, "box-shadow"), want: "#f9f6f2, inset 0 0 0 1px #d2cfca" },
+        { what: "the box's inline svg", got: Lab.cs(hold.querySelector("svg"), "display"), want: "none" },
+        { what: "picked, the box's paper", got: Lab.cs(pickedHold, "background-color"), want: "#43a038" },
+        { what: "picked, the box's ring", got: Lab.cs(pickedHold, "box-shadow"), want: "inset 0 0 0 1px " + ring },
+        { what: "picked, the tick", got: (Lab.cs(pickedHold, "background-image").indexOf("data:image/svg+xml") > 0 ? "the pickers' tick" : Lab.cs(pickedHold, "background-image")) + " at " + Lab.cs(pickedHold, "background-size"), want: "the pickers' tick at 20px auto" },
+        { what: "picked, the word", got: Lab.cs(picked, "color") + ", " + (Lab.cs(picked, "text-shadow").indexOf("-1px") >= 0 ? "outlined" : "plain"), want: "#141414, plain" },
         { what: "page badge height and font", got: Lab.cs(badge, "height") + ", " + Lab.font(badge), want: "24px, 700 16px/24px", tag: "call" },
         { what: "page badge padding", got: Lab.cs(badge, "padding"), want: "0 10px 0 8px", tag: "call" },
         { what: "page badge paper and ring", got: Lab.cs(badge, "background-color") + ", " + Lab.cs(badge, "box-shadow"), want: "#43a038, inset 0 0 0 1px " + ring, tag: "call" },
         { what: "page badge holder", got: Lab.cs(badge, "width", "::before") + " " + Lab.cs(badge, "height", "::before") + " " + Lab.cs(badge, "border-radius", "::before") + " " + Lab.cs(badge, "background-color", "::before"), want: "14px 14px 50% #ffffff", tag: "call" },
         { what: "page badge tick", got: Lab.cs(badge, "width", "::after") + " " + Lab.cs(badge, "height", "::after") + ", " + Lab.cs(badge, "background-color", "::after"), want: "14px 14px, #43a038", tag: "call" }
       ], "The chip in a modal and the badge on a page");
-      Lab.note(card, "The reading page's Reading badge is guide 10.3's own call, built in the rollout against the modal's picked chip. It draws the tick as a masked asset over a white round, since a mask clips everything its element paints.");
-      Lab.note(card, "Hover a chip: the modal's picked cell and the chips keep the pointer, and a press scales to .98.");
+      Lab.note(card, "The reading page's Reading badge is guide 10.3's own call, built in the rollout against the modal's picked chip as it was until 22 Sep 2026: the action green with white outlined words and a white round holding the tick. The modal's chip became a checkbox that day; the badge stands, and is the one place the old form is still drawn.");
+      Lab.note(card, "The box is the settings pickers' mark squared off: the same two-stroke tick, white over the ring's green, at the same share of its box, but with the accent ring the buttons take rather than the black hairline the picker's disc wears over a drawing. A press scales the whole checkbox to .98; the keyboard's focus darkens the box's ring to --faint.");
       Lab.note(card, "The box is drawn where it stands: the fixed positioning of .wmModal, .wmScrim and .wmPanel is neutralised inline, and the box carries .modalInstant, the site's own class for a box that opens with no entrance, so the panel is not held at the animation's first frame. The reading shell's 100vh floor is set to 0.");
     })();</script>
   </div></div>

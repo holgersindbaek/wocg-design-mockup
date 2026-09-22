@@ -273,7 +273,7 @@
 
   <div class="card"><div class="body">
     <h3>The radius ladder, the 12 rung: the controls <span class="tag built">built</span></h3>
-    <p class="rule-text">Control: 12px, and 6px where corner-shape is unsupported, on every button, field, tray cell, thumb, chip, the tooltip and the name plate. They all read --fp-radius-md.</p>
+    <p class="rule-text">Control: 12px, and 6px where corner-shape is unsupported, on every button, field, tray cell, thumb, the tooltip and the name plate. They all read --fp-radius-md. The checkbox's box is the one 24px control off this rung: an 8px squircle, the small mark's corner (7.5), since 22 Sep 2026.</p>
     <div class="demo"><div class="rw">
       <div class="site wm" style="width:250px">
         <div class="wmModal wmOpen modalInstant wmGameOptions" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
@@ -323,7 +323,6 @@
         ['.wmBtn', q('.wmBtn')],
         ['.wmFld input', q('.wmFld input')],
         ['.wmSeg .wmCell', q('.wmCell')],
-        ['.wmChip', q('.wmChip')],
         ['#wtip .wtipBox', q('.wtipBox')],
         ['.playerNameContainer', q('.playerNameContainer')]
       ];
@@ -332,7 +331,8 @@
       });
       rows.push({ what: '--fp-radius-md on the modal', got: Lab.token(q('.wmModal'), '--fp-radius-md'), want: '12px' });
       rows.push({ what: '--fp-radius-md on the frontpage', got: Lab.token(q('.site.fp'), '--fp-radius-md'), want: '12px' });
-      rows.push({ what: 'corner-shape, all six', got: pieces.map(function (p) { return Lab.cs(p[1], 'corner-shape'); }).filter(function (v, i, a) { return a.indexOf(v) === i; }).join(', '), want: 'superellipse(2)' });
+      rows.push({ what: 'the checkbox, off the rung', got: Lab.cs(q('.wmChip i'), 'border-radius'), want: '8px' });
+      rows.push({ what: 'corner-shape, all five', got: pieces.map(function (p) { return Lab.cs(p[1], 'corner-shape'); }).filter(function (v, i, a) { return a.indexOf(v) === i; }).join(', '), want: 'superellipse(2)' });
       Lab.table(card, rows);
       Lab.note(card, 'The name plate writes var(--fp-radius-md, 6px), so a browser with no corner-shape gets the 6px fallback rather than a heavy 12px arc. The tooltip is the capsule wocg.FrontpageTooltip builds, with its fixed position written off.');
     })();</script>
@@ -566,7 +566,7 @@
       Lab.table(card, [
         { what: '.wmCard', got: Lab.cs(q('.wmCard'), 'box-shadow'), want: 'inset 0 0 0 1px #d2cfca, 0 1px 2px rgba(60,45,25,.04), 0 2px 5px rgba(60,45,25,.05)' },
         { what: '.wmFld input', got: Lab.cs(q('.wmFld input'), 'box-shadow'), want: 'inset 0 0 0 1px #d2cfca' },
-        { what: '.wmChip', got: Lab.cs(q('.wmChip'), 'box-shadow'), want: 'inset 0 0 0 1px #d9d2c4' },
+        { what: '.wmChip i, the checkbox', got: Lab.cs(q('.wmChip i'), 'box-shadow'), want: 'inset 0 0 0 1px #d2cfca' },
         { what: '.wmSeg', got: Lab.cs(q('.wmSeg'), 'box-shadow'), want: 'inset 0 0 0 1px #c9c0ae' },
         { what: '.wmBtn', got: Lab.cs(q('.wmBtn'), 'box-shadow'), want: 'inset 0 0 0 1px #bfb5a1' },
         { what: '.fpic', got: Lab.cs(q('.fpic'), 'box-shadow'), want: 'inset 0 0 0 1px #d2cfca, 0 1px 2px rgba(60,45,25,.04), 0 2px 6px rgba(60,45,25,.06)' },

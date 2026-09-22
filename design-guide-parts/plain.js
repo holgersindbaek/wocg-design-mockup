@@ -9,7 +9,7 @@ window.PlainSections = {
  "space": "The gaps between things, how wide a page is, how tall a control is, and what changes as the window narrows.",
  "buttons": "Every button and every link, in each colour and size, and what they do under the pointer.",
  "fields": "The boxes you type in, and the controls for picking one option out of a few.",
- "chips": "The small marks: tags, the rating arrows, ticks, dots, counts and the badges at a seat.",
+ "chips": "The small marks: tags, the rating arrows, checkboxes, dots, counts and the badges at a seat.",
  "cards": "The containers: the white card, a game tile, a table tile, the modal box and the panels that float.",
  "tables": "Every table and list the site draws, from the tight one in a lobby card to the one on a leaderboard page.",
  "heads": "The headings, and the lines that part one part of a page from the next.",
@@ -94,7 +94,7 @@ window.Plain = {
   },
   "The radius ladder, the 12 rung: the controls": {
    "title": "Corners: the control round",
-   "lead": "Every button, field, tray cell, chip and tooltip takes the same corner. Look at whether they read as one family."
+   "lead": "Every button, field, tray cell and tooltip takes the same corner. Look at whether they read as one family. The checkbox's box is smaller and takes the small mark's corner."
   },
   "The radius ladder, the 12 rung: the literals": {
    "title": "Corners: the ones written by hand",
@@ -274,9 +274,9 @@ window.Plain = {
    "title": "The rating up and down chips",
    "lead": "How a rank or a rating that moved is shown, each with its arrow. Up is green, down is red."
   },
-  "The tick chip": {
-   "title": "The tick chip, picked and not",
-   "lead": "A choice you can turn on, with its tick in a white round. Picked, it turns green."
+  "The checkbox": {
+   "title": "The checkbox, picked and not",
+   "lead": "A box you can tick, the height of a small button, with its number after it. Picked, it turns green and shows the tick."
   },
   "Dots": {
    "title": "The presence dots",
