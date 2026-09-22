@@ -2758,7 +2758,9 @@ Lab.note = function () { return document.createElement("p"); };
         { what: 'td padding', got: cs(td, 'padding'), want: '0 12px' },
         { what: 'td line-height', got: cs(td, 'line-height'), want: '24px' },
         { what: 'the line between rows', got: cs(td, 'border-bottom'), want: '1px solid #ebe7de' },
-        { what: 'no column lines', got: cs(td, 'border-left-width'), want: '0' },
+        { what: 'the line between columns', got: cs(td, 'border-right'), want: '1px solid #ebe7de' },
+        { what: 'the line between head cells', got: cs(th, 'border-right'), want: '1px solid #d9d2c4' },
+        { what: 'none after the last column', got: cs(td.parentNode.lastElementChild, 'border-right-width'), want: '0' },
         { what: 'the last row', got: cs(lastTd, 'border-bottom-width'), want: '0' },
         { what: 'the name cell', got: cs(td, 'font-weight'), want: '700' },
         { what: 'figures', got: cs(a.querySelector('table'), 'font-variant-numeric'), want: 'tabular-nums' },
@@ -2787,6 +2789,9 @@ Lab.note = function () { return document.createElement("p"); };
         { what: 'the row with an avatar, height', got: cs(btd, 'height'), want: '65px' },
         { what: 'td padding', got: cs(btd, 'padding'), want: '0 12px' },
         { what: 'the line between rows', got: cs(btd, 'border-bottom'), want: '1px solid #ebe7de' },
+        { what: 'the line between columns', got: cs(btd, 'border-right'), want: '1px solid #ebe7de' },
+        { what: 'the line between head cells', got: cs(bth, 'border-right'), want: '1px solid #d9d2c4' },
+        { what: 'none after the last column', got: cs(btd.parentNode.lastElementChild, 'border-right-width'), want: '0' },
         { what: 'figures right', got: cs(num, 'text-align'), want: 'right' },
         { what: 'the avatar', got: cs(avatar, 'width') + ' by ' + cs(avatar, 'height'), want: '56px by 56px' },
         { what: "the avatar's line", got: cs(avatar, 'filter'), want: 'four 1px #252525 drops (7.9)', tag: 'note' },
@@ -2809,7 +2814,9 @@ Lab.note = function () { return document.createElement("p"); };
         { what: 'td height, the bare table', got: cs(ctd, 'height'), want: '41px' },
         { what: 'td type', got: cs(ctd, 'font-size') + ' / ' + cs(ctd, 'line-height'), want: '16px / 24px' },
         { what: 'the line between rows', got: cs(ctd, 'border-bottom'), want: '1px solid #ebe7de' },
-        { what: 'no column lines', got: cs(ctd, 'border-left-width'), want: '0' },
+        { what: 'the line between columns', got: cs(ctd, 'border-right'), want: '1px solid #ebe7de' },
+        { what: 'the line between head cells', got: cs(cth, 'border-right'), want: '1px solid #d9d2c4' },
+        { what: 'none after the last column', got: cs(ctd.parentNode.lastElementChild, 'border-right-width'), want: '0' },
         { what: 'the last row', got: cs(lastCell, 'border-bottom-width'), want: '0' },
         { what: 'figures right', got: cs(c.querySelector('td.numberFormat'), 'text-align'), want: 'right' }
       ], 'A bare table in a band');
@@ -4324,14 +4331,14 @@ Lab.note(card,'The compact playspace step is read from its rule: the class sits 
                   <a href="https://www.youtube.com/c/Worldofcardgames"><img src="static/images/frontpage/social-youtube.svg" alt="YouTube" loading="lazy" width="24" height="24" /></a>
                 </div>
               </li>
+              <li class="list-inline-item footerRaptive">
+                <div class="adthrive-footer-message">
+                  <a href="#">Update Privacy Preferences</a>
+                  <a href="#">Terms of Content Use</a>
+                  <span>A Raptive Partner Site</span>
+                </div>
+              </li>
             </ul>
-          </div>
-          <div class="footerSection footerRaptive">
-            <div class="adthrive-footer-message">
-              <a href="#">Update Privacy Preferences</a>
-              <a href="#">Terms of Content Use</a>
-              <span>A Raptive Partner Site</span>
-            </div>
           </div>
         </footer>
       </div>
@@ -4417,14 +4424,14 @@ Lab.note(card,'The compact playspace step is read from its rule: the class sits 
                   <a href="https://www.youtube.com/c/Worldofcardgames"><img src="static/images/frontpage/social-youtube.svg" alt="YouTube" loading="lazy" width="24" height="24" /></a>
                 </div>
               </li>
+              <li class="list-inline-item footerRaptive">
+                <div class="adthrive-footer-message">
+                  <a href="#">Update Privacy Preferences</a>
+                  <a href="#">Terms of Content Use</a>
+                  <span>A Raptive Partner Site</span>
+                </div>
+              </li>
             </ul>
-          </div>
-          <div class="footerSection footerRaptive">
-            <div class="adthrive-footer-message">
-              <a href="#">Update Privacy Preferences</a>
-              <a href="#">Terms of Content Use</a>
-              <span>A Raptive Partner Site</span>
-            </div>
           </div>
         </footer>
       </div>
@@ -4496,7 +4503,8 @@ Lab.table(card,[
 Lab.table(card,[
  {what:'Raptive block',got:Lab.cs(rap,'font-size')+'/'+Lab.cs(rap,'line-height')+' '+Lab.cs(rap,'color'),want:'14px/24px #4e4d4c'},
  {what:'its partner note',got:Lab.cs(raps,'color')+' order '+Lab.cs(raps,'order'),want:'#8a857c order 8'},
- {what:'its width',got:Lab.cs(wm.querySelector('.footerRaptive'),'grid-column'),want:'1 / -1'}
+ {what:'a line of its own, last in the row',got:Lab.cs(wm.querySelector('.footerRaptive'),'flex-basis')+' order '+Lab.cs(wm.querySelector('.footerRaptive'),'order'),want:'100% order 10'},
+ {what:'under the links, at the row\u2019s own gap',got:Lab.cs(wm.querySelector('.footerRaptive'),'margin-top'),want:'0px'}
 ],'Raptive’s own block');
 var wells = [].slice.call(card.querySelectorAll('[data-cq]')).map(function (hold) {
   var copy = wm.querySelector('.sitefooter').cloneNode(true);

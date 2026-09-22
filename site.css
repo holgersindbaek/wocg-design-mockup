@@ -9826,14 +9826,14 @@
   bottom: var(--space-viewport-gutter);
   right: var(--space-viewport-gutter);
   z-index: var(--z-modal);
-  --dk: #484136;
-  background-color: #5E574B;
+  --dk: var(--wm-tray-dark-ring, #484136);
+  background-color: var(--wm-tray-dark, #5e574b);
   color: #fff;
   box-shadow: inset 0 0 0 1px var(--dk), 0 2px 4px rgba(0, 0, 0, 0.06);
   text-shadow: -1px -1px 0 var(--dk), 1px -1px 0 var(--dk), -1px 1px 0 var(--dk), 1px 1px 0 var(--dk);
 }
 :where(.site):is(div) .scrollToTop:hover {
-  background-color: #554E42;
+  background-color: var(--wm-tray-dark-hover, #554e42);
 }
 
 @supports (corner-shape: squircle) {
@@ -12477,9 +12477,9 @@
   --go-tray: var(--rule, #d9d2c4);
   --go-tray-ring: #bfb5a1;
   --go-tray-hover: #d1c8b8;
-  --go-dark: #5e574b;
-  --go-dark-ring: #484136;
-  --go-dark-hover: #554e42;
+  --go-dark: var(--wm-tray-dark, #5e574b);
+  --go-dark-ring: var(--wm-tray-dark-ring, #484136);
+  --go-dark-hover: var(--wm-tray-dark-hover, #554e42);
   --go-green: var(--triogreen, #43a038);
   --go-green-ring: var(--triogreenring, #347d2c);
   --go-green-hover: var(--triogreenhover, #3e9334);
@@ -17113,7 +17113,6 @@
   --surface: #ffffff;
   --card: #ffffff;
   --ink: #141414;
-  --ink-soft: #262626;
   --muted: #4e4d4c;
   --muted-soft: color-mix(in srgb, var(--muted) 55%, var(--canvas));
   --hairline: #ebe7de;
@@ -17129,7 +17128,10 @@
   --tileshadow: 0 2px 8px 0 rgba(0, 0, 0, 0.24);
   --panelline: rgba(60, 45, 25, 0.15);
   --rule: #d9d2c4;
-  --faint: #8a857c;
+  --wm-tray-dark: #5e574b;
+  --wm-tray-dark-ring: #484136;
+  --wm-tray-dark-hover: #554e42;
+  --faint: #67635c;
   --liftshadow: 0 1px 2px rgba(60, 45, 25, .05), 0 3px 8px rgba(60, 45, 25, .09);
   --liftshadow-lg: 0 2px 4px rgba(60, 45, 25, .04), 0 4px 12px rgba(60, 45, 25, .12);
   --btnshadow: 0 0 0 1px var(--edge, var(--panelline)), var(--liftshadow);
@@ -17196,7 +17198,7 @@
   font-family: var(--fp-font-ui);
   font-size: 16px;
   line-height: 1;
-  color: var(--ink-soft);
+  color: var(--ink);
 }
 
 @media (min-width: 640px) {
@@ -17282,7 +17284,7 @@
 }
 
 :where(.site):is(div).wm #menuIconContainer {
-  color: var(--ink-soft);
+  color: var(--ink);
 }
 
 :where(.site):is(div).wm #menuBar > li.mclink {
@@ -17296,7 +17298,7 @@
   height: 56px;
   font-size: 16px;
   font-weight: bold;
-  color: var(--ink-soft);
+  color: var(--ink);
   cursor: pointer;
 }
 
@@ -17424,7 +17426,7 @@
   line-height: 24px;
   padding: 2px 0;
   font-weight: normal;
-  color: var(--ink-soft);
+  color: var(--ink);
   text-decoration: none;
   border-bottom: none;
   align-self: flex-start;
@@ -17516,7 +17518,7 @@
   font-size: 16px;
   font-weight: bold;
   line-height: 1;
-  color: var(--ink-soft);
+  color: var(--ink);
 }
 
 :where(.site):is(div).wm #userBar .userAvatarContainer .userName.loading {
@@ -17599,19 +17601,40 @@
   padding-right: 0;
 }
 
+:where(.site):is(div).wm #userBar .friendsIcon .friendsDropdown {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+:where(.site):is(div).wm #userBar .friendsIcon .friendsDropdown .friendsListHeader {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+:where(.site):is(div).wm #userBar .friendsIcon .friendsDropdown .friendsListItems, :where(.site):is(div).wm #userBar .friendsIcon .friendsDropdown .friendItem, :where(.site):is(div).wm #userBar .friendsIcon .friendsDropdown .conversationHeader, :where(.site):is(div).wm #userBar .friendsIcon .friendsDropdown .conversationMessages, :where(.site):is(div).wm #userBar .friendsIcon .friendsDropdown .conversationInputArea {
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
 :where(.site):is(div).wm #userBar .activityIcon .activityEmpty, :where(.site):is(div).wm #userBar .friendsIcon .friendsDropdown .friendsEmpty {
   padding: 0;
   text-align: left;
   font-size: 16px;
   line-height: 24px;
-  color: var(--muted-soft);
+  color: var(--faint);
   width: 230px;
+}
+
+:where(.site):is(div).wm #userBar .friendsIcon .friendsDropdown .friendsEmpty {
+  box-sizing: border-box;
+  width: 254px;
+  padding: 0 12px;
 }
 
 :where(.site):is(div).wm #userBar .userAvatarContainer .userDropdown .dropdownItem {
   font-size: 16px;
   line-height: 24px;
-  color: var(--ink-soft);
+  color: var(--ink);
   cursor: pointer;
   white-space: nowrap;
   padding: 2px 0;
@@ -17675,7 +17698,7 @@
   border-radius: var(--fp-radius-md);
   corner-shape: squircle;
   background-color: var(--canvas);
-  color: var(--ink-soft);
+  color: var(--ink);
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.25), 0 0 2px rgba(60, 45, 25, 0.08), 0 0 5px rgba(60, 45, 25, 0.08), 0 0 12px rgba(60, 45, 25, 0.08);
   font-family: var(--fp-font-ui);
   font-size: 14px;
@@ -18703,10 +18726,10 @@
   background-color: var(--triobluehover);
 }
 :where(.site):is(div).fp .lobbyscope .button.lightblue {
-  background-color: var(--triolight);
-  box-shadow: inset 0 0 0 1px var(--triolightring), 0 2px 4px rgba(0, 0, 0, 0.06);
-  color: var(--triolightink);
-  text-shadow: none;
+  background-color: var(--trioblue);
+  box-shadow: inset 0 0 0 1px var(--triobluering), 0 2px 4px rgba(0, 0, 0, 0.06);
+  color: #ffffff;
+  text-shadow: -1px -1px 0 var(--triobluering), 1px -1px 0 var(--triobluering), -1px 1px 0 var(--triobluering), 1px 1px 0 var(--triobluering);
 }
 :where(.site):is(div).fp .lobbyscope .button.lightblue:hover {
   background-color: var(--triolighthover);
@@ -20383,13 +20406,13 @@
   z-index: 1;
   font-weight: bold;
   border-color: var(--td);
-  color: var(--ink-soft);
+  color: var(--ink);
   box-shadow: -1px 0 0 var(--td), 0 1px 0 var(--td);
   background-color: var(--band, #f4eee5);
 }
 :where(.site):is(div).fp .lobbyscope .ldCalDay:not(.isFuture):hover, :where(.site):is(div).fp .lobbyscope .ldCalDay.isPicked:hover {
   background-color: var(--band, #f4eee5);
-  color: var(--ink-soft);
+  color: var(--ink);
   background-image: none;
   text-indent: 0;
   filter: none;
@@ -20470,7 +20493,7 @@
   padding: 26px 2px;
   font-size: 15px;
   line-height: 1.5;
-  color: var(--ink-soft);
+  color: var(--ink);
 }
 
 :where(.site):is(div).fp .gamesec {
@@ -20855,7 +20878,7 @@
   border: none;
   border-radius: 0;
   background: var(--canvas);
-  color: var(--ink-soft);
+  color: var(--ink);
   cursor: pointer;
   font-family: inherit;
   font-size: 14px;
@@ -21102,7 +21125,7 @@
   border-bottom-color: var(--triolightink);
 }
 :where(.site):is(div).fp #sec-about .serifnote p {
-  color: var(--ink-soft);
+  color: var(--ink);
   font: 400 19px/1.55 var(--fp-font-display);
 }
 :where(.site):is(div).fp #sec-about .serifnote .mail {
@@ -21192,7 +21215,7 @@
 }
 :where(.site):is(div).fp #sec-about .faqi p {
   margin: 0;
-  color: var(--ink-soft);
+  color: var(--ink);
 }
 :where(.site):is(div).fp #sec-about .qtiles {
   display: grid;
@@ -21499,9 +21522,9 @@
 }
 
 :where(.site):is(div).fp .sitefooter .footerRaptive, :where(.site):is(div).wm .sitefooter .footerRaptive {
-  grid-column: 1/-1;
-  width: 100%;
-  max-width: none;
+  flex: 0 0 100%;
+  order: 10;
+  white-space: normal;
 }
 
 :where(.site):is(div).fp .sitefooter .footerRaptive:empty, :where(.site):is(div).wm .sitefooter .footerRaptive:empty {
@@ -21585,9 +21608,16 @@
     break-inside: avoid;
     margin-bottom: 24px;
   }
-  :where(.site):is(div).fp .sitefooter footer > .footerLegal, :where(.site):is(div).wm .sitefooter footer > .footerLegal, :where(.site):is(div).fp .sitefooter footer > .footerRaptive, :where(.site):is(div).wm .sitefooter footer > .footerRaptive {
+  :where(.site):is(div).fp .sitefooter footer > .footerLegal, :where(.site):is(div).wm .sitefooter footer > .footerLegal {
     column-span: all;
     margin-bottom: 0;
+  }
+  :where(.site):is(div).fp .sitefooter .footerLegal .footerRaptive, :where(.site):is(div).wm .sitefooter .footerLegal .footerRaptive {
+    order: 8;
+    margin-top: 2px;
+  }
+  :where(.site):is(div).fp .sitefooter .footerRaptive > .adthrive-footer-message, :where(.site):is(div).wm .sitefooter .footerRaptive > .adthrive-footer-message {
+    justify-content: center;
   }
   :where(.site):is(div).fp .sitefooter footer > .footerLegal, :where(.site):is(div).wm .sitefooter footer > .footerLegal {
     margin-top: 8px;
@@ -21610,7 +21640,9 @@
   :where(.site):is(div).fp .sitefooter .footerLegal > ul, :where(.site):is(div).wm .sitefooter .footerLegal > ul {
     justify-content: center;
     text-align: center;
-    row-gap: 10px;
+  }
+  :where(.site):is(div).fp .sitefooter .footerLegal .footerSocial, :where(.site):is(div).wm .sitefooter .footerLegal .footerSocial {
+    margin-top: 8px;
   }
   :where(.site):is(div).fp .sitefooter .footerLegal .footerSocial, :where(.site):is(div).wm .sitefooter .footerLegal .footerSocial, :where(.site):is(div).fp .sitefooter .footerLegal .social, :where(.site):is(div).wm .sitefooter .footerLegal .social {
     margin-left: 0;
@@ -21788,7 +21820,7 @@
 
 :where(.site):is(div).wm .helpBox {
   --color-text-primary: var(--ink);
-  --color-text-subtle: var(--ink-soft);
+  --color-text-subtle: var(--ink);
   --color-text-muted: var(--muted);
   --color-text-link: var(--triolightink);
   --color-bg-base: var(--canvas);
@@ -21842,15 +21874,20 @@
   padding: 8px 12px;
   border: 0;
   border-bottom: 1px solid var(--hairline);
+  border-right: 1px solid var(--hairline);
   font-size: 16px;
   line-height: 24px;
   text-align: left;
   color: var(--ink);
   vertical-align: middle;
 }
+:where(.site):is(div).wm .helpBox .content table.paddedTable th:last-child, :where(.site):is(div).wm .helpBox .content table.paddedTable td:last-child {
+  border-right: 0;
+}
 :where(.site):is(div).wm .helpBox .content table.paddedTable tr:first-child th {
   background: var(--band);
   border-bottom-color: var(--rule);
+  border-right-color: var(--rule);
   font-weight: 700;
   line-height: 22px;
 }
@@ -22076,7 +22113,7 @@
   padding-left: 16px;
   border-left: 2px solid var(--edge);
   font: 400 19px/1.45 var(--fp-font-display);
-  color: var(--ink-soft);
+  color: var(--ink);
 }
 
 :where(.site):is(div).wm #mainContainer.general .helpBox .content figure {
@@ -22173,10 +22210,15 @@
   height: 40px;
   padding: 0 12px;
   border-bottom: 1px solid var(--hairline);
+  border-right: 1px solid var(--hairline);
+}
+:where(.site):is(div).wm #mainContainer.general .helpBox .content .leaderboardsDirectory th:last-child, :where(.site):is(div).wm #mainContainer.general .helpBox .content .leaderboardsDirectory td:last-child, :where(.site):is(div).wm #mainContainer.general .helpBox .content .rulesDirectory th:last-child, :where(.site):is(div).wm #mainContainer.general .helpBox .content .rulesDirectory td:last-child {
+  border-right: 0;
 }
 :where(.site):is(div).wm #mainContainer.general .helpBox .content .leaderboardsDirectory th, :where(.site):is(div).wm #mainContainer.general .helpBox .content .rulesDirectory th {
   background: var(--band);
   border-bottom-color: var(--rule);
+  border-right-color: var(--rule);
   font-weight: 700;
   line-height: 22px;
   color: var(--ink);
@@ -22198,9 +22240,10 @@
   padding: 0 10px;
   border-radius: var(--fp-radius-md);
   font: 700 16px/24px var(--fp-font-ui);
-  background-color: var(--triolight);
-  box-shadow: inset 0 0 0 1px var(--triolightring), 0 2px 4px rgba(0, 0, 0, 0.06);
-  color: var(--triolightink);
+  background-color: var(--trioblue);
+  box-shadow: inset 0 0 0 1px var(--triobluering), 0 2px 4px rgba(0, 0, 0, 0.06);
+  color: #ffffff;
+  text-shadow: -1px -1px 0 var(--triobluering), 1px -1px 0 var(--triobluering), -1px 1px 0 var(--triobluering), 1px 1px 0 var(--triobluering);
   transition: background-color 24ms ease-out, box-shadow 24ms ease-out, transform 80ms ease-out;
 }
 :where(.site):is(div).wm #mainContainer.general .helpBox .content .leaderboardsDirectory a:active, :where(.site):is(div).wm #mainContainer.general .helpBox .content .rulesDirectory a:active {
@@ -22208,8 +22251,8 @@
 }
 @media (hover: hover) and (pointer: fine) {
   :where(.site):is(div).wm #mainContainer.general .helpBox .content .leaderboardsDirectory a:hover, :where(.site):is(div).wm #mainContainer.general .helpBox .content .rulesDirectory a:hover {
-    background-color: var(--triolighthover);
-    box-shadow: inset 0 0 0 1px var(--triolightring), 0 2px 4px rgba(0, 0, 0, 0.06);
+    background-color: var(--triobluehover);
+    box-shadow: inset 0 0 0 1px var(--triobluering), 0 2px 4px rgba(0, 0, 0, 0.06);
   }
 }
 :where(.site):is(div).wm #mainContainer.general .helpBox .content .leaderboardsDirectory td:last-child a, :where(.site):is(div).wm #mainContainer.general .helpBox .content .rulesDirectory td:last-child a {
@@ -22610,11 +22653,15 @@
   padding: 8px 12px;
   border: 0;
   border-bottom: 1px solid var(--hairline);
+  border-right: 1px solid var(--hairline);
   font-size: 16px;
   line-height: 24px;
   text-align: left;
   color: var(--ink);
   vertical-align: middle;
+}
+:where(.site):is(div).wm #mainContainer.general .helpBox.strategyArticle .content table.paddedTable th:last-child, :where(.site):is(div).wm #mainContainer.general .helpBox.strategyArticle .content table.paddedTable td:last-child, :where(.site):is(div).wm #mainContainer.general .helpBox.strategyArticle .content table.tg th:last-child, :where(.site):is(div).wm #mainContainer.general .helpBox.strategyArticle .content table.tg td:last-child {
+  border-right: 0;
 }
 :where(.site):is(div).wm #mainContainer.general .helpBox.strategyArticle .content table.paddedTable tr > *:first-child, :where(.site):is(div).wm #mainContainer.general .helpBox.strategyArticle .content table.tg tr > *:first-child {
   white-space: nowrap;
@@ -22622,6 +22669,7 @@
 :where(.site):is(div).wm #mainContainer.general .helpBox.strategyArticle .content table.paddedTable tr:first-child th, :where(.site):is(div).wm #mainContainer.general .helpBox.strategyArticle .content table.tg tr:first-child th {
   background: var(--band);
   border-bottom-color: var(--rule);
+  border-right-color: var(--rule);
   font-weight: 700;
   line-height: 22px;
 }
@@ -22724,10 +22772,11 @@
   padding: 0 10px;
   border: 0;
   border-radius: var(--fp-radius-md);
-  background: var(--triolight);
-  box-shadow: inset 0 0 0 1px var(--triolightring), 0 2px 4px rgba(0, 0, 0, 0.06);
+  background: var(--trioblue);
+  box-shadow: inset 0 0 0 1px var(--triobluering), 0 2px 4px rgba(0, 0, 0, 0.06);
   font: 700 16px/24px var(--fp-font-ui);
-  color: var(--triolightink);
+  color: #ffffff;
+  text-shadow: -1px -1px 0 var(--triobluering), 1px -1px 0 var(--triobluering), -1px 1px 0 var(--triobluering), 1px 1px 0 var(--triobluering);
   cursor: pointer;
   transition: background-color 24ms ease-out, transform 80ms ease-out;
 }
@@ -22736,7 +22785,7 @@
 }
 @media (hover: hover) and (pointer: fine) {
   :where(.site):is(div).wm #mainContainer.general .helpBox.strategyArticle .content .buttonSubmitStyle:hover {
-    background: var(--triolighthover);
+    background: var(--triobluehover);
   }
 }
 
@@ -22985,6 +23034,7 @@
   background: var(--band);
   border: 0;
   border-bottom: 1px solid var(--rule);
+  border-right: 1px solid var(--rule);
   font: 700 16px/22px var(--fp-font-ui);
   color: var(--ink);
   text-align: left;
@@ -22998,6 +23048,7 @@
   padding: 0 12px;
   border: 0;
   border-bottom: 1px solid var(--hairline);
+  border-right: 1px solid var(--hairline);
   font-size: 16px;
   line-height: 24px;
   color: var(--ink);
@@ -23008,6 +23059,10 @@
 
 :where(.site):is(div).wm #mainContainer.general .helpBox.gameLeaderboardPage .content tbody tr:last-child td {
   border-bottom: 0;
+}
+
+:where(.site):is(div).wm #mainContainer.general .helpBox.gameLeaderboardPage .content thead th:last-child, :where(.site):is(div).wm #mainContainer.general .helpBox.gameLeaderboardPage .content tbody td:last-child {
+  border-right: 0;
 }
 
 :where(.site):is(div).wm #mainContainer.general .helpBox.gameLeaderboardPage .content th.lbNum, :where(.site):is(div).wm #mainContainer.general .helpBox.gameLeaderboardPage .content td.lbNum, :where(.site):is(div).wm #mainContainer.general .helpBox.gameLeaderboardPage .content th.lbMove, :where(.site):is(div).wm #mainContainer.general .helpBox.gameLeaderboardPage .content td.lbMove {
@@ -23209,7 +23264,7 @@
 :where(.site):is(div).wm #mainContainer.general .helpBox.gameLeaderboardPage .content .dt-paging .dt-paging-button.previous, :where(.site):is(div).wm #mainContainer.general .helpBox.gameLeaderboardPage .content .dt-paging .dt-paging-button.next {
   font-size: 11px;
   margin: 0 0 0 6px;
-  color: var(--muted-soft) !important;
+  color: var(--faint) !important;
 }
 
 :where(.site):is(div).wm #mainContainer.general .helpBox.gameLeaderboardPage .content .dt-paging .dt-paging-button.previous.disabled, :where(.site):is(div).wm #mainContainer.general .helpBox.gameLeaderboardPage .content .dt-paging .dt-paging-button.next.disabled {
@@ -23218,7 +23273,7 @@
 
 :where(.site):is(div).wm #mainContainer.general .helpBox.gameLeaderboardPage .content .dt-paging .ellipsis {
   padding: 0 6px 0 4px;
-  color: var(--muted-soft);
+  color: var(--faint);
   pointer-events: none;
 }
 
@@ -23244,7 +23299,7 @@
   left: 0;
   font-size: 9px;
   line-height: 9px;
-  color: var(--muted-soft);
+  color: var(--faint);
   opacity: 1;
 }
 
@@ -23274,7 +23329,7 @@
   padding: 0 12px;
   font-size: 16px;
   line-height: 24px;
-  color: var(--muted-soft);
+  color: var(--faint);
   text-align: left;
   white-space: normal;
 }
@@ -23406,7 +23461,6 @@
   --surface: #ffffff;
   --card: #ffffff;
   --ink: #141414;
-  --ink-soft: #262626;
   --muted: #4e4d4c;
   --muted-soft: color-mix(in srgb, var(--muted) 55%, var(--canvas));
   --hairline: #ebe7de;
@@ -23422,7 +23476,10 @@
   --tileshadow: 0 2px 8px 0 rgba(0, 0, 0, 0.24);
   --panelline: rgba(60, 45, 25, 0.15);
   --rule: #d9d2c4;
-  --faint: #8a857c;
+  --wm-tray-dark: #5e574b;
+  --wm-tray-dark-ring: #484136;
+  --wm-tray-dark-hover: #554e42;
+  --faint: #67635c;
   --liftshadow: 0 1px 2px rgba(60, 45, 25, .05), 0 3px 8px rgba(60, 45, 25, .09);
   --liftshadow-lg: 0 2px 4px rgba(60, 45, 25, .04), 0 4px 12px rgba(60, 45, 25, .12);
   --btnshadow: 0 0 0 1px var(--edge, var(--panelline)), var(--liftshadow);
@@ -25003,23 +25060,23 @@
 }
 
 :where(.site) .wmModal .wmBtn.wmLight {
-  background: var(--triolight);
-  color: var(--triolightink);
-  box-shadow: inset 0 0 0 1px var(--triolightring);
+  background: var(--trioblue);
+  box-shadow: inset 0 0 0 1px var(--triobluering);
+  color: #ffffff;
+  text-shadow: -1px -1px 0 var(--triobluering), 1px -1px 0 var(--triobluering), -1px 1px 0 var(--triobluering), 1px 1px 0 var(--triobluering);
 }
 :where(.site) .wmModal .wmBtn.wmLight:hover {
-  background: var(--triolighthover);
+  background: var(--triobluehover);
 }
 
 :where(.site) .wmModal .wmBtn.wmSoftKill {
-  --wm-kill-soft-ring: #e8958c;
-  --wm-kill-soft-ink: #b52626;
-  background: var(--trioredlight);
-  color: var(--wm-kill-soft-ink);
-  box-shadow: inset 0 0 0 1px var(--wm-kill-soft-ring);
+  background: var(--wm-danger);
+  box-shadow: inset 0 0 0 1px var(--wm-danger-ring);
+  color: #ffffff;
+  text-shadow: -1px -1px 0 var(--wm-danger-ring), 1px -1px 0 var(--wm-danger-ring), -1px 1px 0 var(--wm-danger-ring), 1px 1px 0 var(--wm-danger-ring);
 }
 :where(.site) .wmModal .wmBtn.wmSoftKill:hover {
-  background: color-mix(in srgb, var(--trioredlight) 94%, black);
+  background: var(--wm-danger-hover);
 }
 
 :where(.site) .wmSettings .wmGames {
@@ -26874,13 +26931,13 @@
   z-index: 1;
   font-weight: bold;
   border-color: var(--td);
-  color: var(--ink-soft);
+  color: var(--ink);
   box-shadow: -1px 0 0 var(--td), 0 1px 0 var(--td);
   background-color: var(--band, #f4eee5);
 }
 :where(.site) .wmModal .ldCalDay:not(.isFuture):hover, :where(.site) .wmModal .ldCalDay.isPicked:hover {
   background-color: var(--band, #f4eee5);
-  color: var(--ink-soft);
+  color: var(--ink);
   background-image: none;
   text-indent: 0;
   filter: none;
