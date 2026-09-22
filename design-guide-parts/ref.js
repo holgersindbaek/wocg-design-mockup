@@ -141,7 +141,7 @@
     if (kind === 'corner' || kind === 'gap' || kind === 'height' || kind === 'width') return item.value;
     if (kind === 'line') return { inset: 'inset 0 0 0 1px --edge', border: '1px solid --edge',
       outside: '0 0 0 1px rgba(0,0,0,.30)', focus: 'inset 0 0 0 1px --faint',
-      divider: 'border-bottom 1px --hairline' }[item.form];
+      divider: 'border-bottom 1px, the surface\u2019s divider colour (--hairline here, on white)' }[item.form];
     if (kind === 'shadow') return (item.token || 'literal') + '  ·  ' + Lab.hex(item.value || colourOf(item, item.token));
     return (item.token || 'literal') + '  ·  ' + shown(item, item.token || item.value);
   }

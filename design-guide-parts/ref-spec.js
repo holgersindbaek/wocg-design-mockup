@@ -11,11 +11,13 @@ window.Spec = {
       { token: '--surface', name: 'White', use: 'Cards, tiles, panels, dropdowns, fields, chips, the tooltip' },
       { value: '#327333', name: 'The felt', use: 'Behind a table: a table tile and the game table itself' }
     ] },
-    { group: 'Ink', note: 'The three darknesses text is written in, from the title down to a timestamp, and one tone that is not an ink at all.', items: [
-      { token: '--ink', name: 'Ink', use: 'Titles, running text, names, figures, table cells' },
-      { token: '--muted', name: 'Muted', use: 'The line under a title, an explainer, a tag, a placeholder' },
-      { token: '--muted-soft', name: 'Soft muted', use: 'Not an ink: the small bullets, a separator dot, the empty star\u2019s stroke' },
+    { group: 'Ink', note: 'The two darknesses text is written in: everything, and the quiet line under it.', items: [
+      { token: '--ink', name: 'Ink', use: 'Every word: titles, running text, names, figures, table cells, a sub-line under a title, an explainer, a placeholder' },
       { token: '--faint', name: 'Faint', use: 'By-lines, timestamps, a quote attribution, the tooltip hint, an empty list' }
+    ] },
+    { group: 'Labels and marks', note: 'Not text: what a label on a thing, and what a mark that is not a line, is drawn in.', items: [
+      { token: '--muted', name: 'Muted', use: 'A tag, a field\u2019s label, a group label, a table\u2019s second figure' },
+      { token: '--mark', name: 'Mark', use: 'The dot that says someone is away, a bullet, the empty star\u2019s outline, the band\u2019s dividers' }
     ] },
     { group: 'Lines', note: 'A border sits between two surfaces and is darker than both. A divider sits on one surface and is that surface one step down.', items: [
       { token: '--edge', name: 'Edge', use: 'The 1px line around a card, tile, field, chip, panel or dropdown' },
@@ -75,12 +77,12 @@ window.Spec = {
       { value: '999px', round: true, name: 'Round', use: 'Dots, badges, the live capsule, a progress bar' },
       { value: '0', name: 'None', use: 'The ad rail, and any band that runs the full width' }
     ] },
-    { group: 'Lines', note: 'The same colours as above, in the three forms a line is drawn in.', kind: 'line', items: [
+    { group: 'Lines', note: 'The colours are in the Lines group under Colour; this is the five forms a 1px line is drawn in. Which colour a divider takes depends on the surface it sits on, not on the form.', kind: 'line', items: [
       { form: 'inset', name: 'Inside ring', use: 'The default: a card, tile, field, checkbox, tray or button' },
       { form: 'border', name: 'Real border', use: 'A fully round pill, a dropdown, a card whose text is padded in' },
       { form: 'outside', name: 'Outside ring', use: 'The modal box, a name plate on the felt, the author photo' },
       { form: 'focus', name: 'Focus ring', use: 'A field you are typing in: the same 1px line, darkened to --faint' },
-      { form: 'divider', name: 'Divider', use: 'Between two rows of one colour' }
+      { form: 'divider', name: 'Divider', use: 'Between two rows of one colour, in that surface\u2019s own divider colour: --hairline on white, --rule on the band and the canvas, --wm-seg-ring inside a chooser' }
     ] },
     { group: 'Shadows', note: 'How far a thing lifts off the page. Five steps and one special.', kind: 'shadow', items: [
       { token: '--liftshadow', name: 'Container lift', use: 'Every light container: a card, a panel, a dropdown, the tooltip. The frontpage draws a lighter copy, .04 and .06' },
