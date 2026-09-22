@@ -83,7 +83,7 @@
   <div class="card">
     <div class="body">
       <h3>The kit in a modal, the actions <span class="tag built">built</span></h3>
-      <p class="rule-text">The same four fills in a box, at 18px bold on 32 and 16px bold on 24, but with the inset ring alone: a modal's button carries no drop. The light blue is the same solid blue, #298ae9 ringed #206cb6 with outlined white words; the pale fill belongs to the name plates and the rating-down chip.</p>
+      <p class="rule-text">The same four fills in a box, at 18px bold on 32 and 16px bold on 24, but with the inset ring alone: a modal's button carries no drop. A box has one blue, #298ae9 ringed #206cb6 with outlined white words; the pale fill belongs to the name plates and the rating-down chip.</p>
       <div class="demo">
         <div class="site wm" data-demo>
           <div class="wmModal wmOpen modalInstant" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
@@ -95,7 +95,6 @@
                     <span class="wmBtn wmGo" role="button" tabindex="0">Save</span>
                     <span class="wmBtn wmGo wmSmall" role="button" tabindex="0">Invite</span>
                     <span class="wmBtn wmBlue" role="button" tabindex="0">Manage</span>
-                    <span class="wmBtn wmLight" role="button" tabindex="0">Change</span>
                   </div>
                 </div>
               </div>
@@ -110,7 +109,6 @@
         var go = root.querySelector('.wmBtn.wmGo:not(.wmSmall)');
         var small = root.querySelector('.wmBtn.wmGo.wmSmall');
         var blue = root.querySelector('.wmBtn.wmBlue');
-        var light = root.querySelector('.wmBtn.wmLight');
         Lab.table(card, B5.rows(go, {
           h: '32px', fs: '18px', lh: '32px', pad: '0 8px', bg: '#43a038',
           sh: 'inset 0 0 0 1px #347d2c', ink: '#ffffff', ts: B5.out('#347d2c')
@@ -123,10 +121,6 @@
           h: '32px', fs: '18px', lh: '32px', pad: '0 8px', bg: '#298ae9',
           sh: 'inset 0 0 0 1px #206cb6', ink: '#ffffff', ts: B5.out('#206cb6')
         }), '.wmBtn.wmBlue');
-        Lab.table(card, B5.rows(light, {
-          h: '32px', fs: '18px', lh: '32px', pad: '0 8px', bg: '#298ae9',
-          sh: 'inset 0 0 0 1px #206cb6', ink: '#ffffff', ts: B5.out('#206cb6')
-        }), '.wmBtn.wmLight, the same solid blue');
         Lab.note(card, 'A button that draws no outline still reads a text-shadow: base.scss:41 puts rgba(0,0,0,.01) 0 0 1px on the root for smoothing and every word on the site inherits it. Those rows are marked rather than reddened.');
         Lab.note(card, 'The box is the shell ModalShell.js builds, laid flat: the layer, the scrim and the panel are put back in the flow so the paper sits in the card. Nothing else about it is changed.');
       })();
@@ -148,7 +142,6 @@
                   <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
                     <span class="wmBtn" role="button" tabindex="0">Cancel</span>
                     <span class="wmBtn wmKill" role="button" tabindex="0">Leave now</span>
-                    <span class="wmBtn wmSoftKill" role="button" tabindex="0">Delete</span>
                     <span class="wmBtn wmSmall wmInvited">Invited</span>
                   </div>
                   <div class="wmReasons" style="margin-top:8px">
@@ -165,12 +158,11 @@
       (function () {
         var card = document.currentScript.closest('.card');
         var root = card.querySelector('[data-demo]');
-        var tray = root.querySelector('.wmBtn:not(.wmKill):not(.wmSoftKill):not(.wmInvited):not(.wmPicked)');
+        var quiet = root.querySelector('.wmBtn:not(.wmKill):not(.wmInvited):not(.wmPicked)');
         var kill = root.querySelector('.wmBtn.wmKill');
-        var soft = root.querySelector('.wmBtn.wmSoftKill');
         var invited = root.querySelector('.wmBtn.wmInvited');
         var picked = root.querySelector('.wmReasons .wmBtn.wmPicked');
-        Lab.table(card, B5.rows(tray, {
+        Lab.table(card, B5.rows(quiet, {
           h: '32px', fs: '18px', lh: '32px', pad: '0 8px', bg: '#d2cfca',
           sh: 'inset 0 0 0 1px #bfb5a1', ink: '#141414', ts: 'inherit'
         }), '.wmBtn, the quiet button');
@@ -178,10 +170,6 @@
           h: '32px', fs: '18px', lh: '32px', pad: '0 8px', bg: '#c92a2a',
           sh: 'inset 0 0 0 1px #9d2121', ink: '#ffffff', ts: B5.out('#9d2121')
         }), '.wmBtn.wmKill');
-        Lab.table(card, B5.rows(soft, {
-          h: '32px', fs: '18px', lh: '32px', pad: '0 8px', bg: '#c92a2a',
-          sh: 'inset 0 0 0 1px #9d2121', ink: '#ffffff', ts: B5.out('#9d2121')
-        }), '.wmBtn.wmSoftKill, the same solid red');
         Lab.table(card, B5.rows(picked, {
           h: '32px', fs: '18px', lh: '32px', pad: '0 10px', bg: '#5e574b',
           sh: 'inset 0 0 0 1px #484136', ink: '#ffffff', ts: B5.out('#484136')

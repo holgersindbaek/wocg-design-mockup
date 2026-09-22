@@ -1486,9 +1486,9 @@
           { what: 'the legal row, .footerLegal > ul', got: Lab.cs(p('legal'), 'font-size') + ' / ' + Lab.cs(p('legal'), 'line-height'), want: '16px / 20px' },
           { what: 'the menu link’s line height', got: Lab.cs(p('mclink'), 'line-height'), want: '1, the bar’s own 16px box', tag: 'note' }
         ], 'size / line / weight / ink');
-        Lab.note(card, 'Lab only: the games panel is opened with the display the hover rule gives it (_fp-chrome.scss:231, display flex and a 12px gap) and the user corner carries the site’s own .open class, so both panels can be read standing still. The 210px of air below the bar is the room they hang in.');
+        Lab.note(card, 'Lab only: the games panel is opened with the display the hover rule gives it (_wm-chrome.scss:231, display flex and a 12px gap) and the user corner carries the site’s own .open class, so both panels can be read standing still. The 210px of air below the bar is the room they hang in.');
         Lab.note(card, 'The account panel carries a Sign in item, hidden here because the corner is drawn signed in. It read Log in until 14 Sep 2026. The wording is the copy section\u2019s business; the markup is drawn as it ships.');
-        Lab.note(card, 'The footer is drawn inside a reading page’s .helpBox, which is where the 0 padding on .sitefooter .footer-basic comes from (_fp-band.scss:115).');
+        Lab.note(card, 'The footer is drawn inside a reading page’s .helpBox, which is where the 0 padding on .sitefooter .footer-basic comes from (_wm-band.scss:115).');
       })();
       </script>
     </div>
@@ -3614,7 +3614,7 @@
   <div class="card">
     <div class="body">
       <h3>The kit in a modal, the actions <span class="tag built">built</span></h3>
-      <p class="rule-text">The same four fills in a box, at 18px bold on 32 and 16px bold on 24, but with the inset ring alone: a modal's button carries no drop. The light blue is the same solid blue, #298ae9 ringed #206cb6 with outlined white words; the pale fill belongs to the name plates and the rating-down chip.</p>
+      <p class="rule-text">The same four fills in a box, at 18px bold on 32 and 16px bold on 24, but with the inset ring alone: a modal's button carries no drop. A box has one blue, #298ae9 ringed #206cb6 with outlined white words; the pale fill belongs to the name plates and the rating-down chip.</p>
       <div class="demo">
         <div class="site wm" data-demo>
           <div class="wmModal wmOpen modalInstant" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
@@ -3626,7 +3626,6 @@
                     <span class="wmBtn wmGo" role="button" tabindex="0">Save</span>
                     <span class="wmBtn wmGo wmSmall" role="button" tabindex="0">Invite</span>
                     <span class="wmBtn wmBlue" role="button" tabindex="0">Manage</span>
-                    <span class="wmBtn wmLight" role="button" tabindex="0">Change</span>
                   </div>
                 </div>
               </div>
@@ -3641,7 +3640,6 @@
         var go = root.querySelector('.wmBtn.wmGo:not(.wmSmall)');
         var small = root.querySelector('.wmBtn.wmGo.wmSmall');
         var blue = root.querySelector('.wmBtn.wmBlue');
-        var light = root.querySelector('.wmBtn.wmLight');
         Lab.table(card, B5.rows(go, {
           h: '32px', fs: '18px', lh: '32px', pad: '0 8px', bg: '#43a038',
           sh: 'inset 0 0 0 1px #347d2c', ink: '#ffffff', ts: B5.out('#347d2c')
@@ -3654,10 +3652,6 @@
           h: '32px', fs: '18px', lh: '32px', pad: '0 8px', bg: '#298ae9',
           sh: 'inset 0 0 0 1px #206cb6', ink: '#ffffff', ts: B5.out('#206cb6')
         }), '.wmBtn.wmBlue');
-        Lab.table(card, B5.rows(light, {
-          h: '32px', fs: '18px', lh: '32px', pad: '0 8px', bg: '#298ae9',
-          sh: 'inset 0 0 0 1px #206cb6', ink: '#ffffff', ts: B5.out('#206cb6')
-        }), '.wmBtn.wmLight, the same solid blue');
         Lab.note(card, 'A button that draws no outline still reads a text-shadow: base.scss:41 puts rgba(0,0,0,.01) 0 0 1px on the root for smoothing and every word on the site inherits it. Those rows are marked rather than reddened.');
         Lab.note(card, 'The box is the shell ModalShell.js builds, laid flat: the layer, the scrim and the panel are put back in the flow so the paper sits in the card. Nothing else about it is changed.');
       })();
@@ -3679,7 +3673,6 @@
                   <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
                     <span class="wmBtn" role="button" tabindex="0">Cancel</span>
                     <span class="wmBtn wmKill" role="button" tabindex="0">Leave now</span>
-                    <span class="wmBtn wmSoftKill" role="button" tabindex="0">Delete</span>
                     <span class="wmBtn wmSmall wmInvited">Invited</span>
                   </div>
                   <div class="wmReasons" style="margin-top:8px">
@@ -3696,12 +3689,11 @@
       (function () {
         var card = document.currentScript.closest('.card');
         var root = card.querySelector('[data-demo]');
-        var tray = root.querySelector('.wmBtn:not(.wmKill):not(.wmSoftKill):not(.wmInvited):not(.wmPicked)');
+        var quiet = root.querySelector('.wmBtn:not(.wmKill):not(.wmInvited):not(.wmPicked)');
         var kill = root.querySelector('.wmBtn.wmKill');
-        var soft = root.querySelector('.wmBtn.wmSoftKill');
         var invited = root.querySelector('.wmBtn.wmInvited');
         var picked = root.querySelector('.wmReasons .wmBtn.wmPicked');
-        Lab.table(card, B5.rows(tray, {
+        Lab.table(card, B5.rows(quiet, {
           h: '32px', fs: '18px', lh: '32px', pad: '0 8px', bg: '#d2cfca',
           sh: 'inset 0 0 0 1px #bfb5a1', ink: '#141414', ts: 'inherit'
         }), '.wmBtn, the quiet button');
@@ -3709,10 +3701,6 @@
           h: '32px', fs: '18px', lh: '32px', pad: '0 8px', bg: '#c92a2a',
           sh: 'inset 0 0 0 1px #9d2121', ink: '#ffffff', ts: B5.out('#9d2121')
         }), '.wmBtn.wmKill');
-        Lab.table(card, B5.rows(soft, {
-          h: '32px', fs: '18px', lh: '32px', pad: '0 8px', bg: '#c92a2a',
-          sh: 'inset 0 0 0 1px #9d2121', ink: '#ffffff', ts: B5.out('#9d2121')
-        }), '.wmBtn.wmSoftKill, the same solid red');
         Lab.table(card, B5.rows(picked, {
           h: '32px', fs: '18px', lh: '32px', pad: '0 10px', bg: '#5e574b',
           sh: 'inset 0 0 0 1px #484136', ink: '#ffffff', ts: B5.out('#484136')
@@ -5246,7 +5234,7 @@
               <div class="wmSh"><span class="wmShTitle">At the table</span></div>
               <div class="wmCard">
                 <div class="wmRow"><span class="wmRowLab"><span class="wmRowTitle">Sounds</span><span class="wmRowLine">Cards, chat and the turn bell.</span></span><span class="wmRowCtl"><span class="wmBtn wmSmall" role="button" tabindex="0">Change</span></span></div>
-                <div class="wmRow"><span class="wmRowLab"><span class="wmRowTitle">Table felt</span></span><span class="wmRowCtl"><span class="wmBtn wmSmall wmLight" role="button" tabindex="0">Pick</span></span></div>
+                <div class="wmRow"><span class="wmRowLab"><span class="wmRowTitle">Table felt</span></span><span class="wmRowCtl"><span class="wmBtn wmSmall wmBlue" role="button" tabindex="0">Pick</span></span></div>
               </div>
             </div>
           </div>
@@ -6744,11 +6732,11 @@
             <div class="wmBox">
               <div class="wmBody">
                 <div class="wmCard">
-                  <div class="wmRow"><span class="wmRowLab"><span class="wmRowTitle">Sort my hand</span></span><span class="wmRowCtl"><span class="wmBtn wmSmall wmLight" role="button" tabindex="0">Change</span></span></div>
+                  <div class="wmRow"><span class="wmRowLab"><span class="wmRowTitle">Sort my hand</span></span><span class="wmRowCtl"><span class="wmBtn wmSmall wmBlue" role="button" tabindex="0">Change</span></span></div>
                 </div>
                 <div class="wmSh"><span class="wmShTitle">Leaderboards</span><span class="wmShHint">You are on 4 of the 18 boards.</span></div>
                 <div class="wmCard">
-                  <div class="wmRow"><span class="wmRowLab"><span class="wmRowTitle">Hearts</span></span><span class="wmRowCtl"><span class="wmBtn wmSmall wmLight" role="button" tabindex="0">Remove</span></span></div>
+                  <div class="wmRow"><span class="wmRowLab"><span class="wmRowTitle">Hearts</span></span><span class="wmRowCtl"><span class="wmBtn wmSmall wmBlue" role="button" tabindex="0">Remove</span></span></div>
                 </div>
               </div>
             </div>
@@ -6771,7 +6759,7 @@
                 <div class="wmPage wmOnPage" data-page="game" role="tabpanel">
                   <div class="wmSh"><span class="wmShTitle">At the table</span></div>
                   <div class="wmCard">
-                    <div class="wmRow"><span class="wmRowLab"><span class="wmRowTitle">Sort my hand</span></span><span class="wmRowCtl"><span class="wmBtn wmSmall wmLight" role="button" tabindex="0">Change</span></span></div>
+                    <div class="wmRow"><span class="wmRowLab"><span class="wmRowTitle">Sort my hand</span></span><span class="wmRowCtl"><span class="wmBtn wmSmall wmBlue" role="button" tabindex="0">Change</span></span></div>
                   </div>
                 </div>
               </div>
@@ -7356,7 +7344,7 @@ Lab.note(card,'WomanGirl2 and ManCowboy are drawn because _avatar-feet.scss give
 <section class="sec" id="chrome">
 <h2>12 The chrome</h2>
 <div class="rule"></div>
-<p class="desc">Guide 8.1 the menubar, 8.2 the footer, 8.3 the ad rail. The markup is common/menu_bar.dust, common/fp_footer.dust and common/ads_code.dust, drawn under a .site root. The bar and the footer are in the flow already; the rail is fixed to the window on the site and is pinned inside its card, and the note says so. Ids repeat across the demos, so every script measures with its own root's querySelector and never getElementById.</p>
+<p class="desc">Guide 8.1 the menubar, 8.2 the footer, 8.3 the ad rail. The markup is common/menu_bar.dust, common/site_footer.dust and common/ads_code.dust, drawn under a .site root. The bar and the footer are in the flow already; the rail is fixed to the window on the site and is pinned inside its card, and the note says so. Ids repeat across the demos, so every script measures with its own root's querySelector and never getElementById.</p>
 
 
 <style>
@@ -7756,7 +7744,7 @@ Lab.table(card, wells.map(function (w) {
 Lab.note(card,'The links are 16 / 28 where the mockup drew 14: open item 5 in the guide, not a fault of the build.');
 Lab.note(card,'The four columns are auto tracks, so Chrome prints the width each one used rather than the word auto. The table counts them.');
 Lab.note(card,'One of the site’s own values cannot be computed: margin-left auto resolves to the pixels it used, so it is read from its rule.');
-Lab.note(card,'The two footers hold different links on purpose. This is common/fp_footer.dust; common/footer.dust ships beside it and CSS picks, and the loser is to be deleted before the flag retires.');
+Lab.note(card,'The two footers hold different links on purpose. This is common/site_footer.dust; common/footer.dust ships beside it and CSS picks, and the loser is to be deleted before the flag retires.');
 })();</script>
 </div></div>
 
@@ -7810,7 +7798,7 @@ Lab.table(card,[
  {what:'the column reserves',got:Lab.cs(col,'margin-right'),want:'336px'},
  {what:'from 640 it reserves',got:'160px',want:'160px',tag:'note'}
 ],'What the page gives up to it');
-Lab.note(card,'The rail paints the band --paper-band #F4EEE5, which 8.3 and 3.1 both name (_fp-chrome.scss:588).');
+Lab.note(card,'The rail paints the band --paper-band #F4EEE5, which 8.3 and 3.1 both name (_wm-chrome.scss:588).');
 Lab.note(card,'The widths are master’s: 336px from 1024 and 160px from 640. The sheet writes height auto and max-height none with !important, so the rail takes its height from its top and bottom and no inline height can cap it.');
 })();</script>
 </div></div>
