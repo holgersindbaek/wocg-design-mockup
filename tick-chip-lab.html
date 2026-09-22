@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Tick chip lab &middot; what else a multiple choice can look like</title>
+<!--
+  The tick chip (Examples > The small marks > The tick chip) is the Host-a-table dialog's "Players" row: pick every
+  table size you will sit at, so more than one can be on. Today each choice is a pill with a white round holding a
+  tick, and the pill turns green when picked. Holger finds it odd. This page draws the same row four more ways,
+  every one built from pieces the kit already has, so they can be compared in place. Real markup and site.css.
+-->
+<link rel="stylesheet" href="guide-fonts.css">
+<link rel="stylesheet" href="site.css">
+<style>
+  body { margin: 0; padding: 28px 20px 80px; background: #f9f6f2; color: #212529; font: 14px/1.5 BuloRounded, -apple-system, "Helvetica Neue", Arial, sans-serif; }
+  .site { display: block; }
+  .wrap { max-width: 640px; margin: 0 auto; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  .sub { color: #868E96; margin: 0 0 28px; }
+  section.lab { margin: 0 0 36px; }
+  h2 { font-size: 15px; margin: 0 0 2px; }
+  h2 b { color: #868E96; font-weight: 400; margin-left: 6px; }
+  .note { color: #868E96; font-size: 12.5px; margin: 0 0 12px; max-width: 620px; }
+  .lab .wmModal { position: static; display: block; opacity: 1; visibility: visible; pointer-events: auto; }
+  .lab .wmModal .wmScrim { display: none; }
+  .lab .wmModal .wmPanel { position: static; transform: none; width: 400px; max-height: none; }
+  .lab .wmModal .wmBox, .lab .wmModal .wmBody { height: auto !important; max-height: none !important; overflow: visible !important; }
+  /* B: the pill without the round */
+  .v-b .wmGameOptions .wmChip { padding: 0 10px; }
+  .v-b .wmGameOptions .wmChip i { display: none; }
+  /* C and D: the tray's track, and every picked cell wears its own thumb */
+  .wmModal .wmSegMulti { position: relative; display: inline-flex; align-items: center; box-sizing: border-box; height: 28px; padding: 2px; border-radius: 12px; corner-shape: squircle;
+    background: var(--band); box-shadow: inset 0 0 0 1px var(--rule); }
+  .wmModal .wmSegMulti .wmCell { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 24px; padding: 0 10px; border-radius: 12px; corner-shape: squircle;
+    font-size: 16px; font-weight: bold; line-height: 24px; color: var(--muted); white-space: nowrap; cursor: pointer; }
+  .wmModal .wmSegMulti .wmCell + .wmCell::before { content: ""; position: absolute; left: 0; top: -2px; bottom: -2px; width: 1px; background: var(--rule); }
+  .wmModal .wmSegMulti .wmCell.wmPicked, .wmModal .wmSegMulti .wmCell.wmPicked + .wmCell { } 
+  .wmModal .wmSegMulti .wmCell.wmPicked::before, .wmModal .wmSegMulti .wmCell.wmPicked + .wmCell::before { display: none; }
+  .wmModal .wmSegMulti .wmCell.wmPicked { background: var(--wm-accent); box-shadow: inset 0 0 0 1px var(--wm-accent-ring), 0 2px 4px rgba(0,0,0,.06); color: #fff;
+    text-shadow: -1px -1px 0 var(--wm-accent-ring), 1px -1px 0 var(--wm-accent-ring), -1px 1px 0 var(--wm-accent-ring), 1px 1px 0 var(--wm-accent-ring); }
+  .wmModal .wmSegMulti .wmCell svg { display: none; }
+  .v-d .wmModal .wmSegMulti .wmCell.wmPicked svg { display: inline; }
+  /* E: the pill with the tick as a glyph, no round */
+  .v-e .wmGameOptions .wmChip { padding: 0 10px; color: var(--muted); }
+  .v-e .wmGameOptions .wmChip i { width: auto; height: auto; border-radius: 0; background: none; box-shadow: none; color: inherit; }
+  .v-e .wmGameOptions .wmChip:not(.wmPicked) i { display: none; }
+  .v-e .wmGameOptions .wmChip.wmPicked i { box-shadow: none; }
+  .v-e .wmGameOptions .wmChip.wmPicked i svg { visibility: visible; }
+  /* the tray beside, for the family likeness */
+  .kin { margin-top: 10px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>The tick chip, and four other ways to pick more than one</h1>
+<p class="sub">The Host-a-table dialog's Players row, "pick every table size you will sit at". A is today. B to E are built from what the kit already draws. Below each, the single-choice tray from the same dialog, so the family likeness can be judged.</p>
+<div id="out"></div>
+</div>
+<script>
+var TICK = '<svg viewBox="0 0 10 8" width="10" height="8" aria-hidden="true"><path d="M1 4l3 3 5-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+function chips(picked) {
+  return '<span class="wmSeats">' + [3, 4, 5].map(function (n) {
+    return '<span class="wmChip' + (picked.indexOf(n) >= 0 ? ' wmPicked' : '') + '" role="checkbox" tabindex="0" aria-checked="' + (picked.indexOf(n) >= 0) + '"><i>' + TICK + '</i>' + n + '</span>';
+  }).join("") + '</span>';
+}
+function cells(picked) {
+  return '<span class="wmSegMulti" role="group">' + [3, 4, 5].map(function (n) {
+    return '<span class="wmCell' + (picked.indexOf(n) >= 0 ? ' wmPicked' : '') + '" role="checkbox" tabindex="0" aria-checked="' + (picked.indexOf(n) >= 0) + '">' + TICK + n + '</span>';
+  }).join("") + '</span>';
+}
+function tray() {
+  return '<div class="wmRow" data-row="ranked"><span class="wmRowLab"><span class="wmRowTitle">Bots</span><span class="wmRowLine">Whether empty seats are filled by bots.</span></span>' +
+    '<span class="wmRowCtl"><span class="wmSeg" role="radiogroup"><span class="wmCell">No</span><span class="wmCell wmPicked">Either</span><span class="wmCell">Yes</span></span></span></div>';
+}
+function box(cls, control) {
+  return '<div class="' + cls + '"><div class="site wm"><div class="wmModal wmGameOptions wmOpen"><div class="wmPanel"><div class="wmBox"><div class="wmBody"><div class="wmCard">' +
+    '<div class="wmRow wmStackRow" data-row="numSeats"><span class="wmRowLab"><span class="wmRowTitle">Players</span><span class="wmRowLine">Pick every table size you will sit at.</span></span><span class="wmRowCtl">' + control + '</span></div>' +
+    tray() + '</div></div></div></div></div></div></div>';
+}
+var VARIANTS = [
+  { k: "A", cls: "v-a", title: "Today: the tick chip", note: "A pill with a white round holding the tick; picked, the pill turns green. Three nested shapes for one yes.", ctl: chips([3, 4]) },
+  { k: "B", cls: "v-b", title: "The plain pill", note: "The same chip with the round taken out. Off is paper with the rule ring, on is the action green with outlined words: exactly the tray's picked cell, only standing on its own.", ctl: chips([3, 4]) },
+  { k: "C", cls: "v-c", title: "Toggle cells in the track", note: "The tray's own track and cells, but every picked cell wears its own thumb, so several can be on. The multiple-choice cousin of the single-choice tray under it; no new shape at all.", ctl: cells([3, 4]) },
+  { k: "D", cls: "v-d", title: "Toggle cells with a tick", note: "C with a small tick before the number on a picked cell, for the reader who wants a mark and not only a colour.", ctl: cells([3, 4]) },
+  { k: "E", cls: "v-e", title: "The pill with a tick glyph", note: "B with the tick drawn inline on a picked pill, no round behind it.", ctl: chips([3, 4]) }
+];
+document.getElementById("out").innerHTML = VARIANTS.map(function (v) {
+  return '<section class="lab" id="v' + v.k + '"><h2>' + v.k + ' &middot; ' + v.title + '</h2><p class="note">' + v.note + '</p>' + box(v.cls, v.ctl) + '</section>';
+}).join("");
+// the tray's thumb, placed as the site places it
+document.querySelectorAll(".wmSeg").forEach(function (seg) {
+  var picked = seg.querySelector(".wmCell.wmPicked"), cells = seg.querySelectorAll(":scope > .wmCell");
+  var thumb = document.createElement("i"); thumb.className = "wmSegThumb wmStill"; seg.insertBefore(thumb, seg.firstChild);
+  var ink = document.createElement("span"); ink.className = "wmSegInk wmStill"; cells.forEach(function (c) { var k = c.cloneNode(true); k.className = "wmCell"; ink.appendChild(k); }); seg.appendChild(ink);
+  function place() { var l = picked.offsetLeft, t = picked.offsetTop, w = picked.offsetWidth, h = picked.offsetHeight;
+    thumb.style.left = l + "px"; thumb.style.top = t + "px"; thumb.style.width = w + "px"; thumb.style.height = h + "px"; thumb.style.opacity = 1;
+    ink.style.clipPath = "inset(" + t + "px " + (seg.offsetWidth - l - w) + "px " + (seg.offsetHeight - t - h) + "px " + l + "px)"; }
+  place(); if (document.fonts) document.fonts.ready.then(place); window.addEventListener("load", place);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Page table lab &middot; column lines on the card-type table</title>
+<!--
+  Examples > Lists and tables > A table on a page, the third demo: Canasta's card-type table, a .paddedTable with
+  row labels that span rows. Today the page table draws no column lines, only a hairline between rows. Holger asked
+  for vertical lines. This page draws the same table five ways under site.css, so they can be compared in place.
+-->
+<link rel="stylesheet" href="guide-fonts.css">
+<link rel="stylesheet" href="site.css">
+<style>
+  body { margin: 0; padding: 28px 20px 80px; background: #f9f6f2; color: #212529; font: 14px/1.5 BuloRounded, -apple-system, "Helvetica Neue", Arial, sans-serif; }
+  .site { display: block; }
+  .wrap { max-width: 640px; margin: 0 auto; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  .sub { color: #868E96; margin: 0 0 28px; }
+  section.lab { margin: 0 0 32px; }
+  h2 { font-size: 15px; margin: 0 0 2px; }
+  .note { color: #868E96; font-size: 12.5px; margin: 0 0 8px; max-width: 620px; }
+  .lab .helpBox .content table.paddedTable { margin: 8px 0 0; }
+  /* B: a hairline between every column, the rule under the head */
+  .v-b .helpBox .content table.paddedTable th:not(:last-child), .v-b .helpBox .content table.paddedTable td:not(:last-child) { border-right: 1px solid var(--hairline); }
+  .v-b .helpBox .content table.paddedTable tr:first-child th:not(:last-child) { border-right-color: var(--rule); }
+  /* C: one line, after the label column only */
+  .v-c .helpBox .content table.paddedTable tr > *:first-child { border-right: 1px solid var(--rule); }
+  /* D: the label column on band paper, with its line */
+  .v-d .helpBox .content table.paddedTable tr > td:first-child { background: var(--band); border-right: 1px solid var(--rule); border-bottom-color: var(--rule); font-weight: 700; }
+  .v-d .helpBox .content table.paddedTable tr > th:first-child { border-right: 1px solid var(--rule); }
+  /* E: the full grid in the rule colour */
+  .v-e .helpBox .content table.paddedTable th, .v-e .helpBox .content table.paddedTable td { border-bottom: 1px solid var(--rule); }
+  .v-e .helpBox .content table.paddedTable th:not(:last-child), .v-e .helpBox .content table.paddedTable td:not(:last-child) { border-right: 1px solid var(--rule); }
+  .v-e .helpBox .content table.paddedTable tr:last-child > td { border-bottom: 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>The card-type table, with and without column lines</h1>
+<p class="sub">Canasta's rules table as the page table draws it (A), then four ways to add lines. All under site.css.</p>
+<div id="out"></div>
+</div>
+<script>
+function table() {
+  return '<div class="site wm"><div class="helpBox" style="position:relative"><div class="content">' +
+    '<table border="1" class="paddedTable">' +
+    '<tr><th>Card Type</th><th>Cards</th><th class="headerFormat">Point Value</th></tr>' +
+    '<tr><td rowspan="3">Natural Cards</td><td>Aces</td><td class="numberFormat">20</td></tr>' +
+    '<tr><td>8s through King</td><td class="numberFormat">10</td></tr>' +
+    '<tr><td>4s through 7s</td><td class="numberFormat">5</td></tr>' +
+    '<tr><td rowspan="2">Wild Cards</td><td>Jokers</td><td class="numberFormat">50</td></tr>' +
+    '<tr><td>2s</td><td class="numberFormat">20</td></tr>' +
+    '</table></div></div></div>';
+}
+var V = [
+  { k: "A", cls: "v-a", title: "Today: rows only", note: "A hairline between rows, the head on band paper, no column lines. With row labels that span rows the eye has to work out which lines belong to which label." },
+  { k: "B", cls: "v-b", title: "A hairline between every column", note: "The same hairline the rows use, standing between the columns too; under the head it is the band's rule. The lightest grid." },
+  { k: "C", cls: "v-c", title: "One line after the label column", note: "Only the label column is fenced off, in the rule colour. The spanning labels read as a margin note, the rest stays open." },
+  { k: "D", cls: "v-d", title: "The label column on band paper", note: "C with the labels on the band, like a row head, bold. The strongest grouping without a full grid." },
+  { k: "E", cls: "v-e", title: "The full grid", note: "Every cell fenced in the rule colour. Reads like a printed rules sheet; the heaviest." }
+];
+document.getElementById("out").innerHTML = V.map(function (v) { return '<section class="lab ' + v.cls + '" id="v' + v.k + '"><h2>' + v.k + ' &middot; ' + v.title + '</h2><p class="note">' + v.note + '</p>' + table() + '</section>'; }).join("");
+</script>
+</body>
+</html>
