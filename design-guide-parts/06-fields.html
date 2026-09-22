@@ -1,0 +1,711 @@
+<section class="sec" id="fields">
+<h2>6 Fields, tray and choosers</h2>
+<div class="rule"></div>
+<p class="desc">Guide 7.3 fields and 7.4 the tray and the segmented control, with the games bar the guide names as the same chooser at a wider corner. Every tray here is live: click a cell and the thumb travels the way the site's own script moves it.</p>
+
+<script>
+/* Section 6's helpers. Ids repeat across demos, so every card measures with its own root's
+   querySelector and never getElementById. The tray and the games bar are driven by the same
+   code the site uses: ModalShell.placeSegThumb, dailyRecordsGeneric's copy of it, and
+   GameBar.js's render, measure, settle and paint. */
+(function () {
+    /* The games bar, as GameBar.js writes and drives it. */
+  function esc(t) { return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
+  function unitWord(n, unit) { return unit ? ' ' + unit + (n === 1 ? '' : 's') : ''; }
+
+  function gamesBar(host, opts) {
+    var games = opts.games.slice().sort(function (a, b) {
+      return b.count - a.count || opts.games.indexOf(a) - opts.games.indexOf(b);
+    });
+    var all = { id: 'all', name: opts.allLabel || 'All games', count: games.reduce(function (s, g) { return s + g.count; }, 0) };
+    var sel = opts.value || 'all';
+    var names = {};
+    games.forEach(function (g) { names[g.id] = g.name; });
+
+    function cellHtml(g, picked) {
+      return '<span class="s' + (picked ? ' on' : '') + (g.count === 0 ? ' zero' : '') + '" data-g="' + esc(g.id) + '">' +
+        '<span>' + esc(g.name) + '<i data-n="' + g.count + '">' + g.count +
+        '<em class="w">' + (picked ? unitWord(g.count, opts.countUnit) : '') + '</em></i></span></span>';
+    }
+    var cells = [cellHtml(all, sel === 'all')];
+    games.forEach(function (g) { cells.push(cellHtml(g, sel === g.id)); });
+    var items = games.map(function (g) {
+      return '<li class="mi' + (g.count === 0 ? ' dim' : '') + '" data-g="' + esc(g.id) + '">' + esc(g.name) + '<i>' + g.count + '</i></li>';
+    }).join('');
+    var foot = '<li class="foot"><span class="lab">Show:</span>' + opts.amounts.map(function (n) {
+      return '<i data-amt="' + n + '"' + (n === opts.amount ? ' class="on"' : '') + '>' + (n ? n : 'All') + '</i>';
+    }).join('') + '</li>';
+
+    host.innerHTML = '<div class="track" data-row>' + cells.join('') +
+      '<div class="ov"><span class="ovbtn"><span class="ovlab">More</span><span class="wall"></span>' +
+      '<span class="zone"><span class="gbtri" aria-hidden="true"></span></span></span>' +
+      '<ul class="ovlist">' + items + foot + '</ul></div>' +
+      '<span class="thumb still"></span></div>';
+
+    var track = host.querySelector('.track');
+    var dd = track.querySelector('.ov');
+    var thumb = track.querySelector('.thumb');
+    var copy = track.cloneNode(true);
+    copy.className = 'track tcopy still';
+    copy.removeAttribute('data-row');
+    copy.querySelector('.ovlist').remove();
+    copy.querySelector('.thumb').remove();
+    host.appendChild(copy);
+    var visible = [];
+
+    function still(state) {
+      thumb.classList.toggle('still', state);
+      copy.classList.toggle('still', state);
+    }
+
+    function cellsOf(root) {
+      return [].slice.call(root.children).filter(function (c) { return c.classList.contains('s'); });
+    }
+
+    /* What does not fit moves into More, measured at natural widths with the thumb away. */
+    function measure(protect) {
+      var cs = cellsOf(track).filter(function (c) { return c.dataset.g !== 'all'; });
+      cs.forEach(function (c) { c.style.display = ''; });
+      thumb.style.display = 'none';
+      track.style.overflow = 'hidden';
+      track.classList.add('measuring');
+      var i = cs.length - 1;
+      while (i >= 0 && track.scrollWidth > track.clientWidth + 1) {
+        if (cs[i].dataset.g !== protect) cs[i].style.display = 'none';
+        i--;
+      }
+      track.style.overflow = '';
+      track.classList.remove('measuring');
+      thumb.style.display = '';
+      visible = cs.filter(function (c) { return c.style.display !== 'none'; }).map(function (c) { return c.dataset.g; });
+      cs.forEach(function (c) {
+        var cc = copy.querySelector('[data-g="' + c.dataset.g + '"]');
+        if (cc) cc.style.display = c.style.display;
+      });
+      track.querySelectorAll('.ovlist .mi').forEach(function (it) {
+        it.style.display = visible.indexOf(it.dataset.g) >= 0 ? 'none' : '';
+      });
+    }
+
+    /* The picked cell's word takes its final width and the others lose theirs, measured with
+       nothing moving, so the thumb aims at where the cell will be when the words have settled. */
+    function settle() {
+      var cs = cellsOf(track), prev = {}, finalW = {};
+      cs.forEach(function (c) {
+        var w = c.querySelector('.w');
+        prev[c.dataset.g] = w ? (w.style.width || '0px') : '0px';
+      });
+      track.classList.add('nofx');
+      cs.forEach(function (c) {
+        var w = c.querySelector('.w');
+        if (!w) { finalW[c.dataset.g] = '0px'; return; }
+        if (c.classList.contains('on')) {
+          w.textContent = unitWord(+c.querySelector('i').dataset.n, opts.countUnit);
+          w.style.width = 'auto';
+          finalW[c.dataset.g] = w.getBoundingClientRect().width + 'px';
+          w.style.width = finalW[c.dataset.g];
+        } else {
+          finalW[c.dataset.g] = '0px';
+          w.style.width = '0px';
+        }
+      });
+      void track.offsetWidth;
+      var target = track.querySelector('.s.on'), rect = null;
+      if (target && target.style.display !== 'none') {
+        var r = target.getBoundingClientRect(), t = track.getBoundingClientRect();
+        rect = { left: r.left - t.left, top: r.top - t.top, width: r.width, height: r.height };
+      }
+      cs.forEach(function (c) { var w = c.querySelector('.w'); if (w) w.style.width = prev[c.dataset.g]; });
+      void track.offsetWidth;
+      track.classList.remove('nofx');
+      cs.forEach(function (c) { var w = c.querySelector('.w'); if (w) w.style.width = finalW[c.dataset.g]; });
+      cellsOf(copy).forEach(function (c) {
+        var w = c.querySelector('.w');
+        if (!w) return;
+        if (c.classList.contains('on')) {
+          var src = track.querySelector('[data-g="' + c.dataset.g + '"] .w');
+          if (src) w.textContent = src.textContent;
+        }
+        w.style.width = finalW[c.dataset.g] || '0px';
+      });
+      return rect;
+    }
+
+    function place(p) {
+      thumb.style.left = p.left + 'px';
+      thumb.style.top = p.top + 'px';
+      thumb.style.width = p.width + 'px';
+      thumb.style.height = p.height + 'px';
+      copy.style.clipPath = 'inset(' + p.top + 'px ' + (track.clientWidth - p.left - p.width) + 'px ' +
+        (track.clientHeight - p.top - p.height) + 'px ' + p.left + 'px)';
+    }
+
+    function paint(instant) {
+      var hidden = sel !== 'all' && visible.indexOf(sel) < 0;
+      host.querySelectorAll('[data-g]').forEach(function (el) { el.classList.toggle('on', el.dataset.g === sel); });
+      [track, copy].forEach(function (root) {
+        var seq = [].slice.call(root.children).filter(function (el) {
+          return (el.classList.contains('s') || el.classList.contains('ov')) && el.style.display !== 'none';
+        });
+        seq.forEach(function (el) { el.classList.remove('nextpick'); });
+        var at = -1;
+        seq.forEach(function (el, i) { if (el.classList.contains('on')) at = i; });
+        if (at >= 0 && seq[at + 1]) seq[at + 1].classList.add('nextpick');
+      });
+      var label = hidden ? (names[sel] || 'More') : 'More';
+      track.querySelector('.ovlab').textContent = label;
+      copy.querySelector('.ovlab').textContent = label;
+      dd.classList.toggle('on', hidden);
+      copy.querySelector('.ov').classList.toggle('on', hidden);
+      var rect = settle();
+      if (!rect) {
+        var b = dd.querySelector('.ovbtn').getBoundingClientRect(), t = track.getBoundingClientRect();
+        rect = { left: b.left - t.left, top: b.top - t.top, width: b.width, height: b.height };
+      }
+      if (instant || thumb.classList.contains('still')) {
+        still(true);
+        place(rect);
+        thumb.style.opacity = '1';
+        copy.style.opacity = '1';
+        requestAnimationFrame(function () { requestAnimationFrame(function () { still(false); }); });
+      } else {
+        place(rect);
+      }
+    }
+
+    function swapIn(id) {
+      if (visible.indexOf(id) >= 0 || !visible.length) return;
+      var lastId = visible[visible.length - 1];
+      [track, copy].forEach(function (root) {
+        var c = root.querySelector('.s[data-g="' + id + '"]');
+        var last = root.querySelector('.s[data-g="' + lastId + '"]');
+        if (c && last) root.insertBefore(c, last.nextSibling);
+      });
+      measure(id);
+    }
+
+    host.addEventListener('click', function (e) {
+      if (!e.target || !e.target.closest) return;
+      if (e.target.closest('.foot')) {
+        var amt = e.target.closest('[data-amt]');
+        if (!amt) return;
+        host.querySelectorAll('.foot [data-amt]').forEach(function (x) { x.classList.toggle('on', x === amt); });
+        return;
+      }
+      if (e.target.closest('.ovbtn')) { dd.classList.toggle('open'); return; }
+      var it = e.target.closest('[data-g]');
+      if (!it || it.dataset.g === sel) { dd.classList.remove('open'); return; }
+      sel = it.dataset.g;
+      dd.classList.remove('open');
+      if (it.closest('.ovlist')) swapIn(sel);
+      paint(false);
+    });
+
+    function fit() {
+      measure();
+      paint(true);
+      host.classList.add('ready');
+      host.classList.add('isIn');
+      host.classList.add('isShown');
+    }
+    fit();
+    if (window.ResizeObserver) new window.ResizeObserver(function () { measure(); paint(true); }).observe(track);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+    return { paint: paint, track: track, copy: copy, thumb: thumb };
+  }
+
+  function firstPart(v) { var d = 0, i, c; for (i = 0; i < v.length; i++) { c = v.charAt(i); if (c === '(') d++; if (c === ')') d--; if (c === ',' && d === 0) return v.slice(0, i).trim(); } return String(v || '').trim(); }
+
+  window.F6 = {
+    first: firstPart,
+    gamesBar: gamesBar,
+    /* the four numbers a field is judged on, plus its paper and its ring */
+    fieldRows: function (input, w) {
+      return [
+        { what: 'height', got: Lab.cs(input, 'height'), want: w.h },
+        { what: 'padding', got: Lab.cs(input, 'padding'), want: w.pad },
+        { what: 'border', got: Lab.cs(input, 'border-width'), want: '0px' },
+        { what: 'border-radius', got: Lab.cs(input, 'border-radius'), want: '12px' },
+        { what: 'background-color', got: Lab.cs(input, 'background-color'), want: w.bg },
+        { what: 'box-shadow', got: Lab.cs(input, 'box-shadow'), want: w.sh },
+        { what: 'font-size / line-height', got: Lab.cs(input, 'font-size') + ' / ' + Lab.cs(input, 'line-height'), want: w.font },
+        { what: 'font-family', got: Lab.cs(input, 'font-family').split(',')[0], want: 'BuloRounded' },
+        { what: 'color', got: Lab.cs(input, 'color'), want: '#141414' }
+      ];
+    },
+    /* the track and one of its cells, whatever the chooser is called */
+    trackRows: function (track, cell, w) {
+      return [
+        { what: 'track height', got: Lab.cs(track, 'height'), want: w.trackH || '28px' },
+        { what: 'track padding', got: Lab.cs(track, 'padding'), want: '2px' },
+        { what: 'track border-radius', got: Lab.cs(track, 'border-radius'), want: w.rad },
+        { what: 'track background', got: Lab.cs(track, 'background-color'), want: w.tray },
+        { what: 'track ring', got: Lab.cs(track, 'box-shadow'), want: 'inset 0 0 0 1px ' + w.ring },
+        { what: 'cell height', got: Lab.cs(cell, 'height'), want: w.cellH || '24px' },
+        { what: 'cell padding', got: Lab.cs(cell, 'padding'), want: '0 10px' },
+        { what: 'cell font', got: Lab.cs(cell, 'font-weight') + ' ' + Lab.cs(cell, 'font-size') + ' / ' + Lab.cs(cell, 'line-height'), want: (w.cellFont || '700 16px / 24px') },
+        { what: 'cell colour', got: Lab.cs(cell, 'color'), want: '#4e4d4c' }
+      ];
+    },
+    thumbRows: function (thumb, w) {
+      return [
+        { what: 'thumb background', got: Lab.cs(thumb, 'background-color'), want: '#43a038' },
+        { what: 'thumb shadow', got: Lab.cs(thumb, 'box-shadow'), want: 'inset 0 0 0 1px #347d2c, 0 2px 4px rgba(0, 0, 0, .06)' },
+        { what: 'thumb border-radius', got: Lab.cs(thumb, 'border-radius'), want: w.rad },
+        { what: 'thumb travel', got: Lab.cs(thumb, 'transition-property') + ' over ' + Lab.cs(thumb, 'transition-duration'), want: w.travel },
+        { what: 'thumb curve', got: firstPart(Lab.cs(thumb, 'transition-timing-function')), want: 'cubic-bezier(0.645, 0.045, 0.355, 1)' }
+      ];
+    }
+  };
+})();
+</script>
+
+<div class="grid g2">
+
+  <div class="card">
+    <div class="body">
+      <h3>The field <span class="tag built">built</span></h3>
+      <p class="rule-text">A field is 32px tall with 0 10px of padding, no border, a 12px squircle, white paper, an inset 1px --edge ring, 16px Bulo in --ink and a --muted placeholder. Focus is an inset 2px --wm-accent-ring with no outline. An error line is 14 / 18 in --wm-danger 4px below. A stack of fields keeps a 12px gap.</p>
+      <div class="demo">
+        <div class="site wm" data-demo>
+          <div class="wmModal wmOpen modalInstant" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
+            <div class="wmScrim" style="position:static;height:0"></div>
+            <div class="wmPanel" style="position:static;transform:none;width:400px;max-height:none">
+              <div class="wmBox">
+                <div class="wmHead"><span class="wmTitle">Name the table</span></div>
+                <div class="wmBody">
+                  <div class="wmTxt">Give the table a name your friends will know it by.</div>
+                  <div class="wmFlds">
+                    <label class="wmFld"><input type="text" placeholder="Table name" /></label>
+                    <label class="wmFld"><input type="text" placeholder="Password" /><span class="wmFldErr">That name is taken.</span></label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <script>
+      (function () {
+        var card = document.currentScript.closest('.card');
+        var root = card.querySelector('[data-demo]');
+        var flds = root.querySelector('.wmFlds');
+        var first = flds.querySelectorAll('input')[0];
+        var second = flds.querySelectorAll('input')[1];
+        var err = root.querySelector('.wmFldErr');
+        second.focus({ preventScroll: true });
+        var focusShadow = Lab.cs(second, 'box-shadow');
+        var focusOutline = Lab.cs(second, 'outline-style');
+        second.blur();
+        Lab.table(card, F6.fieldRows(first, {
+          h: '32px', pad: '0 10px', bg: '#ffffff', sh: 'inset 0 0 0 1px #d2cfca', font: '16px / 32px'
+        }).concat([
+          { what: 'placeholder colour', got: Lab.cs(first, 'color', '::placeholder'), want: '#4e4d4c' },
+          { what: 'the stack’s gap', got: Lab.cs(flds, 'gap'), want: '12px' }
+        ]), 'The field on the box’s own paper');
+        Lab.table(card, [
+          { what: 'box-shadow on focus', got: focusShadow, want: 'inset 0 0 0 1px #8a857c' },
+          { what: 'outline on focus', got: focusOutline, want: 'none' }
+        ], 'Focus, measured with the field focused');
+        Lab.table(card, [
+          { what: 'font-size / line-height', got: Lab.cs(err, 'font-size') + ' / ' + Lab.cs(err, 'line-height'), want: '14px / 18px' },
+          { what: 'colour', got: Lab.cs(err, 'color'), want: '#c92a2a' },
+          { what: 'padding-top', got: Lab.cs(err, 'padding-top'), want: '4px' }
+        ], 'The error line');
+        Lab.note(card, 'Both fields are live: click one and the ring turns green. The guide writes the field’s line height as 16px type in a 32px box; the sheet sets line-height to the field’s own height, which is what the Guide column says.');
+      })();
+      </script>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="body">
+      <h3>The field on a white card, and a bad one <span class="tag built">built</span></h3>
+      <p class="rule-text">On a white card the field takes --canvas paper instead, so it still reads against the card. A field the form has marked bad keeps its shape and turns its ring --wm-danger.</p>
+      <div class="demo">
+        <div class="site wm" data-demo>
+          <div class="wmModal wmOpen modalInstant" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
+            <div class="wmScrim" style="position:static;height:0"></div>
+            <div class="wmPanel" style="position:static;transform:none;width:400px;max-height:none">
+              <div class="wmBox">
+                <div class="wmBody">
+                  <div class="wmCard">
+                    <div class="wmFlds" style="padding:12px 0">
+                      <label class="wmFld"><input type="text" placeholder="Your name" /></label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="demo">
+        <div class="site wm" data-demo2>
+          <div class="wmModal wmAuth wmOpen modalInstant" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
+            <div class="wmScrim" style="position:static;height:0"></div>
+            <div class="wmPanel" style="position:static;transform:none;width:400px;max-height:none">
+              <div class="wmBox">
+                <div class="wmBody">
+                  <form class="box">
+                    <ul>
+                      <li>
+                        <input id="login-email" name="email" type="text" class="bad" />
+                        <label for="login-email">Email</label>
+                      </li>
+                    </ul>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <script>
+      (function () {
+        var card = document.currentScript.closest('.card');
+        var oncard = card.querySelector('[data-demo] .wmCard .wmFld input');
+        var bad = card.querySelector('[data-demo2] .box input.bad');
+        Lab.table(card, F6.fieldRows(oncard, {
+          h: '32px', pad: '0 10px', bg: '#f9f6f2', sh: 'inset 0 0 0 1px #d2cfca', font: '16px / 32px'
+        }), 'The field inside a .wmCard');
+        Lab.table(card, F6.fieldRows(bad, {
+          h: '32px', pad: '0 10px', bg: '#ffffff', sh: 'inset 0 0 0 1px #c92a2a', font: '16px / 32px'
+        }), 'A bad field in the auth box');
+        Lab.note(card, 'The auth box’s label is its placeholder, so it stands over an empty field and BoxForm fades it once something is typed. The stack inside the card is given 12px above and below, which is the lab’s own layout.');
+        Lab.note(card, 'The auth box’s own error line is left out. The lab’s sheet is built with BoxForm after Modals where the site loads BoxForm first, so master’s rule wins the tie here and draws that line absolutely positioned in master’s red. The modal’s .wmFldErr in the card above is the one to judge.');
+      })();
+      </script>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="body">
+      <h3>The search field, at 24 <span class="tag call">guide's call</span></h3>
+      <p class="rule-text">Guide 7.3 says a search field in a table head is the same control at 24px, and it names the one that ships: the per-game leaderboard's player search, white on the band head, 140px wide, with the same ring and the same green focus.</p>
+      <div class="demo">
+        <div class="site wm" data-demo>
+          <div id="mainContainer" class="general" style="min-height:0">
+            <div class="helpBox gameLeaderboardPage">
+              <div class="content">
+                <div class="player-header-container">
+                  <span class="player-header-title">Player</span>
+                  <input type="text" placeholder="Search" aria-label="Search players" class="player-search-input" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <script>
+      (function () {
+        var card = document.currentScript.closest('.card');
+        var root = card.querySelector('[data-demo]');
+        var input = root.querySelector('.player-search-input');
+        input.focus({ preventScroll: true });
+        var focusShadow = Lab.cs(input, 'box-shadow');
+        input.blur();
+        Lab.table(card, [
+          { what: 'height', got: Lab.cs(input, 'height'), want: '24px', tag: 'call' },
+          { what: 'padding', got: Lab.cs(input, 'padding'), want: '0 10px', tag: 'call' },
+          { what: 'width', got: Lab.cs(input, 'width'), want: '140px', tag: 'call' },
+          { what: 'border-radius', got: Lab.cs(input, 'border-radius'), want: '12px', tag: 'call' },
+          { what: 'background-color', got: Lab.cs(input, 'background-color'), want: '#ffffff', tag: 'call' },
+          { what: 'box-shadow', got: Lab.cs(input, 'box-shadow'), want: 'inset 0 0 0 1px #d2cfca', tag: 'call' },
+          { what: 'font-size / line-height', got: Lab.cs(input, 'font-size') + ' / ' + Lab.cs(input, 'line-height'), want: '16px / 24px', tag: 'call' },
+          { what: 'placeholder colour', got: Lab.cs(input, 'color', '::placeholder'), want: '#4e4d4c', tag: 'call' },
+          { what: 'box-shadow on focus', got: focusShadow, want: 'inset 0 0 0 1px #8a857c', tag: 'call' },
+          { what: 'what 7.3 says of it', got: 'one ships, on the board pages (_wm-leaderboard.scss:378-400)', want: 'one ships, on the board pages (_wm-leaderboard.scss:378-400)' }
+        ], 'The 24px field 7.3 invented, now built');
+        Lab.note(card, 'Every row is tagged the guide’s call, and every one of them is built: _wm-leaderboard.scss:378-400 draws the field on the board pages, and 7.3 says so.');
+      })();
+      </script>
+    </div>
+  </div>
+
+
+</div>
+
+<div class="grid g1">
+
+  <div class="card">
+    <div class="body">
+      <h3>The tray, in a modal and on a white card <span class="tag built">built</span></h3>
+      <p class="rule-text">The track is 28px with 2px of padding, a 12px squircle, --wm-seg #e4ddd0 paper and an inset --wm-seg-ring #c9c0ae. Cells are 24px, 0 10px, 16 / 24 bold in --muted, with a 1px divider in the ring colour that spans the track and fades beside the pick. On a white card the track is --band with a #d9d2c4 ring. Off stands first.</p>
+      <div class="demo">
+        <div class="site wm" data-demo>
+          <div class="wmModal wmOpen modalInstant" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
+            <div class="wmScrim" style="position:static;height:0"></div>
+            <div class="wmPanel" style="position:static;transform:none;width:400px;max-height:none">
+              <div class="wmBox">
+                <div class="wmBody">
+                  <span class="wmSeg" role="radiogroup" aria-label="Sound">
+                    <span class="wmCell" role="radio" tabindex="0" aria-checked="false">Off</span>
+                    <span class="wmCell wmPicked" role="radio" tabindex="0" aria-checked="true">Soft</span>
+                    <span class="wmCell" role="radio" tabindex="0" aria-checked="false">On</span>
+                  </span>
+                  <div class="wmCard">
+                    <div class="wmRow">
+                      <span class="wmRowLab"><span class="wmRowTitle">Sound</span><span class="wmRowLine">How loud the table is.</span></span>
+                      <span class="wmRowCtl">
+                        <span class="wmSeg" role="radiogroup" aria-label="Sound on a card">
+                          <span class="wmCell wmPicked" role="radio" tabindex="0" aria-checked="true">Off</span>
+                          <span class="wmCell" role="radio" tabindex="0" aria-checked="false">Soft</span>
+                          <span class="wmCell" role="radio" tabindex="0" aria-checked="false">On</span>
+                        </span>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <script>
+      (function () {
+        var card = document.currentScript.closest('.card');
+        var root = card.querySelector('[data-demo]');
+        var segs = root.querySelectorAll('.wmSeg');
+        var cls = { cell: 'wmCell', picked: 'wmPicked', thumb: 'wmSegThumb', ink: 'wmSegInk', still: 'wmStill' };
+        var a = Lab.seg(segs[0], cls);
+        var b = Lab.seg(segs[1], cls);
+        var cellA = segs[0].querySelector('.wmCell');
+        var second = segs[0].querySelectorAll('.wmCell')[1];
+        var inkCell = segs[0].querySelector('.wmSegInk .wmCell');
+        Lab.table(card, F6.trackRows(segs[0], cellA, { rad: '12px', tray: '#e4ddd0', ring: '#c9c0ae' }).concat([
+          { what: 'cursor on the picked cell', got: Lab.cs(segs[0].querySelector('.wmCell.wmPicked'), 'cursor'), want: 'default, 7.4’s wish', tag: 'note' }
+        ]), 'The tray on the box’s paper');
+        Lab.table(card, [
+          { what: 'divider width', got: Lab.rule('.site .wmModal .wmSeg .wmCell + .wmCell::before', 'width', segs[0]), want: '1px', tag: 'rule' },
+          { what: 'divider top / bottom', got: Lab.rule('.site .wmModal .wmSeg .wmCell + .wmCell::before', 'top', segs[0]) + ' / ' + Lab.rule('.site .wmModal .wmSeg .wmCell + .wmCell::before', 'bottom', segs[0]), want: '-2px / -2px', tag: 'rule' },
+          { what: 'divider colour', got: Lab.rule('.site .wmModal .wmSeg .wmCell + .wmCell::before', 'background', segs[0]), want: '#c9c0ae', tag: 'rule' },
+          { what: 'divider beside the pick', got: Lab.rule('.site .wmModal .wmSeg .wmCell.wmPicked::before', 'opacity', segs[0]), want: '0', tag: 'rule' }
+        ], 'The divider');
+        Lab.table(card, F6.thumbRows(a.thumb, { rad: '12px', travel: 'left, width, top, height, opacity over 0.22s, 0.22s, 0.22s, 0.22s, 0.11s' }).concat([
+          { what: 'the white copy’s ink', got: Lab.cs(inkCell, 'color'), want: '#ffffff' },
+          { what: 'its outline', got: Lab.cs(inkCell, 'text-shadow'), want: '-1px -1px 0 #347d2c, 1px -1px 0 #347d2c, -1px 1px 0 #347d2c, 1px 1px 0 #347d2c' }
+        ]), 'The thumb, and the words it turns white');
+        Lab.table(card, F6.trackRows(segs[1], segs[1].querySelector('.wmCell'), { rad: '12px', tray: '#f4eee5', ring: '#d9d2c4' }).slice(3, 5).concat([
+          { what: 'divider colour on a card', got: Lab.rule('.site .wmModal .wmCard .wmSeg .wmCell + .wmCell::before', 'background', segs[1]), want: '#d9d2c4', tag: 'rule' }
+        ]), 'The same tray on a white card');
+        Lab.table(card, [
+          { what: 'the modal tray’s corner', got: Lab.cs(segs[0], 'border-radius'), want: '12 as built, the lab’s 14 to match the games bar', tag: 'open' },
+          { what: 'the picked cell’s hand', got: Lab.cs(segs[0].querySelector('.wmCell.wmPicked'), 'cursor'), want: 'the games bar shows none; this one still does', tag: 'open' }
+        ], 'Still open');
+        Lab.note(card, 'Both trays are live: click a cell and the thumb travels, the divider beside it fades and the words turn white only where the thumb has reached. The thumb and the white copy are built here by the same steps ModalShell.placeSegThumb takes.');
+      })();
+      </script>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="body">
+      <h3>The settings tabs <span class="tag built">built</span></h3>
+      <p class="rule-text">The settings box's tabs are the same tray one rung up: a 36px track holding 32px cells at 18px bold, each cell sharing the width.</p>
+      <div class="demo">
+        <div class="site wm" data-demo>
+          <div class="wmModal wmWide wmSettings wmOpen modalInstant" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
+            <div class="wmScrim" style="position:static;height:0"></div>
+            <div class="wmPanel" style="position:static;transform:none;width:640px;max-height:none">
+              <div class="wmBox">
+                <div class="wmBody">
+                  <div class="wmSeg wmTabs" role="tablist" aria-label="Settings">
+                    <span class="wmCell wmPicked" role="tab" tabindex="0" aria-selected="true" data-page="game">Game</span>
+                    <span class="wmCell" role="tab" tabindex="0" aria-selected="false" data-page="design">Design</span>
+                    <span class="wmCell" role="tab" tabindex="0" aria-selected="false" data-page="account">Account</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <script>
+      (function () {
+        var card = document.currentScript.closest('.card');
+        var root = card.querySelector('[data-demo]');
+        var tabs = root.querySelector('.wmSeg.wmTabs');
+        var t = Lab.seg(tabs, { cell: 'wmCell', picked: 'wmPicked', thumb: 'wmSegThumb', ink: 'wmSegInk', still: 'wmStill' });
+        var cell = tabs.querySelector('.wmCell');
+        Lab.table(card, F6.trackRows(tabs, cell, {
+          rad: '12px', tray: '#e4ddd0', ring: '#c9c0ae', trackH: '36px', cellH: '32px', cellFont: '700 18px / 32px'
+        }).concat([
+          { what: 'track width', got: Lab.cs(tabs, 'width'), want: '616px' },
+          { what: 'cell flex', got: Lab.cs(cell, 'flex-grow') + ' ' + Lab.cs(cell, 'flex-shrink') + ' ' + Lab.cs(cell, 'flex-basis'), want: '1 1 0px' },
+          { what: 'the gap under the tabs', got: Lab.cs(tabs, 'margin-bottom'), want: '8px' }
+        ]), 'The tabs, a 36px track of 32px cells');
+        Lab.note(card, 'The tabs are live. The track is 36 because the cells are 32 and the track keeps its own 2px either side, which is the tray’s rule at every size.');
+      })();
+      </script>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="body">
+      <h3>The tray on a page <span class="tag built">built</span></h3>
+      <p class="rule-text">The per-game leaderboard draws the same tray on its own markup: the same 28 / 2 / 12 track in --wm-seg with the --wm-seg-ring, the same green thumb and the same 220ms travel, written as --lb-thspd on the page.</p>
+      <div class="demo">
+        <div class="site wm" data-demo>
+          <div id="mainContainer" class="general" style="min-height:0">
+            <div class="helpBox gameLeaderboardPage">
+              <div class="content">
+                <div class="lbTables">
+                  <div class="lbHead">
+                    <h2 class="leaderboard-title"><span class="lbTitleText">Daily Leaderboard</span><span class="lbWhen">Today</span></h2>
+                    <div class="lbSeg" role="radiogroup" aria-label="Leaderboard period">
+                      <span class="lbCell lbPicked" data-period="daily" role="radio" aria-checked="true" tabindex="0">Daily</span>
+                      <span class="lbCell" data-period="weekly" role="radio" aria-checked="false" tabindex="0">Weekly</span>
+                      <span class="lbCell" data-period="monthly" role="radio" aria-checked="false" tabindex="0">Monthly</span>
+                      <span class="lbCell" data-period="alltime" role="radio" aria-checked="false" tabindex="0">All-time</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <script>
+      (function () {
+        var card = document.currentScript.closest('.card');
+        var root = card.querySelector('[data-demo]');
+        var seg = root.querySelector('.lbSeg');
+        var t = Lab.seg(seg, { cell: 'lbCell', picked: 'lbPicked', thumb: 'lbSegThumb', ink: 'lbSegInk', still: 'lbStill' });
+        var cell = seg.querySelector('.lbCell');
+        Lab.table(card, F6.trackRows(seg, cell, { rad: '12px', tray: '#e4ddd0', ring: '#c9c0ae' }), 'The board’s tray');
+        Lab.table(card, F6.thumbRows(t.thumb, { rad: '12px', travel: 'left, width, top, height, opacity over 0.22s, 0.22s, 0.22s, 0.22s, 0.11s' }).concat([
+          { what: '--lb-thspd', got: Lab.cs(seg, '--lb-thspd').trim(), want: '220ms' },
+          { what: '--ot-hover, the unpicked cell’s paper', got: Lab.token(cell, '--ot-hover'), want: '#d9d2c4' },
+          { what: 'the picked cell’s hand', got: Lab.cs(seg.querySelector('.lbPicked'), 'cursor'), want: 'default' }
+        ]), 'Its thumb, and what the page adds');
+        Lab.note(card, 'The board’s tray is live, and it is the one chooser on the site that already shows no hand on the cell you are standing on.');
+      })();
+      </script>
+    </div>
+  </div>
+
+
+  <div class="card" style="overflow:visible;min-width:0">
+    <div class="body">
+      <h3>The games bar <span class="tag built">built</span></h3>
+      <p class="rule-text">The games bar is the same 28px chooser at a 14px corner, with 24px cells at 0 10px in bold 16 / 24 --muted, a 12.3px count after a middle dot, a 1px --wm-seg-ring divider, a green thumb with its ring and drop travelling over 220ms, a --rule hover paper on an unpicked cell, no hand on the picked one, and a More cell whose list keeps the 14px corner.</p>
+      <div class="demo" style="overflow:visible">
+        <div class="site fp wm" data-demo>
+          <div class="lobbyscope" id="openTablesTop">
+            <div class="otFilter" id="otFilter" aria-label="Games"></div>
+          </div>
+        </div>
+      </div>
+      <div class="demo">
+        <div class="site fp wm" data-empty>
+          <div class="lobbyscope">
+            <div class="otFilter" aria-label="Games"></div>
+          </div>
+        </div>
+      </div>
+      <script>
+      (function () {
+        var card = document.currentScript.closest('.card');
+        var host = card.querySelector('[data-demo] .otFilter');
+        var empty = card.querySelector('[data-empty] .otFilter');
+        var bar = F6.gamesBar(host, {
+          games: [
+            { id: 'hearts', name: 'Hearts', count: 12 },
+            { id: 'spades', name: 'Spades', count: 7 },
+            { id: 'euchre', name: 'Euchre', count: 5 },
+            { id: 'canasta', name: 'Canasta', count: 3 },
+            { id: 'cribbage', name: 'Cribbage', count: 2 },
+            { id: 'ginrummy', name: 'Gin Rummy', count: 1 },
+            { id: 'pinochledd', name: 'Double Deck Pinochle', count: 1 },
+            { id: 'handfoot', name: 'Hand & Foot', count: 1 },
+            { id: 'bridge', name: 'Bridge', count: 0 },
+            { id: 'whist', name: 'Whist', count: 0 },
+            { id: 'sheepshead', name: 'Sheepshead', count: 0 },
+            { id: 'twentynine', name: 'Twenty-Nine', count: 0 },
+            { id: 'sergeantmajor', name: 'Sergeant Major', count: 0 },
+            { id: 'rummy', name: 'Rummy', count: 0 },
+            { id: 'crazyeights', name: 'Crazy Eights', count: 0 },
+            { id: 'gofish', name: 'Go Fish', count: 0 },
+            { id: 'oldmaid', name: 'Old Maid', count: 0 },
+            { id: 'pinochle', name: 'Pinochle', count: 0 }
+          ],
+          allLabel: 'All games', countUnit: 'table', amounts: [6, 12, 0], amount: 6
+        });
+        bar.thumb.classList.remove('still');
+        var track = bar.track;
+        var cell = track.querySelector('.s');
+        var count = track.querySelector('.s i');
+        var list = host.querySelector('.ovlist');
+        var row = list.querySelector('.mi');
+        Lab.table(card, F6.trackRows(track, cell, { rad: '14px', tray: '#e4ddd0', ring: '#c9c0ae' }).concat([
+          { what: 'the count', got: Lab.cs(count, 'font-size') + ' ' + Lab.cs(count, 'font-weight'), want: '12.3px 700' },
+          { what: 'the picked cell’s hand', got: Lab.cs(track.querySelector('.s.on'), 'cursor'), want: 'default' },
+          { what: 'an empty host', got: Lab.cs(empty, 'min-height') + ', ' + Lab.cs(empty, 'background-color'), want: '28px, #e4ddd0' }
+        ]), 'The track, its cells and the host that stands in for it');
+        Lab.table(card, F6.thumbRows(bar.thumb, { rad: '12px', travel: 'left, width, top, height, opacity over 0.22s, 0.22s, 0.22s, 0.22s, 0.11s' }), 'The thumb');
+        Lab.table(card, [
+          { what: 'divider width / colour', got: Lab.rule('.site.fp .otFilter .track > .s + .s::before', 'width', track) + ' / ' + Lab.rule('.site.fp .otFilter .track > .s + .s::before', 'background', track), want: '1px / #c9c0ae', tag: 'rule' },
+          { what: '--ot-hover', got: Lab.token(track, '--ot-hover'), want: '#d9d2c4' },
+          { what: 'the hover paper on an unpicked cell', got: Lab.rule('.site.fp .otFilter .track:not(.tcopy) > .s:not(.on):hover::after', 'background', track), want: '#d9d2c4', tag: 'rule' },
+          { what: 'the list’s corner', got: Lab.cs(list, 'border-radius'), want: '14px' },
+          { what: 'the list’s paper and line', got: Lab.cs(list, 'background-color') + ', ' + Lab.cs(list, 'border-color'), want: '#ffffff, #c9c0ae' },
+          { what: 'a row in it', got: Lab.cs(row, 'background-color') + ', ' + Lab.cs(row, 'border-bottom-color'), want: '#f9f6f2, #d9d2c4' }
+        ], 'The divider, the hover and the More list');
+        Lab.note(card, 'The bar is live: pick a game and the thumb travels, the count grows its word, the lines beside the pick fade and the white copy of the words is clipped to the thumb. Hover More to open the list and pick from it, and the game takes the last cell. The card is left with its overflow showing so the list can hang below the bar.');
+        Lab.note(card, 'The list itself is white with a #c9c0ae border and only its rows take --ot-listrow and --ot-listline, which is what the two rows above report.');
+      })();
+      </script>
+    </div>
+  </div>
+
+  <div class="card" style="overflow:visible;min-width:0">
+    <div class="body">
+      <h3>The games bar in a modal <span class="tag built">built</span></h3>
+      <p class="rule-text">A dialog draws the same bar through the same mixin, so nothing about it changes: the modal calls wm-games-bar with its own scope rather than keeping a copy.</p>
+      <div class="demo" style="overflow:visible">
+        <div class="site wm" data-demo>
+          <div class="wmModal wmOpen modalInstant" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
+            <div class="wmScrim" style="position:static;height:0"></div>
+            <div class="wmPanel" style="position:static;transform:none;width:400px;max-height:none">
+              <div class="wmBox">
+                <div class="wmHead"><span class="wmTitle">Pick a game</span></div>
+                <div class="wmBody">
+                  <div class="otFilter" aria-label="Games"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <script>
+      (function () {
+        var card = document.currentScript.closest('.card');
+        var host = card.querySelector('[data-demo] .otFilter');
+        var bar = F6.gamesBar(host, {
+          games: [
+            { id: 'hearts', name: 'Hearts', count: 4 },
+            { id: 'spades', name: 'Spades', count: 2 },
+            { id: 'euchre', name: 'Euchre', count: 1 },
+            { id: 'canasta', name: 'Canasta', count: 0 },
+            { id: 'whist', name: 'Whist', count: 0 }
+          ],
+          allLabel: 'All games', countUnit: 'table', amounts: [6, 12, 0], amount: 6
+        });
+        bar.thumb.classList.remove('still');
+        var track = bar.track;
+        var cell = track.querySelector('.s');
+        Lab.table(card, F6.trackRows(track, cell, { rad: '14px', tray: '#e4ddd0', ring: '#c9c0ae' }).concat([
+          { what: 'the host’s width', got: Lab.cs(host, 'width'), want: '376px' },
+          { what: 'the picked cell’s hand', got: Lab.cs(track.querySelector('.s.on'), 'cursor'), want: 'default' }
+        ]), 'The same bar, in a 400 box');
+        Lab.table(card, F6.thumbRows(bar.thumb, { rad: '12px', travel: 'left, width, top, height, opacity over 0.22s, 0.22s, 0.22s, 0.22s, 0.11s' }), 'Its thumb');
+        Lab.note(card, 'The bar is live here too. Its corner is 14 where the tray in the same box is 12, which is open item 4.');
+      })();
+      </script>
+    </div>
+  </div>
+
+</div>
+
+</section>

@@ -1,0 +1,551 @@
+<section class="sec" id="panels">
+<h2>11 Dropdowns, tooltips, notices, avatars</h2>
+<div class="rule"></div>
+<p class="desc">Guide 7.9, with the games panel and the user cluster rows of 8.1. Every piece is the site's own markup, from common/menu_bar.dust, FrontpageTooltip.js, Notice.js, ShutdownNotice.js, PoolInactiveNotice.js and the avatar rules in _avatar-ink.scss, drawn under a .site root so site.css styles it. A panel that hangs off the fixed bar is pinned to static inside its card, and the note says so each time. Ids repeat across the demos, so every script measures with its own root's querySelector and never getElementById.</p>
+
+
+<div class="grid g1">
+
+<div class="card"><div class="body">
+<h3>The games panel <span class="tag built">built</span></h3>
+<p class="rule-text">The games panel opens on hover as five columns 12px apart with a 32px canvas head strip, hairline dividers from the third column, heads 16 / 32 bold in the ink, and links 16 / 24 in the soft ink that take the ink and a drawn underline on hover.</p>
+<div class="demo" style="background:#f9f6f2;padding:14px">
+  <div class="site wm" data-demo style="background:transparent;display:flex;align-items:flex-start">
+    <div class="mpanel mgdrop" style="position:static;display:flex;gap:12px">
+      <div class="mgcol">
+        <div class="mghead">Trick-taking</div>
+        <a href="/hearts">Hearts</a>
+        <a href="/spades">Spades</a>
+        <a href="/euchre">Euchre</a>
+        <a href="/pinochle">Pinochle</a>
+        <a href="/double-deck-pinochle">Double Deck Pinochle</a>
+      </div>
+      <div class="mgcol">
+        <div class="mghead">&nbsp;</div>
+        <a href="/bridge">Bridge</a>
+        <a href="/whist">Whist</a>
+        <a href="/sheepshead">Sheepshead</a>
+        <a href="/twenty-nine">Twenty-Nine</a>
+        <a href="/sergeant-major">Sergeant Major</a>
+      </div>
+      <div class="mgcol">
+        <div class="mghead">Rummy</div>
+        <a href="/canasta">Canasta</a>
+        <a href="/gin-rummy">Gin Rummy</a>
+        <a href="/hand-and-foot">Hand &amp; Foot</a>
+        <a href="/rummy">Rummy</a>
+      </div>
+      <div class="mgcol">
+        <div class="mghead">Classics</div>
+        <a href="/cribbage">Cribbage</a>
+        <a href="/crazy-eights">Crazy Eights</a>
+        <a href="/go-fish">Go Fish</a>
+        <a href="/old-maid">Old Maid</a>
+      </div>
+      <div class="mgcol">
+        <div class="mghead">Single-player</div>
+        <a href="https://online-solitaire.com/">Solitaire</a>
+        <a href="https://online-solitaire.com/freecell">FreeCell</a>
+        <a href="https://online-solitaire.com/spider-solitaire">Spider Solitaire</a>
+        <a href="https://play2048.co/">2048 Game</a>
+      </div>
+    </div>
+  </div>
+</div>
+<p class="rl">Hover a link to see the drawn underline. The panel above is held open: it is the same .mpanel.mgdrop, pinned to static, since a page cannot hold itself hovered. Its display and its 12px gap are restated inline from the hover rule, and the table reads both from that rule rather than from the box.</p>
+<div class="demo" style="min-height:270px;background:#f9f6f2">
+  <div class="site wm" data-live>
+    <nav id="menuBarContainer" class="mbcenter" aria-label="Main navigation">
+      <ul id="menuBar">
+        <li class="mclink mgames">
+          <span>Games<span class="mtri" aria-hidden="true"></span></span>
+          <div class="mpanel mgdrop">
+            <div class="mgcol">
+              <div class="mghead">Trick-taking</div>
+              <a href="/hearts">Hearts</a>
+              <a href="/spades">Spades</a>
+              <a href="/euchre">Euchre</a>
+              <a href="/pinochle">Pinochle</a>
+              <a href="/double-deck-pinochle">Double Deck Pinochle</a>
+            </div>
+            <div class="mgcol">
+              <div class="mghead">&nbsp;</div>
+              <a href="/bridge">Bridge</a>
+              <a href="/whist">Whist</a>
+              <a href="/sheepshead">Sheepshead</a>
+              <a href="/twenty-nine">Twenty-Nine</a>
+              <a href="/sergeant-major">Sergeant Major</a>
+            </div>
+            <div class="mgcol">
+              <div class="mghead">Rummy</div>
+              <a href="/canasta">Canasta</a>
+              <a href="/gin-rummy">Gin Rummy</a>
+              <a href="/hand-and-foot">Hand &amp; Foot</a>
+              <a href="/rummy">Rummy</a>
+            </div>
+            <div class="mgcol">
+              <div class="mghead">Classics</div>
+              <a href="/cribbage">Cribbage</a>
+              <a href="/crazy-eights">Crazy Eights</a>
+              <a href="/go-fish">Go Fish</a>
+              <a href="/old-maid">Old Maid</a>
+            </div>
+            <div class="mgcol">
+              <div class="mghead">Single-player</div>
+              <a href="https://online-solitaire.com/">Solitaire</a>
+              <a href="https://online-solitaire.com/freecell">FreeCell</a>
+              <a href="https://online-solitaire.com/spider-solitaire">Spider Solitaire</a>
+              <a href="https://play2048.co/">2048 Game</a>
+            </div>
+          </div>
+        </li>
+        <li class="mclink"><a href="/rules">Rules</a></li>
+        <li class="mclink"><a href="/leaderboards">Leaderboards</a></li>
+      <li class="dropdown"><span>All games</span><div id="allGames"></div></li>
+      </ul>
+    </nav>
+  </div>
+</div>
+<p class="rl">The live bar: hover Games and the real panel opens where it opens on the site, 12px up into the bar. The logo and the user corner are section 12's, so only the left links stand here. The well is 270px tall so the open panel is not cut by the card.</p>
+<script>(function(){
+var card=document.currentScript.closest('.card');
+var root=card.querySelector('[data-demo]');
+var live=card.querySelector('[data-live]');
+var pan=root.querySelector('.mgdrop');
+var cols=root.querySelectorAll('.mgcol');
+var col3=cols[2];
+var head=root.querySelector('.mghead');
+var link=root.querySelector('.mgcol a');
+var tri=live.querySelector('.mtri');
+var HOV='.site.wm #menuBar > li.mgames:hover > .mgdrop';
+Lab.table(card,[
+ {what:'display',got:Lab.rule(HOV,'display',root),want:'flex',tag:'rule'},
+ {what:'gap',got:Lab.rule(HOV,'gap',root),want:'12px',tag:'rule'},
+ {what:'padding',got:Lab.cs(pan,'padding'),want:'0 12px 6px'},
+ {what:'border-radius',got:Lab.cs(pan,'border-radius'),want:'20px'},
+ {what:'border',got:Lab.cs(pan,'border-top-width')+' solid '+Lab.cs(pan,'border-top-color'),want:'1px solid #d2cfca'},
+ {what:'lift',got:Lab.cs(pan,'box-shadow'),want:'0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09)'},
+ {what:'paper under the strip',got:Lab.cs(pan,'background-color'),want:'#ffffff'},
+ {what:'head strip',got:Lab.cs(pan,'background-size').split(',')[0].trim(),want:'100% 32px'},
+ {what:'strip rule top',got:Lab.cs(pan, 'top', '::after'),want:'32px'},
+ {what:'strip rule height',got:Lab.cs(pan, 'height', '::after'),want:'1px'},
+ {what:'strip rule colour',got:Lab.cs(pan, 'background-color', '::after'),want:'#d2cfca'}
+],'The panel');
+Lab.table(card,[
+ {what:'columns',got:String(cols.length),want:'5'},
+ {what:'column 3 padding-left',got:Lab.cs(col3,'padding-left'),want:'12px'},
+ {what:'divider width',got:Lab.cs(col3, 'width', '::before'),want:'1px'},
+ {what:'divider top',got:Lab.cs(col3, 'top', '::before'),want:'33px'},
+ {what:'divider bottom',got:Lab.cs(col3, 'bottom', '::before'),want:'-6px'},
+ {what:'divider colour',got:Lab.cs(col3, 'background-color', '::before'),want:'#ebe7de'},
+ {what:'strip divider height',got:Lab.cs(col3, 'height', '::after'),want:'32px'},
+ {what:'strip divider colour',got:Lab.cs(col3, 'background-color', '::after'),want:'#d9d2c4'}
+],'The columns and their dividers');
+Lab.table(card,[
+ {what:'head weight',got:Lab.cs(head,'font-weight'),want:'700'},
+ {what:'head size',got:Lab.cs(head,'font-size'),want:'16px'},
+ {what:'head line',got:Lab.cs(head,'line-height'),want:'32px'},
+ {what:'head ink',got:Lab.cs(head,'color'),want:'#141414'},
+ {what:'head margin-bottom',got:Lab.cs(head,'margin-bottom'),want:'8px'},
+ {what:'link size',got:Lab.cs(link,'font-size'),want:'16px'},
+ {what:'link line',got:Lab.cs(link,'line-height'),want:'24px'},
+ {what:'link padding',got:Lab.cs(link,'padding'),want:'2px 0'},
+ {what:'link ink',got:Lab.cs(link,'color'),want:'#262626'},
+ {what:'link underline at rest',got:Lab.cs(link,'text-decoration-line'),want:'none'},
+ {what:'hover ink',got:Lab.rule('.site.wm #menuBar .mgcol a:hover','color',root),want:'#141414',tag:'rule'},
+ {what:'hover line left',got:Lab.rule('.site.wm #menuBar .mgcol a:hover::after','left',root),want:'1px',tag:'rule'},
+ {what:'hover line right',got:Lab.rule('.site.wm #menuBar .mgcol a:hover::after','right',root),want:'1px',tag:'rule'},
+ {what:'hover line bottom',got:Lab.rule('.site.wm #menuBar .mgcol a:hover::after','bottom',root),want:'6px',tag:'rule'},
+ {what:'hover line height',got:Lab.rule('.site.wm #menuBar .mgcol a:hover::after','height',root),want:'1px',tag:'rule'},
+ {what:'hover line paint',got:Lab.rule('.site.wm #menuBar .mgcol a:hover::after','background',root),want:'currentColor',tag:'rule'},
+ {what:'caret size',got:Lab.cs(tri,'width')+' by '+Lab.cs(tri,'height'),want:'8px by 7px'},
+ {what:'caret paint',got:Lab.cs(tri,'background-color'),want:'#262626'},
+ {what:'caret mask',got:Lab.assetName(tri,'-webkit-mask-image'),want:'arrowDown.svg'}
+],'The heads, the links and the caret');
+Lab.note(card,'The caret is measured on the live bar, where it takes the link’s own colour; standing alone it would read whatever colour it inherited.');
+})();</script>
+</div></div>
+
+<div class="card"><div class="body">
+<h3>The user cluster and its three dropdowns <span class="tag built">built</span></h3>
+<p class="rule-text">The bell and friends icons are 40 by 32, the avatar 28px in .avFoot, the name 16px bold in the soft ink, 6px apart; the three dropdowns take the panel chrome with a 32px head strip, 16 / 24 items and the drawn underline on hover.</p>
+<div class="demo">
+  <div class="site wm" data-cluster>
+    <nav id="menuBarContainer" class="mbcenter" aria-label="Main navigation">
+      <div id="userBarContainer">
+        <ul id="userBar">
+          <li class="activityIcon displayInline">
+            <img class="activityIconImg loaded" src="static/images/menuActivity.svg" alt="Activity" width="40" height="32" />
+            <span class="activityBadge"></span>
+            <div class="activityDropdown">
+              <div class="activityHeader"><span class="activityTitle">Activities</span><span class="activityCount">2 new</span></div>
+              <div class="activityDropdownContent"><div class="activityEmpty visible">No activities yet. Friend requests, game invites and updates will appear here.</div></div>
+            </div>
+          </li>
+          <li class="friendsIcon displayInline">
+            <img class="friendsIconImg loaded" src="static/images/menuFriends.svg" alt="Friends" width="40" height="32" />
+            <span class="friendsBadge"></span>
+          </li>
+          <li class="userAvatarContainer displayInline loggedIn">
+            <span class="avFoot"><img class="userAvatar loaded" src="static/pieces/avatar/classic/WomanGirl2.svg" alt="User avatar" width="24" height="24" /></span>
+            <span class="userName">Ann</span>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+</div>
+<p class="rl">The cluster as it stands at the right end of the bar. The four images the site swaps in on hover and on a notification are left out, so the resting mark is what shows.</p>
+<div class="demo" style="background:#f9f6f2;padding:14px 14px 20px">
+  <div class="site wm" data-panels style="background:transparent">
+    <ul id="userBar" style="height:auto;align-items:flex-start;gap:16px">
+      <li class="activityIcon displayInline open" style="height:auto">
+        <div class="activityDropdown" style="position:static;transform:none">
+          <div class="activityHeader"><span class="activityTitle">Activities</span><span class="activityCount">2 new</span></div>
+          <div class="activityDropdownContent"><div class="activityEmpty visible">No activities yet. Friend requests, game invites and updates will appear here.</div></div>
+        </div>
+      </li>
+      <li class="friendsIcon displayInline open" style="height:auto">
+        <div class="friendsDropdown" style="position:static;transform:none">
+          <div class="friendsDropdownContent"><div class="friendsViewSlider"><div class="friendsListView">
+            <div class="friendsListHeader"><span class="friendsListTitle">Friends</span><span class="friendsListCount">3 online</span></div>
+            <div class="friendsListScrollable"><div class="friendsEmpty visible">No friends yet. Like players you enjoy playing with to see them here.</div></div>
+          </div></div></div>
+        </div>
+      </li>
+      <li class="userAvatarContainer displayInline loggedIn open" style="height:auto">
+        <div class="userDropdown" style="position:static">
+          <div class="mphead">Account</div>
+          <div class="dropdownItem settings">Settings</div>
+          <div class="dropdownItem dailydeal">Daily challenge</div>
+          <div class="dropdownItem stats">Stats</div>
+          <div class="dropdownItem logout loggedIn">Logout</div>
+        </div>
+      </li>
+    </ul>
+  </div>
+</div>
+<p class="rl">The three panels, opened with the site's own .open class and pinned to static so they stand side by side. On the site each hangs under its own icon: the two notification panels centre on it, the account panel keeps its right edge, and all three rise 12px into the bar. Their li carries height auto here and the row 16px of gap, so nothing overlaps; every other value is the sheet's.</p>
+<script>(function(){
+var card=document.currentScript.closest('.card');
+var bar=card.querySelector('[data-cluster]');
+var pans=card.querySelector('[data-panels]');
+var ul=bar.querySelector('#userBar');
+var icon=bar.querySelector('.activityIcon img');
+var av=bar.querySelector('.userAvatar');
+var name=bar.querySelector('.userName');
+var closed=bar.querySelector('.activityDropdown');
+var act=pans.querySelector('.activityDropdown');
+var hd=pans.querySelector('.activityHeader');
+var cnt=pans.querySelector('.activityCount');
+var empty=pans.querySelector('.activityEmpty');
+var user=pans.querySelector('.userDropdown');
+var mph=pans.querySelector('.mphead');
+var item=pans.querySelector('.dropdownItem');
+Lab.table(card,[
+ {what:'row gap',got:Lab.cs(ul,'gap'),want:'6px'},
+ {what:'row height',got:Lab.cs(ul,'height'),want:'56px'},
+ {what:'bell box',got:Lab.cs(icon,'width')+' by '+Lab.cs(icon,'height'),want:'40px by 32px'},
+ {what:'avatar',got:Lab.cs(av,'width')+' by '+Lab.cs(av,'height'),want:'28px by 28px'},
+ {what:'name',got:Lab.cs(name,'font-weight')+' '+Lab.cs(name,'font-size')+'/'+Lab.cs(name,'line-height')+' '+Lab.cs(name,'color'),want:'700 16px/16px #262626'},
+ {what:'name while loading',got:Lab.rule('.site.wm #userBar .userAvatarContainer .userName.loading','color',bar),want:'#4e4d4c',tag:'rule'}
+],'The cluster');
+Lab.table(card,[
+ {what:'width',got:Lab.rule('.site.wm #userBar .activityIcon .activityDropdown','width',pans),want:'max-content',tag:'rule'},
+ {what:'width as drawn here',got:Lab.cs(act,'width'),want:'',tag:'note'},
+ {what:'min-width',got:Lab.cs(act,'min-width'),want:'254px'},
+ {what:'max-width',got:Lab.cs(act,'max-width'),want:'320px'},
+ {what:'--mpgap',got:Lab.token(pans,'--mpgap'),want:'12px'},
+ {what:'rise into the bar',got:Lab.cs(closed,'top'),want:'calc(100% - 12px)'},
+ {what:'centred on its icon',got:Lab.rule('.site.wm #userBar .activityIcon .activityDropdown', 'transform', pans),want:'translateX(-50%)',tag:'rule'},
+ {what:'account panel right',got:Lab.cs(user,'right'),want:'0px'},
+ {what:'account panel min-width',got:Lab.cs(user,'min-width'),want:'150px'},
+ {what:'account panel padding',got:Lab.cs(user,'padding'),want:'0 12px 8px'},
+ {what:'panel radius',got:Lab.cs(act,'border-radius'),want:'20px'},
+ {what:'panel border',got:Lab.cs(act,'border-top-width')+' solid '+Lab.cs(act,'border-top-color'),want:'1px solid #d2cfca'},
+ {what:'panel lift',got:Lab.cs(act,'box-shadow'),want:'0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09)'}
+],'The panel chrome');
+Lab.table(card,[
+ {what:'head strip height',got:Lab.cs(hd,'height'),want:'32px'},
+ {what:'head strip rule',got:Lab.cs(hd,'border-bottom-width')+' solid '+Lab.cs(hd,'border-bottom-color'),want:'1px solid #d2cfca'},
+ {what:'head strip margin',got:Lab.cs(hd,'margin'),want:'0 -12px 7px'},
+ {what:'count',got:Lab.cs(cnt,'font-size')+' '+Lab.cs(cnt,'color'),want:'14px #4e4d4c'},
+ {what:'empty state',got:Lab.cs(empty,'font-size')+'/'+Lab.cs(empty,'line-height')+' '+Lab.cs(empty,'color'),want:'16px/24px #9b9997'},
+ {what:'empty state width',got:Lab.cs(empty,'width'),want:'230px'},
+ {what:'account head',got:Lab.cs(mph,'height')+' '+Lab.cs(mph,'font-size')+' '+Lab.cs(mph,'color'),want:'32px 16px #141414'},
+ {what:'item',got:Lab.cs(item,'font-size')+'/'+Lab.cs(item,'line-height')+' '+Lab.cs(item,'color'),want:'16px/24px #262626'},
+ {what:'item padding',got:Lab.cs(item,'padding'),want:'2px 0'},
+ {what:'item hover line bottom',got:Lab.rule('.site.wm #userBar .userAvatarContainer .userDropdown .dropdownItem:hover::after','bottom',pans),want:'6px',tag:'rule'},
+ {what:'item hover line height',got:Lab.rule('.site.wm #menuBar > li.mclink:not(.mgames):hover > a::after','height',pans),want:'1px',tag:'rule'}
+],'The head strip and the items');
+Lab.note(card,'The rise is read off the closed panel in the cluster above and the centring off its rule, since Chrome gives a panel that is not drawn no transform at all and the open twin is pinned.');
+Lab.note(card,'The hover line is one rule shared with the bar’s own links, so its height is read from that rule’s first selector.');
+Lab.note(card,'The account panel offers Sign in and Sign up on the site as well; a signed-in player’s four items are what stand here.');
+})();</script>
+</div></div>
+
+</div>
+
+<div class="grid g2">
+
+<div class="card"><div class="body">
+<h3>The tooltip <span class="tag built">built</span></h3>
+<p class="rule-text">One tooltip serves the site: 13 / 18 on white with a welded 10px arrow, bold for names and numbers only, a 250ms pause and a 350ms warm window between neighbours, in with its transform over .22s and its opacity over .1s, out in .08s, and a touch box without the arrow.</p>
+<div class="demo" style="background:#f9f6f2;padding:6px 14px 14px">
+  <div class="site" data-tip style="background:transparent">
+    <div id="wtip" class="on" style="position:relative;left:auto;top:auto;--ax:60px">
+      <div class="wtipBox"><b>Ann</b> &middot; Elo <b>1540</b><span class="wtipHint">Click to sit here</span></div>
+    </div>
+  </div>
+  <div class="site fp wm" data-target>
+    <div class="lobbyscope" id="openTablesTop" style="padding:0">
+      <div class="lobbyTablesPanel" id="lobbyTablesPanel">
+        <div class="ltGrid" id="lobbyTablesGrid" style="grid-template-columns:minmax(0,300px)">
+          <div class="ltCard"><div class="tableListing hearts"><div class="header players4"><div class="playersContainer">
+            <div class="player playernumber1" data-tip="Elo: <b>1540</b>"><img width="32" height="32" src="static/pieces/avatar/classic/WomanGirl2.svg" alt="WomanGirl2 avatar" /><div class="playerNameContainer"><p class="playerName">Ann</p></div></div>
+            <div class="player playernumber0"><img width="32" height="32" src="static/pieces/avatar/classic/ManCowboy.svg" alt="ManCowboy avatar" /><div class="playerNameContainer"><p class="playerName">Ben</p></div></div>
+            <div class="player playernumber2 isEmpty"><img width="32" height="32" src="static/pieces/avatar/classic/EmptyChair.svg" alt="Empty seat" /><div class="playerNameContainer"><p class="playerName">Empty</p></div></div>
+            <div class="player playernumber3"><img width="32" height="32" src="static/pieces/avatar/classic/AnimalCat.svg" alt="AnimalCat avatar" /><div class="playerNameContainer"><p class="playerName">Cal</p></div></div>
+          </div></div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<p class="rl">The capsule over the seat it names. #wtip is fixed on the site and placed by FrontpageTooltip.js; here it is relative and stands in the flow above its target, with the arrow's own --ax set to 60px so it points at the first seat. The tile beside it is one column wide rather than the frontpage's three.</p>
+<div class="demo white" style="padding:14px">
+  <div class="site" data-rest>
+    <div id="wtip"><div class="wtipBox">The resting state</div></div>
+    <div class="customTooltip" style="position:static">The touch box, held for 3.2 seconds by a tap</div>
+  </div>
+</div>
+<p class="rl">The resting capsule is invisible on purpose, at opacity 0 behind a 5px drop; only its numbers are read. The touch box beside it is the same paper and edge without the arrow, pinned to static.</p>
+<script>(function(){
+var card=document.currentScript.closest('.card');
+var root=card.querySelector('[data-tip]');
+var rest=card.querySelector('[data-rest]');
+var tip=root.querySelector('#wtip');
+var box=root.querySelector('.wtipBox');
+var b=root.querySelector('.wtipBox b');
+var hint=root.querySelector('.wtipHint');
+var rtip=rest.querySelector('#wtip');
+var touch=rest.querySelector('.customTooltip');
+Lab.table(card,[
+ {what:'frame',got:Lab.cs(tip,'padding'),want:'14px'},
+ {what:'pointer-events',got:Lab.cs(tip,'pointer-events'),want:'none'},
+ {what:'words',got:Lab.cs(box,'font-size')+'/'+Lab.cs(box,'line-height')+' '+Lab.cs(box,'color'),want:'13px/18px #262626'},
+ {what:'weight',got:Lab.cs(box,'font-weight'),want:'400'},
+ {what:'a name or a number',got:Lab.cs(b,'font-weight'),want:'700'},
+ {what:'one line',got:Lab.cs(box,'white-space'),want:'nowrap'},
+ {what:'paper',got:Lab.cs(box,'background-color'),want:'#ffffff'},
+ {what:'ring and lift',got:Lab.cs(box,'box-shadow'),want:'inset 0 0 0 1px #d2cfca, 0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09)'},
+ {what:'radius',got:Lab.cs(box,'border-radius'),want:'12px'},
+ {what:'second line',got:Lab.cs(hint,'font-size')+'/'+Lab.cs(hint,'line-height')+' '+Lab.cs(hint,'color'),want:'11px/15px #8a857c'}
+],'The capsule');
+Lab.table(card,[
+ {what:'arrow',got:Lab.cs(tip, 'width', '::after')+' by '+Lab.cs(tip, 'height', '::after'),want:'10px by 10px'},
+ {what:'arrow foot',got:Lab.cs(tip, 'bottom', '::after'),want:'8.5px'},
+ {what:'arrow turn',got:Lab.rule('.site #wtip::after','transform',root),want:'rotate(45deg)',tag:'rule'},
+ {what:'arrow paper',got:Lab.cs(tip, 'background-color', '::after'),want:'#ffffff'},
+ {what:'arrow right edge',got:Lab.cs(tip, 'border-right-width', '::after')+' '+Lab.cs(tip, 'border-right-color', '::after'),want:'1px #d2cfca'},
+ {what:'arrow bottom edge',got:Lab.cs(tip, 'border-bottom-width', '::after')+' '+Lab.cs(tip, 'border-bottom-color', '::after'),want:'1px #d2cfca'}
+],'The welded arrow');
+Lab.table(card,[
+ {what:'resting transform',got:Lab.rule('.site #wtip', 'transform', root),want:'translateY(5px) scale(.96)',tag:'rule'},
+ {what:'leaving',got:Lab.cs(rtip,'transition'),want:'opacity .08s linear, transform .08s, visibility 0s .08s'},
+ {what:'arriving',got:Lab.cs(tip,'transition'),want:'opacity .1s linear, transform .22s cubic-bezier(.22, 1, .36, 1), visibility'},
+ {what:'the first pause',got:'250ms',want:'250ms',tag:'note'},
+ {what:'the warm window',got:'350ms',want:'350ms',tag:'note'},
+ {what:'touch box measure',got:Lab.cs(touch,'max-width'),want:'230px'},
+ {what:'touch box padding',got:Lab.cs(touch,'padding'),want:'7px 11px 8px'},
+ {what:'touch box arrow',got:Lab.cs(touch, 'content', '::after'),want:'none'}
+],'Motion and the touch box');
+Lab.note(card,'The 250ms pause and the 350ms warm window are FrontpageTooltip.js constants (FIRST_DELAY, WARM_WINDOW), printed as text: no stylesheet holds them.');
+Lab.note(card,'Chrome drops a default from a computed transition, so the sheet’s "transform .08s ease" reads here as "transform .08s" and its "visibility 0s" as "visibility".');
+})();</script>
+</div></div>
+
+<div class="card"><div class="body">
+<h3>The notices on the lobby and on the felt <span class="tag built">built</span></h3>
+<p class="rule-text">The toast and the two corner notices are band paper with a 1px ring and, over the felt, an inset felt line with the table's ambient drop; in its last 30 seconds the shutdown notice rings in the danger red and its clock turns red; none of them is modal.</p>
+<div class="demo" style="background:#f9f6f2;padding:14px">
+  <div class="site wm" data-lobby style="background:transparent">
+    <div id="NoticeContainer" style="position:static;padding-top:0">
+      <div id="Notice" class="wmNotice info wmIn" role="status" aria-live="polite"><strong class="label"></strong><span class="message selectable">Your seat goes to a bot until you come back.</span></div>
+    </div>
+    <div style="height:10px"></div>
+    <div id="poolInactiveNotice" class="wmNotice wmCorner visible" style="position:static;opacity:1"><span class="message">Restart to load server update.</span></div>
+    <div style="height:10px"></div>
+    <div id="shutdownNotice" class="wmNotice wmCorner visible" style="position:static;opacity:1"><span class="message">Server rebooting in:</span><span class="clock">4:18</span></div>
+    <div style="height:10px"></div>
+    <div id="shutdownNotice" class="wmNotice wmCorner visible wmHot" style="position:static;opacity:1"><span class="message">Server rebooting in:</span><span class="clock">0:24</span></div>
+  </div>
+</div>
+<p class="rl">On the lobby: the toast, the update line, the countdown and its last 30 seconds. All four are fixed on the site and pinned to static here, the three corner notices are given the opacity 1 their scripts fade them up to, and the rows stand 10px apart so the rings read separately.</p>
+<div class="demo" style="padding:0">
+  <div class="site wm" data-felt data-table="true">
+    <div id="mainContainer" style="height:auto;padding:14px">
+      <div id="NoticeContainer" style="position:static;padding-top:0">
+        <div id="Notice" class="wmNotice info wmIn" role="status" aria-live="polite"><strong class="label"></strong><span class="message selectable">Your seat goes to a bot until you come back.</span></div>
+      </div>
+      <div style="height:10px"></div>
+      <div id="poolInactiveNotice" class="wmNotice wmCorner visible" style="position:static;opacity:1"><span class="message">Restart to load server update.</span></div>
+      <div style="height:10px"></div>
+      <div id="shutdownNotice" class="wmNotice wmCorner visible" style="position:static;opacity:1"><span class="message">Server rebooting in:</span><span class="clock">4:18</span></div>
+      <div style="height:10px"></div>
+      <div id="shutdownNotice" class="wmNotice wmCorner visible wmHot" style="position:static;opacity:1"><span class="message">Server rebooting in:</span><span class="clock">0:24</span></div>
+    </div>
+  </div>
+</div>
+<p class="rl">The same four over the felt, which #mainContainer paints from the site's own data-table flag; its 100vh is dropped so the well is as tall as what it holds.</p>
+<script>(function(){
+var card=document.currentScript.closest('.card');
+var lob=card.querySelector('[data-lobby]');
+var flt=card.querySelector('[data-felt]');
+var lt=lob.querySelector('#Notice'), lc=lob.querySelector('#poolInactiveNotice'), lh=lob.querySelector('.wmHot');
+var ft=flt.querySelector('#Notice'), fc=flt.querySelector('#poolInactiveNotice'), fh=flt.querySelector('.wmHot');
+var clock=lh.querySelector('.clock');
+var COMPACT='.site #mainContainer.playspace-compact .wmNotice.wmCorner';
+Lab.table(card,[
+ {what:'paper',got:Lab.cs(lt,'background-color'),want:'#f4eee5'},
+ {what:'toast ring and drop',got:Lab.cs(lt,'box-shadow'),want:'0 0 0 1px #d9d2c4, 0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09), 0 8px 20px rgba(0,0,0,.18)'},
+ {what:'the ring the guide names',got:'#d9d2c4',want:'#d9d2c4'},
+ {what:'corner ring alone',got:Lab.cs(lc,'box-shadow'),want:'0 0 0 1px #d9d2c4'},
+ {what:'toast padding',got:Lab.cs(lt,'padding'),want:'14px 26px'},
+ {what:'toast radius',got:Lab.cs(lt,'border-radius'),want:'16px'},
+ {what:'corner height',got:Lab.cs(lc,'height'),want:'40px'},
+ {what:'corner padding',got:Lab.cs(lc,'padding'),want:'0 12px'},
+ {what:'words',got:Lab.cs(lc,'font-size')+'/'+Lab.cs(lc,'line-height'),want:'16px/20px'},
+ {what:'last 30 seconds',got:Lab.cs(lh,'box-shadow'),want:'0 0 0 1px #e18a8a, 0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09), 0 8px 20px rgba(0,0,0,.18)'},
+ {what:'the clock then',got:Lab.cs(clock,'color')+' '+Lab.cs(clock,'font-weight')+' '+Lab.cs(clock,'font-variant-numeric'),want:'#c92a2a 700 tabular-nums'}
+],'On the lobby');
+Lab.table(card,[
+ {what:'paper',got:Lab.cs(ft,'background-color'),want:'#f4eee5'},
+ {what:'toast ring and drop',got:Lab.cs(ft,'box-shadow'),want:'inset 0 0 0 1px #393939, 0 0 8px rgba(0,0,0,.24)'},
+ {what:'the felt line the guide names',got:'#393939',want:'#393939'},
+ {what:'corner ring and drop',got:Lab.cs(fc,'box-shadow'),want:'inset 0 0 0 1px #393939, 0 0 8px rgba(0,0,0,.24)'},
+ {what:'last 30 seconds',got:Lab.cs(fh,'box-shadow'),want:'inset 0 0 0 1px #c92a2a, 0 0 8px rgba(0,0,0,.24)'},
+ {what:'a compact playspace: height',got:Lab.rule(COMPACT,'height',fc),want:'32px',tag:'rule'},
+ {what:'a compact playspace: padding',got:Lab.rule(COMPACT,'padding',fc),want:'0 10px',tag:'rule'},
+ {what:'a compact playspace: words',got:Lab.rule(COMPACT,'font-size',fc)+'/'+Lab.rule(COMPACT,'line-height',fc),want:'14px/18px',tag:'rule'}
+],'Over the felt');
+Lab.table(card,[
+ {what:'toast role',got:lt.getAttribute('role'),want:'status'},
+ {what:'toast aria-modal',got:lt.hasAttribute('aria-modal')?'present':'absent',want:'absent'},
+ {what:'update line aria-modal',got:lc.hasAttribute('aria-modal')?'present':'absent',want:'absent'},
+ {what:'countdown aria-modal',got:lh.hasAttribute('aria-modal')?'present':'absent',want:'absent'}
+],'Never modal');
+Lab.note(card,'Two rows name the guide’s own colours. On paper the ring is --rule #d9d2c4, which 7.6 and 7.9 give a notice on the band, and over the felt the line is --color-table-edge #393939, which 7.9 and 3.3 give felt furniture since 14 Sep (_wm-notices.scss:36,44).');
+Lab.note(card,'The compact playspace step is read from its rule: the class sits on #mainContainer at a small table, which no card here builds.');
+})();</script>
+</div></div>
+
+<div class="card"><div class="body">
+<h3>Avatars off the felt and on it <span class="tag built">built</span></h3>
+<p class="rule-text">Off the felt an avatar wears the avatar line, a 1px dilation of its silhouette inked #252525, and where it floats free a rounded foot by clip-path; at the table and on a felt tile the foot stays square and the avatar wears the table's own shadow. Nothing sits behind the face.</p>
+<div class="demo" style="background:#f9f6f2;padding:14px;display:flex;flex-wrap:wrap;gap:20px;align-items:flex-end">
+  <div class="site wm" data-plain style="background:transparent;width:114px">
+    <div class="wmModal wmOpen modalInstant" role="dialog" style="position:static;display:block;opacity:1">
+      <div class="wmScrim" style="position:static;height:0"></div>
+      <div class="wmPanel" style="position:static;transform:none;width:90px;max-height:none">
+        <div class="wmBox"><div class="wmBody"><div class="wmLrow"><span class="avFoot"><img class="wmAv" src="static/pieces/avatar/classic/WomanGirl2.svg" alt="" width="64" height="64" /></span></div></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="site wm" data-filter style="background:transparent;width:114px">
+    <div class="wmAvLine">
+      <div class="wmModal wmOpen modalInstant" role="dialog" style="position:static;display:block;opacity:1">
+        <div class="wmScrim" style="position:static;height:0"></div>
+        <div class="wmPanel" style="position:static;transform:none;width:90px;max-height:none">
+          <div class="wmBox"><div class="wmBody"><div class="wmLrow"><span class="avFoot"><img class="wmAv" src="static/pieces/avatar/classic/WomanGirl2.svg" alt="" width="64" height="64" /></span></div></div></div>
+        </div>
+      </div>
+    </div>
+    <svg id="wmAvatarLineDefs" width="0" height="0" aria-hidden="true" style="position:absolute;width:0;height:0"><filter id="wmAvatarLine" x="-6%" y="-6%" width="112%" height="112%" color-interpolation-filters="sRGB"><feMorphology in="SourceAlpha" operator="dilate" radius="1" result="fat"/><feFlood flood-color="#252525" result="ink"/><feComposite in="ink" in2="fat" operator="in" result="line"/><feMerge><feMergeNode in="line"/><feMergeNode in="SourceGraphic"/></feMerge></filter></svg>
+  </div>
+  <div class="site wm" data-bar style="background:transparent;width:140px">
+    <div class="wmAvLine">
+      <ul id="userBar" style="height:auto">
+        <li class="userAvatarContainer displayInline loggedIn" style="height:auto">
+          <span class="avFoot"><img class="userAvatar loaded" src="static/pieces/avatar/classic/ManCowboy.svg" alt="User avatar" width="24" height="24" /></span>
+          <span class="userName">Ben</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="site wm" data-picker style="background:transparent;width:214px">
+    <div class="wmAvLine">
+      <div class="wmModal wmWide wmSettings wmOpen modalInstant" role="dialog" style="position:static;display:block;opacity:1">
+        <div class="wmPanel" style="position:static;transform:none;width:190px;max-height:none">
+          <div class="wmBox"><div class="wmBody">
+            <div class="wmPk wmPkAvatar unselectable" menuid="avatar" role="radiogroup" style="--wm-cols:3">
+              <div class="wmTile" role="radio" tabindex="0" aria-checked="false"><span class="WomanGirl2" avatar="WomanGirl2" style="--wm-still:url(static/pieces/avatar/classic/WomanGirl2.svg)"></span><i class="wmPickMark"></i></div>
+              <div class="wmTile wmPicked" role="radio" tabindex="0" aria-checked="true"><span class="ManCowboy" avatar="ManCowboy" style="--wm-still:url(static/pieces/avatar/classic/ManCowboy.svg)"></span><i class="wmPickMark"></i></div>
+              <div class="wmTile" role="radio" tabindex="0" aria-checked="false"><span class="AnimalCat" avatar="AnimalCat" style="--wm-still:url(static/pieces/avatar/classic/AnimalCat.svg)"></span><i class="wmPickMark"></i></div>
+            </div>
+          </div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<p class="rl">Off the felt, left to right: a list row's face with the four drop-shadows every browser gets before the defs land, the same face with the filter, the bar's 28px face, and the settings picker's three tiles. The two modals and the picker are pinned to static and given a width, and carry the site's own modalInstant class so the panel's arrival animation, which would beat an inline transform, never runs. The defs svg is the one ModalShell.js appends, and its .wmAvLine class sits on a wrapper here rather than on html, so the first face keeps the fallback. Each of the four is given a width by the lab so they stand in one row apiece.</p>
+<div class="demo" style="padding:14px">
+  <div class="site fp wm" data-tile>
+    <div class="lobbyscope" id="openTablesTop" style="padding:0">
+      <div class="lobbyTablesPanel" id="lobbyTablesPanel">
+        <div class="ltGrid" id="lobbyTablesGrid" style="grid-template-columns:minmax(0,300px)">
+          <div class="ltCard"><div class="tableListing hearts"><div class="header players4"><div class="playersContainer">
+            <div class="player playernumber1"><img width="32" height="32" src="static/pieces/avatar/classic/WomanGirl2.svg" alt="WomanGirl2 avatar" /><div class="playerNameContainer"><p class="playerName">Ann</p></div></div>
+            <div class="player playernumber0"><img width="32" height="32" src="static/pieces/avatar/classic/ManCowboy.svg" alt="ManCowboy avatar" /><div class="playerNameContainer"><p class="playerName">Ben</p></div></div>
+            <div class="player playernumber2 isEmpty"><img width="32" height="32" src="static/pieces/avatar/classic/EmptyChair.svg" alt="Empty seat" /><div class="playerNameContainer"><p class="playerName">Empty</p></div></div>
+            <div class="player playernumber3"><img width="32" height="32" src="static/pieces/avatar/classic/AnimalCat.svg" alt="AnimalCat avatar" /><div class="playerNameContainer"><p class="playerName">Cal</p></div></div>
+          </div></div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<p class="rl">On a felt tile the foot stays square and the avatar wears the table's own shadow instead of the line. This is the open tables card from the lobby, one column wide rather than the frontpage's three.</p>
+<script>(function(){
+var card=document.currentScript.closest('.card');
+var plain=card.querySelector('[data-plain]');
+var filt=card.querySelector('[data-filter]');
+var bar=card.querySelector('[data-bar]');
+var pick=card.querySelector('[data-picker]');
+var tile=card.querySelector('[data-tile]');
+var foot=plain.querySelector('.avFoot');
+var av=plain.querySelector('img.wmAv');
+var ffoot=filt.querySelector('.avFoot');
+var barfoot=bar.querySelector('.avFoot');
+var span=pick.querySelector('.wmPkAvatar .wmTile > span');
+var seat=tile.querySelector('.player img');
+var defs=filt.querySelector('#wmAvatarLineDefs');
+var morph=defs.querySelector('feMorphology');
+var flood=defs.querySelector('feFlood');
+var FOUR='drop-shadow(1px 0 #252525) drop-shadow(-1px 0 #252525) drop-shadow(0 1px #252525) drop-shadow(0 -1px #252525)';
+var AVSHADOW='drop-shadow(1px 0 rgba(0,0,0,.32)) drop-shadow(-1px 0 rgba(0,0,0,.32)) drop-shadow(0 1px rgba(0,0,0,.32)) drop-shadow(0 -1px rgba(0,0,0,.32)) drop-shadow(0 0 3px rgba(0,0,0,.2)) drop-shadow(0 0 9px rgba(0,0,0,.18))';
+Lab.table(card,[
+ {what:'the line before the defs land',got:Lab.cs(foot,'filter'),want:FOUR},
+ {what:'the line with the defs',got:Lab.cs(ffoot,'filter'),want:'url("#wmAvatarLine")'},
+ {what:'the bar’s face',got:Lab.cs(barfoot,'filter'),want:'url("#wmAvatarLine")'},
+ {what:'the picker’s tile',got:Lab.cs(span,'filter'),want:'url("#wmAvatarLine")'},
+ {what:'dilation',got:morph.getAttribute('operator')+' '+morph.getAttribute('radius'),want:'dilate 1'},
+ {what:'ink',got:flood.getAttribute('flood-color'),want:'#252525'},
+ {what:'nothing behind a list face',got:Lab.cs(foot,'background-color'),want:'rgba(0, 0, 0, 0)'},
+ {what:'nothing behind a picked face',got:Lab.cs(span,'background-color'),want:'rgba(0, 0, 0, 0)'}
+],'The line');
+Lab.table(card,[
+ {what:'foot left edge',got:Lab.token(av,'--fx0'),want:'16.9%'},
+ {what:'foot right edge',got:Lab.token(av,'--fx1'),want:'82.5%'},
+ {what:'foot radius',got:Lab.token(av,'--fr'),want:'8.8%'},
+ {what:'a free face is clipped',got:Lab.cs(av,'clip-path').indexOf('polygon')===0?'polygon':Lab.cs(av,'clip-path'),want:'polygon'},
+ {what:'a seat on the felt is not',got:Lab.cs(seat,'clip-path'),want:'none'},
+ {what:'a seat on the felt wears',got:Lab.cs(seat,'filter'),want:AVSHADOW}
+],'The foot');
+Lab.note(card,'WomanGirl2 and ManCowboy are drawn because _avatar-feet.scss gives them the three numbers the clip needs; an avatar without them keeps a square foot, the clip being invalid without its values.');
+})();</script>
+</div></div>
+
+</div>
+</section>

@@ -1,0 +1,490 @@
+<!-- Section 9, guide 7.7. Ids repeat across the demos (#mainContainer and the rest), because the
+     site keys its rules on them, so every script below measures with its own root's querySelector
+     and never with getElementById. -->
+<section class="sec" id="tables">
+<h2>9 Tables and lists</h2>
+<div class="rule"></div>
+<p class="desc">Guide 7.7, with the reading recipe's directory row from 10.3. Six things ship: the lobby card's compact table, the stats table in a modal, a settings row, a people row, the page table on a reading page, and the changelog rows on the frontpage and on the changelog page. Each demo is the site's own markup under the site's own stylesheet.</p>
+
+<div class="grid g1">
+
+  <div class="card"><div class="body">
+    <h3>The compact card table <span class="tag built">built</span></h3>
+    <p class="rule-text">The lobby's leaderboard card is a table on white at 14 / 20 tabular, rows 32px, cells 0 8px nowrap, the head row bold on the band, every second row on the band, a name cell that ellipsises, and, in the guide's words, --edge between the columns, between the rows and along the card's bottom edge.</p>
+    <div class="demo">
+      <div class="site fp wm" data-demo>
+        <div style="padding:16px;width:480px">
+          <div class="lobbyscope">
+            <div class="lobbyBoardCard isVisible">
+              <div class="lbRows">
+                <div class="lbRow lbHeaderRow"><span class="lbRank">Rank</span><span class="lbName">Player</span><span class="lbRating">Rating</span></div>
+                <div class="lbRow"><span class="lbRank">1</span><span class="lbName">Marya <span class="lbHeart">&hearts;</span></span><span class="lbRating">1,842 <span class="lbUp">12</span></span></div>
+                <div class="lbRow isAlt"><span class="lbRank">2 <span class="lbUp">1</span></span><span class="lbName">Dennis</span><span class="lbRating">1,796</span></div>
+                <div class="lbRow"><span class="lbRank"><b>3</b></span><span class="lbName"><b>Holger</b></span><span class="lbRating"><b>1,771</b> <span class="lbDown">8</span></span></div>
+                <div class="lbRow isAlt"><span class="lbRank">4</span><span class="lbName">Irean</span><span class="lbRating">1,764</span></div>
+              </div>
+              <p class="lbFoot">
+                <span class="lbRefresh">Refreshes in <span class="lbCount">3:12:40</span></span>
+                <a class="button green small lbAll" href="#">See all</a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>(function () {
+      var card = document.currentScript.closest('.card');
+      var root = card.querySelector('[data-demo]');
+      var cs = Lab.cs;
+      var rows = root.querySelector('.lbRows');
+      var head = root.querySelector('.lbHeaderRow');
+      var white = root.querySelectorAll('.lbRow')[1];
+      var alt = root.querySelector('.lbRow.isAlt');
+      var cellW = white.children[1];
+      var cellA = alt.children[1];
+      var name = white.querySelector('.lbName');
+      var heart = root.querySelector('.lbHeart');
+      var foot = root.querySelector('.lbFoot');
+      var board = root.querySelector('.lobbyBoardCard');
+      Lab.table(card, [
+        { what: '.lbRows display', got: cs(rows, 'display'), want: 'table' },
+        { what: '.lbRows background', got: cs(rows, 'background-color'), want: '#ffffff' },
+        { what: '.lbRows type', got: cs(rows, 'font-size') + ' / ' + cs(rows, 'line-height'), want: '14px / 20px' },
+        { what: '.lbRows figures', got: cs(rows, 'font-variant-numeric'), want: 'tabular-nums' },
+        { what: "the card's bottom edge", got: cs(rows, 'border-bottom'), want: '1px solid #d9d2c4' },
+        { what: '.lbRow > span display', got: cs(cellW, 'display'), want: 'table-cell' },
+        { what: '.lbRow > span height', got: cs(cellW, 'height'), want: '32px' },
+        { what: '.lbRow > span padding', got: cs(cellW, 'padding'), want: '0 8px' },
+        { what: '.lbRow > span white-space', got: cs(cellW, 'white-space'), want: 'nowrap' },
+        { what: 'column line, white row', got: cs(cellW, 'border-left'), want: '1px solid #ebe7de' },
+        { what: 'column line, band row', got: cs(cellA, 'border-left'), want: '1px solid #d9d2c4' },
+        { what: 'row line', got: cs(white.children[0], 'border-top'), want: '1px solid #d9d2c4' },
+        { what: '.lbHeaderRow background', got: cs(head, 'background-color'), want: '#f4eee5' },
+        { what: '.lbHeaderRow weight', got: cs(head, 'font-weight'), want: '700' },
+        { what: '.isAlt background', got: cs(alt, 'background-color'), want: '#f4eee5' },
+        { what: '.lbName max-width', got: cs(name, 'max-width'), want: '0px' },
+        { what: '.lbName text-overflow', got: cs(name, 'text-overflow'), want: 'ellipsis' },
+        { what: '.lbHeart colour', got: cs(heart, 'color'), want: '#f03e3e' },
+        { what: '.lbFoot padding', got: cs(foot, 'padding'), want: '12px' },
+        { what: '.lbFoot type', got: cs(foot, 'font-size') + ' / ' + cs(foot, 'line-height'), want: '14px / 24px' },
+        { what: '.lbFoot colour', got: cs(foot, 'color'), want: '#4e4d4c' },
+        { what: "the card's border (7.6)", got: cs(board, 'border-top'), want: '1px solid #d2cfca' },
+        { what: "the card's lift", got: cs(board, 'box-shadow'), want: '--liftshadow', tag: 'note' }
+      ]);
+      Lab.note(card, "The four line rows read the two-tone grid the sheet has drawn since 14 September (_fp-cards.scss:126-148): --rule #d9d2c4 under the card, between the rows and beside a band cell, and --hairline #ebe7de beside a white cell. Guide 7.7 writes the grid that way, as 3.3 asks.");
+      Lab.note(card, "The lift is the frontpage's lighter pair, .04 and .06, which the sheet gives .site.fp. The card is 480px wide in a wrapper of the lab's own, so the columns take the widths they take on a half band.");
+    })();</script>
+  </div></div>
+
+  <div class="card"><div class="body">
+    <h3>The stats table in a modal <span class="tag built">built</span></h3>
+    <p class="rule-text">The stats table is a grid whose head row is padded 4px 0 8px over a hairline at 16 / 22 muted, body rows 40px at 16 / 32 with a hairline between and none under the last, figures right and tabular, yours bold in the ink and everyone's muted.</p>
+    <div class="demo">
+      <div class="site wm" data-demo>
+        <div class="wmModal wmStats wmWide wmOpen modalInstant" role="dialog" style="position:static;display:block;opacity:1">
+          <div class="wmScrim" style="position:static;height:0"></div>
+          <div class="wmPanel" style="position:static;transform:none;width:640px;max-height:none;margin:0 auto">
+            <div class="wmBox">
+              <div class="wmBody">
+                <div class="wmCard">
+                  <div class="wmMp">
+                    <div class="wmMph"><span class="wmMpg">Game</span><span class="wmMpt">Share of games played</span><span class="wmMpp">You</span><span class="wmMpe">Everyone</span></div>
+                    <div class="wmMpr" style="--wmg:#971f3e"><span class="wmMpg">Hearts</span><span class="wmMpt"><i class="wmStYou" style="width:100%"></i><i class="wmStEv" style="width:74%"></i></span><span class="wmMpp">38%</span><span class="wmMpe">28%</span></div>
+                    <div class="wmMpr" style="--wmg:#0065c3"><span class="wmMpg">Spades</span><span class="wmMpt"><i class="wmStYou" style="width:55%"></i><i class="wmStEv" style="width:88%"></i></span><span class="wmMpp">21%</span><span class="wmMpe">33%</span></div>
+                    <div class="wmMpr" style="--wmg:#3a8132"><span class="wmMpg">Euchre</span><span class="wmMpt"><i class="wmStYou" style="width:32%"></i><i class="wmStEv" style="width:41%"></i></span><span class="wmMpp">12%</span><span class="wmMpe">16%</span></div>
+                  </div>
+                  <div class="wmMpf"><span>15 other games</span><span class="wmBtn wmSmall wmMpMore" role="button" tabindex="0">Show all</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>(function () {
+      var card = document.currentScript.closest('.card');
+      var root = card.querySelector('[data-demo]');
+      var cs = Lab.cs;
+      var mph = root.querySelector('.wmMph');
+      var rowsAll = root.querySelectorAll('.wmMpr');
+      var row = rowsAll[0];
+      var last = rowsAll[rowsAll.length - 1];
+      var bar = row.querySelector('.wmMpt i');
+      var ev = row.querySelector('.wmStEv');
+      var foot = root.querySelector('.wmMpf');
+      Lab.table(card, [
+        { what: '.wmMph padding', got: cs(mph, 'padding'), want: '4px 0 8px' },
+        { what: '.wmMph line', got: cs(mph, 'border-bottom'), want: '1px solid #ebe7de' },
+        { what: '.wmMph type', got: cs(mph, 'font-size') + ' / ' + cs(mph, 'line-height'), want: '16px / 22px' },
+        { what: '.wmMph colour', got: cs(mph, 'color'), want: '#4e4d4c' },
+        { what: 'the columns', got: cs(mph, 'grid-template-columns'), want: '132px 1fr 48px 76px', tag: 'note' },
+        { what: 'the column gap', got: cs(mph, 'gap'), want: '12px' },
+        { what: '.wmMpr height', got: cs(row, 'height'), want: '40px' },
+        { what: '.wmMpr box-sizing', got: cs(row, 'box-sizing'), want: 'border-box' },
+        { what: '.wmMpr type', got: cs(row, 'font-size') + ' / ' + cs(row, 'line-height'), want: '16px / 32px' },
+        { what: '.wmMpr line', got: cs(row, 'border-bottom'), want: '1px solid #ebe7de' },
+        { what: 'the last row', got: cs(last, 'border-bottom-width'), want: '0' },
+        { what: "the game's name", got: cs(row.querySelector('.wmMpg'), 'font-weight'), want: '700' },
+        { what: 'yours', got: cs(row.querySelector('.wmMpp'), 'text-align') + ', ' + cs(row.querySelector('.wmMpp'), 'font-weight') + ', ' + cs(row.querySelector('.wmMpp'), 'color'), want: 'right, 700, #141414' },
+        { what: 'yours, figures', got: cs(row.querySelector('.wmMpp'), 'font-variant-numeric'), want: 'tabular-nums' },
+        { what: "everyone's", got: cs(row.querySelector('.wmMpe'), 'text-align') + ', ' + cs(row.querySelector('.wmMpe'), 'color'), want: 'right, #4e4d4c' },
+        { what: 'a bar height', got: cs(bar, 'height'), want: '10px' },
+        { what: 'a bar radius', got: cs(bar, 'border-radius'), want: '12px' },
+        { what: 'a bar fill', got: cs(bar, 'background-color'), want: '#971f3e' },
+        { what: 'a bar ring', got: cs(bar, 'box-shadow'), want: 'inset 0 0 0 1px, the fill mixed 70% to black', tag: 'note' },
+        { what: "everyone's bar", got: cs(ev, 'opacity'), want: '0.4' },
+        { what: '.wmMpf padding', got: cs(foot, 'padding'), want: '12px 0 11px' },
+        { what: '.wmMpf line', got: cs(foot, 'border-top'), want: '1px solid #ebe7de' }
+      ]);
+      Lab.note(card, 'The 1fr column takes what the 640px box leaves, so the resolved value moves with the window. The other three are fixed: 132px is wide enough for Double Deck Pinochle and Sergeant Major.');
+      Lab.note(card, 'The modal is neutralised as site-smoke.html does it: the layer, the scrim and the panel are static and the panel keeps the wide box at 640. Nothing measured here reads a position.');
+    })();</script>
+  </div></div>
+
+  <div class="card"><div class="body">
+    <h3>Settings rows <span class="tag built">built</span></h3>
+    <p class="rule-text">A settings row's content box is 28px, or 40 with a second line, at 12px 0 of padding, with a hairline under each but the last, a 16px bold title over a 16 / 20 muted line, and the control at the right 24px away, so the row measures 53 or 65.</p>
+    <div class="demo">
+      <div class="site wm" data-demo>
+        <div class="wmModal wmWide wmSettings wmOpen modalInstant" role="dialog" style="position:static;display:block;opacity:1">
+          <div class="wmScrim" style="position:static;height:0"></div>
+          <div class="wmPanel" style="position:static;transform:none;width:640px;max-height:none;margin:0 auto">
+            <div class="wmBox">
+              <div class="wmBody">
+                <div class="wmCard">
+                  <div class="wmRow">
+                    <span class="wmRowLab"><span class="wmRowTitle">Sort my hand</span></span>
+                    <span class="wmRowCtl"><span class="wmSeg" role="radiogroup"><span class="wmCell" role="radio" tabindex="0" aria-checked="false">Off</span><span class="wmCell wmPicked" role="radio" tabindex="0" aria-checked="true">On</span></span></span>
+                  </div>
+                  <div class="wmRow">
+                    <span class="wmRowLab"><span class="wmRowTitle">Rank me</span><span class="wmRowLine">Your games count towards the leaderboards.</span></span>
+                    <span class="wmRowCtl"><span class="wmSeg" role="radiogroup"><span class="wmCell" role="radio" tabindex="0" aria-checked="false">Off</span><span class="wmCell wmPicked" role="radio" tabindex="0" aria-checked="true">On</span></span></span>
+                  </div>
+                  <a class="wmRow wmOpens" href="#">
+                    <span class="wmRowLab"><span class="wmRowTitle">Update privacy preferences</span></span>
+                    <span class="wmRowCtl"><svg class="wmChev" viewBox="0 0 8 12" width="8" height="12" aria-hidden="true"><path d="M1.5 1l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>(function () {
+      var card = document.currentScript.closest('.card');
+      var root = card.querySelector('[data-demo]');
+      var cs = Lab.cs;
+      root.querySelectorAll('.wmSeg').forEach(function (seg) { Lab.seg(seg); });
+      var plain = root.querySelectorAll('.wmRow')[0];
+      var lined = root.querySelectorAll('.wmRow')[1];
+      var opens = root.querySelector('.wmRow.wmOpens');
+      Lab.table(card, [
+        { what: '.wmRow box-sizing', got: cs(plain, 'box-sizing'), want: 'content-box' },
+        { what: '.wmRow height', got: cs(plain, 'height'), want: '28px' },
+        { what: '.wmRow padding', got: cs(plain, 'padding'), want: '12px 0' },
+        { what: '.wmRow gap', got: cs(plain, 'gap'), want: '24px' },
+        { what: '.wmRow line', got: cs(plain, 'border-bottom'), want: '1px solid #ebe7de' },
+        { what: 'the row, measured', got: plain.offsetHeight + 'px', want: '53px' },
+        { what: 'with a second line, height', got: cs(lined, 'height'), want: '40px' },
+        { what: 'with a second line, measured', got: lined.offsetHeight + 'px', want: '65px' },
+        { what: 'the last row', got: cs(opens, 'border-bottom-width'), want: '0' },
+        { what: '.wmRowTitle', got: cs(plain.querySelector('.wmRowTitle'), 'font-weight') + ' ' + cs(plain.querySelector('.wmRowTitle'), 'font-size') + ' / ' + cs(plain.querySelector('.wmRowTitle'), 'line-height'), want: '700 16px / 20px' },
+        { what: '.wmRowTitle colour', got: cs(plain.querySelector('.wmRowTitle'), 'color'), want: '#141414' },
+        { what: '.wmRowLine', got: cs(lined.querySelector('.wmRowLine'), 'font-size') + ' / ' + cs(lined.querySelector('.wmRowLine'), 'line-height'), want: '16px / 20px' },
+        { what: '.wmRowLine colour', got: cs(lined.querySelector('.wmRowLine'), 'color'), want: '#4e4d4c' },
+        { what: '.wmRowCtl gap', got: cs(plain.querySelector('.wmRowCtl'), 'gap'), want: '8px' },
+        { what: 'the chevron', got: cs(opens.querySelector('.wmChev'), 'width') + ' by ' + cs(opens.querySelector('.wmChev'), 'height') + ', ' + cs(opens.querySelector('.wmChev'), 'color'), want: '8px by 12px, #4e4d4c' },
+        { what: 'a row that opens, cursor', got: cs(opens, 'cursor'), want: 'pointer' }
+      ]);
+      Lab.note(card, "The guide writes the second line as 16 / 20 muted and the sheet agrees, so a row with a line measures 65 and one without it 53. The tray's thumb and its white words are drawn here the way ModalShell.placeSegThumb draws them, since no script runs in the lab.");
+    })();</script>
+  </div></div>
+
+  <div class="card"><div class="body">
+    <h3>People rows <span class="tag built">built</span></h3>
+    <p class="rule-text">A people or table row is padded 8px 0 with a 12px gap and no fixed height, 59 with a second line, a hairline under each but the last, a 16 / 20 bold name over a 16 / 22 muted line, and a 40 by 40 avatar.</p>
+    <div class="demo">
+      <div class="site wm" data-demo>
+        <div class="wmModal wmOpen modalInstant" role="dialog" style="position:static;display:block;opacity:1">
+          <div class="wmScrim" style="position:static;height:0"></div>
+          <div class="wmPanel" style="position:static;transform:none;width:400px;max-height:none;margin:0 auto">
+            <div class="wmBox">
+              <div class="wmBody">
+                <div class="wmCard">
+                  <div class="wmLrow" data-userid="1"><span class="avFoot"><img class="wmAv" alt="" src="static/pieces/avatar/classic/WomanGirl2.svg"></span><span class="wmName">Irean<small><i class="wmDot wmOn"></i><span>Online</span></small></span><span class="wmRowCtl"><span class="wmBtn wmGo wmSmall" role="button" tabindex="0">Invite</span></span></div>
+                  <div class="wmLrow" data-userid="2"><span class="avFoot"><img class="wmAv" alt="" src="static/pieces/avatar/classic/ManCowboy.svg"></span><span class="wmName">Dennis<small><i class="wmDot wmOn"></i><span>Playing Hearts</span></small></span><span class="wmRowCtl"><span class="wmBtn wmSmall wmInvited">Invited</span></span></div>
+                  <div class="wmLrow" data-userid="3"><span class="avFoot"><img class="wmAv" alt="" src="static/pieces/avatar/classic/AnimalFox.svg"></span><span class="wmName">RC<small><i class="wmDot"></i><span>Last seen yesterday</span></small></span><span class="wmRowCtl"><span class="wmBtn wmGo wmSmall" role="button" tabindex="0">Invite</span></span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>(function () {
+      var card = document.currentScript.closest('.card');
+      var root = card.querySelector('[data-demo]');
+      var cs = Lab.cs;
+      var all = root.querySelectorAll('.wmLrow');
+      var row = all[0];
+      var last = all[all.length - 1];
+      var name = row.querySelector('.wmName');
+      var small = row.querySelector('.wmName small');
+      var av = row.querySelector('img.wmAv');
+      var foot = row.querySelector('.avFoot');
+      var dot = row.querySelector('.wmDot');
+      Lab.table(card, [
+        { what: '.wmLrow padding', got: cs(row, 'padding'), want: '8px 0' },
+        { what: '.wmLrow gap', got: cs(row, 'gap'), want: '12px' },
+        { what: '.wmLrow line', got: cs(row, 'border-bottom'), want: '1px solid #ebe7de' },
+        { what: 'the last row', got: cs(last, 'border-bottom-width'), want: '0' },
+        { what: 'the row, measured', got: row.offsetHeight + 'px', want: '59px' },
+        { what: 'the name block', got: name.offsetHeight + 'px', want: '42px', tag: 'note' },
+        { what: 'the name', got: cs(name, 'font-weight') + ' ' + cs(name, 'font-size') + ' / ' + cs(name, 'line-height'), want: '700 16px / 20px' },
+        { what: 'the name colour', got: cs(name, 'color'), want: '#141414' },
+        { what: 'the name overflow', got: cs(name, 'text-overflow'), want: 'ellipsis' },
+        { what: 'the second line', got: cs(small, 'font-size') + ' / ' + cs(small, 'line-height') + ', ' + cs(small, 'font-weight'), want: '16px / 22px, 400' },
+        { what: 'the second line colour', got: cs(small, 'color'), want: '#4e4d4c' },
+        { what: 'the avatar', got: cs(av, 'width') + ' by ' + cs(av, 'height'), want: '40px by 40px' },
+        { what: "the avatar's line", got: cs(foot, 'filter'), want: 'four 1px #252525 drops (7.9)', tag: 'note' },
+        { what: "the avatar's foot", got: cs(av, 'clip-path') === 'none' ? 'none' : 'the rounded foot', want: 'the rounded foot', tag: 'note' },
+        { what: 'the online dot', got: cs(dot, 'width') + ' by ' + cs(dot, 'height') + ', ' + cs(dot, 'background-color'), want: '8px by 8px, #43a038' }
+      ]);
+      Lab.note(card, "The row is 59: 8 above, a 20px name, a 22px second line, 8 below and the hairline, which is what 7.7 states now (Modals.scss:488-512). Holger is to confirm it. The old 63, still in the sheet's own comment (_wm-people.scss:9), needs a 24px name line that nothing sets, so either the comment goes or the name takes 16 / 24.");
+      Lab.note(card, "The line is the four drop shadows, not the SVG filter: the filter is asked for only under .wmAvLine, which ModalShell adds once its defs are in the document, and a filter url that names nothing would hide the picture. The row measures 59 because the kit's 16 / 20 name over a 16 / 22 line is a step taller than the lab's own 18 over 16 / 18.");
+    })();</script>
+  </div></div>
+
+  <div class="card"><div class="body">
+    <h3>The page table <span class="tag call">guide's call</span></h3>
+    <p class="rule-text">The stats table's rules inside a white card: a 40px head row on the band at 16 / 22 bold, body rows of 40px and 16 / 24 with the hairline under each sitting inside the box, so a row draws 41, none under the last, no column lines, cells 0 12px, figures right and tabular, a row with a 56px avatar 64 and drawing 65 the same way, and a bare table drawing its edge as an outline inset by a pixel.</p>
+    <div class="demo">
+      <div class="site wm" data-demo-rules>
+        <div id="mainContainer" class="general" style="min-height:0">
+          <div class="helpBox">
+            <div class="content">
+              <div class="rulesDirectory">
+                <table>
+                  <thead>
+                    <tr><th>Game</th><th>Rules</th><th>Strategy</th><th>Play</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>Hearts</td><td><a href="#">How to play</a></td><td><a href="#">Strategy guide</a></td><td><a href="#">Play</a></td></tr>
+                    <tr><td>Spades</td><td><a href="#">How to play</a></td><td><a href="#">Strategy guide</a></td><td><a href="#">Play</a></td></tr>
+                    <tr><td>Euchre</td><td><a href="#">How to play</a></td><td></td><td><a href="#">Play</a></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="demo">
+      <div class="site wm" data-demo-board>
+        <div id="mainContainer" class="general" style="min-height:0">
+          <div class="helpBox gameLeaderboardPage">
+            <div class="content">
+              <div class="lbTables">
+                <div class="table-wrapper table-daily">
+                  <div class="table-scroll">
+                    <table>
+                      <thead>
+                        <tr><th class="lbRank">Rank</th><th class="lbMove lbRankMove">Rank +/-</th><th class="lbPlayer">Player</th><th class="lbNum">Rating</th><th class="lbNum lbMove">Rating +/-</th></tr>
+                      </thead>
+                      <tbody>
+                        <tr><td class="lbRank"><span class="lbMedal"><img src="static/pieces/medal/classic/1.png" alt="Rank 1" width="56" height="48"></span></td><td class="lbMove lbRankMove"><span class="change-neutral">0</span></td><td class="lbPlayer"><div class="player-cell"><img src="static/pieces/avatar/classic/WomanCowgirl.svg" alt="Irean" class="avatar-img" width="56" height="56"><span>Irean</span></div></td><td class="lbNum">1,842</td><td class="lbNum lbMove"><span class="change-positive">+12</span></td></tr>
+                        <tr><td class="lbRank"><span class="lbMedal"><img src="static/pieces/medal/classic/2.png" alt="Rank 2" width="56" height="48"></span></td><td class="lbMove lbRankMove"><span class="change-positive">+1</span></td><td class="lbPlayer"><div class="player-cell"><img src="static/pieces/avatar/classic/ManCowboy.svg" alt="Dennis" class="avatar-img" width="56" height="56"><span>Dennis</span></div></td><td class="lbNum">1,796</td><td class="lbNum lbMove"><span class="change-negative">-4</span></td></tr>
+                        <tr><td class="lbRank"><span class="lbMedal"><img src="static/pieces/medal/classic/0.png" alt="Rank 4" width="56" height="48"><span class="rank-overlay">4</span></span></td><td class="lbMove lbRankMove"><span class="change-neutral">0</span></td><td class="lbPlayer"><div class="player-cell"><img src="static/pieces/avatar/classic/AnimalFox.svg" alt="RC" class="avatar-img" width="56" height="56"><span>RC</span></div></td><td class="lbNum">1,764</td><td class="lbNum lbMove"><span class="change-positive">+3</span></td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="demo">
+      <div class="site wm" data-demo-band>
+        <div class="helpBox" style="position:relative">
+          <div class="content">
+            <table border="1" class="paddedTable">
+              <tr><th>Card Type</th><th>Cards</th><th class="headerFormat">Point Value</th></tr>
+              <tr><td rowspan="3">Natural Cards</td><td>Aces</td><td class="numberFormat">20</td></tr>
+              <tr><td>8s through King</td><td class="numberFormat">10</td></tr>
+              <tr><td>4s through 7s</td><td class="numberFormat">5</td></tr>
+              <tr><td rowspan="2">Wild Cards</td><td>Jokers</td><td class="numberFormat">50</td></tr>
+              <tr><td>2s</td><td class="numberFormat">20</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>(function () {
+      var card = document.currentScript.closest('.card');
+      var cs = Lab.cs;
+      var a = card.querySelector('[data-demo-rules]');
+      var dir = a.querySelector('.rulesDirectory');
+      var th = a.querySelector('th');
+      var td = a.querySelector('tbody td');
+      var lastTd = a.querySelectorAll('tbody tr')[2].querySelector('td');
+      var verb = a.querySelector('tbody a');
+      var play = a.querySelector('tbody tr td:last-child a');
+      Lab.table(card, [
+        { what: 'the card paper', got: cs(dir, 'background-color'), want: '#ffffff' },
+        { what: 'the card border', got: cs(dir, 'border-top'), want: '1px solid #d2cfca' },
+        { what: 'the card radius', got: cs(dir, 'border-radius'), want: '16px' },
+        { what: 'the card lift', got: cs(dir, 'box-shadow'), want: '--liftshadow', tag: 'note' },
+        { what: 'th height', got: cs(th, 'height'), want: '40px' },
+        { what: 'th padding', got: cs(th, 'padding'), want: '0 12px' },
+        { what: 'th paper', got: cs(th, 'background-color'), want: '#f4eee5' },
+        { what: 'th line under', got: cs(th, 'border-bottom'), want: '1px solid #d9d2c4' },
+        { what: 'th type', got: cs(th, 'font-weight') + ' ' + cs(th, 'font-size') + ' / ' + cs(th, 'line-height'), want: '700 16px / 22px' },
+        { what: 'th colour', got: cs(th, 'color'), want: '#141414' },
+        { what: 'td height', got: cs(td, 'height'), want: '40px' },
+        { what: 'td padding', got: cs(td, 'padding'), want: '0 12px' },
+        { what: 'td line-height', got: cs(td, 'line-height'), want: '24px' },
+        { what: 'the line between rows', got: cs(td, 'border-bottom'), want: '1px solid #ebe7de' },
+        { what: 'no column lines', got: cs(td, 'border-left-width'), want: '0' },
+        { what: 'the last row', got: cs(lastTd, 'border-bottom-width'), want: '0' },
+        { what: 'the name cell', got: cs(td, 'font-weight'), want: '700' },
+        { what: 'figures', got: cs(a.querySelector('table'), 'font-variant-numeric'), want: 'tabular-nums' },
+        { what: 'a verb, height', got: cs(verb, 'height'), want: '24px' },
+        { what: 'a verb, type', got: cs(verb, 'font-weight') + ' ' + cs(verb, 'font-size') + ' / ' + cs(verb, 'line-height'), want: '700 16px / 24px' },
+        { what: 'a verb, fill', got: cs(verb, 'background-color'), want: '#abd2ff' },
+        { what: 'Play, fill', got: cs(play, 'background-color'), want: '#43a038' },
+        { what: 'Play, ink', got: cs(play, 'color'), want: '#ffffff' }
+      ], 'The rules directory, on a reading page');
+
+      var b = card.querySelector('[data-demo-board]');
+      var scroll = b.querySelector('.table-scroll');
+      var bth = b.querySelector('thead th');
+      var btd = b.querySelector('tbody td');
+      var num = b.querySelector('td.lbNum');
+      var avatar = b.querySelector('.avatar-img');
+      var medal = b.querySelector('.lbMedal');
+      Lab.table(card, [
+        { what: 'the card, overflow', got: cs(scroll, 'overflow-x'), want: 'auto' },
+        { what: 'the card border', got: cs(scroll, 'border-top'), want: '1px solid #d2cfca' },
+        { what: 'the card radius', got: cs(scroll, 'border-radius'), want: '16px' },
+        { what: 'the table minimum', got: cs(b.querySelector('table'), 'min-width'), want: '560px' },
+        { what: 'th height', got: cs(bth, 'height'), want: '40px' },
+        { what: 'th paper and line', got: cs(bth, 'background-color') + ', ' + cs(bth, 'border-bottom'), want: '#f4eee5, 1px solid #d9d2c4' },
+        { what: 'th type', got: cs(bth, 'font-weight') + ' ' + cs(bth, 'font-size') + ' / ' + cs(bth, 'line-height'), want: '700 16px / 22px' },
+        { what: 'the row with an avatar, height', got: cs(btd, 'height'), want: '65px' },
+        { what: 'td padding', got: cs(btd, 'padding'), want: '0 12px' },
+        { what: 'the line between rows', got: cs(btd, 'border-bottom'), want: '1px solid #ebe7de' },
+        { what: 'figures right', got: cs(num, 'text-align'), want: 'right' },
+        { what: 'the avatar', got: cs(avatar, 'width') + ' by ' + cs(avatar, 'height'), want: '56px by 56px' },
+        { what: "the avatar's line", got: cs(avatar, 'filter'), want: 'four 1px #252525 drops (7.9)', tag: 'note' },
+        { what: 'the medal', got: cs(medal, 'width') + ' by ' + cs(medal, 'height'), want: '56px by 48px' }
+      ], 'The generated leaderboard page');
+
+      var c = card.querySelector('[data-demo-band]');
+      var tab = c.querySelector('table.paddedTable');
+      var cth = c.querySelector('th');
+      var ctd = c.querySelectorAll('tr')[1].children[1];
+      var lastRow = c.querySelectorAll('tr');
+      var lastCell = lastRow[lastRow.length - 1].querySelector('td');
+      Lab.table(card, [
+        { what: 'the edge', got: cs(tab, 'outline-width') + ' ' + cs(tab, 'outline-style') + ' ' + cs(tab, 'outline-color'), want: '1px solid #d2cfca' },
+        { what: 'the edge, inset', got: cs(tab, 'outline-offset'), want: '-1px' },
+        { what: 'the radius', got: cs(tab, 'border-radius'), want: '16px' },
+        { what: 'th height', got: cs(cth, 'height'), want: '40px' },
+        { what: 'th padding', got: cs(cth, 'padding'), want: '8px 12px' },
+        { what: 'th paper and line', got: cs(cth, 'background-color') + ', ' + cs(cth, 'border-bottom'), want: '#f4eee5, 1px solid #d9d2c4' },
+        { what: 'td height, the bare table', got: cs(ctd, 'height'), want: '41px' },
+        { what: 'td type', got: cs(ctd, 'font-size') + ' / ' + cs(ctd, 'line-height'), want: '16px / 24px' },
+        { what: 'the line between rows', got: cs(ctd, 'border-bottom'), want: '1px solid #ebe7de' },
+        { what: 'no column lines', got: cs(ctd, 'border-left-width'), want: '0' },
+        { what: 'the last row', got: cs(lastCell, 'border-bottom-width'), want: '0' },
+        { what: 'figures right', got: cs(c.querySelector('td.numberFormat'), 'text-align'), want: 'right' }
+      ], 'A bare table in a band');
+      Lab.note(card, "A border-box cell's stated height has to hold the line under it, so a 64px leaderboard row draws 65 (the .player-cell is a flat 64 inside a 63px content box) and a 40px bare row draws 41 (24px of words and 16px of padding, then the line). Holger settled this on 14 Sep 2026: the guide states the drawn height, 41 and 65, and no cell gives the line its pixel back. The rules directory is clean either way, because its cells pad 0 and the 40 is a floor.");
+      Lab.note(card, "Three wells: the rules page's directory in its white card, the generated leaderboard page's table in the scrolling card that clips the head inside the corner, and a rules partial's .paddedTable, which has no wrapper and so draws its edge as an outline laid a pixel inside itself.");
+      Lab.note(card, "Each shell is the reading page's own: #mainContainer.general, .helpBox, .content. The shell's 100vh minimum is set to 0 inline so the card is only as tall as the table, and the band's .helpBox is made relative because a game page's band is out of flow. Neither touches a measured value. The leaderboard's .table-scroll is the wrapper the page script adds around the table.");
+    })();</script>
+  </div></div>
+
+  <div class="card"><div class="body">
+    <h3>The changelog rows <span class="tag built">built</span></h3>
+    <p class="rule-text">The frontpage's What's new is a flex row of a 16 / 24 entry with its tag, a 14px faint time at the right and 6px between rows with no rule between days. The changelog page keeps that rhythm on a definition list with a 16 bold date, 16 / 24 entries and the rule colour between days, a divider on the canvas.</p>
+    <div class="demo">
+      <div class="site fp wm" data-demo-nw>
+        <div id="sec-about" style="padding:16px 0">
+          <div class="measure">
+            <div class="nwi"><span>The leaderboard boards say where you stand. <span class="ntag">New</span></span><time datetime="2026-09-14">14 Sep</time></div>
+            <div class="nwi"><span>A game page carries the frontpage's chrome. <span class="ntag">Design</span></span><time datetime="2026-09-12">12 Sep</time></div>
+            <div class="nwi"><span>Leaving a table no longer drops your seat to a bot twice. <span class="ntag">Fix</span></span><time datetime="2026-09-11">11 Sep</time></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="demo">
+      <div class="site wm" data-demo-cl>
+        <div id="mainContainer" class="general" style="min-height:0">
+          <div class="helpBox changelogPage">
+            <div class="content">
+              <div class="changeLogContent">
+                <dl>
+                  <dt>14 September 2026</dt>
+                  <dd><span class="category">New</span><span class="change">The leaderboard boards say where you stand, on every board and at every period.</span></dd>
+                  <dd><span class="category">Design</span><span class="change">The user corner is on every static page.</span></dd>
+                </dl>
+                <dl>
+                  <dt>12 September 2026</dt>
+                  <dd><span class="category">Design</span><span class="change">A game page carries the frontpage's chrome.</span></dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>(function () {
+      var card = document.currentScript.closest('.card');
+      var cs = Lab.cs;
+      var a = card.querySelector('[data-demo-nw]');
+      var nwi = a.querySelector('.nwi');
+      var words = nwi.querySelector('span');
+      var time = nwi.querySelector('time');
+      var ntag = a.querySelector('.ntag');
+      Lab.table(card, [
+        { what: '.nwi display', got: cs(nwi, 'display'), want: 'flex' },
+        { what: '.nwi align-items', got: cs(nwi, 'align-items'), want: 'baseline' },
+        { what: '.nwi gap', got: cs(nwi, 'gap'), want: '12px' },
+        { what: 'between rows', got: cs(nwi, 'margin-bottom'), want: '6px' },
+        { what: 'the entry', got: cs(words, 'font-size') + ' / ' + cs(words, 'line-height') + ', ' + cs(words, 'color'), want: '16px / 24px, #141414' },
+        { what: 'the time', got: cs(time, 'font-size') + ', ' + cs(time, 'color'), want: '14px, #8a857c' },
+        { what: 'the tag', got: cs(ntag, 'font-weight') + ' ' + cs(ntag, 'font-size') + ' / ' + cs(ntag, 'line-height'), want: '700 12px / 16px' },
+        { what: 'no rule between days', got: cs(nwi, 'border-bottom-width'), want: '0' }
+      ], "The frontpage's What's new");
+
+      var b = card.querySelector('[data-demo-cl]');
+      var dl = b.querySelector('dl');
+      var lastDl = b.querySelectorAll('dl')[1];
+      var dt = b.querySelector('dt');
+      var dd = b.querySelector('dd');
+      var cat = b.querySelector('dd span.category');
+      Lab.table(card, [
+        { what: 'dl padding', got: cs(dl, 'padding'), want: '12px 0' },
+        { what: 'between days', got: cs(dl, 'border-bottom'), want: '1px solid #d9d2c4' },
+        { what: 'the last day', got: cs(lastDl, 'border-bottom-width'), want: '0' },
+        { what: 'the date', got: cs(dt, 'font-weight') + ' ' + cs(dt, 'font-size') + ' / ' + cs(dt, 'line-height'), want: '700 16px / 24px' },
+        { what: 'the date, not floated', got: cs(dt, 'float'), want: 'none' },
+        { what: 'the entry', got: cs(dd, 'display') + ', gap ' + cs(dd, 'gap'), want: 'flex, gap 6px' },
+        { what: 'the entry type', got: cs(dd, 'font-size') + ' / ' + cs(dd, 'line-height'), want: '16px / 24px' },
+        { what: 'the entry padding', got: cs(dd, 'padding'), want: '2px 0' },
+        { what: 'the tag, centred on the line', got: cs(cat, 'margin-top'), want: '4px' },
+        { what: 'the tag type', got: cs(cat, 'font-weight') + ' ' + cs(cat, 'font-size') + ' / ' + cs(cat, 'line-height'), want: '700 12px / 16px' }
+      ], 'The changelog page');
+      Lab.note(card, "The days are parted with --rule #d9d2c4, the tone 3.3 gives a divider on the canvas, and 7.7 names it there (_wm-read.scss:557-566).");
+      Lab.note(card, "The frontpage rows sit in #sec-about .measure, which is where the real ones sit. The page list is the guide's own call and is built as written, the tag inline and the entry in its own column, so a long entry wraps beside the tag rather than under it.");
+    })();</script>
+  </div></div>
+
+</div>
+</section>

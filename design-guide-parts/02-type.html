@@ -1,0 +1,879 @@
+<section class="sec" id="type">
+<h2>2 Type</h2>
+<div class="rule"></div>
+<p class="desc">Guide 4.1 the faces, 4.2 the UI ladder, 4.3 the display scale, 4.4 the role table, 4.5 the rules. Every step is drawn with the piece that carries it on the site, in the scope that piece lives in: FP is body.fp, MODAL is the dialog shell, READ is a reading page's #mainContainer.general. The lab declares the two faces itself, since site.css drops @font-face; it never declares Bulo 500 or GLCA 600, so the two lines that ask for them show the fallback.</p>
+
+<div class="grid g2">
+
+  <div class="card">
+    <div class="body">
+      <h3>The two faces <span class="tag built">built</span></h3>
+      <p class="rule-text">BuloRounded at 400, 700 and 900 is the interface and GLCA at 400 and 500 only is display; there is no Bulo 500 and no GLCA 600 or 700, so either falls back.</p>
+      <div class="demo">
+        <div class="site wm" data-demo style="padding:12px">
+          <div style="display:grid;grid-template-columns:132px 1fr;gap:3px 10px;align-items:baseline">
+            <span data-lab-copy style="font-size:12px;color:#8a857c">Bulo 400</span><span data-f="b4" style="font:400 16px var(--fp-font-ui)">Hearts, Spades and Euchre</span>
+            <span data-lab-copy style="font-size:12px;color:#8a857c">Bulo 700</span><span data-f="b7" style="font:700 16px var(--fp-font-ui)">Hearts, Spades and Euchre</span>
+            <span data-lab-copy style="font-size:12px;color:#8a857c">Bulo 900</span><span data-f="b9" style="font:900 16px var(--fp-font-ui)">Hearts, Spades and Euchre</span>
+            <span data-lab-copy style="font-size:12px;color:#8a857c">Bulo 500, not served</span><span data-f="b5" style="font:500 16px var(--fp-font-ui)">Hearts, Spades and Euchre</span>
+            <span data-lab-copy style="font-size:12px;color:#8a857c">GLCA 400</span><span data-f="g4" style="font:400 26px var(--fp-font-display)">Hearts and Spades</span>
+            <span data-lab-copy style="font-size:12px;color:#8a857c">GLCA 500</span><span data-f="g5" style="font:500 26px var(--fp-font-display)">Hearts and Spades</span>
+            <span data-lab-copy style="font-size:12px;color:#8a857c">GLCA 600, not served</span><span data-f="g6" style="font:600 26px var(--fp-font-display)">Hearts and Spades</span>
+          </div>
+        </div>
+      </div>
+      <script>
+      (function () {
+        var card = document.currentScript.closest('.card');
+        var root = card.querySelector('[data-demo]');
+        var q = function (k) { return root.querySelector('[data-f="' + k + '"]'); };
+        var bulo = '"BuloRounded", "Verdana", "Arial", "Helvetica", sans-serif';
+        var glca = '"GLCA", "Georgia", serif';
+        // a grid item is blockified, so the span's own box is the column; the range is the words
+        function drawn(k) {
+          var r = document.createRange();
+          r.selectNodeContents(q(k));
+          return Math.round(r.getBoundingClientRect().width * 100) / 100;
+        }
+        function width(font, text) {
+          var c = document.createElement('canvas').getContext('2d');
+          c.font = font;
+          return Math.round(c.measureText(text).width * 100) / 100;
+        }
+        function build() {
+          var b4 = width('400 16px BuloRounded', 'Hearts, Spades and Euchre');
+          var b5 = width('500 16px BuloRounded', 'Hearts, Spades and Euchre');
+          var g5 = width('500 26px GLCA', 'Hearts and Spades');
+          var g6 = width('600 26px GLCA', 'Hearts and Spades');
+          Lab.table(card, [
+            { what: 'font-family of a Bulo line', got: Lab.cs(q('b4'), 'font-family'), want: bulo },
+            { what: 'font-family of a GLCA line', got: Lab.cs(q('g5'), 'font-family'), want: glca },
+            { what: 'served: 400 16px BuloRounded', got: String(document.fonts.check('400 16px BuloRounded')), want: 'true' },
+            { what: 'served: 700 16px BuloRounded', got: String(document.fonts.check('700 16px BuloRounded')), want: 'true' },
+            { what: 'served: 900 12px BuloRounded', got: String(document.fonts.check('900 12px BuloRounded')), want: 'true' },
+            { what: 'served: 400 19px GLCA', got: String(document.fonts.check('400 19px GLCA')), want: 'true' },
+            { what: 'served: 500 26px GLCA', got: String(document.fonts.check('500 26px GLCA')), want: 'true' },
+            { what: 'Bulo 400 line width, canvas', got: b4 + 'px', want: '', tag: 'note' },
+            { what: 'Bulo 500 line width, canvas', got: b5 + 'px', want: b4 + 'px' },
+            { what: 'GLCA 500 line width, canvas', got: g5 + 'px', want: '', tag: 'note' },
+            { what: 'GLCA 600 line width, canvas', got: g6 + 'px', want: g5 + 'px' },
+            { what: 'the drawn Bulo 500 line, on the page', got: drawn('b5') + 'px', want: drawn('b4') + 'px' },
+            { what: 'the drawn GLCA 600 line, on the page', got: drawn('g6') + 'px', want: drawn('g5') + 'px' },
+            { what: '-webkit-font-smoothing on the root', got: Lab.cs(root, '-webkit-font-smoothing'), want: 'antialiased', tag: 'note' }
+          ], 'the faces, and what happens to a weight that is not served');
+          Lab.note(card, 'The four widths that must match are how a missing weight shows. A line asking for Bulo 500 or GLCA 600 measures exactly as the weight the browser falls back to, on the page as well as in a canvas, so the browser draws the served face rather than smearing it. The words are the same on every line so the widths can be compared.');
+          Lab.note(card, 'The smoothing row is a note, not a check: body.wm sets no smoothing. body.fp and the reading shell set antialiased, and this root reads the lab page’s own value.');
+          Lab.note(card, 'Lab layout only: each line sets its own font shorthand, since a specimen is the one place the lab draws type rather than a piece.');
+        }
+        if (document.fonts && document.fonts.ready) document.fonts.ready.then(build); else build();
+      })();
+      </script>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="body">
+      <h3>Cap heights match, not nominal sizes <span class="tag built">built</span></h3>
+      <p class="rule-text">Bulo’s cap is 0.648 of the size and GLCA’s 0.683, so GLCA at 0.95 of a Bulo step has the same cap. The cap ladder down a page is 13.0 for a tile title, 17.8 for a section head and 26.0 for a page title.</p>
+      <div class="demo">
+        <div class="site wm" data-demo style="padding:14px 12px">
+          <span style="font:700 20px var(--fp-font-ui)">Hearts</span>
+          <span style="font:500 19px var(--fp-font-display);margin-left:10px">Hearts</span>
+          <p class="rl" data-lab-copy style="margin:6px 0 0">Bulo 700 at 20 beside GLCA 500 at 19, on one baseline.</p>
+        </div>
+      </div>
+      <script>
+      (function () {
+        var card = document.currentScript.closest('.card');
+        function cap(font) {
+          var c = document.createElement('canvas').getContext('2d');
+          c.font = font;
+          var m = c.measureText('H');
+          return Math.round((m.actualBoundingBoxAscent / 100) * 1000) / 1000;
+        }
+        function build() {
+          var b = cap('700 100px BuloRounded');
+          var g = cap('500 100px GLCA');
+          var near = function (x, y) { return Math.abs(x - y) <= 0.01 ? String(x) : String(x); };
+          Lab.table(card, [
+            { what: 'Bulo cap ratio, measured', got: near(b, 0.648), want: Math.abs(b - 0.648) <= 0.01 ? String(b) : '0.648 (within 0.01)' },
+            { what: 'GLCA cap ratio, measured', got: near(g, 0.683), want: Math.abs(g - 0.683) <= 0.01 ? String(g) : '0.683 (within 0.01)' },
+            { what: 'a tile title, Bulo 20', got: (20 * b).toFixed(1) + 'px', want: '13.0px' },
+            { what: 'a section head, GLCA 26', got: (26 * g).toFixed(1) + 'px', want: '17.8px' },
+            { what: 'a page title, GLCA 38', got: (38 * g).toFixed(1) + 'px', want: '26.0px' },
+            { what: 'GLCA 19 cap, unrounded', got: (19 * g).toFixed(2) + 'px', want: 'Bulo 20 cap, ' + (20 * b).toFixed(2) + 'px', tag: 'note' }
+          ], 'measured off the faces with canvas measureText');
+          Lab.note(card, 'The guide’s three figures round to one decimal: 12.96 reads as 13.0, 17.76 as 17.8 and 25.95 as 26.0. The rows above print what the faces actually measure.');
+          Lab.note(card, 'This is a stated law rather than a CSS value, so nothing here is read from the sheet. The two words beside each other are the check an eye can make.');
+        }
+        if (document.fonts && document.fonts.ready) document.fonts.ready.then(build); else build();
+      })();
+      </script>
+    </div>
+  </div>
+
+</div>
+
+<div class="grid g1">
+
+  <div class="card">
+    <div class="body">
+      <h3>The UI ladder <span class="tag built">built</span></h3>
+      <p class="rule-text">Bulo text takes one of five steps, 12, 14, 16, 18 or 20, with the line heights the guide lists, and nothing a modal writes itself is under 14.</p>
+      <div class="demo">
+        <div data-demo style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:10px;background:var(--band)">
+
+          <div>
+            <p style="font-size:12px;color:#8a857c;margin:0 0 4px">12: a tag, in the what’s new row</p>
+            <div class="site fp wm">
+              <div id="fpPage" class="fpPage"><div class="stage" style="min-height:0">
+                <div class="gamesec" id="sec-about" style="padding:10px 12px">
+                  <div class="measure">
+                    <div class="nwi"><span>Hand and Foot deals a fresh foot <span class="ntag" data-p="ntag">new</span></span><time datetime="2026-09-01">1 Sep</time></div>
+                  </div>
+                </div>
+              </div></div>
+            </div>
+          </div>
+
+          <div>
+            <p style="font-size:12px;color:#8a857c;margin:0 0 4px">14: a name plate on a felt tile</p>
+            <div class="site fp wm">
+              <div id="fpPage" class="fpPage"><div class="stage" style="min-height:0">
+                <div class="lobbyscope" id="openTablesTop" style="padding:10px;background:none">
+                  <div class="lobbyTablesPanel" id="lobbyTablesPanel">
+                    <div class="ltGrid" id="lobbyTablesGrid" style="grid-template-columns:1fr">
+                      <div class="ltCard">
+                        <div class="tableListing hearts">
+                          <div class="header players4">
+                            <div class="playersContainer">
+                              <div class="spacer30"></div>
+                              <div class="player playernumber1"><img src="static/pieces/avatar/classic/WomanGirl2.svg" width="32" height="32" alt="WomanGirl2 avatar" /><div class="playerNameContainer"><p class="playerName" data-p="plate">Ellen</p></div></div>
+                              <div class="spacer30"></div>
+                              <div class="player playernumber0"><img src="static/pieces/avatar/classic/ManCowboy.svg" width="32" height="32" alt="ManCowboy avatar" /><div class="playerNameContainer"><p class="playerName">Ray</p></div></div>
+                              <div class="spacer20"></div>
+                              <div class="player playernumber2"><img src="static/pieces/avatar/classic/AnimalCat.svg" width="32" height="32" alt="AnimalCat avatar" /><div class="playerNameContainer"><p class="playerName">Mitzi</p></div></div>
+                              <div class="spacer30"></div>
+                              <div class="player playernumber3"><img src="static/pieces/avatar/classic/WomanBusinesswoman.svg" width="32" height="32" alt="WomanBusinesswoman avatar" /><div class="playerNameContainer"><p class="playerName">Jane</p></div></div>
+                              <div class="spacer30"></div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div></div>
+            </div>
+          </div>
+
+          <div>
+            <p style="font-size:12px;color:#8a857c;margin:0 0 4px">14 and 16: a by-line and running text</p>
+            <div class="site wm">
+              <div id="mainContainer" class="general" style="min-height:0">
+                <div class="helpBox"><div class="content" id="content" style="padding:12px">
+                  <p class="articleByline" data-p="byline">By Holger &middot; Updated July 2026</p>
+                  <p data-p="readp">Each guide walks you through the rules step by step, from dealing and bidding to scoring and winning.</p>
+                </div></div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <p style="font-size:12px;color:#8a857c;margin:0 0 4px">16, 18 and 20: a dialog</p>
+            <div class="site wm">
+              <div class="wmModal wmOpen modalInstant" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
+                <div class="wmScrim" style="position:static;height:0"></div>
+                <div class="wmPanel" style="position:static;transform:none;width:auto;max-height:none">
+                  <div class="wmBox">
+                    <div class="wmHead"><span class="wmTitle" data-p="wmtitle">Leave the table?</span><span class="wmSub" data-p="wmsub">Your seat is held for three minutes.</span></div>
+                    <div class="wmBody">
+                      <p class="wmTxt" data-p="wmtxt">A bot plays your hand until you come back.</p>
+                      <div class="wmFoot"><span class="wmBtn" data-p="wmbtn" role="button" tabindex="0">Stay</span><span class="wmBtn wmKill" role="button" tabindex="0">Leave now</span></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <p style="font-size:12px;color:#8a857c;margin:0 0 4px">18: the settings tabs</p>
+            <div class="site wm">
+              <div id="profileBox" class="wmModal wmWide wmSettings wmOpen modalInstant" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
+                <div class="wmScrim" style="position:static;height:0"></div>
+                <div class="wmPanel" style="position:static;transform:none;width:auto;max-height:none">
+                  <div class="wmBox">
+                    <div class="wmBody">
+                      <div class="wmSeg wmTabs" role="tablist" aria-label="Settings">
+                        <span class="wmCell wmPicked" data-p="tab" role="tab" tabindex="0" aria-selected="true" data-page="game">Game</span>
+                        <span class="wmCell" role="tab" tabindex="0" aria-selected="false" data-page="design">Design</span>
+                        <span class="wmCell" role="tab" tabindex="0" aria-selected="false" data-page="account">Account</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <p style="font-size:12px;color:#8a857c;margin:0 0 4px">20: a tile title and the lobby’s big button</p>
+            <div class="site fp wm">
+              <div id="fpPage" class="fpPage"><div class="stage" style="min-height:0">
+                <div class="gamesec" id="sec-classic" style="padding:10px 12px">
+                  <div class="catgrid" style="grid-template-columns:1fr">
+                    <div class="gtile game-hearts" data-gameid="hearts" data-gamepath="hearts">
+                      <div class="gimg game-hearts">
+                        <img class="glogo" src="static/images/frontpage/logos/hearts_logo@tile.webp" alt="Hearts" loading="lazy" />
+                      </div>
+                      <div class="gmeta">
+                        <h3 class="gtitle" data-p="gtitle"><a href="/hearts">Hearts</a></h3>
+                        <p class="gsub">Take no hearts and leave the queen of spades alone.</p>
+                        <div class="gbtns"><button type="button" class="gplay" aria-label="Play Hearts"><span class="gplab">Play</span><span class="gpdiv"></span><span class="gpzone"><span class="gzarr"></span></span></button></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="lobbyscope isSettled" id="lobbyDemo" style="padding:0 12px 12px;background:none">
+                  <div class="lobbyDealCard isVisible" id="lobbyDealCard">
+                    <div class="ldFoot"><button type="button" class="button green ldPlay" data-p="lobbybtn">Play today’s challenge</button></div>
+                  </div>
+                </div>
+              </div></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <script>
+      (function () {
+        var card = document.currentScript.closest('.card');
+        var box = card.querySelector('[data-demo]');
+        var p = function (k) { return box.querySelector('[data-p="' + k + '"]'); };
+        function three(what, el, size, line, weight) {
+          return {
+            what: what,
+            got: Lab.cs(el, 'font-size') + ' / ' + Lab.cs(el, 'line-height') + ' / ' + Lab.cs(el, 'font-weight'),
+            want: size + ' / ' + line + ' / ' + weight
+          };
+        }
+        Lab.table(card, [
+          three('12: .ntag', p('ntag'), '12px', '16px', '700'),
+          three('14: .playerName', p('plate'), '14px', '18px', '700'),
+          three('14: .articleByline', p('byline'), '14px', '20px', '400'),
+          three('16: a reading page’s > p', p('readp'), '16px', '24px', '400'),
+          three('16: .wmTxt', p('wmtxt'), '16px', '20px', '400'),
+          three('16: .wmSub', p('wmsub'), '16px', '22px', '400'),
+          three('18: .wmBtn', p('wmbtn'), '18px', '32px', '700'),
+          three('18: .wmTabs .wmCell', p('tab'), '18px', '32px', '700'),
+          three('20: .wmTitle', p('wmtitle'), '20px', '28px', '700'),
+          three('20: .gtitle', p('gtitle'), '20px', '28px', '700'),
+          three('20: .lobbyscope .button', p('lobbybtn'), '20px', '32px', '700')
+        ], 'one piece per step, in the scope it lives in');
+        Lab.note(card, 'The plate reads 14 because body.fp #lobbyTablesPanel .playerName restates it (_fp-open-tables.scss:387); master’s seven-deep chain would otherwise hold it at 16, which is why the tile is drawn inside that panel here.');
+        Lab.note(card, 'The frontpage pieces sit inside #fpPage > .stage, since the page’s leading, 1.5, is set on .stage (_fp-seams.scss:32) rather than on the body.');
+        Lab.note(card, 'Lab layout only: .stage is held to min-height 0, the two frontpage grids are given one column, the zones are trimmed to a card’s padding, and the dialogs stand still. No type is touched.');
+      })();
+      </script>
+    </div>
+  </div>
+
+</div>
+
+<div class="grid g2">
+
+  <div class="card">
+    <div class="body">
+      <h3>Off-ladder sizes that ship <span class="tag built">built</span></h3>
+      <p class="rule-text">Five sizes off the ladder ship and are not to be copied: the 13px tooltip body, the 11px tooltip hint, the 12.3px games bar count, the 13px games bar list note and the 28px stats headline figure.</p>
+      <div class="demo">
+        <div data-demo style="display:grid;gap:10px;padding:10px;background:var(--band)">
+
+          <div class="site" style="padding:6px 12px 2px">
+            <div id="wtip" class="on" style="position:static;transform:none;pointer-events:auto">
+              <div class="wtipBox" data-p="tipbox"><b>Hearts</b> 9 open tables<span class="wtipHint" data-p="tiphint">The count is the tables you can still join</span></div>
+            </div>
+          </div>
+
+          <div class="site fp wm">
+            <div id="fpPage" class="fpPage"><div class="stage" style="min-height:0">
+              <div class="lobbyscope" id="openTablesTop" style="padding:12px;background:none">
+                <div class="otFilter isIn isShown" id="otFilter" aria-label="Games">
+                  <div class="track" data-row>
+                    <span class="s on" data-g="all"><span>All games<i data-n="34" data-p="count">34<em class="w"> tables</em></i></span></span>
+                    <span class="s" data-g="hearts"><span>Hearts<i data-n="9">9<em class="w"></em></i></span></span>
+                    <span class="s" data-g="spades"><span>Spades<i data-n="7">7<em class="w"></em></i></span></span>
+                    <div class="ov"><span class="ovbtn"><span class="ovlab">More</span><span class="wall"></span><span class="zone"><span class="gbtri" aria-hidden="true"></span></span></span>
+                      <ul class="ovlist">
+                        <li class="mi" data-g="euchre">Euchre<i data-p="milist">5</i></li>
+                        <li class="foot"><span class="lab" data-p="footlab">Show:</span><i data-amt="6">6</i><i data-amt="0" class="on">All</i></li>
+                      </ul>
+                    </div>
+                    <span class="thumb still"></span>
+                  </div>
+                </div>
+              </div>
+              <div class="lobbyscope" id="liveTablesTop" style="padding:0 12px 12px;background:none">
+                <div class="lobbyLiveTables" id="lobbyLiveTables">
+                  <div class="lsBody"><p class="llNote" data-p="llnote">Nothing is live in Hearts right now. Pick another game, or start a table above.</p></div>
+                </div>
+              </div>
+            </div></div>
+          </div>
+
+          <div class="site wm">
+            <div class="wmModal wmWide wmStats wmOpen modalInstant" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
+              <div class="wmScrim" style="position:static;height:0"></div>
+              <div class="wmPanel" style="position:static;transform:none;width:auto;max-height:none">
+                <div class="wmBox"><div class="wmBody">
+                  <div class="wmCard wmStTile">
+                    <span class="wmStFigs"><b data-p="stfig">128</b><small data-p="stev">41,204</small></span>
+                    <span class="wmStWords" data-p="stwords"><span>games played</span><small>everyone</small></span>
+                  </div>
+                </div></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <script>
+      (function () {
+        var card = document.currentScript.closest('.card');
+        var box = card.querySelector('[data-demo]');
+        var p = function (k) { return box.querySelector('[data-p="' + k + '"]'); };
+        function two(what, el, size, line, tag) {
+          return { what: what, got: Lab.cs(el, 'font-size') + ' / ' + Lab.cs(el, 'line-height'), want: size + ' / ' + line, tag: tag };
+        }
+        Lab.table(card, [
+          two('.wtipBox', p('tipbox'), '13px', '18px'),
+          two('.wtipHint', p('tiphint'), '11px', '15px'),
+          two('the games bar count, .track > .s i', p('count'), '12.3px', '12.3px'),
+          two('the list note, .ovlist .mi i', p('milist'), '13px', '24px'),
+          two('the list foot, .ovlist .foot .lab', p('footlab'), '16px', '24px'),
+          two('.llNote', p('llnote'), '15px', '22.5px'),
+          two('.wmStFigs b', p('stfig'), '28px', '30px'),
+          { what: '.wmStFigs b weight', got: Lab.cs(p('stfig'), 'font-weight'), want: '700' },
+          { what: 'the everyone figure, .wmStFigs small', got: Lab.cs(p('stev'), 'font-size') + ' / ' + Lab.cs(p('stev'), 'line-height') + ' / ' + Lab.cs(p('stev'), 'font-weight') + ' / ' + Lab.cs(p('stev'), 'color'), want: '20px / 30px / 700 / #4e4d4c' },
+          { what: 'its words, .wmStWords', got: Lab.cs(p('stwords'), 'font-size') + ' / ' + Lab.cs(p('stwords'), 'color'), want: '16px / #4e4d4c' }
+        ], 'a match here is a known exception, not a rung');
+        Lab.note(card, 'Off ladder and known: 13 and 11 in the tooltip, 12.3 for the bar’s count, 13 for the list’s count and 28 for the stats figure. The guide names five; the fifth, the 15px nothing-live note, is the .llNote row. The everyone figure beside the 28 is on the ladder, the xl step at 700 / 30 in --muted, which is the 4.2 row for the stats box.');
+        Lab.note(card, 'The list’s foot label is 16 / 24, which is on the ladder. The 13px the guide calls the games bar list note is the count inside a list row, .ovlist .mi i (_wm-shared.scss:898).');
+        Lab.note(card, 'The overflow list is drawn closed, as it ships: it opens on hover and hangs out of the bar, so it is measured where it stands. The bar’s green cell is the pre-script state, which paints the picked cell until wocg.GameBar places the thumb.');
+      })();
+      </script>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="body">
+      <h3>Rules of the ladder <span class="tag built">built</span></h3>
+      <p class="rule-text">Headings are never underlined or uppercase and keep letter-spacing normal, the font shorthand clears legacy bold on a heading so h3 computes 500 not 700, and a page never imports a font itself.</p>
+      <div class="demo">
+        <div class="site wm" data-demo>
+          <div id="mainContainer" class="general" style="min-height:0">
+            <div class="helpBox"><div class="content" style="padding:12px">
+              <h1 data-p="h1">Card game rules</h1>
+              <h2 data-p="h2">How a hand is played</h2>
+              <h3 data-p="h3">Passing before the lead</h3>
+              <p>Master underlined an h3 and set it bold. The font shorthand clears both.</p>
+            </div></div>
+          </div>
+        </div>
+      </div>
+      <script>
+      (function () {
+        var card = document.currentScript.closest('.card');
+        var box = card.querySelector('[data-demo]');
+        var p = function (k) { return box.querySelector('[data-p="' + k + '"]'); };
+        function head(name, el) {
+          return [
+            { what: name + ' text-decoration-line', got: Lab.cs(el, 'text-decoration-line'), want: 'none' },
+            { what: name + ' text-transform', got: Lab.cs(el, 'text-transform'), want: 'none' },
+            { what: name + ' letter-spacing', got: Lab.cs(el, 'letter-spacing'), want: 'normal' },
+            { what: name + ' font-weight', got: Lab.cs(el, 'font-weight'), want: '500' }
+          ];
+        }
+        var rows = head('h1', p('h1')).concat(head('h2', p('h2'))).concat(head('h3', p('h3')));
+        Lab.table(card, rows, 'a reading page’s three headings');
+        window.addEventListener('load', function () {
+          var sec = document.getElementById('type');
+          var shouted = [], smallest = null, smallestName = '';
+          [].forEach.call(sec.querySelectorAll('.site *'), function (el) {
+            var cs = getComputedStyle(el);
+            if (cs.textTransform === 'uppercase' || cs.fontVariantCaps === 'small-caps') {
+              shouted.push(el.tagName.toLowerCase() + (el.className ? '.' + String(el.className).split(' ')[0] : ''));
+            }
+          });
+          [].forEach.call(sec.querySelectorAll('.wmModal *'), function (el) {
+            if (!el.firstChild || el.firstChild.nodeType !== 3 || !el.textContent.trim()) return;
+            var size = parseFloat(getComputedStyle(el).fontSize);
+            if (smallest === null || size < smallest) {
+              smallest = size;
+              smallestName = el.tagName.toLowerCase() + (el.className ? '.' + String(el.className).split(' ')[0] : '');
+            }
+          });
+          Lab.table(card, [
+            { what: 'elements set uppercase or small-caps in this section', got: String(shouted.length) + (shouted.length ? ': ' + shouted.slice(0, 6).join(', ') : ''), want: '0' },
+            { what: 'smallest font-size a dialog writes here', got: (smallest === null ? '(no dialog text)' : smallest + 'px on ' + smallestName), want: '', tag: 'note' },
+            { what: 'nothing a dialog writes is under 14px', got: String(smallest === null || smallest >= 14), want: 'true' },
+            { what: 'fonts imported by a page', got: 'none; the faces arrive through body.wm', want: '', tag: 'note' }
+          ], 'the two scans, run once the whole section is parsed');
+          Lab.note(card, 'The dialog scan reads every element with its own words inside a .wmModal in this section. The guide’s floor is 14: the felt tile and the games bar a modal borrows bring a 12px badge, a 12.3px count and a 13px note with them, and they are not the modal’s own writing.');
+        });
+        Lab.note(card, 'The hero is the one heading with letter-spacing, -0.01em, and it is measured in the display scale card above.');
+      })();
+      </script>
+    </div>
+  </div>
+
+</div>
+
+<div class="grid g1">
+
+  <div class="card">
+    <div class="body">
+      <h3>The display scale <span class="tag built">built</span></h3>
+      <p class="rule-text">GLCA takes one of five sizes: 38 / 1.15 for a page title, the hero alone with letter-spacing -0.01em; 26 / 1.2 for a section head, 26 / 26 on a seam; 23 / 30 for the about sub-head; 21 / 28 for an h3; and 19 at 26px for a question, 1.45 for a quote and 1.55 for the letter. 500 for heads, 400 for a letter or a quote.</p>
+      <div class="demo">
+        <div data-demo style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:10px;background:var(--band)">
+
+          <div class="site fp wm">
+            <div id="fpPage" class="fpPage"><div class="stage" style="min-height:0">
+              <div class="popular" style="padding:12px">
+                <div class="sceneTxt" id="fpSceneTxt" style="position:static;transform:none;top:auto">
+                  <h1 id="herotitle" data-p="hero">Play card games<br />in good company</h1>
+                </div>
+              </div>
+            </div></div>
+          </div>
+
+          <div class="site wm">
+            <div id="mainContainer" class="general" style="min-height:0">
+              <div class="helpBox"><div class="content" style="padding:12px">
+                <h1 data-p="rh1">Card game rules</h1>
+                <h2 data-p="rh2">How a hand is played</h2>
+                <h3 data-p="rh3">Passing before the lead</h3>
+                <blockquote data-p="rbq">The queen of spades is worth thirteen on her own.</blockquote>
+              </div></div>
+            </div>
+          </div>
+
+          <div class="site fp wm">
+            <div id="fpPage" class="fpPage"><div class="stage" style="min-height:0">
+              <div class="lobbyscope" style="position:relative;height:58px;padding:0;background:none">
+                <div class="divhead isStatic" style="top:22px"><span class="ttl halo">Join a table</span><span class="ttl" data-p="ttl">Join a table</span></div>
+              </div>
+              <div class="gamesec" style="padding:0 12px 10px">
+                <div class="pophead" data-p="pophead">Behind the games</div>
+              </div>
+            </div></div>
+          </div>
+
+          <div class="site fp wm">
+            <div id="fpPage" class="fpPage"><div class="stage" style="min-height:0">
+              <div class="gamesec" id="sec-about" style="padding:12px">
+                <div class="serifnote reader"><p data-p="serif">There is always an open table on World of Card Games, at any hour of the day or night.</p></div>
+                <div class="measure">
+                  <h3 data-p="abouth3">Frequently asked questions</h3>
+                  <div class="faqi"><b data-p="faqb">Is it free?</b><p data-p="faqp">Yes. All eighteen games are free to play and the ads pay for the site.</p></div>
+                  <div class="qtiles qs-namefirst" style="grid-template-columns:1fr">
+                    <div class="q">
+                      <span class="av"><img src="static/pieces/avatar/classic/WomanCowgirl.svg" alt="" width="44" height="44" /></span>
+                      <div>
+                        <p class="qt" data-p="qt">I have been on this site for more than 10 years because of the camaraderie.</p>
+                        <p class="qw"><b>Irean</b><span class="qwho">Texas, USA</span></p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div></div>
+          </div>
+
+        </div>
+      </div>
+      <script>
+      (function () {
+        var card = document.currentScript.closest('.card');
+        var box = card.querySelector('[data-demo]');
+        var p = function (k) { return box.querySelector('[data-p="' + k + '"]'); };
+        var glca = '"GLCA", "Georgia", serif';
+        function three(what, el, size, line, weight, tag) {
+          return {
+            what: what,
+            got: Lab.cs(el, 'font-size') + ' / ' + Lab.cs(el, 'line-height') + ' / ' + Lab.cs(el, 'font-weight'),
+            want: size + ' / ' + line + ' / ' + weight,
+            tag: tag
+          };
+        }
+        var rows = [
+          { what: 'font-family, every piece here', got: Lab.cs(p('hero'), 'font-family'), want: glca },
+          three('#herotitle', p('hero'), '38px', '43.7px', '500'),
+          { what: '#herotitle letter-spacing', got: Lab.cs(p('hero'), 'letter-spacing'), want: '-0.38px' },
+          three('a reading page’s h1', p('rh1'), '38px', '43.7px', '500'),
+          { what: 'that h1’s letter-spacing', got: Lab.cs(p('rh1'), 'letter-spacing'), want: 'normal' },
+          three('a reading page’s h2', p('rh2'), '26px', '31.2px', '500'),
+          three('a seam title, .divhead .ttl', p('ttl'), '26px', '26px', '500'),
+          three('#sec-about h3', p('abouth3'), '23px', '30px', '500'),
+          three('a reading page’s h3', p('rh3'), '21px', '28px', '500'),
+          three('the FAQ question, .faqi b', p('faqb'), '19px', '26px', '500'),
+          three('a pull quote, .q .qt', p('qt'), '19px', '27.55px', '400'),
+          three('the letter, .serifnote p', p('serif'), '19px', '29.45px', '400'),
+          { what: 'the letter’s colour', got: Lab.cs(p('serif'), 'color'), want: '#262626' },
+          three('a reading page’s blockquote', p('rbq'), '19px', '27.55px', '400', 'call'),
+          { what: 'blockquote colour', got: Lab.cs(p('rbq'), 'color'), want: '#262626', tag: 'call' },
+          { what: 'blockquote border-left', got: Lab.cs(p('rbq'), 'border-left'), want: '2px solid #d2cfca', tag: 'call' },
+          { what: 'blockquote padding-left', got: Lab.cs(p('rbq'), 'padding-left'), want: '16px', tag: 'call' },
+          { what: '.pophead, declared and never drawn', got: Lab.cs(p('pophead'), 'font-size'), want: '26px, the guide’s section head', tag: 'note' }
+        ];
+        Lab.table(card, rows, 'the five display sizes, each on its own piece');
+        Lab.note(card, 'The .pophead row is not a mismatch: every zone hides its .pophead and draws the seam title instead, and the hidden rule computes 24px because _fp-hero.scss:28-35 comes after _fp-seams.scss:117 in Frontpage.scss. The drawn seam title above it is the 26 the guide asks for.');
+        Lab.note(card, 'The blockquote is the guide’s own call in 10.3, so its four rows print the guide’s value beside the sheet’s and never go red.');
+        Lab.note(card, 'Lab layout only: the hero’s .sceneTxt is taken out of its absolute placing, the seam is dropped 22px so it can be seen instead of hanging over the zone above, the quote lattice is given one column, and .stage is held to min-height 0.');
+      })();
+      </script>
+    </div>
+  </div>
+
+</div>
+
+<div class="grid g1">
+
+  <div class="card">
+    <div class="body">
+      <h3>Roles: running text and small print <span class="tag built">built</span></h3>
+      <p class="rule-text">Guide 4.4, the first rows: running text 16 / 24 in the ink, a muted line 16 / 22, a by-line 14 / 20 in #8a857c, small print 14 / 18 with an error line in the danger red, a modal title 20 / 28 and its body 16 / 20, and a FAQ answer 16 / 1.5 in the soft ink.</p>
+      <div class="demo">
+        <div data-demo style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:10px;background:var(--band)">
+
+          <div class="site wm">
+            <div id="mainContainer" class="general" style="min-height:0">
+              <div class="helpBox"><div class="content" style="padding:12px">
+                <p class="articleByline" data-p="byline">By Holger &middot; Updated July 2026</p>
+                <p data-p="readp">Each guide walks you through the rules step by step, from dealing and bidding to scoring and winning.</p>
+              </div></div>
+            </div>
+          </div>
+
+          <div class="site wm">
+            <div class="wmModal wmOpen modalInstant" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
+              <div class="wmScrim" style="position:static;height:0"></div>
+              <div class="wmPanel" style="position:static;transform:none;max-height:none">
+                <div class="wmBox">
+                  <div class="wmHead"><span class="wmTitle" data-p="title">Host a table</span><span class="wmSub" data-p="sub">Your friends join by name.</span></div>
+                  <div class="wmBody">
+                    <p class="wmTxt" data-p="txt">Give the table a name and send the link.</p>
+                    <div class="wmFlds">
+                      <label class="wmFld"><input type="text" placeholder="Table name" value="maple" /><span class="wmFldErr" data-p="flderr">That name is taken.</span></label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="site fp wm">
+            <div id="fpPage" class="fpPage"><div class="stage" style="min-height:0">
+              <div class="gamesec" id="sec-about" style="padding:12px">
+                <div class="measure">
+                  <div class="faqi"><b>Do I need an account?</b><p data-p="faqp">No. You can sit down and play as a guest right away.</p></div>
+                </div>
+              </div>
+            </div></div>
+          </div>
+
+        </div>
+      </div>
+      <script>
+      (function () {
+        var card = document.currentScript.closest('.card');
+        var box = card.querySelector('[data-demo]');
+        var p = function (k) { return box.querySelector('[data-p="' + k + '"]'); };
+        function role(what, el, want) {
+          return {
+            what: what,
+            got: Lab.cs(el, 'font-size') + ' / ' + Lab.cs(el, 'line-height') + ' / ' + Lab.cs(el, 'font-weight') + ' / ' + Lab.cs(el, 'color'),
+            want: want
+          };
+        }
+        Lab.table(card, [
+          role('running text, a reading page’s > p', p('readp'), '16px / 24px / 400 / #141414'),
+          role('a muted line, .wmSub', p('sub'), '16px / 22px / 400 / #4e4d4c'),
+          role('a by-line, .articleByline', p('byline'), '14px / 20px / 400 / #8a857c'),
+          role('small print, .wmFldErr', p('flderr'), '14px / 18px / 400 / #c92a2a'),
+          role('a modal title, .wmTitle', p('title'), '20px / 28px / 700 / #141414'),
+          role('a modal body, .wmTxt', p('txt'), '16px / 20px / 400 / #141414'),
+          role('a FAQ answer, .faqi p', p('faqp'), '16px / 24px / 400 / #262626')
+        ], 'size / line / weight / ink');
+        Lab.note(card, 'The by-line is the reading recipe’s own 14 / 20 (guide 10.3), which is a step tighter than the 14 / 1.5 the role table names.');
+        Lab.note(card, '.wmFldErr is drawn here from its rule (Modals.scss:409): no module writes the class today, so the red error line exists in the sheet and nowhere in the site’s JavaScript.');
+        Lab.note(card, 'The FAQ answer’s 1.5 leading comes from body.fp .stage (_fp-seams.scss:32), which is why the piece is drawn inside the page shell.');
+      })();
+      </script>
+    </div>
+  </div>
+
+</div>
+
+<div class="grid g1">
+
+  <div class="card">
+    <div class="body">
+      <h3>Roles: buttons, trays, tags and tables <span class="tag built">built</span></h3>
+      <p class="rule-text">Guide 4.4, the control rows: a big button 18 / 32 700, the frontpage’s own 20 / 32, a small button, tray cell and chip 16 / 24 700, a tag 12 / 16 700 in #4e4d4c on #e4ddd0, a table head and cell, a card title 20 / 28 and a card body 16 / 1.35 muted.</p>
+      <div class="demo">
+        <div data-demo style="display:grid;gap:10px;padding:10px;background:var(--band)">
+
+          <div class="site wm">
+            <div class="wmModal wmOpen modalInstant" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
+              <div class="wmScrim" style="position:static;height:0"></div>
+              <div class="wmPanel" style="position:static;transform:none;max-height:none">
+                <div class="wmBox"><div class="wmBody">
+                  <span class="wmSeg" role="radiogroup"><span class="wmCell wmPicked" data-p="cell" role="radio" tabindex="0" aria-checked="true" data-value="4">4 seats</span><span class="wmCell" role="radio" tabindex="0" aria-checked="false" data-value="3">3 seats</span></span>
+                  <div class="wmFoot"><span class="wmBtn" data-p="btn" role="button" tabindex="0">Cancel</span><span class="wmBtn wmGo" data-p="btngo" role="button" tabindex="0">Host it</span></div>
+                  <div class="wmMpf"><span>Six other games</span><span class="wmBtn wmSmall" data-p="btnsmall" role="button" tabindex="0">Show all</span></div>
+                </div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="site fp wm">
+            <div id="fpPage" class="fpPage"><div class="stage" style="min-height:0">
+              <div class="lobbyscope isSettled" id="lobbyDemo" style="padding:12px;background:none">
+                <div class="lobbyTopBand">
+                  <div class="lobbycol">
+                    <div class="lobbyBoardCard isVisible" id="lobbyBoardCard">
+                      <div class="lbRows" id="lobbyBoardRows">
+                        <div class="lbRow lbHeaderRow"><span class="lbRank" data-p="lbhead">Rank</span><span class="lbName">Player</span><span class="lbRating" data-p="lbelo">Rating</span></div>
+                        <div class="lbRow"><span class="lbRank">1</span><span class="lbName">Ellen</span><span class="lbRating">1,842</span></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="lobbycol">
+                    <div class="lobbyDealCard isVisible" id="lobbyDealCard">
+                      <div class="ldFoot"><button type="button" class="button green ldPlay" data-p="fpbtn">Play today’s challenge</button></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="gamesec" id="sec-about" style="padding:0 12px 12px">
+                <div class="nwi"><span>A fresh foot is dealt on the first go-out <span class="ntag" data-p="tag">new</span></span><time datetime="2026-09-01">1 Sep</time></div>
+                <div class="measure">
+                  <div class="fgrid tiles pictures" style="display:block">
+                    <div class="fpic"><b data-p="picb">You never wait</b><p data-p="picp">Pick a game and a table opens at once. The bots sit down straight away.</p></div>
+                  </div>
+                </div>
+              </div>
+            </div></div>
+          </div>
+
+          <div class="site wm">
+            <div id="mainContainer" class="general" style="min-height:0">
+              <div class="helpBox"><div class="content" style="padding:12px">
+                <div class="rulesDirectory">
+                  <table>
+                    <thead><tr><th data-p="th">Game</th><th>Rules</th><th>Play</th></tr></thead>
+                    <tbody>
+                      <tr><td data-p="tdname">Hearts</td><td data-p="td"><a href="/how-to-play-hearts">How to play</a></td><td><a href="/hearts">Play</a></td></tr>
+                      <tr><td>Spades</td><td><a href="/how-to-play-spades">How to play</a></td><td><a href="/spades">Play</a></td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div></div>
+            </div>
+          </div>
+
+          <div class="site wm">
+            <div class="wmModal wmWide wmStats wmOpen modalInstant" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
+              <div class="wmScrim" style="position:static;height:0"></div>
+              <div class="wmPanel" style="position:static;transform:none;max-height:none">
+                <div class="wmBox"><div class="wmBody">
+                  <div class="wmMpr" style="--wmg:#c92a2a"><span class="wmMpg" data-p="mpg">Hearts</span><span class="wmMpt"></span><span class="wmMpp">18%</span><span class="wmMpe">12%</span></div>
+                </div></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <script>
+      (function () {
+        var card = document.currentScript.closest('.card');
+        var box = card.querySelector('[data-demo]');
+        var p = function (k) { return box.querySelector('[data-p="' + k + '"]'); };
+        function role(what, el, want, tag) {
+          return {
+            what: what,
+            got: Lab.cs(el, 'font-size') + ' / ' + Lab.cs(el, 'line-height') + ' / ' + Lab.cs(el, 'font-weight') + ' / ' + Lab.cs(el, 'color'),
+            want: want,
+            tag: tag
+          };
+        }
+        Lab.table(card, [
+          role('a big button on a tray, .wmBtn', p('btn'), '18px / 32px / 700 / #141414'),
+          role('the action, .wmBtn.wmGo', p('btngo'), '18px / 32px / 700 / #ffffff'),
+          role('the frontpage’s big button, .button', p('fpbtn'), '20px / 32px / 700 / #ffffff'),
+          role('a small button, .wmBtn.wmSmall', p('btnsmall'), '16px / 24px / 700 / #141414'),
+          role('a tray cell, .wmSeg .wmCell', p('cell'), '16px / 24px / 700 / #4e4d4c'),
+          role('a tag, .ntag', p('tag'), '12px / 16px / 700 / #4e4d4c'),
+          { what: 'the tag’s paper', got: Lab.cs(p('tag'), 'background-color'), want: '#e4ddd0' },
+          role('a page table head, .rulesDirectory th', p('th'), '16px / 22px / 700 / #141414'),
+          { what: 'what 4.4 says a table head is', got: '400, --muted', want: '7.7 says 700 ink, and the page table takes it', tag: 'note' },
+          role('a page table cell, .rulesDirectory td', p('td'), '16px / 24px / 400 / #141414'),
+          { what: 'a name cell, tbody td:first-child', got: Lab.cs(p('tdname'), 'font-weight'), want: '700' },
+          role('the lobby card’s compact head, .lbHeaderRow > span', p('lbhead'), '14px / 20px / 700 / #141414'),
+          { what: 'what 4.4 says that head’s ink is', got: Lab.cs(p('lbhead'), 'color'), want: '#141414' },
+          role('a stats row, .wmMpr', p('mpg'), '16px / 32px / 700 / #141414'),
+          role('a card title, .fpic b', p('picb'), '20px / 28px / 700 / #141414'),
+          role('a card body, .fpic p', p('picp'), '16px / 21.6px / 400 / #4e4d4c')
+        ], 'size / line / weight / ink');
+        Lab.note(card, 'The compact head’s ink is --ink #141414, and the 4.4 table head row names it there (_fp-cards.scss:117,151-154). The legacy #212529 left the lobby cards on 13 September.');
+        Lab.note(card, 'The lobby card’s third column reads Rating, the wording the guide asks for, changed in the site on 14 Sep 2026. The old reading was the copy section’s business; the markup is drawn as it ships.');
+        Lab.note(card, 'The tray’s green thumb is placed by JavaScript, so a tray drawn on its own shows the cells alone. The tray’s own look is section 7.');
+      })();
+      </script>
+    </div>
+  </div>
+
+</div>
+
+<div class="grid g1">
+
+  <div class="card">
+    <div class="body">
+      <h3>Roles: the bar, the panels and the footer <span class="tag built">built</span></h3>
+      <p class="rule-text">Guide 4.4, the chrome rows: a menu link 16 / 1 700 in the soft ink, a games panel column head 16 / 32 700 in the ink, a games panel link and a dropdown item 16 / 24 400 in the soft ink, a footer column head 16 / 28 700, a footer link 16 / 28 and the legal row 16 / 20, both in the ink.</p>
+      <div class="demo">
+        <div data-demo style="padding:10px;background:var(--band)">
+          <div class="site wm">
+            <nav id="menuBarContainer" class="mbcenter" aria-label="Main navigation">
+              <a id="menuLogoContainer" href="/"><img src="static/images/logo.png" alt="menu" width="170" height="32" /></a>
+              <div id="menuIconContainer" data-wocg-press-release="true"><span>Games</span></div>
+              <ul id="menuBar">
+                <li class="mclink mgames">
+                  <span>Games<span class="mtri" aria-hidden="true"></span></span>
+                  <div class="mpanel mgdrop" style="display:flex;gap:12px">
+                    <div class="mgcol">
+                      <div class="mghead" data-p="mghead">Trick-taking</div>
+                      <a href="/hearts" data-p="mgcola">Hearts</a>
+                      <a href="/spades">Spades</a>
+                      <a href="/euchre">Euchre</a>
+                    </div>
+                    <div class="mgcol">
+                      <div class="mghead">Rummy</div>
+                      <a href="/canasta">Canasta</a>
+                      <a href="/gin-rummy">Gin Rummy</a>
+                      <a href="/rummy">Rummy</a>
+                    </div>
+                  </div>
+                </li>
+                <li class="mclink"><a href="/rules" data-p="mclink">Rules</a></li>
+                <li class="mclink"><a href="/leaderboards">Leaderboards</a></li>
+              <li class="dropdown"><span>All games</span><div id="allGames"></div></li>
+              </ul>
+              <div id="userBarContainer">
+                <ul id="userBar">
+                  <li class="userAvatarContainer displayInline open loggedIn">
+                    <span class="avFoot"><img class="userAvatar loaded" src="static/pieces/avatar/classic/ManCowboy.svg" alt="User avatar" width="24" height="24" /></span>
+                    <span class="userName">Holger</span>
+                    <div class="userDropdown">
+                      <div class="mphead">Account</div>
+                      <div class="dropdownItem settings" data-p="dropitem">Settings</div>
+                      <div class="dropdownItem dailydeal">Daily challenge</div>
+                      <div class="dropdownItem stats">Stats</div>
+                      <div class="dropdownItem login loggedOut">Sign in</div>
+                      <div class="dropdownItem logout loggedIn">Logout</div>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </nav>
+            <div style="height:210px"></div>
+            <div id="mainContainer" class="general" style="min-height:0">
+              <div class="helpBox">
+                <div class="sitefooter">
+                  <div class="footer-basic">
+                    <footer>
+                      <div class="footerSection footerGroup">
+                        <strong data-p="foothead">Trick-taking games</strong>
+                        <div class="footerCols">
+                          <ul class="list-inline">
+                            <li class="list-inline-item"><a href="/hearts" data-p="footlink">Hearts</a></li>
+                            <li class="list-inline-item"><a href="/spades">Spades</a></li>
+                            <li class="list-inline-item"><a href="/euchre">Euchre</a></li>
+                          </ul>
+                        </div>
+                      </div>
+                      <div class="footerSection footerGroup">
+                        <strong>Rummy games</strong>
+                        <div class="footerCols">
+                          <ul class="list-inline">
+                            <li class="list-inline-item"><a href="/canasta">Canasta</a></li>
+                            <li class="list-inline-item"><a href="/rummy">Rummy</a></li>
+                          </ul>
+                        </div>
+                      </div>
+                      <div class="footerSection footerResources">
+                        <ul class="list-inline">
+                          <li class="list-inline-item"><strong>Resources</strong></li>
+                          <li class="list-inline-item"><a href="/about">About</a></li>
+                          <li class="list-inline-item"><a href="/rules">Rules &amp; Guides</a></li>
+                        </ul>
+                      </div>
+                      <div class="footerSection footerLegal">
+                        <ul class="list-inline" data-p="legal">
+                          <li class="list-inline-item"><strong>Legal</strong></li>
+                          <li class="list-inline-item"><a href="/world-of-card-games-privacy-policy">Privacy Policy</a></li>
+                          <li class="list-inline-item"><a href="/world-of-card-games-terms-of-use">Terms of Use</a></li>
+                          <li class="list-inline-item footerSocial">
+                            <div class="social">
+                              <a href="https://x.com/WorldOfCardGamz"><img src="static/images/frontpage/social-x.svg" alt="X" loading="lazy" width="24" height="24" /></a>
+                              <a href="https://www.facebook.com/WorldOfCardGames/"><img src="static/images/frontpage/social-facebook.svg" alt="Facebook" loading="lazy" width="24" height="24" /></a>
+                              <a href="https://www.youtube.com/c/Worldofcardgames"><img src="static/images/frontpage/social-youtube.svg" alt="YouTube" loading="lazy" width="24" height="24" /></a>
+                            </div>
+                          </li>
+                        </ul>
+                      </div>
+                    </footer>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <script>
+      (function () {
+        var card = document.currentScript.closest('.card');
+        var box = card.querySelector('[data-demo]');
+        var p = function (k) { return box.querySelector('[data-p="' + k + '"]'); };
+        function role(what, el, want, tag) {
+          return {
+            what: what,
+            got: Lab.cs(el, 'font-size') + ' / ' + Lab.cs(el, 'line-height') + ' / ' + Lab.cs(el, 'font-weight') + ' / ' + Lab.cs(el, 'color'),
+            want: want,
+            tag: tag
+          };
+        }
+        Lab.table(card, [
+          role('a menu link, #menuBar > li.mclink > a', p('mclink'), '16px / 16px / 700 / #262626'),
+          role('a panel column head, .mghead', p('mghead'), '16px / 32px / 700 / #141414'),
+          role('a panel link, .mgcol a', p('mgcola'), '16px / 24px / 400 / #262626'),
+          role('a dropdown item, .dropdownItem', p('dropitem'), '16px / 24px / 400 / #262626'),
+          role('a footer column head, .footerGroup > strong', p('foothead'), '16px / 28px / 700 / #141414'),
+          role('a footer link', p('footlink'), '16px / 28px / 400 / #141414'),
+          { what: 'the legal row, .footerLegal > ul', got: Lab.cs(p('legal'), 'font-size') + ' / ' + Lab.cs(p('legal'), 'line-height'), want: '16px / 20px' },
+          { what: 'the menu link’s line height', got: Lab.cs(p('mclink'), 'line-height'), want: '1, the bar’s own 16px box', tag: 'note' }
+        ], 'size / line / weight / ink');
+        Lab.note(card, 'Lab only: the games panel is opened with the display the hover rule gives it (_fp-chrome.scss:231, display flex and a 12px gap) and the user corner carries the site’s own .open class, so both panels can be read standing still. The 210px of air below the bar is the room they hang in.');
+        Lab.note(card, 'The account panel carries a Sign in item, hidden here because the corner is drawn signed in. It read Log in until 14 Sep 2026. The wording is the copy section\u2019s business; the markup is drawn as it ships.');
+        Lab.note(card, 'The footer is drawn inside a reading page’s .helpBox, which is where the 0 padding on .sitefooter .footer-basic comes from (_fp-band.scss:115).');
+      })();
+      </script>
+    </div>
+  </div>
+
+</div>
+</section>

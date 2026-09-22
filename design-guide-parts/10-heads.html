@@ -1,0 +1,517 @@
+<!-- Section 10, guide 7.8. Ids repeat across the demos (#openTablesTop, #menuBarContainer,
+     #mainContainer), because the site keys its rules on them, so every script below measures with
+     its own root's querySelector and never with getElementById. -->
+<section class="sec" id="heads">
+<h2>10 Section heads and rules</h2>
+<div class="rule"></div>
+<p class="desc">Guide 7.8, with the reading recipe's heads from 10.3 and the bar's strip from 8.1. Four forms: the frontpage's seam title on its 14px strip, the plain rule off the frontpage, the heads down a reading page, and a card's section head in a modal.</p>
+
+<div class="grid g1">
+
+  <div class="card"><div class="body">
+    <h3>The seam title <span class="tag built">built</span></h3>
+    <p class="rule-text">A seam title is GLCA 500 at 26 / 26 set into a 14px strip whose 1px #D9D2C4 rule sits at y 6.5, haloed in the paper below, with an even number of suit marks about 96px apart across the window. Before the engine runs, the static seam draws the same rule and the same title.</p>
+    <div class="demo">
+      <div class="site fp wm" data-demo-static>
+        <div style="height:20px"></div>
+        <div class="lobbyscope" id="openTablesTop">
+          <div class="divhead isStatic" style="top:-7px"><span class="ttl halo">Join a table</span><span class="ttl">Join a table</span></div>
+          <div class="lobbyhead"><span class="pophead">Join a table</span></div>
+        </div>
+        <div style="height:20px"></div>
+      </div>
+    </div>
+    <div class="demo">
+      <div class="site fp wm" data-demo-built>
+        <div style="height:20px"></div>
+        <div class="lobbyscope" id="openTablesTop">
+          <div class="lobbyhead"><span class="pophead">Join a table</span></div>
+        </div>
+        <div style="height:20px"></div>
+      </div>
+    </div>
+    <script>(function () {
+      var card = document.currentScript.closest('.card');
+      var cs = Lab.cs;
+      var sroot = card.querySelector('[data-demo-static]');
+      var broot = card.querySelector('[data-demo-built]');
+      var well = card.querySelectorAll('.demo')[1];
+
+      // The engine's own constants and art (FrontpageSeams.js:17-80), so a drawn seam here is
+      // the markup the engine produces rather than a picture of it.
+      var SUITS = {
+      spade: ["M39.95,9 C39.95,9 69.97,20.85 70,43.08 C70.01,52.75 62.13,60.61 52.39,60.62 C49.42,60.63 46.62,59.90 44.16,58.61 L48,71.00 L32,71.00 L35.82,58.65 C33.38,59.93 30.60,60.65 27.64,60.66 C17.91,60.67 10.01,52.83 10,43.16 C9.96,20.92 39.95,9 39.95,9 Z", "#262626", .45, .142],
+      heart: ["M52.34,13.99 C56.93,13.99 61.08,15.95 64.09,19.13 C67.12,22.32 68.99,26.74 69.00,31.62 C69.02,53.20 43.52,65.35 40.04,66.90 C37.71,65.85 26.39,60.44 18.57,50.99 C14.26,45.79 11.00,39.34 10.99,31.70 C10.99,26.82 12.85,22.40 15.87,19.19 C18.87,16.01 23.02,14.03 27.60,14.03 C32.15,14.02 36.26,15.95 39.26,19.07 C39.51,19.33 39.75,19.60 39.98,19.87 C40.21,19.60 40.46,19.33 40.70,19.07 C43.70,15.94 47.80,14.00 52.34,13.99 Z", "#B54A3F", .5, .148],
+      club: ["M39.99,11 C47.76,11 54.06,17.3 54.06,25.06 C54.06,28.79 52.61,32.18 50.24,34.70 C51.98,33.93 53.90,33.50 55.93,33.50 C63.70,33.50 70,39.80 70,47.57 C70,55.33 63.70,61.63 55.93,61.63 C50.95,61.63 46.57,59.04 44.08,55.13 C44.14,55.40 44.21,55.66 44.27,55.93 L44.44,56.61 C44.47,56.73 44.49,56.84 44.52,56.96 L44.69,57.65 L44.85,58.33 C46.17,63.81 47.36,69 47.36,69 L32.93,69 C32.93,69 33.93,64.19 35.11,58.95 L35.27,58.26 L35.35,57.92 L35.51,57.23 C35.69,56.45 35.87,55.68 36.05,54.91 C33.57,58.94 29.13,61.63 24.06,61.63 C16.29,61.63 10,55.33 10,47.57 C10,39.80 16.29,33.50 24.06,33.50 C26.09,33.50 28.01,33.93 29.76,34.70 C27.38,32.19 25.93,28.80 25.93,25.06 C25.93,17.3 32.23,11 39.99,11 Z", "#262626", .45, .153],
+      diamond: ["M40,3.68 L66.75,40.00 L40,76.31 L13.24,40.00 L40,3.68 Z", "#B54A3F", .5, .159]
+      };
+      var TILE = [["club", 41.88, .88, .153], ["diamond", 137.64, .64, .159], ["spade", 234.32, 1.32, .142], ["heart", 330.08, 1.08, .148]];
+      var TILEBY = {};
+      TILE.forEach(function (t) { TILEBY[t[0]] = [t[2], t[3]]; });
+      var GAPSVG = '<svg viewBox="0 0 20 14"><rect y="6.5" width="20" height="1" fill="#D9D2C4"/></svg>';
+      var RULE_COLOR = '#D9D2C4';
+      var HEAD_SIZE = 26, HEAD_HALO = 3, HEAD_PAD_EM = 4 / HEAD_SIZE, CELL_TARGET = 96;
+      var MARK_HALF = 10, MARK_CLEAR = 8, SEAM_HEIGHT = 14, RULE_Y = 7;
+      var svgN = 0, metricsCache = {}, lastFit = [0, 0];
+
+      function el(tag, cls, html) {
+        var e = document.createElement(tag);
+        if (cls) e.className = cls;
+        if (html !== undefined) e.innerHTML = html;
+        return e;
+      }
+      function suitSVG(name) {
+        var s = SUITS[name];
+        var red = name === 'heart' || name === 'diamond';
+        var id = 'labseam' + svgN++;
+        return '<svg viewBox="0 0 80 80"><clipPath id="' + id + '"><path d="' + s[0] + '"/></clipPath>' +
+          '<path d="' + s[0] + '" fill="' + s[1] + '" fill-opacity="' + s[2] + '"/>' +
+          '<path d="' + s[0] + '" fill="none" stroke="' + s[1] + '" stroke-opacity="' + (red ? .32 : .24) +
+          '" stroke-width="9" clip-path="url(#' + id + ')"/></svg>';
+      }
+      function headRule(box, x0, x1) {
+        x0 = Math.round(x0); x1 = Math.round(x1);
+        var w = x1 - x0;
+        if (w < 10) return;
+        var seg = el('span', 'ln');
+        seg.style.cssText = 'left:' + x0 + 'px;width:' + w + 'px;';
+        seg.innerHTML = '<svg viewBox="0 0 ' + w + ' ' + SEAM_HEIGHT + '" width="' + w + '" height="' + SEAM_HEIGHT +
+          '"><rect y="6.5" width="' + w + '" height="1" fill="' + RULE_COLOR + '"/></svg>';
+        box.appendChild(seg);
+      }
+      function fittedStations(cx, colL, colR) {
+        if (colR - colL < 2 * CELL_TARGET) return [];
+        var best = null, n, pitch;
+        for (n = 2; n <= 40; n += 2) {
+          pitch = (colR - colL) / n;
+          if (!best || Math.abs(pitch - CELL_TARGET) < Math.abs(best[1] - CELL_TARGET)) best = [n, pitch];
+        }
+        lastFit = best;
+        var out = [], left = ['diamond', 'club', 'heart', 'spade'], right = ['spade', 'heart', 'club', 'diamond'], k;
+        for (k = 0; k < best[0] / 2; k++) {
+          var d = (k + 0.5) * best[1];
+          out.push({ name: left[k % 4], x: cx - d, station: k, side: 0 });
+          out.push({ name: right[k % 4], x: cx + d, station: k, side: 1 });
+        }
+        return out;
+      }
+      function headMetrics(font) {
+        if (metricsCache[font]) return metricsCache[font];
+        var c = document.createElement('canvas').getContext('2d');
+        c.font = font;
+        var g = c.measureText('Hg'), x = c.measureText('x'), h = c.measureText('H');
+        metricsCache[font] = { asc: g.fontBoundingBoxAscent, desc: g.fontBoundingBoxDescent, xh: x.actualBoundingBoxAscent, cap: h.actualBoundingBoxAscent };
+        return metricsCache[font];
+      }
+      function hitBreak(tbreaks, x) {
+        var reach = MARK_HALF + MARK_CLEAR, i;
+        for (i = 0; i < tbreaks.length; i++) {
+          if (x + reach > tbreaks[i][0] && x - reach < tbreaks[i][1]) return tbreaks[i];
+        }
+        return null;
+      }
+      function drawRule(box, breaks, width) {
+        breaks.sort(function (a, b) { return a[0] - b[0]; });
+        var merged = [];
+        breaks.forEach(function (b) {
+          var last = merged[merged.length - 1];
+          if (last && b[0] <= last[1]) last[1] = Math.max(last[1], b[1]);
+          else merged.push([b[0], b[1]]);
+        });
+        var prev = 0;
+        merged.forEach(function (b) {
+          if (b[0] > prev) headRule(box, prev, b[0]);
+          prev = Math.max(prev, b[1]);
+        });
+        if (prev < width) headRule(box, prev, width);
+      }
+      function addMark(box, mark) {
+        var t = TILEBY[mark.name];
+        var size = 80 * t[1];
+        var gap = el('span', 'gapln', GAPSVG);
+        gap.style.cssText = 'left:' + (mark.x - MARK_HALF) + 'px;opacity:0;';
+        box.appendChild(gap);
+        var su = el('span', 'su', suitSVG(mark.name));
+        su.style.cssText = 'left:' + (mark.x - size / 2) + 'px;top:' + t[0] + 'px;width:' + size + 'px;height:' + size + 'px;opacity:1;';
+        box.appendChild(su);
+      }
+      function build() {
+        var host = broot.querySelector('#openTablesTop');
+        var old = host.querySelector('.divhead');
+        if (old) old.parentNode.removeChild(old);
+        svgN = 0;
+        var box = el('div', 'divhead');
+        box.style.cssText = 'top:-7px;';
+        host.appendChild(box);
+        var width = box.clientWidth;
+        var bx = box.getBoundingClientRect().left;
+        var breaks = [], tbreaks = [];
+        var h = host.querySelector('.pophead');
+        var cr = host.getBoundingClientRect();
+        var cx = cr.left + cr.width / 2 - bx;
+        var hcs = window.getComputedStyle(h);
+        var ttl = el('span', 'ttl', h.innerHTML);
+        ttl.style.fontFamily = hcs.fontFamily;
+        ttl.style.fontWeight = hcs.fontWeight;
+        ttl.style.color = hcs.color;
+        box.appendChild(ttl);
+        var size = parseFloat(window.getComputedStyle(ttl).fontSize) || HEAD_SIZE;
+        var m = headMetrics(hcs.fontWeight + ' ' + size + 'px ' + hcs.fontFamily);
+        var base = (size - (m.asc + m.desc)) / 2 + m.asc;
+        var tw = ttl.getBoundingClientRect().width;
+        var left = cx - tw / 2;
+        ttl.style.left = left + 'px';
+        ttl.style.top = RULE_Y - base + m.xh / 2 + 'px';
+        var paper = 'var(--band, #f4eee5)';
+        var halo = ttl.cloneNode(true);
+        halo.className = 'ttl halo';
+        halo.style.color = paper;
+        halo.style.webkitTextStroke = 2 * HEAD_HALO + 'px ' + paper;
+        box.insertBefore(halo, ttl);
+        var pad = HEAD_PAD_EM * size;
+        breaks.push([left - pad, left + tw + pad]);
+        tbreaks.push([left - pad, left + tw + pad]);
+        var wr = well.getBoundingClientRect();
+        var edges = [wr.left - bx, wr.right - bx];
+        var marks = fittedStations((edges[0] + edges[1]) / 2, edges[0], edges[1]).filter(function (q) {
+          return !hitBreak(tbreaks, q.x);
+        });
+        marks.forEach(function (mk) { breaks.push([mk.x - MARK_HALF, mk.x + MARK_HALF]); });
+        drawRule(box, breaks, width);
+        marks.forEach(function (mk) { addMark(box, mk); });
+        return { box: box, ttl: ttl, halo: halo, metrics: m, size: size, marks: marks.length };
+      }
+
+      function run() {
+        var drawn = build();
+        [].slice.call(card.querySelectorAll('table.mtab, p.rl')).forEach(function (n) { n.parentNode.removeChild(n); });
+
+        var shead = sroot.querySelector('.divhead.isStatic');
+        var sttl = sroot.querySelector('.ttl:not(.halo)');
+        var shalo = sroot.querySelector('.ttl.halo');
+        var before = window.getComputedStyle(shead, '::before');
+        Lab.table(card, [
+          { what: '.divhead height', got: cs(shead, 'height'), want: '14px' },
+          { what: '.divhead width', got: cs(shead, 'width'), want: window.innerWidth + 'px (100vw)', tag: 'note' },
+          { what: 'the rule, y', got: Lab.hex(before.top), want: '6.5px' },
+          { what: 'the rule, height', got: Lab.hex(before.height), want: '1px' },
+          { what: 'the rule, colour', got: Lab.hex(before.backgroundColor), want: '#d9d2c4' },
+          { what: 'the title face', got: cs(sttl, 'font-family'), want: 'GLCA, Georgia, serif' },
+          { what: 'the title weight', got: cs(sttl, 'font-weight'), want: '500' },
+          { what: 'the title size', got: cs(sttl, 'font-size') + ' / ' + cs(sttl, 'line-height'), want: '26px / 26px' },
+          { what: 'the title ink', got: cs(sttl, 'color'), want: '#141414' },
+          { what: 'the title top', got: cs(sttl, 'top'), want: '-7.9px' },
+          { what: 'the halo colour', got: cs(shalo, 'color'), want: '#f4eee5' },
+          { what: 'the halo stroke', got: cs(shalo, '-webkit-text-stroke-width'), want: '6px' },
+          { what: 'the halo padding', got: cs(shalo, 'padding'), want: '0 4px' }
+        ], 'The static seam, before the engine runs');
+
+        var lns = [].slice.call(drawn.box.querySelectorAll('.ln'));
+        var sus = [].slice.call(drawn.box.querySelectorAll('.su'));
+        var xs = sus.map(function (s) { var r = s.getBoundingClientRect(); return r.left + r.width / 2; }).sort(function (a, b) { return a - b; });
+        var gaps = [];
+        for (var i = 1; i < xs.length; i++) gaps.push(xs[i] - xs[i - 1]);
+        gaps.sort(function (a, b) { return a - b; });
+        var rect = lns.length ? lns[0].querySelector('rect') : null;
+        Lab.table(card, [
+          { what: "the rule's y in the svg", got: rect ? rect.getAttribute('y') : '(no rule)', want: '6.5' },
+          { what: "the rule's height in the svg", got: rect ? rect.getAttribute('height') : '', want: '1' },
+          { what: '.ln svg height', got: lns.length ? lns[0].querySelector('svg').getAttribute('height') : '', want: '14' },
+          { what: 'the rule pieces', got: lns.length + ' pieces', want: 'one between each opening', tag: 'note' },
+          { what: 'cells across the window', got: lastFit[0] + ' (' + (lastFit[0] % 2 === 0 ? 'even' : 'odd') + ')', want: 'an even count', tag: 'note' },
+          { what: 'the pitch fitted', got: lastFit[1].toFixed(1) + 'px', want: 'nearest 96px', tag: 'note' },
+          { what: 'the marks drawn', got: String(sus.length), want: lastFit[0] + ' less the ones the title covers', tag: 'note' },
+          { what: 'measured between two marks', got: gaps.length ? gaps[0].toFixed(1) + 'px' : '(none)', want: lastFit[1].toFixed(1) + 'px' },
+          { what: 'the title top, written', got: drawn.ttl.style.top, want: 'y 7 less the baseline plus half the x-height', tag: 'note' },
+          { what: 'the ascent, descent, x-height', got: drawn.metrics.asc.toFixed(1) + ', ' + drawn.metrics.desc.toFixed(1) + ', ' + drawn.metrics.xh.toFixed(1), want: 'measured on a canvas at 26px', tag: 'note' },
+          { what: "the halo's stroke", got: drawn.halo.style.webkitTextStroke || cs(drawn.halo, '-webkit-text-stroke-width'), want: '6px, which is HEAD_HALO 3 each side', tag: 'note' }
+        ], 'The drawn seam, as FrontpageSeams builds it');
+
+        Lab.table(card, [
+          { what: 'HEAD_SIZE', got: String(HEAD_SIZE), want: '26' },
+          { what: 'CELL_TARGET', got: String(CELL_TARGET), want: '96' },
+          { what: 'SEAM_HEIGHT', got: String(SEAM_HEIGHT), want: '14' },
+          { what: 'RULE_Y (the rect sits at 6.5)', got: String(RULE_Y), want: '7' },
+          { what: 'MARK_HALF', got: String(MARK_HALF), want: '10' },
+          { what: 'MARK_CLEAR', got: String(MARK_CLEAR), want: '8' },
+          { what: 'HEAD_HALO', got: String(HEAD_HALO), want: '3' },
+          { what: 'RULE_COLOR', got: RULE_COLOR.toLowerCase(), want: '#d9d2c4' }
+        ], "The engine's constants");
+
+        Lab.note(card, "The halo is stroked 6px, three of which show, because a text stroke is drawn half inside the letter. The sheet writes the 6 and the engine writes 2 x HEAD_HALO, so the two agree.");
+        Lab.note(card, "The engine fits its row of marks to the window the menu bar spans, which is the area left of the ad rail. The lab has no bar, so the second well stands in for it and the pitch is fitted across the card. Everything else is the engine's own arithmetic and its own markup: the pieces of rule, the 20px gap piece under each mark, the suit at its tile size and the halo cloned from the title.");
+        Lab.note(card, "The strip is 100vw wide and hangs half over the band's top edge, so the demo well clips it, as the page's own .stage does.");
+      }
+      run();
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(run);
+    })();</script>
+  </div></div>
+
+  <div class="card"><div class="body">
+    <h3>The plain rule and the bar's strip <span class="tag built">built</span></h3>
+    <p class="rule-text">Off the frontpage a section rule is border-top 1px solid #D9D2C4, which the footer draws, and the menubar hangs a 14px strip 7px below itself with the same 1px line at y 6.5. A reading page's sections draw no rules, the 56 / 44 rhythm does the work.</p>
+    <div class="demo">
+      <div class="site wm" data-demo-bar>
+        <nav id="menuBarContainer" class="mbcenter" aria-label="Main navigation">
+          <a id="menuLogoContainer" href="#"><img src="static/images/logo.png" alt="menu" width="170" height="32"></a>
+          <div id="menuIconContainer" data-wocg-press-release="true"><span>Games</span></div>
+          <ul id="menuBar">
+            <li class="mclink mgames"><span>Games<span class="mtri" aria-hidden="true"></span></span></li>
+            <li class="mclink"><a href="/rules">Rules</a></li>
+            <li class="mclink"><a href="/leaderboards">Leaderboards</a></li>
+            <li><a href="/hearts">Hearts</a></li>
+            <li><a href="/spades">Spades</a></li>
+          </ul>
+        </nav>
+        <div style="height:56px"></div>
+      </div>
+    </div>
+    <div class="demo">
+      <div class="site wm" data-demo-foot>
+        <div class="helpBox" style="position:relative">
+          <div class="content"><p>The last block of the page sits 56px above the footer's rule.</p></div>
+          <div class="sitefooter">
+            <div class="divhead isStatic" style="top:-7px"></div>
+            <div class="footer-basic">
+              <footer>
+                <div class="footerSection footerResources">
+                  <ul class="list-inline">
+                    <li class="list-inline-item"><strong>Resources</strong></li>
+                    <li class="list-inline-item"><a href="#">About</a></li>
+                    <li class="list-inline-item"><a href="#">Leaderboards</a></li>
+                    <li class="list-inline-item"><a href="#">Rules &amp; Guides</a></li>
+                    <li class="list-inline-item"><a href="#">Contact</a></li>
+                  </ul>
+                </div>
+                <div class="footerSection footerLegal">
+                  <ul class="list-inline">
+                    <li class="list-inline-item"><strong>Legal</strong></li>
+                    <li class="list-inline-item"><a href="#">Privacy Policy</a></li>
+                    <li class="list-inline-item"><a href="#">Terms of Use</a></li>
+                    <li class="list-inline-item"><a href="#">Community Guidelines</a></li>
+                    <li class="list-inline-item footerSocial">
+                      <div class="social">
+                        <a href="#"><img src="static/images/frontpage/social-x.svg" alt="X" width="24" height="24"></a>
+                        <a href="#"><img src="static/images/frontpage/social-facebook.svg" alt="Facebook" width="24" height="24"></a>
+                        <a href="#"><img src="static/images/frontpage/social-youtube.svg" alt="YouTube" width="24" height="24"></a>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+              </footer>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="demo">
+      <div class="site wm" data-demo-read>
+        <div id="mainContainer" class="general" style="min-height:0">
+          <div class="helpBox">
+            <div class="content">
+              <h2>How the leaderboard works</h2>
+              <p>The leaderboard refreshes daily. Every ranked game you play moves your rating.</p>
+              <h2>Rating and rank</h2>
+              <p>Rank is your place on the board you are looking at. Rank +/- is how many places you moved on that board over its period.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>(function () {
+      var card = document.currentScript.closest('.card');
+      var cs = Lab.cs;
+      var bar = card.querySelector('[data-demo-bar]').querySelector('#menuBarContainer');
+      var after = window.getComputedStyle(bar, '::after');
+      var before = window.getComputedStyle(bar, '::before');
+      Lab.table(card, [
+        { what: 'the bar height', got: cs(bar, 'height'), want: '56px' },
+        { what: 'the strip height', got: Lab.hex(after.height), want: '14px' },
+        { what: 'the strip hangs', got: Lab.hex(after.bottom), want: '-7px' },
+        { what: 'the strip tile', got: /D9D2C4/i.test(after.backgroundImage) ? 'a 384 by 14 svg with the rule in D9D2C4' : '(no D9D2C4)', want: 'a 384 by 14 svg with the rule in D9D2C4' },
+        { what: "the tile's rect", got: /y=%276.5%27|y='6\.5'/.test(after.backgroundImage) ? "y 6.5" : '(not at 6.5)', want: 'y 6.5' },
+        { what: 'the strip size', got: Lab.hex(after.backgroundSize), want: '384px 14px' },
+        { what: 'the strip repeat', got: Lab.hex(after.backgroundRepeat), want: 'repeat-x' },
+        { what: 'the strip mask', got: Lab.hex(after.webkitMaskImage || after.maskImage), want: 'none' },
+        { what: "the wave's pseudo", got: Lab.hex(before.display), want: 'none' }
+      ], "The menubar's strip");
+
+      var foot = card.querySelector('[data-demo-foot]');
+      var sitefooter = foot.querySelector('.sitefooter');
+      var legal = foot.querySelector('.footerLegal');
+      Lab.table(card, [
+        { what: 'the rule above the footer', got: cs(sitefooter, 'border-top'), want: '1px solid #d9d2c4' },
+        { what: "the footer's paper", got: cs(sitefooter, 'background-color'), want: '#f4eee5' },
+        { what: 'the legal row, rule above', got: cs(legal, 'border-top'), want: '1px solid #d9d2c4' },
+        { what: 'the legal row, over the line', got: cs(legal, 'padding-top'), want: '10px' },
+        { what: 'the seam the frontpage draws', got: cs(foot.querySelector('.sitefooter .divhead'), 'display'), want: 'none' }
+      ], "The footer's rule");
+
+      var read = card.querySelector('[data-demo-read]');
+      var h2s = read.querySelectorAll('h2');
+      Lab.table(card, [
+        { what: 'h2 border-top', got: cs(h2s[1], 'border-top-width'), want: '0' },
+        { what: 'h2 top margin', got: cs(h2s[1], 'margin-top'), want: '44px' },
+        { what: 'a rule between sections', got: read.querySelector('hr, .divhead, .sec-rule') ? 'one is drawn' : 'none', want: 'none' }
+      ], 'A reading page, between two sections');
+      Lab.note(card, "The footer's seam element is in the markup on every page and is hidden off the frontpage, because the engine needs body.fp and the stage's clip. The plain rule stands in its place.");
+      Lab.note(card, "The bar carries its left links and the wordmark; the games panel and the user cluster belong to 8.1. The two game links after them are what the template writes for a top-menu game, hidden under body.wm, and they are here because master hangs a small arrow off the last item in the list. The band's .helpBox is made relative here because a game page's band is out of flow, and the reading shell's 100vh minimum is set to 0 inline; neither touches a measured value.");
+    })();</script>
+  </div></div>
+
+  <div class="card"><div class="body">
+    <h3>Heads on a page <span class="tag call">guide's call</span></h3>
+    <p class="rule-text">A page's h1 is 38 / 1.15 with 12px below and a 14 / 20 by-line 16px under that, h2 is 26 / 1.2 at 44px 0 10px, h3 is 21 / 28 at 28px 0 8px, the first head in the column has no top margin, and the frontpage's .pophead is declared 28px 0 8px but never drawn.</p>
+    <div class="demo">
+      <div class="site wm" data-demo-page>
+        <div id="mainContainer" class="general" style="min-height:0">
+          <div class="helpBox">
+            <div class="content">
+              <h1>About</h1>
+              <p class="articleByline">Written by Holger Sindbaek, 14 September 2026</p>
+              <p>Hello there. My name is Holger Sindbaek, and I am a designer and programmer from Denmark who loves classic card games.</p>
+              <h2>How the site is run</h2>
+              <p>More than 25 million games have been played here. The site is run by one person, and every change starts as an email from a player.</p>
+              <h3>Writing in</h3>
+              <p>If you spot something, write to me. Every message is read and most of them are answered the same day.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="demo">
+      <div class="site fp wm" data-demo-fp>
+        <div style="padding:16px 24px">
+          <div class="popular"><div class="pophead">Popular games</div></div>
+          <div id="sec-about"><div class="measure"><h3>What's new</h3></div></div>
+        </div>
+        <div class="popular" id="popsec"><div class="pophead">Popular games</div></div>
+      </div>
+    </div>
+    <script>(function () {
+      var card = document.currentScript.closest('.card');
+      var cs = Lab.cs;
+      var p = card.querySelector('[data-demo-page]');
+      var h1 = p.querySelector('h1');
+      var by = p.querySelector('.articleByline');
+      var h2 = p.querySelector('h2');
+      var h3 = p.querySelector('h3');
+      Lab.table(card, [
+        { what: 'h1 face and weight', got: cs(h1, 'font-weight') + ' ' + cs(h1, 'font-family'), want: '500 GLCA, Georgia, serif' },
+        { what: 'h1 size', got: cs(h1, 'font-size') + ' / ' + cs(h1, 'line-height'), want: '38px / 43.7px' },
+        { what: 'h1 margin', got: cs(h1, 'margin'), want: '0 0 12px' },
+        { what: 'h1 as the first block', got: cs(h1, 'margin-top'), want: '0' },
+        { what: 'the by-line', got: cs(by, 'font-size') + ' / ' + cs(by, 'line-height') + ', ' + cs(by, 'color'), want: '14px / 20px, #8a857c' },
+        { what: 'the by-line margin', got: cs(by, 'margin'), want: '0 0 16px' },
+        { what: 'h2 size', got: cs(h2, 'font-size') + ' / ' + cs(h2, 'line-height'), want: '26px / 31.2px' },
+        { what: 'h2 margin', got: cs(h2, 'margin'), want: '44px 0 10px', tag: 'call' },
+        { what: 'h3 size', got: cs(h3, 'font-size') + ' / ' + cs(h3, 'line-height'), want: '21px / 28px' },
+        { what: 'h3 margin', got: cs(h3, 'margin'), want: '28px 0 8px', tag: 'call' },
+        { what: 'the heads, ink', got: cs(h2, 'color'), want: '#141414' }
+      ], 'A reading page');
+
+      var f = card.querySelector('[data-demo-fp]');
+      var pop = f.querySelector('.popular .pophead');
+      var hidden = f.querySelector('#popsec > .pophead');
+      var abouth3 = f.querySelector('#sec-about h3');
+      Lab.table(card, [
+        { what: '.pophead margin', got: cs(pop, 'margin'), want: '28px 0 8px' },
+        { what: '.pophead size', got: cs(pop, 'font-size'), want: '26 is the section head; this is the dead rule in _fp-hero.scss:28-35', tag: 'note' },
+        { what: '.pophead face and weight', got: cs(pop, 'font-weight') + ' ' + cs(pop, 'font-family'), want: '500 GLCA, Georgia, serif' },
+        { what: '.pophead in #popsec', got: cs(hidden, 'display'), want: 'none' },
+        { what: '#sec-about h3', got: cs(abouth3, 'font-size') + ' / ' + cs(abouth3, 'line-height'), want: '23px / 30px' },
+        { what: '#sec-about h3 margin', got: cs(abouth3, 'margin'), want: '44px 0 10px' }
+      ], 'The frontpage');
+      Lab.note(card, "The .pophead size is a note, not a mismatch: the seam partial declares .pophead at the display head's 26, and the hero partial declares it again at 24 further down the sheet (_fp-hero.scss:28-35), so 24 wins. Nothing shows it: every .pophead the page carries is hidden, the seam draws the name instead. The guide never states a size for it, so the dead rule is a sweep, not a red row. The type section carries the same finding.");
+      Lab.note(card, "The two h2 and h3 steps are the guide's own call and are built as written. The about zone keeps its own 23 / 30 rank between the 26 head and the 21 sub-head.");
+    })();</script>
+  </div></div>
+
+  <div class="card"><div class="body">
+    <h3>A card's section head in a modal <span class="tag built">built</span></h3>
+    <p class="rule-text">A card's section head is 20 / 28 bold in a strip padded 18px 2px 6px, so it sits 18 under the previous card and 6 over its own, and the first one on a settings page pads 12 under the tabs' 8px margin, 20 in all.</p>
+    <div class="demo">
+      <div class="site wm" data-demo-sh>
+        <div class="wmModal wmWide wmOpen modalInstant" role="dialog" style="position:static;display:block;opacity:1">
+          <div class="wmScrim" style="position:static;height:0"></div>
+          <div class="wmPanel" style="position:static;transform:none;width:640px;max-height:none;margin:0 auto">
+            <div class="wmBox">
+              <div class="wmBody">
+                <div class="wmCard">
+                  <div class="wmRow"><span class="wmRowLab"><span class="wmRowTitle">Sort my hand</span></span><span class="wmRowCtl"><span class="wmBtn wmSmall wmLight" role="button" tabindex="0">Change</span></span></div>
+                </div>
+                <div class="wmSh"><span class="wmShTitle">Leaderboards</span><span class="wmShHint">You are on 4 of the 18 boards.</span></div>
+                <div class="wmCard">
+                  <div class="wmRow"><span class="wmRowLab"><span class="wmRowTitle">Hearts</span></span><span class="wmRowCtl"><span class="wmBtn wmSmall wmLight" role="button" tabindex="0">Remove</span></span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="demo">
+      <div class="site wm" data-demo-tabs>
+        <div class="wmModal wmWide wmSettings wmOpen modalInstant" role="dialog" style="position:static;display:block;opacity:1">
+          <div class="wmScrim" style="position:static;height:0"></div>
+          <div class="wmPanel" style="position:static;transform:none;width:640px;max-height:none;margin:0 auto">
+            <div class="wmBox">
+              <div class="wmBody">
+                <div class="wmSeg wmTabs" role="tablist" aria-label="Settings">
+                  <span class="wmCell wmPicked" role="tab" tabindex="0" aria-selected="true" data-page="game">Game</span>
+                  <span class="wmCell" role="tab" tabindex="0" aria-selected="false" data-page="design">Design</span>
+                  <span class="wmCell" role="tab" tabindex="0" aria-selected="false" data-page="account">Account</span>
+                </div>
+                <div class="wmPage wmOnPage" data-page="game" role="tabpanel">
+                  <div class="wmSh"><span class="wmShTitle">At the table</span></div>
+                  <div class="wmCard">
+                    <div class="wmRow"><span class="wmRowLab"><span class="wmRowTitle">Sort my hand</span></span><span class="wmRowCtl"><span class="wmBtn wmSmall wmLight" role="button" tabindex="0">Change</span></span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>(function () {
+      var card = document.currentScript.closest('.card');
+      var cs = Lab.cs;
+      var a = card.querySelector('[data-demo-sh]');
+      var sh = a.querySelector('.wmSh');
+      var title = sh.querySelector('.wmShTitle');
+      var hint = sh.querySelector('.wmShHint');
+      var nextCard = sh.nextElementSibling;
+      var prevCard = sh.previousElementSibling;
+      Lab.table(card, [
+        { what: '.wmSh display', got: cs(sh, 'display'), want: 'flex' },
+        { what: '.wmSh padding', got: cs(sh, 'padding'), want: '18px 2px 6px' },
+        { what: '.wmSh gap', got: cs(sh, 'gap'), want: '12px' },
+        { what: '.wmShTitle', got: cs(title, 'font-weight') + ' ' + cs(title, 'font-size') + ' / ' + cs(title, 'line-height'), want: '700 20px / 28px' },
+        { what: '.wmShTitle ink', got: cs(title, 'color'), want: '#141414' },
+        { what: '.wmShHint', got: cs(hint, 'font-size') + ' / ' + cs(hint, 'line-height') + ', ' + cs(hint, 'color'), want: '16px / 22px, #4e4d4c' },
+        { what: '.wmShHint align', got: cs(hint, 'text-align'), want: 'right' },
+        { what: 'the card under it', got: cs(nextCard, 'margin-top'), want: '0' },
+        { what: 'under the card above', got: Math.round(sh.getBoundingClientRect().top - prevCard.getBoundingClientRect().bottom) + 'px + 18px of padding', want: '0px + 18px of padding', tag: 'note' },
+        { what: 'the title to its own card', got: Math.round(nextCard.getBoundingClientRect().top - title.getBoundingClientRect().bottom) + 'px', want: '6px' }
+      ], 'A section head between two cards');
+
+      var b = card.querySelector('[data-demo-tabs]');
+      b.querySelectorAll('.wmSeg').forEach(function (seg) { Lab.seg(seg); });
+      var tabs = b.querySelector('.wmTabs');
+      var first = b.querySelector('.wmPage > .wmSh:first-child');
+      var ftitle = first.querySelector('.wmShTitle');
+      Lab.table(card, [
+        { what: 'the tabs, margin under', got: cs(tabs, 'margin-bottom'), want: '8px' },
+        { what: 'the first head, padding over', got: cs(first, 'padding-top'), want: '12px' },
+        { what: "the tabs' foot to the title's top", got: Math.round(ftitle.getBoundingClientRect().top - tabs.getBoundingClientRect().bottom) + 'px', want: '20px' },
+        { what: 'the tab tray height', got: cs(tabs, 'height'), want: '36px' },
+        { what: 'a tab cell', got: cs(tabs.querySelector('.wmCell'), 'height') + ', ' + cs(tabs.querySelector('.wmCell'), 'font-size'), want: '32px, 18px' }
+      ], 'The first head on a settings page');
+      Lab.note(card, "The strip's 18 above and 6 below are what set a head against the card it belongs to rather than the one it follows. On a settings page the tray takes the place of a title, so the first head pads 12 under the tray's own 8.");
+      Lab.note(card, "The two modals carry modalInstant, the site's own class for a box that opens without its entrance, because the entrance keyframes hold their end state and would move a static panel. The tray's thumb and its white copy of the words are drawn as ModalShell.placeSegThumb draws them, since no script runs in the lab.");
+    })();</script>
+  </div></div>
+
+</div>
+</section>

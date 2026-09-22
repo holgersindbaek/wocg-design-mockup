@@ -1,0 +1,922 @@
+<section class="sec" id="space">
+<h2>4 Space and layout</h2>
+<div class="rule"></div>
+<p class="desc">Guide 6.1 rhythm, 6.2 columns, 6.3 control heights, 6.4 breakpoints. Every step is drawn on the real pair that carries it, so the number and the piece it belongs to are read together. The window this page is measured in is <b class="winw">?</b>. Every modal here carries modalInstant, the site’s own class for a box that opens without its entrance, since that animation fills both ways and would otherwise hold the panel’s centring transform. The one exception is named where it is used. Where a piece from the about zone stands beside another piece, its column is clipped: that zone paints a band the width of the window, and in a lab well it would paint over its neighbour.</p>
+
+<style>
+  /* The lab's own layout for this section only. It lays the pieces out on the site's canvas in
+     fixed columns so two can stand side by side; it never writes on a piece. */
+  #space .rw { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 12px; padding: 12px; background: #f9f6f2; }
+  #space .rw.plain { display: block; }
+  #space .cap { font-size: 12px; color: #8a857c; margin: 0 0 4px; }
+  #space .pf { overflow: hidden; box-shadow: inset 0 0 0 1px #d9d2c4; background: #fff; }
+  #space .pf iframe { border: 0; display: block; transform-origin: top left; }
+  #space .frames { display: flex; flex-wrap: wrap; gap: 12px; padding: 12px; background: #f9f6f2; }
+  #space .kinds { font-size: 12px; line-height: 18px; color: #4e4d4c; margin: 6px 0 0; }
+  #space .kinds b { color: #141414; }
+</style>
+
+<script>
+(function () {
+  var sec = document.currentScript.closest('.sec');
+  sec.querySelector('.winw').textContent = window.innerWidth + ' by ' + window.innerHeight;
+  /* The probe mode itself is in lab.js, so every section can use it: the page served to an iframe with
+     ?probe=1&set=<name> shows one probe set and nothing else. This section's set is named space. */
+}());
+</script>
+
+<div class="grid g2">
+
+  <div class="card"><div class="body">
+    <h3>The rhythm: 4, 6, 8 and 10 <span class="tag built">built</span></h3>
+    <p class="rule-text">4 is a field to its error line. 6 is the gap inside a chip, the social marks and the 6px under a modal section title. 8 is where two hard edges meet. 10 is the or line’s gap to its rules, and a sub-head to its text.</p>
+    <div class="demo"><div class="rw">
+      <div class="site wm" style="width:250px">
+        <div class="wmModal wmOpen modalInstant wmGameOptions" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
+          <div class="wmPanel" style="position:static;transform:none;width:250px;max-height:none">
+            <div class="wmBox">
+              <div class="wmBody">
+                <div class="wmSh"><span class="wmShTitle">Table</span><span class="wmShHint">who can sit</span></div>
+                <div class="wmCard"><div class="wmRow"><span class="wmRowLab"><span class="wmRowTitle">Seats</span></span><span class="wmRowCtl"><span class="wmChip" role="checkbox" tabindex="0" aria-checked="false"><i><svg viewBox="0 0 10 8" width="10" height="8" aria-hidden="true"><path d="M1 4l3 3 5-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg></i>4</span></span></div></div>
+                <div class="wmFlds"><label class="wmFld"><input type="text" placeholder="Table name" /><span class="wmFldErr">That name is taken.</span></label></div>
+                <div class="wmFoot"><span class="wmBtn" role="button" tabindex="0">Cancel</span><span class="wmBtn wmGo" role="button" tabindex="0">Host</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="site wm" style="width:250px">
+        <div class="wmModal wmOpen modalInstant wmAuth visible" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
+          <div class="wmPanel" style="position:static;transform:none;width:250px;max-height:none">
+            <div class="wmBox">
+              <div class="wmBody">
+                <div class="box">
+                  <span class="wmOr">or</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="sitefooter">
+          <div class="footer-basic"><footer>
+            <div class="footerSection footerLegal"><ul class="list-inline">
+              <li class="list-inline-item"><a href="#">Privacy Policy</a></li>
+              <li class="list-inline-item footerSocial"><div class="social">
+                <a href="#"><img src="static/images/frontpage/social-x.svg" alt="X" width="24" height="24" /></a>
+                <a href="#"><img src="static/images/frontpage/social-facebook.svg" alt="Facebook" width="24" height="24" /></a>
+                <a href="#"><img src="static/images/frontpage/social-youtube.svg" alt="YouTube" width="24" height="24" /></a>
+              </div></li>
+            </ul></div>
+          </footer></div>
+        </div>
+      </div>
+    </div></div>
+    <script>(function () {
+      var card = document.currentScript.closest('.card');
+      var q = function (s) { return card.querySelector(s); };
+      Lab.table(card, [
+        { what: '.wmFldErr padding-top', got: Lab.cs(q('.wmFldErr'), 'padding-top'), want: '4px' },
+        { what: '.wmChip gap', got: Lab.cs(q('.wmChip'), 'gap'), want: '6px' },
+        { what: '.social gap', got: Lab.cs(q('.social'), 'gap'), want: '6px' },
+        { what: '.wmSh padding-bottom', got: Lab.cs(q('.wmSh'), 'padding-bottom'), want: '6px' },
+        { what: '.wmFoot gap', got: Lab.cs(q('.wmFoot'), 'gap'), want: '8px' },
+        { what: '.wmFoot padding-top', got: Lab.cs(q('.wmFoot'), 'padding-top'), want: '8px' },
+        { what: '--wm-gap, the 8px token', got: Lab.token(q('.wmModal'), '--wm-gap'), want: '8px' },
+        { what: '.wmOr gap', got: Lab.cs(q('.wmOr'), 'gap'), want: '10px' }
+      ]);
+      Lab.note(card, 'The bar’s own 8px below its rule is measured with the bar, in the 12, 16 and 18 card. The reading page’s 10px under a head is measured with the other reading steps, in the 24 to 56 card.');
+    })();</script>
+  </div></div>
+
+  <div class="card"><div class="body">
+    <h3>The rhythm: 24, 28, 44 and 56 <span class="tag built">built</span></h3>
+    <p class="rule-text">24 is the page gutter, a settings row’s label to its tray and the footer’s column gap. 28 above an h3 and 44 between blocks in a reading zone are the guide’s own steps. 56 is --sectgap, from a seam rule’s centre to its neighbour’s edge.</p>
+    <div class="demo"><div class="rw plain">
+      <div class="site fp wm">
+        <div class="lobbyscope">
+          <div class="lobbyhead"><span class="pophead">Join a table</span></div>
+        </div>
+        <div class="gamesec" id="sec-about">
+          <div class="serifnote reader">
+            <p>There is always an open table on World of Card Games, at any hour of the day or night.</p>
+          </div>
+          <div class="measure">
+            <h3>Frequently asked questions</h3>
+            <div class="faqi"><b>Is it free?</b><p>Yes. All eighteen games are free to play.</p></div>
+          </div>
+          <div class="measure">
+            <div class="fgrid tiles pictures">
+              <div class="fpic"><div class="fimg"><svg viewBox="0 0 160 120" role="img" aria-label="A table"><rect width="160" height="120" fill="#327333"></rect></svg></div><b>Real people right now</b><p>The numbers at the top of the page are live.</p></div>
+              <div class="fpic"><div class="fimg"><svg viewBox="0 0 160 120" role="img" aria-label="A table"><rect width="160" height="120" fill="#327333"></rect></svg></div><b>You never wait</b><p>Pick a game and a table opens at once.</p></div>
+              <div class="fpic"><div class="fimg"><svg viewBox="0 0 160 120" role="img" aria-label="A table"><rect width="160" height="120" fill="#327333"></rect></svg></div><b>The table waits for you</b><p>Your seat is held for three minutes.</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="site wm">
+        <div id="mainContainer" class="general" style="min-height:0">
+          <div class="helpBox">
+            <div class="content">
+              <h1>How to play Hearts</h1>
+              <p>Hearts is a trick-taking game for four players. You win by taking as few points as you can.</p>
+              <h2>The deal</h2>
+              <p>Every player is dealt thirteen cards.</p>
+              <h3>Passing</h3>
+              <p>Three cards go to the player on your left.</p>
+            </div>
+            <div class="sitefooter">
+              <div class="footer-basic"><footer>
+                <div class="footerSection footerGroup"><strong>Rummy games</strong><div class="footerCols"><ul class="list-inline"><li class="list-inline-item"><a href="#">Canasta</a></li></ul></div></div>
+                <div class="footerSection footerResources"><ul class="list-inline"><li class="list-inline-item"><strong>Resources</strong></li><li class="list-inline-item"><a href="#">About</a></li></ul></div>
+                <div class="footerSection footerLegal"><ul class="list-inline"><li class="list-inline-item"><a href="#">Privacy Policy</a></li></ul></div>
+              </footer></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+    <script>(function () {
+      var card = document.currentScript.closest('.card');
+      var q = function (s) { return card.querySelector(s); };
+      Lab.table(card, [
+        { what: '.lobbyscope padding-left', got: Lab.cs(q('.lobbyscope'), 'padding-left'), want: '24px' },
+        { what: '.sitefooter footer gap', got: Lab.cs(q('.sitefooter footer'), 'gap'), want: '24px' },
+        { what: '.sitefooter footer padding-left', got: Lab.cs(q('.sitefooter footer'), 'padding-left'), want: '24px' },
+        { what: 'a reading h3 margin-top', got: Lab.cs(q('.content h3'), 'margin-top'), want: '28px', tag: 'call' },
+        { what: 'a reading h3 margin-bottom', got: Lab.cs(q('.content h3'), 'margin-bottom'), want: '8px', tag: 'call' },
+        { what: 'a reading h2 margin-top', got: Lab.cs(q('.content h2'), 'margin-top'), want: '44px', tag: 'call' },
+        { what: 'a reading h2 margin-bottom', got: Lab.cs(q('.content h2'), 'margin-bottom'), want: '10px', tag: 'call' },
+        { what: 'a reading p margin-bottom', got: Lab.cs(q('.content > p'), 'margin-bottom'), want: '12px', tag: 'call' },
+        { what: '#sec-about h3 margin-top', got: Lab.cs(q('#sec-about h3'), 'margin-top'), want: '44px' },
+        { what: '.serifnote margin-bottom', got: Lab.cs(q('.serifnote'), 'margin-bottom'), want: '44px' },
+        { what: '.fgrid.tiles margin', got: Lab.cs(q('.fgrid.tiles'), 'margin-top') + ' ' + Lab.cs(q('.fgrid.tiles'), 'margin-bottom'), want: '44px 44px' },
+        { what: '--sectgap', got: Lab.token(q('.site.wm'), '--sectgap'), want: '56px' },
+        { what: '#sec-about padding-top', got: Lab.cs(q('#sec-about'), 'padding-top'), want: '56px' }
+      ]);
+      Lab.note(card, 'The reading page’s four heading steps are the guide’s own call in 7.8 and 10.3: master gives 32, 32 and 16. They are built, so the rows still compare.');
+      Lab.note(card, '#sec-tt, #sec-rummy, #sec-classic and #sec-about take --sectgap from one rule; the about zone is the one drawn here. Its band paints 100vw wide, which is why the well behind it is band paper.');
+    })();</script>
+  </div></div>
+
+</div>
+
+<div class="grid g1">
+
+  <div class="card"><div class="body">
+    <h3>The rhythm: 12, 16 and 18 <span class="tag built">built</span></h3>
+    <p class="rule-text">12 is inside a box, between pieces and inside a card. 16 is every grid gap on the page. 18 is the gap between the menubar’s links, and a modal section title’s box to the card above it.</p>
+    <div class="demo"><div class="rw plain">
+      <div class="site wm">
+        <nav id="menuBarContainer" class="mbcenter" aria-label="Main navigation">
+          <a id="menuLogoContainer" href="#"><img src="static/images/logo.png" alt="menu" width="170" height="32" /></a>
+          <div id="menuIconContainer" data-wocg-press-release="true"><span>Games</span></div>
+          <ul id="menuBar">
+            <li class="mclink mgames"><span>Games<span class="mtri" aria-hidden="true"></span></span></li>
+            <li class="mclink"><a href="#">Rules</a></li>
+            <li class="mclink"><a href="#">Leaderboards</a></li>
+          <li class="dropdown"><span>All games</span><div id="allGames"></div></li>
+          </ul>
+          <div id="userBarContainer"><ul id="userBar">
+            <li class="userAvatarContainer displayInline loggedIn">
+              <span class="avFoot"><img class="userAvatar loaded" src="static/pieces/avatar/classic/ManCowboy.svg" alt="User avatar" width="24" height="24" /></span>
+              <span class="userName">Holger</span>
+            </li>
+          </ul></div>
+        </nav>
+      </div>
+      <div class="site fp wm">
+        <div class="lobbyscope" id="openTablesTop">
+          <div class="lobbyTablesPanel" id="lobbyTablesPanel">
+            <div class="ltGrid" id="lobbyTablesGrid">
+              <div class="ltCard ltBlank"><div class="tableListing players4"><div class="header"><div class="playersContainer"></div></div></div></div>
+              <div class="ltCard ltBlank"><div class="tableListing players4"><div class="header"><div class="playersContainer"></div></div></div></div>
+              <div class="ltCard ltBlank"><div class="tableListing players4"><div class="header"><div class="playersContainer"></div></div></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="lobbyscope">
+          <div class="lobbyTopBand">
+            <div class="lobbycol"><div class="lobbyBoardCard isVisible"><div class="lbRows"><div class="lbRow"><span class="lbRank">1</span><span class="lbName">Marta</span><span class="lbRating">1642</span></div></div></div></div>
+            <div class="lobbycol"><div class="lobbyDealCard isVisible"><div class="ldInfo"><div class="ldFact"><b>Deal <span class="ldNum">312</span></b><span class="ldCap">today</span></div></div></div></div>
+          </div>
+        </div>
+        <div class="gamesec">
+          <div class="catgrid">
+            <div class="gtile game-hearts" data-gameid="hearts"><div class="gimg game-hearts"><img class="glogo" src="static/images/frontpage/logos/hearts_logo@tile.webp" alt="Hearts" loading="lazy" /></div><div class="gmeta"><h3 class="gtitle"><a href="#">Hearts</a></h3><p class="gsub">Duck the queen and the hearts.</p><div class="gbtns"><button type="button" class="gplay" aria-label="Play Hearts"><span class="gplab">Play</span><span class="gpdiv"></span><span class="gpzone"><span class="gzarr"></span></span></button></div></div></div>
+            <div class="gtile game-spades" data-gameid="spades"><div class="gimg game-spades"><img class="glogo" src="static/images/frontpage/logos/spades_logo@tile.webp" alt="Spades" loading="lazy" /></div><div class="gmeta"><h3 class="gtitle"><a href="#">Spades</a></h3><p class="gsub">Bid what you can take, then take it.</p><div class="gbtns"><button type="button" class="gplay" aria-label="Play Spades"><span class="gplab">Play</span><span class="gpdiv"></span><span class="gpzone"><span class="gzarr"></span></span></button></div></div></div>
+            <div class="gtile game-euchre" data-gameid="euchre"><div class="gimg game-euchre"><img class="glogo" src="static/images/frontpage/logos/euchre_logo@tile.webp" alt="Euchre" loading="lazy" /></div><div class="gmeta"><h3 class="gtitle"><a href="#">Euchre</a></h3><p class="gsub">Short deck, quick hands, one trump.</p><div class="gbtns"><button type="button" class="gplay" aria-label="Play Euchre"><span class="gplab">Play</span><span class="gpdiv"></span><span class="gpzone"><span class="gzarr"></span></span></button></div></div></div>
+            <div class="gtile game-canasta" data-gameid="canasta"><div class="gimg game-canasta"><img class="glogo" src="static/images/frontpage/logos/canasta_logo@tile.webp" alt="Canasta" loading="lazy" /></div><div class="gmeta"><h3 class="gtitle"><a href="#">Canasta</a></h3><p class="gsub">Melds of seven, and the pile is the prize.</p><div class="gbtns"><button type="button" class="gplay" aria-label="Play Canasta"><span class="gplab">Play</span><span class="gpdiv"></span><span class="gpzone"><span class="gzarr"></span></span></button></div></div></div>
+          </div>
+        </div>
+        <div class="gamesec" id="sec-about" style="padding:0">
+          <div class="measure"><div class="fgrid tiles pictures" style="margin:0">
+            <div class="fpic"><div class="fimg"><svg viewBox="0 0 160 120" role="img" aria-label="A table"><rect width="160" height="120" fill="#327333"></rect></svg></div><b>Real people right now</b><p>The numbers are live.</p></div>
+            <div class="fpic"><div class="fimg"><svg viewBox="0 0 160 120" role="img" aria-label="A table"><rect width="160" height="120" fill="#327333"></rect></svg></div><b>You never wait</b><p>A table opens at once.</p></div>
+            <div class="fpic"><div class="fimg"><svg viewBox="0 0 160 120" role="img" aria-label="A table"><rect width="160" height="120" fill="#327333"></rect></svg></div><b>The table waits</b><p>Your seat is held.</p></div>
+          </div></div>
+        </div>
+      </div>
+      <div class="site wm" style="width:280px">
+        <div class="wmModal wmOpen modalInstant wmWide wmSettings" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
+          <div class="wmPanel" style="position:static;transform:none;width:280px;max-height:none">
+            <div class="wmBox">
+              <div class="wmBody">
+                <div class="wmCard"><div class="wmRow"><span class="wmRowLab"><span class="wmRowTitle">Sounds</span></span><span class="wmRowCtl"><span class="wmSeg"><span class="wmCell">Off</span><span class="wmCell wmPicked">On</span></span></span></div></div>
+                <div class="wmSh"><span class="wmShTitle">Account</span></div>
+                <div class="wmCard"><div class="wmRow"><span class="wmRowLab"><span class="wmRowTitle">Email</span></span></div></div>
+                <div class="wmFlds"><label class="wmFld"><input type="text" placeholder="One" /></label><label class="wmFld"><input type="text" placeholder="Two" /></label></div>
+                <div class="wmLrow"><span class="avFoot"><img class="wmAv" src="static/pieces/avatar/classic/AnimalFox.svg" alt="" /></span><span class="wmName">Foxy</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+    <script>(function () {
+      var card = document.currentScript.closest('.card');
+      var q = function (s) { return card.querySelector(s); };
+      Lab.table(card, [
+        { what: '.wmBox padding', got: Lab.cs(q('.wmBox'), 'padding'), want: '0 12px 12px' },
+        { what: '--wm-pad', got: Lab.token(q('.wmModal'), '--wm-pad'), want: '12px' },
+        { what: '.wmFlds gap', got: Lab.cs(q('.wmFlds'), 'gap'), want: '12px' },
+        { what: '.wmLrow gap', got: Lab.cs(q('.wmLrow'), 'gap'), want: '12px' },
+        { what: '.gmeta padding', got: Lab.cs(q('.gmeta'), 'padding'), want: '12px' },
+        { what: '.mpanel padding, the bar’s panel', got: '12px, measured in section 3', want: '12px', tag: 'note' },
+        { what: '.catgrid gap', got: Lab.cs(q('.catgrid'), 'gap'), want: '16px' },
+        { what: '.ltGrid gap', got: Lab.cs(q('.ltGrid'), 'gap'), want: '16px' },
+        { what: '.lobbyTopBand gap', got: Lab.cs(q('.lobbyTopBand'), 'gap'), want: '16px' },
+        { what: '.fgrid.tiles gap', got: Lab.cs(q('.fgrid.tiles'), 'gap'), want: '16px' },
+        { what: '#menuBar gap', got: Lab.cs(q('#menuBar'), 'gap'), want: '18px' },
+        { what: '#menuBarContainer margin-bottom', got: Lab.cs(q('#menuBarContainer'), 'margin-bottom'), want: '8px' },
+        { what: '.wmSh padding', got: Lab.cs(q('.wmSh'), 'padding'), want: '18px 2px 6px' }
+      ]);
+      Lab.note(card, 'The bar is the real partial with the activity and friends icons left out; nothing measured here depends on them. The card’s well is the lab’s full width, so the grids fill as they would on a window of that width.');
+      Lab.note(card, 'A modal section title is padded 18 above and 6 below, which is what puts it against the card that follows it and clear of the card above it.');
+    })();</script>
+  </div></div>
+
+</div>
+
+<div class="grid g1">
+
+  <div class="card"><div class="body">
+    <h3>Columns: 1160 outer, 1112 inner <span class="tag built">built</span></h3>
+    <p class="rule-text">A section is max-width 1160 with 24px of side padding, so its inner column is --fp-column 1112. The gutter is --fp-gutter, max(24px, (100% - 1112px) / 2): the one distance from the window’s side the whole site keeps.</p>
+    <div class="demo"><div class="rw plain">
+      <div class="site fp wm">
+        <nav id="menuBarContainer" class="mbcenter" aria-label="Main navigation">
+          <a id="menuLogoContainer" href="#"><img src="static/images/logo.png" alt="menu" width="170" height="32" /></a>
+          <div id="menuIconContainer" data-wocg-press-release="true"><span>Games</span></div>
+          <ul id="menuBar">
+            <li class="mclink"><a href="#">Rules</a></li>
+            <li class="mclink"><a href="#">Leaderboards</a></li>
+          <li class="dropdown"><span>All games</span><div id="allGames"></div></li>
+          </ul>
+          <div id="userBarContainer"><ul id="userBar"><li class="userAvatarContainer displayInline loggedIn"><span class="avFoot"><img class="userAvatar loaded" src="static/pieces/avatar/classic/ManCowboy.svg" alt="User avatar" width="24" height="24" /></span><span class="userName">Holger</span></li></ul></div>
+        </nav>
+        <div class="lobbyscope">
+          <div class="lobbyhead"><span class="pophead">Join a table</span></div>
+          <div class="lobbyTablesPanel" id="lobbyTablesPanel">
+            <div class="ltGrid">
+              <div class="ltCard ltBlank"><div class="tableListing players4"><div class="header"><div class="playersContainer"></div></div></div></div>
+              <div class="ltCard ltBlank"><div class="tableListing players4"><div class="header"><div class="playersContainer"></div></div></div></div>
+              <div class="ltCard ltBlank"><div class="tableListing players4"><div class="header"><div class="playersContainer"></div></div></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="lobbyscope" id="openTablesTop">
+          <div class="lobbyhead"><span class="pophead">Join a table</span></div>
+        </div>
+        <div class="gamesec">
+          <div class="pophead">Trick-taking games</div>
+        </div>
+      </div>
+    </div></div>
+    <script>(function () {
+      var card = document.currentScript.closest('.card');
+      var q = function (s) { return card.querySelector(s); };
+      var scope = q('.lobbyscope'), band = q('#openTablesTop'), sec = q('.gamesec'), bar = q('#menuBarContainer');
+      var inner = scope.clientWidth - parseFloat(getComputedStyle(scope).paddingLeft) - parseFloat(getComputedStyle(scope).paddingRight);
+      Lab.table(card, [
+        { what: '.lobbyscope max-width', got: Lab.cs(scope, 'max-width'), want: '1160px' },
+        { what: '.lobbyscope padding-left and right', got: Lab.cs(scope, 'padding-left') + ' / ' + Lab.cs(scope, 'padding-right'), want: '24px / 24px' },
+        { what: '.gamesec max-width', got: Lab.cs(sec, 'max-width'), want: '1160px' },
+        { what: '.gamesec padding', got: Lab.cs(sec, 'padding'), want: '14px 24px 0' },
+        { what: '--fp-column', got: Lab.token(q('.site'), '--fp-column'), want: '1112px' },
+        { what: 'the inner column here', got: Math.round(inner) + 'px', want: '1112px at a window of 1160 or more', tag: 'note' },
+        { what: 'the bar’s gutter here', got: Lab.cs(bar, 'padding-left'), want: '24px' },
+        { what: '#openTablesTop max-width', got: Lab.cs(band, 'max-width'), want: 'none, a full-bleed band', tag: 'note' },
+        { what: '#openTablesTop padding', got: Lab.cs(band, 'padding'), want: '56px 24px', tag: 'note' },
+        { what: 'this root’s width', got: Math.round(q('.site').clientWidth) + 'px', want: '', tag: 'note' }
+      ]);
+      Lab.note(card, 'The lab’s own column is narrower than 1160, so the measured inner width is the root’s width less the two 24px gutters. --fp-gutter is max(24px, half of what is left over 1112), so below 1160 it is the flat 24 the whole site keeps, which is the number this card shows.');
+      Lab.note(card, 'The open tables zone is one of the full-bleed bands: it drops the 1160 cap, pads itself --sectgap above and below and takes --fp-gutter at the sides, so its cards still line up with the sections that do keep the cap. Its own head is drawn by the seam engine, which is why the band in the well holds its padding and nothing else.');
+      var kinds = document.createElement('p');
+      kinds.className = 'kinds';
+      kinds.innerHTML = 'Page kinds and the column each one reads. <b>Frontpage</b> wm fp: the 1160 section above. <b>Game page</b> wm with data-table: the band’s 728 content. <b>Reading page</b> wm: the 728 content. <b>Tutorial</b> wm: the same reading column. <b>Leaderboard</b> wm: the reading column with its own table card. <b>Modal</b> .wmModal: 400 or 640.';
+      card.appendChild(kinds);
+    })();</script>
+  </div></div>
+
+  <div class="card"><div class="body">
+    <h3>The reading measure: 680 in a 728 column <span class="tag built">built</span></h3>
+    <p class="rule-text">The reading measure is 680px. .content is border-box at max-width 728 with 24px of side padding, so the text column measures 680 and the padding is the site’s own gutter, 16 from 520 down. The game page’s band takes the same pair.</p>
+    <div class="demo"><div class="rw plain">
+      <div class="site wm">
+        <div id="mainContainer" class="general" style="min-height:0">
+          <div class="helpBox">
+            <div class="content">
+              <h1>How to play Hearts</h1>
+              <p>Hearts is a trick-taking game for four players. You win by taking as few points as you can, and the player with the lowest score when someone passes 100 wins the game. Every heart is a point and the queen of spades is thirteen.</p>
+              <h2>The deal</h2>
+              <p>Every player is dealt thirteen cards, and three of them go to another player before the first trick.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="site wm">
+        <div class="helpBox" style="position:relative">
+          <div class="content">
+            <h2>Hearts by the numbers</h2>
+            <p>Real totals from every game of Hearts played on World of Card Games.</p>
+          </div>
+        </div>
+      </div>
+    </div></div>
+    <script>(function () {
+      var card = document.currentScript.closest('.card');
+      var read = card.querySelectorAll('.content')[0], band = card.querySelectorAll('.content')[1];
+      var col = read.clientWidth - parseFloat(getComputedStyle(read).paddingLeft) - parseFloat(getComputedStyle(read).paddingRight);
+      var p = read.querySelector('p');
+      Lab.table(card, [
+        { what: 'reading .content max-width', got: Lab.cs(read, 'max-width'), want: '728px' },
+        { what: 'reading .content padding', got: Lab.cs(read, 'padding'), want: '40px 24px 56px' },
+        { what: 'reading .content box-sizing', got: Lab.cs(read, 'box-sizing'), want: 'border-box' },
+        { what: 'the text column', got: Math.round(col) + 'px', want: '680px' },
+        { what: 'a paragraph’s own width', got: Math.round(p.getBoundingClientRect().width) + 'px', want: '680px' },
+        { what: 'band .content max-width', got: Lab.cs(band, 'max-width'), want: '728px' },
+        { what: 'band .content padding-left', got: Lab.cs(band, 'padding-left'), want: '24px' },
+        { what: 'band .content box-sizing', got: Lab.cs(band, 'box-sizing'), want: 'border-box' }
+      ]);
+      Lab.note(card, 'The first shell is a reading page, #mainContainer.general .helpBox .content, which adds the 40 above and 56 below. The second is a game page’s band, .helpBox .content, which keeps master’s own 24 above and below and only takes the sides. Both cap at 680 plus two gutters.');
+      Lab.note(card, 'The reading shell carries min-height 0 inline, since the page container is a full viewport tall on a real page. The band\u2019s box is absolutely placed on a game page, where the playspace gives it its box, so the lab lets it stand in the flow instead.');
+    })();</script>
+  </div></div>
+
+  <div class="card"><div class="body">
+    <h3>The modal box, and the ad rail <span class="tag built">built</span></h3>
+    <p class="rule-text">A modal box is 400 narrow and 640 wide, each capped at the window less 32px. The ad rail is 336px from 1024 and 160px from 640, master’s slot sizes: the page reserves it as a margin on the column.</p>
+    <div class="demo"><div class="rw plain">
+      <div class="site wm">
+        <div class="wmModal wmOpen modalInstant" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
+          <div class="wmScrim" style="position:static;height:0"></div>
+          <div class="wmPanel narrow" style="position:static;transform:none;max-height:none">
+            <div class="wmBox">
+              <div class="wmHead"><span class="wmTitle">Leave the table?</span></div>
+              <div class="wmBody"><p class="wmTxt">Your seat goes to a bot until you come back.</p><div class="wmFoot"><span class="wmBtn" role="button" tabindex="0">Stay</span><span class="wmBtn wmKill" role="button" tabindex="0">Leave</span></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="wmModal wmOpen modalInstant wmWide" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
+          <div class="wmPanel wide" style="position:static;transform:none;max-height:none">
+            <div class="wmBox">
+              <div class="wmHead"><span class="wmTitle">Settings</span></div>
+              <div class="wmBody"><div class="wmCard"><div class="wmRow"><span class="wmRowLab"><span class="wmRowTitle">Sounds</span></span><span class="wmRowCtl"><span class="wmSeg"><span class="wmCell">Off</span><span class="wmCell wmPicked">On</span></span></span></div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="site fp wm adsVisible" style="position:relative;height:90px;overflow:hidden">
+        <div id="gameSelectorContainer"><div id="fpPage" style="background:#f4eee5;height:90px"></div></div>
+      </div>
+    </div></div>
+    <script>(function () {
+      var card = document.currentScript.closest('.card');
+      var q = function (s) { return card.querySelector(s); };
+      Lab.table(card, [
+        { what: 'a narrow .wmPanel width', got: Lab.cs(q('.wmPanel.narrow'), 'width'), want: '400px' },
+        { what: '--wm-w-narrow', got: Lab.token(q('.wmModal'), '--wm-w-narrow'), want: '400px' },
+        { what: 'a wide .wmPanel width', got: Lab.cs(q('.wmPanel.wide'), 'width'), want: '640px' },
+        { what: '--wm-w-wide', got: Lab.token(q('.wmModal'), '--wm-w-wide'), want: '640px' },
+        { what: '#gameSelectorContainer margin-right', got: Lab.cs(q('#gameSelectorContainer'), 'margin-right'), want: '336px' },
+        { what: 'the window this is measured at', got: window.innerWidth + 'px', want: '1024 or more for 336, 640 to 1023 for 160', tag: 'note' }
+      ]);
+      Lab.note(card, 'The panel’s width is min(its own token, 100% less 32px), so a box never touches the window’s sides. Only the centring and the fixed layer are written off here; the widths are the sheet’s.');
+      Lab.note(card, 'The rail reservation is a margin on the page column, not a column of its own: the band beside it is the page. The rail itself is drawn in section 3, where its 0 radius is measured.');
+    })();</script>
+  </div></div>
+
+</div>
+
+<div class="grid g1">
+
+  <div class="card"><div class="body">
+    <h3>Control heights: 56 and 40 <span class="tag built">built</span></h3>
+    <p class="rule-text">56 is the menubar, its links and its user cluster. 40 is a corner notice, which is a name plate’s height, a leaderboard or stats row, a directory table row and a settings row’s content box when it carries a second line.</p>
+    <div class="demo"><div class="rw plain">
+      <div class="site wm">
+        <nav id="menuBarContainer" class="mbcenter" aria-label="Main navigation">
+          <a id="menuLogoContainer" href="#"><img src="static/images/logo.png" alt="menu" width="170" height="32" /></a>
+          <div id="menuIconContainer" data-wocg-press-release="true"><span>Games</span></div>
+          <ul id="menuBar">
+            <li class="mclink mgames"><span>Games<span class="mtri" aria-hidden="true"></span></span></li>
+            <li class="mclink"><a href="#">Rules</a></li>
+            <li class="mclink"><a href="#">Leaderboards</a></li>
+          <li class="dropdown"><span>All games</span><div id="allGames"></div></li>
+          </ul>
+          <div id="userBarContainer"><ul id="userBar">
+            <li class="userAvatarContainer displayInline loggedIn">
+              <span class="avFoot"><img class="userAvatar loaded" src="static/pieces/avatar/classic/ManCowboy.svg" alt="User avatar" width="24" height="24" /></span>
+              <span class="userName">Holger</span>
+            </li>
+          </ul></div>
+        </nav>
+      </div>
+      <div class="site wm" style="width:300px">
+        <div id="mainContainer" class="general" style="min-height:0">
+          <div id="poolInactiveNotice" class="wmNotice wmCorner visible" style="position:static"><span class="message">Restart to load server update.</span></div>
+        </div>
+      </div>
+      <div class="site wm" style="width:300px">
+        <div class="wmModal wmOpen modalInstant wmWide wmStats" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
+          <div class="wmPanel" style="position:static;transform:none;width:300px;max-height:none">
+            <div class="wmBox"><div class="wmBody">
+              <div class="wmMpr" style="--wmg:#971f3e"><span class="wmMpg">Hearts</span><span class="wmMpt"><i class="wmStYou" style="width:100%"></i><i class="wmStEv" style="width:78%"></i></span><span class="wmMpp">54%</span><span class="wmMpe">46%</span></div>
+              <div class="wmMpr" style="--wmg:#0065c3"><span class="wmMpg">Spades</span><span class="wmMpt"><i class="wmStYou" style="width:74%"></i><i class="wmStEv" style="width:90%"></i></span><span class="wmMpp">41%</span><span class="wmMpe">50%</span></div>
+            </div></div>
+          </div>
+        </div>
+      </div>
+      <div class="site wm" style="width:360px">
+        <div class="wmModal wmOpen modalInstant wmWide wmSettings" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
+          <div class="wmPanel" style="position:static;transform:none;width:360px;max-height:none">
+            <div class="wmBox"><div class="wmBody"><div class="wmCard">
+              <div class="wmRow onerow"><span class="wmRowLab"><span class="wmRowTitle">Sounds</span></span><span class="wmRowCtl"><span class="wmSeg"><span class="wmCell">Off</span><span class="wmCell wmPicked">On</span></span></span></div>
+              <div class="wmRow tworow"><span class="wmRowLab"><span class="wmRowTitle">Leaderboards</span><span class="wmRowLine">Show my name on the boards</span></span><span class="wmRowCtl"><span class="wmSeg"><span class="wmCell">Off</span><span class="wmCell wmPicked">On</span></span></span></div>
+              <div class="wmRow"><span class="wmRowLab"><span class="wmRowTitle">Hints</span></span><span class="wmRowCtl"><span class="wmSeg"><span class="wmCell wmPicked">Off</span><span class="wmCell">On</span></span></span></div>
+            </div></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="site wm">
+        <div id="mainContainer" class="general" style="min-height:0"><div class="helpBox"><div class="content">
+          <div class="rulesDirectory">
+            <table>
+              <thead><tr><th>Game</th><th>Rules</th><th>Strategy</th><th>Play</th></tr></thead>
+              <tbody>
+                <tr><td>Hearts</td><td><a href="#">How to play</a></td><td><a href="#">Strategy guide</a></td><td><a href="#">Play</a></td></tr>
+                <tr><td>Spades</td><td><a href="#">How to play</a></td><td></td><td><a href="#">Play</a></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div></div></div>
+      </div>
+    </div></div>
+    <script>(function () {
+      var card = document.currentScript.closest('.card');
+      var q = function (s) { return card.querySelector(s); };
+      var oh = function (s) { var e = q(s); return e ? e.offsetHeight + 'px' : '(no element)'; };
+      Lab.table(card, [
+        { what: '#menuBarContainer', got: oh('#menuBarContainer'), want: '56px' },
+        { what: '#menuBar > li.mclink', got: oh('#menuBar > li.mclink'), want: '56px' },
+        { what: '#userBar > li.userAvatarContainer', got: oh('.userAvatarContainer'), want: '56px' },
+        { what: '.wmNotice.wmCorner', got: oh('.wmNotice.wmCorner'), want: '40px' },
+        { what: '.wmMpr, a stats row', got: oh('.wmMpr'), want: '40px' },
+        { what: '.rulesDirectory td, content box', got: Lab.cs(q('.rulesDirectory td'), 'height'), want: '40px' },
+        { what: 'a settings row with a line, content box', got: Lab.cs(q('.wmRow.tworow'), 'height'), want: '40px' },
+        { what: 'the same row, with its padding and line', got: oh('.wmRow.tworow'), want: '65px' }
+      ]);
+      Lab.note(card, 'The corner notice is a name plate’s height, which is what makes it read as one of the table’s own pieces. Its fixed corner is written off so it can stand in the well.');
+      Lab.note(card, 'A settings row is content box, so its hairline sits outside the height: 40 of content, 12 above, 12 below and the 1px line is 65. A directory row is the same shape, 40 of cell with its line outside, so the box measures 41.');
+    })();</script>
+  </div></div>
+
+</div>
+
+<div class="grid g2">
+
+  <div class="card"><div class="body">
+    <h3>Control heights: 32 <span class="tag built">built</span></h3>
+    <p class="rule-text">32 is a big button, a field, the lobby .button (the one 32px control at 20px bold), the catalog’s Play, the live capsule, a panel’s head strip and a compact table row.</p>
+    <div class="demo"><div class="rw">
+      <div class="site wm" style="width:250px">
+        <div class="wmModal wmOpen modalInstant" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
+          <div class="wmPanel" style="position:static;transform:none;width:250px;max-height:none">
+            <div class="wmBox"><div class="wmBody">
+              <div class="wmFlds"><label class="wmFld"><input type="text" placeholder="Table name" /></label></div>
+              <div class="wmFoot"><span class="wmBtn" role="button" tabindex="0">Cancel</span><span class="wmBtn wmGo" role="button" tabindex="0">Host</span></div>
+            </div></div>
+          </div>
+        </div>
+      </div>
+      <div class="site wm" style="width:200px">
+        <ul id="userBar" style="display:block;height:auto">
+          <li class="userAvatarContainer displayInline loggedIn open" style="position:static;height:auto;display:block">
+            <div class="userDropdown" style="position:static;display:block">
+              <div class="mphead">Account</div>
+              <div class="dropdownItem settings">Settings</div>
+              <div class="dropdownItem stats">Stats</div>
+              <div class="dropdownItem logout loggedIn">Logout</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="site fp wm" style="width:250px">
+        <div class="lobbyscope" style="padding:0">
+          <a class="button green" href="#">Play</a>
+          <div class="lobbyBoardCard isVisible" style="margin-top:8px">
+            <div class="lbRows">
+              <div class="lbRow lbHeaderRow"><span class="lbRank">Rank</span><span class="lbName">Player</span><span class="lbRating">Rating</span></div>
+              <div class="lbRow"><span class="lbRank">1</span><span class="lbName">Marta</span><span class="lbRating">1642</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="popular" style="padding:8px 0 0;max-width:none">
+          <div class="sceneTxt" style="position:static;transform:none"><div class="stats statsCapsule isShort isIn"><span class="capsule"><span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span><span class="st"><b>412</b> playing</span></span></div></div>
+        </div>
+        <div class="gamesec" style="padding:8px 0 0">
+          <div class="catgrid">
+            <div class="gtile game-hearts" data-gameid="hearts"><div class="gimg game-hearts"><img class="glogo" src="static/images/frontpage/logos/hearts_logo@tile.webp" alt="Hearts" loading="lazy" /></div><div class="gmeta"><h3 class="gtitle"><a href="#">Hearts</a></h3><p class="gsub">Duck the queen and the hearts.</p><div class="gbtns"><button type="button" class="gplay" aria-label="Play Hearts"><span class="gplab">Play</span><span class="gpdiv"></span><span class="gpzone"><span class="gzarr"></span></span></button></div></div></div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+    <script>(function () {
+      var card = document.currentScript.closest('.card');
+      var q = function (s) { return card.querySelector(s); };
+      var oh = function (s) { var e = q(s); return e ? e.offsetHeight + 'px' : '(no element)'; };
+      Lab.table(card, [
+        { what: '.wmBtn', got: oh('.wmBtn'), want: '32px' },
+        { what: '.wmFld input', got: oh('.wmFld input'), want: '32px' },
+        { what: '.lobbyscope .button', got: oh('.button.green'), want: '32px' },
+        { what: '.statsCapsule .capsule', got: oh('.capsule'), want: '32px' },
+        { what: '.mphead, a panel’s head strip', got: Lab.cs(q('.mphead'), 'height'), want: '32px' },
+        { what: '.lbRow > span, a compact row', got: oh('.lbRow > span'), want: '32px' },
+        { what: '.gplay, the catalog’s Play', got: oh('.gplay'), want: '32px' },
+        { what: '--wm-h-big and --wm-h-field', got: Lab.token(q('.wmModal'), '--wm-h-big') + ' / ' + Lab.token(q('.wmModal'), '--wm-h-field'), want: '32px / 32px' }
+      ]);
+      Lab.note(card, 'The account panel is opened with the class the bar gives it, and its absolute placing is written off so the head strip can be measured in the well. The head strip is 32 of content with its 1px line outside, so its box measures 33. The capsule carries isIn and the games bar isIn with isShown, the classes their scripts add when the numbers land.');
+    })();</script>
+  </div></div>
+
+  <div class="card"><div class="body">
+    <h3>Control heights: 28 and 24 <span class="tag built">built</span></h3>
+    <p class="rule-text">28 is a tray (2px of padding around a 24px cell), a settings row’s content box and a menu row. 24 is a small button, a tray cell, a chip, the yellow verbs and the games bar’s cells.</p>
+    <div class="demo"><div class="rw">
+      <div class="site wm" style="width:250px">
+        <div class="wmModal wmOpen modalInstant wmGameOptions" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
+          <div class="wmPanel" style="position:static;transform:none;width:250px;max-height:none">
+            <div class="wmBox"><div class="wmBody">
+              <span class="wmSeg"><span class="wmCell">Off</span><span class="wmCell wmPicked">On</span></span>
+              <span class="wmChip" role="checkbox" tabindex="0" aria-checked="false"><i><svg viewBox="0 0 10 8" width="10" height="8" aria-hidden="true"><path d="M1 4l3 3 5-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg></i>4</span>
+              <div class="wmCard">
+                <div class="wmRow onerow"><span class="wmRowLab"><span class="wmRowTitle">Sounds</span></span><span class="wmRowCtl"><span class="wmBtn wmSmall" role="button" tabindex="0">Change</span></span></div>
+                <div class="wmRow"><span class="wmRowLab"><span class="wmRowTitle">Hints</span></span><span class="wmRowCtl"><span class="wmBtn wmSmall" role="button" tabindex="0">Change</span></span></div>
+              </div>
+            </div></div>
+          </div>
+        </div>
+      </div>
+      <div class="site wm" style="width:200px">
+        <ul id="userBar" style="display:block;height:auto">
+          <li class="userAvatarContainer displayInline loggedIn open" style="position:static;height:auto;display:block">
+            <div class="userDropdown" style="position:static;display:block">
+              <div class="dropdownItem settings">Settings</div>
+              <div class="dropdownItem stats">Stats</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="site fp wm" style="width:250px">
+        <div class="lobbyscope" style="padding:0">
+          <div class="otFilter isIn isShown" id="otFilter" aria-label="Games">
+            <div class="track" data-row>
+              <span class="s on" data-g="all"><span>All games<i data-n="12">12<em class="w"> tables</em></i></span></span>
+              <span class="s" data-g="hearts"><span>Hearts<i data-n="5">5<em class="w"></em></i></span></span>
+              <span class="thumb still"></span>
+            </div>
+          </div>
+        </div>
+        <div class="lobbyscope" id="openTablesTop" style="padding:8px 0 0">
+          <div class="lobbyTablesPanel" id="lobbyTablesPanel">
+            <div class="ltCard">
+              <div class="tableListing hearts">
+                <div class="header players4">
+                  <div class="playersContainer">
+                    <div class="spacer30"></div>
+                    <div class="player playernumber1"><img width="32" height="32" src="static/pieces/avatar/classic/WomanGirl2.svg" alt="WomanGirl2 avatar" /><div class="playerNameContainer"><p class="playerName">Marta</p></div></div>
+                    <div class="spacer30"></div>
+                    <div class="player playernumber0 isEmpty"><img width="32" height="32" src="static/pieces/avatar/classic/EmptyChair.svg" alt="Empty seat" /><div class="playerNameContainer"><p class="playerName">Empty</p></div></div>
+                    <div class="spacer20"></div>
+                    <div class="player playernumber2 isEmpty"><img width="32" height="32" src="static/pieces/avatar/classic/EmptyChair.svg" alt="Empty seat" /><div class="playerNameContainer"><p class="playerName">Empty</p></div></div>
+                    <div class="spacer30"></div>
+                    <div class="player playernumber3 isEmpty"><img width="32" height="32" src="static/pieces/avatar/classic/EmptyChair.svg" alt="Empty seat" /><div class="playerNameContainer"><p class="playerName">Empty</p></div></div>
+                    <div class="spacer30"></div>
+                    <div class="cbtn" style="opacity:1"><a class="button small" href="#">Join</a></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="popular" style="padding:8px 0 0;max-width:none">
+          <a class="gtile game-euchre videoOn" href="#" data-gameid="euchre" style="width:250px;height:150px">
+            <span class="gimg game-euchre"><img class="glogo" src="static/images/frontpage/logos/euchre_logo@tile.webp" width="320" height="233" alt="Euchre" /><span class="heroPlay" role="button">Play</span></span>
+          </a>
+        </div>
+      </div>
+      <div class="site wm" style="width:280px">
+        <div id="mainContainer" class="general" style="min-height:0"><div class="helpBox gameLeaderboardPage"><div class="content">
+          <div class="player-header-container"><span class="player-header-title">Player</span><input type="text" placeholder="Search" aria-label="Search players" class="player-search-input" /></div>
+        </div></div></div>
+      </div>
+    </div></div>
+    <script>(function () {
+      var card = document.currentScript.closest('.card');
+      var q = function (s) { return card.querySelector(s); };
+      var oh = function (s) { var e = q(s); return e ? e.offsetHeight + 'px' : '(no element)'; };
+      /* wocg.GameBar measures the picked cell and writes the thumb’s box; the lab does the same, so the
+         picked cell stands on its green rather than on the bare tray. */
+      (function () {
+        var cell = q('.track > .s.on'), thumb = q('.track .thumb');
+        if (!cell || !thumb) return;
+        thumb.style.left = cell.offsetLeft + 'px'; thumb.style.top = cell.offsetTop + 'px';
+        thumb.style.width = cell.offsetWidth + 'px'; thumb.style.height = cell.offsetHeight + 'px'; thumb.style.opacity = '1';
+      }());
+      Lab.table(card, [
+        { what: '.wmSeg, a tray', got: oh('.wmSeg'), want: '28px' },
+        { what: '.wmRow content box', got: Lab.cs(q('.wmRow.onerow'), 'height'), want: '28px' },
+        { what: '.wmRow with its padding and line', got: oh('.wmRow.onerow'), want: '53px' },
+        { what: '.otFilter .track', got: oh('.track'), want: '28px' },
+        { what: '.userDropdown .dropdownItem', got: oh('.dropdownItem'), want: '28px' },
+        { what: '.wmBtn.wmSmall', got: oh('.wmBtn.wmSmall'), want: '24px' },
+        { what: '.wmSeg .wmCell', got: oh('.wmCell'), want: '24px' },
+        { what: '.wmChip', got: oh('.wmChip'), want: '24px' },
+        { what: '.heroPlay', got: oh('.heroPlay'), want: '24px' },
+        { what: '.cbtn .button, a felt verb', got: oh('.cbtn .button'), want: '24px' },
+        { what: '.track > .s, a games bar cell', got: oh('.track > .s'), want: '24px' },
+        { what: '.player-search-input', got: oh('.player-search-input'), want: '24px' },
+        { what: '--wm-h-tray and --wm-h-small', got: Lab.token(q('.wmModal'), '--wm-h-tray') + ' / ' + Lab.token(q('.wmModal'), '--wm-h-small'), want: '28px / 24px' }
+      ]);
+      Lab.note(card, 'A menu row is 24 of line with 2px above and below. The felt verb is hidden until the tile is hovered, so the lab gives it the opacity the hover gives it; the tile’s own verb and the leaderboard’s search field are the same 24px control 7.3 names.');
+    })();</script>
+  </div></div>
+
+  <div class="card"><div class="body">
+    <h3>Control heights: 20, 18 and 16 <span class="tag built">built</span></h3>
+    <p class="rule-text">20 is a badge on a seat. 18 is a name plate on a tile, Holger’s pick of 13 September 2026. 16 is a tag and a movement chip.</p>
+    <div class="demo"><div class="rw">
+      <div class="site fp wm" style="width:206px">
+        <div class="lobbyscope" id="openTablesTop" style="padding:0">
+          <div class="lobbyTablesPanel" id="lobbyTablesPanel">
+            <div class="ltCard">
+              <div class="tableListing hearts">
+                <div class="header players4">
+                  <div class="playersContainer">
+                    <div class="spacer30"></div>
+                    <div class="player playernumber1"><img width="32" height="32" src="static/pieces/avatar/classic/WomanGirl2.svg" alt="WomanGirl2 avatar" /><div class="playerNameContainer"><p class="playerName">Marta</p><span class="completionBadge is100"></span></div></div>
+                    <div class="spacer30"></div>
+                    <div class="player playernumber0 isBot"><img width="32" height="32" src="static/pieces/avatar/classic/AnimalFox.svg" alt="AnimalFox avatar" /><div class="playerNameContainer"><p class="playerName">Foxy</p><span class="playerBadge isBot"></span></div></div>
+                    <div class="spacer20"></div>
+                    <div class="player playernumber2 isEmpty"><img width="32" height="32" src="static/pieces/avatar/classic/EmptyChair.svg" alt="Empty seat" /><div class="playerNameContainer"><p class="playerName">Empty</p></div></div>
+                    <div class="spacer30"></div>
+                    <div class="player playernumber3 isEmpty"><img width="32" height="32" src="static/pieces/avatar/classic/EmptyChair.svg" alt="Empty seat" /><div class="playerNameContainer"><p class="playerName">Empty</p></div></div>
+                    <div class="spacer30"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="site fp wm" style="overflow:hidden;width:250px">
+        <div class="lobbyscope" style="padding:0">
+          <div class="lobbyBoardCard isVisible">
+            <div class="lbRows">
+              <div class="lbRow"><span class="lbRank">1</span><span class="lbName">Marta</span><span class="lbRating">1642 <span class="lbUp">2</span></span></div>
+              <div class="lbRow isAlt"><span class="lbRank">2</span><span class="lbName">Hal</span><span class="lbRating">1588 <span class="lbDown">1</span></span></div>
+            </div>
+          </div>
+        </div>
+        <div class="gamesec" id="sec-about" style="padding:8px 0 0">
+          <div class="measure"><div class="nwi"><span>The daily deal remembers your month <span class="ntag">new</span></span><time datetime="2026-09-14">14 Sep</time></div></div>
+        </div>
+      </div>
+    </div></div>
+    <script>(function () {
+      var card = document.currentScript.closest('.card');
+      var q = function (s) { return card.querySelector(s); };
+      var oh = function (s) { var e = q(s); return e ? e.offsetHeight + 'px' : '(no element)'; };
+      Lab.table(card, [
+        { what: '.playerNameContainer', got: oh('.playerNameContainer'), want: '18px' },
+        { what: '.playerBadge', got: oh('.playerBadge'), want: '20px' },
+        { what: '.completionBadge, content box', got: Lab.cs(q('.completionBadge'), 'height'), want: '20px' },
+        { what: '.ntag', got: oh('.ntag'), want: '16px' },
+        { what: '.lbUp', got: oh('.lbUp'), want: '16px' }
+      ]);
+      Lab.note(card, 'The plate is 18px in _wm-shared.scss:180, Holger’s pick of 13 September 2026: an avatar is its seat row less the plate, so the two px the plate gave up went to the face. Guide 3.7 and 6.3 both say 18 now.');
+      Lab.note(card, 'The completion badge carries a pixel of padding that centres its digit on the medal, so its box measures 21 where its content is the 20 the guide names.');
+    })();</script>
+  </div></div>
+
+</div>
+
+<div class="grid g1">
+
+  <div class="card"><div class="body">
+    <h3>The breakpoints, and what this window matches <span class="tag built">built</span></h3>
+    <p class="rule-text">Nine queries carry the design’s answers to a narrower window, and two carry its answers to a pointer that cannot hover and to a visitor who asks for less motion.</p>
+    <div class="demo"><div class="rw plain" style="padding:0">
+      <div class="site wm" style="padding:12px">
+        <div id="mainContainer" class="general" style="min-height:0"><div class="helpBox"><div class="content" style="padding:0">
+          <p>The queries are read from this window. A frame below shows what each one does.</p>
+        </div></div></div>
+      </div>
+    </div></div>
+    <script>(function () {
+      var card = document.currentScript.closest('.card');
+      var qs = [
+        ['min-width: 1024px', 'the ad rail is 336px'],
+        ['min-width: 640px', 'the ad rail is 160px'],
+        ['(min-width: 912px) and (max-width: 1151px)', 'table grids drop to two columns'],
+        ['max-width: 911px', 'table grids are a two column grid, not a carousel'],
+        ['max-width: 860px', 'the bar’s logo is 24px, catalog and about grids go to two columns'],
+        ['(max-width: 640px), (max-height: 640px)', 'the legacy radius ladder steps down and the viewport gutter drops to 8'],
+        ['max-width: 619px', 'table grids and the lobby cards go to one column'],
+        ['max-width: 560px', 'the user name is dropped and every modal becomes a bottom sheet'],
+        ['max-width: 520px', 'the catalog and about grids go to one column, and the gutter is 16'],
+        ['hover: none', 'tile verbs start visible and the seam explainer is hidden'],
+        ['prefers-reduced-motion: reduce', 'arrivals and sweeps drop, waiting states stay']
+      ];
+      Lab.table(card, qs.map(function (x) {
+        return { what: x[0], got: window.matchMedia('(' + x[0] + ')').matches ? 'matches' : 'no', want: x[1], tag: 'note' };
+      }), 'this window is ' + window.innerWidth + ' by ' + window.innerHeight);
+      Lab.note(card, 'The 640 query asks about height as well as width, so a short desktop window takes the phone’s radius ladder. The footer’s two steps are container queries, at 620 and 470 of the footer’s own width, so they are not in this list.');
+      Lab.note(card, 'Master’s own bar breakpoint is 924px and the redesign’s bar rules start at 860. Between the two the games panel opens 24px too high and master’s per-game links leak into it. That is the guide’s open item 10 and it is not measured here.');
+    })();</script>
+  </div></div>
+
+  <div class="card"><div class="body">
+    <h3>Four probe frames <span class="tag built">built</span></h3>
+    <p class="rule-text">The same page at 1200, 900, 700 and 480, each showing the bar, a catalog grid, a table grid, the footer and a modal. Every number is read across the frame boundary, so these are the widths themselves and not a guess at them.</p>
+    <div class="demo"><div class="frames"></div></div>
+    <div class="probeset" data-set="space" hidden>
+      <div class="site wm">
+        <nav id="menuBarContainer" class="mbcenter" aria-label="Main navigation">
+          <a id="menuLogoContainer" href="#"><img src="static/images/logo.png" alt="menu" width="170" height="32" /></a>
+          <div id="menuIconContainer" data-wocg-press-release="true"><span>Games</span></div>
+          <ul id="menuBar">
+            <li class="mclink mgames"><span>Games<span class="mtri" aria-hidden="true"></span></span></li>
+            <li class="mclink"><a href="#">Rules</a></li>
+            <li class="mclink"><a href="#">Leaderboards</a></li>
+          <li class="dropdown"><span>All games</span><div id="allGames"></div></li>
+          </ul>
+          <div id="userBarContainer"><ul id="userBar">
+            <li class="userAvatarContainer displayInline loggedIn">
+              <span class="avFoot"><img class="userAvatar loaded" src="static/pieces/avatar/classic/ManCowboy.svg" alt="User avatar" width="24" height="24" /></span>
+              <span class="userName">Holger</span>
+            </li>
+          </ul></div>
+        </nav>
+      </div>
+      <div class="site fp wm">
+        <div class="gamesec">
+          <div class="catgrid">
+            <div class="gtile game-hearts" data-gameid="hearts"><div class="gimg game-hearts"><img class="glogo" src="static/images/frontpage/logos/hearts_logo@tile.webp" alt="Hearts" loading="lazy" /></div><div class="gmeta"><h3 class="gtitle"><a href="#">Hearts</a></h3><p class="gsub">Duck the queen.</p></div></div>
+            <div class="gtile game-spades" data-gameid="spades"><div class="gimg game-spades"><img class="glogo" src="static/images/frontpage/logos/spades_logo@tile.webp" alt="Spades" loading="lazy" /></div><div class="gmeta"><h3 class="gtitle"><a href="#">Spades</a></h3><p class="gsub">Bid what you can take.</p></div></div>
+            <div class="gtile game-euchre" data-gameid="euchre"><div class="gimg game-euchre"><img class="glogo" src="static/images/frontpage/logos/euchre_logo@tile.webp" alt="Euchre" loading="lazy" /></div><div class="gmeta"><h3 class="gtitle"><a href="#">Euchre</a></h3><p class="gsub">Short deck, quick hands.</p></div></div>
+            <div class="gtile game-canasta" data-gameid="canasta"><div class="gimg game-canasta"><img class="glogo" src="static/images/frontpage/logos/canasta_logo@tile.webp" alt="Canasta" loading="lazy" /></div><div class="gmeta"><h3 class="gtitle"><a href="#">Canasta</a></h3><p class="gsub">Melds of seven.</p></div></div>
+          </div>
+        </div>
+        <div class="lobbyscope" id="openTablesTop">
+          <div class="lobbyTablesPanel" id="lobbyTablesPanel">
+            <div class="ltGrid" id="lobbyTablesGrid">
+              <div class="ltCard ltBlank"><div class="tableListing players4"><div class="header"><div class="playersContainer"></div></div></div></div>
+              <div class="ltCard ltBlank"><div class="tableListing players4"><div class="header"><div class="playersContainer"></div></div></div></div>
+              <div class="ltCard ltBlank"><div class="tableListing players4"><div class="header"><div class="playersContainer"></div></div></div></div>
+              <div class="ltCard ltBlank"><div class="tableListing players4"><div class="header"><div class="playersContainer"></div></div></div></div>
+              <div class="ltCard ltBlank"><div class="tableListing players4"><div class="header"><div class="playersContainer"></div></div></div></div>
+              <div class="ltCard ltBlank"><div class="tableListing players4"><div class="header"><div class="playersContainer"></div></div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="site wm">
+        <div class="helpBox">
+          <div class="sitefooter">
+            <div class="footer-basic"><footer>
+              <div class="footerSection footerGroup"><strong>Trick-taking games</strong><div class="footerCols"><ul class="list-inline"><li class="list-inline-item"><a href="#">Hearts</a></li><li class="list-inline-item"><a href="#">Spades</a></li></ul></div></div>
+              <div class="footerSection footerGroup"><strong>Rummy games</strong><div class="footerCols"><ul class="list-inline"><li class="list-inline-item"><a href="#">Canasta</a></li><li class="list-inline-item"><a href="#">Rummy</a></li></ul></div></div>
+              <div class="footerSection footerGroup"><strong>Classic games</strong><div class="footerCols"><ul class="list-inline"><li class="list-inline-item"><a href="#">Cribbage</a></li><li class="list-inline-item"><a href="#">Go Fish</a></li></ul></div></div>
+              <div class="footerSection footerResources"><ul class="list-inline"><li class="list-inline-item"><strong>Resources</strong></li><li class="list-inline-item"><a href="#">About</a></li><li class="list-inline-item"><a href="#">Rules</a></li></ul></div>
+              <div class="footerSection footerLegal"><ul class="list-inline"><li class="list-inline-item"><a href="#">Privacy Policy</a></li><li class="list-inline-item"><a href="#">Terms of Use</a></li></ul></div>
+            </footer></div>
+          </div>
+        </div>
+      </div>
+      <div class="site fp wm adsVisible" data-probe-rail><div id="gameSelectorContainer" style="height:0"></div><div class="popular" style="padding:0"><div class="sceneTxt" style="position:static;transform:none"><h1 id="herotitle">Play card games</h1></div></div></div>
+      <div class="site wm probeInstant" style="position:relative;height:220px">
+        <div class="wmModal wmOpen modalInstant" role="dialog" aria-modal="true" style="position:absolute;display:block;opacity:1">
+          <div class="wmScrim"></div>
+          <div class="wmPanel">
+            <div class="wmBox">
+              <div class="wmHead"><span class="wmTitle">Leave the table?</span></div>
+              <div class="wmBody"><p class="wmTxt">Your seat goes to a bot until you come back.</p><div class="wmFoot"><span class="wmBtn" role="button" tabindex="0">Stay</span><span class="wmBtn wmKill" role="button" tabindex="0">Leave</span></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="site wm probeAnim" style="position:relative;height:220px">
+        <div class="wmModal wmOpen" role="dialog" aria-modal="true" style="position:absolute;display:block;opacity:1">
+          <div class="wmScrim"></div>
+          <div class="wmPanel">
+            <div class="wmBox">
+              <div class="wmHead"><span class="wmTitle">Leave the table?</span></div>
+              <div class="wmBody"><p class="wmTxt">This one ran its entrance animation.</p><div class="wmFoot"><span class="wmBtn" role="button" tabindex="0">Stay</span><span class="wmBtn wmKill" role="button" tabindex="0">Leave</span></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>(function () {
+      var card = document.currentScript.closest('.card');
+      if (window.PROBE) return;
+      var host = card.querySelector('.frames');
+      var widths = [1200, 900, 700, 480];
+      var scale = 0.4, H = 900;
+      var frames = [];
+      widths.forEach(function (w) {
+        var wrap = document.createElement('div');
+        wrap.className = 'pf';
+        wrap.style.width = Math.round(w * scale) + 'px';
+        wrap.style.height = Math.round(H * scale) + 'px';
+        var f = document.createElement('iframe');
+        f.style.width = w + 'px';
+        f.style.height = H + 'px';
+        f.style.transform = 'scale(' + scale + ')';
+        f.setAttribute('title', 'the page at ' + w + 'px');
+        f.src = location.pathname + '?probe=1&set=space';
+        wrap.appendChild(f);
+        host.appendChild(wrap);
+        frames.push({ w: w, node: f });
+      });
+      Lab.table(card, [{ what: 'the frames', got: widths.join(', ') + ' wide, each 900 tall, drawn at four tenths', want: 'the measurements land when the frames have loaded', tag: 'note' }]);
+      var left = frames.length;
+      var cols = function (v) { return v && v !== 'none' ? String(v).trim().split(/\s+/).length : 0; };
+      function measure(entry) {
+        var d = entry.node.contentDocument;
+        /* Every query is scoped to the probe set: the page it came from is still in the frame, hidden,
+           and an unscoped selector would find the hidden copy first. */
+        var scope = d.querySelector('.probeset') || d;
+        var q = function (s) { return scope.querySelector(s); };
+        var w = entry.w;
+        var logo = w <= 860 ? '24px' : '32px';
+        var pad = w <= 520 ? '16px' : '24px';
+        var name = w <= 560 ? 'none' : 'block';
+        var cat = { 1200: 4, 900: 3, 700: 2, 480: 1 }[w];
+        var lt = w <= 619 ? 1 : (w <= 1151 ? 2 : 3);
+        var foot = w <= 620 ? 2 : 4;
+        var gut = w <= 640 ? '8px' : '16px';
+        var rad = w <= 640 ? '12px' : '16px';
+        var panel = q('.probeInstant .wmPanel');
+        var box = panel.closest('.site').getBoundingClientRect();
+        var sheet = Math.abs(panel.getBoundingClientRect().bottom - box.bottom) < 1 ? 'yes' : 'no';
+        var ran = q('.probeAnim .wmPanel');
+        var gap = Math.round(ran.closest('.site').getBoundingClientRect().bottom - ran.getBoundingClientRect().bottom);
+        var rail = w >= 1024 ? '336px' : (w >= 640 ? '160px' : '0px');
+        var hero = w <= 560 ? '26px' : (w <= 860 ? '30px' : '38px');
+        Lab.table(card, [
+          { what: '#menuLogoContainer img height', got: Lab.cs(q('#menuLogoContainer img'), 'height'), want: logo },
+          { what: '#menuBarContainer padding-left', got: Lab.cs(q('#menuBarContainer'), 'padding-left'), want: pad },
+          { what: '.userName display', got: Lab.cs(q('.userName'), 'display'), want: name },
+          { what: '.catgrid columns', got: String(cols(Lab.cs(q('.catgrid'), 'grid-template-columns'))), want: String(cat) },
+          { what: '.ltGrid columns', got: String(cols(Lab.cs(q('.ltGrid'), 'grid-template-columns'))), want: String(lt) },
+          { what: '.sitefooter footer columns', got: String(cols(Lab.cs(q('.sitefooter footer'), 'grid-template-columns'))), want: String(foot) },
+          { what: '.wmPanel width', got: Lab.cs(panel, 'width'), want: w <= 560 ? w + 'px' : '400px' },
+          { what: '.wmPanel is a bottom sheet', got: sheet, want: w <= 560 ? 'yes' : 'no' },
+          { what: 'the same panel once its entrance has run', got: gap + 'px above the box', want: w <= 560 ? '0px, if the sheet is to sit on the edge' : 'centred', tag: 'note' },
+          { what: '--space-viewport-gutter', got: Lab.token(q('.site'), '--space-viewport-gutter'), want: gut },
+          { what: '--radius-lg', got: Lab.token(q('.site'), '--radius-lg'), want: rad },
+          { what: '#gameSelectorContainer margin-right, the rail reserved', got: Lab.cs(q('[data-probe-rail] #gameSelectorContainer'), 'margin-right'), want: rail },
+          { what: '#herotitle font-size', got: Lab.cs(q('[data-probe-rail] #herotitle'), 'font-size'), want: hero + (w > 560 && w <= 860 ? ', which 6.4 does not state' : ''), tag: (w > 560 && w <= 860 ? 'note' : 'built') }
+        ].concat(w > 520 && w <= 860 ? [
+          { what: 'the bar\u2019s padding at 700, as 6.4 writes it', got: Lab.cs(q('#menuBarContainer'), 'padding-left'), want: '24px' }
+        ] : []), 'at ' + w + 'px');
+      }
+      frames.forEach(function (entry) {
+        entry.node.addEventListener('load', function () {
+          entry.loaded = true;
+          if (--left === 0) frames.forEach(measure);
+        });
+      });
+      Lab.note(card, 'Every frame is the whole lab page asked for with ?probe=1, which draws the set above and nothing else. The frames are laid out at four tenths of their size, which is the lab’s own scaling and changes nothing inside them: each one lays out at its full width.');
+      Lab.note(card, 'The frames are 900 tall on purpose. The 640 query asks about height too, so a shorter frame would take the phone’s gutter and radius at every width. Each frame is scrolled to its own top, so the footer and the modal under the grids are measured rather than seen.');
+      Lab.note(card, 'The probe set holds two modals, each in a 220px box of its own so its scrim covers that box rather than the whole frame. The measured one carries modalInstant, the site’s own class for a box that opens without its entrance.');
+      Lab.note(card, 'The second modal is the same box with the entrance left on, and the row under the sheet row reads it. The entrance fills both ways, so its last keyframe keeps transform translate(-50%, -50%) on the panel and outranks the 560 rule’s own translate(-50%, 0). Under 560 that lifts the sheet off the bottom edge by about half its height, which is worth a look on a phone.');
+      Lab.note(card, 'The catalog grid at 900 is the auto-fill’s own answer, three columns: the guide names four above 860 and two below it, and the fill decides in between.');
+      Lab.note(card, 'The extra row at 700 reads the bar’s padding twice: 6.4 now says the padding stays 24 from 860 down and steps to 16 at 520, which is what 8.1 and the sheet do (Holger, 13 Sep 2026). The rail column and the hero title stand in the probe set for their two rows alone.');
+    })();</script>
+  </div></div>
+
+</div>
+</section>

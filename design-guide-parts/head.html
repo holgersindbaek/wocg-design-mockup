@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The design guide</title>
+<link rel="stylesheet" href="guide-fonts.css">
+<link rel="stylesheet" href="site.css">
+<style>
+  /* the lab's own chrome. Every rule stays off the .site subtree so the site's paper and type are what Holger sees. */
+  :root {
+    --canvas: #f9f6f2; --band: #f4eee5; --surface: #ffffff;
+    --ink: #141414; --ink-soft: #262626; --muted: #4e4d4c; --faint: #8a857c; --muted-soft: #9b9997;
+    --hairline: #ebe7de; --edge: #d2cfca; --rule: #d9d2c4;
+    --liftshadow: 0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09);
+  }
+  *:not(.site):not(.site *) { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { background: var(--canvas); color: var(--ink); font-size: 16px; line-height: 1.5;
+    font-family: "BuloRounded", "Verdana", "Arial", "Helvetica", sans-serif; -webkit-font-smoothing: antialiased; padding: 32px 0 96px; }
+  .page { max-width: 1240px; margin: 0 auto; padding: 0 24px; }
+
+  #toc { position: fixed; left: 0; top: 0; bottom: 0; width: 232px; padding: 36px 16px 24px 24px; background: var(--band); border-right: 1px solid var(--rule); overflow: auto; display: none; z-index: 5; }
+  #toc .tt { font: 500 18px/24px "Gelica", Georgia, serif; margin: 0 0 12px; }
+  #toc a { display: block; padding: 4px 10px; margin: 0 -10px; border-radius: 8px; color: var(--ink-soft); text-decoration: none; font-size: 14px; line-height: 20px; }
+  #toc a:hover { background: #e4ddd0; }
+  #toc a.on { background: #fff; box-shadow: inset 0 0 0 1px var(--edge); color: var(--ink); font-weight: bold; }
+  #toc .labs { margin-top: 22px; padding-top: 12px; border-top: 1px solid var(--rule); }
+  #toc .labs .lb { font-size: 12px; color: var(--faint); margin: 0 0 4px; }
+  #toc .labs a { color: #1971c2; }
+  @media (min-width: 1180px) { #toc { display: block; } body { padding-left: 232px; } }
+
+  /* The Examples tree: the eight groups, and the cards under whichever group you are in. */
+  #toc .extree { margin: 2px 0 0 8px; }
+  #toc .exg { margin: 0 0 1px; }
+  #toc a.grp { font-size: 13px; color: var(--muted); padding: 3px 10px; }
+  #toc .exg.open > a.grp { color: var(--ink); font-weight: bold; }
+  #toc .exl { display: none; margin: 1px 0 6px 8px; padding-left: 9px; border-left: 1px solid var(--rule); }
+  #toc .exg.open .exl { display: block; }
+  #toc a.leaf { font-size: 13px; line-height: 18px; padding: 3px 8px; margin: 0 -8px; }
+
+  /* A card in Examples carries its own designation: click it and the name is on the clipboard. */
+  #pieces .card:not(.site *) { position: relative; }
+  #pieces .card:not(.site *)::after { content: "Click to copy its name"; position: absolute; right: 10px; top: 9px;
+    font: 400 11px/14px "Bulo", system-ui, sans-serif; color: var(--faint); opacity: 0; transition: opacity 90ms ease-out;
+    pointer-events: none; }
+  #pieces .card:hover:not(.site *)::after { opacity: 1; }
+  #pieces .card.copied:not(.site *)::after { content: "Copied"; opacity: 1; color: var(--ink); }
+
+  h1:not(.site *) { font: 500 34px/40px "Gelica", Georgia, serif; margin: 0 0 6px; }
+  .lede { font-size: 16px; color: var(--muted); margin: 0 0 18px; max-width: 860px; }
+  .lede a { color: #1971c2; }
+  h2:not(.site *) { font: 500 26px/32px "Gelica", Georgia, serif; margin: 0 0 4px; }
+  .sec { margin: 0 0 54px; }
+  .sec > .rule { height: 1px; background: var(--rule); margin: 10px 0 18px; }
+  .desc { font-size: 15px; color: var(--muted); margin: 0 0 16px; max-width: 900px; }
+  .sub:not(.site *) { font-size: 17px; font-weight: bold; margin: 26px 0 10px; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; background: var(--band);
+    border-radius: 16px; padding: 14px 18px; margin: 0 0 30px; box-shadow: inset 0 0 0 1px var(--rule); }
+  .legend .li { font-size: 14px; color: var(--muted); }
+  .legend .li b { color: var(--ink); }
+
+  .tag:not(.site *) { display: inline-block; border-radius: 5px; padding: 0 7px; font-size: 12px; font-weight: bold; line-height: 20px;
+    color: var(--muted); background: #e4ddd0; box-shadow: inset 0 0 0 1px #c9c0ae; white-space: nowrap; }
+  .tag.built:not(.site *) { color: #1a5b12; background: #d7ecd4; box-shadow: inset 0 0 0 1px #8dc186; }
+  .tag.call:not(.site *) { color: #6b4e00; background: #f8e7b0; box-shadow: inset 0 0 0 1px #d9b850; }
+  .tag.open:not(.site *) { color: #124f7e; background: #d3e7ff; box-shadow: inset 0 0 0 1px #83b5ef; }
+  .tag.stale:not(.site *) { color: #723b11; background: #fbdecd; box-shadow: inset 0 0 0 1px #e39f75; }
+
+  /* cards and grids */
+  .grid:not(.site *) { display: grid; gap: 16px; align-items: start; }
+  .g3:not(.site *) { grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
+  .g2:not(.site *) { grid-template-columns: repeat(auto-fill, minmax(430px, 1fr)); }
+  .g1:not(.site *) { grid-template-columns: 1fr; }
+  .card:not(.site *) { background: var(--surface); border-radius: 16px; padding: 0; overflow: hidden;
+    box-shadow: 0 0 0 1px var(--edge), var(--liftshadow); }
+  @supports (corner-shape: squircle) { .card:not(.site *) { corner-shape: squircle; border-radius: 20px; } }
+  .card > .body:not(.site *) { padding: 12px 14px 14px; }
+  .card h3:not(.site *) { font-size: 16px; font-weight: bold; line-height: 22px; margin: 0; }
+  .card h3 .tag:not(.site *) { margin-left: 6px; vertical-align: 2px; }
+  .card .rule-text:not(.site *) { font-size: 13px; color: var(--muted); line-height: 18px; margin: 4px 0 10px; }
+  .rl:not(.site *) { font-size: 13px; color: var(--faint); line-height: 18px; margin: 6px 0 0; }
+  .rt:not(.site *) { font-size: 13px; color: var(--muted); line-height: 19px; margin: 4px 0 0; }
+  .rt b:not(.site *) { color: var(--ink); }
+
+  /* The demo well. It owns two things the piece does not: the ground the piece stands on, and the space between
+     the piece and the well's edge (Holger, 15 Sep: a piece should not touch its container, and the container
+     should be the colour the piece actually stands on). The ground is declared here and nowhere else, so a .site
+     root inside is made transparent rather than painting its own paper over it: otherwise the padded band and the
+     middle of the well can end up different colours. `flush` is for the chrome that runs to the window's edge on
+     the site, where a band of ground either side would be a lie. */
+  .demo:not(.site *) { margin: 0 0 8px; padding: 16px; border-radius: 10px; overflow: hidden;
+    background: var(--canvas); box-shadow: inset 0 0 0 1px var(--edge); }
+  .demo.flush:not(.site *) { padding: 0; }
+  .demo.band:not(.site *) { background: var(--band); }
+  .demo.white:not(.site *) { background: #fff; }
+  .demo.felt:not(.site *) { background: #327333; }
+  /* A dialog stands on the darkened page, not on paper (Holger, 15 Sep), so a well holding a modal paints the
+     scrim's own values over the page paper: rgba(0,0,0,.48) over --canvas, the composite a visitor sees. The
+     scrim element inside is then hidden, which is the one place this page reaches into a site piece on purpose:
+     two scrims would darken twice, and the element cannot reach the well's padding anyway. Nothing is lost by
+     hiding it, because a scrim over a flat well has nothing to blur. */
+  .demo.scrim:not(.site *) { background-color: var(--canvas);
+    background-image: linear-gradient(rgba(0, 0, 0, .48), rgba(0, 0, 0, .48)); }
+  .demo.scrim .wmScrim { display: none; }
+  /* and the box sits in the middle of its ground, as a dialog does on the screen. The audit pins the panel
+     static so it flows inline, which left it against the well's left edge. */
+  .demo.scrim .wmPanel { margin-left: auto; margin-right: auto; }
+  .demo > .site { min-height: 0; }
+  .demo > .site:not(.site *) { background: transparent; }
+
+  /* the measured values */
+  table.mtab:not(.site *) { width: 100%; border-collapse: collapse; margin: 6px 0 0; font-size: 12px; line-height: 17px; }
+  table.mtab caption:not(.site *) { text-align: left; color: var(--muted); padding: 0 0 4px; font-weight: bold; }
+  table.mtab th:not(.site *) { text-align: left; font-weight: bold; color: var(--faint); padding: 3px 8px 3px 0; border-bottom: 1px solid var(--hairline); }
+  table.mtab td:not(.site *) { padding: 3px 8px 3px 0; border-bottom: 1px solid var(--hairline); vertical-align: top; font-variant-numeric: tabular-nums; word-break: break-word; }
+  table.mtab td.mbad:not(.site *) { color: #c92a2a; font-weight: bold; }
+  table.mtab td.mtag:not(.site *) { color: var(--faint); font-size: 11px; white-space: nowrap; }
+  table.mtab td.mtag.call:not(.site *) { color: #6b4e00; }
+  table.mtab td.mtag.open:not(.site *) { color: #124f7e; }
+  table.mtab td.mtag.stale:not(.site *) { color: #c92a2a; }
+  .bad:not(.site *) { color: #c92a2a; font-weight: bold; }
+
+  /* What the piece is, in plain words. The line to read before looking at the drawing. */
+  .card .lead:not(.site *) { font-size: 14px; line-height: 20px; color: var(--muted); margin: 5px 0 11px; }
+
+  /* The numbers sit behind a disclosure, so the page is a look at the design first and a sheet of
+     measurements second. A card whose measurements disagree with the guide opens itself. */
+  details.det:not(.site *) { margin: 10px 0 0; border-top: 1px solid var(--hairline); }
+  details.det > summary:not(.site *) { list-style: none; cursor: pointer; display: flex; align-items: center;
+    gap: 8px; padding: 7px 0 1px; font-size: 13px; line-height: 18px; color: var(--faint); }
+  details.det > summary:not(.site *)::-webkit-details-marker { display: none; }
+  details.det > summary:not(.site *):hover { color: var(--muted); }
+  .ar:not(.site *) { flex: 0 0 auto; width: 0; height: 0; border-left: 5px solid currentColor;
+    border-top: 4px solid transparent; border-bottom: 4px solid transparent; transition: transform 120ms ease-out; }
+  details.det[open] > summary .ar:not(.site *) { transform: rotate(90deg); }
+  .dbad:not(.site *) { color: #c92a2a; font-weight: bold; }
+  details.det .detbody:not(.site *) { padding: 2px 0 10px; }
+  details.det .rule-text:not(.site *) { margin: 4px 0 2px; }
+  .seclead:not(.site *) { font-size: 16px; line-height: 22px; color: var(--ink-soft); margin: 0 0 10px; max-width: 900px; }
+  details.secdet:not(.site *) { border-top: 0; margin: 0 0 18px; }
+  details.secdet .detbody:not(.site *), details.secdet > .desc:not(.site *) { padding: 0; }
+
+  /* Nearly every card is built and agrees, so "built" is not news. Only the exceptions wear a tag. */
+  .card h3 .tag.built:not(.site *) { display: none; }
+
+  /* The page carries 53 modal demos, and a scrim blurs what is behind it. Chrome gives each blurred backdrop
+     its own composited layer and reads the page back into it, which on a page this tall is enough to take the
+     renderer down. The blur is a design value two cards show and measure, and those two opt in with data-blur;
+     every other scrim draws its paper without it. This is the one place the page overrides the site on purpose. */
+  .card:not([data-blur]) .wmScrim { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+
+  /* The system reference (design-guide.html): one row per value the design is built from. */
+  /* The audit's own row, which the lifted line demos stand in. The fragments scope it to their own section
+     id, which this page does not have, so the pieces stood in a column. The ground and the padding are the
+     demo well's here, so the row sets nothing but the flow. */
+  #pieces .rw { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 12px; }
+
+  .gname:not(.site *) { font: 500 21px/28px "Gelica", Georgia, serif; margin: 28px 0 2px; }
+  .gnote:not(.site *) { font-size: 14px; line-height: 20px; color: var(--muted); margin: 0 0 14px; max-width: 880px; }
+  .tks:not(.site *) { display: grid; gap: 12px 20px; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); }
+  .tks.k-size:not(.site *), .tks.k-face:not(.site *), .tks.k-width:not(.site *) { grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); }
+  .tk:not(.site *) { display: flex; gap: 14px; align-items: center; background: var(--surface); border-radius: 14px;
+    padding: 11px 13px; box-shadow: 0 0 0 1px var(--edge); }
+  @supports (corner-shape: squircle) { .tk:not(.site *) { corner-shape: squircle; border-radius: 17px; } }
+  .tkart:not(.site *) { flex: 0 0 auto; width: 84px; display: flex; align-items: center; justify-content: center; }
+  .k-size .tkart:not(.site *), .k-face .tkart:not(.site *) { width: 168px; justify-content: flex-start; }
+  .k-width .tkart:not(.site *), .k-gap .tkart:not(.site *) { width: 132px; }
+  .tkmeta:not(.site *) { min-width: 0; flex: 1 1 auto; }
+  .tkname:not(.site *) { display: block; font-size: 15px; font-weight: bold; line-height: 20px; }
+  .tkval:not(.site *) { display: block; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 11.5px;
+    line-height: 17px; color: var(--faint); margin: 1px 0 3px; word-break: break-word; }
+  .tkuse:not(.site *) { display: block; font-size: 13px; line-height: 18px; color: var(--muted); }
+
+  .sw:not(.site *) { display: block; width: 76px; height: 44px; border-radius: 10px; font-style: normal;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,.10); }
+  .sw.btn:not(.site *) { width: auto; min-width: 76px; height: 32px; padding: 0 12px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center; font: bold 16px/24px "BuloRounded", Verdana, sans-serif; }
+  .sw.plate:not(.site *) { width: auto; min-width: 62px; height: 24px; padding: 0 8px; border-radius: 8px; box-shadow: inset 0 0 0 1px rgba(0,0,0,.16);
+    display: flex; align-items: center; justify-content: center; font: bold 12px/16px "BuloRounded", Verdana, sans-serif; }
+  @supports (corner-shape: squircle) { .sw.btn:not(.site *), .sw.plate:not(.site *) { corner-shape: squircle; } }
+  .sw.face:not(.site *), .sw.size:not(.site *) { width: auto; height: auto; box-shadow: none; white-space: nowrap; color: var(--ink); }
+  .sw.corner:not(.site *) { background: var(--band); box-shadow: inset 0 0 0 1px var(--edge); }
+  .sw.lineart:not(.site *) { background: var(--canvas); box-shadow: none; position: relative; overflow: hidden; }
+  .sw.lineart .divline:not(.site *) { position: absolute; left: 10px; right: 10px; top: 50%; height: 1px; }
+  .sw.shadow:not(.site *) { background: #fff; width: 68px; height: 40px; border-radius: 12px; }
+  .sw.gap:not(.site *) { width: auto; height: 40px; box-shadow: none; display: flex; align-items: stretch; }
+  .sw.gap i:not(.site *) { display: block; width: 26px; background: var(--rule); border-radius: 4px; }
+  .sw.height:not(.site *) { width: 100%; height: 56px; box-shadow: none; display: flex; align-items: center; }
+  .sw.height i:not(.site *) { display: block; width: 100%; background: var(--rule); border-radius: 4px; }
+  .sw.width:not(.site *) { width: 100%; height: 12px; box-shadow: none; background: var(--hairline); border-radius: 6px; overflow: hidden; }
+  .sw.width i:not(.site *) { display: block; height: 100%; background: var(--rule); }
+
+  .grid .card.wide:not(.site *) { grid-column: 1 / -1; }
+
+  /* The fold on the examples section. */
+  .fold:not(.site *) { font: bold 14px/20px "BuloRounded", Verdana, sans-serif; color: var(--muted); cursor: pointer;
+    background: var(--band); border: 0; border-radius: 10px; padding: 3px 12px; margin-left: 12px;
+    vertical-align: 5px; box-shadow: inset 0 0 0 1px var(--edge); }
+  @supports (corner-shape: squircle) { .fold:not(.site *) { corner-shape: squircle; border-radius: 12px; } }
+  .fold:not(.site *):hover { background: #ece4d8; color: var(--ink); }
+
+  /* A section whose cards disagree with the guide is marked in the contents. */
+  #toc a .dot:not(.site *) { display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+    background: #c92a2a; margin-left: 6px; vertical-align: 1px; }
+</style>
+<script src="guide-assets.js"></script>
+<script src="design-guide-parts/plain.js"></script>
+<script src="design-guide-parts/ref-spec.js"></script>
+<script src="design-guide-parts/lab.js"></script>
+<script src="design-guide-parts/ref.js"></script>
+</head>
+<body>

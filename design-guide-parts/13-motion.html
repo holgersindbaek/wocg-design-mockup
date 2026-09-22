@@ -1,0 +1,664 @@
+<section class="sec" id="motion">
+<h2>13 Motion</h2>
+<div class="rule"></div>
+<p class="desc">Guide 9, with the timings 7.1 (buttons) and 7.4 (the tray) state. Every card measures the computed transition or animation on the real piece, or reads the rule the page cannot compute, and every card has a control that replays the motion. Chrome prints a computed duration in seconds and drops a default curve, so the guide's 220ms reads here as 0.22s and its .645 as 0.645; the numbers are the guide's. A value marked from the rule is the sheet's own text, in the sheet's own spelling. Every demo root carries 12px of padding, and three pieces that are fixed or absolute on the site are made to stand in their well, which each card's note names; nothing else is added to the site's markup.</p>
+
+<script>
+window.MO = (function () {
+  /* The site's own placements, rewritten for the lab: ModalShell.placeSegThumb for a tray,
+     GameBar's paint() for the games bar, FrontpageHero.setReel for the capsule's odometer.
+     Ids repeat across demos, so every lookup goes through the demo's own root. */
+  function placeSeg(seg, c) {
+    var thumb = seg.querySelector('.' + c.thumb);
+    var ink = seg.querySelector('.' + c.ink);
+    if (!thumb) {
+      thumb = document.createElement('i');
+      thumb.className = c.thumb + ' ' + c.still;
+      seg.insertBefore(thumb, seg.firstChild);
+      ink = document.createElement('span');
+      ink.className = c.ink + ' ' + c.still;
+      ink.setAttribute('aria-hidden', 'true');
+      seg.querySelectorAll(':scope > .' + c.cell).forEach(function (cell) {
+        var copy = cell.cloneNode(true);
+        copy.removeAttribute('role');
+        copy.removeAttribute('tabindex');
+        copy.removeAttribute('aria-checked');
+        ink.appendChild(copy);
+      });
+      seg.appendChild(ink);
+    }
+    var picked = seg.querySelector(':scope > .' + c.cell + '.' + c.picked);
+    if (!picked || !seg.offsetWidth) {
+      thumb.style.opacity = '0';
+      ink.style.clipPath = 'inset(0 100% 0 0)';
+      thumb.classList.add(c.still);
+      ink.classList.add(c.still);
+      return;
+    }
+    var left = picked.offsetLeft, top = picked.offsetTop, w = picked.offsetWidth, h = picked.offsetHeight;
+    thumb.style.left = left + 'px';
+    thumb.style.top = top + 'px';
+    thumb.style.width = w + 'px';
+    thumb.style.height = h + 'px';
+    thumb.style.opacity = '1';
+    ink.style.clipPath = 'inset(' + top + 'px ' + (seg.offsetWidth - left - w) + 'px ' +
+      (seg.offsetHeight - top - h) + 'px ' + left + 'px)';
+    if (thumb.classList.contains(c.still)) {
+      void thumb.offsetWidth;
+      thumb.classList.remove(c.still);
+      ink.classList.remove(c.still);
+    }
+  }
+
+  function wireSeg(seg, c) {
+    seg.addEventListener('click', function (e) {
+      var cell = e.target.closest('.' + c.cell);
+      if (!cell || cell.closest('.' + c.ink) || cell.parentNode !== seg) return;
+      seg.querySelectorAll(':scope > .' + c.cell).forEach(function (one) {
+        one.classList.remove(c.picked);
+        one.setAttribute('aria-checked', 'false');
+      });
+      cell.classList.add(c.picked);
+      cell.setAttribute('aria-checked', 'true');
+      placeSeg(seg, c);
+    });
+    placeSeg(seg, c);
+    return seg;
+  }
+
+  function bar(host, unit) {
+    var track = host.querySelector('.track[data-row]');
+    var copy = host.querySelector('.tcopy');
+    var thumb = track.querySelector('.thumb');
+
+    function words(id) {
+      [track, copy].forEach(function (rootNode) {
+        rootNode.querySelectorAll('.s').forEach(function (cell) {
+          var w = cell.querySelector('.w');
+          if (!w) return;
+          if (cell.dataset.g === id) {
+            var n = +cell.querySelector('i').dataset.n;
+            w.textContent = ' ' + unit + (n === 1 ? '' : 's');
+            w.style.width = 'auto';
+            w.style.width = w.getBoundingClientRect().width + 'px';
+          } else {
+            w.style.width = '0px';
+          }
+        });
+      });
+    }
+
+    function paint(id) {
+      host.querySelectorAll('[data-g]').forEach(function (el) {
+        el.classList.toggle('on', el.dataset.g === id);
+      });
+      [track, copy].forEach(function (rootNode) {
+        var seq = [].slice.call(rootNode.children).filter(function (el) {
+          return el.classList.contains('s') || el.classList.contains('ov');
+        });
+        seq.forEach(function (el) { el.classList.remove('nextpick'); });
+        var at = -1;
+        seq.forEach(function (el, i) { if (el.classList.contains('on')) at = i; });
+        if (at >= 0 && seq[at + 1]) seq[at + 1].classList.add('nextpick');
+      });
+      words(id);
+      var target = track.querySelector('.s.on');
+      if (!target) return;
+      var r = target.getBoundingClientRect(), t = track.getBoundingClientRect();
+      var p = { left: r.left - t.left, top: r.top - t.top, width: r.width, height: r.height };
+      thumb.style.left = p.left + 'px';
+      thumb.style.top = p.top + 'px';
+      thumb.style.width = p.width + 'px';
+      thumb.style.height = p.height + 'px';
+      thumb.style.opacity = '1';
+      copy.style.clipPath = 'inset(' + p.top + 'px ' + (track.clientWidth - p.left - p.width) + 'px ' +
+        (track.clientHeight - p.top - p.height) + 'px ' + p.left + 'px)';
+      thumb.classList.remove('still');
+      copy.classList.remove('still');
+    }
+
+    host.addEventListener('click', function (e) {
+      var cell = e.target.closest('.s[data-g], .mi[data-g]');
+      if (!cell) return;
+      paint(cell.dataset.g);
+    });
+    paint((track.querySelector('.s.on') || track.querySelector('.s')).dataset.g);
+    host.classList.add('ready');
+    return { paint: paint, track: track, copy: copy, thumb: thumb };
+  }
+
+  /* One property of one rule, read from the sheet. Lab.rule takes the last rule of that
+     selector, which on this page is often the reduced-motion copy; these two say which
+     half of the sheet to read. */
+  function ruleValue(sel, prop, reduced) {
+    var want = sel.trim(), out = '';
+    for (var i = 0; i < document.styleSheets.length; i++) {
+      var rules;
+      try { rules = document.styleSheets[i].cssRules; } catch (e) { continue; }
+      (function walk(list, inReduced) {
+        for (var j = 0; j < list.length; j++) {
+          var r = list[j];
+          if (r.cssRules && !r.selectorText) {
+            var cond = String(r.conditionText || (r.media && r.media.mediaText) || '');
+            walk(r.cssRules, inReduced || cond.indexOf('prefers-reduced-motion') >= 0);
+            continue;
+          }
+          if (!r.selectorText || inReduced !== reduced) continue;
+          if (!Lab.selMatch(r.selectorText, want)) continue;
+          var v = r.style.getPropertyValue(prop).trim();
+          if (v) out = v;
+        }
+      })(rules, false);
+    }
+    return out;
+  }
+
+  /* a segment of a computed transition, so one property can be shown on its own */
+  function part(el, prop) {
+    var all = getComputedStyle(el).transition.split(/,\s(?![^(]*\))/);
+    for (var i = 0; i < all.length; i++) {
+      if (all[i].trim().indexOf(prop + ' ') === 0) return all[i].trim();
+    }
+    return '(not in the list)';
+  }
+
+  /* a value a class carries only while it is on: put it on, read it, take it off in the same tick */
+  function whileOn(el, cls, prop) {
+    el.classList.add(cls);
+    var v = getComputedStyle(el).getPropertyValue(prop).trim();
+    el.classList.remove(cls);
+    return v;
+  }
+
+  function anim(el) {
+    return Lab.cs(el, 'animation-name') + ' ' + Lab.cs(el, 'animation-duration') + ' ' +
+      Lab.cs(el, 'animation-timing-function') + ' ' + Lab.cs(el, 'animation-fill-mode');
+  }
+
+  function animOn(el, cls) {
+    return whileOn(el, cls, 'animation-name') + ' ' + whileOn(el, cls, 'animation-duration') + ' ' +
+      whileOn(el, cls, 'animation-timing-function') + ' ' + whileOn(el, cls, 'animation-fill-mode');
+  }
+
+  /* Chrome names the ends of a keyframe block 0% and 100% */
+  function keyframe(name, key) {
+    var wanted = key === 'from' ? ['from', '0%'] : ['to', '100%'];
+    for (var i = 0; i < document.styleSheets.length; i++) {
+      var rules;
+      try { rules = document.styleSheets[i].cssRules; } catch (e) { continue; }
+      for (var j = 0; j < rules.length; j++) {
+        var r = rules[j];
+        if (!r.name || r.name !== name || !r.cssRules) continue;
+        for (var k = 0; k < r.cssRules.length; k++) {
+          if (wanted.indexOf(r.cssRules[k].keyText) >= 0) return r.cssRules[k].style;
+        }
+      }
+    }
+    return null;
+  }
+
+  function reducedRules() {
+    var n = 0;
+    for (var i = 0; i < document.styleSheets.length; i++) {
+      var rules;
+      try { rules = document.styleSheets[i].cssRules; } catch (e) { continue; }
+      (function walk(list) {
+        for (var j = 0; j < list.length; j++) {
+          var r = list[j];
+          if (r.media && String(r.conditionText || r.media.mediaText).indexOf('prefers-reduced-motion') >= 0) n += 1;
+          if (r.cssRules && !r.selectorText) walk(r.cssRules);
+        }
+      })(rules);
+    }
+    return n;
+  }
+
+  function reel(el, v) {
+    var s = String(v);
+    var digits = '<span class="dreel">' + '0123456789'.split('').map(function (d) {
+      return '<span>' + d + '</span>';
+    }).join('') + '</span>';
+    el.setAttribute('data-cur', s);
+    el.innerHTML = '<span class="srnum">' + s + '</span>' + s.split('').map(function () {
+      return '<span class="dcell" aria-hidden="true">' + digits + '</span>';
+    }).join('');
+    el.querySelectorAll('.dreel').forEach(function (r, i) {
+      r.style.transform = 'translateY(-' + (parseInt(s[i], 10) * 1.5) + 'em)';
+    });
+  }
+
+  function replay(card, text, run) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'labctl';
+    b.textContent = text;
+    b.addEventListener('click', run);
+    card.appendChild(b);
+    return b;
+  }
+
+  return { wireSeg: wireSeg, placeSeg: placeSeg, bar: bar, part: part, whileOn: whileOn,
+    anim: anim, animOn: animOn, keyframe: keyframe, reducedRules: reducedRules, reel: reel, replay: replay,
+    rule: function (sel, prop) { return ruleValue(sel, prop, false); },
+    reducedRule: function (sel, prop) { return ruleValue(sel, prop, true); },
+    EASE: 'cubic-bezier(0.645, 0.045, 0.355, 1)', SETTLE: 'cubic-bezier(0.22, 1, 0.36, 1)',
+    SHARP: 'cubic-bezier(0.32, 0, 0.67, 0)', ENTER: 'cubic-bezier(0.2, 0.7, 0.2, 1)',
+    INK: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)' };
+}());
+</script>
+
+<style>
+  /* the lab's own control, off the .site subtree */
+  .labctl:not(.site *) { margin: 8px 8px 0 0; height: 28px; padding: 0 12px; border: 0; border-radius: 8px;
+    background: #e4ddd0; box-shadow: inset 0 0 0 1px #c9c0ae; color: #262626; font: bold 14px/28px "BuloRounded", sans-serif; cursor: pointer; }
+  .labctl:not(.site *):hover { background: #d9d0c0; }
+  .labrow:not(.site *) { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+</style>
+
+<div class="grid g1">
+
+  <div class="card"><div class="body">
+    <h3>A thumb travelling <span class="tag built">built</span></h3>
+    <p class="rule-text">A tray's thumb and the games bar's move over 220ms on cubic-bezier(.645, .045, .355, 1): the thumb on left, width, top and height, the white copy of the words on clip-path, the dividers beside the pick fading on the same clock. The first placement lands instead of sliding.</p>
+    <div class="demo"><div class="site wm" data-demo="tray" style="padding:12px">
+      <div class="wmModal wmOpen modalInstant" role="dialog" style="position:static;display:block;opacity:1">
+        <div class="wmScrim" style="position:static;height:0"></div>
+        <div class="wmPanel" style="position:static;transform:none;width:400px;max-height:none">
+          <div class="wmBox">
+            <div class="wmBody">
+              <div class="wmCard">
+                <div class="wmRow">
+                  <span class="wmRowLab"><span class="wmRowTitle">Sounds</span></span>
+                  <span class="wmRowCtl">
+                    <span class="wmSeg" role="radiogroup">
+                      <span class="wmCell wmPicked" role="radio" tabindex="0" aria-checked="true">Off</span>
+                      <span class="wmCell" role="radio" tabindex="0" aria-checked="false">Soft</span>
+                      <span class="wmCell" role="radio" tabindex="0" aria-checked="false">On</span>
+                    </span>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+    <div class="demo"><div class="site fp wm" data-demo="bar" style="padding:12px">
+      <div class="lobbyscope">
+        <div class="otFilter isIn isShown" id="otFilter" aria-label="Games">
+          <div class="track" data-row>
+            <span class="s on" data-g="all"><span>All games<i data-n="9">9<em class="w"></em></i></span></span>
+            <span class="s" data-g="hearts"><span>Hearts<i data-n="4">4<em class="w"></em></i></span></span>
+            <span class="s" data-g="spades"><span>Spades<i data-n="3">3<em class="w"></em></i></span></span>
+            <span class="s" data-g="euchre"><span>Euchre<i data-n="2">2<em class="w"></em></i></span></span>
+            <div class="ov"><span class="ovbtn"><span class="ovlab">More</span><span class="wall"></span><span class="zone"><span class="gbtri" aria-hidden="true"></span></span></span>
+              <ul class="ovlist"><li class="mi" data-g="canasta">Canasta<i>0</i></li><li class="mi" data-g="rummy">Rummy<i>0</i></li></ul>
+            </div>
+            <span class="thumb still"></span>
+          </div>
+          <div class="track tcopy still">
+            <span class="s on" data-g="all"><span>All games<i data-n="9">9<em class="w"></em></i></span></span>
+            <span class="s" data-g="hearts"><span>Hearts<i data-n="4">4<em class="w"></em></i></span></span>
+            <span class="s" data-g="spades"><span>Spades<i data-n="3">3<em class="w"></em></i></span></span>
+            <span class="s" data-g="euchre"><span>Euchre<i data-n="2">2<em class="w"></em></i></span></span>
+            <div class="ov"><span class="ovbtn"><span class="ovlab">More</span><span class="wall"></span><span class="zone"><span class="gbtri" aria-hidden="true"></span></span></span></div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+    <div class="demo"><div class="site wm" data-demo="lb" style="padding:12px">
+      <div id="mainContainer" class="general" style="min-height:0">
+        <div class="helpBox gameLeaderboardPage">
+          <div class="content">
+            <div class="lbSeg" role="radiogroup" aria-label="Leaderboard period">
+              <span class="lbCell lbPicked" data-period="daily" role="radio" aria-checked="true" tabindex="0">Daily</span>
+              <span class="lbCell" data-period="weekly" role="radio" aria-checked="false" tabindex="0">Weekly</span>
+              <span class="lbCell" data-period="monthly" role="radio" aria-checked="false" tabindex="0">Monthly</span>
+              <span class="lbCell" data-period="alltime" role="radio" aria-checked="false" tabindex="0">All-time</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+    <script>(function () {
+      var card = document.currentScript.closest('.card');
+      var trayRoot = card.querySelector('[data-demo="tray"]');
+      var barRoot = card.querySelector('[data-demo="bar"]');
+      var lbRoot = card.querySelector('[data-demo="lb"]');
+
+      var seg = MO.wireSeg(trayRoot.querySelector('.wmSeg'),
+        { cell: 'wmCell', picked: 'wmPicked', thumb: 'wmSegThumb', ink: 'wmSegInk', still: 'wmStill' });
+      var lbSeg = MO.wireSeg(lbRoot.querySelector('.lbSeg'),
+        { cell: 'lbCell', picked: 'lbPicked', thumb: 'lbSegThumb', ink: 'lbSegInk', still: 'lbStill' });
+      var host = barRoot.querySelector('.otFilter');
+      var gb = MO.bar(host, 'table');
+
+      var modal = trayRoot.querySelector('.wmModal');
+      var page = lbRoot.querySelector('.gameLeaderboardPage');
+      var four = ['left', 'width', 'top', 'height'].map(function (p) { return p + ' 0.22s ' + MO.EASE; }).join(', ');
+
+      Lab.table(card, [
+        { what: '.wmSegThumb transition', got: Lab.cs(seg.querySelector('.wmSegThumb'), 'transition'), want: four + ', opacity 0.11s linear' },
+        { what: '.wmSegInk transition', got: Lab.cs(seg.querySelector('.wmSegInk'), 'transition'), want: 'clip-path 0.22s ' + MO.EASE },
+        { what: '.wmCell + .wmCell::before transition', got: Lab.hex(getComputedStyle(seg.querySelectorAll(':scope > .wmCell')[1], '::before').transition), want: 'opacity 0.22s ' + MO.EASE },
+        { what: '--wm-thspd', got: Lab.token(modal, '--wm-thspd'), want: '220ms' },
+        { what: '--wm-thease', got: Lab.token(modal, '--wm-thease'), want: 'cubic-bezier(.645, .045, .355, 1)' },
+        { what: '.wmSegThumb.wmStill transition', got: MO.rule('.site .wmModal .wmSeg .wmSegThumb.wmStill', 'transition'), want: 'none', tag: 'rule' },
+        { what: '.otFilter .thumb transition', got: Lab.cs(gb.thumb, 'transition'), want: four + ', opacity 0.11s linear' },
+        { what: '.otFilter .tcopy transition', got: Lab.cs(gb.copy, 'transition'), want: 'clip-path 0.22s ' + MO.EASE + ', opacity 0.11s linear' },
+        { what: '.track > .s + .s::before transition', got: Lab.hex(getComputedStyle(host.querySelectorAll('.track[data-row] > .s')[1], '::before').transition), want: 'opacity 0.22s ' + MO.EASE },
+        { what: '.otFilter --thspd', got: Lab.token(host, '--thspd'), want: '220ms' },
+        { what: '.otFilter --thease', got: Lab.token(host, '--thease'), want: 'cubic-bezier(.645, .045, .355, 1)' },
+        { what: '.track.still transition', got: MO.rule('.site.fp .otFilter .track.still', 'transition'), want: 'none', tag: 'rule' },
+        { what: '.lbSegThumb transition', got: Lab.cs(lbSeg.querySelector('.lbSegThumb'), 'transition'), want: four + ', opacity 0.11s linear' },
+        { what: '--lb-thspd', got: Lab.token(page, '--lb-thspd'), want: '220ms' },
+        { what: '--lb-thease', got: Lab.token(page, '--lb-thease'), want: 'cubic-bezier(.645, .045, .355, 1)' },
+        { what: 'the word that grows with the pick', got: Lab.cs(host.querySelector('.s.on .w'), 'transition'), want: 'width 0.22s ' + MO.EASE }
+      ], 'The thumb and what travels with it');
+      Lab.note(card, 'Move it: pick a cell in any of the three. The first is the modal’s tray, the second the frontpage’s games bar and the third the generated leaderboard page’s, and all three carry the same 220ms and the same curve.');
+      Lab.note(card, 'The lab places the thumb with ModalShell.placeSegThumb and GameBar.paint rewritten, since neither script runs here. The opacity leg is the sheet’s calc(--wm-thspd / 2), which is 110ms. The leaderboard page’s #mainContainer is held to no minimum height so its well is not a screen tall.');
+    })();</script>
+  </div></div>
+
+</div>
+
+<div class="grid g2">
+
+  <div class="card"><div class="body">
+    <h3>A control answering the pointer, and a press <span class="tag built">built</span></h3>
+    <p class="rule-text">The lobby's buttons, the catalog's Play, the yellow verbs and the games bar's cells answer colour in 24ms ease-out and press to scale(.98) over 80ms ease-out, a tile to .99. A modal's buttons, cells and chips declare no transition and land at once, and so do a social mark and the Hide-ads pill.</p>
+    <div class="demo"><div class="site fp wm" data-demo="fp" style="padding:12px">
+      <div class="lobbyscope">
+        <div class="labrow">
+          <a class="button green">Play today's challenge</a>
+          <a class="button green small">See all</a>
+        </div>
+      </div>
+      <div class="catgrid" style="margin-top:12px;max-width:240px">
+        <div class="gtile game-hearts" data-gameid="hearts" data-gamepath="hearts">
+          <div class="gmeta">
+            <h3 class="gtitle"><a href="/hearts">Hearts</a></h3>
+            <p class="gsub">Avoid the hearts and the queen of spades.</p>
+            <div class="gbtns">
+              <button type="button" class="gplay" aria-label="Play Hearts"><span class="gplab">Play</span><span class="gpdiv"></span><span class="gpzone"><span class="gzarr"></span></span></button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="lobbyscope" id="openTablesTop" style="margin-top:12px">
+        <div class="cbtn" style="position:static;opacity:1"><a class="button small">Join</a><a class="button small">Options</a></div>
+      </div>
+      <div class="sitefooter" style="margin-top:12px">
+        <div class="footerLegal">
+          <div class="social">
+            <a href="https://x.com/WorldOfCardGamz"><img src="static/images/frontpage/social-x.svg" alt="X" width="24" height="24" /></a>
+            <a href="https://www.facebook.com/WorldOfCardGames/"><img src="static/images/frontpage/social-facebook.svg" alt="Facebook" width="24" height="24" /></a>
+            <a href="https://www.youtube.com/c/Worldofcardgames"><img src="static/images/frontpage/social-youtube.svg" alt="YouTube" width="24" height="24" /></a>
+          </div>
+        </div>
+      </div>
+      <div id="ad" style="position:static;width:300px;margin-top:12px"><div id="rahlc" style="position:static"><span id="rahl" class="link">Hide ads</span></div></div>
+    </div></div>
+    <div class="demo"><div class="site wm" data-demo="modal" style="padding:12px">
+      <div class="wmModal wmGameOptions wmOpen modalInstant" role="dialog" style="position:static;display:block;opacity:1">
+        <div class="wmScrim" style="position:static;height:0"></div>
+        <div class="wmPanel" style="position:static;transform:none;width:400px;max-height:none">
+          <div class="wmBox">
+            <div class="wmBody">
+              <div class="labrow">
+                <span class="wmBtn" role="button" tabindex="0">Cancel</span>
+                <span class="wmBtn wmGo" role="button" tabindex="0">Send</span>
+                <span class="wmSeg" role="radiogroup">
+                  <span class="wmCell wmPicked" role="radio" tabindex="0" aria-checked="true">Off</span>
+                  <span class="wmCell" role="radio" tabindex="0" aria-checked="false">On</span>
+                </span>
+                <span class="wmChip wmPicked" role="checkbox" tabindex="0" aria-checked="true" data-opt="seats4"><i><svg viewBox="0 0 10 8" width="10" height="8" aria-hidden="true"><path d="M1 4l3 3 5-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></i>4</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+    <script>(function () {
+      var card = document.currentScript.closest('.card');
+      var fp = card.querySelector('[data-demo="fp"]');
+      var modal = card.querySelector('[data-demo="modal"]');
+      MO.wireSeg(modal.querySelector('.wmSeg'),
+        { cell: 'wmCell', picked: 'wmPicked', thumb: 'wmSegThumb', ink: 'wmSegInk', still: 'wmStill' });
+
+      var colour = 'background-color 0.024s ease-out';
+      var press = 'transform 0.08s ease-out';
+      function still(el) { return Lab.cs(el, 'transition-duration'); }
+
+      Lab.table(card, [
+        { what: '.lobbyscope .button.green', got: Lab.cs(fp.querySelector('.button.green'), 'transition'), want: colour + ', box-shadow 0.024s ease-out, ' + press },
+        { what: '.gplay', got: Lab.cs(fp.querySelector('.gplay'), 'transition'), want: colour + ', ' + press + ', filter 0.08s ease-out, border-radius 0.1s ease-out 0.22s' },
+        { what: '.cbtn .button (the yellow verb)', got: Lab.cs(fp.querySelector('.cbtn .button'), 'transition'), want: colour + ', box-shadow 0.024s ease-out, ' + press },
+        { what: '.social > a transition-duration', got: still(fp.querySelector('.social > a')), want: '0s' },
+        { what: '#rahl transition-duration', got: still(fp.querySelector('#rahl')), want: '0s' },
+        { what: '.wmBtn transition-duration', got: still(modal.querySelector('.wmBtn')), want: '0s' },
+        { what: '.wmSeg .wmCell transition-duration', got: still(modal.querySelector('.wmCell')), want: '0s' },
+        { what: '.wmChip transition-duration', got: still(modal.querySelector('.wmChip')), want: '0s' },
+        { what: '.button:active transform', got: MO.rule('.site.fp .lobbyscope .button:active', 'transform'), want: 'scale(0.98)', tag: 'rule' },
+        { what: '.gplay:active transform', got: MO.rule('.site.fp .gplay:active', 'transform'), want: 'scale(0.98)', tag: 'rule' },
+        { what: '.cbtn .button:active transform', got: MO.rule('.site.fp #openTablesTop .cbtn .button:active', 'transform'), want: 'scale(0.98)', tag: 'rule' },
+        { what: '.gtile:active transform', got: MO.rule('.site.fp .gtile:active:not(:has(button:active))', 'transform'), want: 'scale(0.99)', tag: 'rule' },
+        { what: '.heroPlay:active transform and transition', got: MO.rule('.site.fp .gimg:hover .heroPlay:active', 'transform') + ', ' + MO.rule('.site.fp .gimg:hover .heroPlay:active', 'transition'), want: 'scale(0.98), none', tag: 'rule' },
+        { what: '.wmBtn:active transform', got: MO.rule('.site .wmModal .wmBtn:active', 'transform'), want: 'scale(0.98)', tag: 'rule' },
+        { what: '.wmChip:active transform', got: MO.rule('.site .wmGameOptions .wmChip:active', 'transform'), want: 'scale(0.98)', tag: 'rule' },
+        { what: '#rahl:active transform', got: MO.rule('.site.fp #ad #rahl:active', 'transform'), want: 'scale(0.98)', tag: 'rule' }
+      ], 'Colour, and the press under it');
+      Lab.note(card, 'Press one: every control here is live, so a press shows its scale and a hover its colour. A modal’s controls declare no transition at all, which is why their duration is zero and they answer in the same frame.');
+      Lab.note(card, 'Chrome prints a shorthand with no duration as all and one declared none as none, so the five that do not move are measured on transition-duration instead. The yellow verbs live at opacity 0 in a tile’s corner until the tile is hovered, and the ad rail is fixed to the window, so the lab stands both in the flow; the strings measured are the sheet’s.');
+    })();</script>
+  </div></div>
+
+  <div class="card" data-blur><div class="body">
+    <h3>Arriving, leaving and entering <span class="tag built">built</span></h3>
+    <p class="rule-text">Something arriving settles over 260ms cubic-bezier(.22, 1, .36, 1), something leaving goes in 190ms cubic-bezier(.32, 0, .67, 0), a panel or a page enters over 260ms cubic-bezier(.2, .7, .2, 1) with the settings page rising in 240 after a 200ms leave, the scrim comes in over 220ms ease-out, and a tile's lift moves at .18s ease.</p>
+    <div class="demo"><div class="site wm" data-demo="toast" style="padding:12px">
+      <div id="NoticeContainer" style="position:static;padding-top:0">
+        <div id="Notice" class="wmNotice info" role="status" aria-live="polite"><strong class="label"></strong><span class="message selectable">Your seat is kept for two minutes.</span></div>
+      </div>
+    </div></div>
+    <div class="demo"><div class="site fp wm" data-demo="tile" style="padding:12px">
+      <a class="gtile" href="/hearts" data-gameid="hearts" style="width:240px">
+        <span class="gimg game-hearts">
+          <span class="gchip"><b>32</b> playing</span>
+          <img class="glogo" src="static/images/frontpage/logos/hearts_logo@2x.png" width="480" height="359" alt="Hearts" />
+          <span class="heroPlay" role="button">Play</span>
+        </span>
+      </a>
+    </div></div>
+    <div class="demo"><div class="site fp wm" data-demo="felt" style="padding:12px">
+      <div class="lobbyscope" id="openTablesTop">
+        <div class="ltGrid" style="width:240px">
+          <div class="ltCard ltBlank"><div class="tableListing players4"><div class="header"><div class="playersContainer"></div></div></div></div>
+        </div>
+      </div>
+    </div></div>
+    <div class="demo"><div class="site wm" data-demo="panel" style="padding:12px;position:relative;min-height:220px">
+      <div class="wmModal wmOpen" role="dialog" style="position:absolute;inset:0">
+        <div class="wmScrim"></div>
+        <div class="wmPanel">
+          <div class="wmBox">
+            <div class="wmHead"><span class="wmTitle">Leave the table?</span></div>
+            <div class="wmBody">
+              <p class="wmTxt">Your seat goes to a robot until you come back.</p>
+              <div class="wmFoot"><span class="wmBtn" role="button" tabindex="0">Keep playing</span><span class="wmBtn wmKill" role="button" tabindex="0">Leave table</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+    <div class="demo"><div class="site wm" data-demo="settings" style="padding:12px">
+      <div class="wmModal wmWide wmSettings wmOpen modalInstant" role="dialog" style="position:static;display:block;opacity:1">
+        <div class="wmScrim" style="position:static;height:0"></div>
+        <div class="wmPanel" style="position:static;transform:none;width:420px;max-height:none">
+          <div class="wmBox">
+            <div class="wmBody">
+              <div class="wmSeg wmTabs" role="tablist" aria-label="Settings">
+                <span class="wmCell wmPicked" role="tab" tabindex="0" aria-selected="true" data-page="game">Game</span>
+                <span class="wmCell" role="tab" tabindex="0" aria-selected="false" data-page="design">Design</span>
+              </div>
+              <div class="wmPage wmOnPage" data-page="game" role="tabpanel"><div class="wmCard"><div class="wmRow"><span class="wmRowLab"><span class="wmRowTitle">Sounds</span><span class="wmRowLine">Card and chat sounds at the table.</span></span></div></div></div>
+              <div class="wmPage" data-page="design" role="tabpanel"><div class="wmCard"><div class="wmRow"><span class="wmRowLab"><span class="wmRowTitle">Card faces</span><span class="wmRowLine">The deck you play with.</span></span></div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+    <script>(function () {
+      var card = document.currentScript.closest('.card');
+      var toast = card.querySelector('[data-demo="toast"]').querySelector('#Notice');
+      var tile = card.querySelector('[data-demo="tile"]');
+      var felt = card.querySelector('[data-demo="felt"]');
+      var panelRoot = card.querySelector('[data-demo="panel"]');
+      var setRoot = card.querySelector('[data-demo="settings"]');
+
+      var restTransition = Lab.cs(toast, 'transition');
+      toast.classList.add('wmIn');
+      var inTransition = Lab.cs(toast, 'transition');
+
+      var panel = panelRoot.querySelector('.wmPanel');
+      var scrim = panelRoot.querySelector('.wmScrim');
+      var pages = setRoot.querySelectorAll('.wmPage');
+      var tabs = setRoot.querySelectorAll('.wmTabs .wmCell');
+
+      Lab.table(card, [
+        { what: '#Notice at rest, transition', got: restTransition, want: 'opacity 0.19s ' + MO.SHARP + ', transform 0.19s ' + MO.SHARP },
+        { what: '#Notice at rest, transform', got: MO.rule('.site #Notice.wmNotice', 'transform'), want: 'translateY(-10px) scale(0.96)', tag: 'rule' },
+        { what: '#Notice.wmIn transition', got: inTransition, want: 'opacity 0.26s ' + MO.SETTLE + ', transform 0.26s ' + MO.SETTLE },
+        { what: '#Notice.wmIn transform', got: MO.rule('.site #Notice.wmNotice.wmIn', 'transform'), want: 'none', tag: 'rule' },
+        { what: '.heroPlay at rest, the opacity leg', got: MO.part(tile.querySelector('.heroPlay'), 'opacity'), want: 'opacity 0.19s ' + MO.SHARP },
+        { what: '.gimg:hover .heroPlay, the first two legs', got: MO.rule('.site.fp .gimg:hover .heroPlay', 'transition').split(', background-color')[0], want: 'opacity 260ms ' + MO.SETTLE + ' 150ms, transform 260ms ' + MO.SETTLE + ' 150ms', tag: 'rule' },
+        { what: '.gtile transition', got: MO.rule('.site.fp .gtile', 'transition'), want: 'transform 0.18s, box-shadow 0.18s', tag: 'rule' },
+        { what: '.ltCard transition', got: Lab.cs(felt.querySelector('.ltCard'), 'transition'), want: 'opacity 0.26s ' + MO.SETTLE },
+        { what: '.wmPanel animation', got: MO.anim(panel), want: 'wmPanelIn 0.26s ' + MO.ENTER + ' both' },
+        { what: '.wmScrim animation', got: MO.anim(scrim), want: 'wmScrimIn 0.22s ease-out both' },
+        { what: '.wmPage.wmEnter animation', got: MO.animOn(pages[1], 'wmEnter'), want: 'wmPageRise 0.24s ' + MO.ENTER + ' both' },
+        { what: '.wmPage.wmLeaving transition', got: MO.whileOn(pages[0], 'wmLeaving', 'transition'), want: 'opacity 0.2s ease-out' },
+        { what: 'the felt tile’s corner verbs, from FrontpageTables.js', got: 'in 260ms ' + MO.SETTLE + ' after 150ms, out 190ms ' + MO.SHARP, want: 'the same pair', tag: 'note' }
+      ], 'Arriving, leaving, entering');
+
+      MO.replay(card, 'Replay the toast', function () {
+        toast.classList.remove('wmIn');
+        void toast.offsetWidth;
+        toast.classList.add('wmIn');
+      });
+      MO.replay(card, 'Replay the panel', function () {
+        var box = panelRoot.querySelector('.wmModal');
+        box.classList.remove('wmOpen');
+        void box.offsetWidth;
+        box.classList.add('wmOpen');
+      });
+      var turning = false;
+      var tabCls = { cell: 'wmCell', picked: 'wmPicked', thumb: 'wmSegThumb', ink: 'wmSegInk', still: 'wmStill' };
+      tabs.forEach(function (tab, i) {
+        tab.addEventListener('click', function () {
+          if (turning) return;
+          var next = pages[i], now = setRoot.querySelector('.wmPage.wmOnPage');
+          if (next === now) return;
+          turning = true;
+          tabs.forEach(function (t) { t.classList.remove('wmPicked'); });
+          tab.classList.add('wmPicked');
+          MO.placeSeg(setRoot.querySelector('.wmTabs'), tabCls);
+          now.classList.add('wmLeaving');
+          setTimeout(function () {
+            now.classList.remove('wmLeaving');
+            now.classList.remove('wmOnPage');
+            next.classList.add('wmOnPage');
+            void next.offsetWidth;
+            next.classList.add('wmEnter');
+            setTimeout(function () { next.classList.remove('wmEnter'); turning = false; }, 240);
+          }, 220);
+        });
+      });
+      MO.placeSeg(setRoot.querySelector('.wmTabs'), tabCls);
+      Lab.note(card, 'Watch it: replay the toast and the panel, hover the tile for its lift and its Play, and turn the settings tabs to see the page leave while the thumb travels and rise once it has landed. The toast is left arrived so it can be read.');
+      Lab.note(card, 'The toast’s container and the modal are fixed to the window on the site; here the container stands in the flow and the modal is held to its own well, which is what lets the panel keep its real centring. The clocks are the sheet’s.');
+    })();</script>
+  </div></div>
+
+</div>
+
+<div class="grid g1">
+
+  <div class="card"><div class="body">
+    <h3>Ink takes, and reduced motion <span class="tag built">built</span></h3>
+    <p class="rule-text">A data-fed element first appears by ink takes: opacity with a 4px blur resolving over 340ms cubic-bezier(.25, .46, .45, .94), and no movement at all. The hero's capsule alone takes a 6px blur over 520ms, and the games bar staggers its cells by 30ms each by --gbi. Every family drops arrivals under prefers-reduced-motion and keeps its waiting states.</p>
+    <div class="demo"><div class="site fp wm" data-demo="ink" style="padding:12px">
+      <div class="stats statsCapsule isShort isIn">
+        <span class="capsule">
+          <span class="st stlive"><span class="ldot"></span><span class="greencap">LIVE</span></span>
+          <span class="st"><b class="creel" data-count="412">412</b> playing</span>
+          <span class="st"><b class="creel" data-count="96">96</b> tables</span>
+        </span>
+      </div>
+      <div class="lobbyscope" style="margin-top:12px">
+        <div class="otFilter isIn" id="ldFilter" aria-label="Game for the leaderboard">
+          <div class="track" data-row>
+            <span class="s on" data-g="all" style="--gbi:0"><span>All games<i data-n="9">9<em class="w"></em></i></span></span>
+            <span class="s" data-g="hearts" style="--gbi:1"><span>Hearts<i data-n="4">4<em class="w"></em></i></span></span>
+            <span class="s" data-g="spades" style="--gbi:2"><span>Spades<i data-n="3">3<em class="w"></em></i></span></span>
+            <div class="ov" style="--gbi:3"><span class="ovbtn"><span class="ovlab">More</span><span class="wall"></span><span class="zone"><span class="gbtri" aria-hidden="true"></span></span></span>
+              <ul class="ovlist"><li class="mi" data-g="euchre">Euchre<i>2</i></li></ul>
+            </div>
+            <span class="thumb still" style="--gbi:0"></span>
+          </div>
+          <div class="track tcopy still" style="--gbi:0">
+            <span class="s on" data-g="all" style="--gbi:0"><span>All games<i data-n="9">9<em class="w"></em></i></span></span>
+            <span class="s" data-g="hearts" style="--gbi:1"><span>Hearts<i data-n="4">4<em class="w"></em></i></span></span>
+            <span class="s" data-g="spades" style="--gbi:2"><span>Spades<i data-n="3">3<em class="w"></em></i></span></span>
+            <div class="ov" style="--gbi:3"><span class="ovbtn"><span class="ovlab">More</span><span class="wall"></span><span class="zone"><span class="gbtri" aria-hidden="true"></span></span></span></div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+    <script>(function () {
+      var card = document.currentScript.closest('.card');
+      var root = card.querySelector('[data-demo="ink"]');
+      var capsule = root.querySelector('.statsCapsule');
+      var host = root.querySelector('.otFilter');
+      MO.bar(host, 'table');
+      root.querySelectorAll('.creel').forEach(function (el) { MO.reel(el, el.dataset.count); });
+
+      var cells = host.querySelectorAll('.track[data-row] > .s');
+      var from = MO.keyframe('fpInkTakes', 'from');
+      var to = MO.keyframe('fpInkTakes', 'to');
+
+      Lab.table(card, [
+        { what: '.statsCapsule.isIn animation', got: MO.anim(capsule), want: 'fpInkTakes 0.52s ' + MO.INK + ' backwards' },
+        { what: '.statsCapsule --fp-blur', got: Lab.token(capsule, '--fp-blur'), want: '6px' },
+        { what: '.statsCapsule.isIn opacity', got: MO.rule('.site.fp .statsCapsule.isIn', 'opacity'), want: '1', tag: 'rule' },
+        { what: '.statsCapsule with no .isIn, opacity', got: MO.rule('.site.fp .statsCapsule', 'opacity'), want: '0', tag: 'rule' },
+        { what: '.track > .s animation', got: MO.anim(cells[0]), want: 'fpInkTakes 0.34s ' + MO.INK + ' backwards' },
+        { what: 'a cell’s --fp-blur', got: Lab.token(cells[0], '--fp-blur'), want: '4px' },
+        { what: 'the stagger, cells 1 to 3', got: [cells[0], cells[1], cells[2]].map(function (c) { return Lab.cs(c, 'animation-delay'); }).join(', '), want: '0s, 0.03s, 0.06s' },
+        { what: 'keyframe from, filter and opacity', got: (from ? from.filter + ' / ' + from.opacity : '(no keyframe)'), want: 'blur(var(--fp-blur, 4px)) / 0', tag: 'rule' },
+        { what: 'keyframe to, filter and opacity', got: (to ? to.filter + ' / ' + to.opacity : '(no keyframe)'), want: 'blur(0px) / 1', tag: 'rule' },
+        { what: 'keyframe transform, either end', got: ((from && from.transform ? from.transform : '') + (to && to.transform ? to.transform : '')) || 'none at either end', want: 'none at either end', tag: 'rule' },
+        { what: 'prefers-reduced-motion matches here', got: String(window.matchMedia('(prefers-reduced-motion: reduce)').matches), want: 'false', tag: 'note' },
+        { what: 'reduced-motion blocks in the sheet', got: String(MO.reducedRules()), want: 'one or more', tag: 'note' },
+        { what: 'reduced: .wmModal.wmOpen .wmPanel animation', got: MO.reducedRule('.site .wmModal.wmOpen .wmPanel', 'animation-name'), want: 'none', tag: 'rule' },
+        { what: 'reduced: #Notice.wmNotice.wmIn transition', got: MO.reducedRule('.site #Notice.wmNotice.wmIn', 'transition'), want: 'opacity 120ms linear', tag: 'rule' },
+        { what: 'reduced: .otFilter.isIn .thumb animation', got: MO.reducedRule('.site.fp .otFilter.isIn .thumb', 'animation-name'), want: 'none', tag: 'rule' }
+      ], 'Ink takes, and what answers a reduced-motion setting');
+
+      MO.replay(card, 'Replay the capsule', function () {
+        capsule.classList.remove('isIn');
+        void capsule.offsetWidth;
+        capsule.classList.add('isIn');
+      });
+      MO.replay(card, 'Replay the bar', function () {
+        host.classList.remove('isIn');
+        void host.offsetWidth;
+        host.classList.add('isIn');
+      });
+      Lab.note(card, 'Replay either one: the capsule takes its 6px blur over 520ms, the bar’s cells take 4px over 340ms, 30ms apart. Nothing moves; only the blur and the opacity resolve.');
+      Lab.note(card, 'The bar stands at .isIn without .isShown, which is the state the reveal runs in, and its cells carry the inline --gbi that GameBar writes. The keyframes and the reduced-motion blocks are read out of the sheet, since a headless window reports no such setting.');
+    })();</script>
+  </div></div>
+
+</div>
+</section>

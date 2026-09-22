@@ -1,0 +1,363 @@
+<section class="sec" id="roots">
+<h2>1 Roots and paper</h2>
+<div class="rule"></div>
+<p class="desc">Guide 2.1 the three roots, 2.2 the flag, 2.3 which page kind gets what. Every piece below is the site's own markup under a scoped root: .site.wm stands for body.wm, .site.fp.wm for the frontpage, and the dialog and toast roots are the trees ModalShell.js and Notice.js build. Colour lives in the colour lab.</p>
+
+<div class="grid g1">
+
+  <div class="card">
+    <div class="body">
+      <h3>The four roots and the shared palette <span class="tag built">built</span></h3>
+      <p class="rule-text">Every redesigned surface reads the same tokens from one of the roots in $wm-token-roots (body.fp, body.wm, .wmModal, .wmNotice, .spot-messageBox, .chatBubble, #wtip, .customTooltip, #tableListingsBox), each carrying color-scheme light and the shared palette.</p>
+      <div class="demo">
+        <div data-demo style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:10px;background:var(--band)">
+
+          <div>
+            <p style="font-size:12px;color:#8a857c;margin:0 0 4px">A reading page</p>
+            <div class="site wm" data-r="wm" style="padding:12px;border-radius:10px">
+              <p style="margin:0;font-size:14px">The shared root. Every reading page and every game page.</p>
+            </div>
+          </div>
+
+          <div>
+            <p style="font-size:12px;color:#8a857c;margin:0 0 4px">The frontpage</p>
+            <div class="site fp wm" data-r="fp" style="padding:12px;border-radius:10px">
+              <p style="margin:0;font-size:14px">The frontpage alone. Never on another page.</p>
+            </div>
+          </div>
+
+          <div>
+            <p style="font-size:12px;color:#8a857c;margin:0 0 4px">A dialog</p>
+            <div class="site wm" style="border-radius:10px">
+              <div class="wmModal wmOpen modalInstant" data-r="modal" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
+                <div class="wmScrim" style="position:static;height:0"></div>
+                <div class="wmPanel" style="position:static;transform:none;width:auto;max-height:none">
+                  <div class="wmBox">
+                    <div class="wmHead"><span class="wmTitle">Leave the table?</span></div>
+                    <div class="wmBody"><p class="wmTxt">Your seat goes to a bot.</p></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <p style="font-size:12px;color:#8a857c;margin:0 0 4px">A notice</p>
+            <div class="site wm" style="padding:12px;border-radius:10px">
+              <div id="Notice" class="wmNotice info wmIn" data-r="notice" role="status" aria-live="polite">
+                <strong class="label"></strong><span class="message selectable">No available seats.</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <div class="site" data-r="others" style="display:none"><div class="spot-messageBox"></div><div class="chatBubble"></div><div id="wtip"></div><div class="customTooltip"></div><div id="tableListingsBox"></div></div>
+      </div>
+      <script>
+      (function () {
+        var card = document.currentScript.closest('.card');
+        var box = card.querySelector('[data-demo]');
+        var roots = [
+          ['body.wm', box.querySelector('[data-r="wm"]')],
+          ['body.fp', box.querySelector('[data-r="fp"]')],
+          ['.wmModal', box.querySelector('[data-r="modal"]')],
+          ['.wmNotice', box.querySelector('[data-r="notice"]')]
+        ];
+        var sq = CSS.supports('corner-shape', 'squircle');
+        // a custom property is not computed, so a color-mix token is read off a probe that uses it
+        function mixed(el, name) {
+          var p = document.createElement('span');
+          p.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden;color:var(' + name + ')';
+          el.appendChild(p);
+          var v = Lab.cs(p, 'color');
+          p.parentNode.removeChild(p);
+          // Chrome hands a color-mix result back as color(srgb r g b); the guide writes hex
+          var m = /^color\(srgb ([\d.]+) ([\d.]+) ([\d.]+)\)$/.exec(v);
+          if (m) {
+            v = '#' + [1, 2, 3].map(function (i) {
+              return Math.round(parseFloat(m[i]) * 255).toString(16).padStart(2, '0');
+            }).join('');
+          }
+          return v;
+        }
+        var rows = [];
+        function add(name, want, read, tag) {
+          var vals = roots.map(function (r) { return read ? read(r[1], name) : Lab.token(r[1], name); });
+          var perRoot = want && typeof want === 'object';
+          var same = !perRoot && vals.every(function (v) { return Lab.same(v, vals[0]); });
+          if (same) { rows.push({ what: name, got: vals[0], want: want, tag: tag }); return; }
+          roots.forEach(function (r, i) {
+            rows.push({ what: name + ' on ' + r[0], got: vals[i], want: perRoot ? want[r[0]] : want, tag: tag });
+          });
+        }
+        add('color-scheme', 'light', function (el) { return Lab.cs(el, 'color-scheme'); });
+        add('--canvas', '#f9f6f2');
+        add('--band', '#f4eee5');
+        add('--surface', '#ffffff');
+        add('--ink', '#141414');
+        add('--ink-soft', '#262626');
+        add('--muted', '#4e4d4c');
+        add('--muted-soft', '#9b9997', mixed);
+        add('--faint', '#8a857c');
+        add('--edge', '#d2cfca');
+        add('--rule', '#d9d2c4');
+        add('--hairline', '#ebe7de');
+        add('--wm-seg', '#e4ddd0');
+        add('--wm-seg-ring', '#c9c0ae');
+        add('--triogreen', '#43a038');
+        add('--triogreenring', '#347d2c', mixed);
+        add('--triolightink', '#1971c2');
+        add('--color-table-edge', '#393939');
+        add('--fp-radius-md', sq ? '12px' : '6px');
+        add('--liftshadow', {
+          'body.wm': '0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09)',
+          'body.fp': '0 1px 2px rgba(60,45,25,.04), 0 2px 6px rgba(60,45,25,.06)',
+          '.wmModal': '0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09)',
+          '.wmNotice': '0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09)'
+        });
+        add('--liftshadow-lg', '0 2px 4px rgba(60,45,25,.04), 0 4px 12px rgba(60,45,25,.12)');
+        [['.spot-messageBox', '.spot-messageBox'], ['.chatBubble', '.chatBubble'], ['#wtip', '#wtip'], ['.customTooltip', '.customTooltip'], ['#tableListingsBox', '#tableListingsBox']].forEach(function (r) {
+          var el = card.querySelector('[data-r="others"] ' + r[1]);
+          rows.push({ what: '--canvas and --ink on ' + r[0], got: Lab.token(el, '--canvas') + ', ' + Lab.token(el, '--ink'), want: '#f9f6f2, #141414' });
+        });
+        rows.push({ what: 'CSS.supports corner-shape squircle', got: String(sq), want: '', tag: 'note' });
+        rows.push({
+          what: '--liftshadow-lg is declared on',
+          got: 'all four roots (_wocg-tokens.scss:77)',
+          want: 'all four roots (_wocg-tokens.scss:77)'
+        });
+        Lab.table(card, rows, 'one row per token; a root is named only where the four disagree');
+        Lab.note(card, 'The guide’s own open item in 5.3 asked for --liftshadow-lg on the shared roots. The sheet does that, and 5.3 names every token root now. The frontpage repeats the token at the same value, so a tile lifts the same on a reading page as on the frontpage.');
+        Lab.note(card, 'The frontpage keeps its lighter --liftshadow (Frontpage.scss:57-60). The scoper writes that rule as .site.site.fp, so the fp root reads it here exactly as a frontpage does.');
+        Lab.note(card, 'The other five roots in $wm-token-roots are the table\u2019s message box and chat bubble, the tooltip, the touch tooltip and the table listings box. They are not drawn here, since each is a table piece with a look of its own, but they stand hidden in the well and their tokens are read.');
+        Lab.note(card, 'Lab layout only: the two page roots carry 12px of padding and a 10px corner so their paper can be seen, and the dialog and the toast sit on a page root with the same padding. Nothing else is added.');
+      })();
+      </script>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="body">
+      <h3>What each root gates <span class="tag built">built</span></h3>
+      <p class="rule-text">body.fp goes on the frontpage only: under it every .helpBox is hidden with !important and #mainContainer is auto height. A game page (data-table true) hides the bar outright, and #fpPage exists only under fp.</p>
+      <div class="demo">
+        <div data-demo style="display:grid;gap:10px;padding:10px;background:var(--band)">
+
+          <div class="site wm" style="border-radius:10px;overflow:hidden">
+            <div id="mainContainer" class="general" style="min-height:0">
+              <div class="helpBox" data-r="helpwm"><div class="content"><p>A .helpBox under body.wm is a reading page’s column, so it draws.</p></div></div>
+            </div>
+          </div>
+
+          <div class="site fp wm" style="padding:10px;border-radius:10px">
+            <div id="mainContainer" style="min-height:0">
+              <div class="helpBox" data-r="helpfp"><div class="content"><p>The same box under body.fp never draws.</p></div></div>
+            </div>
+            <p style="margin:0;font-size:14px">A .helpBox sits above this line, hidden.</p>
+          </div>
+
+          <div class="site wm" data-table="true" style="border-radius:10px;overflow:hidden">
+            <nav id="menuBarContainer" class="mbcenter" data-r="bartable" aria-label="Main navigation">
+              <a id="menuLogoContainer" href="/"><img src="static/images/logo.png" alt="menu" width="170" height="32" /></a>
+              <ul id="menuBar">
+                <li class="mclink"><a href="/rules">Rules</a></li>
+                <li class="mclink"><a href="/leaderboards">Leaderboards</a></li>
+              <li class="dropdown"><span>All games</span><div id="allGames"></div></li>
+              </ul>
+            </nav>
+            <p style="margin:0;padding:10px;font-size:14px">A game page: the bar above this line is hidden and the felt takes the top edge.</p>
+          </div>
+
+          <div class="site wm" style="border-radius:10px;overflow:hidden">
+            <nav id="menuBarContainer" class="mbcenter" data-r="barpage" aria-label="Main navigation">
+              <a id="menuLogoContainer" href="/"><img src="static/images/logo.png" alt="menu" width="170" height="32" /></a>
+              <ul id="menuBar">
+                <li class="mclink"><a href="/rules">Rules</a></li>
+                <li class="mclink"><a href="/leaderboards">Leaderboards</a></li>
+              <li class="dropdown"><span>All games</span><div id="allGames"></div></li>
+              </ul>
+            </nav>
+          </div>
+
+          <div class="site wm" style="padding:10px;border-radius:10px">
+            <div id="fpPage" data-r="fppagewm"><p>#fpPage without fp</p></div>
+            <p style="margin:0;font-size:14px">A page without fp: the frontpage shell above this line is hidden.</p>
+          </div>
+
+        </div>
+      </div>
+      <script>
+      (function () {
+        var card = document.currentScript.closest('.card');
+        var box = card.querySelector('[data-demo]');
+        var q = function (s) { return box.querySelector(s); };
+        Lab.table(card, [
+          { what: 'display of .helpBox under body.wm', got: Lab.cs(q('[data-r="helpwm"]'), 'display'), want: 'flex' },
+          { what: 'display of .helpBox under body.fp', got: Lab.cs(q('[data-r="helpfp"]'), 'display'), want: 'none' },
+          { what: 'display of #menuBarContainer with data-table true', got: Lab.cs(q('[data-r="bartable"]'), 'display'), want: 'none' },
+          { what: 'display of #menuBarContainer on a page', got: Lab.cs(q('[data-r="barpage"]'), 'display'), want: 'flex' },
+          { what: 'height of #menuBarContainer on a page', got: Lab.cs(q('[data-r="barpage"]'), 'height'), want: '56px' },
+          { what: 'display of #fpPage without fp', got: Lab.cs(q('[data-r="fppagewm"]'), 'display'), want: 'none' },
+          { what: 'height of #mainContainer under body.fp', got: Lab.rule('.site.fp #mainContainer', 'height'), want: 'auto', tag: 'rule' }
+        ], 'what draws and what does not');
+        Lab.note(card, 'Lab layout only: both #mainContainer probes are held to min-height 0, since base.scss gives the container the window\u2019s height on a page that is not a table.');
+        Lab.note(card, 'The rules read: Frontpage.scss:117-120 hides every .helpBox under fp, Frontpage.scss:70 hides #fpPage without it, MenuBar.scss:20 hides the bar at a table, and Frontpage.scss:131 gives #mainContainer auto height on the frontpage.');
+        Lab.note(card, 'A bare .helpBox is block. Inside the reading shell it is a flex column, so the footer can stand at the window\u2019s foot (_wm-read.scss:125); the box is drawn in that shell here because master positions a loose .helpBox absolutely. What the row shows is that it draws at all under body.wm.');
+        Lab.note(card, 'The bar is drawn with the logo and two of its three links, which is the part these rules act on; the whole bar and its panels are section 12.');
+      })();
+      </script>
+    </div>
+  </div>
+
+</div>
+
+<div class="grid g2">
+
+  <div class="card">
+    <div class="body">
+      <h3>The modal kit’s own tokens <span class="tag built">built</span></h3>
+      <p class="rule-text">.wmModal and .wmNotice carry a second block of tokens the frontpage has no name for: the box, its ring, the scrim, the two widths, the tray and the thumb’s time.</p>
+      <div class="demo">
+        <div data-demo style="padding:10px;background:var(--band)">
+          <div class="site wm">
+            <div class="wmModal wmOpen modalInstant" data-r="modal" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
+              <div class="wmScrim" style="position:static;height:0"></div>
+              <div class="wmPanel" style="position:static;transform:none;width:auto;max-height:none">
+                <div class="wmBox">
+                  <div class="wmHead"><span class="wmTitle">Start the game?</span><span class="wmSub">Three bots are ready.</span></div>
+                  <div class="wmBody">
+                    <div class="wmFoot"><span class="wmBtn" role="button" tabindex="0">Wait</span><span class="wmBtn wmGo" role="button" tabindex="0">Start</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style="height:10px"></div>
+            <div id="Notice" class="wmNotice info wmIn" data-r="notice" role="status" aria-live="polite">
+              <strong class="label"></strong><span class="message selectable">The table is full.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <script>
+      (function () {
+        var card = document.currentScript.closest('.card');
+        var box = card.querySelector('[data-demo]');
+        var modal = box.querySelector('[data-r="modal"]');
+        var notice = box.querySelector('[data-r="notice"]');
+        var page = box.querySelector('.site');
+        var rows = [];
+        function add(name, want, tag) {
+          var a = Lab.token(modal, name), b = Lab.token(notice, name);
+          if (Lab.same(a, b)) { rows.push({ what: name, got: a, want: want, tag: tag }); return; }
+          rows.push({ what: name + ' on .wmModal', got: a, want: want, tag: tag });
+          rows.push({ what: name + ' on .wmNotice', got: b, want: want, tag: tag });
+        }
+        add('--wm-paper', '#f9f6f2');
+        add('--wm-radius', '20px');
+        add('--wm-card-radius', '16px');
+        add('--wm-pad', '12px');
+        add('--wm-gap', '8px');
+        add('--wm-ring', '0 0 0 1px rgba(0,0,0,.30)');
+        add('--wm-scrim', 'rgba(0,0,0,.48)');
+        add('--wm-scrim-blur', '4px');
+        add('--wm-w-narrow', '400px');
+        add('--wm-w-wide', '640px');
+        add('--wm-danger', '#c92a2a');
+        add('--wm-tray', '#d9d2c4');
+        add('--wm-tray-ring', '#bfb5a1');
+        add('--wm-tray-hover', '#d1c8b8');
+        add('--wm-thspd', '220ms');
+        add('--wm-thease', 'cubic-bezier(.645,.045,.355,1)');
+        rows.push({ what: '--wm-radius on the page root', got: Lab.token(page, '--wm-radius'), want: 'not declared on body.wm', tag: 'note' });
+        Lab.table(card, rows, 'read off the dialog and the toast');
+        Lab.note(card, 'The two roots read the same values: _wm-tokens.scss:6 writes the block on .wmModal, .wmNotice together, so a toast is the same kit as a dialog.');
+        Lab.note(card, 'Lab layout only: the dialog’s fixed position, its scrim height and the panel’s centring are neutralised inline so the box can stand in a card. Nothing about the box itself is changed.');
+      })();
+      </script>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="body">
+      <h3>Page paper and the body’s own type <span class="tag built">built</span></h3>
+      <p class="rule-text">body.wm paints the canvas #f9f6f2 and body.fp adds the interface face, the antialiasing and the ink #141414, so a page is warm paper from the first pixel. A reading page takes the face and the ink on #mainContainer.general instead.</p>
+      <div class="demo">
+        <div data-demo style="display:grid;gap:10px;padding:10px;background:var(--band)">
+
+          <div class="site wm" data-r="wm" style="padding:12px;border-radius:10px">
+            <p style="margin:0;font-size:14px">body.wm: the paper, and nothing else.</p>
+          </div>
+
+          <div class="site fp wm" data-r="fp" style="padding:12px;border-radius:10px">
+            <p style="margin:0;font-size:14px">body.fp: the paper, the face and the ink.</p>
+          </div>
+
+          <div class="site wm" style="border-radius:10px;overflow:hidden">
+            <div id="mainContainer" class="general" data-r="read" style="min-height:0">
+              <div class="helpBox">
+                <div class="content" id="content">
+                  <h1>Card game rules</h1>
+                  <p>The reading shell takes the face and the ink on #mainContainer.general.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <script>
+      (function () {
+        var card = document.currentScript.closest('.card');
+        var box = card.querySelector('[data-demo]');
+        var wm = box.querySelector('[data-r="wm"]');
+        var fp = box.querySelector('[data-r="fp"]');
+        var read = box.querySelector('[data-r="read"]');
+        var stack = '"BuloRounded", "Verdana", "Arial", "Helvetica", sans-serif';
+        Lab.table(card, [
+          { what: 'background-color of .site.wm', got: Lab.cs(wm, 'background-color'), want: '#f9f6f2' },
+          { what: 'background-color of .site.fp', got: Lab.cs(fp, 'background-color'), want: '#f9f6f2' },
+          { what: 'font-family of .site.fp', got: Lab.cs(fp, 'font-family'), want: stack },
+          { what: 'color of .site.fp', got: Lab.cs(fp, 'color'), want: '#141414' },
+          { what: '-webkit-font-smoothing of .site.fp', got: Lab.cs(fp, '-webkit-font-smoothing'), want: 'antialiased' },
+          { what: 'font-family of #mainContainer.general', got: Lab.cs(read, 'font-family'), want: stack },
+          { what: 'color of #mainContainer.general', got: Lab.cs(read, 'color'), want: '#141414' },
+          { what: '-webkit-font-smoothing of #mainContainer.general', got: Lab.cs(read, '-webkit-font-smoothing'), want: 'antialiased' },
+          { what: 'font-family of .site.wm', got: Lab.cs(wm, 'font-family'), want: 'inherited, body.wm sets no face', tag: 'note' },
+          { what: '.helpBox .content padding', got: Lab.cs(read.querySelector('.content'), 'padding'), want: '40px 24px 56px', tag: 'note' }
+        ], 'the paper, the face and the ink');
+        Lab.note(card, 'The site also paints the canvas on html (html:has(body.wm)); the scoper folds that onto .site.wm, which is the root here, so the paper comes from one rule and no mismatch is reported.');
+        Lab.note(card, 'Lab layout only: the two bare roots carry 12px of padding, and #mainContainer.general is held to min-height 0 (base.scss gives it 100vh) so the card stays short. The column’s own 40 / 24 / 56 padding is untouched.');
+      })();
+      </script>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="body">
+      <h3>The flag <span class="tag built">built</span></h3>
+      <p class="rule-text">The redesign is one switch: ?lobby=1|0 on the URL, then localStorage.wocgLobby, then on by default when the hostname starts with dev., never on the native app or Arkadium, resolved before first paint into window.__wocgFp.</p>
+      <p class="rt">The head script, from web/dust/common/wm_flag_head.dust:10, inside the guard {^isPlatformMobile}{^isSourceArkadium}:</p>
+      <p class="rt" style="font-family:ui-monospace,Menlo,monospace;font-size:11px;line-height:16px;background:#f4eee5;padding:8px 10px;border-radius:8px;word-break:break-all">(function(){try{var m=/[?&amp;]lobby=([^&amp;#]*)/.exec(window.location.search);var v=m?decodeURIComponent(m[1]).toLowerCase():"";var on;if(v==="1"||v==="true"||v==="yes"){on=true;}else if(v==="0"||v==="false"||v==="no"){on=false;}if(on===undefined){var s=window.localStorage.getItem("wocgLobby");if(s==="1"||s==="0"){on=(s==="1");}}if(on===undefined){on=window.location.hostname.indexOf("dev.")===0||window.location.href.indexOf("dev=true")!==-1;}if(/[?&amp;](platform=mobile|source=arkadium)(&amp;|$)/.test(window.location.search))on=false;window.__wocgFp=on; ... }catch(e){window.__wocgFp=false;}})();</p>
+      <script>
+      (function () {
+        var card = document.currentScript.closest('.card');
+        Lab.table(card, [
+          { what: 'step 1', got: '?lobby=1|0 on the URL', want: '', tag: 'note' },
+          { what: 'step 2', got: 'localStorage.wocgLobby, 1 or 0', want: '', tag: 'note' },
+          { what: 'step 3', got: 'hostname starts with dev., or the URL carries dev=true', want: '', tag: 'note' },
+          { what: 'guard 1', got: 'the whole script sits inside {^isPlatformMobile}', want: '', tag: 'note' },
+          { what: 'guard 2', got: 'and inside {^isSourceArkadium}', want: '', tag: 'note' },
+          { what: 'guard 3', got: 'platform=mobile or source=arkadium on the URL also turns it off', want: '', tag: 'note' },
+          { what: 'published as', got: 'window.__wocgFp, before first paint', want: '', tag: 'note' },
+          { what: 'the frontpage’s own copy', got: 'index.dust:82-84, with the GLCA preload gated on {^gameid}', want: '', tag: 'note' },
+          { what: 'measured here', got: 'not measurable in a lab page', want: '', tag: 'note' }
+        ], 'the resolution order and the two guards');
+        Lab.note(card, 'The site persists ?lobby= into localStorage (wocg.js:1053-1056), so a ?lobby=0 check has to be undone with ?lobby=1 or the flag stays off on the next visit.');
+        Lab.note(card, 'This card draws no site markup on purpose: the flag is a head script and a body class, not a piece with a look, so there is no .site root to measure.');
+      })();
+      </script>
+    </div>
+  </div>
+
+</div>
+</section>

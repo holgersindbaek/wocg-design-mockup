@@ -1,0 +1,462 @@
+<section class="sec" id="chrome">
+<h2>12 The chrome</h2>
+<div class="rule"></div>
+<p class="desc">Guide 8.1 the menubar, 8.2 the footer, 8.3 the ad rail. The markup is common/menu_bar.dust, common/fp_footer.dust and common/ads_code.dust, drawn under a .site root. The bar and the footer are in the flow already; the rail is fixed to the window on the site and is pinned inside its card, and the note says so. Ids repeat across the demos, so every script measures with its own root's querySelector and never getElementById.</p>
+
+
+<style>
+  /* The lab's own wells for the footer's container steps: a fixed width, nothing written on the piece. */
+  #chrome .cqwells { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 12px; }
+  #chrome .cqwell { overflow: hidden; box-shadow: inset 0 0 0 1px #d9d2c4; background: #fff; }
+  #chrome .cqcap { margin: 0; padding: 6px 8px; color: #8a857c; font-size: 12px; }
+</style>
+
+<div class="grid g1">
+
+<div class="card"><div class="body">
+<h3>The bar <span class="tag built">built</span></h3>
+<p class="rule-text">The bar is 56px tall on #F4EEE5 with no border below and an 8px margin under it, padded 0 24px off the frontpage, 16px in the soft ink, the logo absolutely centred at 32px, three left links 18px apart at 16px bold and 56px tall with an 8 by 7 masked caret, master's per-game links hidden, and the user cluster at the right.</p>
+<div class="demo">
+  <div class="site wm" data-wm>
+    <nav id="menuBarContainer" class="mbcenter" aria-label="Main navigation">
+      <a id="menuLogoContainer" href="/"><img src="static/images/logo.png" alt="menu" width="170" height="32" /></a>
+      <div id="menuIconContainer" data-wocg-press-release="true"><span>Games</span></div>
+      <ul id="menuBar">
+        <li class="mclink mgames"><span>Games<span class="mtri" aria-hidden="true"></span></span></li>
+        <li class="mclink"><a href="/rules">Rules</a></li>
+        <li class="mclink"><a href="/leaderboards">Leaderboards</a></li>
+        <li><a href="/hearts">Hearts</a></li>
+        <li><a href="/spades">Spades</a></li>
+        <li class="dropdown"><span>All games</span><div id="allGames"><a href="/euchre">Euchre</a></div></li>
+      </ul>
+      <div id="userBarContainer">
+        <ul id="userBar">
+          <li class="activityIcon displayInline"><img class="activityIconImg loaded" src="static/images/menuActivity.svg" alt="Activity" width="40" height="32" /></li>
+          <li class="friendsIcon displayInline"><img class="friendsIconImg loaded" src="static/images/menuFriends.svg" alt="Friends" width="40" height="32" /></li>
+          <li class="userAvatarContainer displayInline loggedIn">
+            <span class="avFoot"><img class="userAvatar loaded" src="static/pieces/avatar/classic/WomanGirl2.svg" alt="User avatar" width="24" height="24" /></span>
+            <span class="userName">Ann</span>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <div style="height:40px"></div>
+  </div>
+</div>
+<p class="rl">The bar on a reading page, a game page's band and a tutorial: 24px of desk at every desktop width. The five-column games panel is drawn in section 11, so the Games link here carries its caret alone. The 40px of canvas under the bar is there to show the 8px margin and the seam strip that hangs 7px into it.</p>
+<div class="demo">
+  <div class="site fp wm adsVisible" data-fp>
+    <nav id="menuBarContainer" class="mbcenter" aria-label="Main navigation">
+      <a id="menuLogoContainer" href="/"><img src="static/images/logo.png" alt="menu" width="170" height="32" /></a>
+      <div id="menuIconContainer" data-wocg-press-release="true"><span>Games</span></div>
+      <ul id="menuBar">
+        <li class="mclink mgames"><span>Games<span class="mtri" aria-hidden="true"></span></span></li>
+        <li class="mclink"><a href="/rules">Rules</a></li>
+        <li class="mclink"><a href="/leaderboards">Leaderboards</a></li>
+        <li><a href="/hearts">Hearts</a></li>
+      </ul>
+      <div id="userBarContainer">
+        <ul id="userBar">
+          <li class="activityIcon displayInline"><img class="activityIconImg loaded" src="static/images/menuActivity.svg" alt="Activity" width="40" height="32" /></li>
+          <li class="friendsIcon displayInline"><img class="friendsIconImg loaded" src="static/images/menuFriends.svg" alt="Friends" width="40" height="32" /></li>
+          <li class="userAvatarContainer displayInline loggedIn">
+            <span class="avFoot"><img class="userAvatar loaded" src="static/pieces/avatar/classic/WomanGirl2.svg" alt="User avatar" width="24" height="24" /></span>
+            <span class="userName">Ann</span>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <div style="height:40px"></div>
+  </div>
+</div>
+<p class="rl">The same bar on the frontpage, where the band stops 336px short of the window's right so the logo centres on the content column. The card is narrower than the 1112 column plus the rail, so the gutter falls back to its 24px floor; the reservation is what the table checks.</p>
+<script>(function(){
+var card=document.currentScript.closest('.card');
+var wm=card.querySelector('[data-wm]');
+var fp=card.querySelector('[data-fp]');
+var bar=wm.querySelector('#menuBarContainer');
+var fbar=fp.querySelector('#menuBarContainer');
+var logo=wm.querySelector('#menuLogoContainer');
+var img=logo.querySelector('img');
+var list=wm.querySelector('#menuBar');
+var link=wm.querySelector('#menuBar > li.mclink');
+var game=wm.querySelectorAll('#menuBar > li:not(.mclink)')[0];
+var tri=wm.querySelector('.mtri');
+var burger=wm.querySelector('#menuIconContainer');
+var cluster=wm.querySelector('#userBarContainer');
+var want=Math.max(24,Math.round((fp.clientWidth-336-1112)/2))+'px';
+Lab.table(card,[
+ {what:'height',got:Lab.cs(bar,'height'),want:'56px'},
+ {what:'display',got:Lab.cs(bar,'display'),want:'flex'},
+ {what:'paper',got:Lab.cs(bar,'background-color'),want:'#f4eee5'},
+ {what:'border below',got:Lab.cs(bar,'border-bottom-style'),want:'none'},
+ {what:'margin below',got:Lab.cs(bar,'margin-bottom'),want:'8px'},
+ {what:'gutter off the frontpage',got:Lab.cs(bar,'padding-left')+' and '+Lab.cs(bar,'padding-right'),want:'24px and 24px'},
+ {what:'words',got:Lab.cs(bar,'font-size')+'/'+Lab.cs(bar,'line-height')+' '+Lab.cs(bar,'color'),want:'16px/16px #262626'},
+ {what:'z-index',got:Lab.cs(bar,'z-index'),want:'9201'},
+ {what:'the rule below: height',got:Lab.cs(bar, 'height', '::after'),want:'14px'},
+ {what:'the rule below: hangs',got:Lab.cs(bar, 'bottom', '::after'),want:'-7px'},
+ {what:'the rule below: tile',got:Lab.cs(bar, 'background-size', '::after'),want:'384px 14px'},
+ {what:'the rule below: ink',got:Lab.cs(bar, 'background-image', '::after').indexOf('D9D2C4')>=0?'#D9D2C4 in the tile':'not in the tile',want:'#D9D2C4 in the tile'},
+ {what:'the wave before it',got:Lab.cs(bar, 'display', '::before'),want:'none'}
+],'The bar');
+Lab.table(card,[
+ {what:'rail reserved',got:Lab.cs(fbar,'margin-right'),want:'336px'},
+ {what:'gutter on the frontpage',got:Lab.cs(fbar,'padding-left'),want:want,tag:'note'},
+ {what:'the gutter rule',got:Lab.rule('.site.fp.adsVisible #menuBarContainer', '--fp-bar-gutter', fp),want:'max(24px, calc((100% - 336px - 1112px) / 2))',tag:'rule'},
+ {what:'the column it centres on',got:Lab.token(fp,'--fp-column'),want:'1112px'}
+],'On the frontpage');
+Lab.table(card,[
+ {what:'logo position',got:Lab.cs(logo,'position'),want:'absolute'},
+ {what:'logo left',got:Lab.rule('.site.wm #menuLogoContainer', 'left', wm),want:'50%',tag:'rule'},
+ {what:'logo centring',got:Lab.rule('.site.wm #menuLogoContainer', 'transform', wm),want:'translate(-50%, -50%)',tag:'rule'},
+ {what:'logo height',got:Lab.cs(img,'height'),want:'32px'},
+ {what:'links row',got:Lab.cs(list,'display')+' gap '+Lab.cs(list,'gap'),want:'flex gap 18px'},
+ {what:'a link',got:Lab.cs(link,'height')+' '+Lab.cs(link,'font-weight')+' '+Lab.cs(link,'font-size')+' '+Lab.cs(link,'color'),want:'56px 700 16px #262626'},
+ {what:'master’s per-game links',got:Lab.cs(game,'display'),want:'none'},
+ {what:'caret',got:Lab.cs(tri,'width')+' by '+Lab.cs(tri,'height'),want:'8px by 7px'},
+ {what:'caret mask',got:Lab.assetName(tri,'-webkit-mask-image'),want:'arrowDown.svg'},
+ {what:'the phone trigger’s ink',got:Lab.cs(burger,'color'),want:'#262626'},
+ {what:'the phone trigger at this width',got:Lab.cs(burger,'display'),want:'none'},
+ {what:'cluster to the right',got:Lab.rule('.site.wm #userBarContainer', 'margin-left', wm),want:'auto',tag:'rule'}
+],'The logo, the links and the cluster');
+Lab.note(card,'Two of the bar’s own values cannot be computed: left 50% and margin-left auto resolve to the pixels they used, so both are read from their rules.');
+Lab.note(card,'The frontpage gutter is the rule’s own max(): the card is narrower than the 1112 column and the 336 rail together, so it lands on the 24px floor. The value printed beside it is that floor worked out for this card’s width.');
+Lab.note(card,'The card is narrower than a frontpage window, so on the frontpage copy the centred logo lands on the left links. On a real window the band is wide enough for both.');
+Lab.note(card,'A game page shows no bar at all: body[data-table="true"] hides #menuBarContainer outright.');
+})();</script>
+</div></div>
+
+<div class="card"><div class="body">
+<h3>The footer <span class="tag built">built</span></h3>
+<p class="rule-text">The footer is #F4EEE5 with a 1px #D9D2C4 rule above, a grid padded 20px 24px 14px in four auto columns spread 24px apart with no max width, heads 16 / 28 bold, links 16 / 28 with no underline, a full-width legal row under its own rule with three masked social marks at the right end, and Raptive's block at 14 / 24 muted.</p>
+<div class="demo">
+  <div class="site wm" data-wm>
+    <div id="mainContainer" class="general" style="min-height:0"><div class="helpBox">
+    <div class="sitefooter">
+      <div class="divhead isStatic" style="top:-7px"></div>
+      <div class="footer-basic">
+        <footer>
+          <div class="footerSection footerGroup">
+            <strong>Trick-taking games</strong>
+            <div class="footerCols">
+              <ul class="list-inline">
+                <li class="list-inline-item"><a href="/hearts">Hearts</a></li>
+                <li class="list-inline-item"><a href="/spades">Spades</a></li>
+                <li class="list-inline-item"><a href="/euchre">Euchre</a></li>
+                <li class="list-inline-item"><a href="/pinochle">Pinochle</a></li>
+                <li class="list-inline-item"><a href="/double-deck-pinochle">DD Pinochle</a></li>
+              </ul>
+              <ul class="list-inline">
+                <li class="list-inline-item"><a href="/bridge">Bridge</a></li>
+                <li class="list-inline-item"><a href="/whist">Whist</a></li>
+                <li class="list-inline-item"><a href="/sheepshead">Sheepshead</a></li>
+                <li class="list-inline-item"><a href="/twenty-nine">Twenty-Nine</a></li>
+                <li class="list-inline-item"><a href="/sergeant-major">Sergeant Major</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="footerSection footerGroup">
+            <strong>Rummy games</strong>
+            <div class="footerCols">
+              <ul class="list-inline">
+                <li class="list-inline-item"><a href="/canasta">Canasta</a></li>
+                <li class="list-inline-item"><a href="/gin-rummy">Gin Rummy</a></li>
+                <li class="list-inline-item"><a href="/hand-and-foot">Hand &amp; Foot</a></li>
+                <li class="list-inline-item"><a href="/rummy">Rummy</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="footerSection footerGroup">
+            <strong>Classic games</strong>
+            <div class="footerCols">
+              <ul class="list-inline">
+                <li class="list-inline-item"><a href="/cribbage">Cribbage</a></li>
+                <li class="list-inline-item"><a href="/crazy-eights">Crazy Eights</a></li>
+                <li class="list-inline-item"><a href="/go-fish">Go Fish</a></li>
+                <li class="list-inline-item"><a href="/old-maid">Old Maid</a></li>
+                <li class="list-inline-item"><a href="https://papergames.io/">Board Games</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="footerSection footerResources">
+            <ul class="list-inline">
+              <li class="list-inline-item"><strong>Resources</strong></li>
+              <li class="list-inline-item"><a href="/about">About</a></li>
+              <li class="list-inline-item"><a href="/leaderboards">Leaderboards</a></li>
+              <li class="list-inline-item"><a href="/rules">Rules &amp; Guides</a></li>
+              <li class="list-inline-item"><a href="https://worldofcardgames.com/blog/">Blog</a></li>
+              <li class="list-inline-item"><a href="/contact">Contact</a></li>
+            </ul>
+          </div>
+          <div class="footerSection footerLegal">
+            <ul class="list-inline">
+              <li class="list-inline-item"><strong>Legal</strong></li>
+              <li class="list-inline-item"><a href="/world-of-card-games-privacy-policy">Privacy Policy</a></li>
+              <li class="list-inline-item"><a href="/world-of-card-games-terms-of-use">Terms of Use</a></li>
+              <li class="list-inline-item"><a href="/community-guidelines">Community Guidelines</a></li>
+              <li class="list-inline-item footerSocial">
+                <div class="social">
+                  <a href="https://x.com/WorldOfCardGamz"><img src="static/images/frontpage/social-x.svg" alt="X" loading="lazy" width="24" height="24" /></a>
+                  <a href="https://www.facebook.com/WorldOfCardGames/"><img src="static/images/frontpage/social-facebook.svg" alt="Facebook" loading="lazy" width="24" height="24" /></a>
+                  <a href="https://www.youtube.com/c/Worldofcardgames"><img src="static/images/frontpage/social-youtube.svg" alt="YouTube" loading="lazy" width="24" height="24" /></a>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <div class="footerSection footerRaptive">
+            <div class="adthrive-footer-message">
+              <a href="#">Update Privacy Preferences</a>
+              <a href="#">Terms of Content Use</a>
+              <span>A Raptive Partner Site</span>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </div>
+    </div></div>
+  </div>
+</div>
+<p class="rl">The footer off the frontpage, on the band paper. Hover a link for the drawn underline, and a social mark for its brand colour. The Raptive block is reproduced: on the site Raptive injects it, and nothing stands there until it does. On a page this footer sits inside a reading page's .helpBox, which is what draws the 1px rule above it, and it is drawn in that shell here, with the shell's window-tall minimum set to 0.</p>
+<div class="demo">
+  <div class="site fp wm" data-fp>
+    <div class="gamesec" id="sec-about">
+      <div class="aboutBody">
+        <div class="serifnote reader">
+          <p>There is always an open table on World of Card Games, at any hour of the day or night. Take a seat and say hi, or ask the bots to sit down with you.</p>
+        </div>
+      </div>
+    </div>
+    <div class="sitefooter">
+      <div class="divhead isStatic" style="top:-7px"></div>
+      <div class="footer-basic">
+        <footer>
+          <div class="footerSection footerGroup">
+            <strong>Trick-taking games</strong>
+            <div class="footerCols">
+              <ul class="list-inline">
+                <li class="list-inline-item"><a href="/hearts">Hearts</a></li>
+                <li class="list-inline-item"><a href="/spades">Spades</a></li>
+                <li class="list-inline-item"><a href="/euchre">Euchre</a></li>
+                <li class="list-inline-item"><a href="/pinochle">Pinochle</a></li>
+                <li class="list-inline-item"><a href="/double-deck-pinochle">DD Pinochle</a></li>
+              </ul>
+              <ul class="list-inline">
+                <li class="list-inline-item"><a href="/bridge">Bridge</a></li>
+                <li class="list-inline-item"><a href="/whist">Whist</a></li>
+                <li class="list-inline-item"><a href="/sheepshead">Sheepshead</a></li>
+                <li class="list-inline-item"><a href="/twenty-nine">Twenty-Nine</a></li>
+                <li class="list-inline-item"><a href="/sergeant-major">Sergeant Major</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="footerSection footerGroup">
+            <strong>Rummy games</strong>
+            <div class="footerCols">
+              <ul class="list-inline">
+                <li class="list-inline-item"><a href="/canasta">Canasta</a></li>
+                <li class="list-inline-item"><a href="/gin-rummy">Gin Rummy</a></li>
+                <li class="list-inline-item"><a href="/hand-and-foot">Hand &amp; Foot</a></li>
+                <li class="list-inline-item"><a href="/rummy">Rummy</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="footerSection footerGroup">
+            <strong>Classic games</strong>
+            <div class="footerCols">
+              <ul class="list-inline">
+                <li class="list-inline-item"><a href="/cribbage">Cribbage</a></li>
+                <li class="list-inline-item"><a href="/crazy-eights">Crazy Eights</a></li>
+                <li class="list-inline-item"><a href="/go-fish">Go Fish</a></li>
+                <li class="list-inline-item"><a href="/old-maid">Old Maid</a></li>
+                <li class="list-inline-item"><a href="https://papergames.io/">Board Games</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="footerSection footerResources">
+            <ul class="list-inline">
+              <li class="list-inline-item"><strong>Resources</strong></li>
+              <li class="list-inline-item"><a href="/about">About</a></li>
+              <li class="list-inline-item"><a href="/leaderboards">Leaderboards</a></li>
+              <li class="list-inline-item"><a href="/rules">Rules &amp; Guides</a></li>
+              <li class="list-inline-item"><a href="https://worldofcardgames.com/blog/">Blog</a></li>
+              <li class="list-inline-item"><a href="/contact">Contact</a></li>
+            </ul>
+          </div>
+          <div class="footerSection footerLegal">
+            <ul class="list-inline">
+              <li class="list-inline-item"><strong>Legal</strong></li>
+              <li class="list-inline-item"><a href="/world-of-card-games-privacy-policy">Privacy Policy</a></li>
+              <li class="list-inline-item"><a href="/world-of-card-games-terms-of-use">Terms of Use</a></li>
+              <li class="list-inline-item"><a href="/community-guidelines">Community Guidelines</a></li>
+              <li class="list-inline-item footerSocial">
+                <div class="social">
+                  <a href="https://x.com/WorldOfCardGamz"><img src="static/images/frontpage/social-x.svg" alt="X" loading="lazy" width="24" height="24" /></a>
+                  <a href="https://www.facebook.com/WorldOfCardGames/"><img src="static/images/frontpage/social-facebook.svg" alt="Facebook" loading="lazy" width="24" height="24" /></a>
+                  <a href="https://www.youtube.com/c/Worldofcardgames"><img src="static/images/frontpage/social-youtube.svg" alt="YouTube" loading="lazy" width="24" height="24" /></a>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <div class="footerSection footerRaptive">
+            <div class="adthrive-footer-message">
+              <a href="#">Update Privacy Preferences</a>
+              <a href="#">Terms of Content Use</a>
+              <span>A Raptive Partner Site</span>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </div>
+  </div>
+</div>
+<p class="rl">The frontpage copy, where the footer follows the about band and so takes the canvas instead. The about section and the footer stand as siblings, which is all the flip asks for; the stage and its full-window minimum are left out, and the band's own full-bleed paint is cut by the card.</p>
+<div class="demo"><div class="cqwells">
+  <div class="cqwell" style="width:600px"><p class="cqcap">600px: two columns</p><div class="cqhold" data-cq="600"></div></div>
+  <div class="cqwell" style="width:460px"><p class="cqcap">460px: one column</p><div class="cqhold" data-cq="460"></div></div>
+</div></div>
+<p class="rl">The same footer twice more, in a 600px well and a 460px one. The two steps are container queries on .footer-basic, not media queries, so the footer answers the width it is given and a well is all it takes: two columns under 620 of its own width, one under 470. The markup is the first demo's, copied into each well, so nothing here is written by hand.</p>
+<script>(function(){
+var card=document.currentScript.closest('.card');
+var wm=card.querySelector('[data-wm]');
+var fp=card.querySelector('[data-fp]');
+var foot=wm.querySelector('.sitefooter');
+var ffoot=fp.querySelector('.sitefooter');
+var grid=wm.querySelector('.sitefooter footer');
+var head=wm.querySelector('.footerGroup > strong');
+var ul=wm.querySelector('.footerGroup ul');
+var a=wm.querySelector('.footerGroup a');
+var legal=wm.querySelector('.footerLegal');
+var lul=wm.querySelector('.footerLegal > ul');
+var lstrong=wm.querySelector('.footerLegal li:has(> strong)');
+var social=wm.querySelector('.social');
+var marks=wm.querySelectorAll('.social > a');
+var rap=wm.querySelector('.adthrive-footer-message');
+var raps=wm.querySelector('.adthrive-footer-message > span');
+var tracks=Lab.cs(grid,'grid-template-columns').split(' ').length;
+Lab.table(card,[
+ {what:'paper',got:Lab.cs(foot,'background-color'),want:'#f4eee5'},
+ {what:'paper after the about band',got:Lab.cs(ffoot,'background-color'),want:'#f9f6f2'},
+ {what:'the rule above, in .helpBox',got:Lab.cs(foot,'border-top'),want:'1px solid #d9d2c4'},
+ {what:'the static seam head there',got:Lab.cs(foot.querySelector('.divhead'),'display'),want:'none'},
+ {what:'padding',got:Lab.cs(grid,'padding'),want:'20px 24px 14px'},
+ {what:'display',got:Lab.cs(grid,'display'),want:'grid'},
+ {what:'columns',got:tracks+' tracks',want:'4 tracks'},
+ {what:'spread',got:Lab.cs(grid,'justify-content'),want:'space-between'},
+ {what:'gap',got:Lab.cs(grid,'gap'),want:'24px'},
+ {what:'no measure',got:Lab.cs(grid,'max-width'),want:'none'}
+],'The paper and the grid');
+Lab.table(card,[
+ {what:'head',got:Lab.cs(head,'font-weight')+' '+Lab.cs(head,'font-size')+'/'+Lab.cs(head,'line-height'),want:'700 16px/28px'},
+ {what:'list',got:Lab.cs(ul,'font-size')+'/'+Lab.cs(ul,'line-height'),want:'16px/28px'},
+ {what:'link ink',got:Lab.cs(a,'color'),want:'#141414'},
+ {what:'link underline at rest',got:Lab.cs(a,'text-decoration-line'),want:'none'},
+ {what:'hover line bottom',got:Lab.rule('.site.wm .sitefooter a:not(:has(img)):hover::after','bottom',wm),want:'1px',tag:'rule'},
+ {what:'hover line height',got:Lab.rule('.site.wm .sitefooter a:not(:has(img)):hover::after','height',wm),want:'1px',tag:'rule'},
+ {what:'the two lists apart',got:Lab.cs(wm.querySelector('.footerCols'),'gap'),want:'20px'}
+],'The columns');
+Lab.table(card,[
+ {what:'full width',got:Lab.cs(legal,'grid-column'),want:'1 / -1'},
+ {what:'pulled up',got:Lab.cs(legal,'margin-top'),want:'-4px'},
+ {what:'over the line',got:Lab.cs(legal,'padding-top'),want:'10px'},
+ {what:'its rule',got:Lab.cs(legal,'border-top-width')+' solid '+Lab.cs(legal,'border-top-color'),want:'1px solid #d9d2c4'},
+ {what:'its words',got:Lab.cs(lul,'font-size')+'/'+Lab.cs(lul,'line-height'),want:'16px/20px'},
+ {what:'its gaps',got:Lab.cs(lul,'gap'),want:'2px 20px'},
+ {what:'no Legal head',got:Lab.cs(lstrong,'display'),want:'none'},
+ {what:'marks last in the row',got:Lab.cs(social,'order'),want:'9'},
+ {what:'marks pushed right',got:Lab.rule('.site.wm .sitefooter .footerLegal .social', 'margin-left', wm),want:'auto',tag:'rule'},
+ {what:'marks apart',got:Lab.cs(social,'gap'),want:'6px'},
+ {what:'X box and mark',got:Lab.cs(marks[0],'width')+' by '+Lab.cs(marks[0],'height')+', '+Lab.cs(marks[0],'-webkit-mask-size'),want:'18px by 20px, 17px 17px'},
+ {what:'Facebook box and mark',got:Lab.cs(marks[1],'width')+' by '+Lab.cs(marks[1],'height')+', '+Lab.cs(marks[1],'-webkit-mask-size'),want:'24px by 20px, 19px 19px'},
+ {what:'YouTube box and mark',got:Lab.cs(marks[2],'width')+' by '+Lab.cs(marks[2],'height')+', '+Lab.cs(marks[2],'-webkit-mask-size'),want:'24px by 20px, 22px 22px'},
+ {what:'mark ink',got:Lab.cs(marks[0],'background-color'),want:'#4e4d4c'},
+ {what:'X on hover',got:Lab.rule('.site.wm .sitefooter .social > a:has(img[alt="X"]):hover','background-color',wm),want:'#000000',tag:'rule'},
+ {what:'Facebook on hover',got:Lab.rule('.site.wm .sitefooter .social > a:has(img[alt="Facebook"]):hover','background-color',wm),want:'#0866ff',tag:'rule'},
+ {what:'YouTube on hover',got:Lab.rule('.site.wm .sitefooter .social > a:has(img[alt="YouTube"]):hover','background-color',wm),want:'#ff0000',tag:'rule'}
+],'The legal row and its marks');
+Lab.table(card,[
+ {what:'Raptive block',got:Lab.cs(rap,'font-size')+'/'+Lab.cs(rap,'line-height')+' '+Lab.cs(rap,'color'),want:'14px/24px #4e4d4c'},
+ {what:'its partner note',got:Lab.cs(raps,'color')+' order '+Lab.cs(raps,'order'),want:'#8a857c order 8'},
+ {what:'its width',got:Lab.cs(wm.querySelector('.footerRaptive'),'grid-column'),want:'1 / -1'}
+],'Raptive’s own block');
+var wells = [].slice.call(card.querySelectorAll('[data-cq]')).map(function (hold) {
+  var copy = wm.querySelector('.sitefooter').cloneNode(true);
+  var root = document.createElement('div');
+  root.className = 'site wm';
+  var main = document.createElement('div');
+  main.id = 'mainContainer'; main.className = 'general'; main.style.minHeight = '0';
+  var box = document.createElement('div'); box.className = 'helpBox';
+  box.appendChild(copy); main.appendChild(box); root.appendChild(main); hold.appendChild(root);
+  return { width: hold.getAttribute('data-cq'), grid: copy.querySelector('footer'), legal: copy.querySelector('.footerLegal') };
+});
+Lab.table(card, wells.map(function (w) {
+  return { what: 'columns in a ' + w.width + 'px well', got: String(Lab.cs(w.grid, 'grid-template-columns').split(' ').length), want: w.width === '600' ? '2' : '1' };
+}).concat([
+ {what:'the two steps',got:'620 and 470 of .footer-basic\u2019s own width',want:'two columns under a 620 container, one under 470',tag:'note'},
+ {what:'the grid starts at the left once stepped',got:Lab.cs(wells[0].grid,'justify-content'),want:'start'},
+ {what:'the legal row in a 460px well',got:Lab.cs(wells[1].legal,'grid-column'),want:'1 / -1'}
+]), 'The phone steps, read from the container');
+Lab.note(card,'The links are 16 / 28 where the mockup drew 14: open item 5 in the guide, not a fault of the build.');
+Lab.note(card,'The two red rows in Raptive\u2019s block are the sheet, not the guide, and they only show inside the reading shell: master\u2019s TableBar.scss styles .helpBox .footer-basic .footerRaptive .adthrive-footer-message with !important (16px, 28px lines, the ink, the partner note first and bold), and the design\u2019s own 14 / 24 --muted rule in _fp-footer.scss has no !important, so it loses on every page whose footer sits in .helpBox, which is every page but the frontpage. The frontpage copy below draws the guide\u2019s values.');
+Lab.note(card,'The four columns are auto tracks, so Chrome prints the width each one used rather than the word auto. The table counts them.');
+Lab.note(card,'One of the site’s own values cannot be computed: margin-left auto resolves to the pixels it used, so it is read from its rule.');
+Lab.note(card,'The two footers hold different links on purpose. This is common/fp_footer.dust; common/footer.dust ships beside it and CSS picks, and the loser is to be deleted before the flag retires.');
+})();</script>
+</div></div>
+
+<div class="card"><div class="body">
+<h3>The ad rail <span class="tag built">built</span></h3>
+<p class="rule-text">The frontpage's rail is a fixed full-height column at the right on the band paper with a 72 by 72 four-suit wallpaper at 4% black, a five-layer well shadow, an 8px inset for the slots, and a Hide ads pill 300 wide at most on the canvas in 14 / 24 bold, ringed inset 0 0 0 1px rgba(0,0,0,.25) plus three directionless blurs, hovering to the band at once.</p>
+<div class="demo" style="background:#f9f6f2">
+  <div class="site fp wm adsVisible" data-rail style="position:relative;min-height:430px;background:transparent">
+    <div id="gameSelectorContainer"></div>
+    <div id="ad" style="position:absolute;width:336px">
+      <div id="rahlc" data-payment-link-url=""><span id="rahl" class="link">Hide ads</span></div>
+      <div class="innerAdContainer">
+        <div align="center" class="raptive-display-ad raptive-right-rail-ad" id="worldofcardgamescom_medrec_1"></div>
+        <div align="center" class="raptive-display-ad raptive-right-rail-ad" id="worldofcardgamescom_medrec_2"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<p class="rl">Hover the pill: it takes the band paper at once, with no fade. The rail is fixed to the window's right on the site; here it is absolute inside a 430px well, which its own top, right and bottom of 0 then fill. The slots are the real empty Raptive containers, so the column between the 8px inset and the pill is bare.</p>
+<script>(function(){
+var card=document.currentScript.closest('.card');
+var root=card.querySelector('[data-rail]');
+var ad=root.querySelector('#ad');
+var inner=root.querySelector('.innerAdContainer');
+var hc=root.querySelector('#rahlc');
+var pill=root.querySelector('#rahl');
+var col=root.querySelector('#gameSelectorContainer');
+var bg=Lab.cs(ad,'background-image');
+Lab.table(card,[
+ {what:'paper',got:Lab.cs(ad,'background-color'),want:'#f4eee5'},
+ {what:'wallpaper tile',got:Lab.cs(ad,'background-size'),want:'72px 72px'},
+ {what:'wallpaper ink',got:bg.indexOf("fill-opacity='0.04'")>=0?"fill-opacity='0.04'":'(not in the tile)',want:"fill-opacity='0.04'"},
+ {what:'suits in the tile',got:String((bg.match(/<path/g)||[]).length)+' paths',want:'5 paths'},
+ {what:'no radius',got:Lab.cs(ad,'border-radius'),want:'0px'},
+ {what:'the well',got:Lab.cs(ad,'box-shadow'),want:'inset 1px 0 0 rgba(0,0,0,.08), inset 1px 0 2px rgba(60,45,25,.08), inset 2px 0 5px rgba(60,45,25,.08), inset 5px 0 12px rgba(60,45,25,.08), -1px 0 0 rgba(255,255,255,.64)'},
+ {what:'the slots’ inset',got:Lab.cs(inner,'top'),want:'8px'},
+ {what:'the pill’s inset',got:Lab.cs(hc,'bottom'),want:'8px'}
+],'The rail');
+Lab.table(card,[
+ {what:'measure',got:Lab.cs(pill,'width'),want:'300px'},
+ {what:'radius',got:Lab.cs(pill,'border-radius'),want:'12px'},
+ {what:'paper',got:Lab.cs(pill,'background-color'),want:'#f9f6f2'},
+ {what:'words',got:Lab.cs(pill,'font-weight')+' '+Lab.cs(pill,'font-size')+'/'+Lab.cs(pill,'line-height')+' '+Lab.cs(pill,'color'),want:'700 14px/24px #262626'},
+ {what:'ring and blurs',got:Lab.cs(pill,'box-shadow'),want:'inset 0 0 0 1px rgba(0,0,0,.25), 0 0 2px rgba(60,45,25,.08), 0 0 5px rgba(60,45,25,.08), 0 0 12px rgba(60,45,25,.08)'},
+ {what:'no fade',got:Lab.cs(pill,'transition'),want:'none'},
+ {what:'hover paper',got:Lab.rule('.site.fp #ad #rahl:hover','background-color',root),want:'#f4eee5',tag:'rule'},
+ {what:'press',got:Lab.rule('.site.fp #ad #rahl:active','transform',root),want:'scale(.98)',tag:'rule'}
+],'The Hide ads pill');
+Lab.table(card,[
+ {what:'the column reserves',got:Lab.cs(col,'margin-right'),want:'336px'},
+ {what:'from 640 it reserves',got:'160px',want:'160px',tag:'note'}
+],'What the page gives up to it');
+Lab.note(card,'The rail paints the band --band #F4EEE5, which 8.3 and 3.1 both name now (_fp-chrome.scss:588). The literal #EFEAE2 it drew until 13 Sep is gone.');
+Lab.note(card,'The widths are master’s: 336px from 1024 and 160px from 640. The sheet writes height auto and max-height none with !important, so the rail takes its height from its top and bottom and no inline height can cap it.');
+})();</script>
+</div></div>
+
+</div>
+</section>

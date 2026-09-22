@@ -1,0 +1,585 @@
+<section class="sec" id="cards">
+<h2>8 Cards, tiles and boxes</h2>
+<div class="rule"></div>
+<p class="desc">Guide 7.6, with the radius ladder of 5.1, the rings of 5.2 and the lift of 5.3. Every container is the site's own markup under the site's own CSS. A frontpage demo reads the frontpage's lighter --liftshadow, a page demo the shared one.</p>
+
+
+<div class="grid g2">
+
+  <div class="card"><div class="body">
+    <h3>The white card, in a modal and on a page <span class="tag built">built</span></h3>
+    <p class="rule-text">A white card is a 16px squircle in --card with inset 0 0 0 1px --edge. In a modal it takes --wm-card-lift and 1px 12px of padding; on a page --liftshadow and 12px, with a 16 / 24 bold title 8px over 16 / 24 items and their 6px --muted-soft dots.</p>
+    <div class="demo"><div class="site wm" data-demo="modal">
+      <div class="wmModal wmOpen modalInstant" role="dialog" style="position:static;display:block;opacity:1">
+        <div class="wmScrim" style="position:static;height:0"></div>
+        <div class="wmPanel" style="position:static;transform:none;width:400px;max-height:none">
+          <div class="wmBox">
+            <div class="wmBody">
+              <div class="wmSh"><span class="wmShTitle">At the table</span></div>
+              <div class="wmCard">
+                <div class="wmRow"><span class="wmRowLab"><span class="wmRowTitle">Sounds</span><span class="wmRowLine">Cards, chat and the turn bell.</span></span><span class="wmRowCtl"><span class="wmBtn wmSmall" role="button" tabindex="0">Change</span></span></div>
+                <div class="wmRow"><span class="wmRowLab"><span class="wmRowTitle">Table felt</span></span><span class="wmRowCtl"><span class="wmBtn wmSmall wmLight" role="button" tabindex="0">Pick</span></span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+    <div class="demo"><div class="site wm" data-demo="read">
+      <div id="mainContainer" class="general" style="min-height:0"><div class="helpBox strategyArticle"><div class="content articleContent">
+        <div class="atAGlance">
+          <strong>Hearts at a glance</strong>
+          <ul>
+            <li><strong>Players:</strong> 4, everyone for themselves</li>
+            <li><strong>Deck:</strong> standard 52 cards, no jokers</li>
+            <li><strong>Objective:</strong> avoid the point cards</li>
+          </ul>
+        </div>
+        <div class="contentsPanel">
+          <p class="contentsTitle"><a href="#">Hearts strategy</a></p>
+          <ul class="contentsList">
+            <li><a href="#">What to pass</a></li>
+            <li><a href="#">Counting the spades</a></li>
+          </ul>
+        </div>
+      </div></div></div>
+    </div></div>
+    <script>(function () {
+      var card = document.currentScript.closest(".card");
+      var modal = card.querySelector('[data-demo="modal"]'), read = card.querySelector('[data-demo="read"]');
+      var wc = modal.querySelector(".wmCard");
+      var glance = read.querySelector(".atAGlance"), title = glance.querySelector("strong"), li = glance.querySelector("li");
+      var panel = read.querySelector(".contentsPanel"), ctitle = read.querySelector(".contentsTitle");
+      Lab.table(card, [
+        { what: "modal .wmCard border-radius", got: Lab.cs(wc, "border-radius"), want: "16px" },
+        { what: "modal .wmCard paper", got: Lab.cs(wc, "background-color"), want: "#ffffff" },
+        { what: "modal .wmCard ring and lift", got: Lab.cs(wc, "box-shadow"), want: "inset 0 0 0 1px #d2cfca, 0 1px 2px rgba(60,45,25,.04), 0 2px 5px rgba(60,45,25,.05)" },
+        { what: "modal .wmCard padding", got: Lab.cs(wc, "padding"), want: "1px 12px" },
+        { what: "page .atAGlance border-radius", got: Lab.cs(glance, "border-radius"), want: "16px", tag: "call" },
+        { what: "page .atAGlance paper", got: Lab.cs(glance, "background-color"), want: "#ffffff", tag: "call" },
+        { what: "page .atAGlance ring and lift", got: Lab.cs(glance, "box-shadow"), want: "inset 0 0 0 1px #d2cfca, 0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09)", tag: "call" },
+        { what: "page .atAGlance padding", got: Lab.cs(glance, "padding"), want: "12px", tag: "call" },
+        { what: "page .atAGlance margin", got: Lab.cs(glance, "margin"), want: "16px 0 24px", tag: "call" },
+        { what: "page card title font", got: Lab.font(title), want: "700 16px/24px", tag: "call" },
+        { what: "page card title margin", got: Lab.cs(title, "margin"), want: "0 0 8px", tag: "call" },
+        { what: "page card item", got: Lab.cs(li, "font-size") + "/" + Lab.cs(li, "line-height") + ", padding " + Lab.cs(li, "padding"), want: "16px/24px, padding 3px 0", tag: "call" },
+        { what: "page card dot", got: Lab.cs(li, "width", "::before") + " " + Lab.cs(li, "height", "::before") + " " + Lab.cs(li, "background-color", "::before"), want: "6px 6px #9b9997", tag: "call" },
+        { what: "page card dot gap", got: Lab.cs(li, "margin-right", "::before"), want: "8px", tag: "call" },
+        { what: "page .contentsPanel ring and lift", got: Lab.cs(panel, "box-shadow"), want: "inset 0 0 0 1px #d2cfca, 0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09)", tag: "call" },
+        { what: "page .contentsTitle font", got: Lab.font(ctitle), want: "700 16px/24px", tag: "call" }
+      ], "The card in a modal and the two boxed lists on a page");
+      Lab.note(card, "Guide 7.6 counts no 16px white card on a page: the boxed lists of 10.3 are its own call, and the rollout built them. They take the shared --liftshadow, since a reading page is not the frontpage.");
+      Lab.note(card, "The dot is master's own, through the band's bridge: --color-border-light is remapped to --muted-soft. The box is drawn where it stands, with .modalInstant and the fixed positioning neutralised inline; the reading shell's 100vh floor is set to 0.");
+    })();</script>
+  </div></div>
+
+  <div class="card"><div class="body">
+    <h3>The game tile, hero and catalog <span class="tag built">built</span></h3>
+    <p class="rule-text">A game tile is a 20px squircle in --card lifted --liftshadow-lg, the art edge to edge over a soft-light ring and the game's own colour under the grain. A hero tile rises on hover. A catalog tile's shell is its game's --tintbg with an inset --tintring, the light lift, art clipped 20px 20px 0 0, meta at 12, a 20 / 28 title in --tintink, a 16 / 1.35 line in --tintsub and a 32px Play in the game's --tint.</p>
+    <div class="demo"><div class="site fp wm" data-demo="hero">
+      <div class="popular">
+        <a class="gtile pos-a" href="#" data-gameid="hearts" style="width:320px;height:236px">
+          <span class="gimg game-hearts">
+            <span class="gchip"><b style="min-width:2ch">37</b> playing<span class="gunder" aria-hidden="true"><b style="min-width:2ch">37</b> playing</span></span>
+            <img class="glogo" src="static/images/frontpage/logos/hearts_logo@tile.webp" width="480" height="359" alt="Hearts" />
+            <span class="heroPlay" role="button">Play</span>
+          </span>
+        </a>
+      </div>
+    </div></div>
+    <div class="demo"><div class="site fp wm" data-demo="cat">
+      <div class="gamesec" id="sec-tt">
+        <div class="catgrid" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+          <div class="gtile game-hearts" data-gameid="hearts" data-gamepath="hearts">
+            <div class="gimg game-hearts">
+              <span class="gchip"><b>37</b> playing</span>
+              <img class="glogo" src="static/images/frontpage/logos/hearts_logo@tile.webp" alt="Hearts" loading="lazy" />
+            </div>
+            <div class="gmeta">
+              <h3 class="gtitle"><a href="#">Hearts</a></h3>
+              <p class="gsub">Duck the point cards, or take every one of them.</p>
+              <div class="gbtns">
+                <button type="button" class="gplay" aria-label="Play Hearts"><span class="gplab">Play</span><span class="gpdiv"></span><span class="gpzone"><span class="gzarr"></span></span></button>
+              </div>
+            </div>
+          </div>
+          <div class="gtile game-spades" data-gameid="spades" data-gamepath="spades">
+            <div class="gimg game-spades">
+              <span class="gchip"><b>52</b> playing</span>
+              <img class="glogo" src="static/images/frontpage/logos/spades_logo@tile.webp" alt="Spades" loading="lazy" />
+            </div>
+            <div class="gmeta">
+              <h3 class="gtitle"><a href="#">Spades</a></h3>
+              <p class="gsub">Bid what your hand is worth and make it with your partner.</p>
+              <div class="gbtns">
+                <button type="button" class="gplay" aria-label="Play Spades"><span class="gplab">Play</span><span class="gpdiv"></span><span class="gpzone"><span class="gzarr"></span></span></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+    <script>(function () {
+      var card = document.currentScript.closest(".card");
+      var hero = card.querySelector('[data-demo="hero"]'), cat = card.querySelector('[data-demo="cat"]');
+      var ht = hero.querySelector(".gtile"), hi = hero.querySelector(".gimg");
+      var ct = cat.querySelector(".gtile"), ci = ct.querySelector(".gimg"), meta = ct.querySelector(".gmeta");
+      var tt = ct.querySelector(".gtitle"), sub = ct.querySelector(".gsub"), btns = ct.querySelector(".gbtns");
+      var play = ct.querySelector(".gplay"), arr = ct.querySelector(".gzarr");
+      var pring = "#761830";
+      Lab.table(card, [
+        { what: "hero .gtile border-radius", got: Lab.cs(ht, "border-radius"), want: "20px" },
+        { what: "hero .gtile paper", got: Lab.cs(ht, "background-color"), want: "#ffffff" },
+        { what: "hero .gtile lift", got: Lab.cs(ht, "box-shadow"), want: "0 2px 4px rgba(60,45,25,.04), 0 4px 12px rgba(60,45,25,.12)" },
+        { what: "hero .gtile transition", got: Lab.rule(".site.fp .gtile", "transition", ht), want: "transform .18s ease, box-shadow .18s ease", tag: "note" },
+        { what: "hero .gtile:hover lift", got: Lab.rule(".site.fp .gtile:hover", "box-shadow", ht), want: "0 2px 4px rgba(60,45,25,.08), 0 6px 12px rgba(60,45,25,.10), 0 14px 26px rgba(60,45,25,.12)", tag: "rule" },
+        { what: "hero .gtile:active", got: Lab.rule(".site.fp .gtile:active:not(:has(button:active))", "transform", ht), want: "scale(0.99)", tag: "rule" },
+        { what: "hero .gimg art colour", got: Lab.cs(hi, "background-color"), want: "#971f3e" },
+        { what: "hero .gimg grain", got: Lab.img(hi), want: "noise-balanced.png" },
+        { what: "hero .gimg grain size", got: Lab.cs(hi, "background-size"), want: "256px 256px, halved on a 2x screen", tag: "note" },
+        { what: "hero .gimg blend", got: Lab.cs(hi, "background-blend-mode"), want: "soft-light" },
+        { what: "hero .gimg::after ring", got: Lab.cs(hi, "box-shadow", "::after"), want: "inset 0 0 0 1px rgba(0,0,0,.75)" },
+        { what: "hero .gimg::after blend", got: Lab.cs(hi, "mix-blend-mode", "::after"), want: "soft-light" },
+        { what: "catalog .gtile paper", got: Lab.cs(ct, "background-color"), want: "#ffe3e7" },
+        { what: "catalog .gtile ring and lift", got: Lab.cs(ct, "box-shadow"), want: "inset 0 0 0 1px #ffa8b3, 0 1px 2px rgba(60,45,25,.04), 0 2px 6px rgba(60,45,25,.06)" },
+        { what: "catalog .gtile cursor", got: Lab.cs(ct, "cursor"), want: "default" },
+        { what: "catalog .gimg border-radius", got: Lab.cs(ci, "border-radius"), want: "20px 20px 0 0" },
+        { what: "catalog .gimg aspect-ratio", got: Lab.cs(ci, "aspect-ratio"), want: "4 / 3" },
+        { what: "catalog .gmeta padding", got: Lab.cs(meta, "padding"), want: "12px" },
+        { what: "catalog .gtitle", got: Lab.font(tt) + " " + Lab.cs(tt, "color"), want: "700 20px/28px #921f3c" },
+        { what: "catalog .gsub", got: Lab.cs(sub, "font-size") + "/" + Lab.cs(sub, "line-height") + " " + Lab.cs(sub, "color"), want: "16px/21.6px #994f5a" },
+        { what: "catalog .gbtns margin-top", got: Lab.cs(btns, "margin-top"), want: "8px" },
+        { what: "catalog .gplay height and font", got: Lab.cs(play, "height") + ", " + Lab.font(play), want: "32px, 700 18px/normal" },
+        { what: "catalog .gplay paper and ink", got: Lab.cs(play, "background-color") + ", " + Lab.cs(play, "color"), want: "#971f3e, #ffffff" },
+        { what: "catalog .gplay ring and drop", got: Lab.cs(play, "box-shadow"), want: "inset 0 0 0 1px " + pring + ", 0 2px 4px rgba(0,0,0,.06)" },
+        { what: "catalog .gplay outline", got: Lab.cs(play, "text-shadow"), want: "-1px -1px 0 " + pring + ", 1px -1px 0 " + pring + ", -1px 1px 0 " + pring + ", 1px 1px 0 " + pring },
+        { what: "catalog .gplay border-radius", got: Lab.cs(play, "border-radius"), want: "12px" },
+        { what: "catalog .gzarr", got: Lab.cs(arr, "width") + " by " + Lab.cs(arr, "height"), want: "8px by 7px" }
+      ], "The hero tile and the catalog tile");
+      Lab.note(card, "Two rows read rather than compare. The check runs at 2x, where the sheet halves the grain to 128px so it keeps its size in device pixels; and ease is a transition's initial curve, so Chrome drops the word from the value it prints.");
+      Lab.note(card, "Hover the hero's art: the tile rises on the three-stop shadow, the count leaves and the yellow Play arrives. A catalog tile does not move, and its Play opens the dropup the catalog builds.");
+    })();</script>
+  </div></div>
+
+  <div class="card"><div class="body">
+    <h3>The felt tile <span class="tag built">built</span></h3>
+    <p class="rule-text">A felt tile is a 20px squircle of felt #327333 with a 4:3 header, the seats' plates in --triolight with ink #124f7e (the red team #fcbcb4 on #8b1a1a) ringed 0 0 0 1px #393939 with 0 0 8px rgba(0,0,0,.24) on a 12px corner, 14 / 18 bold names, avatars under --avshadow, a 14px bold white ghost clock and the yellow verbs in the clock's corner. Guide 7.6 gives a game or felt tile --liftshadow-lg.</p>
+    <div class="demo"><div class="site fp wm" data-demo="fp">
+      <div class="lobbyscope" id="openTablesTop"><div class="lobbyTablesPanel" id="lobbyTablesPanel">
+        <div class="ltGrid" id="lobbyTablesGrid" style="grid-template-columns:minmax(0,1fr)">
+          <div class="ltCard" data-tableid="1"><div class="tableListing players4 hearts"><div class="header players4"><div class="playersContainer">
+            <div class="spacer30"></div>
+            <div class="player playernumber1 isBot"><img width="32" height="32" src="static/pieces/avatar/classic/AnimalFox.svg" alt="AnimalFox avatar" /><div class="playerNameContainer"><p class="playerName">Fox</p><span class="playerBadge isBot"></span></div></div>
+            <div class="spacer30"></div>
+            <div class="player playernumber0"><img width="32" height="32" src="static/pieces/avatar/classic/WomanCowgirl.svg" alt="WomanCowgirl avatar" /><div class="playerNameContainer"><p class="playerName">Marya</p></div></div>
+            <div class="spacer20"></div>
+            <div class="player playernumber2"><img width="32" height="32" src="static/pieces/avatar/classic/ManCowboy.svg" alt="ManCowboy avatar" /><div class="playerNameContainer"><p class="playerName">Dennis</p></div></div>
+            <div class="spacer30"></div>
+            <div class="player playernumber3 isEmpty"><img width="32" height="32" src="static/pieces/avatar/classic/EmptyChair.svg" alt="Empty seat" /><div class="playerNameContainer"><p class="playerName">Empty</p></div></div>
+            <div class="spacer30"></div>
+            <img class="ltArt art-hearts" src="static/images/frontpage/logos/hearts_logo@2x.png" alt="Hearts" />
+            <div class="ltTime" style="opacity:0"><svg class="ltRing" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="#fff" stroke-width="2"/><path d="M8 8V1A7 7 0 0 1 15 8z" fill="#fff"/></svg><span>12 min</span></div>
+            <div class="ltMarks"><svg class="ltMark" viewBox="0 0 18 18" aria-hidden="true"><path d="M2.6 14.2 2 6.4c0-.5.6-.8 1-.5l3.1 2.6c.3.2.7.1.9-.2L8.5 4c.2-.4.8-.4 1 0l1.5 4.3c.2.3.6.4.9.2L15 5.9c.4-.3 1 0 1 .5l-.6 7.8c0 .4-.4.7-.8.7H3.4c-.4 0-.8-.3-.8-.7z" fill="#fff"/></svg></div>
+            <div class="cbtn" style="opacity:1"><a class="button small" href="#">Join</a></div>
+          </div></div></div></div>
+        </div>
+      </div></div>
+    </div></div>
+    <div class="demo"><div class="site wm" data-demo="modal">
+      <div class="wmModal wmOpen modalInstant" id="ModalTablePreview" role="dialog" style="position:static;display:block;opacity:1">
+        <div class="wmScrim" style="position:static;height:0"></div>
+        <div class="wmPanel" style="position:static;transform:none;width:400px;max-height:none">
+          <div class="wmBox">
+            <div class="wmHead"><span class="wmTitle">Table preview</span><span class="wmSub">Take a seat, or watch the table.</span></div>
+            <div class="wmBody">
+              <div class="wmFelt">
+                <div class="ltCard"><div class="tableListing players4 spades isTeamGame"><div class="header players4"><div class="playersContainer">
+                  <div class="spacer30"></div>
+                  <div class="player playernumber1"><img width="32" height="32" src="static/pieces/avatar/classic/AnimalFox.svg" alt="AnimalFox avatar" /><div class="playerNameContainer"><p class="playerName">Fox</p></div></div>
+                  <div class="spacer30"></div>
+                  <div class="player playernumber0"><img width="32" height="32" src="static/pieces/avatar/classic/WomanCowgirl.svg" alt="WomanCowgirl avatar" /><div class="playerNameContainer"><p class="playerName">Marya</p></div></div>
+                  <div class="spacer20"></div>
+                  <div class="player playernumber2"><img width="32" height="32" src="static/pieces/avatar/classic/ManCowboy.svg" alt="ManCowboy avatar" /><div class="playerNameContainer"><p class="playerName">Dennis</p></div></div>
+                  <div class="spacer30"></div>
+                  <div class="player playernumber3"><img width="32" height="32" src="static/pieces/avatar/classic/WomanGirl2.svg" alt="WomanGirl2 avatar" /><div class="playerNameContainer"><p class="playerName">Ida</p></div></div>
+                  <div class="spacer30"></div>
+                  <img class="ltArt art-spades" src="static/images/frontpage/logos/spades_logo@2x.png" alt="Spades" />
+                  <div class="ltTime"><svg class="ltRing" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="none" stroke="#fff" stroke-width="2"/></svg><span>0 min</span></div>
+                </div></div></div></div>
+                <span class="wmFeltOver">This game has ended</span>
+              </div>
+              <div class="wmFoot"><span class="wmBtn" role="button" tabindex="0">Close</span><span class="wmBtn wmGo" role="button" tabindex="0">Join table</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+    <script>(function () {
+      var card = document.currentScript.closest(".card");
+      var fp = card.querySelector('[data-demo="fp"]'), modal = card.querySelector('[data-demo="modal"]');
+      var tile = fp.querySelector(".ltCard"), header = fp.querySelector(".header");
+      var plate = fp.querySelector(".playernumber0 .playerNameContainer"), name = plate.querySelector(".playerName");
+      var av = fp.querySelector(".player img"), clock = fp.querySelector(".ltTime"), verb = fp.querySelector(".cbtn .button");
+      var mtile = modal.querySelector(".ltCard"), mplate = modal.querySelector(".playernumber0 .playerNameContainer");
+      var red = modal.querySelector(".playernumber1 .playerNameContainer"), over = modal.querySelector(".wmFeltOver");
+      var pct = Math.round(plate.getBoundingClientRect().width / plate.parentNode.getBoundingClientRect().width * 100) + "%";
+      var ghost = "-1px -1px 0 rgba(0,0,0,.32), 1px -1px 0 rgba(0,0,0,.32), -1px 1px 0 rgba(0,0,0,.32), 1px 1px 0 rgba(0,0,0,.32)";
+      Lab.table(card, [
+        { what: ".ltCard border-radius", got: Lab.cs(tile, "border-radius"), want: "20px" },
+        { what: ".ltCard felt", got: Lab.cs(tile, "background-color"), want: "#327333" },
+        { what: ".ltCard lift", got: Lab.cs(tile, "box-shadow"), want: "0 2px 4px rgba(60,45,25,.04), 0 4px 12px rgba(60,45,25,.12)" },
+        { what: ".tableListing shape", got: Math.round(header.getBoundingClientRect().height / header.getBoundingClientRect().width * 100) + "% of the width", want: "75% of the width" },
+        { what: ".header padding-top", got: Lab.cs(header, "padding-top"), want: "0px" },
+        { what: ".header::after ring", got: Lab.cs(header, "box-shadow", "::after"), want: "inset 0 0 0 1px rgba(57,57,57,.4)" },
+        { what: ".playerNameContainer height", got: Lab.cs(plate, "height"), want: "18px" },
+        { what: ".playerNameContainer border-radius", got: Lab.cs(plate, "border-radius"), want: "12px" },
+        { what: ".playerNameContainer paper and ink", got: Lab.cs(plate, "background-color") + ", " + Lab.cs(plate, "color"), want: "#abd2ff, #124f7e" },
+        { what: ".playerNameContainer line and drop", got: Lab.cs(plate, "box-shadow"), want: "0 0 0 1px #393939, 0 0 8px rgba(0,0,0,.24)" },
+        { what: ".playerNameContainer width", got: pct, want: "90%" },
+        { what: ".playerName font", got: Lab.font(name), want: "700 14px/18px" },
+        { what: ".playerName padding", got: Lab.cs(name, "padding"), want: "0 6px" },
+        { what: ".player img filter", got: Lab.cs(av, "filter"), want: "--avshadow: four 1px drops, then 0 0 3px .20 and 0 0 9px .18", tag: "note" },
+        { what: ".ltTime font and ink", got: Lab.font(clock) + " " + Lab.cs(clock, "color"), want: "700 14px/20px #ffffff" },
+        { what: ".ltTime height", got: Lab.cs(clock, "height"), want: "20px" },
+        { what: ".ltTime ghost", got: Lab.cs(clock, "text-shadow"), want: ghost },
+        { what: ".cbtn .button height and font", got: Lab.cs(verb, "height") + ", " + Lab.font(verb), want: "24px, 700 16px/24px" },
+        { what: ".cbtn .button paper and ink", got: Lab.cs(verb, "background-color") + ", " + Lab.cs(verb, "color"), want: "#ffd43b, #3d2b00" },
+        { what: ".cbtn .button ring", got: Lab.cs(verb, "box-shadow"), want: "inset 0 0 0 1px #f5af23" },
+        { what: "modal .ltCard felt", got: Lab.cs(mtile, "background-color"), want: "#327333" },
+        { what: "modal .ltCard lift", got: Lab.cs(mtile, "box-shadow"), want: "inset 0 0 0 1px #d2cfca, 0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09)" },
+        { what: "modal plate, seat 0", got: Lab.cs(mplate, "background-color") + ", " + Lab.cs(mplate, "color"), want: "#abd2ff, #124f7e" },
+        { what: "modal plate, red team", got: Lab.cs(red, "background-color") + ", " + Lab.cs(red, "color"), want: "#fcbcb4, #8b1a1a" },
+        { what: "modal plate line and drop", got: Lab.cs(mplate, "box-shadow"), want: "0 0 0 1px #393939, 0 0 8px rgba(0,0,0,.24)" },
+        { what: ".wmFeltOver", got: Lab.font(over) + " " + Lab.cs(over, "color"), want: "700 18px/24px #ffffff" }
+      ], "The tile on the frontpage and its copy in a modal");
+      Lab.note(card, "The tile lifts two ways, and 7.6 says so. On the frontpage it takes --liftshadow-lg and no ring (_fp-open-tables.scss:423-430). The modal copy keeps the shared mixin's inset --edge ring and the light --liftshadow (_wm-shared.scss:62-64).");
+      Lab.note(card, "The plate is 18px since 13 Sep, and 3.7 and 6.3 both say 18 now (_wm-shared.scss:180).");
+      Lab.note(card, "The verb carries the paper form of 7.1, an inset ring and no drop, on the felt. Guide 3.4 gives a verb on the felt the felt line outside plus a 0 1px 2px rgba(0,0,0,.30) drop, which this one does not draw.");
+      Lab.note(card, "The frontpage tile is drawn as it stands under the pointer: the lobby script deals the verbs in and takes the clock out, so Join is at opacity 1 and the clock at 0, both set inline. Every value in the table is the sheet's. The grid is one column where the lobby draws three.");
+    })();</script>
+  </div></div>
+
+</div>
+
+<div class="grid g1">
+
+  <div class="card"><div class="body">
+    <h3>The other paper cards, the photo and the quote avatar <span class="tag built">built</span></h3>
+    <p class="rule-text">A leaderboard or deal card is a 20px squircle in white with a real 1px --edge border and --liftshadow, content edge to edge. A quote card is the same with 18px 20px of padding and a 12px gap. A picture card is a 20px squircle with the inset ring under 4:3 art. The author photo is 56px on a 12px squircle with 0 0 0 1px rgba(0,0,0,.12) and 0 2px 6px rgba(60,45,25,.18). The quote avatar plate is 44px, 40 in the name-first form, on a 12px squircle in #e4ddd0.</p>
+    <div class="demo"><div class="site fp wm" data-demo="fp">
+      <div class="lobbyscope isSettled" id="lobbyDemo"><div class="lobbyTopBand">
+        <div class="lobbycol"><div class="lobbyBoardCard isVisible" id="lobbyBoardCard">
+          <div class="lbRows" id="lobbyBoardRows">
+            <div class="lbRow lbHeaderRow"><span class="lbRank">Rank</span><span class="lbName">Player</span><span class="lbRating">Rating</span></div>
+            <div class="lbRow"><span class="lbRank">1 <span class="lbUp">2</span></span><span class="lbName">Marya</span><span class="lbRating">1842</span></div>
+            <div class="lbRow isAlt"><span class="lbRank">2</span><span class="lbName">Dennis</span><span class="lbRating">1815</span></div>
+            <div class="lbRow"><span class="lbRank">3 <span class="lbDown">1</span></span><span class="lbName">Ida</span><span class="lbRating">1790</span></div>
+          </div>
+          <p class="lbFoot" id="lobbyBoardFoot"><span class="lbRefresh">New board in 4h 12m</span><a class="button green small lbAll" href="#">See all</a></p>
+        </div></div>
+        <div class="lobbycol"><div class="lobbyDealCard isVisible" id="lobbyDealCard">
+          <div class="ldChallenge" id="lobbyDealChallenge"></div>
+          <div class="ldInfo">
+            <div class="ldFact"><b>Deal <span class="ldNum">1084</span></b><span class="ldCap">September challenge</span></div>
+            <div class="ldFact"><b class="ldResult">Won</b><span class="ldCap">your result today</span></div>
+            <div class="ldFact"><b class="ldWon">312</b><span class="ldCap">players won today</span></div>
+          </div>
+          <div class="ldFoot"><button type="button" class="button green ldPlay">Play today's challenge</button></div>
+        </div></div>
+      </div></div>
+    </div></div>
+    <div class="demo"><div class="site fp wm" data-demo="about">
+      <div class="gamesec" id="sec-about"><div class="aboutBody">
+        <div class="serifnote reader">
+          <p>I'm Holger, a designer and programmer from Denmark, and I look after the site on my own.</p>
+          <div class="signrow">
+            <img class="photo" src="static/images/frontpage/holger-avatar.jpg" alt="Holger Sindbaek" width="56" height="56" />
+            <div>
+              <p class="close">See you at the tables,</p>
+              <img class="sigimg" src="static/images/frontpage/signature-caveat-ink.png" alt="Holger Sindbaek" width="194" height="39" />
+            </div>
+          </div>
+        </div>
+        <div class="measure">
+          <div class="fgrid tiles pictures" style="grid-template-columns:repeat(2,1fr)">
+            <div class="fpic">
+              <div class="fimg">
+                <svg viewBox="0 0 160 120" role="img" aria-label="Three players seated at a table with one empty seat">
+                  <rect width="160" height="120" fill="#327333"></rect>
+                  <rect x="6" y="6" width="148" height="108" rx="10" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="2"></rect>
+                  <circle cx="80" cy="22" r="15" fill="#fff"></circle>
+                  <image href="static/pieces/avatar/classic/WomanGirl2.svg" x="66" y="8" width="28" height="28"></image>
+                  <circle cx="22" cy="60" r="15" fill="#fff"></circle>
+                  <image href="static/pieces/avatar/classic/ManCowboy.svg" x="8" y="46" width="28" height="28"></image>
+                  <circle cx="138" cy="60" r="15" fill="#fff"></circle>
+                  <image href="static/pieces/avatar/classic/AnimalCat.svg" x="124" y="46" width="28" height="28"></image>
+                  <circle cx="80" cy="98" r="14" fill="none" stroke="#fff" stroke-dasharray="3 3" stroke-width="1.5" opacity=".8"></circle>
+                  <text x="80" y="103" text-anchor="middle" font-size="16" fill="#fff" opacity=".9">+</text>
+                </svg>
+              </div>
+              <b>Real people right now</b>
+              <p>The numbers at the top of the page are live. You can see who is at every table before you sit down.</p>
+            </div>
+            <div class="qtiles qs-namefirst" style="grid-template-columns:1fr">
+              <div class="q" style="grid-column:span 1">
+                <span class="av"><img src="static/pieces/avatar/classic/WomanCowgirl.svg" alt="" width="44" height="44" /></span>
+                <div>
+                  <p class="qt">I have been on this site for more than 10 years because of the camaraderie.</p>
+                  <p class="qw"><b>Irean</b><span class="qwho">Texas, USA</span></p>
+                </div>
+              </div>
+            </div>
+            <div class="qtiles" style="grid-template-columns:1fr;margin:0">
+              <div class="q" style="grid-column:span 1">
+                <span class="av"><img src="static/pieces/avatar/classic/ManCowboy.svg" alt="" width="44" height="44" /></span>
+                <div>
+                  <p class="qt">The bots play a fair hand, and there is always a table open at two in the morning.</p>
+                  <p class="qw"><b>Dennis</b>, Ohio, USA</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div></div>
+    </div></div>
+    <div class="demo"><div class="site wm" data-demo="read">
+      <div id="mainContainer" class="general" style="min-height:0"><div class="helpBox aboutPage"><div class="content">
+        <p>I read every email myself and answer them all.</p>
+        <div class="signRow">
+          <div class="signText">
+            <p class="signOff">I wish you all endless fun playing,<br><span class="signName">Holger</span></p>
+            <img class="sigimg" src="static/images/frontpage/signature-caveat-ink.png" alt="Holger Sindbaek" width="194" height="39" />
+          </div>
+          <img src="static/images/frontpage/holger-avatar.jpg" width="100" height="100" class="aboutPhoto" alt="Photo of Holger Sindbaek">
+        </div>
+      </div></div></div>
+    </div></div>
+    <script>(function () {
+      var card = document.currentScript.closest(".card");
+      var fp = card.querySelector('[data-demo="fp"]'), about = card.querySelector('[data-demo="about"]'), read = card.querySelector('[data-demo="read"]');
+      /* the deal card's month panel, as LobbyWidgets builds it */
+      (function () {
+        var host = fp.querySelector(".ldChallenge");
+        var panel = document.createElement("div"); panel.className = "ldPanel";
+        var award = document.createElement("div"); award.className = "ldAward";
+        var t = document.createElement("p"); t.className = "ldAwardTitle"; t.textContent = "7 wins"; award.appendChild(t);
+        var bars = document.createElement("div"); bars.className = "ldAwardBars";
+        [["isBronze", 10, 70], ["isSilver", 20, 0], ["isGold", 30, 0]].forEach(function (tier) {
+          var bar = document.createElement("span"); bar.className = "ldAwardBar " + tier[0];
+          var fill = document.createElement("span"); fill.className = "ldAwardFill"; fill.style.width = tier[2] + "%";
+          var badge = document.createElement("b"); badge.className = "ldAwardBadge"; badge.textContent = String(tier[1]);
+          bar.appendChild(fill); bar.appendChild(badge); bars.appendChild(bar);
+        });
+        var spacer = document.createElement("span"); spacer.className = "ldAwardBar isSpacer"; bars.appendChild(spacer);
+        award.appendChild(bars); panel.appendChild(award);
+        var cal = document.createElement("div"); cal.className = "ldCal";
+        ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"].forEach(function (h) {
+          var s = document.createElement("span"); s.className = "ldCalHead"; s.textContent = h; cal.appendChild(s);
+        });
+        var won = [2, 3, 5, 8, 9, 12, 13];
+        for (var i = 0; i < 31; i++) {
+          var s = document.createElement("span"); s.className = "ldCalCell";
+          if (i > 0) {
+            var day = i;
+            s.className += " ldCalDay"; s.textContent = String(day);
+            s.setAttribute("data-date", "2026-09-" + (day < 10 ? "0" + day : day));
+            if (won.indexOf(day) >= 0) s.className += " isDealDone";
+            if (day === 14) s.className += " isToday";
+            if (day > 14) s.className += " isFuture";
+          }
+          cal.appendChild(s);
+        }
+        panel.appendChild(cal); host.appendChild(panel);
+      })();
+      var board = fp.querySelector(".lobbyBoardCard"), deal = fp.querySelector(".lobbyDealCard");
+      var q = about.querySelector(".q"), avp = q.querySelector(".av");
+      var qPlain = about.querySelector(".qtiles:not(.qs-namefirst) .q"), avpPlain = qPlain.querySelector(".av");
+      var pic = about.querySelector(".fpic"), fimg = pic.querySelector(".fimg");
+      var photo = about.querySelector(".signrow .photo"), signrow = about.querySelector(".signrow");
+      var aphoto = read.querySelector(".aboutPhoto"), sname = read.querySelector(".signName");
+      var lift = "0 1px 2px rgba(60,45,25,.04), 0 2px 6px rgba(60,45,25,.06)";
+      Lab.table(card, [
+        { what: ".lobbyBoardCard border-radius", got: Lab.cs(board, "border-radius"), want: "20px" },
+        { what: ".lobbyBoardCard paper and border", got: Lab.cs(board, "background-color") + ", " + Lab.cs(board, "border"), want: "#ffffff, 1px solid #d2cfca" },
+        { what: ".lobbyBoardCard lift", got: Lab.cs(board, "box-shadow"), want: lift },
+        { what: ".lobbyBoardCard padding", got: Lab.cs(board, "padding"), want: "0px" },
+        { what: ".lobbyDealCard paper and border", got: Lab.cs(deal, "background-color") + ", " + Lab.cs(deal, "border"), want: "#ffffff, 1px solid #d2cfca" },
+        { what: ".lobbyDealCard lift", got: Lab.cs(deal, "box-shadow"), want: lift },
+        { what: ".q border-radius", got: Lab.cs(q, "border-radius"), want: "20px" },
+        { what: ".q border and lift", got: Lab.cs(q, "border") + ", " + Lab.cs(q, "box-shadow"), want: "1px solid #d2cfca, " + lift },
+        { what: ".q padding and gap", got: Lab.cs(q, "padding") + ", " + Lab.cs(q, "gap"), want: "18px 20px, 12px" },
+        { what: ".qs-namefirst .av size", got: Lab.cs(avp, "width") + " " + Lab.cs(avp, "height"), want: "40px 40px" },
+        { what: ".qtiles .av size, the base form", got: Lab.cs(avpPlain, "width") + " " + Lab.cs(avpPlain, "height"), want: "44px 44px" },
+        { what: ".q .av border-radius", got: Lab.cs(avp, "border-radius"), want: "12px" },
+        { what: ".q .av paper", got: Lab.cs(avp, "background-color"), want: "#e4ddd0" },
+        { what: ".q .av ring", got: Lab.cs(avp, "box-shadow"), want: "inset 0 0 0 1px #c9c0ae" },
+        { what: ".fpic border-radius", got: Lab.cs(pic, "border-radius"), want: "20px" },
+        { what: ".fpic ring and lift", got: Lab.cs(pic, "box-shadow"), want: "inset 0 0 0 1px #d2cfca, " + lift },
+        { what: ".fimg aspect-ratio", got: Lab.cs(fimg, "aspect-ratio"), want: "4 / 3" },
+        { what: ".fimg::after ring and blend", got: Lab.cs(fimg, "box-shadow", "::after") + ", " + Lab.cs(fimg, "mix-blend-mode", "::after"), want: "inset 0 0 0 1px rgba(0,0,0,.75), soft-light" },
+        { what: ".photo size and fit", got: Lab.cs(photo, "width") + " " + Lab.cs(photo, "height") + ", " + Lab.cs(photo, "object-fit"), want: "56px 56px, cover" },
+        { what: ".photo border-radius", got: Lab.cs(photo, "border-radius"), want: "12px" },
+        { what: ".photo ring and lift", got: Lab.cs(photo, "box-shadow"), want: "0 0 0 1px rgba(0,0,0,.12), 0 2px 6px rgba(60,45,25,.18)" },
+        { what: ".signrow gap", got: Lab.cs(signrow, "gap"), want: "14px" },
+        { what: "page .aboutPhoto", got: Lab.cs(aphoto, "width") + " " + Lab.cs(aphoto, "height") + ", " + Lab.cs(aphoto, "border-radius"), want: "56px 56px, 12px" },
+        { what: "page .aboutPhoto ring and lift", got: Lab.cs(aphoto, "box-shadow"), want: "0 0 0 1px rgba(0,0,0,.12), 0 2px 6px rgba(60,45,25,.18)" },
+        { what: "page .signName", got: Lab.cs(sname, "display") + ", " + Lab.font(sname), want: "none, 400 16px/24px" }
+      ], "The frontpage's cards, the about zone's paper and the page's author block");
+      Lab.note(card, "Two rows the guide caught up with. The quote plate rings --wm-seg-ring #c9c0ae, the chooser's own ring, which 7.6 names (_fp-about.scss:193). And 10.3 signs the author block with the frontpage's signature image and hides .signName, which the page keeps for the flag-off copy (_wm-read-info.scss:57, Holger's 14 Sep choice), so the name reads none at the body size.");
+      Lab.note(card, "Both quote forms are drawn: the name-first one the site ships, with the avatar and the name on the top line and a 40px plate, and under it the base form the sheet declares, quote first with the 44px plate 7.6 states. Only common/fp_about.dust:194 ships, and it carries qs-namefirst, so 44 is a value in the sheet that no page renders today.");
+      Lab.note(card, "The base form writes its credit as one faint line, so the demo sets it as one: the .qwho span that holds the place apart belongs to the name-first form, which stacks the two.");
+      Lab.note(card, "These cards take a real 1px border, not an inset ring: an inset ring is drawn inside an antialiased curve at about half strength, and the board's own header row would paint over it.");
+    })();</script>
+  </div></div>
+
+  <div class="card" data-blur><div class="body">
+    <h3>The modal box <span class="tag built">built</span></h3>
+    <p class="rule-text">The box is a 20px squircle of --canvas with the outside ring 0 0 0 1px rgba(0,0,0,.30) and no lift, padded 0 12px 12px, in a 400 or 640 panel over a rgba(0,0,0,.48) scrim blurred 4px, with a 20 / 28 bold title 12px from the top and the close cross 20px square 32px outside the top right corner, drawn as a 4.4 rgba(0,0,0,.30) stroke under a 2.2 white one.</p>
+    <div class="demo"><div class="site wm" data-demo="narrow">
+      <div class="wmModal wmOpen modalInstant" role="dialog" aria-modal="true" style="position:relative;display:block;opacity:1;padding:24px 48px">
+        <div class="wmScrim"></div>
+        <div class="wmPanel" style="position:relative;left:auto;top:auto;transform:none;width:400px;margin:0 auto;max-height:none">
+          <div class="wmBox">
+            <div class="wmHead"><span class="wmTitle">Leave the table?</span><span class="wmSub">Your seat goes to a bot until you come back.</span></div>
+            <div class="wmBody">
+              <div class="wmTxt">A ranked game holds your seat for three minutes.</div>
+              <div class="wmFoot"><span class="wmBtn" role="button" tabindex="0">Stay</span><span class="wmBtn wmKill" role="button" tabindex="0">Leave now</span></div>
+            </div>
+          </div>
+          <span class="wmClose" role="button" aria-label="Close" tabindex="0"><svg viewBox="0 0 16 16" width="20" height="20" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13" stroke="rgba(0,0,0,.30)" stroke-width="4.4" stroke-linecap="round" fill="none"/><path d="M3 3l10 10M13 3L3 13" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" fill="none"/></svg></span>
+        </div>
+      </div>
+    </div></div>
+    <div class="demo"><div class="site wm" data-demo="wide">
+      <div class="wmModal wmWide wmOpen modalInstant" role="dialog" aria-modal="true" style="position:relative;display:block;opacity:1;padding:24px 48px">
+        <div class="wmScrim"></div>
+        <div class="wmPanel" style="position:relative;left:auto;top:auto;transform:none;width:640px;margin:0 auto;max-height:none">
+          <div class="wmBox">
+            <div class="wmHead"><span class="wmTitle">Settings</span><span class="wmSub">Everything here is kept on this device.</span></div>
+            <div class="wmBody">
+              <div class="wmSh"><span class="wmShTitle">At the table</span></div>
+              <div class="wmCard">
+                <div class="wmRow"><span class="wmRowLab"><span class="wmRowTitle">Sounds</span><span class="wmRowLine">Cards, chat and the turn bell.</span></span><span class="wmRowCtl"><span class="wmBtn wmSmall" role="button" tabindex="0">Change</span></span></div>
+              </div>
+              <div class="wmFoot"><span class="wmBtn" role="button" tabindex="0">Close</span><span class="wmBtn wmGo" role="button" tabindex="0">Save</span></div>
+            </div>
+          </div>
+          <span class="wmClose" role="button" aria-label="Close" tabindex="0"><svg viewBox="0 0 16 16" width="20" height="20" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13" stroke="rgba(0,0,0,.30)" stroke-width="4.4" stroke-linecap="round" fill="none"/><path d="M3 3l10 10M13 3L3 13" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" fill="none"/></svg></span>
+        </div>
+      </div>
+    </div></div>
+    <script>(function () {
+      var card = document.currentScript.closest(".card");
+      var narrow = card.querySelector('[data-demo="narrow"]'), wide = card.querySelector('[data-demo="wide"]');
+      var box = narrow.querySelector(".wmBox"), head = narrow.querySelector(".wmHead");
+      var title = narrow.querySelector(".wmTitle"), sub = narrow.querySelector(".wmSub");
+      var txt = narrow.querySelector(".wmTxt"), scrim = narrow.querySelector(".wmScrim");
+      var close = narrow.querySelector(".wmClose"), paths = close.querySelectorAll("path");
+      var body = wide.querySelector(".wmBody"), sh = wide.querySelector(".wmSh");
+      Lab.table(card, [
+        { what: ".wmBox border-radius", got: Lab.cs(box, "border-radius"), want: "20px" },
+        { what: ".wmBox corner-shape", got: Lab.cs(box, "corner-shape"), want: "superellipse(2)" },
+        { what: ".wmBox paper", got: Lab.cs(box, "background-color"), want: "#f9f6f2" },
+        { what: ".wmBox ring, and nothing else", got: Lab.cs(box, "box-shadow"), want: "0 0 0 1px rgba(0,0,0,.30)" },
+        { what: ".wmBox padding", got: Lab.cs(box, "padding"), want: "0 12px 12px" },
+        { what: ".wmBox running text", got: Lab.cs(box, "font-size") + "/" + Lab.cs(box, "line-height"), want: "16px/20px" },
+        { what: ".wmBox scrollbar", got: Lab.cs(box, "scrollbar-width"), want: "none" },
+        { what: ".wmHead padding-top", got: Lab.cs(head, "padding-top"), want: "12px" },
+        { what: ".wmTitle font and ink", got: Lab.font(title) + " " + Lab.cs(title, "color"), want: "700 20px/28px #141414" },
+        { what: ".wmSub font and ink", got: Lab.cs(sub, "font-size") + "/" + Lab.cs(sub, "line-height") + " " + Lab.cs(sub, "color"), want: "16px/22px #4e4d4c" },
+        { what: ".wmTxt after a head", got: Lab.cs(txt, "margin-top"), want: "2px" },
+        { what: "a section head as the body's first child", got: Lab.cs(sh, "margin-top") + ", padding " + Lab.cs(sh, "padding"), want: "12px, padding 18px 2px 6px" },
+        { what: ".wmPanel width, narrow", got: Lab.cs(narrow.querySelector(".wmPanel"), "width"), want: "400px" },
+        { what: ".wmPanel width, wide", got: Lab.cs(wide.querySelector(".wmPanel"), "width"), want: "640px" },
+        { what: ".wmScrim paper", got: Lab.cs(scrim, "background-color"), want: "rgba(0,0,0,.48)" },
+        { what: ".wmScrim blur", got: Lab.cs(scrim, "backdrop-filter"), want: "blur(4px)" },
+        { what: ".wmClose size", got: Lab.cs(close, "width") + " " + Lab.cs(close, "height"), want: "20px 20px" },
+        { what: ".wmClose place", got: "right " + Lab.cs(close, "right") + ", top " + Lab.cs(close, "top"), want: "right -32px, top 0" },
+        { what: ".wmClose under stroke", got: "stroke " + paths[0].getAttribute("stroke") + ", width " + paths[0].getAttribute("stroke-width"), want: "stroke rgba(0,0,0,.30), width 4.4" },
+        { what: ".wmClose over stroke", got: "stroke " + paths[1].getAttribute("stroke") + ", width " + paths[1].getAttribute("stroke-width"), want: "stroke #ffffff, width 2.2" },
+        { what: "shadow layers under the box", got: String(Lab.cs(box, "box-shadow").split(/,(?![^(]*\))/).length) + " layer, the ring", want: "1 layer, the ring" }
+      ], "The narrow box and the wide one");
+      Lab.note(card, "The panel is fixed and centred on the site. Here .wmModal is relative and padded 24px 48px so the scrim can draw behind the box and the cross has its 32px outside the paper; the panel keeps its own position so the cross hangs off it as it does on screen. Both boxes carry .modalInstant, so the entrance does not hold them at its first frame.");
+      Lab.note(card, "No lift under the box: the scrim carries the depth, and a shadow under a box that already stands on a blurred black sheet reads as a second edge.");
+    })();</script>
+  </div></div>
+
+  <div class="card"><div class="body">
+    <h3>The floating containers, geometry <span class="tag built">built</span></h3>
+    <p class="rule-text">A dropdown panel is a 20px squircle in --surface with a 32px --canvas head strip and an --edge rule under it, a real --edge border, --liftshadow and 0 12px 6px of padding on the games panel, 0 12px 8px on the user one. The toast is --radius-lg on --band with a 1px ring and --liftshadow plus 0 8px 20px rgba(0,0,0,.18), padded 14px 26px. A corner notice is --radius-lg on --band with the ring alone, 0 12px, 40 tall. The tooltip is a 12px squircle in --surface with the inset --edge ring and --liftshadow, padded 7px 11px 8px, at most 230 wide.</p>
+    <div class="demo"><div class="site wm" data-demo="menu">
+      <ul id="menuBar" style="display:block;height:auto;margin:0;padding:0">
+        <li class="mclink mgames" style="display:block;height:auto">
+          <div class="mpanel mgdrop" style="position:relative;display:flex;width:max-content;gap:12px">
+            <div class="mgcol"><div class="mghead">Trick-taking</div><a href="#">Hearts</a><a href="#">Spades</a><a href="#">Euchre</a><a href="#">Pinochle</a><a href="#">Double Deck Pinochle</a></div>
+            <div class="mgcol"><div class="mghead">&nbsp;</div><a href="#">Bridge</a><a href="#">Whist</a><a href="#">Sheepshead</a><a href="#">Twenty-Nine</a><a href="#">Sergeant Major</a></div>
+            <div class="mgcol"><div class="mghead">Rummy</div><a href="#">Canasta</a><a href="#">Gin Rummy</a><a href="#">Hand &amp; Foot</a><a href="#">Rummy</a></div>
+            <div class="mgcol"><div class="mghead">Classics</div><a href="#">Cribbage</a><a href="#">Crazy Eights</a><a href="#">Go Fish</a><a href="#">Old Maid</a></div>
+            <div class="mgcol"><div class="mghead">Single-player</div><a href="#">Solitaire</a><a href="#">FreeCell</a><a href="#">Spider Solitaire</a><a href="#">2048 Game</a></div>
+          </div>
+        </li>
+        <li class="dropdown"><span>All games</span><div id="allGames"></div></li>
+      </ul>
+      <div id="userBarContainer" style="margin-top:16px;display:block;height:auto">
+        <ul id="userBar" style="display:block;height:auto;margin:0;padding:0">
+          <li class="userAvatarContainer displayInline open loggedIn" style="display:block;height:auto;float:none">
+            <div class="userDropdown" style="position:relative;display:inline-block">
+              <div class="mphead">Account</div>
+              <div class="dropdownItem settings">Settings</div>
+              <div class="dropdownItem dailydeal">Daily challenge</div>
+              <div class="dropdownItem stats">Stats</div>
+              <div class="dropdownItem logout loggedIn">Logout</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div></div>
+    <div class="demo"><div class="site wm" data-demo="notice">
+      <div id="NoticeContainer" style="position:static;padding-top:0">
+        <div id="Notice" class="wmNotice info wmIn" role="status" aria-live="polite" style="position:static"><strong class="label"></strong><span class="message selectable">There is no seat free at that table.</span></div>
+      </div>
+      <div id="poolInactiveNotice" class="wmNotice wmCorner visible" style="position:static;margin-top:16px;opacity:1"><span class="message">Restart to load server update.</span></div>
+      <div id="wtip" class="on" style="position:relative;display:inline-block;margin-top:16px"><div class="wtipBox"><b>Marya</b><br>Elo: <b>1842</b><br>Games: <b>318</b></div></div>
+    </div></div>
+    <script>(function () {
+      var card = document.currentScript.closest(".card");
+      var menu = card.querySelector('[data-demo="menu"]'), note = card.querySelector('[data-demo="notice"]');
+      var drop = menu.querySelector(".mgdrop"), user = menu.querySelector(".userDropdown"), mphead = menu.querySelector(".mphead");
+      var toast = note.querySelector("#Notice"), corner = note.querySelector("#poolInactiveNotice"), tip = note.querySelector(".wtipBox");
+      var lift = "0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09)";
+      Lab.table(card, [
+        { what: ".mgdrop border-radius", got: Lab.cs(drop, "border-radius"), want: "20px" },
+        { what: ".mgdrop paper", got: Lab.cs(drop, "background-image").replace(/\s+/g, " "), want: "linear-gradient(#f9f6f2, #f9f6f2)", tag: "note" },
+        { what: ".mgdrop head strip", got: Lab.cs(drop, "background-size") + " on " + Lab.cs(drop, "background-color"), want: "100% 32px, auto on #ffffff" },
+        { what: ".mgdrop border", got: Lab.cs(drop, "border"), want: "1px solid #d2cfca" },
+        { what: ".mgdrop lift", got: Lab.cs(drop, "box-shadow"), want: lift },
+        { what: ".mgdrop padding", got: Lab.cs(drop, "padding"), want: "0 12px 6px" },
+        { what: ".mgdrop::after rule", got: "top " + Lab.cs(drop, "top", "::after") + ", " + Lab.cs(drop, "height", "::after") + " of " + Lab.cs(drop, "background-color", "::after"), want: "top 32px, 1px of #d2cfca" },
+        { what: ".mgdrop column gap", got: Lab.rule(".site.wm #menuBar > li.mgames:hover > .mgdrop", "gap", drop), want: "12px", tag: "rule" },
+        { what: ".userDropdown padding", got: Lab.cs(user, "padding"), want: "0 12px 8px" },
+        { what: ".userDropdown min-width", got: Lab.cs(user, "min-width"), want: "150px" },
+        { what: ".userDropdown border and lift", got: Lab.cs(user, "border") + ", " + Lab.cs(user, "box-shadow"), want: "1px solid #d2cfca, " + lift },
+        { what: ".mphead height and line", got: Lab.cs(mphead, "height") + ", " + Lab.cs(mphead, "line-height"), want: "32px, 32px" },
+        { what: ".mphead margin and padding", got: Lab.cs(mphead, "margin") + ", " + Lab.cs(mphead, "padding"), want: "0 -12px 7px, 0 12px" },
+        { what: ".mphead rule under it", got: Lab.cs(mphead, "border-bottom"), want: "1px solid #d2cfca" },
+        { what: "#Notice border-radius", got: Lab.cs(toast, "border-radius"), want: "16px" },
+        { what: "#Notice paper", got: Lab.cs(toast, "background-color"), want: "#f4eee5" },
+        { what: "#Notice ring and lift", got: Lab.cs(toast, "box-shadow"), want: "0 0 0 1px #d9d2c4, " + lift + ", 0 8px 20px rgba(0,0,0,.18)" },
+        { what: "#Notice padding", got: Lab.cs(toast, "padding"), want: "14px 26px" },
+        { what: "#Notice max-width", got: Lab.cs(toast, "max-width"), want: "min(640px, 100% - 32px)", tag: "note" },
+        { what: ".wmCorner height and padding", got: Lab.cs(corner, "height") + ", " + Lab.cs(corner, "padding"), want: "40px, 0 12px" },
+        { what: ".wmCorner border-radius and paper", got: Lab.cs(corner, "border-radius") + ", " + Lab.cs(corner, "background-color"), want: "16px, #f4eee5" },
+        { what: ".wmCorner ring, alone", got: Lab.cs(corner, "box-shadow"), want: "0 0 0 1px #d9d2c4" },
+        { what: ".wmCorner max-width", got: Lab.cs(corner, "max-width"), want: "min(388px, 100% - 32px)", tag: "note" },
+        { what: ".wtipBox max-width", got: Lab.cs(tip, "max-width"), want: "230px" },
+        { what: ".wtipBox paper and padding", got: Lab.cs(tip, "background-color") + ", " + Lab.cs(tip, "padding"), want: "#ffffff, 7px 11px 8px" },
+        { what: ".wtipBox border-radius", got: Lab.cs(tip, "border-radius"), want: "12px" },
+        { what: ".wtipBox ring and lift", got: Lab.cs(tip, "box-shadow"), want: "inset 0 0 0 1px #d2cfca, " + lift }
+      ], "The two panels, the toast, a corner notice and the tooltip");
+      Lab.note(card, "The toast and the corner notice ring --rule #d9d2c4, the band's own divider tone under the 14 Sep line rule, and 7.6 and 7.9 both name it (_wm-notices.scss:36).");
+      Lab.note(card, "The corner notice rests at opacity 0 in master's own sheet and its script fades it up over 300ms, so the opacity is set to 1 inline here. Each panel hangs under the menubar on the site. Here the chain its rules read is kept, ul#menuBar > li.mgames and #userBarContainer > ul#userBar > li.userAvatarContainer, the two hosts are blocks so the panel stands in the flow, and each panel keeps its own box (relative, shrunk to its columns) so its head strip and rule stay inside it: the bar itself belongs to 8.1. The games panel is shown open with the hover rule's display and its 12px gap, the user cluster carries .open, the site's own class, and the notices and the tooltip keep everything but their fixed corner.");
+    })();</script>
+  </div></div>
+
+</div>
+</section>

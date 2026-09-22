@@ -1,0 +1,647 @@
+<section class="sec" id="buttons">
+<h2>5 Buttons and links</h2>
+<div class="rule"></div>
+<p class="desc">Guide 7.1 buttons and 7.2 links, with the yellow verb's shadow line from 5.3 and the focus ring 7.2 leaves open. Every button below is the site's own markup under the site's own CSS, so the first one in each row hovers and presses for real.</p>
+
+<script>
+/* Section 5's own rows. Ids repeat across demos, so every card measures with its own root's
+   querySelector and never getElementById. The colours and shadows print through Lab. */
+(function () {
+  window.B5 = {
+    out: function (ring) {
+      return '-1px -1px 0 ' + ring + ', 1px -1px 0 ' + ring + ', -1px 1px 0 ' + ring + ', 1px 1px 0 ' + ring;
+    },
+    rows: function (el, w) {
+      var r = [
+        { what: 'height', got: Lab.cs(el, 'height'), want: w.h },
+        { what: 'font-size / line-height', got: Lab.cs(el, 'font-size') + ' / ' + Lab.cs(el, 'line-height'), want: w.fs + ' / ' + w.lh },
+        { what: 'font-weight', got: Lab.cs(el, 'font-weight'), want: '700' },
+        { what: 'padding', got: Lab.cs(el, 'padding'), want: w.pad },
+        { what: 'background-color', got: Lab.cs(el, 'background-color'), want: w.bg },
+        { what: 'box-shadow', got: Lab.cs(el, 'box-shadow'), want: w.sh },
+        { what: 'color', got: Lab.cs(el, 'color'), want: w.ink },
+        { what: 'text-shadow', got: Lab.cs(el, 'text-shadow'),
+          want: w.ts === 'inherit' ? 'no outline, and the root\u2019s own smoothing shadow' : w.ts,
+          tag: w.ts === 'inherit' ? 'note' : 'built' }
+      ];
+      if (w.rad) r.push({ what: 'border-radius', got: Lab.cs(el, 'border-radius'), want: w.rad });
+      return r;
+    }
+  };
+})();
+</script>
+
+<div class="grid g2">
+
+  <div class="card">
+    <div class="body">
+      <h3>The kit on the frontpage <span class="tag built">built</span></h3>
+      <p class="rule-text">A 32px button carries 18px bold in 0 8px of padding, and the frontpage's own big button carries 20; a 24px one carries 16px bold in 0 10px. Green is #43a038 ringed #347d2c, blue #298ae9 ringed #206cb6, light blue #abd2ff ringed #83b5ef with #1971c2 ink. A solid frontpage button adds 0 2px 4px rgba(0,0,0,.06) under the ring, and white words are outlined in the ring by four 1px text shadows.</p>
+      <div class="demo">
+        <div class="site fp wm" data-demo>
+          <div class="lobbyscope">
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding-top:16px">
+              <a class="button green" href="#">Play now</a>
+              <a class="button green small" href="#">See all</a>
+              <a class="button blue" href="#">Manage</a>
+              <a class="button lightblue" href="#">How to play</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <script>
+      (function () {
+        var card = document.currentScript.closest('.card');
+        var root = card.querySelector('[data-demo]');
+        var green = root.querySelector('.button.green:not(.small)');
+        var small = root.querySelector('.button.green.small');
+        var blue = root.querySelector('.button.blue');
+        var light = root.querySelector('.button.lightblue');
+        var lift = ', 0 2px 4px rgba(0, 0, 0, .06)';
+        Lab.table(card, B5.rows(green, {
+          h: '32px', fs: '20px', lh: '32px', pad: '0 8px', bg: '#43a038',
+          sh: 'inset 0 0 0 1px #347d2c' + lift, ink: '#ffffff', ts: B5.out('#347d2c')
+        }), '.button.green, the frontpage’s own 20px big button');
+        Lab.table(card, B5.rows(small, {
+          h: '24px', fs: '16px', lh: '24px', pad: '0 10px', bg: '#43a038',
+          sh: 'inset 0 0 0 1px #347d2c' + lift, ink: '#ffffff', ts: B5.out('#347d2c')
+        }), '.button.green.small');
+        Lab.table(card, B5.rows(blue, {
+          h: '32px', fs: '20px', lh: '32px', pad: '0 8px', bg: '#298ae9',
+          sh: 'inset 0 0 0 1px #206cb6' + lift, ink: '#ffffff', ts: B5.out('#206cb6')
+        }), '.button.blue');
+        Lab.table(card, B5.rows(light, {
+          h: '32px', fs: '20px', lh: '32px', pad: '0 8px', bg: '#abd2ff',
+          sh: 'inset 0 0 0 1px #83b5ef' + lift, ink: '#1971c2', ts: 'none'
+        }), '.button.lightblue');
+        Lab.note(card, 'The row sits in a flex wrapper with an 8px gap and 16px above it, which is the lab’s own layout and changes no measured value. The buttons are live: hover and press them.');
+      })();
+      </script>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="body">
+      <h3>The kit in a modal, the actions <span class="tag built">built</span></h3>
+      <p class="rule-text">The same four fills in a box, at 18px bold on 32 and 16px bold on 24, but with the inset ring alone: a modal's button carries no drop. The light blue keeps the lobby's #1971c2 ink and no outline.</p>
+      <div class="demo">
+        <div class="site wm" data-demo>
+          <div class="wmModal wmOpen modalInstant" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
+            <div class="wmScrim" style="position:static;height:0"></div>
+            <div class="wmPanel" style="position:static;transform:none;width:400px;max-height:none">
+              <div class="wmBox">
+                <div class="wmBody">
+                  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                    <span class="wmBtn wmGo" role="button" tabindex="0">Save</span>
+                    <span class="wmBtn wmGo wmSmall" role="button" tabindex="0">Invite</span>
+                    <span class="wmBtn wmBlue" role="button" tabindex="0">Manage</span>
+                    <span class="wmBtn wmLight" role="button" tabindex="0">Change</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <script>
+      (function () {
+        var card = document.currentScript.closest('.card');
+        var root = card.querySelector('[data-demo]');
+        var go = root.querySelector('.wmBtn.wmGo:not(.wmSmall)');
+        var small = root.querySelector('.wmBtn.wmGo.wmSmall');
+        var blue = root.querySelector('.wmBtn.wmBlue');
+        var light = root.querySelector('.wmBtn.wmLight');
+        Lab.table(card, B5.rows(go, {
+          h: '32px', fs: '18px', lh: '32px', pad: '0 8px', bg: '#43a038',
+          sh: 'inset 0 0 0 1px #347d2c', ink: '#ffffff', ts: B5.out('#347d2c')
+        }), '.wmBtn.wmGo');
+        Lab.table(card, B5.rows(small, {
+          h: '24px', fs: '16px', lh: '24px', pad: '0 10px', bg: '#43a038',
+          sh: 'inset 0 0 0 1px #347d2c', ink: '#ffffff', ts: B5.out('#347d2c')
+        }), '.wmBtn.wmGo.wmSmall');
+        Lab.table(card, B5.rows(blue, {
+          h: '32px', fs: '18px', lh: '32px', pad: '0 8px', bg: '#298ae9',
+          sh: 'inset 0 0 0 1px #206cb6', ink: '#ffffff', ts: B5.out('#206cb6')
+        }), '.wmBtn.wmBlue');
+        Lab.table(card, B5.rows(light, {
+          h: '32px', fs: '18px', lh: '32px', pad: '0 8px', bg: '#abd2ff',
+          sh: 'inset 0 0 0 1px #83b5ef', ink: '#1971c2', ts: 'inherit'
+        }), '.wmBtn.wmLight');
+        Lab.note(card, 'A button that draws no outline still reads a text-shadow: base.scss:41 puts rgba(0,0,0,.01) 0 0 1px on the root for smoothing and every word on the site inherits it. Those rows are marked rather than reddened.');
+        Lab.note(card, 'The box is the shell ModalShell.js builds, laid flat: the layer, the scrim and the panel are put back in the flow so the paper sits in the card. Nothing else about it is changed.');
+      })();
+      </script>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="body">
+      <h3>The tray, the danger pair and the inert pill <span class="tag built">built</span></h3>
+      <p class="rule-text">The tray button is #d9d2c4 ringed #bfb5a1 with --ink words. Danger is #c92a2a ringed #9d2121, soft danger #fcbcb4 ringed #e8958c with #b52626 ink. A picked block reason is the felt's leather, #5c3a00 ringed #3d2600. An invite that has gone out is the inert pill: band paper, rule ring, muted words, no hand.</p>
+      <div class="demo">
+        <div class="site wm" data-demo>
+          <div class="wmModal wmOpen modalInstant" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
+            <div class="wmScrim" style="position:static;height:0"></div>
+            <div class="wmPanel" style="position:static;transform:none;width:400px;max-height:none">
+              <div class="wmBox">
+                <div class="wmBody">
+                  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                    <span class="wmBtn" role="button" tabindex="0">Cancel</span>
+                    <span class="wmBtn wmKill" role="button" tabindex="0">Leave now</span>
+                    <span class="wmBtn wmSoftKill" role="button" tabindex="0">Delete</span>
+                    <span class="wmBtn wmSmall wmInvited">Invited</span>
+                  </div>
+                  <div class="wmReasons" style="margin-top:8px">
+                    <span class="wmBtn wmPicked" role="button" tabindex="0">Rude chat</span>
+                    <span class="wmBtn" role="button" tabindex="0">Bad play</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <script>
+      (function () {
+        var card = document.currentScript.closest('.card');
+        var root = card.querySelector('[data-demo]');
+        var tray = root.querySelector('.wmBtn:not(.wmKill):not(.wmSoftKill):not(.wmInvited):not(.wmPicked)');
+        var kill = root.querySelector('.wmBtn.wmKill');
+        var soft = root.querySelector('.wmBtn.wmSoftKill');
+        var invited = root.querySelector('.wmBtn.wmInvited');
+        var picked = root.querySelector('.wmReasons .wmBtn.wmPicked');
+        Lab.table(card, B5.rows(tray, {
+          h: '32px', fs: '18px', lh: '32px', pad: '0 8px', bg: '#d9d2c4',
+          sh: 'inset 0 0 0 1px #bfb5a1', ink: '#141414', ts: 'inherit'
+        }), '.wmBtn, the tray');
+        Lab.table(card, B5.rows(kill, {
+          h: '32px', fs: '18px', lh: '32px', pad: '0 8px', bg: '#c92a2a',
+          sh: 'inset 0 0 0 1px #9d2121', ink: '#ffffff', ts: B5.out('#9d2121')
+        }), '.wmBtn.wmKill');
+        Lab.table(card, B5.rows(soft, {
+          h: '32px', fs: '18px', lh: '32px', pad: '0 8px', bg: '#fcbcb4',
+          sh: 'inset 0 0 0 1px #e8958c', ink: '#b52626', ts: 'inherit'
+        }), '.wmBtn.wmSoftKill');
+        Lab.table(card, B5.rows(picked, {
+          h: '32px', fs: '18px', lh: '32px', pad: '0 10px', bg: '#5c3a00',
+          sh: 'inset 0 0 0 1px #3d2600', ink: '#ffffff', ts: B5.out('#3d2600')
+        }), '.wmReasons .wmBtn.wmPicked, the leather');
+        Lab.table(card, B5.rows(invited, {
+          h: '24px', fs: '16px', lh: '24px', pad: '0 10px', bg: '#f4eee5',
+          sh: 'inset 0 0 0 1px #d9d2c4', ink: '#4e4d4c', ts: 'inherit'
+        }).concat([
+          { what: 'cursor', got: Lab.cs(invited, 'cursor'), want: 'default' }
+        ]), '.wmBtn.wmSmall.wmInvited, the inert pill');
+        Lab.note(card, 'The leather and the two soft-danger colours have no token of their own: _wm-dialogs.scss and _wm-settings.scss declare them on the rule that uses them.');
+      })();
+      </script>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="body">
+      <h3>The yellow verb, on the felt <span class="tag built">built</span></h3>
+      <p class="rule-text">The table verb is 24px with 16px bold in 0 10px, #ffd43b paper, #3d2b00 ink, a 12px corner and the inset ring #f5af23 alone, with no outline on the words. Guide 3.4, 5.3 and 7.1 all give a verb on paper the ring and no drop; the 0 1px 2px black 30% drop belongs to a verb on the felt.</p>
+      <div class="demo felt">
+        <div class="site fp wm" data-demo>
+          <div class="lobbyscope" id="openTablesTop">
+            <div class="ltGrid" style="grid-template-columns:minmax(0,1fr);padding-top:16px">
+              <div class="ltCard">
+                <div class="tableListing players4">
+                  <div class="header">
+                    <div class="playersContainer">
+                      <div class="cbtn" style="opacity:1">
+                        <a class="button small" href="#">Join</a>
+                        <a class="button small" href="#">Watch</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="demo felt">
+        <div class="site fp wm" data-demo2>
+          <a class="gtile videoOn" href="#" data-gameid="hearts" style="width:240px;height:180px;margin:12px">
+            <span class="gimg game-hearts">
+              <img class="glogo" src="static/images/frontpage/logos/hearts_logo@tile.webp" width="480" height="359" alt="Hearts" />
+              <span class="heroPlay" role="button">Play</span>
+            </span>
+          </a>
+        </div>
+      </div>
+      <script>
+      (function () {
+        var card = document.currentScript.closest('.card');
+        var verb = card.querySelector('[data-demo] .cbtn .button');
+        var hero = card.querySelector('[data-demo2] .heroPlay');
+        var want = {
+          h: '24px', fs: '16px', lh: '24px', pad: '0 10px', bg: '#ffd43b',
+          sh: 'inset 0 0 0 1px #f5af23', ink: '#3d2b00', ts: 'none', rad: '12px'
+        };
+        var heroWant = {
+          h: '24px', fs: '16px', lh: '24px', pad: '0 10px', bg: '#ffd43b',
+          sh: 'inset 0 0 0 1px #f5af23', ink: '#3d2b00', ts: 'inherit', rad: '12px'
+        };
+        Lab.table(card, B5.rows(verb, want).concat([
+          { what: 'the lift 5.3 names on paper', got: Lab.cs(verb, 'box-shadow'), want: 'inset 0 0 0 1px #f5af23' }
+        ]), '#openTablesTop .cbtn .button, the tile’s verb');
+        Lab.table(card, B5.rows(hero, heroWant).concat([
+          { what: 'opacity, shown by .gtile.videoOn', got: Lab.cs(hero, 'opacity'), want: '1' },
+          { what: 'the lift 5.3 names on paper', got: Lab.cs(hero, 'box-shadow'), want: 'inset 0 0 0 1px #f5af23' }
+        ]), '.heroPlay, the hero tile’s verb');
+        Lab.note(card, 'Both verbs carry the ring and no drop, which is what 3.4, 5.3 and 7.1 now give a yellow verb on paper (_fp-hero.scss:277). The felt form, the felt line outside with a 0 1px 2px black 30% drop, belongs to a verb at the table.');
+        Lab.note(card, 'The tile is one column rather than three and the hero tile is given a size, since the hero’s own scene canvas places it; the verbs are held at opacity 1, which they otherwise reach on hover. None of that touches a measured value.');
+      })();
+      </script>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="body">
+      <h3>Hover, press and disabled <span class="tag built">built</span></h3>
+      <p class="rule-text">A press is transform: scale(.98), over 80ms on the frontpage's buttons with colour answering in 24ms; a modal's button declares no transition, so its hover and its press land at once. Disabled is opacity .45 with no pointer events.</p>
+      <div class="demo">
+        <div class="site fp wm" data-demo>
+          <div class="lobbyscope">
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding-top:16px">
+              <a class="button green" href="#">Hover me</a>
+              <a class="button blue" href="#">And me</a>
+              <a class="button lightblue" href="#">And me</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="demo">
+        <div class="site wm" data-demo2>
+          <div class="wmModal wmOpen modalInstant" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
+            <div class="wmScrim" style="position:static;height:0"></div>
+            <div class="wmPanel" style="position:static;transform:none;width:400px;max-height:none">
+              <div class="wmBox">
+                <div class="wmBody">
+                  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                    <span class="wmBtn" role="button" tabindex="0">Hover me</span>
+                    <span class="wmBtn wmKill" role="button" tabindex="0">And me</span>
+                    <span class="wmBtn wmGo wmOff" role="button" aria-disabled="true">Disabled</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <script>
+      (function () {
+        var card = document.currentScript.closest('.card');
+        var fp = card.querySelector('[data-demo]');
+        var green = fp.querySelector('.button.green');
+        var off = card.querySelector('[data-demo2] .wmBtn.wmOff');
+        var tray = card.querySelector('[data-demo2] .wmBtn:not(.wmKill):not(.wmOff)');
+        Lab.table(card, [
+          { what: '--triogreenhover', got: Lab.resolve(fp, 'var(--triogreenhover)'), want: '#3e9334' },
+          { what: '--triobluehover', got: Lab.resolve(fp, 'var(--triobluehover)'), want: '#267fd6' },
+          { what: '--triolighthover', got: Lab.resolve(fp, 'var(--triolighthover)'), want: '#a3ccfb' },
+          { what: '--wm-tray-hover', got: Lab.resolve(off, 'var(--wm-tray-hover)'), want: '#d1c8b8' },
+          { what: '--wm-danger-hover', got: Lab.resolve(off, 'var(--wm-danger-hover)'), want: '#b92727' },
+          { what: '--color-table-button-bg-hover', got: Lab.resolve(fp, 'var(--color-table-button-bg-hover)'), want: '#ffda53' }
+        ], 'The hover colours, as tokens');
+        Lab.table(card, [
+          { what: '.button transition', got: Lab.cs(green, 'transition'), want: 'background-color 0.024s ease-out, box-shadow 0.024s ease-out, transform 0.08s ease-out' },
+          { what: '.button:active transform', got: Lab.rule('.site.fp .lobbyscope .button:active', 'transform', fp), want: 'scale(0.98)', tag: 'rule' },
+          { what: '.button.green:hover background', got: Lab.resolve(fp, Lab.rule('.site.fp .lobbyscope .button.green:hover', 'background-color', fp)), want: '#3e9334', tag: 'rule' },
+          { what: '.wmBtn transition', got: Lab.cs(tray, 'transition-property') + ' ' + Lab.cs(tray, 'transition-duration'), want: 'all 0s' },
+          { what: '.wmBtn:active transform', got: Lab.rule('.site .wmModal .wmBtn:active', 'transform', off), want: 'scale(0.98)', tag: 'rule' },
+          { what: '.wmBtn:hover background', got: Lab.resolve(off, Lab.rule('.site .wmModal .wmBtn:hover', 'background', off)), want: '#d1c8b8', tag: 'rule' }
+        ], 'The press, and the hover rules the page cannot compute');
+        Lab.table(card, [
+          { what: '.wmBtn.wmOff opacity', got: Lab.cs(off, 'opacity'), want: '0.45' },
+          { what: '.wmBtn.wmOff pointer-events', got: Lab.cs(off, 'pointer-events'), want: 'none' },
+          { what: '.wmBtn.wmOff cursor', got: Lab.cs(off, 'cursor'), want: 'default' }
+        ], 'Disabled');
+        Lab.note(card, 'Every button here is live. The guide writes the frontpage timings as 24ms and 80ms; Chrome prints them in seconds, which is what the Guide column shows.');
+      })();
+      </script>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="body">
+      <h3>Two buttons in a box, the foot <span class="tag built">built</span></h3>
+      <p class="rule-text">A foot is display: flex with an 8px gap and 8px above it, or 12px when text sits above it. In a 400 box the two buttons share the width with flex: 1 1 0. They are spans, never buttons, because base.css styles a bare button.</p>
+      <div class="demo">
+        <div class="site wm" data-demo>
+          <div class="wmModal wmOpen modalInstant" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
+            <div class="wmScrim" style="position:static;height:0"></div>
+            <div class="wmPanel" style="position:static;transform:none;width:400px;max-height:none">
+              <div class="wmBox">
+                <div class="wmHead"><span class="wmTitle">Leave the table?</span></div>
+                <div class="wmBody">
+                  <div class="wmTxt">Your seat goes to a bot until you come back.</div>
+                  <div class="wmFoot">
+                    <span class="wmBtn" role="button" tabindex="0">Cancel</span>
+                    <span class="wmBtn wmKill" role="button" tabindex="0">Leave now</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="demo">
+        <div class="site wm" data-demo2>
+          <div class="wmModal wmOpen modalInstant" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
+            <div class="wmScrim" style="position:static;height:0"></div>
+            <div class="wmPanel" style="position:static;transform:none;width:400px;max-height:none">
+              <div class="wmBox">
+                <div class="wmHead"><span class="wmTitle">Table options</span></div>
+                <div class="wmBody">
+                  <div class="wmCard">
+                    <div class="wmRow"><span class="wmRowLab"><span class="wmRowTitle">Ranked</span></span></div>
+                  </div>
+                  <div class="wmFoot">
+                    <span class="wmBtn" role="button" tabindex="0">Cancel</span>
+                    <span class="wmBtn wmGo" role="button" tabindex="0">Start</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <script>
+      (function () {
+        var card = document.currentScript.closest('.card');
+        var afterText = card.querySelector('[data-demo] .wmFoot');
+        var afterCard = card.querySelector('[data-demo2] .wmFoot');
+        var a = afterText.children[0], b = afterText.children[1];
+        Lab.table(card, [
+          { what: 'display', got: Lab.cs(afterText, 'display'), want: 'flex' },
+          { what: 'gap', got: Lab.cs(afterText, 'gap'), want: '8px' },
+          { what: 'padding-top, after .wmTxt', got: Lab.cs(afterText, 'padding-top'), want: '12px' },
+          { what: 'padding-top, after .wmCard', got: Lab.cs(afterCard, 'padding-top'), want: '8px' },
+          { what: 'the two widths in a 400 box', got: a.offsetWidth + 'px / ' + b.offsetWidth + 'px', want: '184px / 184px' },
+          { what: 'flex-grow / flex-basis', got: Lab.cs(a, 'flex-grow') + ' / ' + Lab.cs(a, 'flex-basis'), want: '1 / 0px' },
+          { what: 'box-sizing', got: Lab.cs(a, 'box-sizing'), want: 'border-box' },
+          { what: 'the element', got: a.tagName.toLowerCase() + ' role=' + a.getAttribute('role'), want: 'span role=button' }
+        ], 'The foot, and the two buttons in it');
+        Lab.note(card, 'The box is 400 wide with 12px of padding each side, so two buttons and their 8px gap leave 184 each.');
+      })();
+      </script>
+    </div>
+  </div>
+
+</div>
+
+<div class="grid g1">
+  <div class="card">
+    <div class="body">
+      <h3>Links <span class="tag built">built</span></h3>
+      <p class="rule-text">A prose link is #1971c2 with no underline at rest and a plain underline on hover. The about zone's link keeps a resting 1px line under it that turns #1971c2 on hover. Menubar links, the games panel, a dropdown item and the footer are --ink-soft (the footer inherits --ink) with no underline, and draw a 1px ::after in currentColor inset 1px at both ends on hover.</p>
+      <div class="demo">
+        <div class="site wm" data-read>
+          <div id="mainContainer" class="general" style="min-height:0">
+            <div class="helpBox">
+              <div class="content">
+                <p>Hearts is a trick-taking game for four players. The <a href="/rules">rules page</a> covers the scoring, and the <a href="/leaderboards">leaderboards</a> show who is ahead this week.</p>
+                <table border="1" class="paddedTable">
+                  <tr><th>Game</th><th>Players</th></tr>
+                  <tr><td><a href="/hearts">Hearts</a></td><td>4</td></tr>
+                  <tr><td><a href="/spades">Spades</a></td><td>4</td></tr>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="demo">
+        <div class="site fp wm" data-about>
+          <div class="gamesec" id="sec-about">
+            <div class="aboutBody">
+              <div class="serifnote reader">
+                <p>If something breaks, a rule looks wrong, or you would like a game added, write to me at <a class="mail" href="mailto:holger@worldofcardgames.com">holger@worldofcardgames.com</a>. I read every email myself and answer them all.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="demo">
+        <div class="site fp wm" data-bar style="padding-bottom:180px">
+          <nav id="menuBarContainer" class="mbcenter" aria-label="Main navigation">
+            <ul id="menuBar">
+              <li class="mclink mgames">
+                <span>Games<span class="mtri" aria-hidden="true"></span></span>
+                <div class="mpanel mgdrop" style="display:block">
+                  <div class="mgcol">
+                    <div class="mghead">Trick-taking</div>
+                    <a href="/hearts">Hearts</a>
+                    <a href="/spades">Spades</a>
+                    <a href="/euchre">Euchre</a>
+                  </div>
+                </div>
+              </li>
+              <li class="mclink"><a href="/rules">Rules</a></li>
+              <li class="mclink"><a href="/leaderboards">Leaderboards</a></li>
+            <li class="dropdown"><span>All games</span><div id="allGames"></div></li>
+            </ul>
+            <div id="userBarContainer">
+              <ul id="userBar">
+                <li class="userAvatarContainer displayInline loggedIn">
+                  <span class="avFoot"><img class="userAvatar loaded" src="static/pieces/avatar/classic/ManCowboy.svg" alt="User avatar" width="24" height="24" /></span>
+                  <span class="userName">Holger</span>
+                  <div class="userDropdown" style="display:block">
+                    <div class="mphead">Account</div>
+                    <div class="dropdownItem settings">Settings</div>
+                    <div class="dropdownItem dailydeal">Daily challenge</div>
+                    <div class="dropdownItem stats">Stats</div>
+                    <div class="dropdownItem logout loggedIn">Logout</div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </nav>
+        </div>
+      </div>
+      <div class="demo">
+        <div class="site wm" data-foot>
+          <div id="mainContainer" class="general" style="min-height:0">
+            <div class="helpBox">
+            <div class="sitefooter">
+              <div class="footer-basic">
+                <footer>
+                  <div class="footerSection footerGroup">
+                    <strong>Trick-taking games</strong>
+                    <div class="footerCols">
+                      <ul class="list-inline">
+                        <li class="list-inline-item"><a href="/hearts">Hearts</a></li>
+                        <li class="list-inline-item"><a href="/spades">Spades</a></li>
+                        <li class="list-inline-item"><a href="/euchre">Euchre</a></li>
+                      </ul>
+                    </div>
+                  </div>
+                </footer>
+              </div>
+            </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <script>
+      (function () {
+        var card = document.currentScript.closest('.card');
+        var read = card.querySelector('[data-read]');
+        var about = card.querySelector('[data-about]');
+        var bar = card.querySelector('[data-bar]');
+        var foot = card.querySelector('[data-foot]');
+        var prose = read.querySelector('.content p a');
+        var cell = read.querySelector('table.paddedTable td a');
+        var mail = about.querySelector('#sec-about a.mail');
+        var mclink = bar.querySelector('#menuBar > li.mclink:not(.mgames) > a');
+        var panel = bar.querySelector('.mgcol a');
+        var item = bar.querySelector('.userDropdown .dropdownItem');
+        var flink = foot.querySelector('.sitefooter a');
+        function pair(el) { return 'colour ' + Lab.cs(el, 'color') + ', underline ' + Lab.cs(el, 'text-decoration-line'); }
+        Lab.table(card, [
+          { what: 'a reading page’s prose link', got: pair(prose), want: 'colour #1971c2, underline none' },
+          { what: 'a table cell link', got: pair(cell), want: 'colour #1971c2, underline none' },
+          { what: 'the about zone’s link', got: pair(mail), want: 'colour #1971c2, underline none' },
+          { what: 'its resting line under', got: Lab.cs(mail, 'border-bottom'), want: '1px solid #d9d2c4' },
+          { what: 'a menubar link', got: pair(mclink), want: 'colour #262626, underline none' },
+          { what: 'a games panel link', got: pair(panel), want: 'colour #262626, underline none' },
+          { what: 'a dropdown item', got: pair(item), want: 'colour #262626, underline none' },
+          { what: 'a footer link', got: pair(flink), want: 'colour #141414, underline none' }
+        ], 'At rest');
+        Lab.table(card, [
+          { what: 'prose link on hover', got: Lab.rule('.site .helpBox .content p a:hover', 'text-decoration', read), want: 'underline', tag: 'rule' },
+          { what: 'the about link’s line on hover', got: Lab.rule('.site.fp #sec-about a:hover', 'border-bottom-color', about), want: '#1971c2', tag: 'rule' },
+          { what: 'menubar link ::after bottom', got: Lab.rule('.site.wm #menuBar > li.mclink:not(.mgames):hover > a::after', 'bottom', bar), want: '0px', tag: 'rule' },
+          { what: 'menubar link ::after height / left / right', got: Lab.rule('.site.wm #menuBar > li.mclink:not(.mgames):hover > a::after', 'height', bar) + ' / ' + Lab.rule('.site.wm #menuBar > li.mclink:not(.mgames):hover > a::after', 'left', bar) + ' / ' + Lab.rule('.site.wm #menuBar > li.mclink:not(.mgames):hover > a::after', 'right', bar), want: '1px / 1px / 1px', tag: 'rule' },
+          { what: 'menubar link ::after paper', got: Lab.rule('.site.wm #menuBar > li.mclink:not(.mgames):hover > a::after', 'background', bar), want: 'currentColor', tag: 'rule' },
+          { what: 'games panel link ::after bottom', got: Lab.rule('.site.wm #menuBar .mgcol a:hover::after', 'bottom', bar), want: '6px', tag: 'rule' },
+          { what: 'dropdown item ::after bottom', got: Lab.rule('.site.wm #userBar .userAvatarContainer .userDropdown .dropdownItem:hover::after', 'bottom', bar), want: '6px', tag: 'rule' },
+          { what: 'footer link ::after bottom', got: Lab.rule('.site.wm .sitefooter a:not(:has(img)):hover::after', 'bottom', foot), want: '1px', tag: 'rule' }
+        ], 'On hover, read from the rule');
+        Lab.table(card, [
+          { what: 'the seam title’s ring', got: Lab.rule('.site.fp .divhead .ttl:focus-visible', 'outline', about), want: '2px solid #1971c2', tag: 'rule' },
+          { what: 'its offset', got: Lab.rule('.site.fp .divhead .ttl:focus-visible', 'outline-offset', about), want: '4px', tag: 'rule' },
+          { what: 'a focus ring for prose links and controls', got: 'none is designed', want: 'open item 6', tag: 'open' }
+        ], 'Focus');
+        Lab.note(card, 'The about link rests on a --rule #d9d2c4 line, and 7.2 and 4.4 both name it there (_fp-about.scss:39). Guide 3.3 moved it on 14 Sep: a divider on the band or the canvas takes --rule, not the hairline.');
+        Lab.note(card, 'The games panel and the user dropdown are simply shown; they keep the place they take on hover, and the demo is given room under the bar for them. The reading shell\u2019s #mainContainer is let off its 100vh floor, which is the lab\u2019s own layout. The catalog’s Play answers focus with the hover paper, so the seam title carries the only drawn focus ring on the redesign.');
+      })();
+      </script>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="body">
+      <h3>The catalog's dropup <span class="tag built">built</span></h3>
+      <p class="rule-text">The Play control feeds a paper out of its own top edge and squares its top corners while the sheet is out. The paper is a 1px lattice in a 12px squircle open at the foot: two top cells 48 tall, each an 18 / 20 label over a 12 / 15 sub-line, then six rows 28 tall at 14 bold, going to the tile's own pale tint under the pointer. These are the one pair of heights in the kit that is not a button height: 7.1 names them as menu items. Every tile dresses its dropup in its own game's colour, so the two below are the same paper in two inks.</p>
+      <div class="demo">
+        <div class="site fp wm" data-cat>
+          <div class="gamesec" style="padding:0">
+            <div class="catgrid" style="grid-template-columns:250px 250px">
+              <div class="gtile game-hearts" data-gameid="hearts" data-gamepath="hearts">
+                <div class="gimg game-hearts"><img class="glogo" src="static/images/frontpage/logos/hearts_logo@tile.webp" alt="Hearts" loading="lazy" /></div>
+                <div class="gmeta">
+                  <h3 class="gtitle"><a href="#">Hearts</a></h3>
+                  <p class="gsub">Duck the queen and the hearts.</p>
+                  <div class="gbtns"><button type="button" class="gplay" aria-label="Play Hearts" aria-haspopup="true" aria-expanded="true"><span class="gplab">Play</span><span class="gpdiv"></span><span class="gpzone"><span class="gzarr"></span></span></button></div>
+                  <div class="gmenu isOpen">
+                    <div class="gmGrid">
+                      <button type="button" class="gmTop"><span class="dl">Join table</span><span class="dm">3 open</span></button>
+                      <button type="button" class="gmTop"><span class="dl">Play solo</span><span class="dm">Instant</span></button>
+                      <button type="button" class="gmItem">Open tables</button>
+                      <button type="button" class="gmItem">Play ranked</button>
+                      <button type="button" class="gmItem">Host table</button>
+                      <button type="button" class="gmItem">Join private</button>
+                      <button type="button" class="gmItem">Options</button>
+                      <a class="gmItem" href="/how-to-play-hearts">Rules</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="gtile game-canasta" data-gameid="canasta" data-gamepath="canasta">
+                <div class="gimg game-canasta"><img class="glogo" src="static/images/frontpage/logos/canasta_logo@tile.webp" alt="Canasta" loading="lazy" /></div>
+                <div class="gmeta">
+                  <h3 class="gtitle"><a href="#">Canasta</a></h3>
+                  <p class="gsub">Melds of seven, and the pile is the prize.</p>
+                  <div class="gbtns"><button type="button" class="gplay" aria-label="Play Canasta" aria-haspopup="true" aria-expanded="true"><span class="gplab">Play</span><span class="gpdiv"></span><span class="gpzone"><span class="gzarr"></span></span></button></div>
+                  <div class="gmenu isOpen">
+                    <div class="gmGrid">
+                      <button type="button" class="gmTop"><span class="dl">Join table</span><span class="dm">None open</span></button>
+                      <button type="button" class="gmTop"><span class="dl">Play solo</span><span class="dm">Instant</span></button>
+                      <button type="button" class="gmItem">Open tables</button>
+                      <button type="button" class="gmItem">Play ranked</button>
+                      <button type="button" class="gmItem">Host table</button>
+                      <button type="button" class="gmItem">Join private</button>
+                      <button type="button" class="gmItem">Options</button>
+                      <a class="gmItem" href="/how-to-play-canasta">Rules</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="rl">Two catalog tiles at the width a four-column row gives them, with the paper out. FrontpageCatalog.js builds it on the first click and measures its own height for the feed; here the rows are written out in the order it builds them, so every cell hovers and presses for real.</p>
+      <script>
+      (function () {
+        var card = document.currentScript.closest('.card');
+        var root = card.querySelector('[data-cat]');
+        var tiles = root.querySelectorAll('.gtile');
+        var hearts = tiles[0], canasta = tiles[1];
+        var q = function (sel) { return hearts.querySelector(sel); };
+        var menu = q('.gmenu'), grid = q('.gmGrid'), top = q('.gmTop'), item = q('.gmItem');
+        Lab.table(card, [
+          { what: '.gmTop height', got: Lab.cs(top, 'height'), want: '48px' },
+          { what: '.gmTop .dl', got: Lab.font(q('.gmTop .dl')), want: '700 18px/20px' },
+          { what: '.gmTop .dm', got: Lab.font(q('.gmTop .dm')), want: '700 12px/15px' },
+          { what: '.gmTop is a column, 1px apart', got: Lab.cs(top, 'flex-direction') + ', ' + Lab.cs(top, 'gap'), want: 'column, 1px' },
+          { what: '.gmItem height', got: Lab.cs(item, 'height'), want: '28px' },
+          { what: '.gmItem words', got: Lab.font(item), want: '700 14px/14px' },
+          { what: '.gmItem padding', got: Lab.cs(item, 'padding'), want: '0 8px' },
+          { what: 'the cells, counted', got: q('.gmGrid').children.length + ' cells', want: '8 cells' }
+        ], 'The cells: 48 at the top, 28 below');
+        Lab.table(card, [
+          { what: '.gmenu corner', got: Lab.cs(menu, 'border-radius') + ', ' + Lab.cs(menu, 'corner-shape'), want: '12px 12px 0 0, superellipse(2)' },
+          { what: '.gmenu padding, the lattice edge', got: Lab.cs(menu, 'padding'), want: '1px' },
+          { what: '.gmGrid tracks and gap', got: Lab.cs(grid, 'grid-template-columns').split(' ').length + ' tracks, gap ' + Lab.cs(grid, 'gap'), want: '2 tracks, gap 1px' },
+          { what: '.gmGrid paper, the lattice', got: Lab.cs(grid, 'background-color'), want: '#d9d2c4' },
+          { what: '.gmenu lift', got: Lab.cs(menu, 'box-shadow'), want: '0 -3px 8px rgba(60,45,25,.07)' },
+          { what: '.gmenu off the button', got: Lab.cs(menu, 'bottom') + ', in ' + Lab.cs(menu, 'left'), want: '43px, in 12px' },
+          { what: 'the button while the paper is out', got: Lab.cs(q('.gplay'), 'border-top-left-radius') + ' at the top, ' + Lab.cs(q('.gplay'), 'border-bottom-left-radius') + ' at the foot', want: '0px at the top, 12px at the foot' },
+          { what: 'the arrow, turned over', got: Lab.cs(q('.gzarr'), 'transform'), want: 'matrix(-1, 0, 0, -1, 0, 0)' }
+        ], 'The paper');
+        Lab.table(card, [
+          { what: 'hearts .gmTop paper and ink', got: Lab.cs(top, 'background-color') + ', ' + Lab.cs(top, 'color'), want: '#971f3e, #ffffff' },
+          { what: 'hearts .gmTop ring', got: Lab.cs(top, 'box-shadow'), want: '0 0 0 1px #761830' },
+          { what: 'hearts .gmenu frame', got: Lab.cs(menu, 'background-image'), want: 'linear-gradient(#761830 0px, #761830 50px, #d9d2c4 50px)' },
+          { what: 'canasta .gmTop paper', got: Lab.cs(canasta.querySelector('.gmTop'), 'background-color'), want: '#008969' },
+          { what: 'canasta .gmTop ring', got: Lab.cs(canasta.querySelector('.gmTop'), 'box-shadow'), want: '0 0 0 1px #006b52' },
+          { what: '.gmItem paper, on a tinted tile', got: Lab.cs(item, 'background-color'), want: '#ffffff' },
+          { what: 'the top cell with no game on it', got: Lab.rule('.site.fp .gmenu .gmGrid .gmTop', 'background', root), want: '#43a038', tag: 'rule' },
+          { what: 'the row with no game on it', got: Lab.rule('.site.fp .gmenu .gmGrid .gmItem', 'background', root), want: '#f9f6f2', tag: 'rule' }
+        ], "Each tile in its own game's colour");
+        Lab.table(card, [
+          { what: '.gmItem on hover', got: Lab.rule('.site.fp .catgrid .gtile .gmenu .gmGrid .gmItem:hover', 'background', hearts), want: '#ffe3e7', tag: 'rule' },
+          { what: '.gmTop on hover', got: Lab.rule('.site.fp .catgrid .gtile .gmenu .gmGrid .gmTop:hover', 'background', hearts), want: '#8b1d39', tag: 'rule' },
+          { what: 'a cell pressed', got: Lab.rule('.site.fp .gmenu .gmGrid .gmItem:active', 'box-shadow', root), want: 'inset 0 1px 2px rgba(60,45,25,.06)', tag: 'rule' },
+          { what: 'the paper feeding out', got: Lab.cs(menu, 'animation-name') + ' ' + Lab.cs(menu, 'animation-duration') + ' ' + Lab.cs(menu, 'animation-delay') + ' ' + Lab.cs(menu, 'animation-fill-mode'), want: 'fpGmenuFeed 400ms 80ms both' },
+          { what: 'its curve', got: Lab.cs(menu, 'animation-timing-function'), want: 'cubic-bezier(0.22, 1, 0.36, 1)' },
+          { what: 'and back in', got: 'fpGmenuBack 240ms cubic-bezier(.5, 0, .8, .4) both', want: 'the sheet, _fp-catalog.scss:324', tag: 'note' },
+          { what: 'with reduced motion', got: Lab.rule('.site.fp .gmenu.isOpen', 'animation-name', root), want: 'none', tag: 'rule' }
+        ], 'Hover, press and the feed');
+        Lab.note(card, 'Rules is a real page, so that row is an anchor and the others are buttons; the chrome is written for .gmTop and .gmItem so the two read the same.');
+        Lab.note(card, 'The top cells carry a 0 0 0 1px ring rather than an inset one: a cell sits on the lattice, and an inset ring would leave the colour a pixel short on every side. The 1px frame around the whole paper is a gradient, the tile\u2019s button ring for the first 50px and --rule below, so the lattice changes colour where the top cells end.');
+        Lab.note(card, 'The last two rows of the third table are the base the green kit declares (_fp-catalog.scss:295 onward), which only a tile with no game class would show; every catalog tile carries one, so what ships is the tint.');
+        Lab.note(card, '4.2 lists these words as the tile menu\u2019s: 18 for the head, 14 bold for an item, 12 for the sub-line. The sheet writes the item\u2019s line-height as 1, which computes to 14px.');
+      })();
+      </script>
+    </div>
+  </div>
+</div>
+
+</section>
