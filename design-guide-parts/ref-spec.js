@@ -29,9 +29,9 @@ window.Spec = {
     { group: 'Buttons', note: 'Each button is a fill, a ring one step darker, a hover, and its ink. Change the fill and the rest should be rebuilt from it.', kind: 'button', items: [
       { fill: '--btn-green', ring: '--btn-green-ring', ink: '#ffffff', outline: true, name: 'Green', use: 'Every go-ahead button, the tray thumb, a picked checkbox' },
       { fill: '--btn-blue', ring: '--btn-blue-ring', ink: '#ffffff', outline: true, name: 'Blue', use: 'The second solid action: Manage, and its kind' },
-      { fill: '--btn-quiet', ring: '--btn-quiet-ring', ink: '--ink', root: 'modal', name: 'Quiet', use: 'Cancel, Close, Got it: the button that does not commit you' },
+      { fill: '--btn-quiet', ring: '--btn-quiet-ring', ink: '--ink', root: 'modal', name: 'Quiet', use: 'Cancel, Close, Got it: the button that does not commit you, when no filled button stands beside it' },
       { fill: '--btn-danger', ring: '--btn-danger-ring', ink: '#ffffff', outline: true, root: 'modal', name: 'Danger', use: 'Delete, Leave now, Cancel subscription' },
-      { fill: '--btn-quiet-dark', ring: '--btn-quiet-dark-ring', ink: '#ffffff', outline: true, name: 'Quiet dark', use: 'The way back rather than the thing to do: the game over panel\u2019s dark button, and Back to table' },
+      { fill: '--btn-quiet-dark', ring: '--btn-quiet-dark-ring', ink: '#ffffff', outline: true, name: 'Quiet dark', use: 'The quiet button beside a filled one (Cancel beside Host, Watch game beside Join table), and the way back rather than the thing to do: the game over panel\u2019s Leave and Chat, Back to table, a picked block reason' },
       { fill: '#ffd43b', ring: '#f5af23', ink: '#3d2b00', name: 'Yellow', use: 'The table action: Play, Join, Watch, Accept' }
     ] },
     { group: 'Light plates', note: 'A pale fill with its own deep ink, used where a colour has to carry small words.', kind: 'plate', items: [
