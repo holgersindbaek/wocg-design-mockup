@@ -14,8 +14,8 @@
 
   body { margin: 0; padding: 28px 24px 80px; background: #f9f6f2; color: #141414;
     font-family: "BuloRounded", "Verdana", "Arial", sans-serif; -webkit-font-smoothing: antialiased;
-    --radius-md: 6px; --edge: #D2CFCA; --muted: #4E4D4C; --ink: #141414; --ink-soft: #262626; --band: #F4EEE5; --canvas: #F9F6F2;
-    --green: #2f9e44; --door: #1c71c2; --liftshadow: 0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09);
+    --radius-md: 6px; --line: #D2CFCA; --ink-label: #4E4D4C; --ink: #141414; --ink-soft: #262626; --paper-band: #F4EEE5; --paper-page: #F9F6F2;
+    --green: #2f9e44; --door: #1c71c2; --lift: 0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09);
     --evershadow: 0 8px 24px -8px rgba(0,0,21,.12), 0 14px 40px -8px rgba(0,0,21,.04), 0 0 0 1px rgba(0,0,21,.08); }
   @supports (corner-shape: squircle) { body { --radius-md: 12px; } }
   h1 { font-size: 22px; margin: 0 0 4px; }
@@ -23,10 +23,10 @@
   p.note, p.desc { font-size: 13px; color: #8a857c; margin: 0 0 22px; max-width: 900px; line-height: 1.45; }
   .vsec { margin-top: 44px; }
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(560px, 1fr)); gap: 24px; max-width: 1760px; }
-  .cv { background: #fff; border-radius: 12px; corner-shape: squircle; box-shadow: 0 0 0 1px rgba(0,0,0,.06), var(--liftshadow); overflow: hidden; }
+  .cv { background: #fff; border-radius: 12px; corner-shape: squircle; box-shadow: 0 0 0 1px rgba(0,0,0,.06), var(--lift); overflow: hidden; }
   .cv .dcap { font-size: 12.5px; color: #6f6b62; margin: 0; padding: 12px 16px 10px; border-bottom: 1px solid #eeeae3; line-height: 1.4; }
   .cv .dcap b { color: #141414; font-size: 13px; }
-  .stage { background: var(--canvas); padding: 34px 32px 34px 28px; min-height: 250px; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; }
+  .stage { background: var(--paper-page); padding: 34px 32px 34px 28px; min-height: 250px; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; }
   .ctrl { display: flex; flex-wrap: wrap; gap: 8px 18px; padding: 10px 16px 12px; border-top: 1px solid #eeeae3; }
   .cgroup { display: flex; align-items: center; gap: 4px; }
   .cgroup .cglab { font-size: 11px; color: #999488; margin-right: 2px; }
@@ -44,9 +44,9 @@
   .col .stats { margin-top: 28px; }
   .col .stats.tight { margin-top: 24px; }
   .capsule { display: inline-flex; align-items: center; height: 32px; font-size: 16px; background: #fff; border-radius: 20px;
-    box-shadow: inset 0 0 0 1px var(--edge), var(--liftshadow); padding: 0 4px; }
+    box-shadow: inset 0 0 0 1px var(--line), var(--lift); padding: 0 4px; }
   .capsule .st { display: inline-flex; align-items: center; padding: 0 11px; gap: 4px; align-self: stretch; }
-  .capsule .st + .st { border-left: 1px solid var(--edge); }
+  .capsule .st + .st { border-left: 1px solid var(--line); }
   .capsule .stlive { padding: 0 9px; gap: 6px; }
   .capsule .greencap { font-size: 14px; font-weight: bold; letter-spacing: .06em; color: var(--green); }
   .capsule .ldot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
@@ -56,7 +56,7 @@
   .av { display: inline-block; flex-shrink: 0; vertical-align: middle; }
   .chairwrap { position: relative; display: inline-block; line-height: 0; }
   .chairwrap.online .av { opacity: .45; }
-  .chairwrap .pdot { position: absolute; right: -3px; bottom: -3px; width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 2px var(--canvas); }
+  .chairwrap .pdot { position: absolute; right: -3px; bottom: -3px; width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 2px var(--paper-page); }
   .faces { display: inline-flex; align-items: center; vertical-align: middle; margin-right: 8px; }
   .faces .av + .av, .faces .chairwrap + .chairwrap { margin-left: -8px; }
   .lbUp, .lbDown { display: inline-block; vertical-align: 1px; border-radius: 4px; font-size: 12px; line-height: 16px; font-weight: bold; padding: 0 4px 0 16px;
@@ -66,7 +66,7 @@
   .chk { display: inline-block; width: 16px; height: 16px; vertical-align: -2px; margin-right: 3px; background: url("checkmark.png") center / 16px 16px no-repeat; }
   .chk.off { background-image: url("checkmarkDisabled.png"); }
   .glyph { display: inline-block; width: 22px; height: 22px; background-size: contain; background-repeat: no-repeat; background-position: center; vertical-align: middle; }
-  .muted { color: var(--muted); }
+  .muted { color: var(--ink-label); }
   .col p.meta { font-size: 12px; color: #999488; margin: 18px 0 0; }
   .col p.sub.narrow { max-width: 320px; }
 
@@ -82,11 +82,11 @@
   .col p.sub.glyphs .fico, .col p.sub.glyphs .sglyph, .col p.sub.glyphs .chk, .col p.sub.glyphs .aico { margin-right: 7px; }
   .col p.sub.glyphs .sglyph { margin-right: 9px; }
   .col p.sub .gspace { display: inline-block; width: 0; }
-  .col p.sub.quietline { color: var(--muted); }
-  .col p.sub .nudge { color: var(--muted); }
-  .mypill { display: inline-flex; align-items: center; height: 32px; font-size: 16px; background: #fff; border-radius: 20px; box-shadow: inset 0 0 0 1px var(--edge), var(--liftshadow); padding: 0 4px; margin-top: 4px; }
+  .col p.sub.quietline { color: var(--ink-label); }
+  .col p.sub .nudge { color: var(--ink-label); }
+  .mypill { display: inline-flex; align-items: center; height: 32px; font-size: 16px; background: #fff; border-radius: 20px; box-shadow: inset 0 0 0 1px var(--line), var(--lift); padding: 0 4px; margin-top: 4px; }
   .mypill .st { display: inline-flex; align-items: center; padding: 0 11px; gap: 5px; align-self: stretch; }
-  .mypill .st + .st { border-left: 1px solid var(--edge); }
+  .mypill .st + .st { border-left: 1px solid var(--line); }
   .mypill .st.me { padding-left: 5px; gap: 8px; font-weight: bold; }
   .mypill b { font-variant-numeric: tabular-nums; }
   .mypill .chk { margin-right: 0; }
@@ -101,7 +101,7 @@
   /* the seat chip (card 5): one door, the site's band, chairs on the left */
   .seatchip { display: inline-flex; align-items: center; gap: 10px; height: 32px; padding: 0 12px 0 5px; border-radius: 16px; background: #F0EEE6;
     font-size: 16px; color: var(--ink); text-decoration: none; cursor: pointer; max-width: 360px; margin-top: 12px; white-space: nowrap; }
-  .seatchip.white { background: #fff; box-shadow: inset 0 0 0 1px var(--edge), var(--liftshadow); }
+  .seatchip.white { background: #fff; box-shadow: inset 0 0 0 1px var(--line), var(--lift); }
   .seatchip:hover { background: #E9E6DC; }
   .seatchip.white:hover { background: #FCFAF6; }
   .seatchip .lbl { overflow: hidden; text-overflow: ellipsis; }
@@ -124,15 +124,15 @@
   .col .chairrow + .stats { margin-top: 28px; }
 
   /* the member pill and the today strip (drawn anyway) */
-  .mpill { display: inline-flex; align-items: center; height: 28px; font-size: 14px; background: #fff; border-radius: 16px; box-shadow: inset 0 0 0 1px var(--edge), var(--liftshadow); padding: 0 4px; margin-top: 10px; }
+  .mpill { display: inline-flex; align-items: center; height: 28px; font-size: 14px; background: #fff; border-radius: 16px; box-shadow: inset 0 0 0 1px var(--line), var(--lift); padding: 0 4px; margin-top: 10px; }
   .mpill .st { display: inline-flex; align-items: center; padding: 0 10px; gap: 5px; align-self: stretch; }
-  .mpill .st + .st { border-left: 1px solid var(--edge); }
+  .mpill .st + .st { border-left: 1px solid var(--line); }
   .mpill .st.me { padding-left: 4px; }
   .mpill b { font-variant-numeric: tabular-nums; }
   .mpill .chk { width: 14px; height: 14px; margin-right: 0; }
   .chiprow { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 2px; }
   .chip { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 12px; border-radius: 14px; background: #fff; font-size: 14px; color: var(--ink);
-    box-shadow: inset 0 0 0 1px var(--edge), var(--liftshadow); cursor: pointer; white-space: nowrap; }
+    box-shadow: inset 0 0 0 1px var(--line), var(--lift); cursor: pointer; white-space: nowrap; }
   .chip:hover { background: #FCFAF6; }
   .chip .chk { width: 14px; height: 14px; margin-right: 0; }
   .chip .faces { margin-right: 0; }

@@ -218,7 +218,7 @@
   /* Felt buttons: the official in-game button (6 Sep 2026, game-button-lab.html tile 108): flat warm lemon,
      leather ink, a see-through 1px ring in the ink colour at 70% with a 1px drop shadow, a 20px squircle (16px compact) */
   body:is(.fbtn-official, .fbtn-matched, .fbtn-yellow4) .button {
-    --fbtn-ring: var(--edge, rgba(92, 58, 0, .70));      /* the outer 1px line: the shared edge colour when an Edge line is chosen */
+    --fbtn-ring: var(--line, rgba(92, 58, 0, .70));      /* the outer 1px line: the shared edge colour when an Edge line is chosen */
     --fbtn-inset: transparent;              /* an inner 1px line, for the inset and keyline options */
     --fbtn-drop: rgba(0, 0, 0, .30) 0 1px 2px;
     background: #FFD75A; color: #5C3A00; border-radius: var(--radius-button);
@@ -229,28 +229,28 @@
   /* the ink matched to the plates: #67440E is the leather ink lifted to the tile-20b inks' OKLCH lightness (.416), 6.3:1 on the fill; the ring follows the ink */
   body.fbtn-matched .button { color: #67440E; }
   /* 48 Yellow-4 (game-button-lab.html tile 48, added 7 Sep 2026): Open Color yellow-4 with the walnut ink and its own 55% ring; the ladder is one stop deeper on hover, two when pressed */
-  body.fbtn-yellow4 .button { --fbtn-ring: var(--edge, rgba(61, 43, 0, .55)); background: #FFD43B; color: #3D2B00; }
+  body.fbtn-yellow4 .button { --fbtn-ring: var(--line, rgba(61, 43, 0, .55)); background: #FFD43B; color: #3D2B00; }
   /* hover lights the button half an Open Color stop up (between yellow-4 and yellow-3; a whole stop read too light); a press only scales it down and drops the shadow, no third colour */
   body.fbtn-yellow4 .button:hover, body.fbtn-yellow4 .button:active { background: #FFDA53; }
-  /* Edge line (7 Sep 2026): one line for the buttons, the name plates and the score tabs. Solid or see-through colours set --edge,
+  /* Edge line (7 Sep 2026): one line for the buttons, the name plates and the score tabs. Solid or see-through colours set --line,
      the outer 1px line; the plates then draw their line outside like the button instead of the inset outline. Blend options draw the
      line on a layer over the edge with a mix-blend-mode, so it takes its colour from what is under it (felt outside, the piece inside). */
-  body[class*="edge-"] .namePlate { box-shadow: var(--edge) 0 0 0 1px, var(--ambient); }
+  body[class*="edge-"] .namePlate { box-shadow: var(--line) 0 0 0 1px, var(--ambient); }
   /* the tab paints above the plate and covers the plate's bottom line, so the tab draws the seam itself: a 1px line inside its top edge */
-  body[class*="edge-"] .scorePlate.side { box-shadow: var(--seam, var(--edge)) 0 1px 0 0 inset, var(--edge) 1px 0 0 0, var(--edge) 0 1px 0 0, var(--edge) -1px 0 0 0, var(--ambient); }
+  body[class*="edge-"] .scorePlate.side { box-shadow: var(--seam, var(--line)) 0 1px 0 0 inset, var(--line) 1px 0 0 0, var(--line) 0 1px 0 0, var(--line) -1px 0 0 0, var(--ambient); }
   body:is(.team-t49, .team-t49rose, .team-t49coral, .team-t49rosedeep) .scorePlate.side { --seam: transparent; }   /* tile 49 draws its own seam in the team ink */
-  body.edge-plates { --edge: #343A40; }
-  body.edge-nearblack { --edge: #212529; }
-  body.edge-plates70 { --edge: rgba(52, 58, 64, .70); }
-  body.edge-black70 { --edge: rgba(0, 0, 0, .70); }
-  body.edge-black50 { --edge: rgba(0, 0, 0, .50); }
-  body.edge-black30 { --edge: rgba(0, 0, 0, .30); }
-  body.edge-feltshade { --edge: #123A12; }
-  body.edge-feltshade70 { --edge: rgba(18, 58, 18, .70); }
-  body.edge-none { --edge: transparent; }
-  body.edge-noneflat { --edge: transparent; --ambient: 0 0 0 0 transparent; }
+  body.edge-plates { --line: #343A40; }
+  body.edge-nearblack { --line: #212529; }
+  body.edge-plates70 { --line: rgba(52, 58, 64, .70); }
+  body.edge-black70 { --line: rgba(0, 0, 0, .70); }
+  body.edge-black50 { --line: rgba(0, 0, 0, .50); }
+  body.edge-black30 { --line: rgba(0, 0, 0, .30); }
+  body.edge-feltshade { --line: #123A12; }
+  body.edge-feltshade70 { --line: rgba(18, 58, 18, .70); }
+  body.edge-none { --line: transparent; }
+  body.edge-noneflat { --line: transparent; --ambient: 0 0 0 0 transparent; }
   body.edge-noneflat .button { --fbtn-drop: 0 0 0 0 transparent; }
-  body[class*="edge-blend"] { --edge: transparent; }
+  body[class*="edge-blend"] { --line: transparent; }
   body[class*="edge-blend"] .namePlate { overflow: visible; }
   body[class*="edge-blend"] :is(.button, .namePlate, .scorePlate.side)::after {
     content: ""; position: absolute; inset: -1px; border-radius: inherit; pointer-events: none; border: 1px solid; }

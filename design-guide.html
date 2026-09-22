@@ -9,60 +9,60 @@
 <style>
   /* the lab's own chrome. Every rule stays off the .site subtree so the site's paper and type are what Holger sees. */
   :root {
-    --canvas: #f9f6f2; --band: #f4eee5; --surface: #ffffff;
-    --ink: #141414; --ink-soft: #262626; --muted: #4e4d4c; --faint: #8a857c; --muted-soft: #9b9997;
-    --hairline: #ebe7de; --edge: #d2cfca; --rule: #d9d2c4;
-    --liftshadow: 0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09);
+    --paper-page: #f9f6f2; --paper-band: #f4eee5; --paper-card: #ffffff;
+    --ink: #141414; --ink-soft: #262626; --ink-label: #4e4d4c; --ink-quiet: #67635c; --ink-mark: #9b9997;
+    --line-soft: #ebe7de; --line: #d2cfca;
+    --lift: 0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09);
   }
   *:not(.site):not(.site *) { box-sizing: border-box; }
   html, body { margin: 0; }
-  body { background: var(--canvas); color: var(--ink); font-size: 16px; line-height: 1.5;
+  body { background: var(--paper-page); color: var(--ink); font-size: 16px; line-height: 1.5;
     font-family: "BuloRounded", "Verdana", "Arial", "Helvetica", sans-serif; -webkit-font-smoothing: antialiased; padding: 32px 0 96px; }
   .page { max-width: 1240px; margin: 0 auto; padding: 0 24px; }
 
-  #toc { position: fixed; left: 0; top: 0; bottom: 0; width: 232px; padding: 36px 16px 24px 24px; background: var(--band); border-right: 1px solid var(--rule); overflow: auto; display: none; z-index: 5; }
+  #toc { position: fixed; left: 0; top: 0; bottom: 0; width: 232px; padding: 36px 16px 24px 24px; background: var(--paper-band); border-right: 1px solid var(--line); overflow: auto; display: none; z-index: 5; }
   #toc .tt { font: 500 18px/24px "Gelica", Georgia, serif; margin: 0 0 12px; }
   #toc a { display: block; padding: 4px 10px; margin: 0 -10px; border-radius: 8px; color: var(--ink-soft); text-decoration: none; font-size: 14px; line-height: 20px; }
   #toc a:hover { background: #e4ddd0; }
-  #toc a.on { background: #fff; box-shadow: inset 0 0 0 1px var(--edge); color: var(--ink); font-weight: bold; }
-  #toc .labs { margin-top: 22px; padding-top: 12px; border-top: 1px solid var(--rule); }
-  #toc .labs .lb { font-size: 12px; color: var(--faint); margin: 0 0 4px; }
+  #toc a.on { background: #fff; box-shadow: inset 0 0 0 1px var(--line); color: var(--ink); font-weight: bold; }
+  #toc .labs { margin-top: 22px; padding-top: 12px; border-top: 1px solid var(--line); }
+  #toc .labs .lb { font-size: 12px; color: var(--ink-quiet); margin: 0 0 4px; }
   #toc .labs a { color: #1971c2; }
   @media (min-width: 1180px) { #toc { display: block; } body { padding-left: 232px; } }
 
   /* The Examples tree: the eight groups, and the cards under whichever group you are in. */
   #toc .extree { margin: 2px 0 0 8px; }
   #toc .exg { margin: 0 0 1px; }
-  #toc a.grp { font-size: 13px; color: var(--muted); padding: 3px 10px; }
+  #toc a.grp { font-size: 13px; color: var(--ink-label); padding: 3px 10px; }
   #toc .exg.open > a.grp { color: var(--ink); font-weight: bold; }
-  #toc .exl { display: none; margin: 1px 0 6px 8px; padding-left: 9px; border-left: 1px solid var(--rule); }
+  #toc .exl { display: none; margin: 1px 0 6px 8px; padding-left: 9px; border-left: 1px solid var(--line); }
   #toc .exg.open .exl { display: block; }
   #toc a.leaf { font-size: 13px; line-height: 18px; padding: 3px 8px; margin: 0 -8px; }
 
   /* A card in Examples carries its own designation: click it and the name is on the clipboard. */
   #pieces .card:not(.site *) { position: relative; }
   #pieces .card:not(.site *)::after { content: "Click to copy its name"; position: absolute; right: 10px; top: 9px;
-    font: 400 11px/14px "Bulo", system-ui, sans-serif; color: var(--faint); opacity: 0; transition: opacity 90ms ease-out;
+    font: 400 11px/14px "Bulo", system-ui, sans-serif; color: var(--ink-quiet); opacity: 0; transition: opacity 90ms ease-out;
     pointer-events: none; }
   #pieces .card:hover:not(.site *)::after { opacity: 1; }
   #pieces .card.copied:not(.site *)::after { content: "Copied"; opacity: 1; color: var(--ink); }
 
   h1:not(.site *) { font: 500 34px/40px "Gelica", Georgia, serif; margin: 0 0 6px; }
-  .lede { font-size: 16px; color: var(--muted); margin: 0 0 18px; max-width: 860px; }
+  .lede { font-size: 16px; color: var(--ink-label); margin: 0 0 18px; max-width: 860px; }
   .lede a { color: #1971c2; }
   h2:not(.site *) { font: 500 26px/32px "Gelica", Georgia, serif; margin: 0 0 4px; }
   .sec { margin: 0 0 54px; }
-  .sec > .rule { height: 1px; background: var(--rule); margin: 10px 0 18px; }
-  .desc { font-size: 15px; color: var(--muted); margin: 0 0 16px; max-width: 900px; }
+  .sec > .rule { height: 1px; background: var(--line); margin: 10px 0 18px; }
+  .desc { font-size: 15px; color: var(--ink-label); margin: 0 0 16px; max-width: 900px; }
   .sub:not(.site *) { font-size: 17px; font-weight: bold; margin: 26px 0 10px; }
 
-  .legend { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; background: var(--band);
-    border-radius: 16px; padding: 14px 18px; margin: 0 0 30px; box-shadow: inset 0 0 0 1px var(--rule); }
-  .legend .li { font-size: 14px; color: var(--muted); }
+  .legend { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; background: var(--paper-band);
+    border-radius: 16px; padding: 14px 18px; margin: 0 0 30px; box-shadow: inset 0 0 0 1px var(--line); }
+  .legend .li { font-size: 14px; color: var(--ink-label); }
   .legend .li b { color: var(--ink); }
 
   .tag:not(.site *) { display: inline-block; border-radius: 5px; padding: 0 7px; font-size: 12px; font-weight: bold; line-height: 20px;
-    color: var(--muted); background: #e4ddd0; box-shadow: inset 0 0 0 1px #c9c0ae; white-space: nowrap; }
+    color: var(--ink-label); background: #e4ddd0; box-shadow: inset 0 0 0 1px #c9c0ae; white-space: nowrap; }
   .tag.built:not(.site *) { color: #1a5b12; background: #d7ecd4; box-shadow: inset 0 0 0 1px #8dc186; }
   .tag.call:not(.site *) { color: #6b4e00; background: #f8e7b0; box-shadow: inset 0 0 0 1px #d9b850; }
   .tag.open:not(.site *) { color: #124f7e; background: #d3e7ff; box-shadow: inset 0 0 0 1px #83b5ef; }
@@ -73,15 +73,15 @@
   .g3:not(.site *) { grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
   .g2:not(.site *) { grid-template-columns: repeat(auto-fill, minmax(430px, 1fr)); }
   .g1:not(.site *) { grid-template-columns: 1fr; }
-  .card:not(.site *) { background: var(--surface); border-radius: 16px; padding: 0; overflow: hidden;
-    box-shadow: 0 0 0 1px var(--edge), var(--liftshadow); }
+  .card:not(.site *) { background: var(--paper-card); border-radius: 16px; padding: 0; overflow: hidden;
+    box-shadow: 0 0 0 1px var(--line), var(--lift); }
   @supports (corner-shape: squircle) { .card:not(.site *) { corner-shape: squircle; border-radius: 20px; } }
   .card > .body:not(.site *) { padding: 12px 14px 14px; }
   .card h3:not(.site *) { font-size: 16px; font-weight: bold; line-height: 22px; margin: 0; }
   .card h3 .tag:not(.site *) { margin-left: 6px; vertical-align: 2px; }
-  .card .rule-text:not(.site *) { font-size: 13px; color: var(--muted); line-height: 18px; margin: 4px 0 10px; }
-  .rl:not(.site *) { font-size: 13px; color: var(--faint); line-height: 18px; margin: 6px 0 0; }
-  .rt:not(.site *) { font-size: 13px; color: var(--muted); line-height: 19px; margin: 4px 0 0; }
+  .card .rule-text:not(.site *) { font-size: 13px; color: var(--ink-label); line-height: 18px; margin: 4px 0 10px; }
+  .rl:not(.site *) { font-size: 13px; color: var(--ink-quiet); line-height: 18px; margin: 6px 0 0; }
+  .rt:not(.site *) { font-size: 13px; color: var(--ink-label); line-height: 19px; margin: 4px 0 0; }
   .rt b:not(.site *) { color: var(--ink); }
 
   /* The demo well. It owns two things the piece does not: the ground the piece stands on, and the space between
@@ -91,17 +91,17 @@
      middle of the well can end up different colours. `flush` is for the chrome that runs to the window's edge on
      the site, where a band of ground either side would be a lie. */
   .demo:not(.site *) { margin: 0 0 8px; padding: 16px; border-radius: 10px; overflow: hidden;
-    background: var(--canvas); box-shadow: inset 0 0 0 1px var(--edge); }
+    background: var(--paper-page); box-shadow: inset 0 0 0 1px var(--line); }
   .demo.flush:not(.site *) { padding: 0; }
-  .demo.band:not(.site *) { background: var(--band); }
+  .demo.band:not(.site *) { background: var(--paper-band); }
   .demo.white:not(.site *) { background: #fff; }
   .demo.felt:not(.site *) { background: #327333; }
   /* A dialog stands on the darkened page, not on paper (Holger, 15 Sep), so a well holding a modal paints the
-     scrim's own values over the page paper: rgba(0,0,0,.48) over --canvas, the composite a visitor sees. The
+     scrim's own values over the page paper: rgba(0,0,0,.48) over --paper-page, the composite a visitor sees. The
      scrim element inside is then hidden, which is the one place this page reaches into a site piece on purpose:
      two scrims would darken twice, and the element cannot reach the well's padding anyway. Nothing is lost by
      hiding it, because a scrim over a flat well has nothing to blur. */
-  .demo.scrim:not(.site *) { background-color: var(--canvas);
+  .demo.scrim:not(.site *) { background-color: var(--paper-page);
     background-image: linear-gradient(rgba(0, 0, 0, .48), rgba(0, 0, 0, .48)); }
   .demo.scrim .wmScrim { display: none; }
   /* and the box sits in the middle of its ground, as a dialog does on the screen. The audit pins the panel
@@ -112,26 +112,26 @@
 
   /* the measured values */
   table.mtab:not(.site *) { width: 100%; border-collapse: collapse; margin: 6px 0 0; font-size: 12px; line-height: 17px; }
-  table.mtab caption:not(.site *) { text-align: left; color: var(--muted); padding: 0 0 4px; font-weight: bold; }
-  table.mtab th:not(.site *) { text-align: left; font-weight: bold; color: var(--faint); padding: 3px 8px 3px 0; border-bottom: 1px solid var(--hairline); }
-  table.mtab td:not(.site *) { padding: 3px 8px 3px 0; border-bottom: 1px solid var(--hairline); vertical-align: top; font-variant-numeric: tabular-nums; word-break: break-word; }
+  table.mtab caption:not(.site *) { text-align: left; color: var(--ink-label); padding: 0 0 4px; font-weight: bold; }
+  table.mtab th:not(.site *) { text-align: left; font-weight: bold; color: var(--ink-quiet); padding: 3px 8px 3px 0; border-bottom: 1px solid var(--line-soft); }
+  table.mtab td:not(.site *) { padding: 3px 8px 3px 0; border-bottom: 1px solid var(--line-soft); vertical-align: top; font-variant-numeric: tabular-nums; word-break: break-word; }
   table.mtab td.mbad:not(.site *) { color: #c92a2a; font-weight: bold; }
-  table.mtab td.mtag:not(.site *) { color: var(--faint); font-size: 11px; white-space: nowrap; }
+  table.mtab td.mtag:not(.site *) { color: var(--ink-quiet); font-size: 11px; white-space: nowrap; }
   table.mtab td.mtag.call:not(.site *) { color: #6b4e00; }
   table.mtab td.mtag.open:not(.site *) { color: #124f7e; }
   table.mtab td.mtag.stale:not(.site *) { color: #c92a2a; }
   .bad:not(.site *) { color: #c92a2a; font-weight: bold; }
 
   /* What the piece is, in plain words. The line to read before looking at the drawing. */
-  .card .lead:not(.site *) { font-size: 14px; line-height: 20px; color: var(--muted); margin: 5px 0 11px; }
+  .card .lead:not(.site *) { font-size: 14px; line-height: 20px; color: var(--ink-label); margin: 5px 0 11px; }
 
   /* The numbers sit behind a disclosure, so the page is a look at the design first and a sheet of
      measurements second. A card whose measurements disagree with the guide opens itself. */
-  details.det:not(.site *) { margin: 10px 0 0; border-top: 1px solid var(--hairline); }
+  details.det:not(.site *) { margin: 10px 0 0; border-top: 1px solid var(--line-soft); }
   details.det > summary:not(.site *) { list-style: none; cursor: pointer; display: flex; align-items: center;
-    gap: 8px; padding: 7px 0 1px; font-size: 13px; line-height: 18px; color: var(--faint); }
+    gap: 8px; padding: 7px 0 1px; font-size: 13px; line-height: 18px; color: var(--ink-quiet); }
   details.det > summary:not(.site *)::-webkit-details-marker { display: none; }
-  details.det > summary:not(.site *):hover { color: var(--muted); }
+  details.det > summary:not(.site *):hover { color: var(--ink-label); }
   .ar:not(.site *) { flex: 0 0 auto; width: 0; height: 0; border-left: 5px solid currentColor;
     border-top: 4px solid transparent; border-bottom: 4px solid transparent; transition: transform 120ms ease-out; }
   details.det[open] > summary .ar:not(.site *) { transform: rotate(90deg); }
@@ -158,9 +158,9 @@
   .tkuse a.exref:hover { border-bottom-style: solid; }
 
   #expop { position: fixed; z-index: 60; display: none; max-width: 640px; padding: 9px 11px 11px;
-    background: var(--surface); border: 1px solid var(--edge); border-radius: 16px; box-shadow: var(--liftshadow-lg);
+    background: var(--paper-card); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--lift-lg);
     pointer-events: none; }
-  #expop .exhead { font: 700 12px/16px "Bulo", system-ui, sans-serif; color: var(--muted); margin: 0 0 7px; }
+  #expop .exhead { font: 700 12px/16px "Bulo", system-ui, sans-serif; color: var(--ink-label); margin: 0 0 7px; }
   #expop .exbody { overflow: hidden; }
 
   /* The audit's own row, which the lifted line demos stand in. The fragments scope it to their own section
@@ -169,11 +169,11 @@
   #pieces .rw { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 12px; }
 
   .gname:not(.site *) { font: 500 21px/28px "Gelica", Georgia, serif; margin: 28px 0 2px; }
-  .gnote:not(.site *) { font-size: 14px; line-height: 20px; color: var(--muted); margin: 0 0 14px; max-width: 880px; }
+  .gnote:not(.site *) { font-size: 14px; line-height: 20px; color: var(--ink-label); margin: 0 0 14px; max-width: 880px; }
   .tks:not(.site *) { display: grid; gap: 12px 20px; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); }
   .tks.k-size:not(.site *), .tks.k-face:not(.site *), .tks.k-width:not(.site *) { grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); }
-  .tk:not(.site *) { display: flex; gap: 14px; align-items: center; background: var(--surface); border-radius: 14px;
-    padding: 11px 13px; box-shadow: 0 0 0 1px var(--edge); }
+  .tk:not(.site *) { display: flex; gap: 14px; align-items: center; background: var(--paper-card); border-radius: 14px;
+    padding: 11px 13px; box-shadow: 0 0 0 1px var(--line); }
   @supports (corner-shape: squircle) { .tk:not(.site *) { corner-shape: squircle; border-radius: 17px; } }
   .tkart:not(.site *) { flex: 0 0 auto; width: 84px; display: flex; align-items: center; justify-content: center; }
   .k-size .tkart:not(.site *), .k-face .tkart:not(.site *) { width: 168px; justify-content: flex-start; }
@@ -181,8 +181,8 @@
   .tkmeta:not(.site *) { min-width: 0; flex: 1 1 auto; }
   .tkname:not(.site *) { display: block; font-size: 15px; font-weight: bold; line-height: 20px; }
   .tkval:not(.site *) { display: block; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 11.5px;
-    line-height: 17px; color: var(--faint); margin: 1px 0 3px; word-break: break-word; }
-  .tkuse:not(.site *) { display: block; font-size: 13px; line-height: 18px; color: var(--muted); }
+    line-height: 17px; color: var(--ink-quiet); margin: 1px 0 3px; word-break: break-word; }
+  .tkuse:not(.site *) { display: block; font-size: 13px; line-height: 18px; color: var(--ink-label); }
 
   .sw:not(.site *) { display: block; width: 76px; height: 44px; border-radius: 10px; font-style: normal;
     box-shadow: inset 0 0 0 1px rgba(0,0,0,.10); }
@@ -192,23 +192,23 @@
     display: flex; align-items: center; justify-content: center; font: bold 12px/16px "BuloRounded", Verdana, sans-serif; }
   @supports (corner-shape: squircle) { .sw.btn:not(.site *), .sw.plate:not(.site *) { corner-shape: squircle; } }
   .sw.face:not(.site *), .sw.size:not(.site *) { width: auto; height: auto; box-shadow: none; white-space: nowrap; color: var(--ink); }
-  .sw.corner:not(.site *) { background: var(--band); box-shadow: inset 0 0 0 1px var(--edge); }
-  .sw.lineart:not(.site *) { background: var(--canvas); box-shadow: none; position: relative; overflow: hidden; }
+  .sw.corner:not(.site *) { background: var(--paper-band); box-shadow: inset 0 0 0 1px var(--line); }
+  .sw.lineart:not(.site *) { background: var(--paper-page); box-shadow: none; position: relative; overflow: hidden; }
   .sw.lineart .divline:not(.site *) { position: absolute; left: 10px; right: 10px; top: 50%; height: 1px; }
   .sw.shadow:not(.site *) { background: #fff; width: 68px; height: 40px; border-radius: 12px; }
   .sw.gap:not(.site *) { width: auto; height: 40px; box-shadow: none; display: flex; align-items: stretch; }
-  .sw.gap i:not(.site *) { display: block; width: 26px; background: var(--rule); border-radius: 4px; }
+  .sw.gap i:not(.site *) { display: block; width: 26px; background: var(--line); border-radius: 4px; }
   .sw.height:not(.site *) { width: 100%; height: 56px; box-shadow: none; display: flex; align-items: center; }
-  .sw.height i:not(.site *) { display: block; width: 100%; background: var(--rule); border-radius: 4px; }
-  .sw.width:not(.site *) { width: 100%; height: 12px; box-shadow: none; background: var(--hairline); border-radius: 6px; overflow: hidden; }
-  .sw.width i:not(.site *) { display: block; height: 100%; background: var(--rule); }
+  .sw.height i:not(.site *) { display: block; width: 100%; background: var(--line); border-radius: 4px; }
+  .sw.width:not(.site *) { width: 100%; height: 12px; box-shadow: none; background: var(--line-soft); border-radius: 6px; overflow: hidden; }
+  .sw.width i:not(.site *) { display: block; height: 100%; background: var(--line); }
 
   .grid .card.wide:not(.site *) { grid-column: 1 / -1; }
 
   /* The fold on the examples section. */
-  .fold:not(.site *) { font: bold 14px/20px "BuloRounded", Verdana, sans-serif; color: var(--muted); cursor: pointer;
-    background: var(--band); border: 0; border-radius: 10px; padding: 3px 12px; margin-left: 12px;
-    vertical-align: 5px; box-shadow: inset 0 0 0 1px var(--edge); }
+  .fold:not(.site *) { font: bold 14px/20px "BuloRounded", Verdana, sans-serif; color: var(--ink-label); cursor: pointer;
+    background: var(--paper-band); border: 0; border-radius: 10px; padding: 3px 12px; margin-left: 12px;
+    vertical-align: 5px; box-shadow: inset 0 0 0 1px var(--line); }
   @supports (corner-shape: squircle) { .fold:not(.site *) { corner-shape: squircle; border-radius: 12px; } }
   .fold:not(.site *):hover { background: #ece4d8; color: var(--ink); }
 
@@ -247,7 +247,7 @@
     <div class="exg" data-sec="ex-headings-and-rules"><a class="grp" href="#ex-headings-and-rules">Headings and rules</a>
       <div class="exl"><a class="leaf" href="#ex-headings-and-rules-the-section-title-with-the-seam">The section title with the seam</a><a class="leaf" href="#ex-headings-and-rules-the-headings-on-a-page">The headings on a page</a><a class="leaf" href="#ex-headings-and-rules-a-heading-in-a-dialog">A heading in a dialog</a></div></div>
     <div class="exg" data-sec="ex-the-chrome"><a class="grp" href="#ex-the-chrome">The chrome</a>
-      <div class="exl"><a class="leaf" href="#ex-the-chrome-the-menu-bar">The menu bar</a><a class="leaf" href="#ex-the-chrome-the-games-panel">The games panel</a><a class="leaf" href="#ex-the-chrome-your-corner-of-the-bar">Your corner of the bar</a><a class="leaf" href="#ex-the-chrome-the-tooltip">The tooltip</a><a class="leaf" href="#ex-the-chrome-the-notices">The notices</a><a class="leaf" href="#ex-the-chrome-the-footer">The footer</a><a class="leaf" href="#ex-the-chrome-the-ad-column">The ad column</a></div></div>
+      <div class="exl"><a class="leaf" href="#ex-the-chrome-the-menu-bar">The menu bar</a><a class="leaf" href="#ex-the-chrome-the-games-panel">The games panel</a><a class="leaf" href="#ex-the-chrome-your-corner-of-the-bar">Your corner of the bar</a><a class="leaf" href="#ex-the-chrome-the-tooltip">The tooltip</a><a class="leaf" href="#ex-the-chrome-the-notice">The notice</a><a class="leaf" href="#ex-the-chrome-the-footer">The footer</a><a class="leaf" href="#ex-the-chrome-the-ad-column">The ad column</a></div></div>
     <div class="exg" data-sec="ex-at-the-table"><a class="grp" href="#ex-at-the-table">At the table</a>
       <div class="exl"><a class="leaf" href="#ex-at-the-table-the-avatars">The avatars</a></div></div>
   </div>
@@ -568,7 +568,7 @@ Lab.note = function () { return document.createElement("p"); };
         { what: 'track background', got: Lab.cs(track, 'background-color'), want: w.tray },
         { what: 'track ring', got: Lab.cs(track, 'box-shadow'), want: 'inset 0 0 0 1px ' + w.ring },
         { what: 'cell height', got: Lab.cs(cell, 'height'), want: w.cellH || '24px' },
-        { what: 'cell padding', got: Lab.cs(cell, 'padding'), want: '0 10px' },
+        { what: 'cell padding', got: Lab.cs(cell, 'padding'), want: w.cellPad || '0 10px' },
         { what: 'cell font', got: Lab.cs(cell, 'font-weight') + ' ' + Lab.cs(cell, 'font-size') + ' / ' + Lab.cs(cell, 'line-height'), want: (w.cellFont || '700 16px / 24px') },
         { what: 'cell colour', got: Lab.cs(cell, 'color'), want: '#4e4d4c' }
       ];
@@ -637,9 +637,9 @@ Lab.note = function () { return document.createElement("p"); };
           sh: 'inset 0 0 0 1px #206cb6' + lift, ink: '#ffffff', ts: B5.out('#206cb6')
         }), '.button.blue');
         Lab.table(card, B5.rows(light, {
-          h: '32px', fs: '20px', lh: '32px', pad: '0 8px', bg: '#abd2ff',
-          sh: 'inset 0 0 0 1px #83b5ef' + lift, ink: '#1971c2', ts: 'none'
-        }), '.button.lightblue');
+          h: '32px', fs: '20px', lh: '32px', pad: '0 8px', bg: '#298ae9',
+          sh: 'inset 0 0 0 1px #206cb6' + lift, ink: '#ffffff', ts: B5.out('#206cb6')
+        }), '.button.lightblue, solid since 22 Sep 2026');
         Lab.note(card, 'The row sits in a flex wrapper with an 8px gap and 16px above it, which is the lab’s own layout and changes no measured value. The buttons are live: hover and press them.');
       })();
       </script>
@@ -688,9 +688,9 @@ Lab.note = function () { return document.createElement("p"); };
           sh: 'inset 0 0 0 1px #206cb6', ink: '#ffffff', ts: B5.out('#206cb6')
         }), '.wmBtn.wmBlue');
         Lab.table(card, B5.rows(light, {
-          h: '32px', fs: '18px', lh: '32px', pad: '0 8px', bg: '#abd2ff',
-          sh: 'inset 0 0 0 1px #83b5ef', ink: '#1971c2', ts: 'inherit'
-        }), '.wmBtn.wmLight');
+          h: '32px', fs: '18px', lh: '32px', pad: '0 8px', bg: '#298ae9',
+          sh: 'inset 0 0 0 1px #206cb6', ink: '#ffffff', ts: B5.out('#206cb6')
+        }), '.wmBtn.wmLight, solid since 22 Sep 2026');
         Lab.note(card, 'A button that draws no outline still reads a text-shadow: base.scss:41 puts rgba(0,0,0,.01) 0 0 1px on the root for smoothing and every word on the site inherits it. Those rows are marked rather than reddened.');
         Lab.note(card, 'The box is the shell ModalShell.js builds, laid flat: the layer, the scrim and the panel are put back in the flow so the paper sits in the card. Nothing else about it is changed.');
       })();
@@ -733,7 +733,7 @@ Lab.note = function () { return document.createElement("p"); };
         var invited = root.querySelector('.wmBtn.wmInvited');
         var picked = root.querySelector('.wmReasons .wmBtn.wmPicked');
         Lab.table(card, B5.rows(tray, {
-          h: '32px', fs: '18px', lh: '32px', pad: '0 8px', bg: '#d9d2c4',
+          h: '32px', fs: '18px', lh: '32px', pad: '0 8px', bg: '#d2cfca',
           sh: 'inset 0 0 0 1px #bfb5a1', ink: '#141414', ts: 'inherit'
         }), '.wmBtn, the tray');
         Lab.table(card, B5.rows(kill, {
@@ -750,11 +750,11 @@ Lab.note = function () { return document.createElement("p"); };
         }), '.wmReasons .wmBtn.wmPicked, the dark tray');
         Lab.table(card, B5.rows(invited, {
           h: '24px', fs: '16px', lh: '24px', pad: '0 10px', bg: '#f4eee5',
-          sh: 'inset 0 0 0 1px #d9d2c4', ink: '#4e4d4c', ts: 'inherit'
+          sh: 'inset 0 0 0 1px #d2cfca', ink: '#4e4d4c', ts: 'inherit'
         }).concat([
           { what: 'cursor', got: Lab.cs(invited, 'cursor'), want: 'default' }
         ]), '.wmBtn.wmSmall.wmInvited, the inert pill');
-        Lab.note(card, 'The soft-danger class reads the danger tokens since 22 Sep 2026 (Holger: the solid red); its pink, ring and ink are gone. The picked reason reads --wm-tray-dark, the token the game over panel\u2019s dark button and the Back to table pill share (22 Sep 2026).');
+        Lab.note(card, 'The soft-danger class reads the danger tokens since 22 Sep 2026 (Holger: the solid red); its pink, ring and ink are gone. The picked reason reads --btn-quiet-dark, the token the game over panel\u2019s dark button and the Back to table pill share (22 Sep 2026).');
       })();
       </script>
   </div></div>
@@ -858,11 +858,11 @@ Lab.note = function () { return document.createElement("p"); };
         var off = card.querySelector('[data-demo2] .wmBtn.wmOff');
         var tray = card.querySelector('[data-demo2] .wmBtn:not(.wmKill):not(.wmOff)');
         Lab.table(card, [
-          { what: '--triogreenhover', got: Lab.resolve(fp, 'var(--triogreenhover)'), want: '#3e9334' },
-          { what: '--triobluehover', got: Lab.resolve(fp, 'var(--triobluehover)'), want: '#267fd6' },
-          { what: '--triolighthover', got: Lab.resolve(fp, 'var(--triolighthover)'), want: '#a3ccfb' },
-          { what: '--wm-tray-hover', got: Lab.resolve(off, 'var(--wm-tray-hover)'), want: '#d1c8b8' },
-          { what: '--wm-danger-hover', got: Lab.resolve(off, 'var(--wm-danger-hover)'), want: '#b92727' },
+          { what: '--btn-green-hover', got: Lab.resolve(fp, 'var(--btn-green-hover)'), want: '#3e9334' },
+          { what: '--btn-blue-hover', got: Lab.resolve(fp, 'var(--btn-blue-hover)'), want: '#267fd6' },
+          { what: '--plate-blue-hover', got: Lab.resolve(fp, 'var(--plate-blue-hover)'), want: '#a3ccfb' },
+          { what: '--btn-quiet-hover', got: Lab.resolve(off, 'var(--btn-quiet-hover)'), want: '#d1c8b8' },
+          { what: '--btn-danger-hover', got: Lab.resolve(off, 'var(--btn-danger-hover)'), want: '#b92727' },
           { what: '--color-table-button-bg-hover', got: Lab.resolve(fp, 'var(--color-table-button-bg-hover)'), want: '#ffda53' }
         ], 'The hover colours, as tokens');
         Lab.table(card, [
@@ -1057,10 +1057,10 @@ Lab.note = function () { return document.createElement("p"); };
           { what: 'a reading page’s prose link', got: pair(prose), want: 'colour #1971c2, underline none' },
           { what: 'a table cell link', got: pair(cell), want: 'colour #1971c2, underline none' },
           { what: 'the about zone’s link', got: pair(mail), want: 'colour #1971c2, underline none' },
-          { what: 'its resting line under', got: Lab.cs(mail, 'border-bottom'), want: '1px solid #d9d2c4' },
-          { what: 'a menubar link', got: pair(mclink), want: 'colour #262626, underline none' },
-          { what: 'a games panel link', got: pair(panel), want: 'colour #262626, underline none' },
-          { what: 'a dropdown item', got: pair(item), want: 'colour #262626, underline none' },
+          { what: 'its resting line under', got: Lab.cs(mail, 'border-bottom'), want: '1px solid #d2cfca' },
+          { what: 'a menubar link', got: pair(mclink), want: 'colour #141414, underline none' },
+          { what: 'a games panel link', got: pair(panel), want: 'colour #141414, underline none' },
+          { what: 'a dropdown item', got: pair(item), want: 'colour #141414, underline none' },
           { what: 'a footer link', got: pair(flink), want: 'colour #141414, underline none' }
         ], 'At rest');
         Lab.table(card, [
@@ -1078,7 +1078,7 @@ Lab.note = function () { return document.createElement("p"); };
           { what: 'its offset', got: Lab.rule('.site.fp .divhead .ttl:focus-visible', 'outline-offset', about), want: '4px', tag: 'rule' },
           { what: 'a focus ring for prose links and controls', got: 'none is designed', want: 'open item 6', tag: 'open' }
         ], 'Focus');
-        Lab.note(card, 'The about link rests on a --rule #d9d2c4 line, and 7.2 and 4.4 both name it there (_fp-about.scss:39). Guide 3.3 moved it on 14 Sep: a divider on the band or the canvas takes --rule, not the hairline.');
+        Lab.note(card, 'The about link rests on a --line #d2cfca line, and 7.2 and 4.4 both name it there (_fp-about.scss:39). Guide 3.3 moved it on 14 Sep: a divider on the band or the canvas takes --line, not the hairline.');
         Lab.note(card, 'The games panel and the user dropdown are simply shown; they keep the place they take on hover, and the demo is given room under the bar for them. The reading shell\u2019s #mainContainer is let off its 100vh floor, which is the lab\u2019s own layout. The catalog’s Play answers focus with the hover paper, so the seam title carries the only drawn focus ring on the redesign.');
       })();
       </script>
@@ -1157,7 +1157,7 @@ Lab.note = function () { return document.createElement("p"); };
           { what: '.gmenu corner', got: Lab.cs(menu, 'border-radius') + ', ' + Lab.cs(menu, 'corner-shape'), want: '12px 12px 0 0, superellipse(2)' },
           { what: '.gmenu padding, the lattice edge', got: Lab.cs(menu, 'padding'), want: '1px' },
           { what: '.gmGrid tracks and gap', got: Lab.cs(grid, 'grid-template-columns').split(' ').length + ' tracks, gap ' + Lab.cs(grid, 'gap'), want: '2 tracks, gap 1px' },
-          { what: '.gmGrid paper, the lattice', got: Lab.cs(grid, 'background-color'), want: '#d9d2c4' },
+          { what: '.gmGrid paper, the lattice', got: Lab.cs(grid, 'background-color'), want: '#d2cfca' },
           { what: '.gmenu lift', got: Lab.cs(menu, 'box-shadow'), want: '0 -3px 8px rgba(60,45,25,.07)' },
           { what: '.gmenu off the button', got: Lab.cs(menu, 'bottom') + ', in ' + Lab.cs(menu, 'left'), want: '43px, in 12px' },
           { what: 'the button while the paper is out', got: Lab.cs(q('.gplay'), 'border-top-left-radius') + ' at the top, ' + Lab.cs(q('.gplay'), 'border-bottom-left-radius') + ' at the foot', want: '0px at the top, 12px at the foot' },
@@ -1166,7 +1166,7 @@ Lab.note = function () { return document.createElement("p"); };
         Lab.table(card, [
           { what: 'hearts .gmTop paper and ink', got: Lab.cs(top, 'background-color') + ', ' + Lab.cs(top, 'color'), want: '#971f3e, #ffffff' },
           { what: 'hearts .gmTop ring', got: Lab.cs(top, 'box-shadow'), want: '0 0 0 1px #761830' },
-          { what: 'hearts .gmenu frame', got: Lab.cs(menu, 'background-image'), want: 'linear-gradient(#761830 0px, #761830 50px, #d9d2c4 50px)' },
+          { what: 'hearts .gmenu frame', got: Lab.cs(menu, 'background-image'), want: 'linear-gradient(#761830 0px, #761830 50px, #d2cfca 50px)' },
           { what: 'canasta .gmTop paper', got: Lab.cs(canasta.querySelector('.gmTop'), 'background-color'), want: '#008969' },
           { what: 'canasta .gmTop ring', got: Lab.cs(canasta.querySelector('.gmTop'), 'box-shadow'), want: '0 0 0 1px #006b52' },
           { what: '.gmItem paper, on a tinted tile', got: Lab.cs(item, 'background-color'), want: '#ffffff' },
@@ -1183,7 +1183,7 @@ Lab.note = function () { return document.createElement("p"); };
           { what: 'with reduced motion', got: Lab.rule('.site.fp .gmenu.isOpen', 'animation-name', root), want: 'none', tag: 'rule' }
         ], 'Hover, press and the feed');
         Lab.note(card, 'Rules is a real page, so that row is an anchor and the others are buttons; the chrome is written for .gmTop and .gmItem so the two read the same.');
-        Lab.note(card, 'The top cells carry a 0 0 0 1px ring rather than an inset one: a cell sits on the lattice, and an inset ring would leave the colour a pixel short on every side. The 1px frame around the whole paper is a gradient, the tile\u2019s button ring for the first 50px and --rule below, so the lattice changes colour where the top cells end.');
+        Lab.note(card, 'The top cells carry a 0 0 0 1px ring rather than an inset one: a cell sits on the lattice, and an inset ring would leave the colour a pixel short on every side. The 1px frame around the whole paper is a gradient, the tile\u2019s button ring for the first 50px and --line below, so the lattice changes colour where the top cells end.');
         Lab.note(card, 'The last two rows of the third table are the base the green kit declares (_fp-catalog.scss:295 onward), which only a tile with no game class would show; every catalog tile carries one, so what ships is the tint.');
         Lab.note(card, '4.2 lists these words as the tile menu\u2019s: 18 for the head, 14 bold for an item, 12 for the sub-line. The sheet writes the item\u2019s line-height as 1, which computes to 14px.');
       })();
@@ -1229,13 +1229,13 @@ Lab.note = function () { return document.createElement("p"); };
         var focusOutline = Lab.cs(second, 'outline-style');
         second.blur();
         Lab.table(card, F6.fieldRows(first, {
-          h: '32px', pad: '0 10px', bg: '#ffffff', sh: 'inset 0 0 0 1px #d2cfca', font: '16px / 32px'
+          h: '34px', pad: '0 10px', bg: '#ffffff', sh: 'inset 0 0 0 1px #d2cfca', font: '16px / 34px'
         }).concat([
-          { what: 'placeholder colour', got: Lab.cs(first, 'color', '::placeholder'), want: '#4e4d4c' },
-          { what: 'the stack’s gap', got: Lab.cs(flds, 'gap'), want: '12px' }
+          { what: 'placeholder colour', got: Lab.cs(first, 'color', '::placeholder'), want: '#67635c' },
+          { what: 'the stack’s gap, two hard edges', got: Lab.cs(flds, 'gap'), want: '8px' }
         ]), 'The field on the box’s own paper');
         Lab.table(card, [
-          { what: 'box-shadow on focus', got: focusShadow, want: 'inset 0 0 0 1px #8a857c' },
+          { what: 'box-shadow on focus', got: focusShadow, want: 'inset 0 0 0 1px #9b9997' },
           { what: 'outline on focus', got: focusOutline, want: 'none' }
         ], 'Focus, measured with the field focused');
         Lab.table(card, [
@@ -1296,10 +1296,10 @@ Lab.note = function () { return document.createElement("p"); };
         var oncard = card.querySelector('[data-demo] .wmCard .wmFld input');
         var bad = card.querySelector('[data-demo2] .box input.bad');
         Lab.table(card, F6.fieldRows(oncard, {
-          h: '32px', pad: '0 10px', bg: '#f9f6f2', sh: 'inset 0 0 0 1px #d2cfca', font: '16px / 32px'
+          h: '34px', pad: '0 10px', bg: '#f9f6f2', sh: 'inset 0 0 0 1px #d2cfca', font: '16px / 34px'
         }), 'The field inside a .wmCard');
         Lab.table(card, F6.fieldRows(bad, {
-          h: '32px', pad: '0 10px', bg: '#ffffff', sh: 'inset 0 0 0 1px #c92a2a', font: '16px / 32px'
+          h: '34px', pad: '0 10px', bg: '#ffffff', sh: 'inset 0 0 0 1px #c92a2a', font: '16px / 34px'
         }), 'A bad field in the auth box');
         Lab.note(card, 'The auth box’s label is its placeholder, so it stands over an empty field and BoxForm fades it once something is typed. The stack inside the card is given 12px above and below, which is the lab’s own layout.');
         Lab.note(card, 'The auth box’s own error line is left out. The lab’s sheet is built with BoxForm after Modals where the site loads BoxForm first, so master’s rule wins the tie here and draws that line absolutely positioned in master’s red. The modal’s .wmFldErr in the card above is the one to judge.');
@@ -1333,17 +1333,17 @@ Lab.note = function () { return document.createElement("p"); };
         var focusShadow = Lab.cs(input, 'box-shadow');
         input.blur();
         Lab.table(card, [
-          { what: 'height', got: Lab.cs(input, 'height'), want: '24px', tag: 'call' },
+          { what: 'height, 24 plus its ring', got: Lab.cs(input, 'height'), want: '26px', tag: 'call' },
           { what: 'padding', got: Lab.cs(input, 'padding'), want: '0 10px', tag: 'call' },
           { what: 'width', got: Lab.cs(input, 'width'), want: '140px', tag: 'call' },
           { what: 'border-radius', got: Lab.cs(input, 'border-radius'), want: '12px', tag: 'call' },
           { what: 'background-color', got: Lab.cs(input, 'background-color'), want: '#ffffff', tag: 'call' },
           { what: 'box-shadow', got: Lab.cs(input, 'box-shadow'), want: 'inset 0 0 0 1px #d2cfca', tag: 'call' },
-          { what: 'font-size / line-height', got: Lab.cs(input, 'font-size') + ' / ' + Lab.cs(input, 'line-height'), want: '16px / 24px', tag: 'call' },
-          { what: 'placeholder colour', got: Lab.cs(input, 'color', '::placeholder'), want: '#4e4d4c', tag: 'call' },
-          { what: 'box-shadow on focus', got: focusShadow, want: 'inset 0 0 0 1px #8a857c', tag: 'call' },
+          { what: 'font-size / line-height', got: Lab.cs(input, 'font-size') + ' / ' + Lab.cs(input, 'line-height'), want: '16px / 26px', tag: 'call' },
+          { what: 'placeholder colour', got: Lab.cs(input, 'color', '::placeholder'), want: '#67635c', tag: 'call' },
+          { what: 'box-shadow on focus', got: focusShadow, want: 'inset 0 0 0 1px #9b9997', tag: 'call' },
           { what: 'what 7.3 says of it', got: 'one ships, on the board pages (_wm-leaderboard.scss:378-400)', want: 'one ships, on the board pages (_wm-leaderboard.scss:378-400)' }
-        ], 'The 24px field 7.3 invented, now built');
+        ], 'The 26px field 7.3 invented, now built');
         Lab.note(card, 'Every row is tagged the guide’s call, and every one of them is built: _wm-leaderboard.scss:378-400 draws the field on the board pages, and 7.3 says so.');
       })();
       </script>
@@ -1406,11 +1406,11 @@ Lab.note = function () { return document.createElement("p"); };
           { what: 'the white copy’s ink', got: Lab.cs(inkCell, 'color'), want: '#ffffff' },
           { what: 'its outline', got: Lab.cs(inkCell, 'text-shadow'), want: '-1px -1px 0 #347d2c, 1px -1px 0 #347d2c, -1px 1px 0 #347d2c, 1px 1px 0 #347d2c' }
         ]), 'The thumb, and the words it turns white');
-        Lab.table(card, F6.trackRows(segs[1], segs[1].querySelector('.wmCell'), { rad: '12px', tray: '#f4eee5', ring: '#d9d2c4' }).slice(3, 5).concat([
-          { what: 'divider colour on a card', got: Lab.rule('.site .wmModal .wmCard .wmSeg .wmCell + .wmCell::before', 'background', segs[1]), want: '#d9d2c4', tag: 'rule' }
+        Lab.table(card, F6.trackRows(segs[1], segs[1].querySelector('.wmCell'), { rad: '12px', tray: '#f4eee5', ring: '#d2cfca' }).slice(3, 5).concat([
+          { what: 'divider colour on a card', got: Lab.rule('.site .wmModal .wmCard .wmSeg .wmCell + .wmCell::before', 'background', segs[1]), want: '#d2cfca', tag: 'rule' }
         ]), 'The same tray on a white card');
         Lab.table(card, [
-          { what: 'the modal tray’s corner', got: Lab.cs(segs[0], 'border-radius'), want: '12 as built, the lab’s 14 to match the games bar', tag: 'open' },
+          { what: 'the modal tray’s corner', got: Lab.cs(segs[0], 'border-radius'), want: '12px' },
           { what: 'the picked cell’s hand', got: Lab.cs(segs[0].querySelector('.wmCell.wmPicked'), 'cursor'), want: 'the games bar shows none; this one still does', tag: 'open' }
         ], 'Still open');
         Lab.note(card, 'Both trays are live: click a cell and the thumb travels, the divider beside it fades and the words turn white only where the thumb has reached. The thumb and the white copy are built here by the same steps ModalShell.placeSegThumb takes.');
@@ -1448,7 +1448,7 @@ Lab.note = function () { return document.createElement("p"); };
           <p class="contentsTitle"><a href="#">Hearts strategy</a></p>
           <ul class="contentsList">
             <li><a href="#">What to pass</a></li>
-            <li class="contentsCurrent"><em>Holding the Queen of Spades</em> <span class="contentsCurrentBadge">Reading</span></li>
+            <li class="contentsCurrent"><span class="contentsCurrentTitle">Holding the Queen of Spades</span> <span class="contentsCurrentBadge">Reading</span></li>
             <li><a href="#">Counting the spades</a></li>
           </ul>
         </div>
@@ -1488,7 +1488,7 @@ Lab.note = function () { return document.createElement("p"); };
         { what: "page badge tick", got: Lab.cs(badge, "width", "::after") + " " + Lab.cs(badge, "height", "::after") + ", " + Lab.cs(badge, "background-color", "::after"), want: "14px 14px, #43a038", tag: "call" }
       ], "The chip in a modal and the badge on a page");
       Lab.note(card, "The reading page's Reading badge is guide 10.3's own call, built in the rollout against the modal's picked chip as it was until 22 Sep 2026: the action green with white outlined words and a white round holding the tick. The modal's chip became a checkbox that day; the badge stands, and is the one place the old form is still drawn.");
-      Lab.note(card, "The box is the settings pickers' mark squared off: the same two-stroke tick, white over the ring's green, at the same share of its box, but with the accent ring the buttons take rather than the black hairline the picker's disc wears over a drawing. A press scales the box alone to .9, since the word beside it should stand still (Holger, 22 Sep 2026); the keyboard's focus darkens the box's ring to --faint. Click a box: the fill lands and the tick is drawn in; click again and box and tick fade together. Each state declares the transition that leads to it, and the unpicked path snaps back to undrawn only after its 220ms fade, so the tick fades whole rather than unwinding.");
+      Lab.note(card, "The box is the settings pickers' mark squared off: the same two-stroke tick, white over the ring's green, at the same share of its box, but with the accent ring the buttons take rather than the black hairline the picker's disc wears over a drawing. A press scales the box alone to .9, since the word beside it should stand still (Holger, 22 Sep 2026); the keyboard's focus darkens the box's ring to --ink-quiet. Click a box: the fill lands and the tick is drawn in; click again and box and tick fade together. Each state declares the transition that leads to it, and the unpicked path snaps back to undrawn only after its 220ms fade, so the tick fades whole rather than unwinding.");
       Lab.note(card, "The box is drawn where it stands: the fixed positioning of .wmModal, .wmScrim and .wmPanel is neutralised inline, and the box carries .modalInstant, the site's own class for a box that opens with no entrance, so the panel is not held at the animation's first frame. The reading shell's 100vh floor is set to 0.");
     })();</script>
   </div></div>
@@ -1578,7 +1578,7 @@ Lab.note = function () { return document.createElement("p"); };
         var count = track.querySelector('.s i');
         var list = host.querySelector('.ovlist');
         var row = list.querySelector('.mi');
-        Lab.table(card, F6.trackRows(track, cell, { rad: '14px', tray: '#e4ddd0', ring: '#c9c0ae' }).concat([
+        Lab.table(card, F6.trackRows(track, cell, { rad: '12px', cellPad: '0 8px', tray: '#e4ddd0', ring: '#c9c0ae' }).concat([
           { what: 'the count', got: Lab.cs(count, 'font-size') + ' ' + Lab.cs(count, 'font-weight'), want: '12.3px 700' },
           { what: 'the picked cell’s hand', got: Lab.cs(track.querySelector('.s.on'), 'cursor'), want: 'default' },
           { what: 'an empty host', got: Lab.cs(empty, 'min-height') + ', ' + Lab.cs(empty, 'background-color'), want: '28px, #e4ddd0' }
@@ -1586,11 +1586,11 @@ Lab.note = function () { return document.createElement("p"); };
         Lab.table(card, F6.thumbRows(bar.thumb, { rad: '12px', travel: 'left, width, top, height, opacity over 0.22s, 0.22s, 0.22s, 0.22s, 0.11s' }), 'The thumb');
         Lab.table(card, [
           { what: 'divider width / colour', got: Lab.rule('.site.fp .otFilter .track > .s + .s::before', 'width', track) + ' / ' + Lab.rule('.site.fp .otFilter .track > .s + .s::before', 'background', track), want: '1px / #c9c0ae', tag: 'rule' },
-          { what: '--ot-hover', got: Lab.token(track, '--ot-hover'), want: '#d9d2c4' },
-          { what: 'the hover paper on an unpicked cell', got: Lab.rule('.site.fp .otFilter .track:not(.tcopy) > .s:not(.on):hover::after', 'background', track), want: '#d9d2c4', tag: 'rule' },
-          { what: 'the list’s corner', got: Lab.cs(list, 'border-radius'), want: '14px' },
+          { what: '--ot-hover', got: Lab.token(track, '--ot-hover'), want: '#d2cfca' },
+          { what: 'the hover paper on an unpicked cell', got: Lab.rule('.site.fp .otFilter .track:not(.tcopy) > .s:not(.on):hover::after', 'background', track), want: '#d2cfca', tag: 'rule' },
+          { what: 'the list’s corner', got: Lab.cs(list, 'border-radius'), want: '12px' },
           { what: 'the list’s paper and line', got: Lab.cs(list, 'background-color') + ', ' + Lab.cs(list, 'border-color'), want: '#ffffff, #c9c0ae' },
-          { what: 'a row in it', got: Lab.cs(row, 'background-color') + ', ' + Lab.cs(row, 'border-bottom-color'), want: '#f9f6f2, #d9d2c4' }
+          { what: 'a row in it', got: Lab.cs(row, 'background-color') + ', ' + Lab.cs(row, 'border-bottom-color'), want: '#f9f6f2, #d2cfca' }
         ], 'The divider, the hover and the More list');
         Lab.note(card, 'The bar is live: pick a game and the thumb travels, the count grows its word, the lines beside the pick fade and the white copy of the words is clipped to the thumb. Hover More to open the list and pick from it, and the game takes the last cell. The card is left with its overflow showing so the list can hang below the bar.');
         Lab.note(card, 'The list itself is white with a #c9c0ae border and only its rows take --ot-listrow and --ot-listline, which is what the two rows above report.');
@@ -1844,7 +1844,7 @@ Lab.note = function () { return document.createElement("p"); };
         { what: ".playerBadge art", got: Lab.img(bot) + " at " + Lab.cs(bot, "background-size"), want: "botBadge.svg at 16px 16px" },
         { what: ".completionBadge size", got: Lab.cs(done, "width") + " " + Lab.cs(done, "height"), want: "20px 20px" },
         { what: ".completionBadge corner", got: "right " + Lab.cs(done, "right") + ", top " + Lab.cs(done, "top"), want: "right -10px, top -10px" },
-        { what: ".completionBadge figure", got: Lab.cs(done, "font-size") + " " + Lab.cs(done, "font-weight") + ", " + Lab.cs(done, "letter-spacing"), want: "12px 900, -1px" },
+        { what: ".completionBadge figure", got: Lab.cs(done, "font-size") + " " + Lab.cs(done, "font-weight") + ", " + Lab.cs(done, "letter-spacing"), want: "12px 700, -1px" },
         { what: ".completionBadge ink", got: Lab.cs(done, "color"), want: "#347d2c" },
         { what: ".completionBadge art", got: Lab.img(done) + " at " + Lab.cs(done, "background-size"), want: "cleanMeldBadge.svg at 20px 20px" },
         { what: ".completionBadge.is100 art", got: Lab.img(full) + " at " + Lab.cs(full, "background-size"), want: "highReputationBadge.svg at 20px 20px" }
@@ -1903,11 +1903,11 @@ Lab.note = function () { return document.createElement("p"); };
       var glance = read.querySelector(".atAGlance"), title = glance.querySelector("strong"), li = glance.querySelector("li");
       var panel = read.querySelector(".contentsPanel"), ctitle = read.querySelector(".contentsTitle");
       Lab.table(card, [
-        { what: "modal .wmCard border-radius", got: Lab.cs(wc, "border-radius"), want: "16px" },
+        { what: "modal .wmCard border-radius, the control rung", got: Lab.cs(wc, "border-radius"), want: "12px" },
         { what: "modal .wmCard paper", got: Lab.cs(wc, "background-color"), want: "#ffffff" },
         { what: "modal .wmCard ring and lift", got: Lab.cs(wc, "box-shadow"), want: "inset 0 0 0 1px #d2cfca, 0 1px 2px rgba(60,45,25,.04), 0 2px 5px rgba(60,45,25,.05)" },
         { what: "modal .wmCard padding", got: Lab.cs(wc, "padding"), want: "1px 12px" },
-        { what: "page .atAGlance border-radius", got: Lab.cs(glance, "border-radius"), want: "16px", tag: "call" },
+        { what: "page .atAGlance border-radius, the box rung", got: Lab.cs(glance, "border-radius"), want: "20px", tag: "call" },
         { what: "page .atAGlance paper", got: Lab.cs(glance, "background-color"), want: "#ffffff", tag: "call" },
         { what: "page .atAGlance ring and lift", got: Lab.cs(glance, "box-shadow"), want: "inset 0 0 0 1px #d2cfca, 0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09)", tag: "call" },
         { what: "page .atAGlance padding", got: Lab.cs(glance, "padding"), want: "12px", tag: "call" },
@@ -1920,8 +1920,8 @@ Lab.note = function () { return document.createElement("p"); };
         { what: "page .contentsPanel ring and lift", got: Lab.cs(panel, "box-shadow"), want: "inset 0 0 0 1px #d2cfca, 0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09)", tag: "call" },
         { what: "page .contentsTitle font", got: Lab.font(ctitle), want: "700 16px/24px", tag: "call" }
       ], "The card in a modal and the two boxed lists on a page");
-      Lab.note(card, "Guide 7.6 counts no 16px white card on a page: the boxed lists of 10.3 are its own call, and the rollout built them. They take the shared --liftshadow, since a reading page is not the frontpage.");
-      Lab.note(card, "The dot is master's own, through the band's bridge: --color-border-light is remapped to --muted-soft. The box is drawn where it stands, with .modalInstant and the fixed positioning neutralised inline; the reading shell's 100vh floor is set to 0.");
+      Lab.note(card, "Guide 7.6 counts no 16px white card on a page: the boxed lists of 10.3 are its own call, and the rollout built them. They take the shared --lift, since a reading page is not the frontpage.");
+      Lab.note(card, "The dot is master's own, through the band's bridge: --color-border-light is remapped to --ink-mark. The box is drawn where it stands, with .modalInstant and the fixed positioning neutralised inline; the reading shell's 100vh floor is set to 0.");
     })();</script>
   </div></div>
 
@@ -1987,9 +1987,9 @@ Lab.note = function () { return document.createElement("p"); };
         { what: "hero .gtile:hover lift", got: Lab.rule(".site.fp .gtile:hover", "box-shadow", ht), want: "0 2px 4px rgba(60,45,25,.08), 0 6px 12px rgba(60,45,25,.10), 0 14px 26px rgba(60,45,25,.12)", tag: "rule" },
         { what: "hero .gtile:active", got: Lab.rule(".site.fp .gtile:active:not(:has(button:active))", "transform", ht), want: "scale(0.99)", tag: "rule" },
         { what: "hero .gimg art colour", got: Lab.cs(hi, "background-color"), want: "#971f3e" },
-        { what: "hero .gimg grain", got: Lab.img(hi), want: "noise-balanced.png" },
-        { what: "hero .gimg grain size", got: Lab.cs(hi, "background-size"), want: "256px 256px, halved on a 2x screen", tag: "note" },
-        { what: "hero .gimg blend", got: Lab.cs(hi, "background-blend-mode"), want: "soft-light" },
+        { what: "hero .gimg art", got: Lab.img(hi), want: "hearts_bg.jpg" },
+        { what: "hero .gimg art size", got: Lab.cs(hi, "background-size"), want: "cover" },
+        { what: "hero .gimg blend", got: Lab.cs(hi, "background-blend-mode"), want: "normal" },
         { what: "hero .gimg::after ring", got: Lab.cs(hi, "box-shadow", "::after"), want: "inset 0 0 0 1px rgba(0,0,0,.75)" },
         { what: "hero .gimg::after blend", got: Lab.cs(hi, "mix-blend-mode", "::after"), want: "soft-light" },
         { what: "catalog .gtile paper", got: Lab.cs(ct, "background-color"), want: "#ffe3e7" },
@@ -2008,7 +2008,7 @@ Lab.note = function () { return document.createElement("p"); };
         { what: "catalog .gplay border-radius", got: Lab.cs(play, "border-radius"), want: "12px" },
         { what: "catalog .gzarr", got: Lab.cs(arr, "width") + " by " + Lab.cs(arr, "height"), want: "8px by 7px" }
       ], "The hero tile and the catalog tile");
-      Lab.note(card, "Two rows read rather than compare. The check runs at 2x, where the sheet halves the grain to 128px so it keeps its size in device pixels; and ease is a transition's initial curve, so Chrome drops the word from the value it prints.");
+      Lab.note(card, "One row reads rather than compares: ease is a transition's initial curve, so Chrome drops the word from the value it prints.");
       Lab.note(card, "Hover the hero's art: the tile rises on the three-stop shadow, the count leaves and the yellow Play arrives. A catalog tile does not move, and its Play opens the dropup the catalog builds.");
     })();</script>
   </div></div>
@@ -2090,7 +2090,7 @@ Lab.note = function () { return document.createElement("p"); };
         { what: ".playerNameContainer width", got: pct, want: "90%" },
         { what: ".playerName font", got: Lab.font(name), want: "700 14px/18px" },
         { what: ".playerName padding", got: Lab.cs(name, "padding"), want: "0 6px" },
-        { what: ".player img filter", got: Lab.cs(av, "filter"), want: "--avshadow: four 1px drops, then 0 0 3px .20 and 0 0 9px .18", tag: "note" },
+        { what: ".player img filter", got: Lab.cs(av, "filter"), want: "--lift-avatar: four 1px drops, then 0 0 3px .20 and 0 0 9px .18", tag: "note" },
         { what: ".ltTime font and ink", got: Lab.font(clock) + " " + Lab.cs(clock, "color"), want: "700 14px/20px #ffffff" },
         { what: ".ltTime height", got: Lab.cs(clock, "height"), want: "20px" },
         { what: ".ltTime ghost", got: Lab.cs(clock, "text-shadow"), want: ghost },
@@ -2104,7 +2104,7 @@ Lab.note = function () { return document.createElement("p"); };
         { what: "modal plate line and drop", got: Lab.cs(mplate, "box-shadow"), want: "0 0 0 1px #393939, 0 0 8px rgba(0,0,0,.24)" },
         { what: ".wmFeltOver", got: Lab.font(over) + " " + Lab.cs(over, "color"), want: "700 18px/24px #ffffff" }
       ], "The tile on the frontpage and its copy in a modal");
-      Lab.note(card, "The tile lifts two ways, and 7.6 says so. On the frontpage it takes --liftshadow-lg and no ring (_fp-open-tables.scss:423-430). The modal copy keeps the shared mixin's inset --edge ring and the light --liftshadow (_wm-shared.scss:62-64).");
+      Lab.note(card, "The tile lifts two ways, and 7.6 says so. On the frontpage it takes --lift-lg and no ring (_fp-open-tables.scss:423-430). The modal copy keeps the shared mixin's inset --line ring and the light --lift (_wm-shared.scss:62-64).");
       Lab.note(card, "The plate is 18px since 13 Sep, and 3.7 and 6.3 both say 18 now (_wm-shared.scss:180).");
       Lab.note(card, "The verb carries the paper form of 7.1, an inset ring and no drop, on the felt. Guide 3.4 gives a verb on the felt the felt line outside plus a 0 1px 2px rgba(0,0,0,.30) drop, which this one does not draw.");
       Lab.note(card, "The frontpage tile is drawn as it stands under the pointer: the lobby script deals the verbs in and takes the clock out, so Join is at opacity 1 and the clock at 0, both set inline. Every value in the table is the sheet's. The grid is one column where the lobby draws three.");
@@ -2273,7 +2273,7 @@ Lab.note = function () { return document.createElement("p"); };
         { what: "page .aboutPhoto ring and lift", got: Lab.cs(aphoto, "box-shadow"), want: "0 0 0 1px rgba(0,0,0,.12), 0 2px 6px rgba(60,45,25,.18)" },
         { what: "page .signName", got: Lab.cs(sname, "display") + ", " + Lab.font(sname), want: "none, 400 16px/24px" }
       ], "The frontpage's cards, the about zone's paper and the page's author block");
-      Lab.note(card, "Two rows the guide caught up with. The quote plate rings --wm-seg-ring #c9c0ae, the chooser's own ring, which 7.6 names (_fp-about.scss:193). And 10.3 signs the author block with the frontpage's signature image and hides .signName, which the page keeps for the flag-off copy (_wm-read-info.scss:57, Holger's 14 Sep choice), so the name reads none at the body size.");
+      Lab.note(card, "Two rows the guide caught up with. The quote plate rings --line-tray #c9c0ae, the chooser's own ring, which 7.6 names (_fp-about.scss:193). And 10.3 signs the author block with the frontpage's signature image and hides .signName, which the page keeps for the flag-off copy (_wm-read-info.scss:57, Holger's 14 Sep choice), so the name reads none at the body size.");
       Lab.note(card, "Both quote forms are drawn: the name-first one the site ships, with the avatar and the name on the top line and a 40px plate, and under it the base form the sheet declares, quote first with the 44px plate 7.6 states. Only common/fp_about.dust:194 ships, and it carries qs-namefirst, so 44 is a value in the sheet that no page renders today.");
       Lab.note(card, "The base form writes its credit as one faint line, so the demo sets it as one: the .qwho span that holds the place apart belongs to the name-first form, which stacks the two.");
       Lab.note(card, "These cards take a real 1px border, not an inset ring: an inset ring is drawn inside an antialiased curve at about half strength, and the board's own header row would paint over it.");
@@ -2334,7 +2334,7 @@ Lab.note = function () { return document.createElement("p"); };
         { what: ".wmBox scrollbar", got: Lab.cs(box, "scrollbar-width"), want: "none" },
         { what: ".wmHead padding-top", got: Lab.cs(head, "padding-top"), want: "12px" },
         { what: ".wmTitle font and ink", got: Lab.font(title) + " " + Lab.cs(title, "color"), want: "700 20px/28px #141414" },
-        { what: ".wmSub font and ink", got: Lab.cs(sub, "font-size") + "/" + Lab.cs(sub, "line-height") + " " + Lab.cs(sub, "color"), want: "16px/22px #4e4d4c" },
+        { what: ".wmSub font and ink", got: Lab.cs(sub, "font-size") + "/" + Lab.cs(sub, "line-height") + " " + Lab.cs(sub, "color"), want: "16px/22px #141414" },
         { what: ".wmTxt after a head", got: Lab.cs(txt, "margin-top"), want: "2px" },
         { what: "a section head as the body's first child", got: Lab.cs(sh, "margin-top") + ", padding " + Lab.cs(sh, "padding"), want: "12px, padding 18px 2px 6px" },
         { what: ".wmPanel width, narrow", got: Lab.cs(narrow.querySelector(".wmPanel"), "width"), want: "400px" },
@@ -2386,14 +2386,13 @@ Lab.note = function () { return document.createElement("p"); };
       <div id="NoticeContainer" style="position:static;padding-top:0">
         <div id="Notice" class="wmNotice info wmIn" role="status" aria-live="polite" style="position:static"><strong class="label"></strong><span class="message selectable">There is no seat free at that table.</span></div>
       </div>
-      <div id="poolInactiveNotice" class="wmNotice wmCorner visible" style="position:static;margin-top:16px;opacity:1"><span class="message">Restart to load server update.</span></div>
       <div id="wtip" class="on" style="position:relative;display:inline-block;margin-top:16px"><div class="wtipBox"><b>Marya</b><br>Elo: <b>1842</b><br>Games: <b>318</b></div></div>
     </div></div>
     <script>(function () {
       var card = document.currentScript.closest(".card");
       var menu = card.querySelector('[data-demo="menu"]'), note = card.querySelector('[data-demo="notice"]');
       var drop = menu.querySelector(".mgdrop"), user = menu.querySelector(".userDropdown"), mphead = menu.querySelector(".mphead");
-      var toast = note.querySelector("#Notice"), corner = note.querySelector("#poolInactiveNotice"), tip = note.querySelector(".wtipBox");
+      var toast = note.querySelector("#Notice"), tip = note.querySelector(".wtipBox");
       var lift = "0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09)";
       Lab.table(card, [
         { what: ".mgdrop border-radius", got: Lab.cs(drop, "border-radius"), want: "20px" },
@@ -2410,22 +2409,18 @@ Lab.note = function () { return document.createElement("p"); };
         { what: ".mphead height and line", got: Lab.cs(mphead, "height") + ", " + Lab.cs(mphead, "line-height"), want: "32px, 32px" },
         { what: ".mphead margin and padding", got: Lab.cs(mphead, "margin") + ", " + Lab.cs(mphead, "padding"), want: "0 -12px 7px, 0 12px" },
         { what: ".mphead rule under it", got: Lab.cs(mphead, "border-bottom"), want: "1px solid #d2cfca" },
-        { what: "#Notice border-radius", got: Lab.cs(toast, "border-radius"), want: "16px" },
+        { what: "#Notice border-radius, the box rung", got: Lab.cs(toast, "border-radius"), want: "20px" },
         { what: "#Notice paper", got: Lab.cs(toast, "background-color"), want: "#f4eee5" },
-        { what: "#Notice ring and lift", got: Lab.cs(toast, "box-shadow"), want: "0 0 0 1px #d9d2c4, " + lift + ", 0 8px 20px rgba(0,0,0,.18)" },
+        { what: "#Notice ring and lift", got: Lab.cs(toast, "box-shadow"), want: "0 0 0 1px #d2cfca, " + lift + ", 0 8px 20px rgba(0,0,0,.18)" },
         { what: "#Notice padding", got: Lab.cs(toast, "padding"), want: "14px 26px" },
         { what: "#Notice max-width", got: Lab.cs(toast, "max-width"), want: "min(640px, 100% - 32px)", tag: "note" },
-        { what: ".wmCorner height and padding", got: Lab.cs(corner, "height") + ", " + Lab.cs(corner, "padding"), want: "40px, 0 12px" },
-        { what: ".wmCorner border-radius and paper", got: Lab.cs(corner, "border-radius") + ", " + Lab.cs(corner, "background-color"), want: "16px, #f4eee5" },
-        { what: ".wmCorner ring, alone", got: Lab.cs(corner, "box-shadow"), want: "0 0 0 1px #d9d2c4" },
-        { what: ".wmCorner max-width", got: Lab.cs(corner, "max-width"), want: "min(388px, 100% - 32px)", tag: "note" },
         { what: ".wtipBox max-width", got: Lab.cs(tip, "max-width"), want: "230px" },
         { what: ".wtipBox paper and padding", got: Lab.cs(tip, "background-color") + ", " + Lab.cs(tip, "padding"), want: "#ffffff, 7px 11px 8px" },
         { what: ".wtipBox border-radius", got: Lab.cs(tip, "border-radius"), want: "12px" },
         { what: ".wtipBox ring and lift", got: Lab.cs(tip, "box-shadow"), want: "inset 0 0 0 1px #d2cfca, " + lift }
-      ], "The two panels, the toast, a corner notice and the tooltip");
-      Lab.note(card, "The toast and the corner notice ring --rule #d9d2c4, the band's own divider tone under the 14 Sep line rule, and 7.6 and 7.9 both name it (_wm-notices.scss:36).");
-      Lab.note(card, "The corner notice rests at opacity 0 in master's own sheet and its script fades it up over 300ms, so the opacity is set to 1 inline here. Each panel hangs under the menubar on the site. Here the chain its rules read is kept, ul#menuBar > li.mgames and #userBarContainer > ul#userBar > li.userAvatarContainer, the two hosts are blocks so the panel stands in the flow, and each panel keeps its own box (relative, shrunk to its columns) so its head strip and rule stay inside it: the bar itself belongs to 8.1. The games panel is shown open with the hover rule's display and its 12px gap, the user cluster carries .open, the site's own class, and the notices and the tooltip keep everything but their fixed corner.");
+      ], "The two panels, the toast and the tooltip");
+      Lab.note(card, "The toast rings --line #d2cfca, the band's own divider tone under the 14 Sep line rule, and 7.6 and 7.9 both name it (_wm-notices.scss). The two corner notices it used to stand beside are gone: the update line and the maintenance countdown are toasts now (Holger, 22 Sep 2026).");
+      Lab.note(card, "Each panel hangs under the menubar on the site. Here the chain its rules read is kept, ul#menuBar > li.mgames and #userBarContainer > ul#userBar > li.userAvatarContainer, the two hosts are blocks so the panel stands in the flow, and each panel keeps its own box (relative, shrunk to its columns) so its head strip and rule stay inside it: the bar itself belongs to 8.1. The games panel is shown open with the hover rule's display and its 12px gap, the user cluster carries .open, the site's own class, and the toast and the tooltip keep everything but their fixed place.");
     })();</script>
   </div></div>
 </div>
@@ -2476,14 +2471,14 @@ Lab.note = function () { return document.createElement("p"); };
         { what: '.lbRows background', got: cs(rows, 'background-color'), want: '#ffffff' },
         { what: '.lbRows type', got: cs(rows, 'font-size') + ' / ' + cs(rows, 'line-height'), want: '14px / 20px' },
         { what: '.lbRows figures', got: cs(rows, 'font-variant-numeric'), want: 'tabular-nums' },
-        { what: "the card's bottom edge", got: cs(rows, 'border-bottom'), want: '1px solid #d9d2c4' },
+        { what: "the card's bottom edge", got: cs(rows, 'border-bottom'), want: '1px solid #d2cfca' },
         { what: '.lbRow > span display', got: cs(cellW, 'display'), want: 'table-cell' },
         { what: '.lbRow > span height', got: cs(cellW, 'height'), want: '32px' },
         { what: '.lbRow > span padding', got: cs(cellW, 'padding'), want: '0 8px' },
         { what: '.lbRow > span white-space', got: cs(cellW, 'white-space'), want: 'nowrap' },
         { what: 'column line, white row', got: cs(cellW, 'border-left'), want: '1px solid #ebe7de' },
-        { what: 'column line, band row', got: cs(cellA, 'border-left'), want: '1px solid #d9d2c4' },
-        { what: 'row line', got: cs(white.children[0], 'border-top'), want: '1px solid #d9d2c4' },
+        { what: 'column line, band row', got: cs(cellA, 'border-left'), want: '1px solid #d2cfca' },
+        { what: 'row line', got: cs(white.children[0], 'border-top'), want: '1px solid #d2cfca' },
         { what: '.lbHeaderRow background', got: cs(head, 'background-color'), want: '#f4eee5' },
         { what: '.lbHeaderRow weight', got: cs(head, 'font-weight'), want: '700' },
         { what: '.isAlt background', got: cs(alt, 'background-color'), want: '#f4eee5' },
@@ -2494,9 +2489,9 @@ Lab.note = function () { return document.createElement("p"); };
         { what: '.lbFoot type', got: cs(foot, 'font-size') + ' / ' + cs(foot, 'line-height'), want: '14px / 24px' },
         { what: '.lbFoot colour', got: cs(foot, 'color'), want: '#4e4d4c' },
         { what: "the card's border (7.6)", got: cs(board, 'border-top'), want: '1px solid #d2cfca' },
-        { what: "the card's lift", got: cs(board, 'box-shadow'), want: '--liftshadow', tag: 'note' }
+        { what: "the card's lift", got: cs(board, 'box-shadow'), want: '--lift', tag: 'note' }
       ]);
-      Lab.note(card, "The four line rows read the two-tone grid the sheet has drawn since 14 September (_fp-cards.scss:126-148): --rule #d9d2c4 under the card, between the rows and beside a band cell, and --hairline #ebe7de beside a white cell. Guide 7.7 writes the grid that way, as 3.3 asks.");
+      Lab.note(card, "The four line rows read the two-tone grid the sheet has drawn since 14 September (_fp-cards.scss:126-148): --line #d2cfca under the card, between the rows and beside a band cell, and --line-soft #ebe7de beside a white cell. Guide 7.7 writes the grid that way, as 3.3 asks.");
       Lab.note(card, "The lift is the frontpage's lighter pair, .04 and .06, which the sheet gives .site.fp. The card is 480px wide in a wrapper of the lab's own, so the columns take the widths they take on a half band.");
     })();</script>
   </div></div>
@@ -2761,12 +2756,12 @@ Lab.note = function () { return document.createElement("p"); };
       Lab.table(card, [
         { what: 'the card paper', got: cs(dir, 'background-color'), want: '#ffffff' },
         { what: 'the card border', got: cs(dir, 'border-top'), want: '1px solid #d2cfca' },
-        { what: 'the card radius', got: cs(dir, 'border-radius'), want: '16px' },
-        { what: 'the card lift', got: cs(dir, 'box-shadow'), want: '--liftshadow', tag: 'note' },
+        { what: 'the card radius', got: cs(dir, 'border-radius'), want: '20px' },
+        { what: 'the card lift', got: cs(dir, 'box-shadow'), want: '--lift', tag: 'note' },
         { what: 'th height', got: cs(th, 'height'), want: '40px' },
         { what: 'th padding', got: cs(th, 'padding'), want: '0 12px' },
         { what: 'th paper', got: cs(th, 'background-color'), want: '#f4eee5' },
-        { what: 'th line under', got: cs(th, 'border-bottom'), want: '1px solid #d9d2c4' },
+        { what: 'th line under', got: cs(th, 'border-bottom'), want: '1px solid #d2cfca' },
         { what: 'th type', got: cs(th, 'font-weight') + ' ' + cs(th, 'font-size') + ' / ' + cs(th, 'line-height'), want: '700 16px / 22px' },
         { what: 'th colour', got: cs(th, 'color'), want: '#141414' },
         { what: 'td height', got: cs(td, 'height'), want: '40px' },
@@ -2774,14 +2769,14 @@ Lab.note = function () { return document.createElement("p"); };
         { what: 'td line-height', got: cs(td, 'line-height'), want: '24px' },
         { what: 'the line between rows', got: cs(td, 'border-bottom'), want: '1px solid #ebe7de' },
         { what: 'the line between columns', got: cs(td, 'border-right'), want: '1px solid #ebe7de' },
-        { what: 'the line between head cells', got: cs(th, 'border-right'), want: '1px solid #d9d2c4' },
+        { what: 'the line between head cells', got: cs(th, 'border-right'), want: '1px solid #d2cfca' },
         { what: 'none after the last column', got: cs(td.parentNode.lastElementChild, 'border-right-width'), want: '0' },
         { what: 'the last row', got: cs(lastTd, 'border-bottom-width'), want: '0' },
         { what: 'the name cell', got: cs(td, 'font-weight'), want: '700' },
         { what: 'figures', got: cs(a.querySelector('table'), 'font-variant-numeric'), want: 'tabular-nums' },
         { what: 'a verb, height', got: cs(verb, 'height'), want: '24px' },
         { what: 'a verb, type', got: cs(verb, 'font-weight') + ' ' + cs(verb, 'font-size') + ' / ' + cs(verb, 'line-height'), want: '700 16px / 24px' },
-        { what: 'a verb, fill', got: cs(verb, 'background-color'), want: '#abd2ff' },
+        { what: 'a verb, fill', got: cs(verb, 'background-color'), want: '#298ae9' },
         { what: 'Play, fill', got: cs(play, 'background-color'), want: '#43a038' },
         { what: 'Play, ink', got: cs(play, 'color'), want: '#ffffff' }
       ], 'The rules directory, on a reading page');
@@ -2796,16 +2791,16 @@ Lab.note = function () { return document.createElement("p"); };
       Lab.table(card, [
         { what: 'the card, overflow', got: cs(scroll, 'overflow-x'), want: 'auto' },
         { what: 'the card border', got: cs(scroll, 'border-top'), want: '1px solid #d2cfca' },
-        { what: 'the card radius', got: cs(scroll, 'border-radius'), want: '16px' },
+        { what: 'the card radius', got: cs(scroll, 'border-radius'), want: '20px' },
         { what: 'the table minimum', got: cs(b.querySelector('table'), 'min-width'), want: '560px' },
         { what: 'th height', got: cs(bth, 'height'), want: '40px' },
-        { what: 'th paper and line', got: cs(bth, 'background-color') + ', ' + cs(bth, 'border-bottom'), want: '#f4eee5, 1px solid #d9d2c4' },
+        { what: 'th paper and line', got: cs(bth, 'background-color') + ', ' + cs(bth, 'border-bottom'), want: '#f4eee5, 1px solid #d2cfca' },
         { what: 'th type', got: cs(bth, 'font-weight') + ' ' + cs(bth, 'font-size') + ' / ' + cs(bth, 'line-height'), want: '700 16px / 22px' },
         { what: 'the row with an avatar, height', got: cs(btd, 'height'), want: '65px' },
         { what: 'td padding', got: cs(btd, 'padding'), want: '0 12px' },
         { what: 'the line between rows', got: cs(btd, 'border-bottom'), want: '1px solid #ebe7de' },
         { what: 'the line between columns', got: cs(btd, 'border-right'), want: '1px solid #ebe7de' },
-        { what: 'the line between head cells', got: cs(bth, 'border-right'), want: '1px solid #d9d2c4' },
+        { what: 'the line between head cells', got: cs(bth, 'border-right'), want: '1px solid #d2cfca' },
         { what: 'none after the last column', got: cs(btd.parentNode.lastElementChild, 'border-right-width'), want: '0' },
         { what: 'figures right', got: cs(num, 'text-align'), want: 'right' },
         { what: 'the avatar', got: cs(avatar, 'width') + ' by ' + cs(avatar, 'height'), want: '56px by 56px' },
@@ -2822,15 +2817,15 @@ Lab.note = function () { return document.createElement("p"); };
       Lab.table(card, [
         { what: 'the edge', got: cs(tab, 'outline-width') + ' ' + cs(tab, 'outline-style') + ' ' + cs(tab, 'outline-color'), want: '1px solid #d2cfca' },
         { what: 'the edge, inset', got: cs(tab, 'outline-offset'), want: '-1px' },
-        { what: 'the radius', got: cs(tab, 'border-radius'), want: '16px' },
+        { what: 'the radius', got: cs(tab, 'border-radius'), want: '20px' },
         { what: 'th height', got: cs(cth, 'height'), want: '40px' },
         { what: 'th padding', got: cs(cth, 'padding'), want: '8px 12px' },
-        { what: 'th paper and line', got: cs(cth, 'background-color') + ', ' + cs(cth, 'border-bottom'), want: '#f4eee5, 1px solid #d9d2c4' },
+        { what: 'th paper and line', got: cs(cth, 'background-color') + ', ' + cs(cth, 'border-bottom'), want: '#f4eee5, 1px solid #d2cfca' },
         { what: 'td height, the bare table', got: cs(ctd, 'height'), want: '41px' },
         { what: 'td type', got: cs(ctd, 'font-size') + ' / ' + cs(ctd, 'line-height'), want: '16px / 24px' },
         { what: 'the line between rows', got: cs(ctd, 'border-bottom'), want: '1px solid #ebe7de' },
         { what: 'the line between columns', got: cs(ctd, 'border-right'), want: '1px solid #ebe7de' },
-        { what: 'the line between head cells', got: cs(cth, 'border-right'), want: '1px solid #d9d2c4' },
+        { what: 'the line between head cells', got: cs(cth, 'border-right'), want: '1px solid #d2cfca' },
         { what: 'none after the last column', got: cs(ctd.parentNode.lastElementChild, 'border-right-width'), want: '0' },
         { what: 'the last row', got: cs(lastCell, 'border-bottom-width'), want: '0' },
         { what: 'figures right', got: cs(c.querySelector('td.numberFormat'), 'text-align'), want: 'right' }
@@ -2890,7 +2885,7 @@ Lab.note = function () { return document.createElement("p"); };
         { what: '.nwi gap', got: cs(nwi, 'gap'), want: '12px' },
         { what: 'between rows', got: cs(nwi, 'margin-bottom'), want: '6px' },
         { what: 'the entry', got: cs(words, 'font-size') + ' / ' + cs(words, 'line-height') + ', ' + cs(words, 'color'), want: '16px / 24px, #141414' },
-        { what: 'the time', got: cs(time, 'font-size') + ', ' + cs(time, 'color'), want: '14px, #8a857c' },
+        { what: 'the time', got: cs(time, 'font-size') + ', ' + cs(time, 'color'), want: '14px, #67635c' },
         { what: 'the tag', got: cs(ntag, 'font-weight') + ' ' + cs(ntag, 'font-size') + ' / ' + cs(ntag, 'line-height'), want: '700 12px / 16px' },
         { what: 'no rule between days', got: cs(nwi, 'border-bottom-width'), want: '0' }
       ], "The frontpage's What's new");
@@ -2903,7 +2898,7 @@ Lab.note = function () { return document.createElement("p"); };
       var cat = b.querySelector('dd span.category');
       Lab.table(card, [
         { what: 'dl padding', got: cs(dl, 'padding'), want: '12px 0' },
-        { what: 'between days', got: cs(dl, 'border-bottom'), want: '1px solid #d9d2c4' },
+        { what: 'between days', got: cs(dl, 'border-bottom'), want: '1px solid #d2cfca' },
         { what: 'the last day', got: cs(lastDl, 'border-bottom-width'), want: '0' },
         { what: 'the date', got: cs(dt, 'font-weight') + ' ' + cs(dt, 'font-size') + ' / ' + cs(dt, 'line-height'), want: '700 16px / 24px' },
         { what: 'the date, not floated', got: cs(dt, 'float'), want: 'none' },
@@ -2913,7 +2908,7 @@ Lab.note = function () { return document.createElement("p"); };
         { what: 'the tag, centred on the line', got: cs(cat, 'margin-top'), want: '4px' },
         { what: 'the tag type', got: cs(cat, 'font-weight') + ' ' + cs(cat, 'font-size') + ' / ' + cs(cat, 'line-height'), want: '700 12px / 16px' }
       ], 'The changelog page');
-      Lab.note(card, "The days are parted with --rule #d9d2c4, the tone 3.3 gives a divider on the canvas, and 7.7 names it there (_wm-read.scss:557-566).");
+      Lab.note(card, "The days are parted with --line #d2cfca, the tone 3.3 gives a divider on the canvas, and 7.7 names it there (_wm-read.scss:557-566).");
       Lab.note(card, "The frontpage rows sit in #sec-about .measure, which is where the real ones sit. The page list is the guide's own call and is built as written, the tag inline and the entry in its own column, so a long entry wraps beside the tag rather than under it.");
     })();</script>
   </div></div>
@@ -2974,15 +2969,15 @@ Lab.note = function () { return document.createElement("p"); };
       var q = function (s) { return card.querySelector(s); };
       Lab.table(card, [
         { what: '.wmRow border-bottom', got: Lab.cs(q('.wmRow'), 'border-bottom'), want: '1px solid #ebe7de' },
-        { what: '--hairline', got: Lab.token(q('.wmCard'), '--hairline'), want: '#ebe7de' },
-        { what: '.lbRow + .lbRow > span border-top', got: Lab.cs(card.querySelectorAll('.lbRow')[1].querySelector('span'), 'border-top'), want: '1px solid #d9d2c4' },
+        { what: '--line-soft', got: Lab.token(q('.wmCard'), '--line-soft'), want: '#ebe7de' },
+        { what: '.lbRow + .lbRow > span border-top', got: Lab.cs(card.querySelectorAll('.lbRow')[1].querySelector('span'), 'border-top'), want: '1px solid #d2cfca' },
         { what: 'a tray on the box, cell line', got: Lab.cs(q('.baretray .wmCell + .wmCell'), 'background-color', '::before'), want: '#c9c0ae' },
-        { what: 'a tray on a white card, cell line', got: Lab.cs(q('.cardtray .wmCell + .wmCell'), 'background-color', '::before'), want: '#d9d2c4' },
+        { what: 'a tray on a white card, cell line', got: Lab.cs(q('.cardtray .wmCell + .wmCell'), 'background-color', '::before'), want: '#d2cfca' },
         { what: 'the cell line, width', got: Lab.cs(q('.baretray .wmCell + .wmCell'), 'width', '::before'), want: '1px' },
         { what: 'the cell line, top and bottom', got: Lab.cs(q('.baretray .wmCell + .wmCell'), 'top', '::before') + ' / ' + Lab.cs(q('.baretray .wmCell + .wmCell'), 'bottom', '::before'), want: '-2px / -2px' },
-        { what: '.footerLegal border-top', got: Lab.cs(q('.footerLegal'), 'border-top'), want: '1px solid #d9d2c4' }
+        { what: '.footerLegal border-top', got: Lab.cs(q('.footerLegal'), 'border-top'), want: '1px solid #d2cfca' }
       ]);
-      Lab.note(card, 'The chooser’s line runs 2px past the cell at each end, which is the tray’s own padding, so it reaches the tray’s inside edge rather than stopping at the words. On a white card the same line steps to --rule.');
+      Lab.note(card, 'The chooser’s line runs 2px past the cell at each end, which is the tray’s own padding, so it reaches the tray’s inside edge rather than stopping at the words. On a white card the same line steps to --line.');
       Lab.note(card, 'The leaderboard card’s rows are a table, so the line is the next row’s border-top rather than the first row’s border-bottom.');
     })();</script>
   </div></div>
@@ -3068,7 +3063,7 @@ Lab.note = function () { return document.createElement("p"); };
         { what: 'the bar height', got: cs(bar, 'height'), want: '56px' },
         { what: 'the strip height', got: Lab.hex(after.height), want: '14px' },
         { what: 'the strip hangs', got: Lab.hex(after.bottom), want: '-7px' },
-        { what: 'the strip tile', got: /D9D2C4/i.test(after.backgroundImage) ? 'a 384 by 14 svg with the rule in D9D2C4' : '(no D9D2C4)', want: 'a 384 by 14 svg with the rule in D9D2C4' },
+        { what: 'the strip tile', got: /D2CFCA/i.test(after.backgroundImage) ? 'a 384 by 14 svg with the rule in D2CFCA' : '(no D2CFCA)', want: 'a 384 by 14 svg with the rule in D2CFCA' },
         { what: "the tile's rect", got: /y=%276.5%27|y='6\.5'/.test(after.backgroundImage) ? "y 6.5" : '(not at 6.5)', want: 'y 6.5' },
         { what: 'the strip size', got: Lab.hex(after.backgroundSize), want: '384px 14px' },
         { what: 'the strip repeat', got: Lab.hex(after.backgroundRepeat), want: 'repeat-x' },
@@ -3080,9 +3075,9 @@ Lab.note = function () { return document.createElement("p"); };
       var sitefooter = foot.querySelector('.sitefooter');
       var legal = foot.querySelector('.footerLegal');
       Lab.table(card, [
-        { what: 'the rule above the footer', got: cs(sitefooter, 'border-top'), want: '1px solid #d9d2c4' },
+        { what: 'the rule above the footer', got: cs(sitefooter, 'border-top'), want: '1px solid #d2cfca' },
         { what: "the footer's paper", got: cs(sitefooter, 'background-color'), want: '#f4eee5' },
-        { what: 'the legal row, rule above', got: cs(legal, 'border-top'), want: '1px solid #d9d2c4' },
+        { what: 'the legal row, rule above', got: cs(legal, 'border-top'), want: '1px solid #d2cfca' },
         { what: 'the legal row, over the line', got: cs(legal, 'padding-top'), want: '10px' },
         { what: 'the seam the frontpage draws', got: cs(foot.querySelector('.sitefooter .divhead'), 'display'), want: 'none' }
       ], "The footer's rule");
@@ -3144,11 +3139,11 @@ Lab.note = function () { return document.createElement("p"); };
         { what: '.wmSeg', got: Lab.cs(q('.wmSeg'), 'box-shadow'), want: 'inset 0 0 0 1px #c9c0ae' },
         { what: '.wmBtn', got: Lab.cs(q('.wmBtn'), 'box-shadow'), want: 'inset 0 0 0 1px #bfb5a1' },
         { what: '.fpic', got: Lab.cs(q('.fpic'), 'box-shadow'), want: 'inset 0 0 0 1px #d2cfca, 0 1px 2px rgba(60,45,25,.04), 0 2px 6px rgba(60,45,25,.06)' },
-        { what: '--edge', got: Lab.token(q('.wmCard'), '--edge'), want: '#d2cfca' },
-        { what: '--wm-seg-ring, the tray’s ring', got: Lab.token(q('.wmSeg'), '--wm-seg-ring'), want: '#c9c0ae' },
-        { what: '--wm-tray-ring, the button’s ring', got: Lab.token(q('.wmBtn'), '--wm-tray-ring'), want: '#bfb5a1' }
+        { what: '--line', got: Lab.token(q('.wmCard'), '--line'), want: '#d2cfca' },
+        { what: '--line-tray, the tray’s ring', got: Lab.token(q('.wmSeg'), '--line-tray'), want: '#c9c0ae' },
+        { what: '--btn-quiet-ring, the button’s ring', got: Lab.token(q('.wmBtn'), '--btn-quiet-ring'), want: '#bfb5a1' }
       ]);
-      Lab.note(card, 'The lift is measured with the ring, since they are one string. A chip rings itself in --rule and a tray in --wm-seg-ring, which are the two steps either side of --edge: a ring follows the paper it is cut into, not one token for all.');
+      Lab.note(card, 'The lift is measured with the ring, since they are one string. A chip rings itself in --line and a tray in --line-tray, which are the two steps either side of --line: a ring follows the paper it is cut into, not one token for all.');
       Lab.note(card, 'The picture card is on the frontpage, so its lift is the lighter frontpage pair (.04 and .06). Every modal piece here reads the shared pair.');
     })();</script>
   </div></div>
@@ -3211,7 +3206,7 @@ Lab.note = function () { return document.createElement("p"); };
         { what: '.q box-sizing', got: Lab.cs(q('.q'), 'box-sizing'), want: 'border-box' }
       ]);
       Lab.note(card, 'The capsule’s own comment names the reason: an inset ring on the pill rendered at #e8e7e4 against the card’s #d2cfca, and the drop under it was exactly as dark, so the bottom edge had no line at all.');
-      Lab.note(card, 'The capsule and the panel are on the frontpage, where --liftshadow is the lighter pair.');
+      Lab.note(card, 'The capsule and the panel are on the frontpage, where --lift is the lighter pair.');
     })();</script>
   </div></div>
 
@@ -3274,12 +3269,12 @@ Lab.note = function () { return document.createElement("p"); };
       live.blur();
       Lab.table(card, [
         { what: '.wmBox', got: Lab.cs(q('.wmBox'), 'box-shadow'), want: '0 0 0 1px rgba(0,0,0,.30)' },
-        { what: '--wm-ring', got: Lab.token(q('.wmModal'), '--wm-ring'), want: '0 0 0 1px rgba(0,0,0,.30)' },
+        { what: '--ring-overlay', got: Lab.token(q('.wmModal'), '--ring-overlay'), want: '0 0 0 1px rgba(0,0,0,.30)' },
         { what: '.playerNameContainer', got: Lab.cs(q('.playerNameContainer'), 'box-shadow'), want: '0 0 0 1px #393939, 0 0 8px rgba(0,0,0,.24)' },
         { what: '--color-table-edge', got: Lab.token(q('.site.fp'), '--color-table-edge'), want: '#393939' },
         { what: '.signrow .photo', got: Lab.cs(q('.photo'), 'box-shadow'), want: '0 0 0 1px rgba(0,0,0,.12), 0 2px 6px rgba(60,45,25,.18)' },
         { what: 'a field at rest', got: Lab.cs(q('.restfld'), 'box-shadow'), want: 'inset 0 0 0 1px #d2cfca' },
-        { what: 'a focused field', got: focused, want: 'inset 0 0 0 1px #8a857c' },
+        { what: 'a focused field', got: focused, want: 'inset 0 0 0 1px #9b9997' },
         { what: 'a focused field, outline', got: Lab.rule('.site .wmModal .wmFld input[type="text"]:focus', 'outline', q('.wmModal')), want: 'none', tag: 'rule' },
         { what: 'the field you clicked', got: 'click it to see', want: '', tag: 'note' }
       ]);
@@ -3380,8 +3375,8 @@ Lab.note = function () { return document.createElement("p"); };
       var TILE = [["club", 41.88, .88, .153], ["diamond", 137.64, .64, .159], ["spade", 234.32, 1.32, .142], ["heart", 330.08, 1.08, .148]];
       var TILEBY = {};
       TILE.forEach(function (t) { TILEBY[t[0]] = [t[2], t[3]]; });
-      var GAPSVG = '<svg viewBox="0 0 20 14"><rect y="6.5" width="20" height="1" fill="#D9D2C4"/></svg>';
-      var RULE_COLOR = '#D9D2C4';
+      var GAPSVG = '<svg viewBox="0 0 20 14"><rect y="6.5" width="20" height="1" fill="#D2CFCA"/></svg>';
+      var RULE_COLOR = '#D2CFCA';
       var HEAD_SIZE = 26, HEAD_HALO = 3, HEAD_PAD_EM = 4 / HEAD_SIZE, CELL_TARGET = 96;
       var MARK_HALF = 10, MARK_CLEAR = 8, SEAM_HEIGHT = 14, RULE_Y = 7;
       var svgN = 0, metricsCache = {}, lastFit = [0, 0];
@@ -3494,7 +3489,7 @@ Lab.note = function () { return document.createElement("p"); };
         var left = cx - tw / 2;
         ttl.style.left = left + 'px';
         ttl.style.top = RULE_Y - base + m.xh / 2 + 'px';
-        var paper = 'var(--band, #f4eee5)';
+        var paper = 'var(--paper-band, #f4eee5)';
         var halo = ttl.cloneNode(true);
         halo.className = 'ttl halo';
         halo.style.color = paper;
@@ -3527,7 +3522,7 @@ Lab.note = function () { return document.createElement("p"); };
           { what: '.divhead width', got: cs(shead, 'width'), want: window.innerWidth + 'px (100vw)', tag: 'note' },
           { what: 'the rule, y', got: Lab.hex(before.top), want: '6.5px' },
           { what: 'the rule, height', got: Lab.hex(before.height), want: '1px' },
-          { what: 'the rule, colour', got: Lab.hex(before.backgroundColor), want: '#d9d2c4' },
+          { what: 'the rule, colour', got: Lab.hex(before.backgroundColor), want: '#d2cfca' },
           { what: 'the title face', got: cs(sttl, 'font-family'), want: 'GLCA, Georgia, serif' },
           { what: 'the title weight', got: cs(sttl, 'font-weight'), want: '500' },
           { what: 'the title size', got: cs(sttl, 'font-size') + ' / ' + cs(sttl, 'line-height'), want: '26px / 26px' },
@@ -3567,7 +3562,7 @@ Lab.note = function () { return document.createElement("p"); };
           { what: 'MARK_HALF', got: String(MARK_HALF), want: '10' },
           { what: 'MARK_CLEAR', got: String(MARK_CLEAR), want: '8' },
           { what: 'HEAD_HALO', got: String(HEAD_HALO), want: '3' },
-          { what: 'RULE_COLOR', got: RULE_COLOR.toLowerCase(), want: '#d9d2c4' }
+          { what: 'RULE_COLOR', got: RULE_COLOR.toLowerCase(), want: '#d2cfca' }
         ], "The engine's constants");
 
         Lab.note(card, "The halo is stroked 6px, three of which show, because a text stroke is drawn half inside the letter. The sheet writes the 6 and the engine writes 2 x HEAD_HALO, so the two agree.");
@@ -3621,7 +3616,7 @@ Lab.note = function () { return document.createElement("p"); };
         { what: 'h1 size', got: cs(h1, 'font-size') + ' / ' + cs(h1, 'line-height'), want: '38px / 43.7px' },
         { what: 'h1 margin', got: cs(h1, 'margin'), want: '0 0 12px' },
         { what: 'h1 as the first block', got: cs(h1, 'margin-top'), want: '0' },
-        { what: 'the by-line', got: cs(by, 'font-size') + ' / ' + cs(by, 'line-height') + ', ' + cs(by, 'color'), want: '14px / 20px, #8a857c' },
+        { what: 'the by-line', got: cs(by, 'font-size') + ' / ' + cs(by, 'line-height') + ', ' + cs(by, 'color'), want: '14px / 20px, #67635c' },
         { what: 'the by-line margin', got: cs(by, 'margin'), want: '0 0 16px' },
         { what: 'h2 size', got: cs(h2, 'font-size') + ' / ' + cs(h2, 'line-height'), want: '26px / 31.2px' },
         { what: 'h2 margin', got: cs(h2, 'margin'), want: '44px 0 10px', tag: 'call' },
@@ -3814,19 +3809,19 @@ Lab.table(card,[
  {what:'border below',got:Lab.cs(bar,'border-bottom-style'),want:'none'},
  {what:'margin below',got:Lab.cs(bar,'margin-bottom'),want:'8px'},
  {what:'gutter off the frontpage',got:Lab.cs(bar,'padding-left')+' and '+Lab.cs(bar,'padding-right'),want:'24px and 24px'},
- {what:'words',got:Lab.cs(bar,'font-size')+'/'+Lab.cs(bar,'line-height')+' '+Lab.cs(bar,'color'),want:'16px/16px #262626'},
+ {what:'words',got:Lab.cs(bar,'font-size')+'/'+Lab.cs(bar,'line-height')+' '+Lab.cs(bar,'color'),want:'16px/16px #141414'},
  {what:'z-index',got:Lab.cs(bar,'z-index'),want:'9201'},
  {what:'the rule below: height',got:Lab.cs(bar, 'height', '::after'),want:'14px'},
  {what:'the rule below: hangs',got:Lab.cs(bar, 'bottom', '::after'),want:'-7px'},
  {what:'the rule below: tile',got:Lab.cs(bar, 'background-size', '::after'),want:'384px 14px'},
- {what:'the rule below: ink',got:Lab.cs(bar, 'background-image', '::after').indexOf('D9D2C4')>=0?'#D9D2C4 in the tile':'not in the tile',want:'#D9D2C4 in the tile'},
+ {what:'the rule below: ink',got:Lab.cs(bar, 'background-image', '::after').indexOf('D2CFCA')>=0?'#D2CFCA in the tile':'not in the tile',want:'#D2CFCA in the tile'},
  {what:'the wave before it',got:Lab.cs(bar, 'display', '::before'),want:'none'}
 ],'The bar');
 Lab.table(card,[
  {what:'rail reserved',got:Lab.cs(fbar,'margin-right'),want:'336px'},
  {what:'gutter on the frontpage',got:Lab.cs(fbar,'padding-left'),want:want,tag:'note'},
  {what:'the gutter rule',got:Lab.rule('.site.fp.adsVisible #menuBarContainer', '--fp-bar-gutter', fp),want:'max(24px, calc((100% - 336px - 1112px) / 2))',tag:'rule'},
- {what:'the column it centres on',got:Lab.token(fp,'--fp-column'),want:'1112px'}
+ {what:'the column it centres on',got:Lab.token(fp,'--space-column'),want:'1112px'}
 ],'On the frontpage');
 Lab.table(card,[
  {what:'logo position',got:Lab.cs(logo,'position'),want:'absolute'},
@@ -3834,11 +3829,11 @@ Lab.table(card,[
  {what:'logo centring',got:Lab.rule('.site.wm #menuLogoContainer', 'transform', wm),want:'translate(-50%, -50%)',tag:'rule'},
  {what:'logo height',got:Lab.cs(img,'height'),want:'32px'},
  {what:'links row',got:Lab.cs(list,'display')+' gap '+Lab.cs(list,'gap'),want:'flex gap 18px'},
- {what:'a link',got:Lab.cs(link,'height')+' '+Lab.cs(link,'font-weight')+' '+Lab.cs(link,'font-size')+' '+Lab.cs(link,'color'),want:'56px 700 16px #262626'},
+ {what:'a link',got:Lab.cs(link,'height')+' '+Lab.cs(link,'font-weight')+' '+Lab.cs(link,'font-size')+' '+Lab.cs(link,'color'),want:'56px 700 16px #141414'},
  {what:'master’s per-game links',got:Lab.cs(game,'display'),want:'none'},
  {what:'caret',got:Lab.cs(tri,'width')+' by '+Lab.cs(tri,'height'),want:'8px by 7px'},
  {what:'caret mask',got:Lab.assetName(tri,'-webkit-mask-image'),want:'arrowDown.svg'},
- {what:'the phone trigger’s ink',got:Lab.cs(burger,'color'),want:'#262626'},
+ {what:'the phone trigger’s ink',got:Lab.cs(burger,'color'),want:'#141414'},
  {what:'the phone trigger at this width',got:Lab.cs(burger,'display'),want:'none'},
  {what:'cluster to the right',got:Lab.rule('.site.wm #userBarContainer', 'margin-left', wm),want:'auto',tag:'rule'}
 ],'The logo, the links and the cluster');
@@ -3980,7 +3975,7 @@ Lab.table(card,[
  {what:'divider bottom',got:Lab.cs(col3, 'bottom', '::before'),want:'-6px'},
  {what:'divider colour',got:Lab.cs(col3, 'background-color', '::before'),want:'#ebe7de'},
  {what:'strip divider height',got:Lab.cs(col3, 'height', '::after'),want:'32px'},
- {what:'strip divider colour',got:Lab.cs(col3, 'background-color', '::after'),want:'#d9d2c4'}
+ {what:'strip divider colour',got:Lab.cs(col3, 'background-color', '::after'),want:'#d2cfca'}
 ],'The columns and their dividers');
 Lab.table(card,[
  {what:'head weight',got:Lab.cs(head,'font-weight'),want:'700'},
@@ -3991,7 +3986,7 @@ Lab.table(card,[
  {what:'link size',got:Lab.cs(link,'font-size'),want:'16px'},
  {what:'link line',got:Lab.cs(link,'line-height'),want:'24px'},
  {what:'link padding',got:Lab.cs(link,'padding'),want:'2px 0'},
- {what:'link ink',got:Lab.cs(link,'color'),want:'#262626'},
+ {what:'link ink',got:Lab.cs(link,'color'),want:'#141414'},
  {what:'link underline at rest',got:Lab.cs(link,'text-decoration-line'),want:'none'},
  {what:'hover ink',got:Lab.rule('.site.wm #menuBar .mgcol a:hover','color',root),want:'#141414',tag:'rule'},
  {what:'hover line left',got:Lab.rule('.site.wm #menuBar .mgcol a:hover::after','left',root),want:'1px',tag:'rule'},
@@ -4000,7 +3995,7 @@ Lab.table(card,[
  {what:'hover line height',got:Lab.rule('.site.wm #menuBar .mgcol a:hover::after','height',root),want:'1px',tag:'rule'},
  {what:'hover line paint',got:Lab.rule('.site.wm #menuBar .mgcol a:hover::after','background',root),want:'currentColor',tag:'rule'},
  {what:'caret size',got:Lab.cs(tri,'width')+' by '+Lab.cs(tri,'height'),want:'8px by 7px'},
- {what:'caret paint',got:Lab.cs(tri,'background-color'),want:'#262626'},
+ {what:'caret paint',got:Lab.cs(tri,'background-color'),want:'#141414'},
  {what:'caret mask',got:Lab.assetName(tri,'-webkit-mask-image'),want:'arrowDown.svg'}
 ],'The heads, the links and the caret');
 Lab.note(card,'The caret is measured on the live bar, where it takes the link’s own colour; standing alone it would read whatever colour it inherited.');
@@ -4086,7 +4081,7 @@ Lab.table(card,[
  {what:'row height',got:Lab.cs(ul,'height'),want:'56px'},
  {what:'bell box',got:Lab.cs(icon,'width')+' by '+Lab.cs(icon,'height'),want:'40px by 32px'},
  {what:'avatar',got:Lab.cs(av,'width')+' by '+Lab.cs(av,'height'),want:'28px by 28px'},
- {what:'name',got:Lab.cs(name,'font-weight')+' '+Lab.cs(name,'font-size')+'/'+Lab.cs(name,'line-height')+' '+Lab.cs(name,'color'),want:'700 16px/16px #262626'},
+ {what:'name',got:Lab.cs(name,'font-weight')+' '+Lab.cs(name,'font-size')+'/'+Lab.cs(name,'line-height')+' '+Lab.cs(name,'color'),want:'700 16px/16px #141414'},
  {what:'name while loading',got:Lab.rule('.site.wm #userBar .userAvatarContainer .userName.loading','color',bar),want:'#4e4d4c',tag:'rule'}
 ],'The cluster');
 Lab.table(card,[
@@ -4109,10 +4104,10 @@ Lab.table(card,[
  {what:'head strip rule',got:Lab.cs(hd,'border-bottom-width')+' solid '+Lab.cs(hd,'border-bottom-color'),want:'1px solid #d2cfca'},
  {what:'head strip margin',got:Lab.cs(hd,'margin'),want:'0 -12px 7px'},
  {what:'count',got:Lab.cs(cnt,'font-size')+' '+Lab.cs(cnt,'color'),want:'14px #4e4d4c'},
- {what:'empty state',got:Lab.cs(empty,'font-size')+'/'+Lab.cs(empty,'line-height')+' '+Lab.cs(empty,'color'),want:'16px/24px #9b9997'},
+ {what:'empty state',got:Lab.cs(empty,'font-size')+'/'+Lab.cs(empty,'line-height')+' '+Lab.cs(empty,'color'),want:'16px/24px #67635c'},
  {what:'empty state width',got:Lab.cs(empty,'width'),want:'230px'},
  {what:'account head',got:Lab.cs(mph,'height')+' '+Lab.cs(mph,'font-size')+' '+Lab.cs(mph,'color'),want:'32px 16px #141414'},
- {what:'item',got:Lab.cs(item,'font-size')+'/'+Lab.cs(item,'line-height')+' '+Lab.cs(item,'color'),want:'16px/24px #262626'},
+ {what:'item',got:Lab.cs(item,'font-size')+'/'+Lab.cs(item,'line-height')+' '+Lab.cs(item,'color'),want:'16px/24px #141414'},
  {what:'item padding',got:Lab.cs(item,'padding'),want:'2px 0'},
  {what:'item hover line bottom',got:Lab.rule('.site.wm #userBar .userAvatarContainer .userDropdown .dropdownItem:hover::after','bottom',pans),want:'6px',tag:'rule'},
  {what:'item hover line height',got:Lab.rule('.site.wm #menuBar > li.mclink:not(.mgames):hover > a::after','height',pans),want:'1px',tag:'rule'}
@@ -4166,14 +4161,14 @@ var touch=rest.querySelector('.customTooltip');
 Lab.table(card,[
  {what:'frame',got:Lab.cs(tip,'padding'),want:'14px'},
  {what:'pointer-events',got:Lab.cs(tip,'pointer-events'),want:'none'},
- {what:'words',got:Lab.cs(box,'font-size')+'/'+Lab.cs(box,'line-height')+' '+Lab.cs(box,'color'),want:'13px/18px #262626'},
+ {what:'words',got:Lab.cs(box,'font-size')+'/'+Lab.cs(box,'line-height')+' '+Lab.cs(box,'color'),want:'13px/18px #141414'},
  {what:'weight',got:Lab.cs(box,'font-weight'),want:'400'},
  {what:'a name or a number',got:Lab.cs(b,'font-weight'),want:'700'},
  {what:'one line',got:Lab.cs(box,'white-space'),want:'nowrap'},
  {what:'paper',got:Lab.cs(box,'background-color'),want:'#ffffff'},
  {what:'ring and lift',got:Lab.cs(box,'box-shadow'),want:'inset 0 0 0 1px #d2cfca, 0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09)'},
  {what:'radius',got:Lab.cs(box,'border-radius'),want:'12px'},
- {what:'second line',got:Lab.cs(hint,'font-size')+'/'+Lab.cs(hint,'line-height')+' '+Lab.cs(hint,'color'),want:'11px/15px #8a857c'}
+ {what:'second line',got:Lab.cs(hint,'font-size')+'/'+Lab.cs(hint,'line-height')+' '+Lab.cs(hint,'color'),want:'11px/15px #67635c'}
 ],'The capsule');
 Lab.table(card,[
  {what:'arrow',got:Lab.cs(tip, 'width', '::after')+' by '+Lab.cs(tip, 'height', '::after'),want:'10px by 10px'},
@@ -4198,20 +4193,18 @@ Lab.note(card,'Chrome drops a default from a computed transition, so the sheet�
 })();</script>
   </div></div>
 
-  <div class="card" id="ex-the-chrome-the-notices" data-ref="Examples › The chrome › The notices"><div class="body">
-    <h3>The notices</h3>
-    <p class="lead">The toast and the corner notices, on paper and over the felt, including the shutdown warning that turns red.</p>
+  <div class="card" id="ex-the-chrome-the-notice" data-ref="Examples › The chrome › The notice"><div class="body">
+    <h3>The notice</h3>
+    <p class="lead">The one notice the site draws, the toast, on paper and over the felt. The update line and the maintenance line are toasts too.</p>
     <div class="demo" style="padding:14px">
   <div class="site wm" data-lobby style="background:transparent">
     <div id="NoticeContainer" style="position:static;padding-top:0">
       <div id="Notice" class="wmNotice info wmIn" role="status" aria-live="polite"><strong class="label"></strong><span class="message selectable">Your seat goes to a bot until you come back.</span></div>
     </div>
     <div style="height:10px"></div>
-    <div id="poolInactiveNotice" class="wmNotice wmCorner visible" style="position:static;opacity:1"><span class="message">Restart to load server update.</span></div>
-    <div style="height:10px"></div>
-    <div id="shutdownNotice" class="wmNotice wmCorner visible" style="position:static;opacity:1"><span class="message">Server rebooting in:</span><span class="clock">4:18</span></div>
-    <div style="height:10px"></div>
-    <div id="shutdownNotice" class="wmNotice wmCorner visible wmHot" style="position:static;opacity:1"><span class="message">Server rebooting in:</span><span class="clock">0:24</span></div>
+    <div id="NoticeContainer" style="position:static;padding-top:0">
+      <div id="Notice" class="wmNotice warning wmIn" role="status" aria-live="polite"><strong class="label"></strong><span class="message selectable">The server goes down for maintenance in about ten minutes. It comes straight back.</span></div>
+    </div>
   </div>
 </div>
 <div class="demo" style="padding:0">
@@ -4220,12 +4213,6 @@ Lab.note(card,'Chrome drops a default from a computed transition, so the sheet�
       <div id="NoticeContainer" style="position:static;padding-top:0">
         <div id="Notice" class="wmNotice info wmIn" role="status" aria-live="polite"><strong class="label"></strong><span class="message selectable">Your seat goes to a bot until you come back.</span></div>
       </div>
-      <div style="height:10px"></div>
-      <div id="poolInactiveNotice" class="wmNotice wmCorner visible" style="position:static;opacity:1"><span class="message">Restart to load server update.</span></div>
-      <div style="height:10px"></div>
-      <div id="shutdownNotice" class="wmNotice wmCorner visible" style="position:static;opacity:1"><span class="message">Server rebooting in:</span><span class="clock">4:18</span></div>
-      <div style="height:10px"></div>
-      <div id="shutdownNotice" class="wmNotice wmCorner visible wmHot" style="position:static;opacity:1"><span class="message">Server rebooting in:</span><span class="clock">0:24</span></div>
     </div>
   </div>
 </div>
@@ -4233,41 +4220,28 @@ Lab.note(card,'Chrome drops a default from a computed transition, so the sheet�
 var card=document.currentScript.closest('.card');
 var lob=card.querySelector('[data-lobby]');
 var flt=card.querySelector('[data-felt]');
-var lt=lob.querySelector('#Notice'), lc=lob.querySelector('#poolInactiveNotice'), lh=lob.querySelector('.wmHot');
-var ft=flt.querySelector('#Notice'), fc=flt.querySelector('#poolInactiveNotice'), fh=flt.querySelector('.wmHot');
-var clock=lh.querySelector('.clock');
-var COMPACT='.site #mainContainer.playspace-compact .wmNotice.wmCorner';
+var lt=lob.querySelector('#Notice'), lw=lob.querySelectorAll('#Notice')[1];
+var ft=flt.querySelector('#Notice');
 Lab.table(card,[
  {what:'paper',got:Lab.cs(lt,'background-color'),want:'#f4eee5'},
- {what:'toast ring and drop',got:Lab.cs(lt,'box-shadow'),want:'0 0 0 1px #d9d2c4, 0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09), 0 8px 20px rgba(0,0,0,.18)'},
- {what:'the ring the guide names',got:'#d9d2c4',want:'#d9d2c4'},
- {what:'corner ring alone',got:Lab.cs(lc,'box-shadow'),want:'0 0 0 1px #d9d2c4'},
+ {what:'toast ring and drop',got:Lab.cs(lt,'box-shadow'),want:'0 0 0 1px #d2cfca, 0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09), 0 8px 20px rgba(0,0,0,.18)'},
+ {what:'the ring the guide names',got:'#d2cfca',want:'#d2cfca'},
  {what:'toast padding',got:Lab.cs(lt,'padding'),want:'14px 26px'},
- {what:'toast radius',got:Lab.cs(lt,'border-radius'),want:'16px'},
- {what:'corner height',got:Lab.cs(lc,'height'),want:'40px'},
- {what:'corner padding',got:Lab.cs(lc,'padding'),want:'0 12px'},
- {what:'words',got:Lab.cs(lc,'font-size')+'/'+Lab.cs(lc,'line-height'),want:'16px/20px'},
- {what:'last 30 seconds',got:Lab.cs(lh,'box-shadow'),want:'0 0 0 1px #e18a8a, 0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09), 0 8px 20px rgba(0,0,0,.18)'},
- {what:'the clock then',got:Lab.cs(clock,'color')+' '+Lab.cs(clock,'font-weight')+' '+Lab.cs(clock,'font-variant-numeric'),want:'#c92a2a 700 tabular-nums'}
+ {what:'toast radius, the box rung',got:Lab.cs(lt,'border-radius'),want:'20px'},
+ {what:'words',got:Lab.cs(lt,'font-size')+'/'+Lab.cs(lt,'line-height'),want:'16px/20px'},
+ {what:'the warning tone keeps the same paper',got:Lab.cs(lw,'background-color'),want:'#f4eee5'}
 ],'On the lobby');
 Lab.table(card,[
  {what:'paper',got:Lab.cs(ft,'background-color'),want:'#f4eee5'},
  {what:'toast ring and drop',got:Lab.cs(ft,'box-shadow'),want:'inset 0 0 0 1px #393939, 0 0 8px rgba(0,0,0,.24)'},
- {what:'the felt line the guide names',got:'#393939',want:'#393939'},
- {what:'corner ring and drop',got:Lab.cs(fc,'box-shadow'),want:'inset 0 0 0 1px #393939, 0 0 8px rgba(0,0,0,.24)'},
- {what:'last 30 seconds',got:Lab.cs(fh,'box-shadow'),want:'inset 0 0 0 1px #c92a2a, 0 0 8px rgba(0,0,0,.24)'},
- {what:'a compact playspace: height',got:Lab.rule(COMPACT,'height',fc),want:'32px',tag:'rule'},
- {what:'a compact playspace: padding',got:Lab.rule(COMPACT,'padding',fc),want:'0 10px',tag:'rule'},
- {what:'a compact playspace: words',got:Lab.rule(COMPACT,'font-size',fc)+'/'+Lab.rule(COMPACT,'line-height',fc),want:'14px/18px',tag:'rule'}
+ {what:'the felt line the guide names',got:'#393939',want:'#393939'}
 ],'Over the felt');
 Lab.table(card,[
  {what:'toast role',got:lt.getAttribute('role'),want:'status'},
- {what:'toast aria-modal',got:lt.hasAttribute('aria-modal')?'present':'absent',want:'absent'},
- {what:'update line aria-modal',got:lc.hasAttribute('aria-modal')?'present':'absent',want:'absent'},
- {what:'countdown aria-modal',got:lh.hasAttribute('aria-modal')?'present':'absent',want:'absent'}
+ {what:'toast aria-modal',got:lt.hasAttribute('aria-modal')?'present':'absent',want:'absent'}
 ],'Never modal');
-Lab.note(card,'Two rows name the guide’s own colours. On paper the ring is --rule #d9d2c4, which 7.6 and 7.9 give a notice on the band, and over the felt the line is --color-table-edge #393939, which 7.9 and 3.3 give felt furniture since 14 Sep (_wm-notices.scss:36,44).');
-Lab.note(card,'The compact playspace step is read from its rule: the class sits on #mainContainer at a small table, which no card here builds.');
+Lab.note(card,'Two rows name the guide\u2019s own colours. On paper the ring is --line #d2cfca, which 7.6 and 7.9 give a notice on the band, and over the felt the line is --color-table-edge #393939, which 7.9 and 3.3 give felt furniture since 14 Sep (_wm-notices.scss).');
+Lab.note(card,'The maintenance line is drawn here in the words ShutdownNotice.js writes; the module holds the time for the lobby\u2019s own lockout, but says it once.');
 })();</script>
   </div></div>
 
@@ -4478,7 +4452,7 @@ var tracks=Lab.cs(grid,'grid-template-columns').split(' ').length;
 Lab.table(card,[
  {what:'paper',got:Lab.cs(foot,'background-color'),want:'#f4eee5'},
  {what:'paper after the about band',got:Lab.cs(ffoot,'background-color'),want:'#f9f6f2'},
- {what:'the rule above, in .helpBox',got:Lab.cs(foot,'border-top'),want:'1px solid #d9d2c4'},
+ {what:'the rule above, in .helpBox',got:Lab.cs(foot,'border-top'),want:'1px solid #d2cfca'},
  {what:'the static seam head there',got:Lab.cs(foot.querySelector('.divhead'),'display'),want:'none'},
  {what:'padding',got:Lab.cs(grid,'padding'),want:'20px 24px 14px'},
  {what:'display',got:Lab.cs(grid,'display'),want:'grid'},
@@ -4500,12 +4474,12 @@ Lab.table(card,[
  {what:'full width',got:Lab.cs(legal,'grid-column'),want:'1 / -1'},
  {what:'pulled up',got:Lab.cs(legal,'margin-top'),want:'-4px'},
  {what:'over the line',got:Lab.cs(legal,'padding-top'),want:'10px'},
- {what:'its rule',got:Lab.cs(legal,'border-top-width')+' solid '+Lab.cs(legal,'border-top-color'),want:'1px solid #d9d2c4'},
+ {what:'its rule',got:Lab.cs(legal,'border-top-width')+' solid '+Lab.cs(legal,'border-top-color'),want:'1px solid #d2cfca'},
  {what:'its words',got:Lab.cs(lul,'font-size')+'/'+Lab.cs(lul,'line-height'),want:'16px/20px'},
  {what:'its gaps',got:Lab.cs(lul,'gap'),want:'2px 20px'},
  {what:'no Legal head',got:Lab.cs(lstrong,'display'),want:'none'},
  {what:'marks last in the row',got:Lab.cs(social,'order'),want:'9'},
- {what:'marks pushed right',got:Lab.rule('.site.wm .sitefooter .footerLegal .social', 'margin-left', wm),want:'auto',tag:'rule'},
+ {what:'marks pushed right',got:Math.round(lul.getBoundingClientRect().right-social.getBoundingClientRect().right)+'px from the row\u2019s right edge',want:'0px from the row\u2019s right edge'},
  {what:'marks apart',got:Lab.cs(social,'gap'),want:'6px'},
  {what:'X box and mark',got:Lab.cs(marks[0],'width')+' by '+Lab.cs(marks[0],'height')+', '+Lab.cs(marks[0],'-webkit-mask-size'),want:'18px by 20px, 17px 17px'},
  {what:'Facebook box and mark',got:Lab.cs(marks[1],'width')+' by '+Lab.cs(marks[1],'height')+', '+Lab.cs(marks[1],'-webkit-mask-size'),want:'24px by 20px, 19px 19px'},
@@ -4517,7 +4491,7 @@ Lab.table(card,[
 ],'The legal row and its marks');
 Lab.table(card,[
  {what:'Raptive block',got:Lab.cs(rap,'font-size')+'/'+Lab.cs(rap,'line-height')+' '+Lab.cs(rap,'color'),want:'14px/24px #4e4d4c'},
- {what:'its partner note',got:Lab.cs(raps,'color')+' order '+Lab.cs(raps,'order'),want:'#8a857c order 8'},
+ {what:'its partner note',got:Lab.cs(raps,'color')+' order '+Lab.cs(raps,'order'),want:'#67635c order 8'},
  {what:'a line of its own, last in the row',got:Lab.cs(wm.querySelector('.footerRaptive'),'flex-basis')+' order '+Lab.cs(wm.querySelector('.footerRaptive'),'order'),want:'100% order 10'},
  {what:'under the links, at the row\u2019s own gap',got:Lab.cs(wm.querySelector('.footerRaptive'),'margin-top'),want:'0px'}
 ],'Raptive’s own block');
@@ -4532,14 +4506,15 @@ var wells = [].slice.call(card.querySelectorAll('[data-cq]')).map(function (hold
   return { width: hold.getAttribute('data-cq'), grid: copy.querySelector('footer'), legal: copy.querySelector('.footerLegal') };
 });
 Lab.table(card, wells.map(function (w) {
-  return { what: 'columns in a ' + w.width + 'px well', got: String(Lab.cs(w.grid, 'grid-template-columns').split(' ').length), want: w.width === '600' ? '2' : '1' };
+  if (w.width === '600') return { what: 'columns in a 600px well', got: String(Lab.cs(w.grid, 'grid-template-columns').split(' ').length), want: '2' };
+  return { what: 'the links in a ' + w.width + 'px well', got: Lab.cs(w.grid, 'display') + ', ' + Lab.cs(w.grid, 'column-count') + ' columns', want: 'block, 2 columns' };
 }).concat([
- {what:'the two steps',got:'620 and 470 of .footer-basic\u2019s own width',want:'two columns under a 620 container, one under 470',tag:'note'},
+ {what:'the three steps',got:'620, 470 and 330 of .footer-basic\u2019s own width',want:'a two-column grid under 620; under 470 the grid gives way and the links flow as a two-column multicol; one column under 330',tag:'note'},
  {what:'the grid starts at the left once stepped',got:Lab.cs(wells[0].grid,'justify-content'),want:'start'},
  {what:'the legal row in a 460px well',got:Lab.cs(wells[1].legal,'grid-column'),want:'1 / -1'}
 ]), 'The phone steps, read from the container');
 Lab.note(card,'The links are 16 / 28 where the mockup drew 14: open item 5 in the guide, not a fault of the build.');
-Lab.note(card,'The two red rows in Raptive\u2019s block are the sheet, not the guide, and they only show inside the reading shell: master\u2019s TableBar.scss styles .helpBox .footer-basic .footerRaptive .adthrive-footer-message with !important (16px, 28px lines, the ink, the partner note first and bold), and the design\u2019s own 14 / 24 --muted rule in _fp-footer.scss has no !important, so it loses on every page whose footer sits in .helpBox, which is every page but the frontpage. The frontpage copy below draws the guide\u2019s values.');
+Lab.note(card,'The two red rows in Raptive\u2019s block are the sheet, not the guide, and they only show inside the reading shell: master\u2019s TableBar.scss styles .helpBox .footer-basic .footerRaptive .adthrive-footer-message with !important (16px, 28px lines, the ink, the partner note first and bold), and the design\u2019s own 14 / 24 --ink-label rule in _fp-footer.scss has no !important, so it loses on every page whose footer sits in .helpBox, which is every page but the frontpage. The frontpage copy below draws the guide\u2019s values.');
 Lab.note(card,'The four columns are auto tracks, so Chrome prints the width each one used rather than the word auto. The table counts them.');
 Lab.note(card,'One of the site’s own values cannot be computed: margin-left auto resolves to the pixels it used, so it is read from its rule.');
 Lab.note(card,'The two footers hold different links on purpose. This is common/fp_footer.dust; common/footer.dust ships beside it and CSS picks, and the loser is to be deleted before the flag retires.');
@@ -4581,10 +4556,11 @@ Lab.table(card,[
  {what:'the pill’s inset',got:Lab.cs(hc,'bottom'),want:'8px'}
 ],'The rail');
 Lab.table(card,[
- {what:'measure',got:Lab.cs(pill,'width'),want:'300px'},
+ {what:'measure',got:Lab.cs(pill,'width'),want:'288px'},
+ {what:'the rule behind it',got:'min(300px, 100% - 2 x --space-edge)',want:'300 at most; the 336 rail less two 24px gutters leaves 288',tag:'note'},
  {what:'radius',got:Lab.cs(pill,'border-radius'),want:'12px'},
  {what:'paper',got:Lab.cs(pill,'background-color'),want:'#f9f6f2'},
- {what:'words',got:Lab.cs(pill,'font-weight')+' '+Lab.cs(pill,'font-size')+'/'+Lab.cs(pill,'line-height')+' '+Lab.cs(pill,'color'),want:'700 16px/24px #262626'},
+ {what:'words',got:Lab.cs(pill,'font-weight')+' '+Lab.cs(pill,'font-size')+'/'+Lab.cs(pill,'line-height')+' '+Lab.cs(pill,'color'),want:'700 16px/24px #141414'},
  {what:'ring and blurs',got:Lab.cs(pill,'box-shadow'),want:'inset 0 0 0 1px rgba(0,0,0,.25), 0 0 2px rgba(60,45,25,.08), 0 0 5px rgba(60,45,25,.08), 0 0 12px rgba(60,45,25,.08)'},
  {what:'no fade',got:Lab.cs(pill,'transition'),want:'none'},
  {what:'hover paper',got:Lab.rule('.site.fp #ad #rahl:hover','background-color',root),want:'#f4eee5',tag:'rule'},
@@ -4594,7 +4570,7 @@ Lab.table(card,[
  {what:'the column reserves',got:Lab.cs(col,'margin-right'),want:'336px'},
  {what:'from 640 it reserves',got:'160px',want:'160px',tag:'note'}
 ],'What the page gives up to it');
-Lab.note(card,'The rail paints the band --band #F4EEE5, which 8.3 and 3.1 both name now (_fp-chrome.scss:588). The literal #EFEAE2 it drew until 13 Sep is gone.');
+Lab.note(card,'The rail paints the band --paper-band #F4EEE5, which 8.3 and 3.1 both name now (_fp-chrome.scss:588). The literal #EFEAE2 it drew until 13 Sep is gone.');
 Lab.note(card,'The widths are master’s: 336px from 1024 and 160px from 640. The sheet writes height auto and max-height none with !important, so the rail takes its height from its top and bottom and no inline height can cap it.');
 })();</script>
   </div></div>
@@ -4727,7 +4703,7 @@ Lab.note(card,'WomanGirl2 and ManCowboy are drawn because _avatar-feet.scss give
 </section>
 
 </div>
-<script>window.ExampleIndex = [{"id":"ex-buttons-and-links-the-buttons","t":"The buttons","g":"Buttons and links"},{"id":"ex-buttons-and-links-the-buttons-in-a-dialog","t":"The buttons in a dialog","g":"Buttons and links"},{"id":"ex-buttons-and-links-the-quiet-the-dangerous-and-the-done","t":"The quiet, the dangerous and the done","g":"Buttons and links"},{"id":"ex-buttons-and-links-the-yellow-button","t":"The yellow button","g":"Buttons and links"},{"id":"ex-buttons-and-links-what-a-button-does-when-you-touch-it","t":"What a button does when you touch it","g":"Buttons and links"},{"id":"ex-buttons-and-links-two-buttons-at-the-foot-of-a-dialog","t":"Two buttons at the foot of a dialog","g":"Buttons and links"},{"id":"ex-buttons-and-links-links","t":"Links","g":"Buttons and links"},{"id":"ex-buttons-and-links-the-menu-that-opens-from-a-play-button","t":"The menu that opens from a Play button","g":"Buttons and links"},{"id":"ex-fields-and-choosers-a-text-field","t":"A text field","g":"Fields and choosers"},{"id":"ex-fields-and-choosers-a-field-on-white-and-one-with-an-error","t":"A field on white, and one with an error","g":"Fields and choosers"},{"id":"ex-fields-and-choosers-the-small-search-field","t":"The small search field","g":"Fields and choosers"},{"id":"ex-fields-and-choosers-the-tray","t":"The tray","g":"Fields and choosers"},{"id":"ex-fields-and-choosers-the-checkbox","t":"The checkbox","g":"Fields and choosers"},{"id":"ex-fields-and-choosers-the-settings-tabs","t":"The settings tabs","g":"Fields and choosers"},{"id":"ex-fields-and-choosers-the-games-bar","t":"The games bar","g":"Fields and choosers"},{"id":"ex-the-small-marks-the-tag","t":"The tag","g":"The small marks"},{"id":"ex-the-small-marks-the-rating-up-and-down-chips","t":"The rating up and down chips","g":"The small marks"},{"id":"ex-the-small-marks-the-presence-dots","t":"The presence dots","g":"The small marks"},{"id":"ex-the-small-marks-the-player-count-on-a-tile","t":"The player count on a tile","g":"The small marks"},{"id":"ex-the-small-marks-the-marks-at-a-seat","t":"The marks at a seat","g":"The small marks"},{"id":"ex-containers-the-white-card","t":"The white card","g":"Containers"},{"id":"ex-containers-a-game-tile","t":"A game tile","g":"Containers"},{"id":"ex-containers-a-table-tile","t":"A table tile","g":"Containers"},{"id":"ex-containers-the-other-cards","t":"The other cards","g":"Containers"},{"id":"ex-containers-the-modal-box","t":"The modal box","g":"Containers"},{"id":"ex-containers-the-panels-that-float","t":"The panels that float","g":"Containers"},{"id":"ex-lists-and-tables-the-table-in-a-lobby-card","t":"The table in a lobby card","g":"Lists and tables"},{"id":"ex-lists-and-tables-the-table-in-a-dialog","t":"The table in a dialog","g":"Lists and tables"},{"id":"ex-lists-and-tables-a-settings-row","t":"A settings row","g":"Lists and tables"},{"id":"ex-lists-and-tables-a-row-with-a-person","t":"A row with a person","g":"Lists and tables"},{"id":"ex-lists-and-tables-a-table-on-a-page","t":"A table on a page","g":"Lists and tables"},{"id":"ex-lists-and-tables-the-whats-new-rows","t":"The What’s new rows","g":"Lists and tables"},{"id":"ex-lines-and-dividers-a-divider-in-three-places","t":"A divider in three places","g":"Lines and dividers"},{"id":"ex-lines-and-dividers-the-plain-dividing-line","t":"The plain dividing line","g":"Lines and dividers"},{"id":"ex-lines-and-dividers-the-line-a-box-is-drawn-with","t":"The line a box is drawn with","g":"Lines and dividers"},{"id":"ex-lines-and-dividers-a-real-border","t":"A real border","g":"Lines and dividers"},{"id":"ex-lines-and-dividers-the-rings-drawn-outside-and-the-focus-ring","t":"The rings drawn outside, and the focus ring","g":"Lines and dividers"},{"id":"ex-lines-and-dividers-the-line-over-tile-art","t":"The line over tile art","g":"Lines and dividers"},{"id":"ex-headings-and-rules-the-section-title-with-the-seam","t":"The section title with the seam","g":"Headings and rules"},{"id":"ex-headings-and-rules-the-headings-on-a-page","t":"The headings on a page","g":"Headings and rules"},{"id":"ex-headings-and-rules-a-heading-in-a-dialog","t":"A heading in a dialog","g":"Headings and rules"},{"id":"ex-the-chrome-the-menu-bar","t":"The menu bar","g":"The chrome"},{"id":"ex-the-chrome-the-games-panel","t":"The games panel","g":"The chrome"},{"id":"ex-the-chrome-your-corner-of-the-bar","t":"Your corner of the bar","g":"The chrome"},{"id":"ex-the-chrome-the-tooltip","t":"The tooltip","g":"The chrome"},{"id":"ex-the-chrome-the-notices","t":"The notices","g":"The chrome"},{"id":"ex-the-chrome-the-footer","t":"The footer","g":"The chrome"},{"id":"ex-the-chrome-the-ad-column","t":"The ad column","g":"The chrome"},{"id":"ex-at-the-table-the-avatars","t":"The avatars","g":"At the table"}];</script>
+<script>window.ExampleIndex = [{"id":"ex-buttons-and-links-the-buttons","t":"The buttons","g":"Buttons and links"},{"id":"ex-buttons-and-links-the-buttons-in-a-dialog","t":"The buttons in a dialog","g":"Buttons and links"},{"id":"ex-buttons-and-links-the-quiet-the-dangerous-and-the-done","t":"The quiet, the dangerous and the done","g":"Buttons and links"},{"id":"ex-buttons-and-links-the-yellow-button","t":"The yellow button","g":"Buttons and links"},{"id":"ex-buttons-and-links-what-a-button-does-when-you-touch-it","t":"What a button does when you touch it","g":"Buttons and links"},{"id":"ex-buttons-and-links-two-buttons-at-the-foot-of-a-dialog","t":"Two buttons at the foot of a dialog","g":"Buttons and links"},{"id":"ex-buttons-and-links-links","t":"Links","g":"Buttons and links"},{"id":"ex-buttons-and-links-the-menu-that-opens-from-a-play-button","t":"The menu that opens from a Play button","g":"Buttons and links"},{"id":"ex-fields-and-choosers-a-text-field","t":"A text field","g":"Fields and choosers"},{"id":"ex-fields-and-choosers-a-field-on-white-and-one-with-an-error","t":"A field on white, and one with an error","g":"Fields and choosers"},{"id":"ex-fields-and-choosers-the-small-search-field","t":"The small search field","g":"Fields and choosers"},{"id":"ex-fields-and-choosers-the-tray","t":"The tray","g":"Fields and choosers"},{"id":"ex-fields-and-choosers-the-checkbox","t":"The checkbox","g":"Fields and choosers"},{"id":"ex-fields-and-choosers-the-settings-tabs","t":"The settings tabs","g":"Fields and choosers"},{"id":"ex-fields-and-choosers-the-games-bar","t":"The games bar","g":"Fields and choosers"},{"id":"ex-the-small-marks-the-tag","t":"The tag","g":"The small marks"},{"id":"ex-the-small-marks-the-rating-up-and-down-chips","t":"The rating up and down chips","g":"The small marks"},{"id":"ex-the-small-marks-the-presence-dots","t":"The presence dots","g":"The small marks"},{"id":"ex-the-small-marks-the-player-count-on-a-tile","t":"The player count on a tile","g":"The small marks"},{"id":"ex-the-small-marks-the-marks-at-a-seat","t":"The marks at a seat","g":"The small marks"},{"id":"ex-containers-the-white-card","t":"The white card","g":"Containers"},{"id":"ex-containers-a-game-tile","t":"A game tile","g":"Containers"},{"id":"ex-containers-a-table-tile","t":"A table tile","g":"Containers"},{"id":"ex-containers-the-other-cards","t":"The other cards","g":"Containers"},{"id":"ex-containers-the-modal-box","t":"The modal box","g":"Containers"},{"id":"ex-containers-the-panels-that-float","t":"The panels that float","g":"Containers"},{"id":"ex-lists-and-tables-the-table-in-a-lobby-card","t":"The table in a lobby card","g":"Lists and tables"},{"id":"ex-lists-and-tables-the-table-in-a-dialog","t":"The table in a dialog","g":"Lists and tables"},{"id":"ex-lists-and-tables-a-settings-row","t":"A settings row","g":"Lists and tables"},{"id":"ex-lists-and-tables-a-row-with-a-person","t":"A row with a person","g":"Lists and tables"},{"id":"ex-lists-and-tables-a-table-on-a-page","t":"A table on a page","g":"Lists and tables"},{"id":"ex-lists-and-tables-the-whats-new-rows","t":"The What’s new rows","g":"Lists and tables"},{"id":"ex-lines-and-dividers-a-divider-in-three-places","t":"A divider in three places","g":"Lines and dividers"},{"id":"ex-lines-and-dividers-the-plain-dividing-line","t":"The plain dividing line","g":"Lines and dividers"},{"id":"ex-lines-and-dividers-the-line-a-box-is-drawn-with","t":"The line a box is drawn with","g":"Lines and dividers"},{"id":"ex-lines-and-dividers-a-real-border","t":"A real border","g":"Lines and dividers"},{"id":"ex-lines-and-dividers-the-rings-drawn-outside-and-the-focus-ring","t":"The rings drawn outside, and the focus ring","g":"Lines and dividers"},{"id":"ex-lines-and-dividers-the-line-over-tile-art","t":"The line over tile art","g":"Lines and dividers"},{"id":"ex-headings-and-rules-the-section-title-with-the-seam","t":"The section title with the seam","g":"Headings and rules"},{"id":"ex-headings-and-rules-the-headings-on-a-page","t":"The headings on a page","g":"Headings and rules"},{"id":"ex-headings-and-rules-a-heading-in-a-dialog","t":"A heading in a dialog","g":"Headings and rules"},{"id":"ex-the-chrome-the-menu-bar","t":"The menu bar","g":"The chrome"},{"id":"ex-the-chrome-the-games-panel","t":"The games panel","g":"The chrome"},{"id":"ex-the-chrome-your-corner-of-the-bar","t":"Your corner of the bar","g":"The chrome"},{"id":"ex-the-chrome-the-tooltip","t":"The tooltip","g":"The chrome"},{"id":"ex-the-chrome-the-notice","t":"The notice","g":"The chrome"},{"id":"ex-the-chrome-the-footer","t":"The footer","g":"The chrome"},{"id":"ex-the-chrome-the-ad-column","t":"The ad column","g":"The chrome"},{"id":"ex-at-the-table-the-avatars","t":"The avatars","g":"At the table"}];</script>
 <script>
 (function () {
   var top = [].slice.call(document.querySelectorAll('#toc a.top'));

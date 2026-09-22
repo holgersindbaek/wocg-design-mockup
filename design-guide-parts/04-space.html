@@ -9,7 +9,7 @@
   #space .rw { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 12px; padding: 12px; background: #f9f6f2; }
   #space .rw.plain { display: block; }
   #space .cap { font-size: 12px; color: #8a857c; margin: 0 0 4px; }
-  #space .pf { overflow: hidden; box-shadow: inset 0 0 0 1px #d9d2c4; background: #fff; }
+  #space .pf { overflow: hidden; box-shadow: inset 0 0 0 1px #d2cfca; background: #fff; }
   #space .pf iframe { border: 0; display: block; transform-origin: top left; }
   #space .frames { display: flex; flex-wrap: wrap; gap: 12px; padding: 12px; background: #f9f6f2; }
   #space .kinds { font-size: 12px; line-height: 18px; color: #4e4d4c; margin: 6px 0 0; }
@@ -81,7 +81,7 @@
         { what: '.wmSh padding-bottom', got: Lab.cs(q('.wmSh'), 'padding-bottom'), want: '6px' },
         { what: '.wmFoot gap', got: Lab.cs(q('.wmFoot'), 'gap'), want: '8px' },
         { what: '.wmFoot padding-top', got: Lab.cs(q('.wmFoot'), 'padding-top'), want: '8px' },
-        { what: '--wm-gap, the 8px token', got: Lab.token(q('.wmModal'), '--wm-gap'), want: '8px' },
+        { what: '--space-inner, the 8px token', got: Lab.token(q('.wmModal'), '--space-inner'), want: '8px' },
         { what: '.wmOr gap', got: Lab.cs(q('.wmOr'), 'gap'), want: '10px' }
       ]);
       Lab.note(card, 'The bar’s own 8px below its rule is measured with the bar, in the 12, 16 and 18 card. The reading page’s 10px under a head is measured with the other reading steps, in the 24 to 56 card.');
@@ -90,7 +90,7 @@
 
   <div class="card"><div class="body">
     <h3>The rhythm: 24, 28, 44 and 56 <span class="tag built">built</span></h3>
-    <p class="rule-text">24 is the page gutter, a settings row’s label to its tray and the footer’s column gap. 28 above an h3 and 44 between blocks in a reading zone are the guide’s own steps. 56 is --sectgap, from a seam rule’s centre to its neighbour’s edge.</p>
+    <p class="rule-text">24 is the page gutter, a settings row’s label to its tray and the footer’s column gap. 28 above an h3 and 44 between blocks in a reading zone are the guide’s own steps. 56 is --space-section, from a seam rule’s centre to its neighbour’s edge.</p>
     <div class="demo"><div class="rw plain">
       <div class="site fp wm">
         <div class="lobbyscope">
@@ -150,11 +150,11 @@
         { what: '#sec-about h3 margin-top', got: Lab.cs(q('#sec-about h3'), 'margin-top'), want: '44px' },
         { what: '.serifnote margin-bottom', got: Lab.cs(q('.serifnote'), 'margin-bottom'), want: '44px' },
         { what: '.fgrid.tiles margin', got: Lab.cs(q('.fgrid.tiles'), 'margin-top') + ' ' + Lab.cs(q('.fgrid.tiles'), 'margin-bottom'), want: '44px 44px' },
-        { what: '--sectgap', got: Lab.token(q('.site.wm'), '--sectgap'), want: '56px' },
+        { what: '--space-section', got: Lab.token(q('.site.wm'), '--space-section'), want: '56px' },
         { what: '#sec-about padding-top', got: Lab.cs(q('#sec-about'), 'padding-top'), want: '56px' }
       ]);
       Lab.note(card, 'The reading page’s four heading steps are the guide’s own call in 7.8 and 10.3: master gives 32, 32 and 16. They are built, so the rows still compare.');
-      Lab.note(card, '#sec-tt, #sec-rummy, #sec-classic and #sec-about take --sectgap from one rule; the about zone is the one drawn here. Its band paints 100vw wide, which is why the well behind it is band paper.');
+      Lab.note(card, '#sec-tt, #sec-rummy, #sec-classic and #sec-about take --space-section from one rule; the about zone is the one drawn here. Its band paints 100vw wide, which is why the well behind it is band paper.');
     })();</script>
   </div></div>
 
@@ -237,8 +237,8 @@
       var q = function (s) { return card.querySelector(s); };
       Lab.table(card, [
         { what: '.wmBox padding', got: Lab.cs(q('.wmBox'), 'padding'), want: '0 12px 12px' },
-        { what: '--wm-pad', got: Lab.token(q('.wmModal'), '--wm-pad'), want: '12px' },
-        { what: '.wmFlds gap', got: Lab.cs(q('.wmFlds'), 'gap'), want: '12px' },
+        { what: '--space-pad', got: Lab.token(q('.wmModal'), '--space-pad'), want: '12px' },
+        { what: '.wmFlds gap', got: Lab.cs(q('.wmFlds'), 'gap'), want: '8px' },
         { what: '.wmLrow gap', got: Lab.cs(q('.wmLrow'), 'gap'), want: '12px' },
         { what: '.gmeta padding', got: Lab.cs(q('.gmeta'), 'padding'), want: '12px' },
         { what: '.mpanel padding, the bar’s panel', got: '12px, measured in section 3', want: '12px', tag: 'note' },
@@ -261,7 +261,7 @@
 
   <div class="card"><div class="body">
     <h3>Columns: 1160 outer, 1112 inner <span class="tag built">built</span></h3>
-    <p class="rule-text">A section is max-width 1160 with 24px of side padding, so its inner column is --fp-column 1112. The gutter is --fp-gutter, max(24px, (100% - 1112px) / 2): the one distance from the window’s side the whole site keeps.</p>
+    <p class="rule-text">A section is max-width 1160 with 24px of side padding, so its inner column is --space-column 1112. The gutter is --space-edge, max(24px, (100% - 1112px) / 2): the one distance from the window’s side the whole site keeps.</p>
     <div class="demo"><div class="rw plain">
       <div class="site fp wm">
         <nav id="menuBarContainer" class="mbcenter" aria-label="Main navigation">
@@ -302,15 +302,15 @@
         { what: '.lobbyscope padding-left and right', got: Lab.cs(scope, 'padding-left') + ' / ' + Lab.cs(scope, 'padding-right'), want: '24px / 24px' },
         { what: '.gamesec max-width', got: Lab.cs(sec, 'max-width'), want: '1160px' },
         { what: '.gamesec padding', got: Lab.cs(sec, 'padding'), want: '14px 24px 0' },
-        { what: '--fp-column', got: Lab.token(q('.site'), '--fp-column'), want: '1112px' },
+        { what: '--space-column', got: Lab.token(q('.site'), '--space-column'), want: '1112px' },
         { what: 'the inner column here', got: Math.round(inner) + 'px', want: '1112px at a window of 1160 or more', tag: 'note' },
         { what: 'the bar’s gutter here', got: Lab.cs(bar, 'padding-left'), want: '24px' },
         { what: '#openTablesTop max-width', got: Lab.cs(band, 'max-width'), want: 'none, a full-bleed band', tag: 'note' },
         { what: '#openTablesTop padding', got: Lab.cs(band, 'padding'), want: '56px 24px', tag: 'note' },
         { what: 'this root’s width', got: Math.round(q('.site').clientWidth) + 'px', want: '', tag: 'note' }
       ]);
-      Lab.note(card, 'The lab’s own column is narrower than 1160, so the measured inner width is the root’s width less the two 24px gutters. --fp-gutter is max(24px, half of what is left over 1112), so below 1160 it is the flat 24 the whole site keeps, which is the number this card shows.');
-      Lab.note(card, 'The open tables zone is one of the full-bleed bands: it drops the 1160 cap, pads itself --sectgap above and below and takes --fp-gutter at the sides, so its cards still line up with the sections that do keep the cap. Its own head is drawn by the seam engine, which is why the band in the well holds its padding and nothing else.');
+      Lab.note(card, 'The lab’s own column is narrower than 1160, so the measured inner width is the root’s width less the two 24px gutters. --space-edge is max(24px, half of what is left over 1112), so below 1160 it is the flat 24 the whole site keeps, which is the number this card shows.');
+      Lab.note(card, 'The open tables zone is one of the full-bleed bands: it drops the 1160 cap, pads itself --space-section above and below and takes --space-edge at the sides, so its cards still line up with the sections that do keep the cap. Its own head is drawn by the seam engine, which is why the band in the well holds its padding and nothing else.');
       var kinds = document.createElement('p');
       kinds.className = 'kinds';
       kinds.innerHTML = 'Page kinds and the column each one reads. <b>Frontpage</b> wm fp: the 1160 section above. <b>Game page</b> wm with data-table: the band’s 728 content. <b>Reading page</b> wm: the 728 content. <b>Tutorial</b> wm: the same reading column. <b>Leaderboard</b> wm: the reading column with its own table card. <b>Modal</b> .wmModal: 400 or 640.';
@@ -395,9 +395,9 @@
       var q = function (s) { return card.querySelector(s); };
       Lab.table(card, [
         { what: 'a narrow .wmPanel width', got: Lab.cs(q('.wmPanel.narrow'), 'width'), want: '400px' },
-        { what: '--wm-w-narrow', got: Lab.token(q('.wmModal'), '--wm-w-narrow'), want: '400px' },
+        { what: '--size-narrow', got: Lab.token(q('.wmModal'), '--size-narrow'), want: '400px' },
         { what: 'a wide .wmPanel width', got: Lab.cs(q('.wmPanel.wide'), 'width'), want: '640px' },
-        { what: '--wm-w-wide', got: Lab.token(q('.wmModal'), '--wm-w-wide'), want: '640px' },
+        { what: '--size-wide', got: Lab.token(q('.wmModal'), '--size-wide'), want: '640px' },
         { what: '#gameSelectorContainer margin-right', got: Lab.cs(q('#gameSelectorContainer'), 'margin-right'), want: '336px' },
         { what: 'the window this is measured at', got: window.innerWidth + 'px', want: '1024 or more for 336, 640 to 1023 for 160', tag: 'note' }
       ]);
@@ -412,7 +412,7 @@
 
   <div class="card"><div class="body">
     <h3>Control heights: 56 and 40 <span class="tag built">built</span></h3>
-    <p class="rule-text">56 is the menubar, its links and its user cluster. 40 is a corner notice, which is a name plate’s height, a leaderboard or stats row, a directory table row and a settings row’s content box when it carries a second line.</p>
+    <p class="rule-text">56 is the menubar, its links and its user cluster. 40 is a leaderboard or stats row, a directory table row and a settings row’s content box when it carries a second line.</p>
     <div class="demo"><div class="rw plain">
       <div class="site wm">
         <nav id="menuBarContainer" class="mbcenter" aria-label="Main navigation">
@@ -434,7 +434,6 @@
       </div>
       <div class="site wm" style="width:300px">
         <div id="mainContainer" class="general" style="min-height:0">
-          <div id="poolInactiveNotice" class="wmNotice wmCorner visible" style="position:static"><span class="message">Restart to load server update.</span></div>
         </div>
       </div>
       <div class="site wm" style="width:300px">
@@ -480,13 +479,11 @@
         { what: '#menuBarContainer', got: oh('#menuBarContainer'), want: '56px' },
         { what: '#menuBar > li.mclink', got: oh('#menuBar > li.mclink'), want: '56px' },
         { what: '#userBar > li.userAvatarContainer', got: oh('.userAvatarContainer'), want: '56px' },
-        { what: '.wmNotice.wmCorner', got: oh('.wmNotice.wmCorner'), want: '40px' },
         { what: '.wmMpr, a stats row', got: oh('.wmMpr'), want: '40px' },
         { what: '.rulesDirectory td, content box', got: Lab.cs(q('.rulesDirectory td'), 'height'), want: '40px' },
         { what: 'a settings row with a line, content box', got: Lab.cs(q('.wmRow.tworow'), 'height'), want: '40px' },
         { what: 'the same row, with its padding and line', got: oh('.wmRow.tworow'), want: '65px' }
       ]);
-      Lab.note(card, 'The corner notice is a name plate’s height, which is what makes it read as one of the table’s own pieces. Its fixed corner is written off so it can stand in the well.');
       Lab.note(card, 'A settings row is content box, so its hairline sits outside the height: 40 of content, 12 above, 12 below and the 1px line is 65. A directory row is the same shape, 40 of cell with its line outside, so the box measures 41.');
     })();</script>
   </div></div>
@@ -553,7 +550,7 @@
         { what: '.mphead, a panel’s head strip', got: Lab.cs(q('.mphead'), 'height'), want: '32px' },
         { what: '.lbRow > span, a compact row', got: oh('.lbRow > span'), want: '32px' },
         { what: '.gplay, the catalog’s Play', got: oh('.gplay'), want: '32px' },
-        { what: '--wm-h-big and --wm-h-field', got: Lab.token(q('.wmModal'), '--wm-h-big') + ' / ' + Lab.token(q('.wmModal'), '--wm-h-field'), want: '32px / 32px' }
+        { what: '--size-big and --size-field', got: Lab.token(q('.wmModal'), '--size-big') + ' / ' + Lab.token(q('.wmModal'), '--size-field'), want: '32px / 34px' }
       ]);
       Lab.note(card, 'The account panel is opened with the class the bar gives it, and its absolute placing is written off so the head strip can be measured in the well. The head strip is 32 of content with its 1px line outside, so its box measures 33. The capsule carries isIn and the games bar isIn with isShown, the classes their scripts add when the numbers land.');
     })();</script>
@@ -656,7 +653,7 @@
         { what: '.cbtn .button, a felt verb', got: oh('.cbtn .button'), want: '24px' },
         { what: '.track > .s, a games bar cell', got: oh('.track > .s'), want: '24px' },
         { what: '.player-search-input, 24 plus its ring', got: oh('.player-search-input'), want: '26px' },
-        { what: '--wm-h-tray and --wm-h-small', got: Lab.token(q('.wmModal'), '--wm-h-tray') + ' / ' + Lab.token(q('.wmModal'), '--wm-h-small'), want: '28px / 24px' }
+        { what: '--size-tray and --size-small', got: Lab.token(q('.wmModal'), '--size-tray') + ' / ' + Lab.token(q('.wmModal'), '--size-small'), want: '28px / 24px' }
       ]);
       Lab.note(card, 'A menu row is 24 of line with 2px above and below. The felt verb is hidden until the tile is hovered, so the lab gives it the opacity the hover gives it; the tile’s own verb and the leaderboard’s search field are the same 24px control 7.3 names.');
     })();</script>
@@ -871,7 +868,7 @@
         var q = function (s) { return scope.querySelector(s); };
         var w = entry.w;
         var logo = w <= 860 ? '24px' : '32px';
-        var pad = w <= 520 ? '16px' : '24px';
+        var pad = w <= 520 ? '12px' : '24px';
         var name = w <= 560 ? 'none' : 'block';
         var cat = { 1200: 4, 900: 3, 700: 2, 480: 1 }[w];
         var lt = w <= 619 ? 1 : (w <= 1151 ? 2 : 3);

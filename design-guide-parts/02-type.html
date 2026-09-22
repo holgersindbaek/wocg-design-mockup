@@ -8,17 +8,17 @@
   <div class="card">
     <div class="body">
       <h3>The two faces <span class="tag built">built</span></h3>
-      <p class="rule-text">BuloRounded at 400, 700 and 900 is the interface and GLCA at 400 and 500 only is display; there is no Bulo 500 and no GLCA 600 or 700, so either falls back.</p>
+      <p class="rule-text">BuloRounded at 400 and 700 is the interface and GLCA at 500 alone is display. Three files, not five, since 22 Sep 2026: the Bulo black was one badge and the GLCA regular three rules. There is no Bulo 500 or 900 and no GLCA 400, 600 or 700, so any of them falls back.</p>
       <div class="demo">
         <div class="site wm" data-demo style="padding:12px">
           <div style="display:grid;grid-template-columns:132px 1fr;gap:3px 10px;align-items:baseline">
-            <span data-lab-copy style="font-size:12px;color:#8a857c">Bulo 400</span><span data-f="b4" style="font:400 16px var(--fp-font-ui)">Hearts, Spades and Euchre</span>
-            <span data-lab-copy style="font-size:12px;color:#8a857c">Bulo 700</span><span data-f="b7" style="font:700 16px var(--fp-font-ui)">Hearts, Spades and Euchre</span>
-            <span data-lab-copy style="font-size:12px;color:#8a857c">Bulo 900</span><span data-f="b9" style="font:900 16px var(--fp-font-ui)">Hearts, Spades and Euchre</span>
-            <span data-lab-copy style="font-size:12px;color:#8a857c">Bulo 500, not served</span><span data-f="b5" style="font:500 16px var(--fp-font-ui)">Hearts, Spades and Euchre</span>
-            <span data-lab-copy style="font-size:12px;color:#8a857c">GLCA 400</span><span data-f="g4" style="font:400 26px var(--fp-font-display)">Hearts and Spades</span>
-            <span data-lab-copy style="font-size:12px;color:#8a857c">GLCA 500</span><span data-f="g5" style="font:500 26px var(--fp-font-display)">Hearts and Spades</span>
-            <span data-lab-copy style="font-size:12px;color:#8a857c">GLCA 600, not served</span><span data-f="g6" style="font:600 26px var(--fp-font-display)">Hearts and Spades</span>
+            <span data-lab-copy style="font-size:12px;color:#8a857c">Bulo 400</span><span data-f="b4" style="font:400 16px var(--font-ui)">Hearts, Spades and Euchre</span>
+            <span data-lab-copy style="font-size:12px;color:#8a857c">Bulo 700</span><span data-f="b7" style="font:700 16px var(--font-ui)">Hearts, Spades and Euchre</span>
+            <span data-lab-copy style="font-size:12px;color:#8a857c">Bulo 900, not served</span><span data-f="b9" style="font:900 16px var(--font-ui)">Hearts, Spades and Euchre</span>
+            <span data-lab-copy style="font-size:12px;color:#8a857c">Bulo 500, not served</span><span data-f="b5" style="font:500 16px var(--font-ui)">Hearts, Spades and Euchre</span>
+            <span data-lab-copy style="font-size:12px;color:#8a857c">GLCA 400, not served</span><span data-f="g4" style="font:400 26px var(--font-display)">Hearts and Spades</span>
+            <span data-lab-copy style="font-size:12px;color:#8a857c">GLCA 500</span><span data-f="g5" style="font:500 26px var(--font-display)">Hearts and Spades</span>
+            <span data-lab-copy style="font-size:12px;color:#8a857c">GLCA 600, not served</span><span data-f="g6" style="font:600 26px var(--font-display)">Hearts and Spades</span>
           </div>
         </div>
       </div>
@@ -50,8 +50,8 @@
             { what: 'font-family of a GLCA line', got: Lab.cs(q('g5'), 'font-family'), want: glca },
             { what: 'served: 400 16px BuloRounded', got: String(document.fonts.check('400 16px BuloRounded')), want: 'true' },
             { what: 'served: 700 16px BuloRounded', got: String(document.fonts.check('700 16px BuloRounded')), want: 'true' },
-            { what: 'served: 900 12px BuloRounded', got: String(document.fonts.check('900 12px BuloRounded')), want: 'true' },
-            { what: 'served: 400 19px GLCA', got: String(document.fonts.check('400 19px GLCA')), want: 'true' },
+            { what: 'no 900 face declared', got: String([].slice.call(document.fonts).some(function (f) { return f.family === 'BuloRounded' && String(f.weight) === '900'; })), want: 'false' },
+            { what: 'no GLCA 400 face declared', got: String([].slice.call(document.fonts).some(function (f) { return f.family === 'GLCA' && String(f.weight) === '400'; })), want: 'false' },
             { what: 'served: 500 26px GLCA', got: String(document.fonts.check('500 26px GLCA')), want: 'true' },
             { what: 'Bulo 400 line width, canvas', got: b4 + 'px', want: '', tag: 'note' },
             { what: 'Bulo 500 line width, canvas', got: b5 + 'px', want: b4 + 'px' },
@@ -77,8 +77,8 @@
       <p class="rule-text">Bulo’s cap is 0.648 of the size and GLCA’s 0.683, so GLCA at 0.95 of a Bulo step has the same cap. The cap ladder down a page is 13.0 for a tile title, 17.8 for a section head and 26.0 for a page title.</p>
       <div class="demo">
         <div class="site wm" data-demo style="padding:14px 12px">
-          <span style="font:700 20px var(--fp-font-ui)">Hearts</span>
-          <span style="font:500 19px var(--fp-font-display);margin-left:10px">Hearts</span>
+          <span style="font:700 20px var(--font-ui)">Hearts</span>
+          <span style="font:500 19px var(--font-display);margin-left:10px">Hearts</span>
           <p class="rl" data-lab-copy style="margin:6px 0 0">Bulo 700 at 20 beside GLCA 500 at 19, on one baseline.</p>
         </div>
       </div>
@@ -121,7 +121,7 @@
       <h3>The UI ladder <span class="tag built">built</span></h3>
       <p class="rule-text">Bulo text takes one of five steps, 12, 14, 16, 18 or 20, with the line heights the guide lists, and nothing a modal writes itself is under 14.</p>
       <div class="demo">
-        <div data-demo style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:10px;background:var(--band)">
+        <div data-demo style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:10px;background:var(--paper-band)">
 
           <div>
             <p style="font-size:12px;color:#8a857c;margin:0 0 4px">12: a tag, in the what’s new row</p>
@@ -288,7 +288,7 @@
       <h3>Off-ladder sizes that ship <span class="tag built">built</span></h3>
       <p class="rule-text">Five sizes off the ladder ship and are not to be copied: the 13px tooltip body, the 11px tooltip hint, the 12.3px games bar count, the 13px games bar list note and the 28px stats headline figure.</p>
       <div class="demo">
-        <div data-demo style="display:grid;gap:10px;padding:10px;background:var(--band)">
+        <div data-demo style="display:grid;gap:10px;padding:10px;background:var(--paper-band)">
 
           <div class="site" style="padding:6px 12px 2px">
             <div id="wtip" class="on" style="position:static;transform:none;pointer-events:auto">
@@ -355,10 +355,10 @@
           two('.llNote', p('llnote'), '15px', '22.5px'),
           two('.wmStFigs b', p('stfig'), '28px', '30px'),
           { what: '.wmStFigs b weight', got: Lab.cs(p('stfig'), 'font-weight'), want: '700' },
-          { what: 'the everyone figure, .wmStFigs small', got: Lab.cs(p('stev'), 'font-size') + ' / ' + Lab.cs(p('stev'), 'line-height') + ' / ' + Lab.cs(p('stev'), 'font-weight') + ' / ' + Lab.cs(p('stev'), 'color'), want: '20px / 30px / 700 / #4e4d4c' },
-          { what: 'its words, .wmStWords', got: Lab.cs(p('stwords'), 'font-size') + ' / ' + Lab.cs(p('stwords'), 'color'), want: '16px / #4e4d4c' }
+          { what: 'the everyone figure, .wmStFigs small', got: Lab.cs(p('stev'), 'font-size') + ' / ' + Lab.cs(p('stev'), 'line-height') + ' / ' + Lab.cs(p('stev'), 'font-weight') + ' / ' + Lab.cs(p('stev'), 'color'), want: '20px / 30px / 700 / #141414' },
+          { what: 'its words, .wmStWords', got: Lab.cs(p('stwords'), 'font-size') + ' / ' + Lab.cs(p('stwords'), 'color'), want: '16px / #141414' }
         ], 'a match here is a known exception, not a rung');
-        Lab.note(card, 'Off ladder and known: 13 and 11 in the tooltip, 12.3 for the bar’s count, 13 for the list’s count and 28 for the stats figure. The guide names five; the fifth, the 15px nothing-live note, is the .llNote row. The everyone figure beside the 28 is on the ladder, the xl step at 700 / 30 in --muted, which is the 4.2 row for the stats box.');
+        Lab.note(card, 'Off ladder and known: 13 and 11 in the tooltip, 12.3 for the bar’s count, 13 for the list’s count and 28 for the stats figure. The guide names five; the fifth, the 15px nothing-live note, is the .llNote row. The everyone figure beside the 28 is on the ladder, the xl step at 700 / 30 in --ink-label, which is the 4.2 row for the stats box.');
         Lab.note(card, 'The list’s foot label is 16 / 24, which is on the ladder. The 13px the guide calls the games bar list note is the count inside a list row, .ovlist .mi i (_wm-shared.scss:898).');
         Lab.note(card, 'The overflow list is drawn closed, as it ships: it opens on hover and hangs out of the bar, so it is measured where it stands. The bar’s green cell is the pre-script state, which paints the picked cell until wocg.GameBar places the thumb.');
       })();
@@ -437,7 +437,7 @@
       <h3>The display scale <span class="tag built">built</span></h3>
       <p class="rule-text">GLCA takes one of four sizes: 38 / 1.15 for a page title, the hero alone with letter-spacing -0.01em; 26 / 1.2 for a section head, 26 / 26 on a seam; 21 / 28 for every h3 and the FAQ question; and 19 for display prose, 1.45 for a quote and 1.55 for the letter. 500 for heads, 400 for a letter or a quote. The about zone's own 23 / 30 and the question's 19 / 26 went on 22 Sep 2026.</p>
       <div class="demo">
-        <div data-demo style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:10px;background:var(--band)">
+        <div data-demo style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:10px;background:var(--paper-band)">
 
           <div class="site fp wm">
             <div id="fpPage" class="fpPage"><div class="stage" style="min-height:0">
@@ -519,11 +519,11 @@
           three('#sec-about h3', p('abouth3'), '21px', '28px', '500'),
           three('a reading page’s h3', p('rh3'), '21px', '28px', '500'),
           three('the FAQ question, .faqi b', p('faqb'), '21px', '28px', '500'),
-          three('a pull quote, .q .qt', p('qt'), '19px', '27.55px', '400'),
-          three('the letter, .serifnote p', p('serif'), '19px', '29.45px', '400'),
-          { what: 'the letter’s colour', got: Lab.cs(p('serif'), 'color'), want: '#262626' },
-          three('a reading page’s blockquote', p('rbq'), '19px', '27.55px', '400', 'call'),
-          { what: 'blockquote colour', got: Lab.cs(p('rbq'), 'color'), want: '#262626', tag: 'call' },
+          three('a pull quote, .q .qt', p('qt'), '19px', '27.55px', '500'),
+          three('the letter, .serifnote p', p('serif'), '16px', '24px', '400'),
+          { what: 'the letter’s colour', got: Lab.cs(p('serif'), 'color'), want: '#141414' },
+          three('a reading page’s blockquote', p('rbq'), '19px', '27.55px', '500', 'call'),
+          { what: 'blockquote colour', got: Lab.cs(p('rbq'), 'color'), want: '#141414', tag: 'call' },
           { what: 'blockquote border-left', got: Lab.cs(p('rbq'), 'border-left'), want: '2px solid #d2cfca', tag: 'call' },
           { what: 'blockquote padding-left', got: Lab.cs(p('rbq'), 'padding-left'), want: '16px', tag: 'call' },
           { what: '.pophead, declared and never drawn', got: Lab.cs(p('pophead'), 'font-size'), want: '26px, the guide’s section head', tag: 'note' }
@@ -546,7 +546,7 @@
       <h3>Roles: running text and small print <span class="tag built">built</span></h3>
       <p class="rule-text">Guide 4.4, the first rows: running text 16 / 24 in the ink, a muted line 16 / 22, a by-line 14 / 20 in #8a857c, small print 14 / 18 with an error line in the danger red, a modal title 20 / 28 and its body 16 / 20, and a FAQ answer 16 / 1.5 in the soft ink.</p>
       <div class="demo">
-        <div data-demo style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:10px;background:var(--band)">
+        <div data-demo style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:10px;background:var(--paper-band)">
 
           <div class="site wm">
             <div id="mainContainer" class="general" style="min-height:0">
@@ -600,12 +600,12 @@
         }
         Lab.table(card, [
           role('running text, a reading page’s > p', p('readp'), '16px / 24px / 400 / #141414'),
-          role('a muted line, .wmSub', p('sub'), '16px / 22px / 400 / #4e4d4c'),
-          role('a by-line, .articleByline', p('byline'), '14px / 20px / 400 / #8a857c'),
+          role('a muted line, .wmSub', p('sub'), '16px / 22px / 400 / #141414'),
+          role('a by-line, .articleByline', p('byline'), '14px / 20px / 400 / #67635c'),
           role('small print, .wmFldErr', p('flderr'), '14px / 18px / 400 / #c92a2a'),
           role('a modal title, .wmTitle', p('title'), '20px / 28px / 700 / #141414'),
           role('a modal body, .wmTxt', p('txt'), '16px / 20px / 400 / #141414'),
-          role('a FAQ answer, .faqi p', p('faqp'), '16px / 24px / 400 / #262626')
+          role('a FAQ answer, .faqi p', p('faqp'), '16px / 24px / 400 / #141414')
         ], 'size / line / weight / ink');
         Lab.note(card, 'The by-line is the reading recipe’s own 14 / 20 (guide 10.3), which is a step tighter than the 14 / 1.5 the role table names.');
         Lab.note(card, '.wmFldErr is drawn here from its rule (Modals.scss:409): no module writes the class today, so the red error line exists in the sheet and nowhere in the site’s JavaScript.');
@@ -624,7 +624,7 @@
       <h3>Roles: buttons, trays, tags and tables <span class="tag built">built</span></h3>
       <p class="rule-text">Guide 4.4, the control rows: a big button 18 / 32 700, the frontpage’s own 20 / 32, a small button, tray cell and chip 16 / 24 700, a tag 12 / 16 700 in #4e4d4c on #e4ddd0, a table head and cell, a card title 20 / 28 and a card body 16 / 1.35 muted.</p>
       <div class="demo">
-        <div data-demo style="display:grid;gap:10px;padding:10px;background:var(--band)">
+        <div data-demo style="display:grid;gap:10px;padding:10px;background:var(--paper-band)">
 
           <div class="site wm">
             <div class="wmModal wmOpen modalInstant" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
@@ -720,7 +720,7 @@
           role('a tag, .ntag', p('tag'), '12px / 16px / 700 / #4e4d4c'),
           { what: 'the tag’s paper', got: Lab.cs(p('tag'), 'background-color'), want: '#e4ddd0' },
           role('a page table head, .rulesDirectory th', p('th'), '16px / 22px / 700 / #141414'),
-          { what: 'what 4.4 says a table head is', got: '400, --muted', want: '7.7 says 700 ink, and the page table takes it', tag: 'note' },
+          { what: 'what 4.4 says a table head is', got: '400, --ink-label', want: '7.7 says 700 ink, and the page table takes it', tag: 'note' },
           role('a page table cell, .rulesDirectory td', p('td'), '16px / 24px / 400 / #141414'),
           { what: 'a name cell, tbody td:first-child', got: Lab.cs(p('tdname'), 'font-weight'), want: '700' },
           role('the lobby card’s compact head, .lbHeaderRow > span', p('lbhead'), '14px / 20px / 700 / #141414'),
@@ -746,7 +746,7 @@
       <h3>Roles: the bar, the panels and the footer <span class="tag built">built</span></h3>
       <p class="rule-text">Guide 4.4, the chrome rows: a menu link 16 / 1 700 in the soft ink, a games panel column head 16 / 32 700 in the ink, a games panel link and a dropdown item 16 / 24 400 in the soft ink, a footer column head 16 / 28 700, a footer link 16 / 28 and the legal row 16 / 20, both in the ink.</p>
       <div class="demo">
-        <div data-demo style="padding:10px;background:var(--band)">
+        <div data-demo style="padding:10px;background:var(--paper-band)">
           <div class="site wm">
             <nav id="menuBarContainer" class="mbcenter" aria-label="Main navigation">
               <a id="menuLogoContainer" href="/"><img src="static/images/logo.png" alt="menu" width="170" height="32" /></a>
@@ -858,10 +858,10 @@
           };
         }
         Lab.table(card, [
-          role('a menu link, #menuBar > li.mclink > a', p('mclink'), '16px / 16px / 700 / #262626'),
+          role('a menu link, #menuBar > li.mclink > a', p('mclink'), '16px / 16px / 700 / #141414'),
           role('a panel column head, .mghead', p('mghead'), '16px / 32px / 700 / #141414'),
-          role('a panel link, .mgcol a', p('mgcola'), '16px / 24px / 400 / #262626'),
-          role('a dropdown item, .dropdownItem', p('dropitem'), '16px / 24px / 400 / #262626'),
+          role('a panel link, .mgcol a', p('mgcola'), '16px / 24px / 400 / #141414'),
+          role('a dropdown item, .dropdownItem', p('dropitem'), '16px / 24px / 400 / #141414'),
           role('a footer column head, .footerGroup > strong', p('foothead'), '16px / 28px / 700 / #141414'),
           role('a footer link', p('footlink'), '16px / 28px / 400 / #141414'),
           { what: 'the legal row, .footerLegal > ul', got: Lab.cs(p('legal'), 'font-size') + ' / ' + Lab.cs(p('legal'), 'line-height'), want: '16px / 20px' },

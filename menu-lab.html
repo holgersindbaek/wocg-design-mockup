@@ -9,9 +9,9 @@
   @font-face { font-family: 'BuloRounded'; src: url("BuloRounded-Bold.woff2") format('woff2'); font-weight: bold; font-display: swap; }
   body { margin: 0; padding: 28px 24px 80px; background: #f9f6f2; color: #141414;
     font-family: "BuloRounded", "Verdana", "Arial", sans-serif; -webkit-font-smoothing: antialiased;
-    --canvas: #f9f6f2; --band: #f4eee5; --surface: #fff; --ink: #141414; --ink-soft: #262626;
-    --muted: #4e4d4c; --hairline: #e7e7e7; --edge: #d2cfca; --p1: #f4c360; --p3: #4d64ff; --p4: #00a82d;
-    --liftshadow: 0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09); }
+    --paper-page: #f9f6f2; --paper-band: #f4eee5; --paper-card: #fff; --ink: #141414; --ink-soft: #262626;
+    --ink-label: #4e4d4c; --line-soft: #e7e7e7; --line: #d2cfca; --star-fill: #f4c360; --p3: #4d64ff; --btn-green: #00a82d;
+    --lift: 0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09); }
   h1 { font-size: 22px; margin: 0 0 4px; }
   p.note { font-size: 13px; color: #8a857c; margin: 0 0 26px; max-width: 860px; }
   .mvar { margin: 0 0 64px; }
@@ -32,14 +32,14 @@
   /* the panel, hanging open under Games */
   .wrap { position: relative; max-width: 1112px; }
   .panel { position: absolute; top: 16px; left: 24px; text-align: left;
-    background: var(--surface); border-radius: 20px; corner-shape: squircle; padding: 12px;
-    box-shadow: 0 0 0 1px var(--edge), var(--liftshadow); display: flex; gap: 16px; }
+    background: var(--paper-card); border-radius: 20px; corner-shape: squircle; padding: 12px;
+    box-shadow: 0 0 0 1px var(--line), var(--lift); display: flex; gap: 16px; }
   .panel::after { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 32px;
-    background: var(--canvas); border-bottom: 1px solid var(--edge);
+    background: var(--paper-page); border-bottom: 1px solid var(--line);
     border-radius: 20px 20px 0 0; corner-shape: squircle; pointer-events: none; }
   .panel { padding-top: 0; padding-bottom: 6px; }
   .col { display: flex; flex-direction: column; white-space: nowrap; position: relative; z-index: 1; }
-  .colhead { font-size: 16px; font-weight: bold; color: var(--muted); line-height: 32px; margin: 0 0 8px; }
+  .colhead { font-size: 16px; font-weight: bold; color: var(--ink-label); line-height: 32px; margin: 0 0 8px; }
   .col a { font-size: 16px; line-height: 24px; padding: 2px 0; font-weight: normal; color: var(--ink-soft);
     text-decoration: none; }
   .col a:hover { text-decoration: underline; }
@@ -48,12 +48,12 @@
   /* ===== variant coats ===== */
   /* 2 · vertical rules between the category groups (not between the two
      trick-taking columns, which read as one group) */
-  .v-colrules .col.grp { border-left: 1px solid var(--hairline); padding-left: 16px; margin-left: -16px; }
+  .v-colrules .col.grp { border-left: 1px solid var(--line-soft); padding-left: 16px; margin-left: -16px; }
   .v-colrules .col.grp { margin-left: 0; }
   .v-colrules .panel { gap: 16px; }
 
   /* 3 · a hairline under every row, full column width */
-  .v-rowlines .col a { border-bottom: 1px solid var(--hairline); padding: 3px 0; }
+  .v-rowlines .col a { border-bottom: 1px solid var(--line-soft); padding: 3px 0; }
   .v-rowlines .col a:last-child { border-bottom: none; }
 
   /* 4 · zebra rows */
@@ -61,37 +61,37 @@
   .v-zebra .col a:nth-child(odd) { background: #F8F5F0; }
 
   /* 5 · every category its own card on a canvas panel */
-  .v-cards .panel { background: var(--canvas); padding: 12px; gap: 12px; }
+  .v-cards .panel { background: var(--paper-page); padding: 12px; gap: 12px; }
   .v-cards .panel::after { display: none; }
-  .v-cards .col { background: var(--surface); border-radius: 12px; corner-shape: squircle; padding: 0 12px 8px;
-    box-shadow: inset 0 0 0 1px var(--edge); }
-  .v-cards .colhead { border-bottom: 1px solid var(--edge); margin: 0 -12px 8px; padding: 0 12px;
-    background: var(--canvas); border-radius: 12px 12px 0 0; corner-shape: squircle; }
+  .v-cards .col { background: var(--paper-card); border-radius: 12px; corner-shape: squircle; padding: 0 12px 8px;
+    box-shadow: inset 0 0 0 1px var(--line); }
+  .v-cards .colhead { border-bottom: 1px solid var(--line); margin: 0 -12px 8px; padding: 0 12px;
+    background: var(--paper-page); border-radius: 12px 12px 0 0; corner-shape: squircle; }
 
   /* 6 · headers wear their category's tile color as a pip */
   .v-pips .colhead::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%;
-    margin-right: 7px; vertical-align: 1px; background: var(--muted); }
+    margin-right: 7px; vertical-align: 1px; background: var(--ink-label); }
   .v-pips .colhead.ghost::before { display: none; }
   .v-pips .col.c-tt .colhead::before { background: var(--p3); }
-  .v-pips .col.c-ru .colhead::before { background: var(--p4); }
-  .v-pips .col.c-cl .colhead::before { background: var(--p1); }
+  .v-pips .col.c-ru .colhead::before { background: var(--btn-green); }
+  .v-pips .col.c-cl .colhead::before { background: var(--star-fill); }
   .v-pips .col.c-more .colhead::before { background: #d1548f; }
 
   /* 7 · no band: colored underlined headers carry the structure */
   .v-nobands .panel { padding-top: 12px; }
   .v-nobands .panel::after { display: none; }
   .v-nobands .colhead { line-height: 24px; margin: 0 0 8px; padding-bottom: 6px; color: var(--ink);
-    border-bottom: 2px solid var(--edge); }
+    border-bottom: 2px solid var(--line); }
   .v-nobands .col.c-tt .colhead { border-color: var(--p3); }
-  .v-nobands .col.c-ru .colhead { border-color: var(--p4); }
-  .v-nobands .col.c-cl .colhead { border-color: var(--p1); }
+  .v-nobands .col.c-ru .colhead { border-color: var(--btn-green); }
+  .v-nobands .col.c-cl .colhead { border-color: var(--star-fill); }
 
   /* 8 · sitemap rows: category left, games flowing right */
   .v-rows .panel { flex-direction: column; gap: 0; padding: 12px 16px; }
   .v-rows .panel::after { display: none; }
   .v-rows .row { display: flex; align-items: baseline; gap: 16px; padding: 8px 0; }
-  .v-rows .row + .row { border-top: 1px solid var(--hairline); }
-  .v-rows .rowhead { flex: none; width: 120px; font-size: 16px; font-weight: bold; color: var(--muted); }
+  .v-rows .row + .row { border-top: 1px solid var(--line-soft); }
+  .v-rows .rowhead { flex: none; width: 120px; font-size: 16px; font-weight: bold; color: var(--ink-label); }
   .v-rows .row a { font-size: 16px; line-height: 24px; color: var(--ink-soft); text-decoration: none; white-space: nowrap; }
   .v-rows .row a:hover { text-decoration: underline; }
   .v-rows .row .games { display: flex; flex-wrap: wrap; gap: 2px 18px; }

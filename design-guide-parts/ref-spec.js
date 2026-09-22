@@ -6,51 +6,50 @@ window.Spec = {
 
   colour: [
     { group: 'Paper', note: 'What a surface is made of. Every page starts as the canvas.', items: [
-      { token: '--canvas', name: 'Page paper', use: 'Every page, and the modal box' },
-      { token: '--band', name: 'Band paper', use: 'The menu bar, the footer, a banded section, the notices, a table head row' },
-      { token: '--surface', name: 'White', use: 'Cards, tiles, panels, dropdowns, fields, chips, the tooltip' },
+      { token: '--paper-page', name: 'Page paper', use: 'Every page, and the modal box' },
+      { token: '--paper-band', name: 'Band paper', use: 'The menu bar, the footer, a banded section, the notices, a table head row' },
+      { token: '--paper-card', name: 'Card paper', use: 'Cards, tiles, panels, dropdowns, fields, chips, the tooltip' },
       { value: '#327333', name: 'The felt', use: 'Behind a table: a table tile and the game table itself' }
     ] },
     { group: 'Ink', note: 'The two darknesses text is written in: everything, and the quiet line under it.', items: [
       { token: '--ink', name: 'Ink', use: 'Every word: titles, running text, names, figures, table cells, a sub-line under a title, an explainer, a placeholder' },
-      { token: '--faint', name: 'Faint', use: 'By-lines, timestamps, a quote attribution, the tooltip hint, an empty list' }
+      { token: '--ink-quiet', name: 'Quiet ink', use: 'By-lines, timestamps, a quote attribution, the tooltip hint, an empty list' }
     ] },
     { group: 'Labels and marks', note: 'Not text: what a label on a thing, and what a mark that is not a line, is drawn in.', items: [
-      { token: '--muted', name: 'Muted', use: 'A tag, a field\u2019s label, a group label, a table\u2019s second figure' },
-      { token: '--mark', name: 'Mark', use: 'The dot that says someone is away, a bullet, the empty star\u2019s outline, the band\u2019s dividers' }
+      { token: '--ink-label', name: 'Label ink', use: 'A tag, a field\u2019s label, a group label, a table\u2019s second figure' },
+      { token: '--ink-mark', name: 'Mark', use: 'The dot that says someone is away, and the empty rating star\u2019s outline' }
     ] },
     { group: 'Lines', note: 'A border sits between two surfaces and is darker than both. A divider sits on one surface and is that surface one step down.', items: [
-      { token: '--edge', name: 'Edge', use: 'The 1px line around a card, tile, field, chip, panel or dropdown' },
-      { token: '--rule', name: 'Rule', use: 'A section seam, the line under the bar, the line over the footer, a tray on white' },
-      { token: '--hairline', name: 'Hairline', use: 'The divider between two rows inside a white card' },
-      { token: '--wm-seg-ring', name: 'Chooser ring', root: 'modal', use: 'Around a tray or the games bar, and between its cells' },
+      { token: '--line', name: 'Line', use: 'Every 1px line the page draws: around a card, tile, field, chip, panel or dropdown, and along a section seam, under the bar and over the footer' },
+      { token: '--line-soft', name: 'Soft line', use: 'The divider between two rows inside a white card' },
+      { token: '--line-tray', name: 'Tray line', root: 'modal', use: 'Around a tray or the games bar, and between its cells' },
       { token: '--color-table-edge', name: 'Felt line', use: 'A name plate and a notice over the felt' },
       { value: 'rgba(0, 0, 0, .30)', name: 'Overlay ring', use: 'The modal box, and any paper floating over the felt or the dark sheet' }
     ] },
     { group: 'Buttons', note: 'Each button is a fill, a ring one step darker, a hover, and its ink. Change the fill and the rest should be rebuilt from it.', kind: 'button', items: [
-      { fill: '--triogreen', ring: '--triogreenring', ink: '#ffffff', outline: true, name: 'Action green', use: 'Every go-ahead button, the tray thumb, a picked checkbox' },
-      { fill: '--trioblue', ring: '--triobluering', ink: '#ffffff', outline: true, name: 'Blue', use: 'The second solid action: Manage, and its kind' },
-      { fill: '--wm-tray', ring: '--wm-tray-ring', ink: '--ink', root: 'modal', name: 'Quiet brown', use: 'Cancel, Close, Got it: the button that does not commit you' },
-      { fill: '--wm-danger', ring: '--wm-danger-ring', ink: '#ffffff', outline: true, root: 'modal', name: 'Danger', use: 'Delete, Leave now, Cancel subscription' },
-      { fill: '--wm-tray-dark', ring: '--wm-tray-dark-ring', ink: '#ffffff', outline: true, name: 'Quiet brown, dark', use: 'The way back rather than the thing to do: the game over panel\u2019s dark button, and Back to table' },
-      { fill: '#ffd43b', ring: '#f5af23', ink: '#3d2b00', name: 'Yellow verb', use: 'The table action: Play, Join, Watch, Accept' }
+      { fill: '--btn-green', ring: '--btn-green-ring', ink: '#ffffff', outline: true, name: 'Green', use: 'Every go-ahead button, the tray thumb, a picked checkbox' },
+      { fill: '--btn-blue', ring: '--btn-blue-ring', ink: '#ffffff', outline: true, name: 'Blue', use: 'The second solid action: Manage, and its kind' },
+      { fill: '--btn-quiet', ring: '--btn-quiet-ring', ink: '--ink', root: 'modal', name: 'Quiet', use: 'Cancel, Close, Got it: the button that does not commit you' },
+      { fill: '--btn-danger', ring: '--btn-danger-ring', ink: '#ffffff', outline: true, root: 'modal', name: 'Danger', use: 'Delete, Leave now, Cancel subscription' },
+      { fill: '--btn-quiet-dark', ring: '--btn-quiet-dark-ring', ink: '#ffffff', outline: true, name: 'Quiet dark', use: 'The way back rather than the thing to do: the game over panel\u2019s dark button, and Back to table' },
+      { fill: '#ffd43b', ring: '#f5af23', ink: '#3d2b00', name: 'Yellow', use: 'The table action: Play, Join, Watch, Accept' }
     ] },
     { group: 'Light plates', note: 'A pale fill with its own deep ink, used where a colour has to carry small words.', kind: 'plate', items: [
-      { fill: '--triogreenlight', ink: '--triogreenlightink', name: 'Light green', use: 'A rating that went up, a seat plate' },
-      { fill: '--trioredlight', ink: '#8b1a1a', name: 'Light red', use: 'A rating that went down, the red team' },
-      { fill: '--triolight', ink: '--triolightink', name: 'Light blue', use: 'A name plate at the table' },
-      { fill: '--wm-seg', ink: '--muted', name: 'Chooser paper', use: 'The track a tray or the games bar sits in, and a tag' }
+      { fill: '--plate-blue', ink: '--plate-blue-ink', name: 'Blue plate', use: 'A name plate at the table' },
+      { fill: '--plate-red', ink: '#8b1a1a', name: 'Red plate', use: 'A rating that went down, the red team' },
+      { fill: '--plate-green', ink: '--plate-green-ink', name: 'Green plate', use: 'A rating that went up, a seat plate' },
+      { fill: '--plate-tray', ink: '--ink-label', name: 'Tray paper', use: 'The track a tray or the games bar sits in, and a tag' }
     ] },
     { group: 'Accents', note: 'Two colours that only mark a rating.', items: [
-      { token: '--p1', name: 'Star fill', use: 'A full rating star' },
-      { token: '--p5', name: 'Star stroke', use: 'The line around a rating star' }
+      { token: '--star-fill', name: 'Star fill', use: 'A full rating star' },
+      { token: '--star-stroke', name: 'Star stroke', use: 'The line around a rating star' }
     ] }
   ],
 
   text: [
-    { group: 'The two faces', note: 'One face for the interface, one for headings. No other font is loaded by any page.', kind: 'face', items: [
-      { face: 'ui', weights: '400, 700 and 900', name: 'BuloRounded', use: 'Everything you click, read in a row, or type into' },
-      { face: 'display', weights: '400 and 500', name: 'GLCA', use: 'Page titles, section heads, an h3, a quote' }
+    { group: 'The two faces', note: 'One face for the interface, one for headings, three files between them. No other font is loaded by any page.', kind: 'face', items: [
+      { face: 'ui', weights: '400 and 700', name: 'BuloRounded', use: 'Everything you click, read in a row, or type into, and the about letter' },
+      { face: 'display', weights: '500', name: 'GLCA', use: 'Page titles, section heads, an h3, a quote' }
     ] },
     { group: 'Interface sizes', note: 'All interface text is one of five sizes. Nothing a dialog writes is under 14.', kind: 'size', items: [
       { size: '20px', line: '28px', weight: 700, name: '20', use: 'A tile title, a modal title, the lobby big button' },
@@ -63,33 +62,29 @@ window.Spec = {
       { size: '38px', line: '1.15', face: 'display', weight: 500, name: '38', use: 'The hero title, and nothing else' },
       { size: '26px', line: '1.2', face: 'display', weight: 500, name: '26', use: 'A section head, and a seam title' },
       { size: '21px', line: '28px', face: 'display', weight: 500, name: '21', use: 'An h3 anywhere: a reading page, the band, the about zone; the FAQ question' },
-      { size: '19px', line: '26px', face: 'display', weight: 400, name: '19', use: 'Display prose, never a heading: a quote, the letter' }
+      { size: '19px', line: '26px', face: 'display', weight: 500, name: '19', use: 'Display prose, never a heading: a quote card, a blockquote' }
     ] }
   ],
 
   shape: [
-    { group: 'Corners', note: 'Every corner is a squircle, not an arc, except the three noted. Five sizes, and round.', kind: 'corner', items: [
-      { value: '20px', name: '20', use: 'A modal box, a game tile, a table tile, a leaderboard card, a dropdown panel' },
-      { value: '16px', name: '16', use: 'A white card inside a modal, and the notices' },
-      { value: '14px', name: '14', use: 'The games bar track, one step rounder than the cells inside it' },
-      { value: '12px', name: '12', use: 'Every button, field, tray cell, checkbox, thumb and the tooltip' },
-      { value: '8px', name: '8', use: 'A tag, and a rating movement chip' },
-      { value: '999px', round: true, name: 'Round', use: 'Dots, badges, the live capsule, a progress bar' },
+    { group: 'Corners', note: 'Every corner is a squircle, not an arc, except the three noted. Two sizes, round, and none (Holger, 22 Sep 2026).', kind: 'corner', items: [
+      { value: '20px', name: '20', use: 'Every box: a modal box, a game tile, a table tile, a leaderboard card, a dropdown panel, a picture, a reading page box and the notices' },
+      { value: '12px', name: '12', use: 'Every control and everything inside a box: a button, field, tray, tray cell, checkbox, thumb, the tooltip, and the white card in a modal' },
+      { value: '999px', round: true, name: 'Round', use: 'Dots, badges, the live capsule, and anything so small that half its height is the corner: a chip at 8, the waiting bar at 6, the award strip at 4' },
       { value: '0', name: 'None', use: 'The ad rail, and any band that runs the full width' }
     ] },
     { group: 'Lines', note: 'The colours are in the Lines group under Colour; this is the five forms a 1px line is drawn in. Which colour a divider takes depends on the surface it sits on, not on the form.', kind: 'line', items: [
       { form: 'inset', name: 'Inside ring', use: 'The default: a card, tile, field, checkbox, tray or button' },
       { form: 'border', name: 'Real border', use: 'A fully round pill, a dropdown, a card whose text is padded in' },
       { form: 'outside', name: 'Outside ring', use: 'The modal box, a name plate on the felt, the author photo' },
-      { form: 'focus', name: 'Focus ring', use: 'A field you are typing in: the same 1px line, darkened to --faint' },
-      { form: 'divider', name: 'Divider', use: 'Between two rows of one colour, in that surface\u2019s own divider colour: --hairline on white, --rule on the band and the canvas, --wm-seg-ring inside a chooser' }
+      { form: 'focus', name: 'Focus ring', use: 'A field you are typing in: the same 1px line, one soft step darker in --ink-mark (Holger, 22 Sep 2026)' },
+      { form: 'divider', name: 'Divider', use: 'Between two rows of one colour, in that surface\u2019s own divider colour: --line-soft on white, --line on the band and the canvas, --line-tray inside a chooser' }
     ] },
     { group: 'Shadows', note: 'How far a thing lifts off the page. Five steps and one special.', kind: 'shadow', items: [
-      { token: '--liftshadow', name: 'Container lift', use: 'Every light container: a card, a panel, a dropdown, the tooltip. The frontpage draws a lighter copy, .04 and .06' },
-      { token: '--liftshadow-lg', name: 'Tile lift', use: 'A hero tile and a table tile, which sit higher than a card' },
-      { token: '--wm-card-lift', root: 'modal', name: 'Half lift', use: 'A white card inside a modal' },
-      { value: '0 2px 4px rgba(0, 0, 0, .06)', name: 'Button drop', use: 'The lobby buttons and both tray thumbs. A modal button has none' },
-      { token: '--wm-lift', root: 'modal', name: 'Modal lift', use: 'The modal box over the dark sheet' }
+      { token: '--lift', name: 'Container lift', use: 'Every light container: a card, a panel, a dropdown, the tooltip. The frontpage draws a lighter copy, .04 and .06' },
+      { token: '--lift-lg', name: 'Tile lift', use: 'A hero tile and a table tile, which sit higher than a card' },
+      { token: '--lift-card', root: 'modal', name: 'Half lift', use: 'A white card inside a modal' },
+      { value: '0 2px 4px rgba(0, 0, 0, .06)', name: 'Button drop', use: 'The lobby buttons and both tray thumbs. A modal button has none' }
     ] }
   ],
 

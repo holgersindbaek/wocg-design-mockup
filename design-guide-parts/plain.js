@@ -80,17 +80,17 @@ window.Plain = {
   }
  },
  "shape": {
-  "The radius ladder, the 20 rung": {
-   "title": "Corners: the big round, on boxes and tiles",
-   "lead": "The largest corner in the design, on a modal box, a game tile, a table tile and the big cards."
+  "The radius ladder, the box rung": {
+   "title": "Corners: the box round",
+   "lead": "The one corner every box takes, on a modal box, a game tile, a table tile and the big cards."
   },
-  "The radius ladder, the 16 rung": {
-   "title": "Corners: the card round",
-   "lead": "The white card inside a modal, and the notices, which take a smaller corner on a small window."
+  "The radius ladder, the box rung on paper": {
+   "title": "Corners: the paper boxes take it too",
+   "lead": "The reading pages' boxes and the notices used to be a touch tighter than the cards in the lobby. They are the same now. The one card that sits inside a box is tighter than the box around it."
   },
-  "The radius ladder, the 14 rung": {
+  "The radius ladder, the tray": {
    "title": "Corners: the tray round",
-   "lead": "The games bar's track is one step rounder than the cells inside it, so the cells sit inside its curve."
+   "lead": "A tray holding cells takes the same corner as the cells. It used to be two pixels rounder, which nobody could see."
   },
   "The radius ladder, the 12 rung: the controls": {
    "title": "Corners: the control round",
@@ -100,9 +100,9 @@ window.Plain = {
    "title": "Corners: the ones written by hand",
    "lead": "Four places write the same corner as a plain number instead of reading the shared one: the yellow buttons, the author photo, the quote avatars and the settings tiles."
   },
-  "The radius ladder, the 8 rung and the round 6": {
-   "title": "Corners: the small chip, and the one true arc",
-   "lead": "A movement chip and a tag take a small corner. The progress bar is one of only three things in the design drawn with a real arc instead of a squircle."
+  "The radius ladder, as round as the box goes": {
+   "title": "Corners: the small ones are just round",
+   "lead": "A chip, a tag and the two bars are as round as a thing that small can be. They are not sizes of their own. The waiting bar is one of only three things in the design drawn with a real arc instead of a squircle."
   },
   "The radius ladder, round and none": {
    "title": "Corners: fully round, and none at all",
@@ -372,9 +372,9 @@ window.Plain = {
   "The tooltip": {
    "lead": "One tooltip serves the whole site. Point at the word to see it, and note the pause before it comes."
   },
-  "The notices on the lobby and on the felt": {
-   "title": "The notices",
-   "lead": "The toast and the two corner notices, on the lobby and over the felt, including the shutdown warning that turns red near its end."
+  "The notice on the lobby and on the felt": {
+   "title": "The notice",
+   "lead": "There is one notice, the toast, drawn on the lobby and over the felt. The update line and the maintenance countdown are toasts too now, said once each, where they used to sit in the bottom right corner."
   },
   "Avatars off the felt and on it": {
    "title": "The avatars",

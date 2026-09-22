@@ -9,7 +9,7 @@
   @font-face { font-family: 'BuloRounded'; src: url("BuloRounded-Bold.woff2") format('woff2'); font-weight: bold; font-display: swap; }
   body { margin: 0; padding: 28px 24px 80px; background: #f9f6f2; color: #141414;
     font-family: "BuloRounded", "Verdana", "Arial", sans-serif; -webkit-font-smoothing: antialiased;
-    --canvas: #f9f6f2; --band: #f4eee5; --sandline: #d9d2c4; --deep: #cfc6b4; --pale: #e3dcce;
+    --paper-page: #f9f6f2; --paper-band: #f4eee5; --sandline: #d9d2c4; --deep: #cfc6b4; --pale: #e3dcce;
     --gold: #c9a24c; --goldlight: #dcc08a; --green: #00a82d; --ink: #141414; --ink-soft: #262626;
     /* the mockup's own wave tiles, for the baseline and its variations */
     --waveline: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 8'%3E%3Cpath d='M0 4C2.5 1 7.5 1 10 4C12.5 7 17.5 7 20 4' fill='none' stroke='white' stroke-width='2'/%3E%3C/svg%3E");
@@ -25,7 +25,7 @@
   /* ===== the scene: the mockup's centered menu bar + 100px of page ===== */
   .scene { position: relative; }
   .bar { position: relative; height: 56px; display: flex; align-items: center; padding: 0 24px;
-    background: var(--band); z-index: 2; }
+    background: var(--paper-band); z-index: 2; }
   .mleft { display: flex; gap: 18px; flex: 1; align-items: center; }
   .mclink { font-size: 16px; font-weight: bold; color: var(--ink-soft); cursor: pointer; }
   .mclink:hover { text-decoration: underline; }
@@ -43,7 +43,7 @@
   @media (prefers-reduced-motion: reduce) { .seam::before, .seam::after { animation: none !important; } }
 
   /* ===== 1 · the current wave (baseline) ===== */
-  .v-wave .seam::before { content: ""; top: 0; height: 8px; background: var(--band);
+  .v-wave .seam::before { content: ""; top: 0; height: 8px; background: var(--paper-band);
     -webkit-mask: var(--wavecut) left center / 20px 8px repeat-x;
             mask: var(--wavecut) left center / 20px 8px repeat-x; }
   .v-wave .seam::after { content: ""; top: 0; height: 8px; background: var(--sandline);
@@ -71,7 +71,7 @@
   @keyframes sheenb { from { background-position: 150% 0; } to { background-position: -50% 0; } }
 
   /* ===== 4 · meeple queue: the wave's period becomes head-and-shoulders ===== */
-  .v-meeple .seam::before { content: ""; top: 0; height: 13px; background: var(--band);
+  .v-meeple .seam::before { content: ""; top: 0; height: 13px; background: var(--paper-band);
     -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 13'%3E%3Cpath d='M0 12.5C3 12.5 4.5 7 8.5 5.8C10.5 5.2 10 1.5 13 1.5C16 1.5 15.5 5.2 17.5 5.8C21.5 7 23 12.5 26 12.5L26 0L0 0Z' fill='white'/%3E%3C/svg%3E") left top / 26px 13px repeat-x;
             mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 13'%3E%3Cpath d='M0 12.5C3 12.5 4.5 7 8.5 5.8C10.5 5.2 10 1.5 13 1.5C16 1.5 15.5 5.2 17.5 5.8C21.5 7 23 12.5 26 12.5L26 0L0 0Z' fill='white'/%3E%3C/svg%3E") left top / 26px 13px repeat-x; }
   .v-meeple .seam::after { content: ""; top: 0; height: 13px; background: var(--sandline);
@@ -125,7 +125,7 @@
     background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 10'%3E%3Cg fill='%23CFC6B4'%3E%3Ccircle cx='10' cy='5' r='1.2'/%3E%3Ccircle cx='28' cy='3' r='1.2'/%3E%3Ccircle cx='32' cy='7' r='1.2'/%3E%3Ccircle cx='48' cy='3' r='1.2'/%3E%3Ccircle cx='50' cy='5' r='1.2'/%3E%3Ccircle cx='52' cy='7' r='1.2'/%3E%3Ccircle cx='68' cy='3' r='1.2'/%3E%3Ccircle cx='72' cy='3' r='1.2'/%3E%3Ccircle cx='68' cy='7' r='1.2'/%3E%3Ccircle cx='72' cy='7' r='1.2'/%3E%3Ccircle cx='88' cy='3' r='1.2'/%3E%3Ccircle cx='92' cy='3' r='1.2'/%3E%3Ccircle cx='90' cy='5' r='1.2'/%3E%3Ccircle cx='88' cy='7' r='1.2'/%3E%3Ccircle cx='92' cy='7' r='1.2'/%3E%3Ccircle cx='108' cy='2.5' r='1.2'/%3E%3Ccircle cx='108' cy='5' r='1.2'/%3E%3Ccircle cx='108' cy='7.5' r='1.2'/%3E%3Ccircle cx='112' cy='2.5' r='1.2'/%3E%3Ccircle cx='112' cy='5' r='1.2'/%3E%3Ccircle cx='112' cy='7.5' r='1.2'/%3E%3C/g%3E%3C/svg%3E") left top / 120px 10px repeat-x; }
 
   /* ===== 15 · puzzle seam: bar and page are two pieces of the same puzzle ===== */
-  .v-puzzle .seam::before { content: ""; top: 0; height: 12px; background: var(--band);
+  .v-puzzle .seam::before { content: ""; top: 0; height: 12px; background: var(--paper-band);
     -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 12'%3E%3Cpath d='M0 1.5H24C27 1.5 27.5 3.5 26 5C23.5 7.2 24.5 10.5 32 10.5C39.5 10.5 40.5 7.2 38 5C36.5 3.5 37 1.5 40 1.5H64V0H0Z' fill='white'/%3E%3C/svg%3E") left top / 64px 12px repeat-x;
             mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 12'%3E%3Cpath d='M0 1.5H24C27 1.5 27.5 3.5 26 5C23.5 7.2 24.5 10.5 32 10.5C39.5 10.5 40.5 7.2 38 5C36.5 3.5 37 1.5 40 1.5H64V0H0Z' fill='white'/%3E%3C/svg%3E") left top / 64px 12px repeat-x; }
   .v-puzzle .seam::after { content: ""; top: 0; height: 12px; background: var(--sandline);
@@ -153,7 +153,7 @@
   .v-stamp .seam::before { content: ""; top: 1px; height: 8px; background: #E7DFD2;
     -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Crect width='8' height='8' fill='white'/%3E%3Ccircle cx='4' cy='8' r='3' fill='black'/%3E%3C/svg%3E") left top / 8px 8px repeat-x;
             mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Crect width='8' height='8' fill='white'/%3E%3Ccircle cx='4' cy='8' r='3' fill='black'/%3E%3C/svg%3E") left top / 8px 8px repeat-x; }
-  .v-stamp .seam::after { content: ""; top: 0; height: 8px; background: var(--band);
+  .v-stamp .seam::after { content: ""; top: 0; height: 8px; background: var(--paper-band);
     -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Crect width='8' height='8' fill='white'/%3E%3Ccircle cx='4' cy='8' r='3' fill='black'/%3E%3C/svg%3E") left top / 8px 8px repeat-x;
             mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Crect width='8' height='8' fill='white'/%3E%3Ccircle cx='4' cy='8' r='3' fill='black'/%3E%3C/svg%3E") left top / 8px 8px repeat-x; }
 

@@ -8,7 +8,7 @@
     var host = document.createElement('div');
     host.style.cssText = 'position:absolute;left:-9999px;top:0;width:600px;height:0;overflow:hidden;visibility:hidden;pointer-events:none';
     // The shared root, not the frontpage: body.fp overrides a few tokens with lighter copies of its own
-    // (--liftshadow is .04/.06 there and .05/.09 everywhere else), and the shared value is the one to state.
+    // (--lift is .04/.06 there and .05/.09 everywhere else), and the shared value is the one to state.
     host.innerHTML = '<div class="site wm"><div class="wmModal wmOpen modalInstant"><div class="wmPanel">' +
       '<div class="wmBox"></div></div></div></div>';
     document.body.appendChild(host);
@@ -90,11 +90,11 @@
     },
     line: function (item) {
       var b = el('i', 'sw lineart');
-      var edge = colourOf(item, '--edge'), rule = colourOf(item, '--rule'), hair = colourOf(item, '--hairline');
+      var edge = colourOf(item, '--line'), rule = colourOf(item, '--line'), hair = colourOf(item, '--line-soft');
       if (item.form === 'inset') b.style.boxShadow = 'inset 0 0 0 1px ' + edge;
       if (item.form === 'border') { b.style.border = '1px solid ' + edge; b.style.borderRadius = '999px'; b.style.cornerShape = 'round'; }
       if (item.form === 'outside') b.style.boxShadow = '0 0 0 1px rgba(0,0,0,.30)';
-      if (item.form === 'focus') b.style.boxShadow = 'inset 0 0 0 1px ' + colourOf({ root: 'modal' }, '--faint');
+      if (item.form === 'focus') b.style.boxShadow = 'inset 0 0 0 1px ' + colourOf({ root: 'modal' }, '--ink-mark');
       if (item.form === 'divider') {
         b.style.boxShadow = 'inset 0 0 0 1px ' + edge;
         var r = el('i', 'divline'); r.style.background = hair; b.appendChild(r);
@@ -139,9 +139,9 @@
     if (kind === 'face') return item.weights;
     if (kind === 'size') return item.size + ' / ' + item.line + (item.weight === 700 ? ' bold' : '');
     if (kind === 'corner' || kind === 'gap' || kind === 'height' || kind === 'width') return item.value;
-    if (kind === 'line') return { inset: 'inset 0 0 0 1px --edge', border: '1px solid --edge',
-      outside: '0 0 0 1px rgba(0,0,0,.30)', focus: 'inset 0 0 0 1px --faint',
-      divider: 'border-bottom 1px, the surface\u2019s divider colour (--hairline here, on white)' }[item.form];
+    if (kind === 'line') return { inset: 'inset 0 0 0 1px --line', border: '1px solid --line',
+      outside: '0 0 0 1px rgba(0,0,0,.30)', focus: 'inset 0 0 0 1px --ink-mark',
+      divider: 'border-bottom 1px, the surface\u2019s divider colour (--line-soft here, on white)' }[item.form];
     if (kind === 'shadow') return (item.token || 'literal') + '  ·  ' + Lab.hex(item.value || colourOf(item, item.token));
     return (item.token || 'literal') + '  ·  ' + shown(item, item.token || item.value);
   }

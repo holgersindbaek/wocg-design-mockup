@@ -65,7 +65,11 @@
     var w = canon(want);
     return String(selectorText).split(/,(?![^(]*\))/).some(function (x) { return canon(x) === w; });
   }
-  // the last rule for the selector that declares the property (or the last rule at all when prop is not given)
+  // the last rule for the selector that declares the property (or the last rule at all when prop is not given).
+  // A rule inside a width or height @media that does not match at the size the page is being read at is skipped:
+  // the phone's own answer is not what a desk-width row is asking about, and reading it made the site's phone
+  // steps look like faults (the notification panel's placement). Feature queries such as prefers-reduced-motion
+  // are left alone, since a row that asks about them is asking for the rule inside.
   function findRule(sel, prop) {
     var out = null;
     for (var i = 0; i < document.styleSheets.length; i++) {
@@ -73,6 +77,7 @@
       (function walk(list) {
         for (var j = 0; j < list.length; j++) {
           var r = list[j];
+          if (r.media && /width|height/.test(r.media.mediaText) && !matchMedia(r.media.mediaText).matches) continue;
           if (r.cssRules && r.cssRules.length && !r.selectorText) { walk(r.cssRules); continue; }
           if (r.selectorText && selMatch(r.selectorText, sel) && (!prop || (r.style && r.style.getPropertyValue(prop)))) out = r;
         }

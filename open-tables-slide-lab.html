@@ -3424,7 +3424,7 @@
   .ovlist .mi { display: flex; align-items: center; justify-content: space-between; gap: 18px; cursor: pointer; white-space: nowrap; }
   .ovlist .mi i { font-style: normal; }
   /* the site's own list, as the leaderboard's More draws it: light blue rows on a #72b0f6 frame */
-  .list-site .ovlist { background: #fff; border: 1px solid var(--triolightline, #72b0f6); border-radius: 6px; overflow: hidden; padding: 0; min-width: 100%; }
+  .list-site .ovlist { background: #fff; border: 1px solid var(--triolightline, #72b0f6); border-radius: calc(var(--radius-md, 6px) + 2px); corner-shape: squircle; overflow: hidden; padding: 0; min-width: 100%; top: calc(100% + 10px); }
   .list-site .ovlist .mi { font-size: 16px; line-height: 24px; font-weight: bold; color: var(--triolightink, #1971C2); background: var(--triolight, #abd2ff); border-bottom: 1px solid var(--triolightline, #72b0f6); padding: 0 12px; }
   .list-site .ovlist .mi:last-child { border-bottom: 0; }
   .list-site .ovlist .mi:hover { background: var(--triolighthover, #a3ccfb); }
@@ -3554,9 +3554,16 @@
 <style>
   /* ===== round six: dividers, counts, and the move made smooth ===== */
 
+  /* The lag, measured in Chrome's trace: layout, paint and script were under 5 ms a click, but the GPU spent 218 ms
+     (84 ms in one frame). The bar shares its raster tiles with the top of the game tiles below it, and every
+     frame the thumb moved, those raster tiles were redrawn, avatars, SVG edge filter and drop shadows included,
+     at 2x. On its own compositor layer the bar redraws alone: 53 ms a click, 19 ms worst frame. The z-index keeps
+     the More list above the game tiles now that the bar is a stacking context. */
+  .wseg .track { will-change: transform; z-index: 5; }
+
   /* the dividers: drawn on the left edge of every segment after the first, and on the More cell */
   .track > .s + .s::before, .track > .s + .ov::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 1px; background: transparent; pointer-events: none; transition: opacity var(--thspd) var(--thease); }
-  .dv-full .track > .s + .s::before, .dv-full .track > .s + .ov::before { background: var(--triolightring, #83b5ef); }
+  .dv-full .track > .s + .s::before, .dv-full .track > .s + .ov::before { background: var(--triolightring, #83b5ef); top: -2px; bottom: -2px; }
   .dv-half .track > .s + .s::before, .dv-half .track > .s + .ov::before { background: var(--triolightring, #83b5ef); top: 6px; bottom: 6px; }
   .dv-quarter .track > .s + .s::before, .dv-quarter .track > .s + .ov::before { background: var(--triolightring, #83b5ef); top: 8px; bottom: 8px; }
   .dv-white .track > .s + .s::before, .dv-white .track > .s + .ov::before { background: rgba(255,255,255,.65); top: 5px; bottom: 5px; }
@@ -3574,9 +3581,84 @@
   /* the count sits on the name's baseline, and its digits are as tall as the name's small letters: an e in bold 16px BuloRounded is 8.1px tall, and bold digits are 8.1px tall at 12.3px */
   .wseg .track > .s > span, .wseg .track .ov .ovbtn .ovlab { align-items: baseline; }
   .wseg .track > .s i, .wseg .track .ov .ovbtn .ovlab i { font-size: 12.3px; line-height: 1; }
-  /* the More cell: the triangle sits close to its word, 4px to the wall and 3px after it, with 9px of air to the right edge */
-  .wseg .track .ov .ovbtn .ovlab { padding-right: 4px; }
-  .wseg .track .ov .ovbtn .zone { aspect-ratio: auto; width: 20px; justify-content: flex-start; padding-left: 3px; box-sizing: border-box; }
+  /* the More cell: the triangle sits close to its word, 3px to the wall and 2px after it, with 11px of air to the right edge */
+  .wseg .track .ov .ovbtn .ovlab { padding-right: 3px; }
+  .wseg .track .ov .ovbtn .zone { aspect-ratio: auto; width: 22px; justify-content: flex-start; padding-left: 2px; box-sizing: border-box; }
+
+  /* hover, switched at the top of the page. None is the default: the segments are labels on a tray, and the thumb is the one raised thing.
+     The picked cell never shows a hover. */
+  body[data-hover="none"] .wseg .track:not(.tcopy) > .s:hover, body[data-hover="none"] .wseg .track:not(.tcopy) .ov .ovbtn:hover { background: transparent !important; }
+  body[data-hover="ink"] .wseg .track:not(.tcopy) > .s:hover, body[data-hover="ink"] .wseg .track:not(.tcopy) .ov .ovbtn:hover { background: transparent !important; }
+  body[data-hover="ink"] .wseg .track:not(.tcopy) > .s:not(.on):hover, body[data-hover="ink"] .wseg .track:not(.tcopy) > .s:not(.on):hover i,
+  body[data-hover="ink"] .wseg .track:not(.tcopy) .ov:not(.on) .ovbtn:hover, body[data-hover="ink"] .wseg .track:not(.tcopy) .ov:not(.on) .ovbtn:hover .ovlab i { color: #14589a !important; }
+  body[data-hover="site"] .wseg .track:not(.tcopy) > .s:not(.on):hover, body[data-hover="site"] .wseg .track:not(.tcopy) .ov:not(.on) .ovbtn:hover { background: var(--triolighthover, #a3ccfb) !important; }
+  body[data-hover="white"] .wseg .track:not(.tcopy) > .s:not(.on):hover, body[data-hover="white"] .wseg .track:not(.tcopy) .ov:not(.on) .ovbtn:hover { background: rgba(255,255,255,.28) !important; }
+  /* Ant and Material: a wash of the ink itself at 8% */
+  body[data-hover="inkwash"] .wseg .track:not(.tcopy) > .s:not(.on):hover, body[data-hover="inkwash"] .wseg .track:not(.tcopy) .ov:not(.on) .ovbtn:hover { background: rgba(25,113,194,.08) !important; }
+  /* Carbon: the wash and the darker ink together */
+  body[data-hover="both"] .wseg .track:not(.tcopy) > .s:not(.on):hover, body[data-hover="both"] .wseg .track:not(.tcopy) .ov:not(.on) .ovbtn:hover { background: var(--triolighthover, #a3ccfb) !important; }
+  body[data-hover="both"] .wseg .track:not(.tcopy) > .s:not(.on):hover, body[data-hover="both"] .wseg .track:not(.tcopy) > .s:not(.on):hover i,
+  body[data-hover="both"] .wseg .track:not(.tcopy) .ov:not(.on) .ovbtn:hover, body[data-hover="both"] .wseg .track:not(.tcopy) .ov:not(.on) .ovbtn:hover .ovlab i { color: #14589a !important; }
+  body[data-hover] .wseg .track:not(.tcopy) > .s.on:hover, body[data-hover] .wseg .track:not(.tcopy) .ov.on .ovbtn:hover { background: transparent !important; }
+
+  /* two cards lock their own hover, whatever the switch says */
+  .hv-ink.wseg .track:not(.tcopy) > .s:not(.on):hover, .hv-ink.wseg .track:not(.tcopy) .ov:not(.on) .ovbtn:hover { background: transparent !important; }
+  .hv-ink.wseg .track:not(.tcopy) > .s:not(.on):hover, .hv-ink.wseg .track:not(.tcopy) > .s:not(.on):hover i,
+  .hv-ink.wseg .track:not(.tcopy) .ov:not(.on) .ovbtn:hover, .hv-ink.wseg .track:not(.tcopy) .ov:not(.on) .ovbtn:hover .ovlab i { color: #14589a !important; }
+  .hv-site.wseg .track:not(.tcopy) > .s:not(.on):hover, .hv-site.wseg .track:not(.tcopy) .ov:not(.on) .ovbtn:hover { background: var(--triolighthover, #a3ccfb) !important; color: var(--triolightink, #1971C2) !important; }
+  .hv-site.wseg .track:not(.tcopy) > .s:not(.on):hover i, .hv-site.wseg .track:not(.tcopy) .ov:not(.on) .ovbtn:hover .ovlab i { color: var(--triolightink, #1971C2) !important; }
+  .hv-ink.wseg .track:not(.tcopy) > .s, .hv-site.wseg .track:not(.tcopy) > .s, .hv-ink.wseg .track:not(.tcopy) .ov .ovbtn, .hv-site.wseg .track:not(.tcopy) .ov .ovbtn { transition: background-color 24ms ease-out, color 24ms ease-out; }
+
+  /* the line on the left of whatever follows the picked cell goes too, even when hidden cells sit between them in the markup */
+  .dv-fade .track > .nextpick::before { opacity: 0; }
+
+  /* More opens on hover, as the leaderboard's More does; the list carries an 8px bridge above it so the pointer can cross the gap. A click still opens it for touch. */
+  .hover-more .ov:hover .ovlist { display: block; }
+  .hover-more .ov.picked:hover .ovlist { display: none; }
+  .hover-more .ov.picked.open .ovlist { display: block; }
+  .ovlist::before { content: ""; position: absolute; left: 0; right: 0; top: -8px; height: 8px; }
+
+  /* while a stage measures its final layout, nothing transitions */
+  .track.nofx, .track.nofx *, .track.nofx *::before, .track.nofx *::after, .clipmode .track.nofx:not(.tcopy) > .s i .w { transition: none !important; }
+
+  /* the clipped copy: a second bar, white on blue, over the real one, clipped to the window that is the thumb */
+  .trackwrap { position: relative; margin-bottom: 16px; }
+  .trackwrap > .track { margin-bottom: 0; }
+  .wseg .tcopy { position: absolute; inset: 0; margin: 0; pointer-events: none; z-index: 6;
+    background: transparent !important; box-shadow: none !important;
+    clip-path: inset(0 100% 0 0);
+    transition: clip-path var(--thspd) var(--thease), opacity calc(var(--thspd) / 2) linear; }
+  /* the tray's corners sit 2px outside the thumb's, so they are concentric: thumb 6px, tray 8px, both squircles.
+     The site's buttons carry a soft drop shadow because they are raised things; the tray is a recess, so it keeps
+     only its ring, and the thumb, which is the button, keeps the shadow. */
+  .wseg .track { border-radius: calc(var(--radius-md, 6px) + 2px); }
+  .tr-light .track:not(.tcopy) { box-shadow: inset 0 0 0 1px var(--triolightring, #83b5ef); }
+  .wseg .tcopy.still { transition: none !important; }
+  .wseg .tcopy > .s, .wseg .tcopy > .s i, .wseg .tcopy .ov .ovbtn, .wseg .tcopy .ov .ovbtn .ovlab i { color: #fff !important;
+    text-shadow: -1px -1px 0 var(--triobluering), 1px -1px 0 var(--triobluering), -1px 1px 0 var(--triobluering), 1px 1px 0 var(--triobluering); }
+  .wseg .tcopy > .s::before, .wseg .tcopy > .s + .s::before, .wseg .tcopy > .s + .ov::before, .wseg .tcopy .ov::before { display: none !important; }
+  .wseg .tcopy > .s, .wseg .tcopy .ov .ovbtn { background: transparent !important; }
+  .wseg .tcopy .ov .ovbtn .wall { background: var(--triobluering, #1f6fbf) !important; }
+  .wseg .tcopy .ov .ovbtn .zone svg path { fill: #fff !important; stroke: #fff !important; }
+  .wseg .tcopy > .s i .w { opacity: 1 !important; transition: width var(--thspd) var(--thease) !important; }
+  /* under the copy, the real bar never changes colour: the window does the colouring */
+  .clipmode .track:not(.tcopy) > .s.on, .clipmode .track:not(.tcopy) > .s.on i, .clipmode .track:not(.tcopy) .ov.on .ovbtn, .clipmode .track:not(.tcopy) .ov.on .ovbtn .ovlab i { color: var(--triolightink, #1971C2) !important; text-shadow: none !important; }
+  .clipmode .track:not(.tcopy) .ov.on .ovbtn .wall { background: var(--triolightring, #83b5ef) !important; }
+  .clipmode .track:not(.tcopy) .ov.on .ovbtn .zone svg path { fill: #1971C2 !important; stroke: #1971C2 !important; }
+  .clipmode .track:not(.tcopy) > .s i .w { opacity: 0 !important; transition: width var(--thspd) var(--thease) !important; }
+  .clipmode .track:not(.tcopy) > .s.on:hover { background: rgba(255,255,255,.28); }
+
+  /* the count as Holger asked on 5 Sep: the same blue as the name but not bold, and on the picked game the number goes white and says "tables" */
+  .ct-word .track > .s i, .ct-word .track .ov .ovbtn .ovlab i { font-weight: normal; opacity: 1; color: var(--triolightink, #1971C2); }
+  .ct-word .track > .s.on i, .ct-word .track .ov.on .ovbtn .ovlab i { color: #fff; }
+  /* the word is a real element whose width grows with the thumb's move and fades in as it lands; it collapses and fades at once as the thumb leaves */
+  .ct-word .track > .s i .w { display: inline-block; width: 0; overflow: visible; clip-path: inset(0); white-space: pre; vertical-align: baseline; font-style: normal; opacity: 0;
+    transition: width var(--thspd) var(--thease), opacity calc(var(--thspd) * .35) linear; }
+  .ct-word .track > .s.on i .w { opacity: 1; transition: width var(--thspd) var(--thease), opacity calc(var(--thspd) * .35) linear calc(var(--thspd) * .65); }
+
+  /* 2a with bold digits and a small middle dot between the name and the number */
+  .ct-dot .track > .s i, .ct-dot .track .ov .ovbtn .ovlab i { font-weight: bold; }
+  .ct-dot .track > .s i::before, .ct-dot .track .ov .ovbtn .ovlab i::before { content: "\00B7"; margin-right: 5px; }
 
   /* the counts */
   .ct-pill .track > .s i, .ct-pill .track .ov .ovbtn .ovlab i { background: rgba(255,255,255,.55); color: #1971C2; border-radius: 9px; padding: 0 5px; font-size: 11px; line-height: 16px; height: 16px; opacity: 1; display: inline-block; }
@@ -3626,9 +3708,13 @@
   <span class="klab">Easing</span>
   <span class="kgrp" data-knob="thease"><span data-v="cubic-bezier(.645,.045,.355,1)" class="on">Ant, ease in out</span><span data-v="ease">Mantine, ease</span><span data-v="cubic-bezier(.1,.9,.2,1)">Fluent, decelerate</span><span data-v="cubic-bezier(.34,1.3,.5,1)">Overshoot</span><span data-v="linear">Linear</span></span>
   <span class="klab">Move</span>
-  <span class="kgrp" data-knob="anim"><span data-v="slide" class="on">Slide</span><span data-v="stretch">Stretch, then settle</span><span data-v="fade">Fade</span><span data-v="transform">Slide on the compositor</span><span data-v="instant">None</span></span>
+  <span class="kgrp" data-knob="anim"><span data-v="slide" class="on">Slide</span><span data-v="fade">Fade</span><span data-v="instant">None</span></span>
   <span class="klab">Tiles</span>
   <span class="kgrp" data-knob="defer"><span data-v="wait" class="on">Wait for the thumb</span><span data-v="now">Rebuild on the click</span></span>
+  <span class="klab">Hover</span>
+  <span class="kgrp" data-knob="hover"><span data-v="none" class="on">None, Apple</span><span data-v="ink">Darker ink, Mantine</span><span data-v="site">The site's wash, Primer</span><span data-v="inkwash">Ink at 8%, Material</span><span data-v="both">Wash and ink, Carbon</span><span data-v="white">White wash</span></span>
+  <span class="klab">Word</span>
+  <span class="kgrp" data-knob="word"><span data-v="tables" class="on">12 tables</span><span data-v="open">12 open</span><span data-v="open tables">12 open tables</span><span data-v="waiting">12 waiting</span><span data-v="">just 12</span></span>
   <span class="knote">Ant ships 300 ms, Mantine 200, Fluent 300, Radix 100.</span>
 </div>
 
@@ -3643,14 +3729,17 @@
         <li><b>The lines.</b> A full line between the games, and none beside the picked one.</li>
         <li><b>The count.</b> Digits as tall as a small letter, on the baseline. The raised footnote and the picked only sentence stay in the running.</li>
         <li><b>The More cell.</b> The triangle close to its word, the air on the right.</li>
-        <li><b>Open.</b> Which count, and which move now that the lag is gone.</li>
+        <li><b>The games.</b> The nine the hero shows: Hearts, Euchre, Twenty-Nine, Spades, Double Deck Pinochle, Hand &amp; Foot, Rummy, Gin Rummy, Canasta. The other nine live under More.</li>
+        <li><b>The shapes.</b> The thumb is the 6px squircle button, the tray an 8px squircle around it, so the corners are concentric. The thumb carries the site's button shadow, the tray only its ring.</li>
+        <li><b>Hover.</b> None by default, and More opens on hover as the leaderboard's does. The Hover switch tries the alternatives.</li>
+        <li><b>Open.</b> Which count, which word after the number, and which move.</li>
       </ul>
     </div>
     <div class="dcard data"><h3>Where the lag came from <span class="tag">measured in Chrome</span></h3>
       <ul>
-        <li><b>A click rebuilds the six tiles.</b> Each tile has an SVG edge filter and three drop shadows on four avatars, so the rebuild costs one long frame: 83 to 217 ms on repeat clicks, 500 ms the first time.</li>
-        <li><b>Without the rebuild the frames are 17 ms.</b> The thumb itself is one small element.</li>
-        <li><b>Two fixes, both in section Three.</b> Let the tiles wait until the thumb has landed. And move the thumb with a transform, which the compositor animates even while the main thread is busy.</li>
+        <li><b>First cause, fixed earlier.</b> A click rebuilt the six tiles on the same frame the thumb started, 83 to 500 ms. The tiles now wait until the thumb has landed.</li>
+        <li><b>Second cause, found in a trace.</b> Layout, paint and script cost under 5 ms a click, but the GPU spent 218 ms, 84 ms in one frame. The bar shared its raster tiles with the top of the game tiles, so every frame of the move redrew avatars with their SVG edge filter and drop shadows at 2x.</li>
+        <li><b>The fix.</b> The bar gets its own compositor layer, so only the bar redraws during the move: 53 ms a click, 19 ms worst frame. That is one line of CSS on the track.</li>
       </ul>
     </div>
     <div class="dcard rule"><h3>How to read the meter <span class="tag">under every card</span></h3>
@@ -3673,6 +3762,12 @@
   <h2>Two &middot; the count</h2>
   <p class="desc">The number after each game is the open tables it has. The base, and the two other ways still in the running.</p>
   <div id="countVariants"></div>
+</div>
+
+<div class="asec" id="secHover">
+  <h2>Three &middot; hover, the two ways the libraries do it</h2>
+  <p class="desc">Both cards keep their own hover whatever the switch at the top says. Move the pointer along the bar.</p>
+  <div id="hoverVariants"></div>
 </div>
 
 <script>
@@ -3700,8 +3795,8 @@ window.LAB = (function () {
   var GAMES = [
     ["hearts", "Hearts", 12], ["spades", "Spades", 9], ["euchre", "Euchre", 8],
     ["pinochledd", "Double Deck Pinochle", 5], ["handfoot", "Hand & Foot", 4], ["ginrummy", "Gin Rummy", 3],
-    ["twentynine", "Twenty-Nine", 2], ["canasta", "Canasta", 1], ["pinochle", "Pinochle", 1], ["cribbage", "Cribbage", 1],
-    ["rummy", "Rummy", 0], ["gofish", "Go Fish", 0], ["threefiveeight", "Sergeant Major", 0], ["whist", "Whist", 0],
+    ["twentynine", "Twenty-Nine", 2], ["rummy", "Rummy", 2], ["canasta", "Canasta", 1], ["pinochle", "Pinochle", 1], ["cribbage", "Cribbage", 1],
+    ["gofish", "Go Fish", 0], ["threefiveeight", "Sergeant Major", 0], ["whist", "Whist", 0],
     ["crazyeights", "Crazy Eights", 0], ["bridge", "Bridge", 0], ["oldmaid", "Old Maid", 0], ["sheepshead", "Sheepshead", 0]
   ];
   var ART = { pinochledd: "ddpinochle", threefiveeight: "sgtmajor" };
@@ -3733,7 +3828,9 @@ window.LAB = (function () {
     { g: "hearts", seats: [P.carol, null, null, null], mins: 0, marks: ["lock"] },
     { g: "canasta", seats: [P.marge, null, P.carl, null], mins: 40 },
     { g: "cribbage", two: true, seats: [null, P.tilly, null, null], mins: 0 },
-    { g: "bridge", seats: [P.north, P.wendy, null, null], mins: 0 }
+    { g: "bridge", seats: [P.north, P.wendy, null, null], mins: 0 },
+    { g: "rummy", seats: [P.gin, null, P.rosie, null], mins: 0 },
+    { g: "rummy", seats: [P.dan, P.molly, "bot", null], mins: 15 }
   ];
   var LOCK = '<svg class="ltMark" viewBox="0 0 18 18" aria-hidden="true"><rect x="3.5" y="8" width="11" height="8" rx="2" fill="#fff"/><path d="M6 8V5.8a3 3 0 0 1 6 0V8" fill="none" stroke="#fff" stroke-width="2"/><circle cx="9" cy="12" r="1.3" fill="#327333"/></svg>';
   var CROWN = '<svg class="ltMark" viewBox="0 0 18 18" aria-hidden="true"><path d="M2.6 14.2 2 6.4c0-.5.6-.8 1-.5l3.1 2.6c.3.2.7.1.9-.2L8.5 4c.2-.4.8-.4 1 0l1.5 4.3c.2.3.6.4.9.2L15 5.9c.4-.3 1 0 1 .5l-.6 7.8c0 .4-.4.7-.8.7H3.4c-.4 0-.8-.3-.8-.7z" fill="#fff"/></svg>';
@@ -3780,7 +3877,9 @@ window.LAB = (function () {
     o = o || {};
     var st = document.createElement("div");
     st.className = "fstage " + kind.cls + (o.cls ? " " + o.cls : "");
-    var items = (kind.all === "item" ? kind.item(ALL, o) : "") + GAMES.map(function (g) { return kind.item(g, o); }).join("");
+    /* kind.games limits which games get a cell in the bar; the rest live only in the More list */
+    var barGames = kind.games ? GAMES.filter(function (g) { return kind.games.indexOf(g[0]) >= 0; }) : GAMES;
+    var items = (kind.all === "item" ? kind.item(ALL, o) : "") + barGames.map(function (g) { return kind.item(g, o); }).join("");
     var over = kind.over || "menu", control;
     if (over === "scroll") {
       control = '<div class="strip"><span class="sarr l" data-scroll="-1">' + ARROW_L + '</span><div class="track" data-row>' + items + '</div><span class="sarr r" data-scroll="1">' + ARROW_R + "</span></div>";
@@ -3801,25 +3900,43 @@ window.LAB = (function () {
     var grid = st.querySelector(".ltGrid"), rowEl = st.querySelector("[data-row]"), dd = st.querySelector("[data-dd]");
     /* the thumb: one element that slides to whatever is picked, the dropdown button included */
     var thumb = null, thumbTimer = null;
-    if (kind.thumb) { thumb = document.createElement("span"); thumb.className = "thumb still"; rowEl.appendChild(thumb); }
+    if (kind.thumb === "clip") {
+      /* the thumb is a full copy of the bar drawn white on blue, sitting over the real one and clipped to a window that slides.
+         The text turns white exactly where the window is, with no crossfade, and the word grows in both layers at once. */
+      var wrap = document.createElement("div"); wrap.className = "trackwrap";
+      rowEl.parentNode.insertBefore(wrap, rowEl); wrap.appendChild(rowEl);
+      var copy = rowEl.cloneNode(true); copy.className = rowEl.className + " tcopy still"; copy.removeAttribute("data-row");
+      copy.querySelectorAll(".ovlist, .thumb").forEach(function (n) { n.remove(); });
+      copy.querySelectorAll("[data-dd]").forEach(function (d) { d.removeAttribute("data-dd"); });
+      wrap.appendChild(copy); st.copy = copy; st.classList.add("clipmode");
+      /* the blue shape is still the squircle thumb element; the copy only carries the white text, clipped to the same window */
+      thumb = document.createElement("span"); thumb.className = "thumb still"; rowEl.appendChild(thumb);
+    } else if (kind.thumb) { thumb = document.createElement("span"); thumb.className = "thumb still"; rowEl.appendChild(thumb); }
+    function still(on) { thumb.classList.toggle("still", on); if (st.copy) st.copy.classList.toggle("still", on); }
+    function fade(v) { thumb.style.opacity = v; if (st.copy) st.copy.style.opacity = v; }
     st.moveThumb = function (instant) {
       if (!thumb) return;
       var target = rowEl.querySelector('[data-g="' + st.sel + '"]');
       if (!target || target.style.display === "none") target = dd ? dd.querySelector(".ovbtn") : null;
-      if (!target) { thumb.style.opacity = "0"; return; }
+      if (!target) { fade("0"); return; }
       var r = target.getBoundingClientRect(), t = rowEl.getBoundingClientRect();
-      var next = { left: r.left - t.left + rowEl.scrollLeft, top: r.top - t.top, width: r.width, height: r.height };
+      var next = st.nextRect || { left: r.left - t.left + rowEl.scrollLeft, top: r.top - t.top, width: r.width, height: r.height };
+      st.nextRect = null;
       var mode = instant ? "instant" : (document.body.dataset.anim || o.anim || kind.anim || "slide");
+      if (st.copy && (mode === "stretch" || mode === "transform")) mode = "slide";
       clearTimeout(thumbTimer);
-      function place(p) { thumb.style.left = p.left + "px"; thumb.style.top = p.top + "px"; thumb.style.width = p.width + "px"; thumb.style.height = p.height + "px"; }
+      function place(p) {
+        thumb.style.left = p.left + "px"; thumb.style.top = p.top + "px"; thumb.style.width = p.width + "px"; thumb.style.height = p.height + "px";
+        if (st.copy) { var tw = rowEl.clientWidth, th = rowEl.clientHeight; st.copy.style.clipPath = "inset(" + p.top + "px " + (tw - p.left - p.width) + "px " + (th - p.top - p.height) + "px " + p.left + "px)"; }
+      }
       if (mode === "instant" || thumb.classList.contains("still")) {
-        thumb.classList.add("still"); place(next); thumb.style.opacity = "1";
-        requestAnimationFrame(function () { requestAnimationFrame(function () { thumb.classList.remove("still"); }); });
+        still(true); place(next); fade("1");
+        requestAnimationFrame(function () { requestAnimationFrame(function () { still(false); }); });
         return;
       }
       if (mode === "fade") {
-        thumb.style.opacity = "0";
-        thumbTimer = setTimeout(function () { thumb.classList.add("still"); place(next); requestAnimationFrame(function () { thumb.classList.remove("still"); thumb.style.opacity = "1"; }); }, st.speed() / 2);
+        fade("0");
+        thumbTimer = setTimeout(function () { still(true); place(next); requestAnimationFrame(function () { still(false); fade("1"); }); }, st.speed() / 2);
         return;
       }
       if (mode === "transform") {
@@ -3840,7 +3957,7 @@ window.LAB = (function () {
         thumbTimer = setTimeout(function () { place(next); }, st.speed() / 2);
         return;
       }
-      place(next); thumb.style.opacity = "1";
+      place(next); fade("1");
     };
     st.speed = function () { var v = getComputedStyle(st).getPropertyValue("--thspd").trim(); return v ? parseFloat(v) : 220; };
     st.render = function () {
@@ -3848,6 +3965,8 @@ window.LAB = (function () {
       var rows = TABLES.filter(function (t) { return all || t.g === st.sel; });
       var html = rows.slice(0, st.limit === 0 ? rows.length : st.limit).map(tileHtml).join("");
       if (!all && rows.length < st.limit) html += hostTile(st.sel);
+      /* a tail: a last tile that stands for the tables not showing */
+      if (st.limit && rows.length > st.limit && o.tail) html += o.tail(rows.length - st.limit);
       /* the tiles are the expensive part: with deferGrid they wait until the thumb has landed */
       clearTimeout(st.gridTimer);
       if (o.deferGrid && thumb && !st.fitting && !thumb.classList.contains("still")) { st.gridTimer = setTimeout(function () { grid.innerHTML = html; }, st.speed() + 40); }
@@ -3857,13 +3976,14 @@ window.LAB = (function () {
         el.classList.toggle("on", el.dataset.g === st.sel);
       });
       var more = st.querySelector(".fmore"); more.style.display = (st.limit === 0 || rows.length <= st.limit) ? "none" : "";
-      var hiddenSel = st.hid.indexOf(st.sel) >= 0;
+      var hiddenSel = st.sel !== "all" && (st.visible ? st.visible.indexOf(st.sel) < 0 : st.hid.indexOf(st.sel) >= 0);
       if (dd) {
         var lab = dd.querySelector(".ovlab");
         if (lab && over === "menu") lab.textContent = hiddenSel ? byId[st.sel][1] : (kind.moreLabel ? kind.moreLabel(st) : "More");
         if (lab && over === "plus") lab.textContent = hiddenSel ? byId[st.sel][1] : "+" + st.hid.length;
         if (lab && over === "collapse") lab.textContent = all ? "All games" : byId[st.sel][1];
         dd.classList.toggle("on", hiddenSel);
+        if (st.copy) { var cl = st.copy.querySelector(".ovlab"); if (cl && lab) cl.textContent = lab.textContent; var cov = st.copy.querySelector(".ov"); if (cov) cov.classList.toggle("on", hiddenSel); }
       }
       st.querySelectorAll(".fname").forEach(function (el) { el.textContent = all ? "All games" : byId[st.sel][1]; });
       st.querySelectorAll(".fcount").forEach(function (el) { el.textContent = all ? TOTAL : byId[st.sel][2]; });
@@ -3874,7 +3994,15 @@ window.LAB = (function () {
       st.fitting = true;
       try { st.fitInner(); } finally { st.fitting = false; }
     };
-    st.fitInner = function () {
+    /* a game picked from the list takes the last cell in the bar; the game it displaces goes into the list */
+    st.swapIn = function (id) {
+      if (!st.visible || st.visible.indexOf(id) >= 0 || !st.visible.length) return;
+      var lastId = st.visible[st.visible.length - 1];
+      [rowEl, st.copy].forEach(function (root) { if (!root) return; var c = root.querySelector('[data-g="' + id + '"]'), last = root.querySelector('[data-g="' + lastId + '"]'); if (c && last) root.insertBefore(c, last.nextSibling); });
+      st.protect = id; st.fitting = true;
+      try { st.fitInner(true); } finally { st.fitting = false; st.protect = null; }
+    };
+    st.fitInner = function (skipRender) {
       if (over === "scroll" || over === "none" || over === "collapse") {
         if (o.max) [].slice.call(rowEl.children).filter(function (c) { return c.dataset.g && c.dataset.g !== "all"; }).forEach(function (c, i) { c.style.display = i < o.max ? "" : "none"; });
         st.render(); if (over === "scroll") st.arrows(); return;
@@ -3886,14 +4014,17 @@ window.LAB = (function () {
       chips.slice(n).forEach(function (c) { c.style.display = "none"; });
       /* measured at natural widths, clipped, so a segment that could shrink or stretch does not fool the count */
       rowEl.style.overflow = "hidden"; rowEl.classList.add("measuring");
-      while (n > 0 && rowEl.scrollWidth > rowEl.clientWidth + 1) { n--; chips[n].style.display = "none"; }
+      var i = n - 1;
+      while (i >= 0 && rowEl.scrollWidth > rowEl.clientWidth + 1) { if (chips[i].dataset.g !== st.protect) chips[i].style.display = "none"; i--; }
       rowEl.style.overflow = ""; rowEl.classList.remove("measuring");
       if (thumb) thumb.style.display = "";
       st.hid = chips.filter(function (c) { return c.style.display === "none"; }).map(function (c) { return c.dataset.g; });
-      st.querySelectorAll(".ovlist [data-g]").forEach(function (it) { it.style.display = (it.dataset.g !== "all" && st.hid.indexOf(it.dataset.g) < 0) ? "none" : ""; });
+      st.visible = chips.filter(function (c) { return c.style.display !== "none"; }).map(function (c) { return c.dataset.g; });
+      if (st.copy) chips.forEach(function (c) { var cc = st.copy.querySelector('[data-g="' + c.dataset.g + '"]'); if (cc) cc.style.display = c.style.display; });
+      st.querySelectorAll(".ovlist [data-g]").forEach(function (it) { it.style.display = (it.dataset.g !== "all" && st.visible.indexOf(it.dataset.g) >= 0) ? "none" : ""; });
       var hr = st.querySelector(".ovlist .mhr"); if (hr) hr.style.display = st.hid.length ? "" : "none";
       if (over === "plus") { var pl = st.querySelector(".ovlist"); pl.innerHTML = GAMES.filter(function (g) { return st.hid.indexOf(g[0]) >= 0; }).map(function (g) { return '<span class="mi' + (g[2] ? "" : " dim") + '" data-g="' + g[0] + '">' + g[1] + "<i>" + g[2] + "</i></span>"; }).join(""); }
-      st.render();
+      if (!skipRender) st.render();
     };
     st.arrows = function () {
       var l = st.querySelector(".sarr.l"), r = st.querySelector(".sarr.r"); if (!l) return;
@@ -3907,9 +4038,13 @@ window.LAB = (function () {
       var sc = e.target.closest("[data-scroll]");
       if (sc) { rowEl.scrollBy({ left: +sc.dataset.scroll * Math.round(rowEl.clientWidth * 0.7), behavior: "smooth" }); return; }
       var it = e.target.closest("[data-g]");
-      if (it && !it.classList.contains("ltCard")) { if (st.meterEl) st.startMeter(); st.sel = it.dataset.g; if (dd) dd.classList.remove("open"); st.render(); return; }
+      if (it && !it.classList.contains("ltCard")) {
+        if (st.meterEl) st.startMeter(); st.sel = it.dataset.g;
+        if (dd) { dd.classList.remove("open"); if (it.closest(".ovlist")) { if (kind.swap) st.swapIn(st.sel); dd.classList.add("picked"); dd.addEventListener("mouseleave", function leave() { dd.classList.remove("picked"); dd.removeEventListener("mouseleave", leave); }); } }
+        st.render(); return;
+      }
       var more = e.target.closest("[data-more]");
-      if (more) { st.limit = +more.dataset.more; st.render(); }
+      if (more) { var v = more.dataset.more; st.limit = v.charAt(0) === "+" ? st.limit + (+v.slice(1)) : +v; st.render(); if (kind.onMore) kind.onMore(st); }
     });
     st.addEventListener("change", function (e) { if (e.target.tagName === "SELECT") { st.sel = e.target.value; st.render(); } });
     /* the meter: frame gaps for half a second after a click, drawn as bars */
@@ -3941,19 +4076,53 @@ window.LAB = (function () {
     document.getElementById(host).appendChild(c);
   }
   function fitAll() { stages.forEach(function (s) { s.fit(); }); }
-  return { GAMES: GAMES, ALL: ALL, TOTAL: TOTAL, byId: byId, art: art, CHEV: CHEV, makeStage: makeStage, card: card, fitAll: fitAll, stages: stages };
+  return { GAMES: GAMES, ALL: ALL, TOTAL: TOTAL, TABLES: TABLES, byId: byId, art: art, CHEV: CHEV, makeStage: makeStage, card: card, fitAll: fitAll, stages: stages };
 })();
 </script>
 <script>
 (function (L) {
   var TRI = '<svg viewBox="0 0 8 7" aria-hidden="true"><path d="M1.2 1h5.6L4 6z" fill="#1971C2" stroke="#1971C2" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></svg>';
   function siteMore() { return '<span class="ovbtn"><span class="ovlab">More</span><span class="wall"></span><span class="zone">' + TRI + "</span></span>"; }
+  /* the games the hero mosaic shows, in the bar's order of open tables; the other nine live only in the More list */
+  var HERO = ["hearts", "spades", "euchre", "pinochledd", "handfoot", "ginrummy", "twentynine", "rummy", "canasta"];
+  function wordFor(n) {
+    var w = document.body.dataset.word; if (w === undefined) w = "tables";
+    if (!w) return "";
+    if (n === 1) return " " + w.replace(/tables$/, "table");
+    return " " + w;
+  }
+  /* before the thumb is measured: the picked cell's word gets its final width and the others lose theirs, measured with transitions off,
+     so the thumb aims at where the cell will be when the words have finished growing and shrinking */
+  function settleWords(st) {
+    var row = st.querySelector(".track"), cells = [].slice.call(row.querySelectorAll(".s")), prev = {};
+    /* the divider after the picked cell: mark the next cell that is actually showing, hidden cells in between do not count */
+    var seq = [].slice.call(row.children).filter(function (el) { return (el.classList.contains("s") || el.classList.contains("ov")) && el.style.display !== "none"; });
+    seq.forEach(function (el) { el.classList.remove("nextpick"); });
+    var at = -1; seq.forEach(function (el, i) { if (el.classList.contains("on")) at = i; });
+    if (at >= 0 && seq[at + 1]) seq[at + 1].classList.add("nextpick");
+    cells.forEach(function (c) { var w = c.querySelector(".w"); if (!w) return; prev[c.dataset.g] = w.style.width || "0px"; });
+    row.classList.add("nofx");
+    var finalW = {};
+    cells.forEach(function (c) { var w = c.querySelector(".w"); if (!w) return;
+      if (c.classList.contains("on")) { w.textContent = wordFor(+c.querySelector("i").dataset.n); w.style.width = "auto"; finalW[c.dataset.g] = w.getBoundingClientRect().width + "px"; w.style.width = finalW[c.dataset.g]; }
+      else { finalW[c.dataset.g] = "0px"; w.style.width = "0px"; } });
+    void row.offsetWidth;
+    var target = row.querySelector(".s.on");
+    if (target && target.style.display !== "none") { var r = target.getBoundingClientRect(), t = row.getBoundingClientRect(); st.nextRect = { left: r.left - t.left + row.scrollLeft, top: r.top - t.top, width: r.width, height: r.height }; }
+    cells.forEach(function (c) { var w = c.querySelector(".w"); if (w) w.style.width = prev[c.dataset.g]; });
+    void row.offsetWidth;
+    row.classList.remove("nofx");
+    cells.forEach(function (c) { var w = c.querySelector(".w"); if (w) w.style.width = finalW[c.dataset.g]; });
+    /* the white copy gets the same words and widths, so both layers grow together */
+    if (st.copy) st.copy.querySelectorAll(".s").forEach(function (c) { var w = c.querySelector(".w"); if (!w) return; w.textContent = c.classList.contains("on") ? wordFor(+c.querySelector("i").dataset.n) : w.textContent; w.style.width = finalW[c.dataset.g] || "0px"; });
+  }
   function wseg(extra) {
-    return Object.assign({ cls: "wseg", all: "item", over: "menu", thumb: true, menuBtn: siteMore,
-      item: function (g) { return '<span class="s' + (g[2] === 0 && g[0] !== "all" ? " zero" : "") + '" data-g="' + g[0] + '"><span>' + g[1] + '<i data-n="' + g[2] + '">' + g[2] + "</i></span></span>"; } }, extra || {});
+    return Object.assign({ cls: "wseg", all: "item", over: "menu", thumb: "clip", swap: true, menuBtn: siteMore, onRender: settleWords,
+      item: function (g) { return '<span class="s' + (g[2] === 0 && g[0] !== "all" ? " zero" : "") + '" data-g="' + g[0] + '"><span>' + g[1] + '<i data-n="' + g[2] + '">' + g[2] + '<em class="w"></em></i></span></span>'; } }, extra || {});
   }
   /* the base from here on: the light blue track, the blue button as the thumb, full lines with none beside the pick, More fused on the end */
-  var BASE = "tr-light th-blue list-site dv-full dv-fade";
+  var BASE = "tr-light th-blue list-site dv-full dv-fade hover-more";
+  document.body.dataset.hover = "none";
   function card(host, spec, kindOverride) {
     var o = Object.assign({ sel: "hearts", cls: BASE + (spec.cls ? " " + spec.cls : ""), deferGrid: true }, spec.o || {});
     var st = L.makeStage(kindOverride || wseg(), o);
@@ -3970,18 +4139,28 @@ window.LAB = (function () {
     note: "A 1px line in the ring colour between every two games and before More, and the two lines touching the picked game gone: they fade out as the thumb arrives and come back as it leaves, on the thumb's own clock. The More cell keeps its word close to the triangle, with the air on the right." });
 
   /* ═══════════ Two: the count ═══════════ */
-  card("countVariants", { title: "2a &middot; A small number on the baseline", tag: "base", tagCls: "base",
-    note: "The digits as tall as the name's small letters, 12.3px bold on the same baseline, three quarters strength, 6px after the name." });
+  card("countVariants", { title: "2a &middot; The number in plain blue, and the picked one says tables", tag: "base", tagCls: "base", cls: "ct-word",
+    note: "The digits as tall as the name's small letters on the same baseline, in the name's blue but not bold, at full strength. On the picked game the number turns white like the name and gains its word: <b>Hearts 12 tables</b>, or <b>1 table</b>. The word slides in with the thumb and leaves with it." });
   card("countVariants", { title: "2b &middot; Raised, like a footnote", cls: "ct-super",
     note: "A 10px number raised beside the name. Out of the way and still there. Easy to miss." });
   card("countVariants", { title: "2c &middot; Only on the picked game, written out", cls: "ct-picked",
     note: "The other games show no number. The picked one says <b>Hearts 12 tables</b>. The bar is calmer and the count becomes a sentence about what is showing. The cost: you cannot see which games are busy before picking one." });
+  card("countVariants", { title: "2d &middot; Bold numbers after a middle dot", cls: "ct-word ct-dot",
+    note: "2a with the digits bold like the name, and a small middle dot between the name and the number: <b>Hearts · 12</b>. The dot does the separating, so the number can be as strong as the name. On the picked game it reads <b>Hearts · 12 tables</b> in white." });
+
+  /* ═══════════ Three: hover ═══════════ */
+  card("hoverVariants", { title: "3a &middot; Darker ink", cls: "ct-word ct-dot hv-ink",
+    note: "What Mantine, shadcn, Spectrum and Google's result tabs do: the label under the pointer goes from the ink blue to a darker blue, and nothing fills. The bar stays flat, and the hover says only that the label is a thing you can click. The picked cell does not react." });
+  card("hoverVariants", { title: "3b &middot; The site's wash", cls: "ct-word ct-dot hv-site",
+    note: "What Ant Design, Material, Primer, Polaris and Carbon do, in the site's own colour: the cell under the pointer takes the slightly darker light blue the leaderboard's chips already use on hover. A gentle fill, one shade below the tray. Reads more like a button, and matches the rest of the page." });
 
   document.getElementById("knobs").addEventListener("click", function (e) {
     var v = e.target.closest("[data-v]"); if (!v) return;
     var grp = v.parentNode; grp.querySelectorAll("[data-v]").forEach(function (x) { x.classList.toggle("on", x === v); });
     if (grp.dataset.knob === "anim") { document.body.dataset.anim = v.dataset.v; return; }
     if (grp.dataset.knob === "defer") { L.stages.forEach(function (s) { s.o.deferGrid = v.dataset.v === "wait"; }); return; }
+    if (grp.dataset.knob === "word") { document.body.dataset.word = v.dataset.v; L.stages.forEach(function (s) { s.fit(); }); return; }
+    if (grp.dataset.knob === "hover") { document.body.dataset.hover = v.dataset.v; return; }
     document.body.style.setProperty("--" + grp.dataset.knob, v.dataset.v);
   });
 })(window.LAB);

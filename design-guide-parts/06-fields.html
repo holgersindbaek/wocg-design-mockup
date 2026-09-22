@@ -242,7 +242,7 @@
         { what: 'track background', got: Lab.cs(track, 'background-color'), want: w.tray },
         { what: 'track ring', got: Lab.cs(track, 'box-shadow'), want: 'inset 0 0 0 1px ' + w.ring },
         { what: 'cell height', got: Lab.cs(cell, 'height'), want: w.cellH || '24px' },
-        { what: 'cell padding', got: Lab.cs(cell, 'padding'), want: '0 10px' },
+        { what: 'cell padding', got: Lab.cs(cell, 'padding'), want: w.cellPad || '0 10px' },
         { what: 'cell font', got: Lab.cs(cell, 'font-weight') + ' ' + Lab.cs(cell, 'font-size') + ' / ' + Lab.cs(cell, 'line-height'), want: (w.cellFont || '700 16px / 24px') },
         { what: 'cell colour', got: Lab.cs(cell, 'color'), want: '#4e4d4c' }
       ];
@@ -265,7 +265,7 @@
   <div class="card">
     <div class="body">
       <h3>The field <span class="tag built">built</span></h3>
-      <p class="rule-text">A field is 34px tall, a button's 32 plus the 2px its ring takes, with 0 10px of padding, no border, a 12px squircle, white paper, an inset 1px --edge ring, 16px Bulo in --ink and a --muted placeholder. Focus keeps the 1px ring and darkens it to the mark grey, between the quiet button's ring and the quiet ink, no outline. An error line is 14 / 18 in --wm-danger 4px below. A stack of fields keeps a 12px gap.</p>
+      <p class="rule-text">A field is 34px tall, a button's 32 plus the 2px its ring takes, with 0 10px of padding, no border, a 12px squircle, white paper, an inset 1px --line ring, 16px Bulo in --ink and an --ink-quiet placeholder. Focus keeps the 1px ring and darkens it to the mark grey, between the quiet button's ring and the quiet ink, no outline. An error line is 14 / 18 in --btn-danger 4px below. A stack of fields keeps a 12px gap.</p>
       <div class="demo">
         <div class="site wm" data-demo>
           <div class="wmModal wmOpen modalInstant" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
@@ -300,7 +300,7 @@
         Lab.table(card, F6.fieldRows(first, {
           h: '34px', pad: '0 10px', bg: '#ffffff', sh: 'inset 0 0 0 1px #d2cfca', font: '16px / 34px'
         }).concat([
-          { what: 'placeholder colour', got: Lab.cs(first, 'color', '::placeholder'), want: '#4e4d4c' },
+          { what: 'placeholder colour', got: Lab.cs(first, 'color', '::placeholder'), want: '#67635c' },
           { what: 'the stack’s gap, two hard edges', got: Lab.cs(flds, 'gap'), want: '8px' }
         ]), 'The field on the box’s own paper');
         Lab.table(card, [
@@ -321,7 +321,7 @@
   <div class="card">
     <div class="body">
       <h3>The field on a white card, and a bad one <span class="tag built">built</span></h3>
-      <p class="rule-text">On a white card the field takes --canvas paper instead, so it still reads against the card. A field the form has marked bad keeps its shape and turns its ring --wm-danger.</p>
+      <p class="rule-text">On a white card the field takes --paper-page instead, so it still reads against the card. A field the form has marked bad keeps its shape and turns its ring --btn-danger.</p>
       <div class="demo">
         <div class="site wm" data-demo>
           <div class="wmModal wmOpen modalInstant" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
@@ -413,7 +413,7 @@
           { what: 'background-color', got: Lab.cs(input, 'background-color'), want: '#ffffff', tag: 'call' },
           { what: 'box-shadow', got: Lab.cs(input, 'box-shadow'), want: 'inset 0 0 0 1px #d2cfca', tag: 'call' },
           { what: 'font-size / line-height', got: Lab.cs(input, 'font-size') + ' / ' + Lab.cs(input, 'line-height'), want: '16px / 26px', tag: 'call' },
-          { what: 'placeholder colour', got: Lab.cs(input, 'color', '::placeholder'), want: '#4e4d4c', tag: 'call' },
+          { what: 'placeholder colour', got: Lab.cs(input, 'color', '::placeholder'), want: '#67635c', tag: 'call' },
           { what: 'box-shadow on focus', got: focusShadow, want: 'inset 0 0 0 1px #9b9997', tag: 'call' },
           { what: 'what 7.3 says of it', got: 'one ships, on the board pages (_wm-leaderboard.scss:378-400)', want: 'one ships, on the board pages (_wm-leaderboard.scss:378-400)' }
         ], 'The 26px field 7.3 invented, now built');
@@ -431,7 +431,7 @@
   <div class="card">
     <div class="body">
       <h3>The tray, in a modal and on a white card <span class="tag built">built</span></h3>
-      <p class="rule-text">The track is 28px with 2px of padding, a 12px squircle, --wm-seg #e4ddd0 paper and an inset --wm-seg-ring #c9c0ae. Cells are 24px, 0 10px, 16 / 24 bold in --muted, with a 1px divider in the ring colour that spans the track and fades beside the pick. On a white card the track is --band with a #d9d2c4 ring. Off stands first. Several options at once is the checkbox, below.</p>
+      <p class="rule-text">The track is 28px with 2px of padding, a 12px squircle, --plate-tray #e4ddd0 paper and an inset --line-tray #c9c0ae. Cells are 24px, 0 10px, 16 / 24 bold in --ink-label, with a 1px divider in the ring colour that spans the track and fades beside the pick. On a white card the track is --paper-band with a #d2cfca ring. Off stands first. Several options at once is the checkbox, below.</p>
       <div class="demo">
         <div class="site wm" data-demo>
           <div class="wmModal wmOpen modalInstant" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
@@ -486,11 +486,11 @@
           { what: 'the white copy’s ink', got: Lab.cs(inkCell, 'color'), want: '#ffffff' },
           { what: 'its outline', got: Lab.cs(inkCell, 'text-shadow'), want: '-1px -1px 0 #347d2c, 1px -1px 0 #347d2c, -1px 1px 0 #347d2c, 1px 1px 0 #347d2c' }
         ]), 'The thumb, and the words it turns white');
-        Lab.table(card, F6.trackRows(segs[1], segs[1].querySelector('.wmCell'), { rad: '12px', tray: '#f4eee5', ring: '#d9d2c4' }).slice(3, 5).concat([
-          { what: 'divider colour on a card', got: Lab.rule('.site .wmModal .wmCard .wmSeg .wmCell + .wmCell::before', 'background', segs[1]), want: '#d9d2c4', tag: 'rule' }
+        Lab.table(card, F6.trackRows(segs[1], segs[1].querySelector('.wmCell'), { rad: '12px', tray: '#f4eee5', ring: '#d2cfca' }).slice(3, 5).concat([
+          { what: 'divider colour on a card', got: Lab.rule('.site .wmModal .wmCard .wmSeg .wmCell + .wmCell::before', 'background', segs[1]), want: '#d2cfca', tag: 'rule' }
         ]), 'The same tray on a white card');
         Lab.table(card, [
-          { what: 'the modal tray’s corner', got: Lab.cs(segs[0], 'border-radius'), want: '12 as built, the lab’s 14 to match the games bar', tag: 'open' },
+          { what: 'the modal tray’s corner', got: Lab.cs(segs[0], 'border-radius'), want: '12px' },
           { what: 'the picked cell’s hand', got: Lab.cs(segs[0].querySelector('.wmCell.wmPicked'), 'cursor'), want: 'the games bar shows none; this one still does', tag: 'open' }
         ], 'Still open');
         Lab.note(card, 'Both trays are live: click a cell and the thumb travels, the divider beside it fades and the words turn white only where the thumb has reached. The thumb and the white copy are built here by the same steps ModalShell.placeSegThumb takes.');
@@ -569,7 +569,7 @@
         { what: "page badge tick", got: Lab.cs(badge, "width", "::after") + " " + Lab.cs(badge, "height", "::after") + ", " + Lab.cs(badge, "background-color", "::after"), want: "14px 14px, #43a038", tag: "call" }
       ], "The chip in a modal and the badge on a page");
       Lab.note(card, "The reading page's Reading badge is guide 10.3's own call, built in the rollout against the modal's picked chip as it was until 22 Sep 2026: the action green with white outlined words and a white round holding the tick. The modal's chip became a checkbox that day; the badge stands, and is the one place the old form is still drawn.");
-      Lab.note(card, "The box is the settings pickers' mark squared off: the same two-stroke tick, white over the ring's green, at the same share of its box, but with the accent ring the buttons take rather than the black hairline the picker's disc wears over a drawing. A press scales the box alone to .9, since the word beside it should stand still (Holger, 22 Sep 2026); the keyboard's focus darkens the box's ring to --faint. Click a box: the fill lands and the tick is drawn in; click again and box and tick fade together. Each state declares the transition that leads to it, and the unpicked path snaps back to undrawn only after its 220ms fade, so the tick fades whole rather than unwinding.");
+      Lab.note(card, "The box is the settings pickers' mark squared off: the same two-stroke tick, white over the ring's green, at the same share of its box, but with the accent ring the buttons take rather than the black hairline the picker's disc wears over a drawing. A press scales the box alone to .9, since the word beside it should stand still (Holger, 22 Sep 2026); the keyboard's focus darkens the box's ring to --ink-quiet. Click a box: the fill lands and the tick is drawn in; click again and box and tick fade together. Each state declares the transition that leads to it, and the unpicked path snaps back to undrawn only after its 220ms fade, so the tick fades whole rather than unwinding.");
       Lab.note(card, "The box is drawn where it stands: the fixed positioning of .wmModal, .wmScrim and .wmPanel is neutralised inline, and the box carries .modalInstant, the site's own class for a box that opens with no entrance, so the panel is not held at the animation's first frame. The reading shell's 100vh floor is set to 0.");
     })();</script>
   </div></div>
@@ -619,7 +619,7 @@
   <div class="card">
     <div class="body">
       <h3>The tray on a page <span class="tag built">built</span></h3>
-      <p class="rule-text">The per-game leaderboard draws the same tray on its own markup: the same 28 / 2 / 12 track in --wm-seg with the --wm-seg-ring, the same green thumb and the same 220ms travel, written as --lb-thspd on the page.</p>
+      <p class="rule-text">The per-game leaderboard draws the same tray on its own markup: the same 28 / 2 / 12 track in --plate-tray with the --line-tray, the same green thumb and the same 220ms travel, written as --lb-thspd on the page.</p>
       <div class="demo">
         <div class="site wm" data-demo>
           <div id="mainContainer" class="general" style="min-height:0">
@@ -651,7 +651,7 @@
         Lab.table(card, F6.trackRows(seg, cell, { rad: '12px', tray: '#e4ddd0', ring: '#c9c0ae' }), 'The board’s tray');
         Lab.table(card, F6.thumbRows(t.thumb, { rad: '12px', travel: 'left, width, top, height, opacity over 0.22s, 0.22s, 0.22s, 0.22s, 0.11s' }).concat([
           { what: '--lb-thspd', got: Lab.cs(seg, '--lb-thspd').trim(), want: '220ms' },
-          { what: '--ot-hover, the unpicked cell’s paper', got: Lab.token(cell, '--ot-hover'), want: '#d9d2c4' },
+          { what: '--ot-hover, the unpicked cell’s paper', got: Lab.token(cell, '--ot-hover'), want: '#d2cfca' },
           { what: 'the picked cell’s hand', got: Lab.cs(seg.querySelector('.lbPicked'), 'cursor'), want: 'default' }
         ]), 'Its thumb, and what the page adds');
         Lab.note(card, 'The board’s tray is live, and it is the one chooser on the site that already shows no hand on the cell you are standing on.');
@@ -664,7 +664,7 @@
   <div class="card" style="overflow:visible;min-width:0">
     <div class="body">
       <h3>The games bar <span class="tag built">built</span></h3>
-      <p class="rule-text">The games bar is the same 28px chooser at a 14px corner, with 24px cells at 0 10px in bold 16 / 24 --muted, a 12.3px count after a middle dot, a 1px --wm-seg-ring divider, a green thumb with its ring and drop travelling over 220ms, a --rule hover paper on an unpicked cell, no hand on the picked one, and a More cell whose list keeps the 14px corner.</p>
+      <p class="rule-text">The games bar is the same 28px chooser at a 12px corner, with 24px cells at 0 8px in bold 16 / 24 --ink-label, a 12.3px count after a middle dot, a 1px --line-tray divider, a green thumb with its ring and drop travelling over 220ms, a --line hover paper on an unpicked cell, no hand on the picked one, and a More cell whose list keeps the 12px corner. The cells are 8 apart rather than 10 so one more game stands on the bar before the fold (Holger, 17 Sep 2026), and the corner is the shared --radius since 22 Sep 2026.</p>
       <div class="demo" style="overflow:visible">
         <div class="site fp wm" data-demo>
           <div class="lobbyscope" id="openTablesTop">
@@ -713,7 +713,7 @@
         var count = track.querySelector('.s i');
         var list = host.querySelector('.ovlist');
         var row = list.querySelector('.mi');
-        Lab.table(card, F6.trackRows(track, cell, { rad: '14px', tray: '#e4ddd0', ring: '#c9c0ae' }).concat([
+        Lab.table(card, F6.trackRows(track, cell, { rad: '12px', cellPad: '0 8px', tray: '#e4ddd0', ring: '#c9c0ae' }).concat([
           { what: 'the count', got: Lab.cs(count, 'font-size') + ' ' + Lab.cs(count, 'font-weight'), want: '12.3px 700' },
           { what: 'the picked cell’s hand', got: Lab.cs(track.querySelector('.s.on'), 'cursor'), want: 'default' },
           { what: 'an empty host', got: Lab.cs(empty, 'min-height') + ', ' + Lab.cs(empty, 'background-color'), want: '28px, #e4ddd0' }
@@ -721,11 +721,11 @@
         Lab.table(card, F6.thumbRows(bar.thumb, { rad: '12px', travel: 'left, width, top, height, opacity over 0.22s, 0.22s, 0.22s, 0.22s, 0.11s' }), 'The thumb');
         Lab.table(card, [
           { what: 'divider width / colour', got: Lab.rule('.site.fp .otFilter .track > .s + .s::before', 'width', track) + ' / ' + Lab.rule('.site.fp .otFilter .track > .s + .s::before', 'background', track), want: '1px / #c9c0ae', tag: 'rule' },
-          { what: '--ot-hover', got: Lab.token(track, '--ot-hover'), want: '#d9d2c4' },
-          { what: 'the hover paper on an unpicked cell', got: Lab.rule('.site.fp .otFilter .track:not(.tcopy) > .s:not(.on):hover::after', 'background', track), want: '#d9d2c4', tag: 'rule' },
-          { what: 'the list’s corner', got: Lab.cs(list, 'border-radius'), want: '14px' },
+          { what: '--ot-hover', got: Lab.token(track, '--ot-hover'), want: '#d2cfca' },
+          { what: 'the hover paper on an unpicked cell', got: Lab.rule('.site.fp .otFilter .track:not(.tcopy) > .s:not(.on):hover::after', 'background', track), want: '#d2cfca', tag: 'rule' },
+          { what: 'the list’s corner', got: Lab.cs(list, 'border-radius'), want: '12px' },
           { what: 'the list’s paper and line', got: Lab.cs(list, 'background-color') + ', ' + Lab.cs(list, 'border-color'), want: '#ffffff, #c9c0ae' },
-          { what: 'a row in it', got: Lab.cs(row, 'background-color') + ', ' + Lab.cs(row, 'border-bottom-color'), want: '#f9f6f2, #d9d2c4' }
+          { what: 'a row in it', got: Lab.cs(row, 'background-color') + ', ' + Lab.cs(row, 'border-bottom-color'), want: '#f9f6f2, #d2cfca' }
         ], 'The divider, the hover and the More list');
         Lab.note(card, 'The bar is live: pick a game and the thumb travels, the count grows its word, the lines beside the pick fade and the white copy of the words is clipped to the thumb. Hover More to open the list and pick from it, and the game takes the last cell. The card is left with its overflow showing so the list can hang below the bar.');
         Lab.note(card, 'The list itself is white with a #c9c0ae border and only its rows take --ot-listrow and --ot-listline, which is what the two rows above report.');
@@ -770,7 +770,7 @@
         bar.thumb.classList.remove('still');
         var track = bar.track;
         var cell = track.querySelector('.s');
-        Lab.table(card, F6.trackRows(track, cell, { rad: '14px', tray: '#e4ddd0', ring: '#c9c0ae' }).concat([
+        Lab.table(card, F6.trackRows(track, cell, { rad: '12px', cellPad: '0 8px', tray: '#e4ddd0', ring: '#c9c0ae' }).concat([
           { what: 'the host’s width', got: Lab.cs(host, 'width'), want: '376px' },
           { what: 'the picked cell’s hand', got: Lab.cs(track.querySelector('.s.on'), 'cursor'), want: 'default' }
         ]), 'The same bar, in a 400 box');

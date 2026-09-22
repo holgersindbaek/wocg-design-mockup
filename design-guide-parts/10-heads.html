@@ -10,7 +10,7 @@
 
   <div class="card"><div class="body">
     <h3>The seam title <span class="tag built">built</span></h3>
-    <p class="rule-text">A seam title is GLCA 500 at 26 / 26 set into a 14px strip whose 1px #D9D2C4 rule sits at y 6.5, haloed in the paper below, with an even number of suit marks about 96px apart across the window. Before the engine runs, the static seam draws the same rule and the same title.</p>
+    <p class="rule-text">A seam title is GLCA 500 at 26 / 26 set into a 14px strip whose 1px #D2CFCA rule sits at y 6.5, haloed in the paper below, with an even number of suit marks about 96px apart across the window. Before the engine runs, the static seam draws the same rule and the same title.</p>
     <div class="demo">
       <div class="site fp wm" data-demo-static>
         <div style="height:20px"></div>
@@ -48,8 +48,8 @@
       var TILE = [["club", 41.88, .88, .153], ["diamond", 137.64, .64, .159], ["spade", 234.32, 1.32, .142], ["heart", 330.08, 1.08, .148]];
       var TILEBY = {};
       TILE.forEach(function (t) { TILEBY[t[0]] = [t[2], t[3]]; });
-      var GAPSVG = '<svg viewBox="0 0 20 14"><rect y="6.5" width="20" height="1" fill="#D9D2C4"/></svg>';
-      var RULE_COLOR = '#D9D2C4';
+      var GAPSVG = '<svg viewBox="0 0 20 14"><rect y="6.5" width="20" height="1" fill="#D2CFCA"/></svg>';
+      var RULE_COLOR = '#D2CFCA';
       var HEAD_SIZE = 26, HEAD_HALO = 3, HEAD_PAD_EM = 4 / HEAD_SIZE, CELL_TARGET = 96;
       var MARK_HALF = 10, MARK_CLEAR = 8, SEAM_HEIGHT = 14, RULE_Y = 7;
       var svgN = 0, metricsCache = {}, lastFit = [0, 0];
@@ -162,7 +162,7 @@
         var left = cx - tw / 2;
         ttl.style.left = left + 'px';
         ttl.style.top = RULE_Y - base + m.xh / 2 + 'px';
-        var paper = 'var(--band, #f4eee5)';
+        var paper = 'var(--paper-band, #f4eee5)';
         var halo = ttl.cloneNode(true);
         halo.className = 'ttl halo';
         halo.style.color = paper;
@@ -195,7 +195,7 @@
           { what: '.divhead width', got: cs(shead, 'width'), want: window.innerWidth + 'px (100vw)', tag: 'note' },
           { what: 'the rule, y', got: Lab.hex(before.top), want: '6.5px' },
           { what: 'the rule, height', got: Lab.hex(before.height), want: '1px' },
-          { what: 'the rule, colour', got: Lab.hex(before.backgroundColor), want: '#d9d2c4' },
+          { what: 'the rule, colour', got: Lab.hex(before.backgroundColor), want: '#d2cfca' },
           { what: 'the title face', got: cs(sttl, 'font-family'), want: 'GLCA, Georgia, serif' },
           { what: 'the title weight', got: cs(sttl, 'font-weight'), want: '500' },
           { what: 'the title size', got: cs(sttl, 'font-size') + ' / ' + cs(sttl, 'line-height'), want: '26px / 26px' },
@@ -235,7 +235,7 @@
           { what: 'MARK_HALF', got: String(MARK_HALF), want: '10' },
           { what: 'MARK_CLEAR', got: String(MARK_CLEAR), want: '8' },
           { what: 'HEAD_HALO', got: String(HEAD_HALO), want: '3' },
-          { what: 'RULE_COLOR', got: RULE_COLOR.toLowerCase(), want: '#d9d2c4' }
+          { what: 'RULE_COLOR', got: RULE_COLOR.toLowerCase(), want: '#d2cfca' }
         ], "The engine's constants");
 
         Lab.note(card, "The halo is stroked 6px, three of which show, because a text stroke is drawn half inside the letter. The sheet writes the 6 and the engine writes 2 x HEAD_HALO, so the two agree.");
@@ -249,7 +249,7 @@
 
   <div class="card"><div class="body">
     <h3>The plain rule and the bar's strip <span class="tag built">built</span></h3>
-    <p class="rule-text">Off the frontpage a section rule is border-top 1px solid #D9D2C4, which the footer draws, and the menubar hangs a 14px strip 7px below itself with the same 1px line at y 6.5. A reading page's sections draw no rules, the 56 / 44 rhythm does the work.</p>
+    <p class="rule-text">Off the frontpage a section rule is border-top 1px solid #D2CFCA, which the footer draws, and the menubar hangs a 14px strip 7px below itself with the same 1px line at y 6.5. A reading page's sections draw no rules, the 56 / 44 rhythm does the work.</p>
     <div class="demo">
       <div class="site wm" data-demo-bar>
         <nav id="menuBarContainer" class="mbcenter" aria-label="Main navigation">
@@ -328,7 +328,7 @@
         { what: 'the bar height', got: cs(bar, 'height'), want: '56px' },
         { what: 'the strip height', got: Lab.hex(after.height), want: '14px' },
         { what: 'the strip hangs', got: Lab.hex(after.bottom), want: '-7px' },
-        { what: 'the strip tile', got: /D9D2C4/i.test(after.backgroundImage) ? 'a 384 by 14 svg with the rule in D9D2C4' : '(no D9D2C4)', want: 'a 384 by 14 svg with the rule in D9D2C4' },
+        { what: 'the strip tile', got: /D2CFCA/i.test(after.backgroundImage) ? 'a 384 by 14 svg with the rule in D2CFCA' : '(no D2CFCA)', want: 'a 384 by 14 svg with the rule in D2CFCA' },
         { what: "the tile's rect", got: /y=%276.5%27|y='6\.5'/.test(after.backgroundImage) ? "y 6.5" : '(not at 6.5)', want: 'y 6.5' },
         { what: 'the strip size', got: Lab.hex(after.backgroundSize), want: '384px 14px' },
         { what: 'the strip repeat', got: Lab.hex(after.backgroundRepeat), want: 'repeat-x' },
@@ -340,9 +340,9 @@
       var sitefooter = foot.querySelector('.sitefooter');
       var legal = foot.querySelector('.footerLegal');
       Lab.table(card, [
-        { what: 'the rule above the footer', got: cs(sitefooter, 'border-top'), want: '1px solid #d9d2c4' },
+        { what: 'the rule above the footer', got: cs(sitefooter, 'border-top'), want: '1px solid #d2cfca' },
         { what: "the footer's paper", got: cs(sitefooter, 'background-color'), want: '#f4eee5' },
-        { what: 'the legal row, rule above', got: cs(legal, 'border-top'), want: '1px solid #d9d2c4' },
+        { what: 'the legal row, rule above', got: cs(legal, 'border-top'), want: '1px solid #d2cfca' },
         { what: 'the legal row, over the line', got: cs(legal, 'padding-top'), want: '10px' },
         { what: 'the seam the frontpage draws', got: cs(foot.querySelector('.sitefooter .divhead'), 'display'), want: 'none' }
       ], "The footer's rule");
@@ -401,7 +401,7 @@
         { what: 'h1 size', got: cs(h1, 'font-size') + ' / ' + cs(h1, 'line-height'), want: '38px / 43.7px' },
         { what: 'h1 margin', got: cs(h1, 'margin'), want: '0 0 12px' },
         { what: 'h1 as the first block', got: cs(h1, 'margin-top'), want: '0' },
-        { what: 'the by-line', got: cs(by, 'font-size') + ' / ' + cs(by, 'line-height') + ', ' + cs(by, 'color'), want: '14px / 20px, #8a857c' },
+        { what: 'the by-line', got: cs(by, 'font-size') + ' / ' + cs(by, 'line-height') + ', ' + cs(by, 'color'), want: '14px / 20px, #67635c' },
         { what: 'the by-line margin', got: cs(by, 'margin'), want: '0 0 16px' },
         { what: 'h2 size', got: cs(h2, 'font-size') + ' / ' + cs(h2, 'line-height'), want: '26px / 31.2px' },
         { what: 'h2 margin', got: cs(h2, 'margin'), want: '44px 0 10px', tag: 'call' },

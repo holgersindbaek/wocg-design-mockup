@@ -9,19 +9,19 @@
   @font-face { font-family: 'BuloRounded'; src: url("BuloRounded-Bold.woff2") format('woff2'); font-weight: bold; font-display: swap; }
   body { margin: 0; padding: 28px 24px 80px; background: #f9f6f2; color: #141414;
     font-family: "BuloRounded", "Verdana", "Arial", sans-serif; -webkit-font-smoothing: antialiased;
-    --canvas: #f9f6f2; --band: #f4eee5; --surface: #fff; --ink: #141414; --ink-soft: #262626;
-    --muted: #4e4d4c; --hairline: #e7e7e7; --edge: #d2cfca; --edge-deep: #b8b5b1; --accent: #00a82d;
-    --liftshadow: 0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09);
+    --paper-page: #f9f6f2; --paper-band: #f4eee5; --paper-card: #fff; --ink: #141414; --ink-soft: #262626;
+    --ink-label: #4e4d4c; --line-soft: #e7e7e7; --line: #d2cfca; --edge-deep: #b8b5b1; --accent: #00a82d;
+    --lift: 0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09);
     --wavetrough: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 7 7'%3E%3Cpath d='M0 5C1.4 5 2.1 2 3.5 2C4.9 2 5.6 5 7 5' fill='none' stroke='white' stroke-width='1.5'/%3E%3C/svg%3E"); }
   h1 { font-size: 22px; margin: 0 0 4px; }
   p.note { font-size: 13px; color: #8a857c; margin: 0 0 26px; max-width: 860px; }
   .grid { display: grid; grid-template-columns: repeat(4, 220px); gap: 40px 32px; }
   .vbox .tag { font-size: 12px; color: #999488; margin: 0 0 10px; min-height: 28px; }
 
-  .panel { width: 200px; background: var(--surface); border-radius: 20px; corner-shape: squircle;
-    padding: 0 12px 8px; box-shadow: 0 0 0 1px var(--edge), var(--liftshadow); text-align: left; }
+  .panel { width: 200px; background: var(--paper-card); border-radius: 20px; corner-shape: squircle;
+    padding: 0 12px 8px; box-shadow: 0 0 0 1px var(--line), var(--lift); text-align: left; }
   .phead { font-size: 16px; font-weight: bold; color: var(--ink); margin: 0 -12px 7px; padding: 0 12px;
-    line-height: 32px; background: var(--canvas); border-bottom: 1px solid var(--edge);
+    line-height: 32px; background: var(--paper-page); border-bottom: 1px solid var(--line);
     border-radius: 20px 20px 0 0; corner-shape: squircle; }
   .item { font-size: 16px; line-height: 24px; color: var(--ink-soft); cursor: pointer;
     white-space: nowrap; padding: 2px 0; position: relative; }
@@ -48,12 +48,12 @@
 
   /* 5 · a pill hugs the words */
   .v-pill .item .w { padding: 2px 7px; margin: 0 -7px; border-radius: 5px; }
-  .v-pill .item:hover .w { background: var(--band); }
+  .v-pill .item:hover .w { background: var(--paper-band); }
   .v-pill .item:hover { color: var(--ink); }
 
   /* 6 · the whole row washes in the band */
   .v-wash .item { padding: 2px 12px; margin: 0 -12px; }
-  .v-wash .item:hover { background: var(--band); color: var(--ink); }
+  .v-wash .item:hover { background: var(--paper-band); color: var(--ink); }
 
   /* 7 · a 2px bar stands at the left edge */
   .v-bar .item { padding-left: 0; }
@@ -100,8 +100,8 @@
 
   /* 14 · the row lifts like a picked-up card */
   .v-lift .item { padding: 2px 8px; margin: 0 -8px; border-radius: 6px; transition: transform .12s ease, box-shadow .12s ease; }
-  .v-lift .item:hover { color: var(--ink); background: var(--surface); transform: translateY(-1px);
-    box-shadow: 0 0 0 1px var(--hairline), var(--liftshadow); }
+  .v-lift .item:hover { color: var(--ink); background: var(--paper-card); transform: translateY(-1px);
+    box-shadow: 0 0 0 1px var(--line-soft), var(--lift); }
 
   /* 15 · the word tilts like a held card */
   .v-tilt .item .w { display: inline-block; transition: transform .14s ease; transform-origin: left bottom; }

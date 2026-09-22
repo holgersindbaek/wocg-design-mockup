@@ -25,8 +25,8 @@
 <div class="grid g1">
 
   <div class="card"><div class="body">
-    <h3>The radius ladder, the 20 rung <span class="tag built">built</span></h3>
-    <p class="rule-text">Box and tile: 20px on the modal box, a game tile, a felt table tile, a leaderboard card, a picture and a quote card and a dropdown panel. Every one is a squircle, since base.scss sets corner-shape on everything under the body.</p>
+    <h3>The radius ladder, the box rung <span class="tag built">built</span></h3>
+    <p class="rule-text">A box: 20px on the modal box, a game tile, a felt table tile, a leaderboard card, a picture and a quote card and a dropdown panel. Since 22 Sep 2026 this is the only box corner: the paper boxes that drew 16 draw this one too (the next card). Every one is a squircle, since base.scss sets corner-shape on everything under the body.</p>
     <div class="demo"><div class="rw">
 
       <div class="site wm" style="width:250px">
@@ -162,7 +162,7 @@
       var shapes = pieces.map(function (p) { return Lab.cs(p[1], 'corner-shape'); });
       var one = shapes.filter(function (v, i) { return shapes.indexOf(v) === i; }).join(', ');
       rows.push({ what: 'corner-shape, all seven', got: one, want: 'superellipse(2)' });
-      rows.push({ what: '--wm-radius, the box’s own token', got: Lab.token(q('.wmBox'), '--wm-radius'), want: '20px' });
+      rows.push({ what: '--radius-panel, the box’s own token', got: Lab.token(q('.wmBox'), '--radius-panel'), want: '20px' });
       Lab.table(card, rows);
       Lab.note(card, 'The modal is the tree ModalShell builds, with its fixed layer, its scrim and the panel’s centring written off so the box can stand in the well. The felt tile is the tree TableListingBuilder draws for the open tables, without the white content block the frontpage strips off it. The games panel only shows on hover, so its display and position are the hover rule’s own values, written inline.');
       Lab.note(card, 'Each piece stands in a column of a fixed width, which is the lab’s own layout and changes no radius. The quote grid is given one column for the same reason.');
@@ -174,8 +174,8 @@
 <div class="grid g2">
 
   <div class="card"><div class="body">
-    <h3>The radius ladder, the 16 rung <span class="tag built">built</span></h3>
-    <p class="rule-text">Card: 16px on the white .wmCard inside a modal, a literal on purpose. The toast and the two corner notices read --radius-lg, the one card-rung element that shrinks: 16 with squircles, 12 on a window at or under 640px.</p>
+    <h3>The radius ladder, the box rung on paper <span class="tag built">built</span></h3>
+    <p class="rule-text">The 16 rung is gone (Holger, 22 Sep 2026). A box of paper is a box: at a glance, the read next box, the rules directory, a boxed list, a code block, the leaderboard page's table and both notices all take the box rung. The one card that sits inside a box is the exception: it stands 12px in from the box's own edge, so it takes the control rung instead, one step tighter than the box around it. A playing card keeps its own 16, which is the card's art and not this ladder.</p>
     <div class="demo"><div class="rw">
       <div class="site wm" style="width:250px">
         <div class="wmModal wmOpen modalInstant" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
@@ -215,21 +215,20 @@
       var card = document.currentScript.closest('.card');
       var q = function (s) { return card.querySelector(s); };
       Lab.table(card, [
-        { what: '.wmCard radius', got: Lab.cs(q('.wmCard'), 'border-radius'), want: '16px' },
-        { what: '--wm-card-radius', got: Lab.token(q('.wmCard'), '--wm-card-radius'), want: '16px' },
-        { what: '.atAGlance radius', got: Lab.cs(q('.atAGlance'), 'border-radius'), want: '16px' },
-        { what: '#Notice radius', got: Lab.cs(q('#Notice'), 'border-radius'), want: '16px' },
-        { what: '--radius-lg at this window', got: Lab.token(card.querySelector('.site'), '--radius-lg'), want: '16px' },
+        { what: '.wmCard radius, the control rung', got: Lab.cs(q('.wmCard'), 'border-radius'), want: '12px' },
+        { what: '.atAGlance radius', got: Lab.cs(q('.atAGlance'), 'border-radius'), want: '20px' },
+        { what: '#Notice radius', got: Lab.cs(q('#Notice'), 'border-radius'), want: '20px' },
+        { what: '--radius-panel, the box rung the notice reads', got: Lab.token(q('#Notice'), '--radius-panel'), want: '20px' },
         { what: 'corner-shape, all three', got: [q('.wmCard'), q('.atAGlance'), q('#Notice')].map(function (e) { return Lab.cs(e, 'corner-shape'); }).filter(function (v, i, a) { return a.indexOf(v) === i; }).join(', '), want: 'superellipse(2)' }
       ]);
-      Lab.note(card, 'The reading page’s at a glance card is the guide’s own call for the 16 rung: no other 16px white card ships on a page yet. The toast reads --radius-lg, so it is the one that steps to 12 under a 640px window; this window is ' + window.innerWidth + ' by ' + window.innerHeight + '.');
+      Lab.note(card, 'Until 22 Sep 2026 all three drew 16: the card had its own --radius-card token, now gone, and the notices read master’s --radius-lg, which falls to 12 on a window at or under 640px. They were the only corners on the site that changed with the window; both notices read --radius-panel now and hold at 20. This window is ' + window.innerWidth + ' by ' + window.innerHeight + '.');
       Lab.note(card, 'The reading shell carries min-height 0 inline, since the page container is 100vh tall on a real page.');
     })();</script>
   </div></div>
 
   <div class="card"><div class="body">
-    <h3>The radius ladder, the 14 rung <span class="tag built">built</span></h3>
-    <p class="rule-text">Tray: 14px on the games bar’s track and its overflow list, written calc(var(--fp-radius-md) + 2px) so the track is one step rounder than the cells inside it. The modal’s own tray draws 12 today and the guide calls that open.</p>
+    <h3>The radius ladder, the tray <span class="tag built">built</span></h3>
+    <p class="rule-text">The 14 rung is gone (Holger, 22 Sep 2026). It was never a size of its own: the games bar's track and its overflow list wrote calc(var(--radius) + 2px), the control rung plus the 2px the track pads its cells by. The modal's own tray has drawn the control rung flat, at 12 with the same 2px of padding, since it was built, and nobody could tell the two trays apart. Both read --radius now.</p>
     <div class="demo"><div class="rw tall">
       <div class="site fp wm" style="width:380px">
         <div class="lobbyscope" style="padding:0">
@@ -261,9 +260,9 @@
         thumb.style.width = cell.offsetWidth + 'px'; thumb.style.height = cell.offsetHeight + 'px'; thumb.style.opacity = '1';
       }());
       Lab.table(card, [
-        { what: '.otFilter .track radius', got: Lab.cs(q('.track'), 'border-radius'), want: '14px' },
-        { what: '.ovlist radius', got: Lab.cs(q('.ovlist'), 'border-radius'), want: '14px' },
-        { what: '--fp-radius-md, the control rung', got: Lab.token(q('.otFilter'), '--fp-radius-md'), want: '12px' },
+        { what: '.otFilter .track radius', got: Lab.cs(q('.track'), 'border-radius'), want: '12px' },
+        { what: '.ovlist radius', got: Lab.cs(q('.ovlist'), 'border-radius'), want: '12px' },
+        { what: '--radius, the control rung', got: Lab.token(q('.otFilter'), '--radius'), want: '12px' },
         { what: 'a cell inside, .track > .s', got: Lab.cs(q('.track > .s'), 'border-radius'), want: '12px' },
         { what: '.track corner-shape', got: Lab.cs(q('.track'), 'corner-shape'), want: 'superellipse(2)' }
       ]);
@@ -273,7 +272,7 @@
 
   <div class="card"><div class="body">
     <h3>The radius ladder, the 12 rung: the controls <span class="tag built">built</span></h3>
-    <p class="rule-text">Control: 12px, and 6px where corner-shape is unsupported, on every button, field, tray cell, thumb, the tooltip and the name plate. They all read --fp-radius-md, the checkbox's box too (Holger, 22 Sep 2026).</p>
+    <p class="rule-text">Control: 12px, and 6px where corner-shape is unsupported, on every button, field, tray cell, thumb, the tooltip and the name plate. They all read --radius, the checkbox's box too (Holger, 22 Sep 2026).</p>
     <div class="demo"><div class="rw">
       <div class="site wm" style="width:250px">
         <div class="wmModal wmOpen modalInstant wmGameOptions" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
@@ -330,11 +329,11 @@
       var rows = pieces.map(function (p) {
         return { what: p[0] + ' radius', got: Lab.cs(p[1], 'border-radius'), want: '12px' };
       });
-      rows.push({ what: '--fp-radius-md on the modal', got: Lab.token(q('.wmModal'), '--fp-radius-md'), want: '12px' });
-      rows.push({ what: '--fp-radius-md on the frontpage', got: Lab.token(q('.site.fp'), '--fp-radius-md'), want: '12px' });
+      rows.push({ what: '--radius on the modal', got: Lab.token(q('.wmModal'), '--radius'), want: '12px' });
+      rows.push({ what: '--radius on the frontpage', got: Lab.token(q('.site.fp'), '--radius'), want: '12px' });
       rows.push({ what: 'corner-shape, all six', got: pieces.map(function (p) { return Lab.cs(p[1], 'corner-shape'); }).filter(function (v, i, a) { return a.indexOf(v) === i; }).join(', '), want: 'superellipse(2)' });
       Lab.table(card, rows);
-      Lab.note(card, 'The name plate writes var(--fp-radius-md, 6px), so a browser with no corner-shape gets the 6px fallback rather than a heavy 12px arc. The tooltip is the capsule wocg.FrontpageTooltip builds, with its fixed position written off.');
+      Lab.note(card, 'The name plate writes var(--radius, 6px), so a browser with no corner-shape gets the 6px fallback rather than a heavy 12px arc. The tooltip is the capsule wocg.FrontpageTooltip builds, with its fixed position written off.');
     })();</script>
   </div></div>
 
@@ -402,8 +401,8 @@
   </div></div>
 
   <div class="card"><div class="body">
-    <h3>The radius ladder, the 8 rung and the round 6 <span class="tag built">built</span></h3>
-    <p class="rule-text">Small chip: 8px on a movement chip and a tag. Round on purpose: 6px with corner-shape round on the progress track and its fill, one of the three things in the design drawn with a true arc.</p>
+    <h3>The radius ladder, as round as the box goes <span class="tag built">built</span></h3>
+    <p class="rule-text">The 8 rung and the round 6 are gone as sizes (Holger, 22 Sep 2026). Every small number here is half the height of the thing it is on, which is the round rung wearing a number: a chip and a tag are 16 tall and write 8, the waiting bar is 12 tall and writes 6, the award strip is 8 tall and writes 4, the modal's scrollbar is 6 wide and writes 3. Measured, a chip at 8 and a chip written as round draw the same pixels, since a radius is clamped to half the side and the squircle is kept. The values stay in the sheet, because a chip that ever wrapped to two lines would go pill-shaped if it asked for round. What changes is the shape, not the size: the waiting bar asks for corner-shape round and is one of the three true arcs in the design; a chip keeps the squircle.</p>
     <div class="demo"><div class="rw">
       <div class="site fp wm" style="overflow:hidden;width:250px">
         <div class="lobbyscope" style="padding:0">
@@ -463,7 +462,7 @@
         { what: '.ldAwardBar radius', got: Lab.cs(q('.ldAwardBar.isBronze'), 'border-radius'), want: '4px 0 0 4px' },
         { what: '.ldAwardBar corner-shape', got: Lab.cs(q('.ldAwardBar.isBronze'), 'corner-shape'), want: 'superellipse(2)' }
       ]);
-      Lab.note(card, 'The guide’s round 6 rung is the modal’s waiting bar. The daily deal’s award strip is the other progress bar on the site and it is not on that rung: it draws its own 4px ends and keeps the squircle, so it is measured here against the sheet’s own value.');
+      Lab.note(card, 'Every want in this table is half the height of its own piece. The chip and the tag are 16 tall at 8, the waiting bar 12 tall at 6, the award strip 8 tall at 4. Only the waiting bar asks for a true arc; the rest keep the squircle, which is why the ends of a chip and the ends of the bar do not match.');
     })();</script>
   </div></div>
 
@@ -527,7 +526,7 @@
 
   <div class="card"><div class="body">
     <h3>Rings: the inset 1px edge <span class="tag built">built</span></h3>
-    <p class="rule-text">The default: box-shadow inset 0 0 0 1px var(--edge) on cards, tiles, fields, chips, trays and buttons, each in its own ring colour. An inset ring paints below the element’s children, so art that runs edge to edge covers it.</p>
+    <p class="rule-text">The default: box-shadow inset 0 0 0 1px var(--line) on cards, tiles, fields, chips, trays and buttons, each in its own ring colour. An inset ring paints below the element’s children, so art that runs edge to edge covers it.</p>
     <div class="demo"><div class="rw">
       <div class="site wm" style="width:250px">
         <div class="wmModal wmOpen modalInstant wmGameOptions" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
@@ -570,18 +569,18 @@
         { what: '.wmSeg', got: Lab.cs(q('.wmSeg'), 'box-shadow'), want: 'inset 0 0 0 1px #c9c0ae' },
         { what: '.wmBtn', got: Lab.cs(q('.wmBtn'), 'box-shadow'), want: 'inset 0 0 0 1px #bfb5a1' },
         { what: '.fpic', got: Lab.cs(q('.fpic'), 'box-shadow'), want: 'inset 0 0 0 1px #d2cfca, 0 1px 2px rgba(60,45,25,.04), 0 2px 6px rgba(60,45,25,.06)' },
-        { what: '--edge', got: Lab.token(q('.wmCard'), '--edge'), want: '#d2cfca' },
-        { what: '--wm-seg-ring, the tray’s ring', got: Lab.token(q('.wmSeg'), '--wm-seg-ring'), want: '#c9c0ae' },
-        { what: '--wm-tray-ring, the button’s ring', got: Lab.token(q('.wmBtn'), '--wm-tray-ring'), want: '#bfb5a1' }
+        { what: '--line', got: Lab.token(q('.wmCard'), '--line'), want: '#d2cfca' },
+        { what: '--line-tray, the tray’s ring', got: Lab.token(q('.wmSeg'), '--line-tray'), want: '#c9c0ae' },
+        { what: '--btn-quiet-ring, the button’s ring', got: Lab.token(q('.wmBtn'), '--btn-quiet-ring'), want: '#bfb5a1' }
       ]);
-      Lab.note(card, 'The lift is measured with the ring, since they are one string. A chip rings itself in --rule and a tray in --wm-seg-ring, which are the two steps either side of --edge: a ring follows the paper it is cut into, not one token for all.');
+      Lab.note(card, 'The lift is measured with the ring, since they are one string. A chip rings itself in --line and a tray in --line-tray, which are the two steps either side of --line: a ring follows the paper it is cut into, not one token for all.');
       Lab.note(card, 'The picture card is on the frontpage, so its lift is the lighter frontpage pair (.04 and .06). Every modal piece here reads the shared pair.');
     })();</script>
   </div></div>
 
   <div class="card"><div class="body">
     <h3>Borders: a real 1px line <span class="tag built">built</span></h3>
-    <p class="rule-text">border 1px solid var(--edge) on a fully round pill, the dropdown panels, the leaderboard and deal cards and a quote card whose text is padded from the edge. An inset ring inside an antialiased curve renders at about half strength.</p>
+    <p class="rule-text">border 1px solid var(--line) on a fully round pill, the dropdown panels, the leaderboard and deal cards and a quote card whose text is padded from the edge. An inset ring inside an antialiased curve renders at about half strength.</p>
     <div class="demo"><div class="rw">
       <div class="site fp wm" style="width:250px">
         <div class="popular" style="padding:0;max-width:none">
@@ -637,13 +636,13 @@
         { what: '.q box-sizing', got: Lab.cs(q('.q'), 'box-sizing'), want: 'border-box' }
       ]);
       Lab.note(card, 'The capsule’s own comment names the reason: an inset ring on the pill rendered at #e8e7e4 against the card’s #d2cfca, and the drop under it was exactly as dark, so the bottom edge had no line at all.');
-      Lab.note(card, 'The capsule and the panel are on the frontpage, where --liftshadow is the lighter pair.');
+      Lab.note(card, 'The capsule and the panel are on the frontpage, where --lift is the lighter pair.');
     })();</script>
   </div></div>
 
   <div class="card"><div class="body">
     <h3>Rings drawn outside, and the focus ring <span class="tag built">built</span></h3>
-    <p class="rule-text">0 0 0 1px outside on the modal box (black 30%), the name plate on the felt (--color-table-edge #393939) and the author photo (black 12%). A focused field keeps a 1px ring and darkens it to --faint #8a857c, the deepest neutral in the border list (Holger, 22 Sep 2026: no 2px anywhere, and no green on a field).</p>
+    <p class="rule-text">0 0 0 1px outside on the modal box (black 30%), the name plate on the felt (--color-table-edge #393939) and the author photo (black 12%). A focused field keeps a 1px ring and darkens it to --ink-quiet #8a857c, the deepest neutral in the border list (Holger, 22 Sep 2026: no 2px anywhere, and no green on a field).</p>
     <div class="demo"><div class="rw">
       <div class="site wm" style="width:250px">
         <div class="wmModal wmOpen modalInstant" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
@@ -700,7 +699,7 @@
       live.blur();
       Lab.table(card, [
         { what: '.wmBox', got: Lab.cs(q('.wmBox'), 'box-shadow'), want: '0 0 0 1px rgba(0,0,0,.30)' },
-        { what: '--wm-ring', got: Lab.token(q('.wmModal'), '--wm-ring'), want: '0 0 0 1px rgba(0,0,0,.30)' },
+        { what: '--ring-overlay', got: Lab.token(q('.wmModal'), '--ring-overlay'), want: '0 0 0 1px rgba(0,0,0,.30)' },
         { what: '.playerNameContainer', got: Lab.cs(q('.playerNameContainer'), 'box-shadow'), want: '0 0 0 1px #393939, 0 0 8px rgba(0,0,0,.24)' },
         { what: '--color-table-edge', got: Lab.token(q('.site.fp'), '--color-table-edge'), want: '#393939' },
         { what: '.signrow .photo', got: Lab.cs(q('.photo'), 'box-shadow'), want: '0 0 0 1px rgba(0,0,0,.12), 0 2px 6px rgba(60,45,25,.18)' },
@@ -764,7 +763,7 @@
 
   <div class="card"><div class="body">
     <h3>Dividers <span class="tag built">built</span></h3>
-    <p class="rule-text">A row line is border-bottom 1px in the surface’s own divider token: --hairline on white, --rule on the band and the canvas, --wm-seg-ring in a chooser. A divider parts two regions of one colour and is never the border token.</p>
+    <p class="rule-text">A row line is border-bottom 1px in the surface’s own divider token: --line-soft on white, --line on the band and the canvas, --line-tray in a chooser. A divider parts two regions of one colour and is never the border token.</p>
     <div class="demo"><div class="rw">
       <div class="site wm" style="width:250px">
         <div class="wmModal wmOpen modalInstant wmWide wmSettings" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
@@ -814,15 +813,15 @@
       var q = function (s) { return card.querySelector(s); };
       Lab.table(card, [
         { what: '.wmRow border-bottom', got: Lab.cs(q('.wmRow'), 'border-bottom'), want: '1px solid #ebe7de' },
-        { what: '--hairline', got: Lab.token(q('.wmCard'), '--hairline'), want: '#ebe7de' },
-        { what: '.lbRow + .lbRow > span border-top', got: Lab.cs(card.querySelectorAll('.lbRow')[1].querySelector('span'), 'border-top'), want: '1px solid #d9d2c4' },
+        { what: '--line-soft', got: Lab.token(q('.wmCard'), '--line-soft'), want: '#ebe7de' },
+        { what: '.lbRow + .lbRow > span border-top', got: Lab.cs(card.querySelectorAll('.lbRow')[1].querySelector('span'), 'border-top'), want: '1px solid #d2cfca' },
         { what: 'a tray on the box, cell line', got: Lab.cs(q('.baretray .wmCell + .wmCell'), 'background-color', '::before'), want: '#c9c0ae' },
-        { what: 'a tray on a white card, cell line', got: Lab.cs(q('.cardtray .wmCell + .wmCell'), 'background-color', '::before'), want: '#d9d2c4' },
+        { what: 'a tray on a white card, cell line', got: Lab.cs(q('.cardtray .wmCell + .wmCell'), 'background-color', '::before'), want: '#d2cfca' },
         { what: 'the cell line, width', got: Lab.cs(q('.baretray .wmCell + .wmCell'), 'width', '::before'), want: '1px' },
         { what: 'the cell line, top and bottom', got: Lab.cs(q('.baretray .wmCell + .wmCell'), 'top', '::before') + ' / ' + Lab.cs(q('.baretray .wmCell + .wmCell'), 'bottom', '::before'), want: '-2px / -2px' },
-        { what: '.footerLegal border-top', got: Lab.cs(q('.footerLegal'), 'border-top'), want: '1px solid #d9d2c4' }
+        { what: '.footerLegal border-top', got: Lab.cs(q('.footerLegal'), 'border-top'), want: '1px solid #d2cfca' }
       ]);
-      Lab.note(card, 'The chooser’s line runs 2px past the cell at each end, which is the tray’s own padding, so it reaches the tray’s inside edge rather than stopping at the words. On a white card the same line steps to --rule.');
+      Lab.note(card, 'The chooser’s line runs 2px past the cell at each end, which is the tray’s own padding, so it reaches the tray’s inside edge rather than stopping at the words. On a white card the same line steps to --line.');
       Lab.note(card, 'The leaderboard card’s rows are a table, so the line is the next row’s border-top rather than the first row’s border-bottom.');
     })();</script>
   </div></div>
@@ -833,7 +832,7 @@
 
   <div class="card"><div class="body">
     <h3>Lift: light containers <span class="tag built">built</span></h3>
-    <p class="rule-text">--liftshadow, 0 1px 2px rgba(60,45,25,.05) and 0 3px 8px rgba(60,45,25,.09), on every light container: cards, panels, dropdowns, the tooltip and the capsule. On the frontpage only, the root overrides it to the lighter .04 and .06 so a lift that reads under white paper does not vanish under a saturated tile.</p>
+    <p class="rule-text">--lift, 0 1px 2px rgba(60,45,25,.05) and 0 3px 8px rgba(60,45,25,.09), on every light container: cards, panels, dropdowns, the tooltip and the capsule. On the frontpage only, the root overrides it to the lighter .04 and .06 so a lift that reads under white paper does not vanish under a saturated tile.</p>
     <div class="demo"><div class="rw">
       <div class="site fp wm" style="overflow:hidden;width:250px">
         <div class="gamesec" id="sec-about" style="padding:0">
@@ -866,20 +865,20 @@
       var q = function (s) { return card.querySelector(s); };
       var fp = q('.site.fp'), wm = card.querySelectorAll('.site')[1];
       Lab.table(card, [
-        { what: '--liftshadow on a wm page', got: Lab.token(wm, '--liftshadow'), want: '0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09)' },
-        { what: '--liftshadow on the frontpage', got: Lab.token(fp, '--liftshadow'), want: '0 1px 2px rgba(60,45,25,.04), 0 2px 6px rgba(60,45,25,.06)' },
+        { what: '--lift on a wm page', got: Lab.token(wm, '--lift'), want: '0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09)' },
+        { what: '--lift on the frontpage', got: Lab.token(fp, '--lift'), want: '0 1px 2px rgba(60,45,25,.04), 0 2px 6px rgba(60,45,25,.06)' },
         { what: '.fpic, frontpage', got: Lab.cs(q('.fpic'), 'box-shadow'), want: 'inset 0 0 0 1px #d2cfca, 0 1px 2px rgba(60,45,25,.04), 0 2px 6px rgba(60,45,25,.06)' },
         { what: '.lobbyBoardCard, frontpage', got: Lab.cs(q('.lobbyBoardCard'), 'box-shadow'), want: '0 1px 2px rgba(60,45,25,.04), 0 2px 6px rgba(60,45,25,.06)' },
         { what: '.mpanel, a wm page', got: Lab.cs(q('.mpanel'), 'box-shadow'), want: '0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09)' },
         { what: '#wtip .wtipBox, a wm page', got: Lab.cs(q('.wtipBox'), 'box-shadow'), want: 'inset 0 0 0 1px #d2cfca, 0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09)' }
       ]);
-      Lab.note(card, 'This is the guide’s open item 1 drawn: the same card copied from the frontpage to a reading page changes weight, because the two roots declare --liftshadow differently. The bar’s panel and the tooltip are the heavier pair here and the lighter pair on the frontpage.');
+      Lab.note(card, 'This is the guide’s open item 1 drawn: the same card copied from the frontpage to a reading page changes weight, because the two roots declare --lift differently. The bar’s panel and the tooltip are the heavier pair here and the lighter pair on the frontpage.');
     })();</script>
   </div></div>
 
   <div class="card"><div class="body">
     <h3>Lift: tiles, and the hover <span class="tag built">built</span></h3>
-    <p class="rule-text">--liftshadow-lg, 0 2px 4px rgba(60,45,25,.04) and 0 4px 12px rgba(60,45,25,.12), on the hero tiles and on a felt tile on the frontpage, which drops its ring with it. A catalog tile takes the light --liftshadow under its tint ring, and the same felt tile inside a modal keeps the shared --edge ring with --liftshadow. A hero tile rises on hover to a three-stop shadow at .18s ease; a catalog tile does not move.</p>
+    <p class="rule-text">--lift-lg, 0 2px 4px rgba(60,45,25,.04) and 0 4px 12px rgba(60,45,25,.12), on the hero tiles and on a felt tile on the frontpage, which drops its ring with it. A catalog tile takes the light --lift under its tint ring, and the same felt tile inside a modal keeps the shared --line ring with --lift. A hero tile rises on hover to a three-stop shadow at .18s ease; a catalog tile does not move.</p>
     <div class="demo"><div class="rw">
       <div class="site fp wm" style="width:250px">
         <p class="cap">hero tile, hover it</p>
@@ -962,7 +961,7 @@
       var q = function (s) { return card.querySelector(s); };
       var fp = q('.site.fp');
       Lab.table(card, [
-        { what: '--liftshadow-lg on the frontpage', got: Lab.token(fp, '--liftshadow-lg'), want: '0 2px 4px rgba(60,45,25,.04), 0 4px 12px rgba(60,45,25,.12)' },
+        { what: '--lift-lg on the frontpage', got: Lab.token(fp, '--lift-lg'), want: '0 2px 4px rgba(60,45,25,.04), 0 4px 12px rgba(60,45,25,.12)' },
         { what: 'a hero tile', got: Lab.cs(q('.popular .gtile'), 'box-shadow'), want: '0 2px 4px rgba(60,45,25,.04), 0 4px 12px rgba(60,45,25,.12)' },
         { what: 'a hero tile on hover, from the rule', got: Lab.rule('.site.fp .gtile:hover', 'box-shadow', fp), want: '0 2px 4px rgba(60,45,25,.08), 0 6px 12px rgba(60,45,25,.10), 0 14px 26px rgba(60,45,25,.12)', tag: 'rule' },
         { what: 'a hero tile transition', got: Lab.cs(q('.popular .gtile'), 'transition'), want: 'transform 0.18s, box-shadow 0.18s' },
@@ -971,15 +970,15 @@
         { what: 'a felt tile on the frontpage', got: Lab.cs(q('#openTablesTop .ltCard'), 'box-shadow'), want: '0 2px 4px rgba(60,45,25,.04), 0 4px 12px rgba(60,45,25,.12)' },
         { what: 'a felt tile in a modal', got: Lab.cs(q('.modalTile'), 'box-shadow'), want: 'inset 0 0 0 1px #d2cfca, 0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09)' }
       ]);
-      Lab.note(card, 'One tile, two lifts, and 5.3 and 7.6 both say so now. The catalog tile takes the light --liftshadow under its tint ring (_fp-catalog.scss:216-222, a pale tinted card). The frontpage’s felt tile drops the shared ring and takes the big lift (_fp-open-tables.scss:423-430); the same tile inside a modal keeps the shared mixin’s --edge ring and reads --liftshadow (_wm-shared.scss:62-64).');
+      Lab.note(card, 'One tile, two lifts, and 5.3 and 7.6 both say so now. The catalog tile takes the light --lift under its tint ring (_fp-catalog.scss:216-222, a pale tinted card). The frontpage’s felt tile drops the shared ring and takes the big lift (_fp-open-tables.scss:423-430); the same tile inside a modal keeps the shared mixin’s --line ring and reads --lift (_wm-shared.scss:62-64).');
       Lab.note(card, 'Chrome drops the default ease from a transition and prints 0.18s, so the transition row reads shorter than the guide writes it.');
-      Lab.note(card, 'The hero tile is drawn outside the scene canvas, since the six tiles on the page are placed absolutely by measurement; its width and height are the lab’s. The catalog tile’s ring is its own game tint, not --edge.');
+      Lab.note(card, 'The hero tile is drawn outside the scene canvas, since the six tiles on the page are placed absolutely by measurement; its width and height are the lab’s. The catalog tile’s ring is its own game tint, not --line.');
     })();</script>
   </div></div>
 
   <div class="card"><div class="body">
     <h3>Lift: the modal’s card and its box <span class="tag built">built</span></h3>
-    <p class="rule-text">--wm-card-lift, 0 1px 2px rgba(60,45,25,.04) and 0 2px 5px rgba(60,45,25,.05), under the white card inside a modal, which is the half lift. The box itself has none: the ring alone, since a lift under a box on a blurred black sheet reads as a second edge.</p>
+    <p class="rule-text">--lift-card, 0 1px 2px rgba(60,45,25,.04) and 0 2px 5px rgba(60,45,25,.05), under the white card inside a modal, which is the half lift. The box itself has none: the ring alone, since a lift under a box on a blurred black sheet reads as a second edge.</p>
     <div class="demo"><div class="rw">
       <div class="site wm" style="width:280px">
         <div class="wmModal wmOpen modalInstant" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
@@ -1001,12 +1000,12 @@
       var card = document.currentScript.closest('.card');
       var q = function (s) { return card.querySelector(s); };
       Lab.table(card, [
-        { what: '--wm-card-lift', got: Lab.token(q('.wmModal'), '--wm-card-lift'), want: '0 1px 2px rgba(60,45,25,.04), 0 2px 5px rgba(60,45,25,.05)' },
+        { what: '--lift-card', got: Lab.token(q('.wmModal'), '--lift-card'), want: '0 1px 2px rgba(60,45,25,.04), 0 2px 5px rgba(60,45,25,.05)' },
         { what: '.wmCard', got: Lab.cs(q('.wmCard'), 'box-shadow'), want: 'inset 0 0 0 1px #d2cfca, 0 1px 2px rgba(60,45,25,.04), 0 2px 5px rgba(60,45,25,.05)' },
         { what: '.wmBox', got: Lab.cs(q('.wmBox'), 'box-shadow'), want: '0 0 0 1px rgba(0,0,0,.30)' },
-        { what: '--wm-lift, declared and never read', got: Lab.token(q('.wmModal'), '--wm-lift'), want: '', tag: 'note' }
+        { what: '--wm-lift, removed 22 Sep 2026', got: Lab.token(q('.wmModal'), '--wm-lift'), want: '', tag: 'note' }
       ]);
-      Lab.note(card, 'The box on the page sits on the scrim, which carries its depth. The lab shows it on the canvas with the scrim flattened, so the ring is all there is to see. --wm-lift is declared on the modal root and nothing reads it; the guide says not to build on it.');
+      Lab.note(card, 'The box on the page sits on the scrim, which carries its depth. The lab shows it on the canvas with the scrim flattened, so the ring is all there is to see. --wm-lift was declared on the modal root and nothing ever read it, so it went on 22 September 2026; the lift a modal\u2019s white card takes is --lift-card.');
     })();</script>
   </div></div>
 
@@ -1069,7 +1068,7 @@
 
   <div class="card"><div class="body">
     <h3>Lift: an avatar on the felt <span class="tag built">built</span></h3>
-    <p class="rule-text">--avshadow, four 1px rgba(0,0,0,.32) drop shadows and then 0 0 3px at .20 and 0 0 9px at .18, on an avatar at a table. It is a filter, not a box-shadow, so it follows the drawing’s own outline.</p>
+    <p class="rule-text">--lift-avatar, four 1px rgba(0,0,0,.32) drop shadows and then 0 0 3px at .20 and 0 0 9px at .18, on an avatar at a table. It is a filter, not a box-shadow, so it follows the drawing’s own outline.</p>
     <div class="demo"><div class="rw">
       <div class="site fp wm" style="width:206px">
         <div class="lobbyscope" id="openTablesTop" style="padding:0">
@@ -1100,7 +1099,7 @@
       var q = function (s) { return card.querySelector(s); };
       var want = 'drop-shadow(rgba(0,0,0,.32) 1px 0 0) drop-shadow(rgba(0,0,0,.32) -1px 0 0) drop-shadow(rgba(0,0,0,.32) 0 1px 0) drop-shadow(rgba(0,0,0,.32) 0 -1px 0) drop-shadow(rgba(0,0,0,.20) 0 0 3px) drop-shadow(rgba(0,0,0,.18) 0 0 9px)';
       Lab.table(card, [
-        { what: '--avshadow', got: Lab.token(q('.site.fp'), '--avshadow'), want: 'drop-shadow(1px 0 rgba(0,0,0,.32)) drop-shadow(-1px 0 rgba(0,0,0,.32)) drop-shadow(0 1px rgba(0,0,0,.32)) drop-shadow(0 -1px rgba(0,0,0,.32)) drop-shadow(0 0 3px rgba(0,0,0,.20)) drop-shadow(0 0 9px rgba(0,0,0,.18))' },
+        { what: '--lift-avatar', got: Lab.token(q('.site.fp'), '--lift-avatar'), want: 'drop-shadow(1px 0 rgba(0,0,0,.32)) drop-shadow(-1px 0 rgba(0,0,0,.32)) drop-shadow(0 1px rgba(0,0,0,.32)) drop-shadow(0 -1px rgba(0,0,0,.32)) drop-shadow(0 0 3px rgba(0,0,0,.20)) drop-shadow(0 0 9px rgba(0,0,0,.18))' },
         { what: '.player img filter', got: Lab.cs(q('.player img'), 'filter'), want: want },
         { what: '.player img height', got: Lab.cs(q('.player img'), 'height'), want: 'the seat row less the 18px plate', tag: 'note' }
       ]);

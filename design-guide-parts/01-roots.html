@@ -10,7 +10,7 @@
       <h3>The four roots and the shared palette <span class="tag built">built</span></h3>
       <p class="rule-text">Every redesigned surface reads the same tokens from one of the roots in $wm-token-roots (body.fp, body.wm, .wmModal, .wmNotice, .spot-messageBox, .chatBubble, #wtip, .customTooltip, #tableListingsBox), each carrying color-scheme light and the shared palette.</p>
       <div class="demo">
-        <div data-demo style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:10px;background:var(--band)">
+        <div data-demo style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:10px;background:var(--paper-band)">
 
           <div>
             <p style="font-size:12px;color:#8a857c;margin:0 0 4px">A reading page</p>
@@ -91,44 +91,42 @@
           });
         }
         add('color-scheme', 'light', function (el) { return Lab.cs(el, 'color-scheme'); });
-        add('--canvas', '#f9f6f2');
-        add('--band', '#f4eee5');
-        add('--surface', '#ffffff');
+        add('--paper-page', '#f9f6f2');
+        add('--paper-band', '#f4eee5');
+        add('--paper-card', '#ffffff');
         add('--ink', '#141414');
-        add('--ink-soft', '#262626');
-        add('--muted', '#4e4d4c');
-        add('--muted-soft', '#9b9997', mixed);
-        add('--faint', '#8a857c');
-        add('--edge', '#d2cfca');
-        add('--rule', '#d9d2c4');
-        add('--hairline', '#ebe7de');
-        add('--wm-seg', '#e4ddd0');
-        add('--wm-seg-ring', '#c9c0ae');
-        add('--triogreen', '#43a038');
-        add('--triogreenring', '#347d2c', mixed);
-        add('--triolightink', '#1971c2');
+        add('--ink-label', '#4e4d4c');
+        add('--ink-mark', '#9b9997', mixed);
+        add('--ink-quiet', '#67635c');
+        add('--line', '#d2cfca');
+        add('--line-soft', '#ebe7de');
+        add('--plate-tray', '#e4ddd0');
+        add('--line-tray', '#c9c0ae');
+        add('--btn-green', '#43a038');
+        add('--btn-green-ring', '#347d2c', mixed);
+        add('--plate-blue-ink', '#1971c2');
         add('--color-table-edge', '#393939');
-        add('--fp-radius-md', sq ? '12px' : '6px');
-        add('--liftshadow', {
+        add('--radius', sq ? '12px' : '6px');
+        add('--lift', {
           'body.wm': '0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09)',
           'body.fp': '0 1px 2px rgba(60,45,25,.04), 0 2px 6px rgba(60,45,25,.06)',
           '.wmModal': '0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09)',
           '.wmNotice': '0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09)'
         });
-        add('--liftshadow-lg', '0 2px 4px rgba(60,45,25,.04), 0 4px 12px rgba(60,45,25,.12)');
+        add('--lift-lg', '0 2px 4px rgba(60,45,25,.04), 0 4px 12px rgba(60,45,25,.12)');
         [['.spot-messageBox', '.spot-messageBox'], ['.chatBubble', '.chatBubble'], ['#wtip', '#wtip'], ['.customTooltip', '.customTooltip'], ['#tableListingsBox', '#tableListingsBox']].forEach(function (r) {
           var el = card.querySelector('[data-r="others"] ' + r[1]);
-          rows.push({ what: '--canvas and --ink on ' + r[0], got: Lab.token(el, '--canvas') + ', ' + Lab.token(el, '--ink'), want: '#f9f6f2, #141414' });
+          rows.push({ what: '--paper-page and --ink on ' + r[0], got: Lab.token(el, '--paper-page') + ', ' + Lab.token(el, '--ink'), want: '#f9f6f2, #141414' });
         });
         rows.push({ what: 'CSS.supports corner-shape squircle', got: String(sq), want: '', tag: 'note' });
         rows.push({
-          what: '--liftshadow-lg is declared on',
+          what: '--lift-lg is declared on',
           got: 'all four roots (_wocg-tokens.scss:77)',
           want: 'all four roots (_wocg-tokens.scss:77)'
         });
         Lab.table(card, rows, 'one row per token; a root is named only where the four disagree');
-        Lab.note(card, 'The guide’s own open item in 5.3 asked for --liftshadow-lg on the shared roots. The sheet does that, and 5.3 names every token root now. The frontpage repeats the token at the same value, so a tile lifts the same on a reading page as on the frontpage.');
-        Lab.note(card, 'The frontpage keeps its lighter --liftshadow (Frontpage.scss:57-60). The scoper writes that rule as .site.site.fp, so the fp root reads it here exactly as a frontpage does.');
+        Lab.note(card, 'The guide’s own open item in 5.3 asked for --lift-lg on the shared roots. The sheet does that, and 5.3 names every token root now. The frontpage repeats the token at the same value, so a tile lifts the same on a reading page as on the frontpage.');
+        Lab.note(card, 'The frontpage keeps its lighter --lift (Frontpage.scss:57-60). The scoper writes that rule as .site.site.fp, so the fp root reads it here exactly as a frontpage does.');
         Lab.note(card, 'The other five roots in $wm-token-roots are the table\u2019s message box and chat bubble, the tooltip, the touch tooltip and the table listings box. They are not drawn here, since each is a table piece with a look of its own, but they stand hidden in the well and their tokens are read.');
         Lab.note(card, 'Lab layout only: the two page roots carry 12px of padding and a 10px corner so their paper can be seen, and the dialog and the toast sit on a page root with the same padding. Nothing else is added.');
       })();
@@ -141,7 +139,7 @@
       <h3>What each root gates <span class="tag built">built</span></h3>
       <p class="rule-text">body.fp goes on the frontpage only: under it every .helpBox is hidden with !important and #mainContainer is auto height. A game page (data-table true) hides the bar outright, and #fpPage exists only under fp.</p>
       <div class="demo">
-        <div data-demo style="display:grid;gap:10px;padding:10px;background:var(--band)">
+        <div data-demo style="display:grid;gap:10px;padding:10px;background:var(--paper-band)">
 
           <div class="site wm" style="border-radius:10px;overflow:hidden">
             <div id="mainContainer" class="general" style="min-height:0">
@@ -218,7 +216,7 @@
       <h3>The modal kit’s own tokens <span class="tag built">built</span></h3>
       <p class="rule-text">.wmModal and .wmNotice carry a second block of tokens the frontpage has no name for: the box, its ring, the scrim, the two widths, the tray and the thumb’s time.</p>
       <div class="demo">
-        <div data-demo style="padding:10px;background:var(--band)">
+        <div data-demo style="padding:10px;background:var(--paper-band)">
           <div class="site wm">
             <div class="wmModal wmOpen modalInstant" data-r="modal" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
               <div class="wmScrim" style="position:static;height:0"></div>
@@ -252,23 +250,22 @@
           rows.push({ what: name + ' on .wmModal', got: a, want: want, tag: tag });
           rows.push({ what: name + ' on .wmNotice', got: b, want: want, tag: tag });
         }
-        add('--wm-paper', '#f9f6f2');
-        add('--wm-radius', '20px');
-        add('--wm-card-radius', '16px');
-        add('--wm-pad', '12px');
-        add('--wm-gap', '8px');
-        add('--wm-ring', '0 0 0 1px rgba(0,0,0,.30)');
-        add('--wm-scrim', 'rgba(0,0,0,.48)');
-        add('--wm-scrim-blur', '4px');
-        add('--wm-w-narrow', '400px');
-        add('--wm-w-wide', '640px');
-        add('--wm-danger', '#c92a2a');
-        add('--wm-tray', '#d9d2c4');
-        add('--wm-tray-ring', '#bfb5a1');
-        add('--wm-tray-hover', '#d1c8b8');
-        add('--wm-thspd', '220ms');
-        add('--wm-thease', 'cubic-bezier(.645,.045,.355,1)');
-        rows.push({ what: '--wm-radius on the page root', got: Lab.token(page, '--wm-radius'), want: 'not declared on body.wm', tag: 'note' });
+        add('--paper-page', '#f9f6f2');
+        add('--radius-panel', '20px');
+        add('--space-pad', '12px');
+        add('--space-inner', '8px');
+        add('--ring-overlay', '0 0 0 1px rgba(0,0,0,.30)');
+        add('--scrim', 'rgba(0,0,0,.48)');
+        add('--scrim-blur', '4px');
+        add('--size-narrow', '400px');
+        add('--size-wide', '640px');
+        add('--btn-danger', '#c92a2a');
+        add('--btn-quiet', '#d2cfca');
+        add('--btn-quiet-ring', '#bfb5a1');
+        add('--btn-quiet-hover', '#d1c8b8');
+        add('--motion-speed', '220ms');
+        add('--motion-ease', 'cubic-bezier(.645,.045,.355,1)');
+        rows.push({ what: '--radius-panel on the page root', got: Lab.token(page, '--radius-panel'), want: 'not declared on body.wm', tag: 'note' });
         Lab.table(card, rows, 'read off the dialog and the toast');
         Lab.note(card, 'The two roots read the same values: _wm-tokens.scss:6 writes the block on .wmModal, .wmNotice together, so a toast is the same kit as a dialog.');
         Lab.note(card, 'Lab layout only: the dialog’s fixed position, its scrim height and the panel’s centring are neutralised inline so the box can stand in a card. Nothing about the box itself is changed.');
@@ -282,7 +279,7 @@
       <h3>Page paper and the body’s own type <span class="tag built">built</span></h3>
       <p class="rule-text">body.wm paints the canvas #f9f6f2 and body.fp adds the interface face, the antialiasing and the ink #141414, so a page is warm paper from the first pixel. A reading page takes the face and the ink on #mainContainer.general instead.</p>
       <div class="demo">
-        <div data-demo style="display:grid;gap:10px;padding:10px;background:var(--band)">
+        <div data-demo style="display:grid;gap:10px;padding:10px;background:var(--paper-band)">
 
           <div class="site wm" data-r="wm" style="padding:12px;border-radius:10px">
             <p style="margin:0;font-size:14px">body.wm: the paper, and nothing else.</p>

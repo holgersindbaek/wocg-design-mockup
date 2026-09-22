@@ -47,12 +47,12 @@
 
   /* ===== index.html 180-185 and 206: the scheme and the nine tile colours ===== */
   body.evernote {
-    --canvas:#f9f6f2; --band:#f4eee5; --surface:#ffffff; --card:#ffffff;
-    --ink:#141414; --ink-soft:#262626; --muted:#4e4d4c; --hairline:#e7e7e7; --edge:#d2cfca;
+    --paper-page:#f9f6f2; --paper-band:#f4eee5; --paper-card:#ffffff; --paper-card:#ffffff;
+    --ink:#141414; --ink-soft:#262626; --ink-label:#4e4d4c; --line-soft:#e7e7e7; --line:#d2cfca;
     --accent:#00a82d; --accent-deep:#008a25; --accent-ink:#ffffff; --second:#4d64ff;
-    --p1:#f4c360; --p2:#ef9eb2; --p3:#4d64ff; --p4:#00a82d; --p5:#e8862f; --p6:#9a6df0; --p7:#5bb4d0; --p8:#e54e40; --p9:#d1548f; --pfg:#ffffff;
+    --star-fill:#f4c360; --p2:#ef9eb2; --p3:#4d64ff; --btn-green:#00a82d; --star-stroke:#e8862f; --p6:#9a6df0; --p7:#5bb4d0; --p8:#e54e40; --p9:#d1548f; --btn-ink:#ffffff;
   }
-  body.play-raph     { --p1:#f5b81e; --p2:#e370b5; --p3:#1f87e8; --p4:#43a038; --p5:#ef7f27; --p6:#8a3fd0; --p7:#18a89d; --p8:#e33d3a; --p9:#cf3f92; --pfg:#ffffff; }
+  body.play-raph     { --star-fill:#f5b81e; --p2:#e370b5; --p3:#1f87e8; --btn-green:#43a038; --star-stroke:#ef7f27; --p6:#8a3fd0; --p7:#18a89d; --p8:#e33d3a; --p9:#cf3f92; --btn-ink:#ffffff; }
 
   /* ===== index.html 1242-1275: the suit seam and wave tiles ===== */
   body {
@@ -101,7 +101,7 @@
   /* ===== index.html 1668-1711: the game tile and its art box ===== */
   .gtile {
     display: flex; flex-direction: column;
-    background: var(--card);
+    background: var(--paper-card);
     border-radius: 20px;
     corner-shape: squircle;
     box-shadow: 0 2px 8px 0 rgba(0,0,0,0.24);
@@ -122,7 +122,7 @@
     corner-shape: squircle;
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     width: 100%; height: 100%; flex: 1;
-    color: var(--pfg);
+    color: var(--btn-ink);
   }
   .gimg::after {
     content: ""; position: absolute; inset: 0; border-radius: 20px;
@@ -130,9 +130,9 @@
     box-shadow: inset 0 0 0 1px rgba(52,58,64,0.4);
     pointer-events: none; z-index: 3;
   }
-  .gimg.t1 { background: var(--p1); } .gimg.t2 { background: var(--p2); }
-  .gimg.t3 { background: var(--p3); } .gimg.t4 { background: var(--p4); }
-  .gimg.t5 { background: var(--p5); } .gimg.t6 { background: var(--p6); }
+  .gimg.t1 { background: var(--star-fill); } .gimg.t2 { background: var(--p2); }
+  .gimg.t3 { background: var(--p3); } .gimg.t4 { background: var(--btn-green); }
+  .gimg.t5 { background: var(--star-stroke); } .gimg.t6 { background: var(--p6); }
   .gimg.t7 { background: var(--p7); } .gimg.t8 { background: var(--p8); }
   .gimg.t9 { background: var(--p9); }
   .glogo { max-width: 64%; max-height: 72%; width: auto; height: auto; z-index: 1; }
@@ -145,10 +145,10 @@
   }
 
   /* ===== index.html 1716-1721: the shadow coat the page runs ===== */
-  body.shadow-soft .gtile { box-shadow: var(--liftshadow-lg); }
+  body.shadow-soft .gtile { box-shadow: var(--lift-lg); }
   /* the capsule's shadow on the hero tiles: the same small warm lift, no ring; on hover the
      lift grows as in the soft coat */
-  body.shadow-capsule .gtile { box-shadow: var(--liftshadow); }
+  body.shadow-capsule .gtile { box-shadow: var(--lift); }
   body.shadow-capsule .gtile:hover { box-shadow: 0 2px 4px rgba(60,45,25,.08), 0 6px 12px rgba(60,45,25,.10), 0 14px 26px rgba(60,45,25,.12); }
   body.shadow-soft .gtile:hover { box-shadow: 0 2px 4px rgba(60,45,25,.08), 0 6px 12px rgba(60,45,25,.10), 0 14px 26px rgba(60,45,25,.12); }
 
@@ -218,7 +218,7 @@
   /* every button wears the tile buttons' chrome: radius-md squircle plus an
      inset ring cut from its own fill and one soft drop (the .gbtn recipe) */
   /* the lobby buttons wear the tile family's colors: green is the Play
-     button's trio green (--p4 with the playbtn-triogreen ring and hover:
+     button's trio green (--btn-green with the playbtn-triogreen ring and hover:
      78% and 92% toward black), blue is the trick-taking trio blue (#298ae9,
      the green's OKLCH depth at hue 252, see #sec-tt), and light blue is
      the old Mantine blue-2/3 fill and ring turned to that hue in OKLCH;
@@ -228,23 +228,23 @@
      the family hue. The light red is the light blue's fill at the tile
      red's hue (26.4, --p8 in the Raphael scheme; the old plate red already
      sat at 26.5). */
-  body { --triogreen: var(--p4); --triogreenring: color-mix(in srgb, var(--p4) 78%, black); --triogreenhover: color-mix(in srgb, var(--p4) 92%, black);
-    --trioblue: #298ae9; --triobluering: color-mix(in srgb, #298ae9 78%, black); --triobluehover: color-mix(in srgb, #298ae9 92%, black);
-    --triolight: #abd2ff; --triolightring: #83b5ef; --triolightink: #1971C2; --triolighthover: #a3ccfb; --triolightline: #72b0f6;
-    --trioredlight: #fcbcb4; }
+  body { --btn-green: var(--btn-green); --btn-green-ring: color-mix(in srgb, var(--btn-green) 78%, black); --btn-green-hover: color-mix(in srgb, var(--btn-green) 92%, black);
+    --btn-blue: #298ae9; --btn-blue-ring: color-mix(in srgb, #298ae9 78%, black); --btn-blue-hover: color-mix(in srgb, #298ae9 92%, black);
+    --plate-blue: #abd2ff; --plate-blue-ring: #83b5ef; --plate-blue-ink: #1971C2; --plate-blue-hover: #a3ccfb; --triolightline: #72b0f6;
+    --plate-red: #fcbcb4; }
   .lobbyscope .button, .cattabs .button { border-radius: var(--radius-md, 6px); corner-shape: squircle; text-decoration: none; color: #fff; font-weight: bold; font-size: 20px;
     height: 32px; line-height: 32px; display: inline-block; text-align: center; padding: 0 8px; box-sizing: border-box;
     cursor: pointer; border: none; transition: background-color 24ms ease-out, box-shadow 24ms ease-out, transform 80ms ease-out; }
   .lobbyscope .button:active, .cattabs .button:active { transform: scale(0.98); }
   .lobbyscope .button.small, .cattabs .button.small { font-size: 16px; height: 24px; line-height: 24px; padding: 0 10px; }
-  .lobbyscope .button.green { background-color: var(--triogreen); box-shadow: inset 0 0 0 1px var(--triogreenring), 0 2px 4px rgba(0, 0, 0, .06);
-    text-shadow: -1px -1px 0 var(--triogreenring), 1px -1px 0 var(--triogreenring), -1px 1px 0 var(--triogreenring), 1px 1px 0 var(--triogreenring); }
-  .lobbyscope .button.green:hover { background-color: var(--triogreenhover); }
-  .lobbyscope .button.blue, .cattabs .button.blue { background-color: var(--trioblue); box-shadow: inset 0 0 0 1px var(--triobluering), 0 2px 4px rgba(0, 0, 0, .06);
-    text-shadow: -1px -1px 0 var(--triobluering), 1px -1px 0 var(--triobluering), -1px 1px 0 var(--triobluering), 1px 1px 0 var(--triobluering); }
-  .lobbyscope .button.blue:hover, .cattabs .button.blue:hover { background-color: var(--triobluehover); }
-  .lobbyscope .button.lightblue, .cattabs .button.lightblue { background-color: var(--triolight); box-shadow: inset 0 0 0 1px var(--triolightring), 0 2px 4px rgba(0, 0, 0, .06); color: var(--triolightink); text-shadow: none; }
-  .lobbyscope .button.lightblue:hover, .cattabs .button.lightblue:hover { background-color: var(--triolighthover); }
+  .lobbyscope .button.green { background-color: var(--btn-green); box-shadow: inset 0 0 0 1px var(--btn-green-ring), 0 2px 4px rgba(0, 0, 0, .06);
+    text-shadow: -1px -1px 0 var(--btn-green-ring), 1px -1px 0 var(--btn-green-ring), -1px 1px 0 var(--btn-green-ring), 1px 1px 0 var(--btn-green-ring); }
+  .lobbyscope .button.green:hover { background-color: var(--btn-green-hover); }
+  .lobbyscope .button.blue, .cattabs .button.blue { background-color: var(--btn-blue); box-shadow: inset 0 0 0 1px var(--btn-blue-ring), 0 2px 4px rgba(0, 0, 0, .06);
+    text-shadow: -1px -1px 0 var(--btn-blue-ring), 1px -1px 0 var(--btn-blue-ring), -1px 1px 0 var(--btn-blue-ring), 1px 1px 0 var(--btn-blue-ring); }
+  .lobbyscope .button.blue:hover, .cattabs .button.blue:hover { background-color: var(--btn-blue-hover); }
+  .lobbyscope .button.lightblue, .cattabs .button.lightblue { background-color: var(--plate-blue); box-shadow: inset 0 0 0 1px var(--plate-blue-ring), 0 2px 4px rgba(0, 0, 0, .06); color: var(--plate-blue-ink); text-shadow: none; }
+  .lobbyscope .button.lightblue:hover, .cattabs .button.lightblue:hover { background-color: var(--plate-blue-hover); }
 
   .lobbyscope .lobbyTopBand { display: flex; flex-wrap: wrap; gap: 16px; width: 100%; }
 
@@ -264,18 +264,18 @@
     border-radius: 20px; corner-shape: squircle;
     /* inset ring like the game tiles: the felt header covers it up top, so
        the line only wraps the white lower half */
-    box-shadow: inset 0 0 0 1px var(--edge, var(--panelline)), var(--liftshadow); overflow: hidden; cursor: pointer; }
+    box-shadow: inset 0 0 0 1px var(--line, var(--line-overlay)), var(--lift); overflow: hidden; cursor: pointer; }
   .lobbyscope .ltCard:hover, .lobbyscope .llCard:hover { background-color: #F8F7F4; }
   .lobbyscope .ltCard.isNew { cursor: default; }
 
   .lobbyscope .tableListing { width: 100%; position: relative; }
   .lobbyscope .tableListing.isTeamGame .playernumber1 .playerNameContainer,
-  .lobbyscope .tableListing.isTeamGame .playernumber3 .playerNameContainer { background-color: var(--trioredlight); color: #B52626; }
+  .lobbyscope .tableListing.isTeamGame .playernumber3 .playerNameContainer { background-color: var(--plate-red); color: #B52626; }
   /* a set of seats on its way out keeps the colour it arrived with while the listing already wears the next game's class (5 September) */
   .lobbyscope .tableListing .playersContainer.teamSeats .playernumber1 .playerNameContainer,
-  .lobbyscope .tableListing .playersContainer.teamSeats .playernumber3 .playerNameContainer { background-color: var(--trioredlight); color: #B52626; }
+  .lobbyscope .tableListing .playersContainer.teamSeats .playernumber3 .playerNameContainer { background-color: var(--plate-red); color: #B52626; }
   .lobbyscope .tableListing .playersContainer.soloSeats .playernumber1 .playerNameContainer,
-  .lobbyscope .tableListing .playersContainer.soloSeats .playernumber3 .playerNameContainer { background-color: var(--triolight); color: #1665AD; }
+  .lobbyscope .tableListing .playersContainer.soloSeats .playernumber3 .playerNameContainer { background-color: var(--plate-blue); color: #1665AD; }
   .lobbyscope .tableListing .header { position: absolute; overflow: hidden; top: 0; width: 100%; padding-top: 75%;
     background: #327333 url("green-felt.jpg") repeat; background-size: 300px 300px; }
   @media (min-resolution: 2dppx) { .lobbyscope .tableListing .header { background-size: 100px 100px; } }
@@ -295,7 +295,7 @@
   .lobbyscope .spacer20 { flex-basis: 20%; max-width: 20%; }
   .lobbyscope .player { position: relative; text-align: center; flex-basis: 40%; max-width: 40%; height: 33.3%; }
   .lobbyscope .player img { height: calc(100% - 20px); width: auto; margin-top: 1px;
-    filter: url(#avatarInnerEdge) var(--avshadow);
+    filter: url(#avatarInnerEdge) var(--lift-avatar);
     transform-origin: center bottom; transition: transform 80ms ease-in-out, filter 80ms ease-in-out; }
   .lobbyscope .player.seatAvailable:hover img, .lobbyscope .player.isEmpty:hover img { transform: scale(1.12); }
   /* nameplates on dark felt: shadows alone barely read on a dark ground, so
@@ -303,7 +303,7 @@
      hugging the shape (the crisp core of the shadow, not a drawn border), the
      soft drops beneath it, and a faint light inner top edge so the plate reads
      lit from above */
-  .lobbyscope .playerNameContainer { background-color: var(--triolight); color: #1665AD;
+  .lobbyscope .playerNameContainer { background-color: var(--plate-blue); color: #1665AD;
     box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 0 0 1px rgba(0,0,0,.30),
       0 1px 3px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25);
     border-radius: var(--radius-md, 6px); corner-shape: squircle;
@@ -335,24 +335,24 @@
   /* the site's radius token: 6px, doubled to 12 where squircles render */
   body { --radius-md: 6px; }
   @supports (corner-shape: squircle) { body { --radius-md: 12px; } }
-  body { --tileshadow: 0 2px 8px 0 rgba(0,0,0,0.24); --panelline: rgba(60,45,25,0.15);
+  body { --tileshadow: 0 2px 8px 0 rgba(0,0,0,0.24); --line-overlay: rgba(60,45,25,0.15);
     /* edge-deep: the scheme's border grey deepened one step with its own
-       muted ink (80/20), the missing rung between --edge and --muted */
-    --edge-deep: color-mix(in srgb, var(--edge, #d2cfca) 80%, var(--muted, #4e4d4c));
+       muted ink (80/20), the missing rung between --line and --ink-label */
+    --edge-deep: color-mix(in srgb, var(--line, #d2cfca) 80%, var(--ink-label, #4e4d4c));
     /* muted-soft: helper-text grey derived from the scheme itself, the
        muted ink faded 45% toward the canvas */
-    --muted-soft: color-mix(in srgb, var(--muted, #4e4d4c) 55%, var(--canvas, #f9f6f2));
-    /* the design's one chrome: the scheme's --edge draws the line, and the
+    --muted-soft: color-mix(in srgb, var(--ink-label, #4e4d4c) 55%, var(--paper-page, #f9f6f2));
+    /* the design's one chrome: the scheme's --line draws the line, and the
        soft layers run warm and visible on cream (the old ElevenLabs 4%
        neutrals sank under cream + grain). Everything that wears btnshadow
        - tiles, rail containers, pills, chips, capsule, menu mark - shares
        this recipe */
-    --liftshadow: 0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09);
+    --lift: 0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09);
     /* the same warm material scaled for big surfaces (hero art tiles):
        a pill-sized blur vanishes under a 300px block */
-    --liftshadow-lg: 0 2px 5px rgba(60,45,25,.07), 0 8px 18px rgba(60,45,25,.10);
-    --btnshadow: 0 0 0 1px var(--edge, var(--panelline)), var(--liftshadow);
-    --ringshadow: var(--btnshadow); }
+    --lift-lg: 0 2px 5px rgba(60,45,25,.07), 0 8px 18px rgba(60,45,25,.10);
+    --lift-btn: 0 0 0 1px var(--line, var(--line-overlay)), var(--lift);
+    --ringshadow: var(--lift-btn); }
 
   /* ===== index.html 3641-3797: the all felt tile in both table sections ===== */
   /* ── the open-table tile (open-tables-lab c27, "bare essentials"): the whole tile is the 4:3 felt.
@@ -433,17 +433,17 @@
   body.cbtn-official .otscope.otscope.otscope .cbtn .button:active { background-color: #FCC419; box-shadow: 0 0 0 1px rgba(92,58,0,.70); }
   body.cbtn-gameyellow .cbtn .button:hover { background-color: color-mix(in srgb, #FFE066 92%, #E67700 8%); }
   body.cbtn-gameyellow .cbtn .button:active { background-color: #FCC419; } /* the game's pressed yellow */
-  body.cbtn-triogreen .cbtn .button { background-color: var(--triogreen); color: #fff;
-    text-shadow: -1px -1px 0 var(--triogreenring), 1px -1px 0 var(--triogreenring), -1px 1px 0 var(--triogreenring), 1px 1px 0 var(--triogreenring); }
-  body.cbtn-triogreen .cbtn .button:hover { background-color: var(--triogreenhover); }
+  body.cbtn-triogreen .cbtn .button { background-color: var(--btn-green); color: #fff;
+    text-shadow: -1px -1px 0 var(--btn-green-ring), 1px -1px 0 var(--btn-green-ring), -1px 1px 0 var(--btn-green-ring), 1px 1px 0 var(--btn-green-ring); }
+  body.cbtn-triogreen .cbtn .button:hover { background-color: var(--btn-green-hover); }
   body.cbtn-evergreen .cbtn .button { background-color: #00a82d; color: #fff;
     text-shadow: -1px -1px 0 color-mix(in srgb, #00a82d 78%, black), 1px -1px 0 color-mix(in srgb, #00a82d 78%, black), -1px 1px 0 color-mix(in srgb, #00a82d 78%, black), 1px 1px 0 color-mix(in srgb, #00a82d 78%, black); }
   body.cbtn-evergreen .cbtn .button:hover { background-color: color-mix(in srgb, #00a82d 92%, black); }
-  body.cbtn-lightblue .cbtn .button { background-color: var(--triolight); color: var(--triolightink); text-shadow: none; }
-  body.cbtn-lightblue .cbtn .button:hover { background-color: var(--triolighthover); }
-  body.cbtn-blue .cbtn .button { background-color: var(--trioblue); color: #fff;
-    text-shadow: -1px -1px 0 var(--triobluering), 1px -1px 0 var(--triobluering), -1px 1px 0 var(--triobluering), 1px 1px 0 var(--triobluering); }
-  body.cbtn-blue .cbtn .button:hover { background-color: var(--triobluehover); }
+  body.cbtn-lightblue .cbtn .button { background-color: var(--plate-blue); color: var(--plate-blue-ink); text-shadow: none; }
+  body.cbtn-lightblue .cbtn .button:hover { background-color: var(--plate-blue-hover); }
+  body.cbtn-blue .cbtn .button { background-color: var(--btn-blue); color: #fff;
+    text-shadow: -1px -1px 0 var(--btn-blue-ring), 1px -1px 0 var(--btn-blue-ring), -1px 1px 0 var(--btn-blue-ring), 1px 1px 0 var(--btn-blue-ring); }
+  body.cbtn-blue .cbtn .button:hover { background-color: var(--btn-blue-hover); }
 
   /* the options gear, top right, on your own table only. It sits in the one corner every tile
      leaves empty, and away from the marks, so a row of status marks never looks clickable. */
@@ -520,27 +520,27 @@
      paint has it too. ── */
   .lobbyTopBand > .otFilter { flex: 0 0 100%; width: 100%; margin: 0; } /* the bar over both cards: the full row, the cards 16px under it, the row's own gap, as the tiles are under the open tables' bar */
   .otFilter { --ot-outline: -1px -1px 0 var(--ot-thumbring), 1px -1px 0 var(--ot-thumbring), -1px 1px 0 var(--ot-thumbring), 1px 1px 0 var(--ot-thumbring);
-    position: relative; margin: 2px 0 8px; font-family: "BuloRounded", "Verdana", "Arial", sans-serif; --thspd: 220ms; --thease: cubic-bezier(.645,.045,.355,1);
+    position: relative; margin: 2px 0 8px; font-family: "BuloRounded", "Verdana", "Arial", sans-serif; --bar-speed: 220ms; --bar-ease: cubic-bezier(.645,.045,.355,1);
     --ot-tray: #e4ddd0; --ot-ring: #c9c0ae; --ot-line: #c9c0ae; --ot-ink: #4e4d4c; --ot-hover: #dcd4c5;
-    --ot-listrow: var(--canvas, #f9f6f2); --ot-listline: #e6e0d6; --ot-listhover: color-mix(in srgb, var(--ot-listrow), var(--ot-tray));
+    --ot-listrow: var(--paper-page, #f9f6f2); --ot-listline: #e6e0d6; --ot-listhover: color-mix(in srgb, var(--ot-listrow), var(--ot-tray));
     --ot-listshadow: 0 2px 4px rgba(60,45,25,.06), 0 8px 20px rgba(60,45,25,.12);
-    --ot-thumb: var(--triogreen); --ot-thumbring: var(--triogreenring); --ot-thumbink: #fff; --ot-thumbshadow: var(--ot-outline); }
+    --ot-thumb: var(--btn-green); --ot-thumbring: var(--btn-green-ring); --ot-thumbink: #fff; --ot-thumbshadow: var(--ot-outline); }
   /* the leaderboard's own blue: the light blue tray with the solid blue thumb and white outlined text */
-  body.otc-blue .otFilter { --ot-tray: var(--triolight); --ot-ring: var(--triolightring); --ot-ink: var(--triolightink); --ot-hover: var(--triolighthover); --ot-line: var(--triolightline);
-    --ot-thumb: var(--trioblue); --ot-thumbring: var(--triobluering); --ot-thumbink: #fff; --ot-thumbshadow: var(--ot-outline); }
+  body.otc-blue .otFilter { --ot-tray: var(--plate-blue); --ot-ring: var(--plate-blue-ring); --ot-ink: var(--plate-blue-ink); --ot-hover: var(--plate-blue-hover); --ot-line: var(--triolightline);
+    --ot-thumb: var(--btn-blue); --ot-thumbring: var(--btn-blue-ring); --ot-thumbink: #fff; --ot-thumbshadow: var(--ot-outline); }
   /* the greens the page already plays with: the Play button's own green, and Evernote's */
-  body.otc-green .otFilter { --ot-tray: #dcefc9; --ot-ring: #b6d894; --ot-ink: #4F800B; --ot-hover: #d1e8ba; --ot-line: #a4cf7e; --ot-thumb: var(--triogreen); --ot-thumbring: var(--triogreenring); --ot-thumbink: #fff; --ot-thumbshadow: var(--ot-outline); }
+  body.otc-green .otFilter { --ot-tray: #dcefc9; --ot-ring: #b6d894; --ot-ink: #4F800B; --ot-hover: #d1e8ba; --ot-line: #a4cf7e; --ot-thumb: var(--btn-green); --ot-thumbring: var(--btn-green-ring); --ot-thumbink: #fff; --ot-thumbshadow: var(--ot-outline); }
   body.otc-evergreen .otFilter { --ot-tray: #d4f1dc; --ot-ring: #a3dcb5; --ot-ink: #0d6b2a; --ot-hover: #c6ead0; --ot-line: #8fd2a5; --ot-thumb: #00a82d; --ot-thumbring: #008a25; --ot-thumbink: #fff; --ot-thumbshadow: var(--ot-outline); }
   /* the game's yellow: the corner buttons' #FFE066 with the pressed #FCC419 as the thumb, dark ink and no outline */
   body.otc-yellow .otFilter { --ot-tray: #FFF3C2; --ot-ring: #F0DA8A; --ot-ink: #8A5A00; --ot-hover: #FCECA8; --ot-line: #E8CB6A; --ot-thumb: #FFD43B; --ot-thumbring: #E6B92B; --ot-thumbink: #5C3D00; --ot-thumbshadow: none; }
   /* the Evernote scheme: the page's warm band as the tray, so the bar does not stand out, and the ring and the lines in the
      divider's own colour, #D9D2C4. A white card or the ink as the thumb. Then the same with the tray a shade darker, and a shade lighter. */
-  body.otc-warm .otFilter { --ot-tray: var(--band, #f0eee6); --ot-ring: #D9D2C4; --ot-line: #D9D2C4; --ot-ink: #4e4d4c; --ot-hover: color-mix(in srgb, var(--band, #f0eee6) 88%, #D9D2C4); --ot-thumb: #fff; --ot-thumbring: #D9D2C4; --ot-thumbink: #141414; --ot-thumbshadow: none; }
+  body.otc-warm .otFilter { --ot-tray: var(--paper-band, #f0eee6); --ot-ring: #D9D2C4; --ot-line: #D9D2C4; --ot-ink: #4e4d4c; --ot-hover: color-mix(in srgb, var(--paper-band, #f0eee6) 88%, #D9D2C4); --ot-thumb: #fff; --ot-thumbring: #D9D2C4; --ot-thumbink: #141414; --ot-thumbshadow: none; }
   body.otc-warmdarker .otFilter { --ot-thumb: #fff; --ot-thumbring: #c9c0ae; --ot-thumbink: #141414; --ot-thumbshadow: none; }
-  body.otc-warmlighter .otFilter { --ot-tray: #fff; --ot-ring: #D9D2C4; --ot-line: #D9D2C4; --ot-ink: #4e4d4c; --ot-hover: var(--band, #f0eee6); --ot-thumb: #fff; --ot-thumbring: #D9D2C4; --ot-thumbink: #141414; --ot-thumbshadow: 0 0 0 transparent; }
+  body.otc-warmlighter .otFilter { --ot-tray: #fff; --ot-ring: #D9D2C4; --ot-line: #D9D2C4; --ot-ink: #4e4d4c; --ot-hover: var(--paper-band, #f0eee6); --ot-thumb: #fff; --ot-thumbring: #D9D2C4; --ot-thumbink: #141414; --ot-thumbshadow: 0 0 0 transparent; }
   body.otc-warmlighter .otFilter .track .thumb { box-shadow: inset 0 0 0 1px var(--ot-thumbring), 0 2px 4px rgba(0,0,0,.1); }
-  body.otc-warmdark .otFilter { --ot-tray: var(--band, #f0eee6); --ot-ring: #D9D2C4; --ot-line: #D9D2C4; --ot-ink: #4e4d4c; --ot-hover: color-mix(in srgb, var(--band, #f0eee6) 88%, #D9D2C4); --ot-thumb: #3d3d3a; --ot-thumbring: #2a2a28; --ot-thumbink: #fff; --ot-thumbshadow: none; }
-  body.otc-warmgreen .otFilter { --ot-tray: var(--band, #f0eee6); --ot-ring: #D9D2C4; --ot-line: #D9D2C4; --ot-ink: #4e4d4c; --ot-hover: color-mix(in srgb, var(--band, #f0eee6) 88%, #D9D2C4); --ot-thumb: var(--triogreen); --ot-thumbring: var(--triogreenring); --ot-thumbink: #fff; --ot-thumbshadow: var(--ot-outline); }
+  body.otc-warmdark .otFilter { --ot-tray: var(--paper-band, #f0eee6); --ot-ring: #D9D2C4; --ot-line: #D9D2C4; --ot-ink: #4e4d4c; --ot-hover: color-mix(in srgb, var(--paper-band, #f0eee6) 88%, #D9D2C4); --ot-thumb: #3d3d3a; --ot-thumbring: #2a2a28; --ot-thumbink: #fff; --ot-thumbshadow: none; }
+  body.otc-warmgreen .otFilter { --ot-tray: var(--paper-band, #f0eee6); --ot-ring: #D9D2C4; --ot-line: #D9D2C4; --ot-ink: #4e4d4c; --ot-hover: color-mix(in srgb, var(--paper-band, #f0eee6) 88%, #D9D2C4); --ot-thumb: var(--btn-green); --ot-thumbring: var(--btn-green-ring); --ot-thumbink: #fff; --ot-thumbshadow: var(--ot-outline); }
 
   .otFilter .track { position: relative; display: flex; align-items: center; flex-wrap: nowrap; width: 100%; box-sizing: border-box; gap: 0; padding: 2px;
     border-radius: calc(var(--radius-md, 6px) + 2px); corner-shape: squircle; background: var(--ot-tray);
@@ -555,7 +555,7 @@
   .otFilter .track > .s i::before { content: "\00B7"; margin-right: 5px; }
   /* the word: a real element whose width grows with the move, kept in step by the script; it shows only in the white copy */
   .otFilter .track > .s i .w { display: inline-block; width: 0; overflow: visible; clip-path: inset(0); white-space: pre; vertical-align: baseline; font-style: normal; opacity: 0;
-    transition: width var(--thspd) var(--thease); }
+    transition: width var(--bar-speed) var(--bar-ease); }
   /* hover: the whole segment, not the button's shape. A pseudo behind the text fills the cell edge to edge and reaches 1px
      above and below it into the tray's padding, up to the ring, with square corners; the two end segments, All games and
      More, follow the tray's inner corner. Never on the picked cell. A game with no tables is not dimmed: it can be picked. */
@@ -569,7 +569,7 @@
   body.othover-ink .otFilter .track:not(.tcopy) .ov:not(.on) .ovbtn:hover .zone svg path { fill: #141414; stroke: #141414; }
   /* the lines: one on the left of every cell after the first and on More, the two beside the pick faded on the thumb's clock */
   .otFilter .track > .s + .s::before, .otFilter .track > .s + .ov::before { content: ""; position: absolute; left: 0; top: -2px; bottom: -2px; width: 1px; background: var(--ot-ring); pointer-events: none;
-    transition: opacity var(--thspd) var(--thease); }
+    transition: opacity var(--bar-speed) var(--bar-ease); }
   .otFilter .track > .s.on::before, .otFilter .track > .nextpick::before, .otFilter .track > .ov.on::before { opacity: 0; }
   /* More: the leaderboard's dropdown button, fused on the end. The word sits 3px from the wall, the triangle 2px after it.
      Its hover bridge reaches down through the tray's padding and the 8px gap, so the pointer can travel to the list. */
@@ -603,10 +603,10 @@
   /* the thumb: the site's blue button, sliding. It carries the button's shadow; the tray, being a recess, has only its ring */
   .otFilter .track .thumb { position: absolute; z-index: 1; left: 0; top: 0; width: 0; height: 0; pointer-events: none; opacity: 0;
     border-radius: var(--radius-md, 6px); corner-shape: squircle; background: var(--ot-thumb); box-shadow: inset 0 0 0 1px var(--ot-thumbring), 0 2px 4px rgba(0,0,0,.06);
-    transition: left var(--thspd) var(--thease), width var(--thspd) var(--thease), top var(--thspd) var(--thease), height var(--thspd) var(--thease), opacity calc(var(--thspd) / 2) linear; }
+    transition: left var(--bar-speed) var(--bar-ease), width var(--bar-speed) var(--bar-ease), top var(--bar-speed) var(--bar-ease), height var(--bar-speed) var(--bar-ease), opacity calc(var(--bar-speed) / 2) linear; }
   /* the white copy: the whole bar again in white, clipped to the thumb's window, so the text is white exactly where the thumb is */
   .otFilter .tcopy { position: absolute; inset: 0; z-index: 6; margin: 0; pointer-events: none; background: transparent; box-shadow: none;
-    clip-path: inset(0 100% 0 0); transition: clip-path var(--thspd) var(--thease), opacity calc(var(--thspd) / 2) linear; }
+    clip-path: inset(0 100% 0 0); transition: clip-path var(--bar-speed) var(--bar-ease), opacity calc(var(--bar-speed) / 2) linear; }
   .otFilter .tcopy > .s, .otFilter .tcopy > .s i, .otFilter .tcopy .ov .ovbtn { color: var(--ot-thumbink); text-shadow: var(--ot-thumbshadow); }
   .otFilter .tcopy > .s + .s::before, .otFilter .tcopy > .s + .ov::before { display: none; }
   .otFilter .tcopy > .s, .otFilter .tcopy .ov .ovbtn { background: transparent !important; opacity: 1; }
@@ -626,8 +626,8 @@
 </style>
 <style>
   /* ===== the avatar shadow the page runs (index.html 992 and 996) ===== */
-  body { --avshadow: drop-shadow(1px 0 rgba(0,0,0,.12)) drop-shadow(-1px 0 rgba(0,0,0,.12)) drop-shadow(0 1px rgba(0,0,0,.12)) drop-shadow(0 -1px rgba(0,0,0,.12)) drop-shadow(0 1px 1px rgba(0,0,0,.14)) drop-shadow(0 2px 3px rgba(0,0,0,.14)) drop-shadow(0 5px 9px rgba(0,0,0,.18)); }
-  body.avsh-hover { --avshadow: drop-shadow(1px 0 rgba(0,0,0,.32)) drop-shadow(-1px 0 rgba(0,0,0,.32)) drop-shadow(0 1px rgba(0,0,0,.32)) drop-shadow(0 -1px rgba(0,0,0,.32)) drop-shadow(0 0 3px rgba(0,0,0,.20)) drop-shadow(0 0 9px rgba(0,0,0,.18)); }
+  body { --lift-avatar: drop-shadow(1px 0 rgba(0,0,0,.12)) drop-shadow(-1px 0 rgba(0,0,0,.12)) drop-shadow(0 1px rgba(0,0,0,.12)) drop-shadow(0 -1px rgba(0,0,0,.12)) drop-shadow(0 1px 1px rgba(0,0,0,.14)) drop-shadow(0 2px 3px rgba(0,0,0,.14)) drop-shadow(0 5px 9px rgba(0,0,0,.18)); }
+  body.avsh-hover { --lift-avatar: drop-shadow(1px 0 rgba(0,0,0,.32)) drop-shadow(-1px 0 rgba(0,0,0,.32)) drop-shadow(0 1px rgba(0,0,0,.32)) drop-shadow(0 -1px rgba(0,0,0,.32)) drop-shadow(0 0 3px rgba(0,0,0,.20)) drop-shadow(0 0 9px rgba(0,0,0,.18)); }
   /* the heading face the page runs (index.html 96), and the seam title, which the
      real page gives the same face by copying the hidden .pophead's computed style */
   body.font-gelicamd .pophead, body.font-gelicamd .seam .ttl { font-family: "Gelica", "Georgia", serif; font-weight: 500; }
@@ -692,7 +692,7 @@
   .pstage.headplain .sub { text-align: left; }
 
   /* the sub-line */
-  .shead .sub { margin: 6px 0 0; text-align: center; font-size: 15px; line-height: 21px; color: var(--muted); }
+  .shead .sub { margin: 6px 0 0; text-align: center; font-size: 15px; line-height: 21px; color: var(--ink-label); }
   .pstage.subsmall .shead .sub { font-size: 13.5px; line-height: 19px; color: var(--muted-soft); }
   .pstage.subloud .shead .sub { font-size: 16px; line-height: 24px; color: var(--ink-soft); }
   .pstage.subabove .shead { display: flex; flex-direction: column; }
@@ -703,9 +703,9 @@
 
   /* a few words after the title, on the title's own line */
   .seam .ttl .tail { margin-left: 10px; font-family: "BuloRounded","Verdana","Arial",sans-serif;
-    font-size: 15px; font-weight: normal; color: var(--muted); }
+    font-size: 15px; font-weight: normal; color: var(--ink-label); }
   .seam .ttl .cnt { margin-left: 10px; font-family: "BuloRounded","Verdana","Arial",sans-serif;
-    font-size: 14px; font-weight: bold; color: var(--muted); }
+    font-size: 14px; font-weight: bold; color: var(--ink-label); }
 
   /* the line that is not there until you point at it */
   .pstage.subfloat .shead .sub { position: absolute; left: 0; right: 0; top: 100%; margin-top: 8px;
@@ -717,16 +717,16 @@
   .qwrap { position: relative; display: inline-block; }
   .qdot { display: inline-flex; align-items: center; justify-content: center; width: 19px; height: 19px;
     margin-left: 9px; padding: 0 0 1px; border: 0; cursor: pointer; vertical-align: 3px;
-    border-radius: 50%; background: #fff; box-shadow: inset 0 0 0 1px var(--edge, #d2cfca);
-    color: var(--muted); font: bold 12px/19px "BuloRounded", Verdana, sans-serif; }
-  .qdot:hover, .qdot:focus-visible { background: var(--band); color: var(--ink); }
+    border-radius: 50%; background: #fff; box-shadow: inset 0 0 0 1px var(--line, #d2cfca);
+    color: var(--ink-label); font: bold 12px/19px "BuloRounded", Verdana, sans-serif; }
+  .qdot:hover, .qdot:focus-visible { background: var(--paper-band); color: var(--ink); }
   .qbub { position: absolute; z-index: 20; left: 50%; top: calc(100% + 11px); width: 300px; box-sizing: border-box;
     transform: translateX(-50%) translateY(4px); opacity: 0; visibility: hidden;
     transition: opacity .1s linear, transform .2s cubic-bezier(.22,1,.36,1), visibility 0s .1s;
     background: #F9F6F2; color: #262626; font-family: "BuloRounded","Verdana","Arial",sans-serif;
     font-size: 13px; line-height: 18px; font-weight: normal; text-align: left; white-space: normal;
     padding: 7px 11px 8px; border-radius: var(--radius-md, 6px); corner-shape: squircle;
-    box-shadow: inset 0 0 0 1px #d2cfca, var(--liftshadow); }
+    box-shadow: inset 0 0 0 1px #d2cfca, var(--lift); }
   .qwrap:hover .qbub, .qwrap:focus-within .qbub { opacity: 1; visibility: visible;
     transform: translateX(-50%) translateY(0); transition: opacity .1s linear, transform .22s cubic-bezier(.22,1,.36,1), visibility 0s; }
   .pstage.qpush .shead .sub { display: none; }
@@ -742,13 +742,13 @@
   body.showhidden .pstage.qpush .psec:first-of-type .shead .sub { display: block; }
 
   /* one line, or three chips, for the whole page */
-  .toporient { max-width: 720px; margin: 0 auto 39px; text-align: center; font-size: 16px; line-height: 24px; color: var(--muted); }
+  .toporient { max-width: 720px; margin: 0 auto 39px; text-align: center; font-size: 16px; line-height: 24px; color: var(--ink-label); }
   .topstrip { display: flex; justify-content: center; gap: 8px; margin: 0 0 39px; }
   .topstrip a { display: inline-flex; align-items: baseline; gap: 7px; height: 32px; padding: 0 13px; box-sizing: border-box;
     border-radius: var(--radius-md, 6px); corner-shape: squircle; text-decoration: none; line-height: 32px;
-    background: #fff; box-shadow: inset 0 0 0 1px var(--edge, #d2cfca), var(--liftshadow);
+    background: #fff; box-shadow: inset 0 0 0 1px var(--line, #d2cfca), var(--lift);
     font-size: 15px; font-weight: bold; color: #212529; }
-  .topstrip a em { font-style: normal; font-size: 13.5px; font-weight: normal; color: var(--muted); }
+  .topstrip a em { font-style: normal; font-size: 13.5px; font-weight: normal; color: var(--ink-label); }
   .topstrip a:hover { background: #F8F7F4; }
 
   /* the line under the row instead of over it */
@@ -760,9 +760,9 @@
   .emptyPanel { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px;
     height: 150px; box-sizing: border-box; padding: 0 24px; text-align: center;
     border-radius: 20px; corner-shape: squircle; background: #fff;
-    box-shadow: inset 0 0 0 1px var(--edge, #d2cfca), var(--liftshadow); }
+    box-shadow: inset 0 0 0 1px var(--line, #d2cfca), var(--lift); }
   .emptyPanel b { font-size: 20px; line-height: 28px; color: #212529; }
-  .emptyPanel p { font-size: 15px; line-height: 21px; color: var(--muted); margin: 0; max-width: 30em; }
+  .emptyPanel p { font-size: 15px; line-height: 21px; color: var(--ink-label); margin: 0; max-width: 30em; }
 
   /* ===== round two, family two: the hint that survives the pointer =====
      Every rule here rides on the .subfloat .subsection pair above, which is

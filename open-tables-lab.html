@@ -13,11 +13,11 @@
   /* ===== page chrome (the lab convention) ===== */
   body { margin: 0; padding: 28px 24px 80px; background: #f9f6f2; color: #141414;
     font-family: "BuloRounded", "Verdana", "Arial", sans-serif; -webkit-font-smoothing: antialiased;
-    --canvas: #f9f6f2; --band: #f4eee5; --surface: #fff; --edge: #d2cfca; --ink: #141414; --muted: #4e4d4c;
-    --muted-soft: #8a857c; --panelline: rgba(60,45,25,.15); --radius-md: 6px;
-    --liftshadow: 0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09);
-    --btnshadow: 0 0 0 1px var(--edge), var(--liftshadow);
-    --avshadow: drop-shadow(1px 0 rgba(0,0,0,.12)) drop-shadow(-1px 0 rgba(0,0,0,.12)) drop-shadow(0 1px rgba(0,0,0,.12)) drop-shadow(0 -1px rgba(0,0,0,.12)) drop-shadow(0 1px 1px rgba(0,0,0,.14)) drop-shadow(0 2px 3px rgba(0,0,0,.14)) drop-shadow(0 5px 9px rgba(0,0,0,.18)); }
+    --paper-page: #f9f6f2; --paper-band: #f4eee5; --paper-card: #fff; --line: #d2cfca; --ink: #141414; --ink-label: #4e4d4c;
+    --muted-soft: #8a857c; --line-overlay: rgba(60,45,25,.15); --radius-md: 6px;
+    --lift: 0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09);
+    --lift-btn: 0 0 0 1px var(--line), var(--lift);
+    --lift-avatar: drop-shadow(1px 0 rgba(0,0,0,.12)) drop-shadow(-1px 0 rgba(0,0,0,.12)) drop-shadow(0 1px rgba(0,0,0,.12)) drop-shadow(0 -1px rgba(0,0,0,.12)) drop-shadow(0 1px 1px rgba(0,0,0,.14)) drop-shadow(0 2px 3px rgba(0,0,0,.14)) drop-shadow(0 5px 9px rgba(0,0,0,.18)); }
   @supports (corner-shape: squircle) { body { --radius-md: 12px; } }
   h1 { font-size: 22px; margin: 0 0 4px; }
   p.note { font-size: 13px; color: var(--muted-soft); margin: 0 0 22px; max-width: 900px; line-height: 1.45; }
@@ -25,13 +25,13 @@
   .vsec2 { margin: 0 0 54px; }
   .vsec2 h2 { font-size: 17px; margin: 0 0 4px; }
   .vsec2 .desc { font-size: 13px; color: var(--muted-soft); margin: 0 0 14px; max-width: 900px; line-height: 1.45; }
-  .vsec2 .desc code { font-family: ui-monospace, Menlo, monospace; font-size: 12px; background: #fff; padding: 0 4px; border-radius: 4px; box-shadow: inset 0 0 0 1px var(--edge); }
+  .vsec2 .desc code { font-family: ui-monospace, Menlo, monospace; font-size: 12px; background: #fff; padding: 0 4px; border-radius: 4px; box-shadow: inset 0 0 0 1px var(--line); }
 
   /* ===== the brief: a four column card ===== */
   .brief { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; max-width: 1100px; margin-bottom: 10px; }
-  .brief .bcol { background: #fff; border-radius: 12px; corner-shape: squircle; box-shadow: var(--btnshadow); padding: 12px 14px 14px; }
+  .brief .bcol { background: #fff; border-radius: 12px; corner-shape: squircle; box-shadow: var(--lift-btn); padding: 12px 14px 14px; }
   .brief .bcol h3 { font-size: 13px; margin: 0 0 8px; padding-bottom: 6px; border-bottom: 1px solid #eeeae3; display: flex; align-items: center; gap: 6px; }
-  .brief .bcol h3 .tag { font-size: 10.5px; font-weight: bold; padding: 1px 6px; border-radius: 10px; background: var(--band); color: var(--muted); }
+  .brief .bcol h3 .tag { font-size: 10.5px; font-weight: bold; padding: 1px 6px; border-radius: 10px; background: var(--paper-band); color: var(--ink-label); }
   .brief .bcol.vital h3 .tag { background: #C0EB75; color: #4F800B; }
   .brief .bcol.need h3 .tag { background: #A5D8FF; color: #1665AD; }
   .brief .bcol.nice h3 .tag { background: #FFE8A3; color: #8A5A00; }
@@ -101,11 +101,11 @@
   .lobbyscope .button.blue:hover { background-color: #1969B2; }
   .lobbyscope .button.lightblue { background-color: #A5D8FF; box-shadow: inset 0 0 0 1px #7AB8EC, 0 2px 4px rgba(0, 0, 0, .06); color: #1971C2; text-shadow: none; }
   .lobbyscope .button.lightblue:hover { background-color: #9ACFF8; }
-  .lobbyscope .button.paper { background-color: #fff; box-shadow: inset 0 0 0 1px var(--edge), 0 2px 4px rgba(0,0,0,.05); color: #212529; text-shadow: none; }
+  .lobbyscope .button.paper { background-color: #fff; box-shadow: inset 0 0 0 1px var(--line), 0 2px 4px rgba(0,0,0,.05); color: #212529; text-shadow: none; }
   .lobbyscope .button.paper:hover { background-color: #F8F7F4; }
 
   .lobbyscope .ltCard { display: flex; flex-direction: column; background-color: #fff; border-radius: 20px; corner-shape: squircle;
-    box-shadow: inset 0 0 0 1px var(--edge, var(--panelline)), var(--liftshadow); overflow: hidden; cursor: pointer; position: relative; }
+    box-shadow: inset 0 0 0 1px var(--line, var(--line-overlay)), var(--lift); overflow: hidden; cursor: pointer; position: relative; }
   .lobbyscope .ltCard:hover { background-color: #F8F7F4; }
   .lobbyscope .ltCard.isNew { cursor: default; }
 
@@ -129,7 +129,7 @@
   .lobbyscope .verticalSpacer { flex-basis: 100%; max-width: 100%; height: 11.11%; }
   .lobbyscope .player { position: relative; text-align: center; flex-basis: 40%; max-width: 40%; height: 33.3%; }
   .lobbyscope .player img { height: calc(100% - 20px); width: auto; margin-top: 1px;
-    filter: url(#avatarInnerEdge) var(--avshadow);
+    filter: url(#avatarInnerEdge) var(--lift-avatar);
     transform-origin: center bottom; transition: transform 80ms ease-in-out, filter 80ms ease-in-out; }
   .lobbyscope .playerNameContainer { background-color: #A5D8FF; color: #1665AD;
     box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 0 0 1px rgba(0,0,0,.30), 0 1px 3px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25);
@@ -233,7 +233,7 @@
     transition: opacity .1s linear, transform .22s cubic-bezier(.22,1,.36,1), visibility 0s; }
   #wtip .wtipBox { max-width: 230px; background: #F9F6F2; color: #262626; font-size: 13px; line-height: 18px; font-weight: normal;
     font-family: "BuloRounded", "Verdana", "Arial", sans-serif; text-align: left; white-space: nowrap;
-    padding: 7px 11px 8px; border-radius: var(--radius-md, 6px); corner-shape: squircle; box-shadow: inset 0 0 0 1px #d2cfca, var(--liftshadow); }
+    padding: 7px 11px 8px; border-radius: var(--radius-md, 6px); corner-shape: squircle; box-shadow: inset 0 0 0 1px #d2cfca, var(--lift); }
   #wtip b { font-weight: bold; }
   #wtip::after { content: ""; position: absolute; bottom: 8.5px; left: var(--ax, 50%); width: 10px; height: 10px; margin-left: -5px; box-sizing: border-box;
     transform: rotate(45deg); background: #F9F6F2; border: 0 solid #d2cfca; border-right-width: 1px; border-bottom-width: 1px; border-radius: 0 0 2px 0; }
@@ -2855,15 +2855,15 @@ registerConcept({ id: "c23", round: 2, open: false, compare: ["c20", "c20"],
 <div id="concepts-end"></div>
 <!-- VERDICT START -->
 <style>
-  #sec-verdict .vtable { border-collapse: collapse; font-size: 12.5px; margin: 0 0 16px; background: #fff; border-radius: 12px; corner-shape: squircle; box-shadow: var(--btnshadow); overflow: hidden; }
+  #sec-verdict .vtable { border-collapse: collapse; font-size: 12.5px; margin: 0 0 16px; background: #fff; border-radius: 12px; corner-shape: squircle; box-shadow: var(--lift-btn); overflow: hidden; }
   #sec-verdict .vtable th, #sec-verdict .vtable td { text-align: left; padding: 6px 12px; border-bottom: 1px solid #eeeae3; vertical-align: top; }
-  #sec-verdict .vtable th { font-size: 11.5px; color: var(--muted-soft); font-weight: bold; background: var(--band); }
+  #sec-verdict .vtable th { font-size: 11.5px; color: var(--muted-soft); font-weight: bold; background: var(--paper-band); }
   #sec-verdict .vtable tr:last-child td { border-bottom: none; }
   #sec-verdict .vtable td.num, #sec-verdict .vtable th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
   #sec-verdict .vtable tr.win td { background: #F5F9EA; }
   #sec-verdict .vtable tr.syn td { background: #F9F6F2; }
   #sec-verdict .vcols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; max-width: 1100px; }
-  #sec-verdict .vcol { background: #fff; border-radius: 12px; corner-shape: squircle; box-shadow: var(--btnshadow); padding: 12px 14px 14px; }
+  #sec-verdict .vcol { background: #fff; border-radius: 12px; corner-shape: squircle; box-shadow: var(--lift-btn); padding: 12px 14px 14px; }
   #sec-verdict .vcol h3 { font-size: 13px; margin: 0 0 8px; padding-bottom: 6px; border-bottom: 1px solid #eeeae3; }
   #sec-verdict .vcol ul { margin: 0; padding: 0 0 0 16px; font-size: 12.5px; line-height: 1.4; color: #3a3733; }
   #sec-verdict .vcol li { margin: 0 0 5px; }
@@ -2920,15 +2920,15 @@ registerConcept({ id: "c23", round: 2, open: false, compare: ["c20", "c20"],
 <!-- VERDICT END -->
 <!-- VERDICT3 START -->
 <style>
-  #sec-verdict3 .vtable { border-collapse: collapse; font-size: 12.5px; margin: 0 0 16px; background: #fff; border-radius: 12px; corner-shape: squircle; box-shadow: var(--btnshadow); overflow: hidden; }
+  #sec-verdict3 .vtable { border-collapse: collapse; font-size: 12.5px; margin: 0 0 16px; background: #fff; border-radius: 12px; corner-shape: squircle; box-shadow: var(--lift-btn); overflow: hidden; }
   #sec-verdict3 .vtable th, #sec-verdict3 .vtable td { text-align: left; padding: 6px 12px; border-bottom: 1px solid #eeeae3; vertical-align: top; }
-  #sec-verdict3 .vtable th { font-size: 11.5px; color: var(--muted-soft); font-weight: bold; background: var(--band); }
+  #sec-verdict3 .vtable th { font-size: 11.5px; color: var(--muted-soft); font-weight: bold; background: var(--paper-band); }
   #sec-verdict3 .vtable tr:last-child td { border-bottom: none; }
   #sec-verdict3 .vtable td.num, #sec-verdict3 .vtable th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
   #sec-verdict3 .vtable tr.win td { background: #F5F9EA; }
   #sec-verdict3 .vtable tr.syn td { background: #F9F6F2; }
   #sec-verdict3 .vcols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; max-width: 1100px; }
-  #sec-verdict3 .vcol { background: #fff; border-radius: 12px; corner-shape: squircle; box-shadow: var(--btnshadow); padding: 12px 14px 14px; }
+  #sec-verdict3 .vcol { background: #fff; border-radius: 12px; corner-shape: squircle; box-shadow: var(--lift-btn); padding: 12px 14px 14px; }
   #sec-verdict3 .vcol h3 { font-size: 13px; margin: 0 0 8px; padding-bottom: 6px; border-bottom: 1px solid #eeeae3; }
   #sec-verdict3 .vcol ul { margin: 0; padding: 0 0 0 16px; font-size: 12.5px; line-height: 1.4; color: #3a3733; }
   #sec-verdict3 .vcol li { margin: 0 0 5px; }
@@ -2954,15 +2954,15 @@ registerConcept({ id: "c23", round: 2, open: false, compare: ["c20", "c20"],
 <!-- VERDICT3 END -->
 <!-- VERDICT2 START -->
 <style>
-  #sec-verdict2 .vtable { border-collapse: collapse; font-size: 12.5px; margin: 0 0 16px; background: #fff; border-radius: 12px; corner-shape: squircle; box-shadow: var(--btnshadow); overflow: hidden; }
+  #sec-verdict2 .vtable { border-collapse: collapse; font-size: 12.5px; margin: 0 0 16px; background: #fff; border-radius: 12px; corner-shape: squircle; box-shadow: var(--lift-btn); overflow: hidden; }
   #sec-verdict2 .vtable th, #sec-verdict2 .vtable td { text-align: left; padding: 6px 12px; border-bottom: 1px solid #eeeae3; vertical-align: top; }
-  #sec-verdict2 .vtable th { font-size: 11.5px; color: var(--muted-soft); font-weight: bold; background: var(--band); }
+  #sec-verdict2 .vtable th { font-size: 11.5px; color: var(--muted-soft); font-weight: bold; background: var(--paper-band); }
   #sec-verdict2 .vtable tr:last-child td { border-bottom: none; }
   #sec-verdict2 .vtable td.num, #sec-verdict2 .vtable th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
   #sec-verdict2 .vtable tr.win td { background: #F5F9EA; }
   #sec-verdict2 .vtable tr.syn td { background: #F9F6F2; }
   #sec-verdict2 .vcols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; max-width: 1100px; }
-  #sec-verdict2 .vcol { background: #fff; border-radius: 12px; corner-shape: squircle; box-shadow: var(--btnshadow); padding: 12px 14px 14px; }
+  #sec-verdict2 .vcol { background: #fff; border-radius: 12px; corner-shape: squircle; box-shadow: var(--lift-btn); padding: 12px 14px 14px; }
   #sec-verdict2 .vcol h3 { font-size: 13px; margin: 0 0 8px; padding-bottom: 6px; border-bottom: 1px solid #eeeae3; }
   #sec-verdict2 .vcol ul { margin: 0; padding: 0 0 0 16px; font-size: 12.5px; line-height: 1.4; color: #3a3733; }
   #sec-verdict2 .vcol li { margin: 0 0 5px; }

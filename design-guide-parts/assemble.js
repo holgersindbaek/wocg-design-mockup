@@ -64,8 +64,11 @@ const secs = SECS.map(s => `<section class="sec" id="${s.id}">
 <div data-spec="${s.id}"></div>
 </section>`).join('\n\n');
 
+const index = JSON.stringify([].concat.apply([], groups.map(g => g.cards.map(c => ({ id: c.id, t: c.title, g: g.name })))));
+
 const outro = `
 </div>
+<script>window.ExampleIndex = ${index};</script>
 <script>
 (function () {
   var top = [].slice.call(document.querySelectorAll('#toc a.top'));
@@ -141,8 +144,10 @@ const outro = `
     flashing = card;
     setTimeout(function () { card.classList.remove('copied'); }, 1400);
   });
+
 })();
 </script>
+<script src="design-guide-parts/exref.js"></script>
 </body>
 </html>
 `;

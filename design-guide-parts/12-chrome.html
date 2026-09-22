@@ -7,7 +7,7 @@
 <style>
   /* The lab's own wells for the footer's container steps: a fixed width, nothing written on the piece. */
   #chrome .cqwells { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 12px; }
-  #chrome .cqwell { overflow: hidden; box-shadow: inset 0 0 0 1px #d9d2c4; background: #fff; }
+  #chrome .cqwell { overflow: hidden; box-shadow: inset 0 0 0 1px #d2cfca; background: #fff; }
   #chrome .cqcap { margin: 0; padding: 6px 8px; color: #8a857c; font-size: 12px; }
 </style>
 
@@ -92,19 +92,19 @@ Lab.table(card,[
  {what:'border below',got:Lab.cs(bar,'border-bottom-style'),want:'none'},
  {what:'margin below',got:Lab.cs(bar,'margin-bottom'),want:'8px'},
  {what:'gutter off the frontpage',got:Lab.cs(bar,'padding-left')+' and '+Lab.cs(bar,'padding-right'),want:'24px and 24px'},
- {what:'words',got:Lab.cs(bar,'font-size')+'/'+Lab.cs(bar,'line-height')+' '+Lab.cs(bar,'color'),want:'16px/16px #262626'},
+ {what:'words',got:Lab.cs(bar,'font-size')+'/'+Lab.cs(bar,'line-height')+' '+Lab.cs(bar,'color'),want:'16px/16px #141414'},
  {what:'z-index',got:Lab.cs(bar,'z-index'),want:'9201'},
  {what:'the rule below: height',got:Lab.cs(bar, 'height', '::after'),want:'14px'},
  {what:'the rule below: hangs',got:Lab.cs(bar, 'bottom', '::after'),want:'-7px'},
  {what:'the rule below: tile',got:Lab.cs(bar, 'background-size', '::after'),want:'384px 14px'},
- {what:'the rule below: ink',got:Lab.cs(bar, 'background-image', '::after').indexOf('D9D2C4')>=0?'#D9D2C4 in the tile':'not in the tile',want:'#D9D2C4 in the tile'},
+ {what:'the rule below: ink',got:Lab.cs(bar, 'background-image', '::after').indexOf('D2CFCA')>=0?'#D2CFCA in the tile':'not in the tile',want:'#D2CFCA in the tile'},
  {what:'the wave before it',got:Lab.cs(bar, 'display', '::before'),want:'none'}
 ],'The bar');
 Lab.table(card,[
  {what:'rail reserved',got:Lab.cs(fbar,'margin-right'),want:'336px'},
  {what:'gutter on the frontpage',got:Lab.cs(fbar,'padding-left'),want:want,tag:'note'},
  {what:'the gutter rule',got:Lab.rule('.site.fp.adsVisible #menuBarContainer', '--fp-bar-gutter', fp),want:'max(24px, calc((100% - 336px - 1112px) / 2))',tag:'rule'},
- {what:'the column it centres on',got:Lab.token(fp,'--fp-column'),want:'1112px'}
+ {what:'the column it centres on',got:Lab.token(fp,'--space-column'),want:'1112px'}
 ],'On the frontpage');
 Lab.table(card,[
  {what:'logo position',got:Lab.cs(logo,'position'),want:'absolute'},
@@ -112,11 +112,11 @@ Lab.table(card,[
  {what:'logo centring',got:Lab.rule('.site.wm #menuLogoContainer', 'transform', wm),want:'translate(-50%, -50%)',tag:'rule'},
  {what:'logo height',got:Lab.cs(img,'height'),want:'32px'},
  {what:'links row',got:Lab.cs(list,'display')+' gap '+Lab.cs(list,'gap'),want:'flex gap 18px'},
- {what:'a link',got:Lab.cs(link,'height')+' '+Lab.cs(link,'font-weight')+' '+Lab.cs(link,'font-size')+' '+Lab.cs(link,'color'),want:'56px 700 16px #262626'},
+ {what:'a link',got:Lab.cs(link,'height')+' '+Lab.cs(link,'font-weight')+' '+Lab.cs(link,'font-size')+' '+Lab.cs(link,'color'),want:'56px 700 16px #141414'},
  {what:'master’s per-game links',got:Lab.cs(game,'display'),want:'none'},
  {what:'caret',got:Lab.cs(tri,'width')+' by '+Lab.cs(tri,'height'),want:'8px by 7px'},
  {what:'caret mask',got:Lab.assetName(tri,'-webkit-mask-image'),want:'arrowDown.svg'},
- {what:'the phone trigger’s ink',got:Lab.cs(burger,'color'),want:'#262626'},
+ {what:'the phone trigger’s ink',got:Lab.cs(burger,'color'),want:'#141414'},
  {what:'the phone trigger at this width',got:Lab.cs(burger,'display'),want:'none'},
  {what:'cluster to the right',got:Lab.rule('.site.wm #userBarContainer', 'margin-left', wm),want:'auto',tag:'rule'}
 ],'The logo, the links and the cluster');
@@ -129,7 +129,7 @@ Lab.note(card,'A game page shows no bar at all: body[data-table="true"] hides #m
 
 <div class="card"><div class="body">
 <h3>The footer <span class="tag built">built</span></h3>
-<p class="rule-text">The footer is #F4EEE5 with a 1px #D9D2C4 rule above, a grid padded 20px 24px 14px in four auto columns spread 24px apart with no max width, heads 16 / 28 bold, links 16 / 28 with no underline, a full-width legal row under its own rule with three masked social marks at the right end, and Raptive's block at 14 / 24 muted.</p>
+<p class="rule-text">The footer is #F4EEE5 with a 1px #D2CFCA rule above, a grid padded 20px 24px 14px in four auto columns spread 24px apart with no max width, heads 16 / 28 bold, links 16 / 28 with no underline, a full-width legal row under its own rule with three masked social marks at the right end, and Raptive's block at 14 / 24 muted.</p>
 <div class="demo">
   <div class="site wm" data-wm>
     <div id="mainContainer" class="general" style="min-height:0"><div class="helpBox">
@@ -315,7 +315,7 @@ Lab.note(card,'A game page shows no bar at all: body[data-table="true"] hides #m
   <div class="cqwell" style="width:600px"><p class="cqcap">600px: two columns</p><div class="cqhold" data-cq="600"></div></div>
   <div class="cqwell" style="width:460px"><p class="cqcap">460px: one column</p><div class="cqhold" data-cq="460"></div></div>
 </div></div>
-<p class="rl">The same footer twice more, in a 600px well and a 460px one. The two steps are container queries on .footer-basic, not media queries, so the footer answers the width it is given and a well is all it takes: two columns under 620 of its own width, one under 470. The markup is the first demo's, copied into each well, so nothing here is written by hand.</p>
+<p class="rl">The same footer twice more, in a 600px well and a 460px one. The two steps are container queries on .footer-basic, not media queries, so the footer answers the width it is given and a well is all it takes: a two-column grid under 620 of its own width; under 470 the grid gives way and the links flow as a two-column multicol, which is what balances them on a phone; one column under 330. The markup is the first demo's, copied into each well, so nothing here is written by hand.</p>
 <script>(function(){
 var card=document.currentScript.closest('.card');
 var wm=card.querySelector('[data-wm]');
@@ -337,7 +337,7 @@ var tracks=Lab.cs(grid,'grid-template-columns').split(' ').length;
 Lab.table(card,[
  {what:'paper',got:Lab.cs(foot,'background-color'),want:'#f4eee5'},
  {what:'paper after the about band',got:Lab.cs(ffoot,'background-color'),want:'#f9f6f2'},
- {what:'the rule above, in .helpBox',got:Lab.cs(foot,'border-top'),want:'1px solid #d9d2c4'},
+ {what:'the rule above, in .helpBox',got:Lab.cs(foot,'border-top'),want:'1px solid #d2cfca'},
  {what:'the static seam head there',got:Lab.cs(foot.querySelector('.divhead'),'display'),want:'none'},
  {what:'padding',got:Lab.cs(grid,'padding'),want:'20px 24px 14px'},
  {what:'display',got:Lab.cs(grid,'display'),want:'grid'},
@@ -359,12 +359,12 @@ Lab.table(card,[
  {what:'full width',got:Lab.cs(legal,'grid-column'),want:'1 / -1'},
  {what:'pulled up',got:Lab.cs(legal,'margin-top'),want:'-4px'},
  {what:'over the line',got:Lab.cs(legal,'padding-top'),want:'10px'},
- {what:'its rule',got:Lab.cs(legal,'border-top-width')+' solid '+Lab.cs(legal,'border-top-color'),want:'1px solid #d9d2c4'},
+ {what:'its rule',got:Lab.cs(legal,'border-top-width')+' solid '+Lab.cs(legal,'border-top-color'),want:'1px solid #d2cfca'},
  {what:'its words',got:Lab.cs(lul,'font-size')+'/'+Lab.cs(lul,'line-height'),want:'16px/20px'},
  {what:'its gaps',got:Lab.cs(lul,'gap'),want:'2px 20px'},
  {what:'no Legal head',got:Lab.cs(lstrong,'display'),want:'none'},
  {what:'marks last in the row',got:Lab.cs(social,'order'),want:'9'},
- {what:'marks pushed right',got:Lab.rule('.site.wm .sitefooter .footerLegal .social', 'margin-left', wm),want:'auto',tag:'rule'},
+ {what:'marks pushed right',got:Math.round(lul.getBoundingClientRect().right-social.getBoundingClientRect().right)+'px from the row\u2019s right edge',want:'0px from the row\u2019s right edge'},
  {what:'marks apart',got:Lab.cs(social,'gap'),want:'6px'},
  {what:'X box and mark',got:Lab.cs(marks[0],'width')+' by '+Lab.cs(marks[0],'height')+', '+Lab.cs(marks[0],'-webkit-mask-size'),want:'18px by 20px, 17px 17px'},
  {what:'Facebook box and mark',got:Lab.cs(marks[1],'width')+' by '+Lab.cs(marks[1],'height')+', '+Lab.cs(marks[1],'-webkit-mask-size'),want:'24px by 20px, 19px 19px'},
@@ -376,7 +376,7 @@ Lab.table(card,[
 ],'The legal row and its marks');
 Lab.table(card,[
  {what:'Raptive block',got:Lab.cs(rap,'font-size')+'/'+Lab.cs(rap,'line-height')+' '+Lab.cs(rap,'color'),want:'14px/24px #4e4d4c'},
- {what:'its partner note',got:Lab.cs(raps,'color')+' order '+Lab.cs(raps,'order'),want:'#8a857c order 8'},
+ {what:'its partner note',got:Lab.cs(raps,'color')+' order '+Lab.cs(raps,'order'),want:'#67635c order 8'},
  {what:'a line of its own, last in the row',got:Lab.cs(wm.querySelector('.footerRaptive'),'flex-basis')+' order '+Lab.cs(wm.querySelector('.footerRaptive'),'order'),want:'100% order 10'},
  {what:'under the links, at the row\u2019s own gap',got:Lab.cs(wm.querySelector('.footerRaptive'),'margin-top'),want:'0px'}
 ],'Raptive’s own block');
@@ -391,14 +391,15 @@ var wells = [].slice.call(card.querySelectorAll('[data-cq]')).map(function (hold
   return { width: hold.getAttribute('data-cq'), grid: copy.querySelector('footer'), legal: copy.querySelector('.footerLegal') };
 });
 Lab.table(card, wells.map(function (w) {
-  return { what: 'columns in a ' + w.width + 'px well', got: String(Lab.cs(w.grid, 'grid-template-columns').split(' ').length), want: w.width === '600' ? '2' : '1' };
+  if (w.width === '600') return { what: 'columns in a 600px well', got: String(Lab.cs(w.grid, 'grid-template-columns').split(' ').length), want: '2' };
+  return { what: 'the links in a ' + w.width + 'px well', got: Lab.cs(w.grid, 'display') + ', ' + Lab.cs(w.grid, 'column-count') + ' columns', want: 'block, 2 columns' };
 }).concat([
- {what:'the two steps',got:'620 and 470 of .footer-basic\u2019s own width',want:'two columns under a 620 container, one under 470',tag:'note'},
+ {what:'the three steps',got:'620, 470 and 330 of .footer-basic\u2019s own width',want:'a two-column grid under 620; under 470 the grid gives way and the links flow as a two-column multicol; one column under 330',tag:'note'},
  {what:'the grid starts at the left once stepped',got:Lab.cs(wells[0].grid,'justify-content'),want:'start'},
  {what:'the legal row in a 460px well',got:Lab.cs(wells[1].legal,'grid-column'),want:'1 / -1'}
 ]), 'The phone steps, read from the container');
 Lab.note(card,'The links are 16 / 28 where the mockup drew 14: open item 5 in the guide, not a fault of the build.');
-Lab.note(card,'The two red rows in Raptive\u2019s block are the sheet, not the guide, and they only show inside the reading shell: master\u2019s TableBar.scss styles .helpBox .footer-basic .footerRaptive .adthrive-footer-message with !important (16px, 28px lines, the ink, the partner note first and bold), and the design\u2019s own 14 / 24 --muted rule in _fp-footer.scss has no !important, so it loses on every page whose footer sits in .helpBox, which is every page but the frontpage. The frontpage copy below draws the guide\u2019s values.');
+Lab.note(card,'The two red rows in Raptive\u2019s block are the sheet, not the guide, and they only show inside the reading shell: master\u2019s TableBar.scss styles .helpBox .footer-basic .footerRaptive .adthrive-footer-message with !important (16px, 28px lines, the ink, the partner note first and bold), and the design\u2019s own 14 / 24 --ink-label rule in _fp-footer.scss has no !important, so it loses on every page whose footer sits in .helpBox, which is every page but the frontpage. The frontpage copy below draws the guide\u2019s values.');
 Lab.note(card,'The four columns are auto tracks, so Chrome prints the width each one used rather than the word auto. The table counts them.');
 Lab.note(card,'One of the site’s own values cannot be computed: margin-left auto resolves to the pixels it used, so it is read from its rule.');
 Lab.note(card,'The two footers hold different links on purpose. This is common/fp_footer.dust; common/footer.dust ships beside it and CSS picks, and the loser is to be deleted before the flag retires.');
@@ -441,10 +442,11 @@ Lab.table(card,[
  {what:'the pill’s inset',got:Lab.cs(hc,'bottom'),want:'8px'}
 ],'The rail');
 Lab.table(card,[
- {what:'measure',got:Lab.cs(pill,'width'),want:'300px'},
+ {what:'measure',got:Lab.cs(pill,'width'),want:'288px'},
+ {what:'the rule behind it',got:'min(300px, 100% - 2 x --space-edge)',want:'300 at most; the 336 rail less two 24px gutters leaves 288',tag:'note'},
  {what:'radius',got:Lab.cs(pill,'border-radius'),want:'12px'},
  {what:'paper',got:Lab.cs(pill,'background-color'),want:'#f9f6f2'},
- {what:'words',got:Lab.cs(pill,'font-weight')+' '+Lab.cs(pill,'font-size')+'/'+Lab.cs(pill,'line-height')+' '+Lab.cs(pill,'color'),want:'700 16px/24px #262626'},
+ {what:'words',got:Lab.cs(pill,'font-weight')+' '+Lab.cs(pill,'font-size')+'/'+Lab.cs(pill,'line-height')+' '+Lab.cs(pill,'color'),want:'700 16px/24px #141414'},
  {what:'ring and blurs',got:Lab.cs(pill,'box-shadow'),want:'inset 0 0 0 1px rgba(0,0,0,.25), 0 0 2px rgba(60,45,25,.08), 0 0 5px rgba(60,45,25,.08), 0 0 12px rgba(60,45,25,.08)'},
  {what:'no fade',got:Lab.cs(pill,'transition'),want:'none'},
  {what:'hover paper',got:Lab.rule('.site.fp #ad #rahl:hover','background-color',root),want:'#f4eee5',tag:'rule'},
@@ -454,7 +456,7 @@ Lab.table(card,[
  {what:'the column reserves',got:Lab.cs(col,'margin-right'),want:'336px'},
  {what:'from 640 it reserves',got:'160px',want:'160px',tag:'note'}
 ],'What the page gives up to it');
-Lab.note(card,'The rail paints the band --band #F4EEE5, which 8.3 and 3.1 both name now (_fp-chrome.scss:588). The literal #EFEAE2 it drew until 13 Sep is gone.');
+Lab.note(card,'The rail paints the band --paper-band #F4EEE5, which 8.3 and 3.1 both name now (_fp-chrome.scss:588). The literal #EFEAE2 it drew until 13 Sep is gone.');
 Lab.note(card,'The widths are master’s: 336px from 1024 and 160px from 640. The sheet writes height auto and max-height none with !important, so the rail takes its height from its top and bottom and no inline height can cap it.');
 })();</script>
 </div></div>
