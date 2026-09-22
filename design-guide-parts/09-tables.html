@@ -258,7 +258,7 @@
 
   <div class="card"><div class="body">
     <h3>The page table <span class="tag call">guide's call</span></h3>
-    <p class="rule-text">The stats table's rules inside a white card: a 40px head row on the band at 16 / 22 bold, body rows of 40px and 16 / 24 with the hairline under each sitting inside the box, so a row draws 41, none under the last, no column lines, cells 0 12px, figures right and tabular, a row with a 56px avatar 64 and drawing 65 the same way, and a bare table drawing its edge as an outline inset by a pixel.</p>
+    <p class="rule-text">The stats table's rules inside a white card: a 40px head row on the band at 16 / 22 bold, body rows of 40px and 16 / 24 with the hairline under each sitting inside the box, so a row draws 41, none under the last, a hairline between the columns and the band's rule between the head cells, none after the last column, cells 0 12px, figures right and tabular, a row with a 56px avatar 64 and drawing 65 the same way, and a bare table drawing its edge as an outline inset by a pixel.</p>
     <div class="demo">
       <div class="site wm" data-demo-rules>
         <div id="mainContainer" class="general" style="min-height:0">
@@ -348,7 +348,9 @@
         { what: 'td padding', got: cs(td, 'padding'), want: '0 12px' },
         { what: 'td line-height', got: cs(td, 'line-height'), want: '24px' },
         { what: 'the line between rows', got: cs(td, 'border-bottom'), want: '1px solid #ebe7de' },
-        { what: 'no column lines', got: cs(td, 'border-left-width'), want: '0' },
+        { what: 'the line between columns', got: cs(td, 'border-right'), want: '1px solid #ebe7de' },
+        { what: 'the line between head cells', got: cs(th, 'border-right'), want: '1px solid #d9d2c4' },
+        { what: 'none after the last column', got: cs(td.parentNode.lastElementChild, 'border-right-width'), want: '0' },
         { what: 'the last row', got: cs(lastTd, 'border-bottom-width'), want: '0' },
         { what: 'the name cell', got: cs(td, 'font-weight'), want: '700' },
         { what: 'figures', got: cs(a.querySelector('table'), 'font-variant-numeric'), want: 'tabular-nums' },
@@ -377,6 +379,9 @@
         { what: 'the row with an avatar, height', got: cs(btd, 'height'), want: '65px' },
         { what: 'td padding', got: cs(btd, 'padding'), want: '0 12px' },
         { what: 'the line between rows', got: cs(btd, 'border-bottom'), want: '1px solid #ebe7de' },
+        { what: 'the line between columns', got: cs(btd, 'border-right'), want: '1px solid #ebe7de' },
+        { what: 'the line between head cells', got: cs(bth, 'border-right'), want: '1px solid #d9d2c4' },
+        { what: 'none after the last column', got: cs(btd.parentNode.lastElementChild, 'border-right-width'), want: '0' },
         { what: 'figures right', got: cs(num, 'text-align'), want: 'right' },
         { what: 'the avatar', got: cs(avatar, 'width') + ' by ' + cs(avatar, 'height'), want: '56px by 56px' },
         { what: "the avatar's line", got: cs(avatar, 'filter'), want: 'four 1px #252525 drops (7.9)', tag: 'note' },
@@ -399,7 +404,9 @@
         { what: 'td height, the bare table', got: cs(ctd, 'height'), want: '41px' },
         { what: 'td type', got: cs(ctd, 'font-size') + ' / ' + cs(ctd, 'line-height'), want: '16px / 24px' },
         { what: 'the line between rows', got: cs(ctd, 'border-bottom'), want: '1px solid #ebe7de' },
-        { what: 'no column lines', got: cs(ctd, 'border-left-width'), want: '0' },
+        { what: 'the line between columns', got: cs(ctd, 'border-right'), want: '1px solid #ebe7de' },
+        { what: 'the line between head cells', got: cs(cth, 'border-right'), want: '1px solid #d9d2c4' },
+        { what: 'none after the last column', got: cs(ctd.parentNode.lastElementChild, 'border-right-width'), want: '0' },
         { what: 'the last row', got: cs(lastCell, 'border-bottom-width'), want: '0' },
         { what: 'figures right', got: cs(c.querySelector('td.numberFormat'), 'text-align'), want: 'right' }
       ], 'A bare table in a band');
