@@ -35,7 +35,16 @@
   .v-b .wmGameOptions .wmStackRow .wmRowCtl { gap: 8px; }
   .v-b .wmGameOptions .wmChip { padding: 0 10px; }
   .v-b .wmGameOptions .wmChip i { display: none; }
-  /* F is the site's own checkbox now, drawn through site.css. G keeps the lab's 18px sketch for the list */
+  /* F is the site's own checkbox, drawn through site.css: the fill lands, the tick arrives over 260ms and leaves in 190. G keeps the lab's 18px sketch for the list */
+  /* F2: fill and tick on the tray's clock, 220ms cubic-bezier(.645,.045,.355,1), so the box fades to green as the tick grows */
+  .v-f2 .wmGameOptions .wmChip i { transition: background-color 220ms cubic-bezier(.645, .045, .355, 1), box-shadow 220ms cubic-bezier(.645, .045, .355, 1); }
+  .v-f2 .wmGameOptions .wmChip i::after, .v-f2 .wmGameOptions .wmChip.wmPicked i::after { transition: transform 220ms cubic-bezier(.645, .045, .355, 1), opacity 220ms cubic-bezier(.645, .045, .355, 1); }
+  /* F3: the tick draws itself. The two strokes are inline paths with a dash the length of the stroke, unwound over 220ms once the fill has landed; leaving, it fades in 190 */
+  .v-f3 .wmGameOptions .wmChip i::after { display: none; }
+  .v-f3 .wmGameOptions .wmChip i svg { display: block; position: absolute; inset: 0; width: 20px; height: 20px; margin: 2px; opacity: 0; transition: opacity 190ms cubic-bezier(.32, 0, .67, 0); }
+  .v-f3 .wmGameOptions .wmChip i svg path { stroke-dasharray: 23; stroke-dashoffset: 23; transition: stroke-dashoffset 190ms cubic-bezier(.32, 0, .67, 0); }
+  .v-f3 .wmGameOptions .wmChip.wmPicked i svg { opacity: 1; transition: opacity 40ms linear; }
+  .v-f3 .wmGameOptions .wmChip.wmPicked i svg path { stroke-dashoffset: 0; transition: stroke-dashoffset 220ms cubic-bezier(.645, .045, .355, 1) 40ms; }
   .wmModal .cbx { display: inline-flex; align-items: center; gap: 8px; height: 24px; font-size: 16px; font-weight: 700; line-height: 24px; color: var(--ink); cursor: pointer; user-select: none; }
   .wmModal .cbx i { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 5px; corner-shape: squircle; background: var(--surface); box-shadow: inset 0 0 0 1px var(--edge); color: #fff; }
   .wmModal .cbx i svg { visibility: hidden; }
@@ -67,12 +76,13 @@
 <body>
 <div class="wrap">
 <h1>Picking more than one, the conventional ways</h1>
-<p class="sub">The Players row again. B is the plain pill from the first lab. F to J are the patterns the rest of the web uses for "pick all that apply", each in the kit's colours and sizes.</p>
+<p class="sub">The Players row again. B is the plain pill from the first lab. F is Holger's pick as built, with F2 and F3 as two other ways for its tick to move; G to J are the other patterns the web uses for "pick all that apply". Every mark here can be clicked.</p>
 <div id="out"></div>
 </div>
 <script>
 var TICK = '<svg viewBox="0 0 10 8" width="10" height="8" aria-hidden="true"><path d="M1 4l3 3 5-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 var TICK12 = '<svg viewBox="0 0 10 8" width="12" height="10" aria-hidden="true"><path d="M1 4l3 3 5-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+function chips3(p) { return '<span class="wmSeats">' + [3, 4, 5].map(function (n) { return '<span class="wmChip' + (p.indexOf(n) >= 0 ? ' wmPicked' : '') + '" role="checkbox" aria-checked="' + (p.indexOf(n) >= 0) + '"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 12.5l5 5 10-11" fill="none" stroke="#347d2c" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.5 12.5l5 5 10-11" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg></i>' + n + '</span>'; }).join("") + '</span>'; }
 function chips(p) { return '<span class="wmSeats">' + [3, 4, 5].map(function (n) { return '<span class="wmChip' + (p.indexOf(n) >= 0 ? ' wmPicked' : '') + '" role="checkbox" aria-checked="' + (p.indexOf(n) >= 0) + '"><i>' + TICK + '</i>' + n + '</span>'; }).join("") + '</span>'; }
 function cbxRow(p) { return '<span class="cbxRow">' + [3, 4, 5].map(function (n) { return '<label class="cbx' + (p.indexOf(n) >= 0 ? ' on' : '') + '"><i>' + TICK12 + '</i>' + n + '</label>'; }).join("") + '</span>'; }
 function cbxList(p) { return '<span class="cbxList">' + [3, 4, 5].map(function (n) { return '<label class="cbx' + (p.indexOf(n) >= 0 ? ' on' : '') + '"><i>' + TICK12 + '</i>' + n + ' players</label>'; }).join("") + '</span>'; }
@@ -86,13 +96,22 @@ function box(cls, control, stacked) {
 }
 var V = [
   { k: "B", cls: "v-b", title: "The plain pill, lab 1's pick", note: "For reference: the chip without the round. On is the action green with outlined words.", ctl: chips([3, 4]), stacked: true },
-  { k: "F", cls: "v-f", title: "Checkboxes in a row (built, 22 Sep 2026)", note: "Holger's pick, as built: a 24px box, the small button's height, in the field's paper and ring; picked, the action green with the accent ring and the settings pickers' own two-stroke tick. The word 8px after its box, 16px to the next.", ctl: chips([3, 4]), stacked: true },
+  { k: "F", cls: "v-f", title: "Checkboxes in a row (built, 22 Sep 2026)", note: "Holger's pick, as built: a 24px box at the button's 12px corner, in the field's paper and ring; picked, the action green with the accent ring and the settings pickers' own two-stroke tick. Click one: the fill lands at once and the tick arrives over 260ms on the kit's arriving curve; on the way out it leaves in 190 on the leaving curve, the way the pickers' mark comes and goes.", ctl: chips([3, 4]), stacked: true },
+  { k: "F2", cls: "v-f2", title: "The same, on the tray's clock", note: "Fill and tick both move over 220ms on the tray thumb's curve, so the box fades to green while the tick grows. Softer, and the same clock as the Bots tray beside it.", ctl: chips([3, 4]), stacked: true },
+  { k: "F3", cls: "v-f3", title: "The tick draws itself", note: "The fill lands, then the tick is drawn from its start to its end over 220ms, both strokes together. Leaving, it fades in 190. The most checkbox-like of the three; needs the tick as inline paths rather than a background.", ctl: chips3([3, 4]), stacked: true },
   { k: "G", cls: "v-g", title: "A checkbox list", note: "The same box, one choice per line with a fuller label. Reads as a form; takes three lines.", ctl: cbxList([3, 4]), stacked: true },
   { k: "H", cls: "v-h", title: "Switches", note: "One switch per size, as a phone's settings would. Clear, but the kit says on and off with the tray, so this would be a second vocabulary for the same thing.", ctl: switches([3, 4]), stacked: true },
   { k: "I", cls: "v-i", title: "The filter chip", note: "Material's chip: an outlined pill on white, and when picked it tints to the band, takes the green ring and ink, and grows a tick at its start. No white round.", ctl: chips([3, 4]), stacked: true },
   { k: "J", cls: "v-j", title: "The picker tile with its corner mark", note: "The settings pickers' own pattern at chip size: a small tile, and when picked a green ring and the green round with a tick at the corner.", ctl: tiles([3, 4]), stacked: true }
 ];
 document.getElementById("out").innerHTML = V.map(function (v) { return '<section class="lab" id="v' + v.k + '"><h2>' + v.k + ' &middot; ' + v.title + '</h2><p class="note">' + v.note + '</p>' + box(v.cls, v.ctl, v.stacked) + '</section>'; }).join("");
+document.addEventListener("click", function (e) {
+  var box = e.target.closest(".wmChip, .cbx, .sw, .tile");
+  if (!box) return;
+  e.preventDefault();
+  if (box.classList.contains("wmChip")) { var on = box.classList.toggle("wmPicked"); box.setAttribute("aria-checked", on ? "true" : "false"); }
+  else box.classList.toggle("on");
+});
 document.querySelectorAll(".wmSeg").forEach(function (seg) {
   var picked = seg.querySelector(".wmCell.wmPicked"), cells = seg.querySelectorAll(":scope > .wmCell");
   var thumb = document.createElement("i"); thumb.className = "wmSegThumb wmStill"; seg.insertBefore(thumb, seg.firstChild);

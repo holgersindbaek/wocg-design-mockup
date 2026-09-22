@@ -366,7 +366,7 @@ window.MO = (function () {
 
   <div class="card"><div class="body">
     <h3>A control answering the pointer, and a press <span class="tag built">built</span></h3>
-    <p class="rule-text">The lobby's buttons, the catalog's Play, the yellow verbs and the games bar's cells answer colour in 24ms ease-out and press to scale(.98) over 80ms ease-out, a tile to .99. A modal's buttons, cells and chips declare no transition and land at once, and so do a social mark and the Hide-ads pill.</p>
+    <p class="rule-text">The lobby's buttons, the catalog's Play, the yellow verbs and the games bar's cells answer colour in 24ms ease-out and press to scale(.98) over 80ms ease-out, a tile to .99. A modal's buttons, cells and checkboxes declare no transition and land at once, and so do a social mark and the Hide-ads pill; only the checkbox's tick moves, arriving over 260ms on the arriving curve and leaving in 190 on the leaving one (Holger asked for the motion, 22 Sep 2026).</p>
     <div class="demo"><div class="site fp wm" data-demo="fp" style="padding:12px">
       <div class="lobbyscope">
         <div class="labrow">
@@ -439,6 +439,8 @@ window.MO = (function () {
         { what: '.wmBtn transition-duration', got: still(modal.querySelector('.wmBtn')), want: '0s' },
         { what: '.wmSeg .wmCell transition-duration', got: still(modal.querySelector('.wmCell')), want: '0s' },
         { what: '.wmChip transition-duration', got: still(modal.querySelector('.wmChip')), want: '0s' },
+        { what: '.wmChip i, the box, transition-duration', got: still(modal.querySelector('.wmChip i')), want: '0s' },
+        { what: '.wmChip i::after, the tick, arriving', got: Lab.cs(modal.querySelector('.wmChip.wmPicked i'), 'transition-duration', '::after'), want: '0.26s, 0.12s' },
         { what: '.button:active transform', got: MO.rule('.site.fp .lobbyscope .button:active', 'transform'), want: 'scale(0.98)', tag: 'rule' },
         { what: '.gplay:active transform', got: MO.rule('.site.fp .gplay:active', 'transform'), want: 'scale(0.98)', tag: 'rule' },
         { what: '.cbtn .button:active transform', got: MO.rule('.site.fp #openTablesTop .cbtn .button:active', 'transform'), want: 'scale(0.98)', tag: 'rule' },

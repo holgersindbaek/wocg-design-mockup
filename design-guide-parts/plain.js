@@ -94,7 +94,7 @@ window.Plain = {
   },
   "The radius ladder, the 12 rung: the controls": {
    "title": "Corners: the control round",
-   "lead": "Every button, field, tray cell and tooltip takes the same corner. Look at whether they read as one family. The checkbox's box is smaller and takes the small mark's corner."
+   "lead": "Every button, field, tray cell, checkbox and tooltip takes the same corner. Look at whether they read as one family."
   },
   "The radius ladder, the 12 rung: the literals": {
    "title": "Corners: the ones written by hand",
