@@ -265,7 +265,7 @@
   <div class="card">
     <div class="body">
       <h3>The field <span class="tag built">built</span></h3>
-      <p class="rule-text">A field is 32px tall with 0 10px of padding, no border, a 12px squircle, white paper, an inset 1px --edge ring, 16px Bulo in --ink and a --muted placeholder. Focus is an inset 2px --wm-accent-ring with no outline. An error line is 14 / 18 in --wm-danger 4px below. A stack of fields keeps a 12px gap.</p>
+      <p class="rule-text">A field is 34px tall, a button's 32 plus the 2px its ring takes, with 0 10px of padding, no border, a 12px squircle, white paper, an inset 1px --edge ring, 16px Bulo in --ink and a --muted placeholder. Focus keeps the 1px ring and darkens it one soft step, to the quiet button's ring, no outline. An error line is 14 / 18 in --wm-danger 4px below. A stack of fields keeps a 12px gap.</p>
       <div class="demo">
         <div class="site wm" data-demo>
           <div class="wmModal wmOpen modalInstant" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
@@ -298,13 +298,13 @@
         var focusOutline = Lab.cs(second, 'outline-style');
         second.blur();
         Lab.table(card, F6.fieldRows(first, {
-          h: '32px', pad: '0 10px', bg: '#ffffff', sh: 'inset 0 0 0 1px #d2cfca', font: '16px / 32px'
+          h: '34px', pad: '0 10px', bg: '#ffffff', sh: 'inset 0 0 0 1px #d2cfca', font: '16px / 34px'
         }).concat([
           { what: 'placeholder colour', got: Lab.cs(first, 'color', '::placeholder'), want: '#4e4d4c' },
-          { what: 'the stack’s gap', got: Lab.cs(flds, 'gap'), want: '12px' }
+          { what: 'the stack’s gap, two hard edges', got: Lab.cs(flds, 'gap'), want: '8px' }
         ]), 'The field on the box’s own paper');
         Lab.table(card, [
-          { what: 'box-shadow on focus', got: focusShadow, want: 'inset 0 0 0 1px #8a857c' },
+          { what: 'box-shadow on focus', got: focusShadow, want: 'inset 0 0 0 1px #bfb5a1' },
           { what: 'outline on focus', got: focusOutline, want: 'none' }
         ], 'Focus, measured with the field focused');
         Lab.table(card, [
@@ -367,10 +367,10 @@
         var oncard = card.querySelector('[data-demo] .wmCard .wmFld input');
         var bad = card.querySelector('[data-demo2] .box input.bad');
         Lab.table(card, F6.fieldRows(oncard, {
-          h: '32px', pad: '0 10px', bg: '#f9f6f2', sh: 'inset 0 0 0 1px #d2cfca', font: '16px / 32px'
+          h: '34px', pad: '0 10px', bg: '#f9f6f2', sh: 'inset 0 0 0 1px #d2cfca', font: '16px / 34px'
         }), 'The field inside a .wmCard');
         Lab.table(card, F6.fieldRows(bad, {
-          h: '32px', pad: '0 10px', bg: '#ffffff', sh: 'inset 0 0 0 1px #c92a2a', font: '16px / 32px'
+          h: '34px', pad: '0 10px', bg: '#ffffff', sh: 'inset 0 0 0 1px #c92a2a', font: '16px / 34px'
         }), 'A bad field in the auth box');
         Lab.note(card, 'The auth box’s label is its placeholder, so it stands over an empty field and BoxForm fades it once something is typed. The stack inside the card is given 12px above and below, which is the lab’s own layout.');
         Lab.note(card, 'The auth box’s own error line is left out. The lab’s sheet is built with BoxForm after Modals where the site loads BoxForm first, so master’s rule wins the tie here and draws that line absolutely positioned in master’s red. The modal’s .wmFldErr in the card above is the one to judge.');
@@ -414,7 +414,7 @@
           { what: 'box-shadow', got: Lab.cs(input, 'box-shadow'), want: 'inset 0 0 0 1px #d2cfca', tag: 'call' },
           { what: 'font-size / line-height', got: Lab.cs(input, 'font-size') + ' / ' + Lab.cs(input, 'line-height'), want: '16px / 24px', tag: 'call' },
           { what: 'placeholder colour', got: Lab.cs(input, 'color', '::placeholder'), want: '#4e4d4c', tag: 'call' },
-          { what: 'box-shadow on focus', got: focusShadow, want: 'inset 0 0 0 1px #8a857c', tag: 'call' },
+          { what: 'box-shadow on focus', got: focusShadow, want: 'inset 0 0 0 1px #bfb5a1', tag: 'call' },
           { what: 'what 7.3 says of it', got: 'one ships, on the board pages (_wm-leaderboard.scss:378-400)', want: 'one ships, on the board pages (_wm-leaderboard.scss:378-400)' }
         ], 'The 24px field 7.3 invented, now built');
         Lab.note(card, 'Every row is tagged the guide’s call, and every one of them is built: _wm-leaderboard.scss:378-400 draws the field on the board pages, and 7.3 says so.');
