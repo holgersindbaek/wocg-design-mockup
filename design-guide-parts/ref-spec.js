@@ -26,7 +26,7 @@ window.Spec = {
       { value: 'rgba(0, 0, 0, .30)', name: 'Overlay ring', use: 'The modal box, and any paper floating over the felt or the dark sheet' }
     ] },
     { group: 'Buttons', note: 'Each button is a fill, a ring one step darker, a hover, and its ink. Change the fill and the rest should be rebuilt from it.', kind: 'button', items: [
-      { fill: '--triogreen', ring: '--triogreenring', ink: '#ffffff', outline: true, name: 'Action green', use: 'Every go-ahead button, the tray thumb, a picked chip' },
+      { fill: '--triogreen', ring: '--triogreenring', ink: '#ffffff', outline: true, name: 'Action green', use: 'Every go-ahead button, the tray thumb, a picked checkbox' },
       { fill: '--trioblue', ring: '--triobluering', ink: '#ffffff', outline: true, name: 'Blue', use: 'The second solid action: Manage, and its kind' },
       { fill: '--wm-tray', ring: '--wm-tray-ring', ink: '--ink', root: 'modal', name: 'Quiet brown', use: 'Cancel, Close, Got it: the button that does not commit you' },
       { fill: '--wm-danger', ring: '--wm-danger-ring', ink: '#ffffff', outline: true, root: 'modal', name: 'Danger', use: 'Delete, Leave now, Cancel subscription' },
@@ -70,13 +70,13 @@ window.Spec = {
       { value: '20px', name: '20', use: 'A modal box, a game tile, a table tile, a leaderboard card, a dropdown panel' },
       { value: '16px', name: '16', use: 'A white card inside a modal, and the notices' },
       { value: '14px', name: '14', use: 'The games bar track, one step rounder than the cells inside it' },
-      { value: '12px', name: '12', use: 'Every button, field, tray cell, chip, thumb and the tooltip' },
+      { value: '12px', name: '12', use: 'Every button, field, tray cell, checkbox, thumb and the tooltip' },
       { value: '8px', name: '8', use: 'A tag, and a rating movement chip' },
       { value: '999px', round: true, name: 'Round', use: 'Dots, badges, the live capsule, a progress bar' },
       { value: '0', name: 'None', use: 'The ad rail, and any band that runs the full width' }
     ] },
     { group: 'Lines', note: 'The same colours as above, in the three forms a line is drawn in.', kind: 'line', items: [
-      { form: 'inset', name: 'Inside ring', use: 'The default: a card, tile, field, chip, tray or button' },
+      { form: 'inset', name: 'Inside ring', use: 'The default: a card, tile, field, checkbox, tray or button' },
       { form: 'border', name: 'Real border', use: 'A fully round pill, a dropdown, a card whose text is padded in' },
       { form: 'outside', name: 'Outside ring', use: 'The modal box, a name plate on the felt, the author photo' },
       { form: 'focus', name: 'Focus ring', use: 'A field you are typing in: the same 1px line, darkened to --faint' },
@@ -110,7 +110,7 @@ window.Spec = {
       { value: '40px', use: 'A corner notice, a leaderboard row, a table row, a settings row with two lines' },
       { value: '32px', use: 'A button, a field, the live capsule, a panel head strip' },
       { value: '28px', use: 'A tray track, a settings row, a menu row' },
-      { value: '24px', use: 'A small button, a tray cell, a chip, the yellow verb' },
+      { value: '24px', use: 'A small button, a tray cell, a checkbox, the yellow verb' },
       { value: '20px', use: 'A badge at a seat' },
       { value: '18px', use: 'A name plate on a tile' },
       { value: '16px', use: 'A tag, and a rating movement chip' }

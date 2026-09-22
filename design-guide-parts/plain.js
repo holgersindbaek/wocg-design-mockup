@@ -8,8 +8,8 @@ window.PlainSections = {
  "shape": "The corners, the lines around and between things, and the shadows they sit on.",
  "space": "The gaps between things, how wide a page is, how tall a control is, and what changes as the window narrows.",
  "buttons": "Every button and every link, in each colour and size, and what they do under the pointer.",
- "fields": "The boxes you type in, and the controls for picking one option out of a few.",
- "chips": "The small marks: tags, the rating arrows, checkboxes, dots, counts and the badges at a seat.",
+ "fields": "The boxes you type in, and the controls for picking one option out of a few, or several at once.",
+ "chips": "The small marks: tags, the rating arrows, dots, counts and the badges at a seat.",
  "cards": "The containers: the white card, a game tile, a table tile, the modal box and the panels that float.",
  "tables": "Every table and list the site draws, from the tight one in a lobby card to the one on a leaderboard page.",
  "heads": "The headings, and the lines that part one part of a page from the next.",
@@ -184,7 +184,7 @@ window.Plain = {
   },
   "Control heights: 28 and 24": {
    "title": "How tall: the small controls",
-   "lead": "A tray and its cells, a small button, a chip and the games bar."
+   "lead": "A tray and its cells, a small button, a checkbox and the games bar."
   },
   "Control heights: 20, 18 and 16": {
    "title": "How tall: the smallest pieces",
@@ -249,6 +249,10 @@ window.Plain = {
    "title": "The tray: picking one of a few",
    "lead": "The control for choosing one option from two or three. Click a cell and the green thumb travels to it."
   },
+  "The checkbox": {
+   "title": "The checkbox, picked and not",
+   "lead": "A box you can tick, the height of a small button, with its number after it. Click it and the tick draws itself in; click again and box and tick fade together."
+  },
   "The settings tabs": {
    "title": "The settings tabs",
    "lead": "The same tray one size up, used as the tabs across the top of the settings box."
@@ -273,10 +277,6 @@ window.Plain = {
   "The movement chips": {
    "title": "The rating up and down chips",
    "lead": "How a rank or a rating that moved is shown, each with its arrow. Up is green, down is red."
-  },
-  "The checkbox": {
-   "title": "The checkbox, picked and not",
-   "lead": "A box you can tick, the height of a small button, with its number after it. Picked, it turns green and shows the tick."
   },
   "Dots": {
    "title": "The presence dots",
