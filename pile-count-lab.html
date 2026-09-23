@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>WOCG · pile count lab</title>
+<!-- BUILT by pile-count-lab-parts/build.py from pile-count-lab-parts/template.html. Edit the parts, then run the build. -->
+<style>
+  @font-face { font-family: 'BuloRounded'; src: url("BuloRounded-Regular.woff2") format('woff2'); font-weight: normal; font-display: block; }
+  @font-face { font-family: 'BuloRounded'; src: url("BuloRounded-Bold.woff2") format('woff2'); font-weight: bold; font-display: block; }
+
+  :root {
+    /* The table's own values (static/scss/_wocg-tokens.scss, _variables.scss). */
+    --paper-band: #f4eee5;
+    --paper-card: #ffffff;
+    --ink: #141414;
+    --ink-label: #4e4d4c;
+    --line-felt: #393939;
+    --card-ring: #252525;
+    --lift-felt: 0 0 8px 0 rgba(0, 0, 0, .24);
+    /* The lab's own chrome. */
+    --lab-bg: #1d1f1c;
+    --lab-panel: #f9f6f2;
+    --lab-line: #d2cfca;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    background: var(--lab-bg); color: var(--ink);
+    font-family: 'BuloRounded', system-ui, sans-serif; font-size: 14px; line-height: 20px;
+    display: grid; grid-template-columns: minmax(0, 1fr) 380px; grid-template-rows: minmax(0, 1fr) auto;
+    overflow: hidden;
+  }
+
+  /* ---- the table ---------------------------------------------------------------------------- */
+  #stageWrap { position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+  .stage { position: relative; transform-origin: 0 0; }
+  .stage > img { position: absolute; left: 0; top: 0; display: block; user-select: none; -webkit-user-drag: none; }
+  .overlay { position: absolute; inset: 0; pointer-events: none; font-weight: bold; }
+  #stageBox { position: absolute; }
+  /* Desktop + phone: the desktop table at 1:1 and the phone at life size in Safari's frame (the sweep
+     viewer's frame: 390 by 844, 47px over the page, Safari's bar in the 133px under it). */
+  #pair { position: absolute; inset: 0; display: flex; overflow: auto; padding: 16px; }
+  #pair[hidden], #stageBox[hidden] { display: none; }
+  .pairRow { margin: auto; display: flex; gap: 24px; align-items: flex-start; }
+  .pairCol { display: flex; flex-direction: column; gap: 8px; }
+  .pairLab { color: #b9b4aa; font-size: 12px; line-height: 16px; white-space: nowrap; }
+  .pairLab b { color: #fff; margin-right: 6px; }
+  .pairWin { position: relative; overflow: hidden; box-shadow: 0 0 0 1px #000, 0 8px 40px rgba(0,0,0,.6); }
+  .pairWin > .stage { position: absolute; left: 0; top: 0; }
+  .phoneBody { position: relative; background: #1b1d21; overflow: hidden; box-shadow: 0 0 0 1px #2c3036, 0 8px 40px rgba(0,0,0,.6); corner-shape: round; }
+  .phoneBody .phoneScreen { position: relative; overflow: hidden; }
+  .phoneBody .sbar { position: absolute; left: 0; right: 0; bottom: 0; background: #f2f2f4; border-top: 1px solid #d0d0d4; color: #1c1c1e; font-family: system-ui, sans-serif; display: flex; justify-content: center; }
+  .phoneBody .sbar .url { background: #e2e2e6; align-self: flex-start; }
+  /* ---- play: the chosen tabs moving. The same paint and motion as the site (pieces.scss: the pile
+     tabs, the plate tabs; base.scss: the board's round tab; piece/chip.js Y.wocg.TabMotion). */
+  .ptab { position: absolute; display: flex; align-items: center; justify-content: center; box-sizing: border-box;
+    background: var(--paper-band); box-shadow: 0 0 0 1px var(--line-felt), 0 0 8px 0 rgba(0, 0, 0, .24); corner-shape: squircle;
+    color: var(--ink); font-weight: bold; white-space: nowrap; line-height: var(--h); }
+  .ptab.onLeft { border-radius: var(--r) 0 0 var(--r); clip-path: inset(-12px 0 -12px -12px); }
+  .ptab.onRight { border-radius: 0 var(--r) var(--r) 0; clip-path: inset(-12px -12px -12px 0); }
+  /* The plate and the board stand in front of their tabs on the site: the shot's own line shows
+     through the cut at the tab's foot, and their ambient falls on the tab */
+  .ptab.onPlate { border-radius: var(--r) var(--r) 0 0; clip-path: inset(-12px -12px 1px -12px); background-position: center; background-repeat: no-repeat; background-size: var(--h) var(--h); }
+  .ptab.onBoard { border-radius: 0 0 var(--r) var(--r); clip-path: inset(1px -12px -12px -12px); }
+  .ptab.onPlate::after, .ptab.onBoard::after { content: ""; position: absolute; left: 0; right: 0; height: 8px; pointer-events: none; }
+  .ptab.onPlate::after { bottom: 1px; background: linear-gradient(to top, rgba(0, 0, 0, .14), rgba(0, 0, 0, 0)); }
+  .ptab.onBoard::after { top: 1px; background: linear-gradient(to bottom, rgba(0, 0, 0, .14), rgba(0, 0, 0, 0)); }
+  .ptab.red { color: #c92a2a; }
+  .tabNum.tabReel { display: inline-block; vertical-align: top; overflow: hidden;
+    -webkit-mask-image: linear-gradient(transparent, #000 18%, #000 82%, transparent); mask-image: linear-gradient(transparent, #000 18%, #000 82%, transparent); }
+  .tabNum.tabReel > span { display: block; }
+  .tabNum.tabReel > span > span { display: block; text-align: center; white-space: nowrap; }
+  #caption { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); max-width: calc(100% - 32px); z-index: 5;
+    background: rgba(17, 19, 16, .92); color: #f1ede6; border-radius: 12px; padding: 8px 14px; font-size: 14px; line-height: 20px;
+    box-shadow: 0 0 0 1px #000, 0 6px 24px rgba(0,0,0,.5); text-align: center; pointer-events: none; }
+  #caption[hidden] { display: none; }
+  #caption b { color: #fff; margin-right: 6px; }
+  body.noPanel { grid-template-columns: minmax(0, 1fr) 0; }
+  body.noPanel #panel { display: none; }
+
+  /* ---- the panel ---------------------------------------------------------------------------- */
+  #panel { background: var(--lab-panel); overflow: auto; padding: 18px 20px 20px; border-left: 1px solid #000; }
+  #panel h1 { font-size: 13px; line-height: 16px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-label); margin: 0 0 12px; }
+  .nav { display: flex; align-items: center; gap: 8px; margin: 0 0 14px; }
+  .nav button.arrow { width: 44px; height: 44px; border-radius: 12px; border: 0; background: #5e574b; color: #fff; font-size: 22px; line-height: 44px; cursor: pointer; box-shadow: inset 0 0 0 1px #484136; }
+  .nav button.arrow:hover { background: #554e42; }
+  .nav .count { flex: 1; text-align: center; font-weight: bold; font-size: 15px; }
+  #vFamily { font-size: 12px; letter-spacing: .05em; text-transform: uppercase; color: var(--ink-label); margin: 0 0 2px; }
+  #vName { font-size: 22px; line-height: 28px; font-weight: bold; margin: 0 0 8px; }
+  #vDesc { margin: 0 0 10px; }
+  .pc { margin: 0 0 12px; padding: 0; list-style: none; }
+  .pc li { padding-left: 18px; position: relative; margin: 0 0 4px; }
+  .pc li::before { position: absolute; left: 0; top: 0; font-weight: bold; }
+  .pc li.pro::before { content: "+"; color: #2b8a3e; }
+  .pc li.con::before { content: "−"; color: #c92a2a; }
+  .pc li.note::before { content: "·"; color: var(--ink-label); }
+  .group { margin: 14px 0 0; }
+  .group h2 { font-size: 11px; line-height: 14px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-label); margin: 0 0 6px; }
+  .seg { display: flex; flex-wrap: wrap; gap: 4px; }
+  .seg button { border: 0; border-radius: 10px; padding: 6px 10px; background: #e4ddd0; color: var(--ink); font: inherit; font-size: 13px; cursor: pointer; box-shadow: inset 0 0 0 1px #c9c0ae; }
+  .seg button.on { background: #5e574b; color: #fff; box-shadow: inset 0 0 0 1px #484136; }
+  #loupe { position: relative; overflow: hidden; height: 250px; border-radius: 12px; background: #173d1c; box-shadow: inset 0 0 0 1px rgba(0,0,0,.4); margin-top: 6px; }
+  #loupe .stage { position: absolute; left: 0; top: 0; }
+  .keys { color: var(--ink-label); font-size: 12px; line-height: 17px; margin-top: 14px; }
+  kbd { font: inherit; font-weight: bold; background: #fff; border-radius: 5px; padding: 0 5px; box-shadow: inset 0 0 0 1px var(--lab-line); }
+
+  /* ---- the strip of all variants ------------------------------------------------------------ */
+  #strip { grid-column: 1 / -1; background: #111310; display: flex; gap: 4px; padding: 6px 8px; overflow-x: auto; border-top: 1px solid #000; }
+  #strip button { flex: 0 0 auto; border: 0; border-radius: 8px; padding: 5px 9px; background: #2b2e29; color: #d8d4cc; font: inherit; font-size: 12px; line-height: 16px; cursor: pointer; white-space: nowrap; }
+  #strip button.on { background: var(--paper-band); color: var(--ink); }
+  #strip button b { color: #8f8a80; margin-right: 4px; }
+  #strip button.on b { color: var(--ink-label); }
+
+  /* ---- the pieces the variants draw ---------------------------------------------------------
+     Positions are in the shot's CSS pixels. A tab stands up from behind the card (or hangs from it):
+     the card covers its foot, so the lab cuts the ring where the tab meets the card. */
+  .o { position: absolute; display: flex; align-items: center; justify-content: center; color: var(--ink); white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .tab { background: var(--paper-band); box-shadow: 0 0 0 1px var(--line-felt); corner-shape: squircle; }
+  .tab.up { border-radius: var(--r) var(--r) 0 0; clip-path: inset(-2px -2px 0 -2px); padding-top: 1px; }
+  .tab.down { border-radius: 0 0 var(--r) var(--r); clip-path: inset(0 -2px -2px -2px); }
+  .tab.right { border-radius: 0 var(--r) var(--r) 0; clip-path: inset(-2px -2px -2px 0); }
+  .tab.left { border-radius: var(--r) 0 0 var(--r); clip-path: inset(-2px 0 -2px -2px); }
+  .pill { background: var(--paper-band); box-shadow: 0 0 0 1px var(--line-felt), var(--lift-felt); border-radius: 999px; }
+  .chipToday { border-radius: 50%; background: radial-gradient(circle at 50% 42%, #fff 0%, #f8f9fa 68%, #e9ecef 100%); box-shadow: inset 0 0 0 1px #252525, 0 1px 2px rgba(0,0,0,.24), 0 0 6px rgba(0,0,0,.24); }
+  .band { background: var(--paper-band); box-shadow: 0 1px 0 var(--line-felt), 0 -1px 0 var(--line-felt), 0 2px 4px rgba(0,0,0,.25); }
+  .index { background: var(--paper-band); box-shadow: 0 0 0 1px var(--line-felt); }
+  .numeral { color: #fff; text-shadow: 0 0 1px #0d1b3d, 0 0 3px #0d1b3d, 0 0 6px rgba(13,27,61,.9); }
+  .medal { background: var(--paper-band); box-shadow: 0 0 0 1px var(--line-felt), 0 0 0 3px rgba(255,255,255,.35); border-radius: 50%; }
+  .felttext { color: var(--paper-band); text-shadow: 0 1px 1px rgba(0,0,0,.45); font-weight: bold; }
+  .felttext small { font-weight: normal; opacity: .85; font-size: .86em; margin-left: .25em; }
+  .layer { background: var(--paper-card); box-shadow: inset 0 0 0 1px var(--card-ring); }
+  .gauge { border-radius: 999px; background: rgba(0, 0, 0, .38); box-shadow: inset 0 0 0 1px rgba(0,0,0,.25); overflow: hidden; }
+  .gauge i { position: absolute; left: 0; top: 0; bottom: 0; background: var(--paper-band); border-radius: 999px; }
+  .clip { background: var(--paper-band); box-shadow: 0 0 0 1px var(--line-felt), 0 1px 3px rgba(0,0,0,.3); border-radius: 5px; }
+  .ghost { outline: 1px dashed rgba(255, 212, 59, .9); outline-offset: 1px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<div id="stageWrap"><div id="stageBox"></div><div id="pair" hidden></div><div id="caption" hidden></div></div>
+<aside id="panel">
+  <h1>Pile count lab</h1>
+  <div class="nav">
+    <button class="arrow" id="prev" title="Previous (←)">‹</button>
+    <div class="count" id="vCount"></div>
+    <button class="arrow" id="next" title="Next (→)">›</button>
+  </div>
+  <div id="vFamily"></div>
+  <div id="vName"></div>
+  <p id="vDesc"></p>
+  <ul class="pc" id="vPc"></ul>
+  <div class="group"><h2>Table</h2><div class="seg" id="scenes"></div></div>
+  <div class="group"><h2>Screen</h2><div class="seg" id="vps"></div></div>
+  <div class="group"><h2>Count</h2><div class="seg" id="counts"></div></div>
+  <div class="group" id="badgeGroup"><h2>Badge size</h2><div class="seg" id="badges"></div></div>
+  <div class="group"><h2>Close up</h2><div id="loupe"></div></div>
+  <div class="group" id="playGroup"><h2>Play: side tabs 24 / 20, the plate tabs and the round tab</h2><div class="seg" id="play"><button id="playBtn">▶ Play the tabs</button><button id="slowBtn">Slow motion</button><button id="calmBtn">Reduced motion</button></div></div>
+  <div class="group"><h2>Compare</h2><div class="seg" id="compare"><button id="ghostBtn">Outline today's chip</button><button id="allBtn">Show all variants</button></div></div>
+  <div class="keys"><kbd>←</kbd> <kbd>→</kbd> walk the variants · <kbd>1</kbd> to <kbd>4</kbd> screens · <kbd>P</kbd> this screen's pixels per inch, for the phone's life size · <kbd>H</kbd> hide this panel · <kbd>Space</kbd> play the tabs · <kbd>S</kbd> next table · <kbd>C</kbd> next count · <kbd>G</kbd> outline today's chip. The shots are the dev tables through the sweep's replays, with the count chips hidden; the lab draws each variant on top, in the table's own paper, line and type.</div>
+</aside>
+<nav id="strip"></nav>
+
+<script>
+const DATA = {"scenes":{"cribbage-start":{"label":"Cribbage \u00b7 the deal","deck":52,"shots":{"desktop":{"view":[1200,800],"compact":false,"piles":[{"spot":"stockPile","rect":[56,280,135,189],"faceUp":false,"count":"40","chip":[16,437,32,32],"radius":16.0}],"img":"pile-count-lab/cribbage-start@desktop.jpg","bare":"pile-count-lab/cribbage-start@desktop-bare.jpg"},"iphone-portrait":{"view":[390,664],"compact":true,"piles":[{"spot":"stockPile","rect":[40,340,70,98],"faceUp":false,"count":"40","chip":[8,414,24,24],"radius":12.0}],"img":"pile-count-lab/cribbage-start@iphone-portrait.jpg","bare":"pile-count-lab/cribbage-start@iphone-portrait-bare.jpg"},"iphone-landscape":{"view":[750,340],"compact":true,"piles":[{"spot":"stockPile","rect":[40,137,50,71],"faceUp":false,"count":"40","chip":[8,184,24,24],"radius":12.0}],"img":"pile-count-lab/cribbage-start@iphone-landscape.jpg","bare":"pile-count-lab/cribbage-start@iphone-landscape-bare.jpg"}}},"cribbage-cut":{"label":"Cribbage \u00b7 after the cut","deck":52,"shots":{"desktop":{"view":[1200,800],"compact":false,"piles":[{"spot":"stockPile","rect":[56,280,135,189],"faceUp":true,"count":"39","chip":[16,437,32,32],"radius":16.0}],"img":"pile-count-lab/cribbage-cut@desktop.jpg","bare":"pile-count-lab/cribbage-cut@desktop-bare.jpg"},"iphone-portrait":{"view":[390,664],"compact":true,"piles":[{"spot":"stockPile","rect":[40,340,70,98],"faceUp":true,"count":"39","chip":[8,414,24,24],"radius":12.0}],"img":"pile-count-lab/cribbage-cut@iphone-portrait.jpg","bare":"pile-count-lab/cribbage-cut@iphone-portrait-bare.jpg"},"iphone-landscape":{"view":[750,340],"compact":true,"piles":[{"spot":"stockPile","rect":[40,137,50,71],"faceUp":true,"count":"39","chip":[8,184,24,24],"radius":12.0}],"img":"pile-count-lab/cribbage-cut@iphone-landscape.jpg","bare":"pile-count-lab/cribbage-cut@iphone-landscape-bare.jpg"}}},"canasta":{"label":"Canasta \u00b7 stock and discard","deck":108,"shots":{"desktop":{"view":[1200,800],"compact":false,"piles":[{"spot":"stockPile","rect":[342,428,86,121],"faceUp":false,"count":"62","chip":[301,517,32,32],"radius":12.0},{"spot":"discardPile","rect":[436,428,86,121],"faceUp":true,"count":"1","chip":[531,517,32,32],"radius":12.0}],"img":"pile-count-lab/canasta@desktop.jpg","bare":"pile-count-lab/canasta@desktop-bare.jpg"},"iphone-portrait":{"view":[390,664],"compact":true,"piles":[{"spot":"stockPile","rect":[146,423,45,63],"faceUp":false,"count":"62","chip":[114,462,24,24],"radius":12.0},{"spot":"discardPile","rect":[198,423,45,63],"faceUp":true,"count":"1","chip":[252,462,24,24],"radius":12.0}],"img":"pile-count-lab/canasta@iphone-portrait.jpg","bare":"pile-count-lab/canasta@iphone-portrait-bare.jpg"},"iphone-landscape":{"view":[750,340],"compact":true,"piles":[{"spot":"stockPile","rect":[259,154,32,45],"faceUp":false,"count":"62","chip":[227,175,24,24],"radius":8.0},{"spot":"discardPile","rect":[299,154,32,45],"faceUp":true,"count":"1","chip":[339,175,24,24],"radius":8.0}],"img":"pile-count-lab/canasta@iphone-landscape.jpg","bare":"pile-count-lab/canasta@iphone-landscape-bare.jpg"}}},"rummy":{"label":"Rummy \u00b7 stock and discard","deck":52,"shots":{"desktop":{"view":[1200,800],"compact":false,"piles":[{"spot":"stockPile","rect":[342,428,86,121],"faceUp":false,"count":"22","chip":[301,517,32,32],"radius":12.0},{"spot":"discardPile","rect":[436,428,86,121],"faceUp":true,"count":"2","chip":[531,517,32,32],"radius":12.0}],"img":"pile-count-lab/rummy@desktop.jpg","bare":"pile-count-lab/rummy@desktop-bare.jpg"},"iphone-portrait":{"view":[390,664],"compact":true,"piles":[{"spot":"stockPile","rect":[146,423,45,63],"faceUp":false,"count":"22","chip":[114,462,24,24],"radius":12.0},{"spot":"discardPile","rect":[198,423,45,63],"faceUp":true,"count":"2","chip":[252,462,24,24],"radius":12.0}],"img":"pile-count-lab/rummy@iphone-portrait.jpg","bare":"pile-count-lab/rummy@iphone-portrait-bare.jpg"},"iphone-landscape":{"view":[750,340],"compact":true,"piles":[{"spot":"stockPile","rect":[259,154,32,45],"faceUp":false,"count":"22","chip":[227,175,24,24],"radius":8.0},{"spot":"discardPile","rect":[299,154,32,45],"faceUp":true,"count":"2","chip":[339,175,24,24],"radius":8.0}],"img":"pile-count-lab/rummy@iphone-landscape.jpg","bare":"pile-count-lab/rummy@iphone-landscape-bare.jpg"}}},"handfoot":{"label":"Hand & Foot \u00b7 round count too","deck":270,"shots":{"desktop":{"view":[1200,800],"compact":false,"piles":[{"spot":"stockPile","rect":[342,428,86,121],"faceUp":false,"count":"168","chip":[318,517,24,24],"radius":12.0},{"spot":"discardPile","rect":[436,428,86,121],"faceUp":true,"count":"2","chip":[522,517,24,24],"radius":12.0}],"img":"pile-count-lab/handfoot@desktop.jpg","bare":"pile-count-lab/handfoot@desktop-bare.jpg"},"iphone-portrait":{"view":[390,664],"compact":true,"piles":[{"spot":"stockPile","rect":[146,423,45,63],"faceUp":false,"count":"168","chip":[126,458,20,20],"radius":12.0},{"spot":"discardPile","rect":[198,423,45,63],"faceUp":true,"count":"2","chip":[243,458,20,20],"radius":12.0}],"img":"pile-count-lab/handfoot@iphone-portrait.jpg","bare":"pile-count-lab/handfoot@iphone-portrait-bare.jpg"},"iphone-landscape":{"view":[750,340],"compact":true,"piles":[{"spot":"stockPile","rect":[259,154,32,45],"faceUp":false,"count":"168","chip":[239,171,20,20],"radius":8.0},{"spot":"discardPile","rect":[299,154,32,45],"faceUp":true,"count":"2","chip":[331,171,20,20],"radius":8.0}],"img":"pile-count-lab/handfoot@iphone-landscape.jpg","bare":"pile-count-lab/handfoot@iphone-landscape-bare.jpg"}}},"crazyeights":{"label":"Crazy eights \u00b7 side seats close","deck":52,"shots":{"desktop":{"view":[1200,800],"compact":false,"piles":[{"spot":"stockPile","rect":[293,280,135,189],"faceUp":false,"count":"31","chip":[253,437,32,32],"radius":16.0},{"spot":"discardPile","rect":[435,280,135,189],"faceUp":true,"count":"4","chip":[579,437,32,32],"radius":16.0}],"img":"pile-count-lab/crazyeights@desktop.jpg","bare":"pile-count-lab/crazyeights@desktop-bare.jpg"},"iphone-portrait":{"view":[390,664],"compact":true,"piles":[{"spot":"stockPile","rect":[121,340,70,98],"faceUp":false,"count":"31","chip":[89,414,24,24],"radius":12.0},{"spot":"discardPile","rect":[199,340,70,98],"faceUp":true,"count":"4","chip":[277,414,24,24],"radius":12.0}],"img":"pile-count-lab/crazyeights@iphone-portrait.jpg","bare":"pile-count-lab/crazyeights@iphone-portrait-bare.jpg"},"iphone-landscape":{"view":[750,340],"compact":true,"piles":[{"spot":"stockPile","rect":[241,137,50,71],"faceUp":false,"count":"31","chip":[208,184,24,24],"radius":12.0},{"spot":"discardPile","rect":[299,137,50,71],"faceUp":true,"count":"4","chip":[358,184,24,24],"radius":12.0}],"img":"pile-count-lab/crazyeights@iphone-landscape.jpg","bare":"pile-count-lab/crazyeights@iphone-landscape-bare.jpg"}}},"ginrummy":{"label":"Gin rummy \u00b7 stock on the right","deck":52,"shots":{"desktop":{"view":[1200,800],"compact":false,"piles":[{"spot":"stock","rect":[435,280,135,189],"faceUp":false,"count":"31","chip":[579,437,32,32],"radius":16.0},{"spot":"upCard","rect":[293,280,135,189],"faceUp":true,"count":null,"chip":null,"radius":16.0}],"img":"pile-count-lab/ginrummy@desktop.jpg","bare":"pile-count-lab/ginrummy@desktop-bare.jpg"},"iphone-portrait":{"view":[390,664],"compact":true,"piles":[{"spot":"stock","rect":[199,340,70,98],"faceUp":false,"count":"31","chip":[277,414,24,24],"radius":12.0},{"spot":"upCard","rect":[121,340,70,98],"faceUp":true,"count":null,"chip":null,"radius":12.0}],"img":"pile-count-lab/ginrummy@iphone-portrait.jpg","bare":"pile-count-lab/ginrummy@iphone-portrait-bare.jpg"},"iphone-landscape":{"view":[750,340],"compact":true,"piles":[{"spot":"stock","rect":[299,137,50,71],"faceUp":false,"count":"31","chip":[358,184,24,24],"radius":12.0},{"spot":"upCard","rect":[241,137,50,71],"faceUp":true,"count":null,"chip":null,"radius":12.0}],"img":"pile-count-lab/ginrummy@iphone-landscape.jpg","bare":"pile-count-lab/ginrummy@iphone-landscape-bare.jpg"}}}},"play":{"desktop":{"view":[1200,800],"compact":false,"piles":[{"spot":"stockPile","rect":[342,428,86,121],"cards":168,"count":"168","chip":[318,517,24,24]},{"spot":"discardPile","rect":[436,428,86,121],"cards":2,"count":"2","chip":[522,517,24,24]}],"plates":[{"seat":0,"rect":[232,744,400,40],"team2":false,"bg":"rgb(171, 210, 255)","radius":"16px","rightEdge":false,"blocks":[[384,704,96,96],[608,728,32,32]]},{"seat":1,"rect":[16,374,155,40],"team2":true,"bg":"rgb(252, 188, 180)","radius":"16px","rightEdge":false,"blocks":[[46,279,96,96],[155,358,32,32]]},{"seat":2,"rect":[232,72,400,40],"team2":false,"bg":"rgb(171, 210, 255)","radius":"16px","rightEdge":false,"blocks":[[384,16,96,96],[616,56,32,32]]},{"seat":3,"rect":[693,374,155,40],"team2":true,"bg":"rgb(252, 188, 180)","radius":"16px","rightEdge":true,"blocks":[[723,279,96,96],[677,358,32,32]]}],"tabs":[],"board":[737,72,110.98,96],"round":null,"bare":"pile-count-lab/play-handfoot@desktop.jpg"},"iphone-portrait":{"view":[390,664],"compact":true,"piles":[{"spot":"stockPile","rect":[146,423,45,63],"cards":168,"count":"168","chip":[126,458,20,20]},{"spot":"discardPile","rect":[198,423,45,63],"cards":2,"count":"2","chip":[243,458,20,20]}],"plates":[{"seat":0,"rect":[48,624,294,32],"team2":false,"bg":"rgb(171, 210, 255)","radius":"12px","rightEdge":false,"blocks":[[161,596,68,68],[326,612,24,24]]},{"seat":1,"rect":[8,389,70,32],"team2":true,"bg":"rgb(252, 188, 180)","radius":"12px","rightEdge":false,"blocks":[[9,322,68,68],[66,377,24,24]]},{"seat":2,"rect":[151,176,88,32],"team2":false,"bg":"rgb(171, 210, 255)","radius":"12px","rightEdge":false,"blocks":[[161,109,68,68],[227,164,24,24]]},{"seat":3,"rect":[312,389,70,32],"team2":true,"bg":"rgb(252, 188, 180)","radius":"12px","rightEdge":true,"blocks":[[313,322,68,68],[300,377,24,24]]}],"tabs":[],"board":[278,176,103.66,68],"round":null,"bare":"pile-count-lab/play-handfoot@iphone-portrait.jpg"},"iphone-landscape":{"view":[750,340],"compact":true,"piles":[{"spot":"stockPile","rect":[259,154,32,45],"cards":168,"count":"168","chip":[239,171,20,20]},{"spot":"discardPile","rect":[299,154,32,45],"cards":2,"count":"2","chip":[331,171,20,20]}],"plates":[{"seat":0,"rect":[115,300,360,32],"team2":false,"bg":"rgb(171, 210, 255)","radius":"12px","rightEdge":false,"blocks":[[268,286,54,54],[459,288,24,24]]},{"seat":1,"rect":[8,172,106,32],"team2":true,"bg":"rgb(252, 188, 180)","radius":"12px","rightEdge":false,"blocks":[[34,119,54,54],[102,160,24,24]]},{"seat":2,"rect":[154,48,283,32],"team2":false,"bg":"rgb(171, 210, 255)","radius":"12px","rightEdge":false,"blocks":[[269,26,54,54],[425,36,24,24]]},{"seat":3,"rect":[476,172,106,32],"team2":true,"bg":"rgb(252, 188, 180)","radius":"12px","rightEdge":true,"blocks":[[502,119,54,54],[464,160,24,24]]}],"tabs":[],"board":[478,48,103.66,68],"round":null,"bare":"pile-count-lab/play-handfoot@iphone-landscape.jpg"}}};
+
+// ---- sizes -----------------------------------------------------------------------------------
+// The table's numbers: a tab is 24px tall on a desktop and 16px on a phone, the tab's number 16px and
+// 14px bold (the pegging tabs), plain text on the felt 14px and 12px, a pill 22px and 16px.
+function sizes(compact) {
+  return compact
+    ? { compact, tabH: 16, font: 14, text: 12, pill: 16, digit: 8, tabW1: 18, r: 8, gap: 4, inset: 6 }
+    : { compact, tabH: 24, font: 16, text: 14, pill: 22, digit: 9, tabW1: 34, r: 12, gap: 6, inset: 12 };
+}
+// A tab hugs its number on a phone (18px and 8px a digit, the pegging tabs); on a desktop it is the
+// plate tab's 34px until a third digit needs more.
+function tabW(S, label) {
+  const d = String(label).length;
+  return S.compact ? S.tabW1 + S.digit * (d - 1) : Math.max(S.tabW1, 16 + S.digit * d);
+}
+function pillW(S, label) { const d = String(label).length; return Math.max(S.pill, S.pill + S.digit * (d - 1) + (d > 1 ? 2 : 0)); }
+
+// The end of each pile that faces away from the others: with two piles, the stock's left and the
+// discard's right (where today's chips sit); a lone pile's end toward the nearer edge of the table.
+function outerSides(piles, view) {
+  // Every pile on the table places the pair, the up card of gin rummy included, which carries no count.
+  const all = (piles[0] && piles[0].all) || piles;
+  const xs = all.map((p) => p.x), rights = all.map((p) => p.x + p.w);
+  const mid = all.length > 1 ? (Math.min(...xs) + Math.max(...rights)) / 2 : view[0] / 2;
+  return piles.map((p) => (p.x + p.w / 2 < mid ? "left" : "right"));
+}
+function tabAt(S, p, side, dir) {
+  const w = tabW(S, p.count), x = side === "left" ? p.x + 8 : p.x + p.w - 8 - w;
+  return box("tab " + dir, x, dir === "up" ? p.y - S.tabH : p.y + p.h, w, S.tabH, num(S, p.count), `--r:${S.r}px`);
+}
+// The width of a number in the table's bold type.
+const measureCtx = document.createElement("canvas").getContext("2d");
+function textW(str, px) { measureCtx.font = `bold ${px}px BuloRounded`; return measureCtx.measureText(String(str)).width; }
+// A tab's width on a table: it hugs the widest count's number with a small pad each side (3px on a
+// desktop, 2px on a phone), and is never narrower than it is tall. Every tab on the table takes that
+// one width, so the stock's and the discard's tabs are always one size.
+function tabFitW(S, piles, h) {
+  const pad = S.compact ? 2 : 3;
+  return Math.max(h, ...piles.map((p) => Math.ceil(textW(p.count, S.font) + 2 * pad)));
+}
+// A side tab comes out of the pile's side edge, 8px up from its bottom, at the height given
+// (desktop / phone), its outer corners rounded: square unless a count needs more (Hand & Foot's
+// three-digit stock).
+function sideTabSq(S, piles, desk, phone) {
+  const h = S.compact ? phone : desk;
+  return { w: tabFitW(S, piles, h), h, r: plateR(S) };
+}
+// A tab's corners are the score plate's under a side seat's name plate: --radius-lg (16px, 12px on a
+// phone) drawn as a squircle, as every corner on the site is. On a tab shorter than two radii the
+// browser scales them down to fit, as it does on the plate.
+function plateR(S) { return S.compact ? 12 : 16; }
+function sideTabAt(S, p, side, T) {
+  const x = side === "right" ? p.x + p.w : p.x - T.w;
+  return box("tab " + side, x, p.y + p.h - 8 - T.h, T.w, T.h, tabNum(S, p.count), `--r:${T.r}px`);
+}
+// A tab hanging from the pile's bottom edge at the height given (desktop / phone), 8px in from the
+// end named, or centred, at the table's one tab width.
+function hangTab(S, p, where, desk, phone, piles) {
+  const h = S.compact ? phone : desk, w = tabFitW(S, piles || [p], h);
+  const x = where === "left" ? p.x + 8 : where === "right" ? p.x + p.w - 8 - w : Math.round(p.x + (p.w - w) / 2);
+  return box("tab down", x, p.y + p.h, w, h, tabNum(S, p.count), `--r:${plateR(S)}px`);
+}
+function chipAt(S, p, side) {
+  const s = S.compact ? 24 : 32, x = side === "left" ? p.x - s * .25 : p.x + p.w - s * .75;
+  return box("chipToday", x, p.y + p.h - s * .75, s, s, chipNum(S, p.count, s));
+}
+
+function box(cls, x, y, w, h, html, style) {
+  return `<div class="o ${cls}" style="left:${x}px;top:${y}px;width:${w}px;height:${h}px;${style || ""}">${html}</div>`;
+}
+function num(S, n, size) { return `<span style="font-size:${size || S.font}px;line-height:1">${n}</span>`; }
+// A tab's number, moved down to sit in the middle: BuloRounded's figures ride high in their line, 1px
+// at 12px (measured in the tabs). At 14px they ride half a pixel high and at 16px a quarter, but the
+// type snaps to whole pixels, so a half-pixel drop lands them half a pixel low: those stay.
+function tabNum(S, n) {
+  const drop = S.font <= 12 ? 1 : 0;
+  return `<span style="font-size:${S.font}px;line-height:1;position:relative;top:${drop}px">${n}</span>`;
+}
+// Today's chip fits its number to the circle (Piece.chip's FitText): 16px (14px on a phone) until a
+// third digit needs it smaller.
+function chipNum(S, n, size) { const base = S.compact ? 14 : 16; return num(S, n, Math.min(base, Math.floor((size - 4) / (.6 * String(n).length)))); }
+
+// ---- the variants ----------------------------------------------------------------------------
+// Each draws one pile's count. p: { x, y, w, h, faceUp, count, radius, deck }; S: sizes.
+const V = [];
+const add = (family, name, desc, pc, draw, opts) => V.push(Object.assign({ family, name, desc, pc, draw }, opts || {}));
+
+add("Today", "The round chip beside the pile",
+  "The site as it is: a round white chip, 32px (24px on a phone), beside the pile with a gap. On the two-pile tables one sits left of the stock and one right of the discard.",
+  [["con", "Takes 40px (32px on a phone) of the row beside every pile; the action buttons under a discard pile widen to cover it"], ["con", "The chips are the only round white pieces on the felt; they read as buttons"], ["note", "Drawn from the real shot, nothing added"]],
+  () => "", { today: true });
+
+add("Tab", "A tab standing up, 8px in from the left",
+  "The pegging tabs' form: a paper tab stands up from behind the pile's top edge, 8px in from its left, the card covering its foot.",
+  [["pro", "No width at all, and the same piece the pegging points and the plates' tabs already use"], ["pro", "Reads as a label on the pile, not a button"], ["con", "Needs its height above the pile; tight where meld rows sit right above (canasta, rummy on a phone)"]],
+  (p, S) => { const w = tabW(S, p.count); return box("tab up", p.x + 8, p.y - S.tabH, w, S.tabH, num(S, p.count), `--r:${S.r}px`); });
+
+add("Tab", "A tab standing up, centred",
+  "The same tab, centred on the pile.",
+  [["pro", "Symmetric over a single pile like cribbage's"], ["con", "Centred tabs on two piles side by side look like a pair of ears"], ["con", "Height above the pile, as the left tab"]],
+  (p, S) => { const w = tabW(S, p.count); return box("tab up", p.x + (p.w - w) / 2, p.y - S.tabH, w, S.tabH, num(S, p.count), `--r:${S.r}px`); });
+
+add("Tab", "A tab hanging down, 8px in from the left",
+  "Hanging from the bottom edge, 8px in from the left: the exact form of your own pegging tabs.",
+  [["pro", "One rule for every number that belongs to cards: tab, 8px in"], ["con", "Off-centre under a lone pile it looks like it slipped"]],
+  (p, S) => tabAt(S, p, "left", "down"));
+
+add("Tab", "A tab standing up, 8px in from the right",
+  "The standing tab at the pile's right end: where a count sits on an app icon or a cart, in the table's tab form.",
+  [["pro", "The count as people know it from badges, top right, without the badge's overhang"], ["pro", "Reads after the pile, left to right: the thing, then how many"], ["con", "Height above the pile, as every standing tab"]],
+  (p, S) => tabAt(S, p, "right", "up"));
+
+add("Tab", "A tab hanging down, 8px in from the right",
+  "The hanging tab at the pile's right end.",
+  [["pro", "Space above stays free for the meld rows"], ["pro", "Ends the pile on the right, where the eye finishes it"], ["con", "Off-centre under a lone pile, as the left one"]],
+  (p, S) => tabAt(S, p, "right", "down"));
+
+add("Tab", "Tabs at the outer ends, standing up",
+  "Each pile's tab stands at its outer end: the stock's at its left, the discard's at its right, where today's chips sit, pulled onto the piles. A lone pile's goes toward the table's edge.",
+  [["pro", "The two counts part like the piles do, and neither sits between them"], ["pro", "Today's placement, so a player finds the count where it was"], ["con", "Two rules (left and right) instead of one"]],
+  null, { drawAll: (piles, S, view) => outerSides(piles, view).map((side, i) => tabAt(S, piles[i], side, "up")).join("") });
+
+add("Side tab", "A tab out of the right side, at the bottom",
+  "A square tab comes out of the pile's right edge, 8px up from its bottom corner, its outer corners rounded: 32px (22px on a phone).",
+  [["pro", "Leaves the space above and below the pile free: no meld rows or buttons to move"], ["pro", "Low on the pile, where today's chip sits"], ["con", "On two piles side by side the stock's tab lands in the 8px gap before the discard"], ["con", "Needs room beside the pile, which the side seats and Hand & Foot's round count also want"]],
+  null, { drawAll: (piles, S) => { const T = sideTabSq(S, piles, 32, 20); return piles.map((p) => sideTabAt(S, p, "right", T)).join(""); } });
+
+add("Side tab", "A tab out of the left side, at the bottom",
+  "The same tab out of the pile's left edge.",
+  [["pro", "Top and bottom stay free"], ["pro", "Where cribbage's chip is today, but attached to the pile"], ["con", "Reaches out sideways, and on two piles the discard's tab lands in the gap"]],
+  null, { drawAll: (piles, S) => { const T = sideTabSq(S, piles, 32, 20); return piles.map((p) => sideTabAt(S, p, "left", T)).join(""); } });
+
+const SIDE_PC = [["pro", "Today's places, so a player finds the count where it was, with no chip floating in the gap"], ["pro", "Top and bottom stay free, and a card landing on the pile never covers it"], ["con", "Needs room beside the pile: fits wherever today's chip fits, but Hand & Foot's round count shares the stock's left side (they touch on a landscape phone)"], ["con", "Keeps using width, so it cannot free the row the way a hanging tab does"]];
+const HANG_PC = [["pro", "No width at all, and the space above the pile stays free for the meld rows"], ["pro", "Its foot hides behind the pile, so a card landing on the pile covers only what is hidden already"], ["con", "Takes the space under the pile, where the draw and discard buttons appear on some tables"]];
+// The sizes run [tab on a desktop, tab on a phone, number on a desktop, number on a phone].
+const withFont = (S, fd, fm) => Object.assign({}, S, { font: S.compact ? fm : fd });
+[[32, 24, 16, 14], [24, 20, 16, 14], [20, 16, 16, 12]].forEach(([d, m, fd, fm]) => add("Side tab", `Side tabs at the outer sides · ${d} / ${m}`,
+  `Each pile's tab comes out of its outer side, 8px up from its bottom: the stock's from its left, the discard's from its right, where today's chips sit. Square, ${d}px on a desktop and ${m}px on a phone, the number ${fd}px and ${fm}px.`,
+  SIDE_PC, null, { drawAll: (piles, S0, view) => { const S = withFont(S0, fd, fm), T = sideTabSq(S, piles, d, m); return outerSides(piles, view).map((side, i) => sideTabAt(S, piles[i], side, T)).join(""); } }));
+[[24, 16], [24, 20]].forEach(([d, m]) => add("Bottom tab", `Bottom tabs at the outer ends · ${d} / ${m}`,
+  `Each pile's tab hangs from its bottom edge at its outer end, 8px in: the stock's at its left, the discard's at its right. ${d}px tall on a desktop and ${m}px on a phone, the number 16px and 14px.`,
+  HANG_PC, null, { drawAll: (piles, S, view) => outerSides(piles, view).map((side, i) => hangTab(S, piles[i], side, d, m)).join("") }));
+[[24, 16, 16, 14], [24, 20, 16, 14], [20, 16, 16, 12]].forEach(([d, m, fd, fm]) => add("Bottom tab", `Bottom tab, centred · ${d} / ${m}`,
+  `The tab hangs from the middle of each pile's bottom edge. ${d}px tall on a desktop and ${m}px on a phone, the number ${fd}px and ${fm}px. Both tabs take the wider count's width, so they are always one size.`,
+  HANG_PC.concat([["con", "Two centred tabs side by side read as a pair, not as each pile's own"]]), null, { drawAll: (piles, S0) => { const S = withFont(S0, fd, fm); return piles.map((p) => hangTab(S, p, "centre", d, m, piles)).join(""); } }));
+
+add("Plate", "A score strip under the pile",
+  "Like the score tab under a name plate: a paper strip nearly as wide as the card hangs below it, a little narrower so the card stays the shape.",
+  [["pro", "Borrows the plate's grammar: name above, number below"], ["pro", "Room for a word on a desktop ('40 left') if wanted"], ["con", "The widest of the hanging forms; more paper on the felt"]],
+  (p, S) => { const i = Math.min(S.inset, Math.max(3, p.w * .12)); return box("tab down", p.x + i, p.y + p.h, p.w - 2 * i, S.tabH, num(S, p.count), `--r:${S.r}px`); });
+
+add("Plate", "One strip under both piles",
+  "Where two piles sit side by side, one paper strip hangs under the pair, each pile's count under its own card and a hairline between them. A lone pile gets the plain score strip.",
+  [["pro", "One piece for the pair instead of two, so the row reads as one place: the stock and the discard"], ["pro", "The widest room for words ('62 · 1') without touching the width of the row"], ["con", "Joins two piles the eye should keep apart when only one is live"]],
+  null, { drawAll: (piles, S) => {
+    const i = Math.min(S.inset, Math.max(3, piles[0].w * .12));
+    const left = piles[0].x + i, right = piles[piles.length - 1].x + piles[piles.length - 1].w - i;
+    const top = Math.max(...piles.map((p) => p.y + p.h));
+    let html = box("tab down", left, top, right - left, S.tabH, "", `--r:${S.r}px`);
+    piles.forEach((p, k) => {
+      html += box("", p.x, top, p.w, S.tabH, num(S, p.count), S.compact ? "" : "padding-top:0");
+      if (k > 0) { const mid = (piles[k - 1].x + piles[k - 1].w + p.x) / 2; html += box("", mid - .5, top + 4, 1, S.tabH - 8, "", "background:#c9c0ae"); }
+    });
+    return html;
+  } });
+
+add("Badge", "A badge on the top right corner",
+  "A round paper badge on the pile's top right corner, its centre 2px in from the corner, always round and one size per screen. Pick the size under Badge size.",
+  [["pro", "Very familiar, and the smallest piece that still reads"], ["pro", "Round at every count: the number shrinks for a third digit instead of the badge growing"], ["con", "Half of it sits on the pile, so a card landing on the pile covers it, or has to fly under it"], ["con", "Half of it hangs past the pile's right edge, toward the next pile on the two-pile tables"], ["con", "On a face-up pile it covers part of the suit sign in the top right corner"]],
+  (p, S) => {
+    const d = badgeSize(S), digits = String(p.count).length;
+    const f = Math.round(d * (digits > 2 ? .46 : .6));
+    return box("pill", p.x + p.w - d / 2 - 2, p.y - d / 2 + 2, d, d, num(S, p.count, f));
+  }, { sizes: true });
+
+add("Badge", "Today's chip, on the bottom left corner",
+  "Today's round chip, unchanged, pulled onto the pile's bottom left corner so a quarter of it overhangs.",
+  [["pro", "The smallest change: the same piece, almost no width of its own"], ["pro", "A card prints its index top left and bottom right, so this corner hides none on a face-up discard"], ["con", "Sits on the pile, so every card that lands on it covers the chip or has to fly under it"], ["con", "Still the round white chip that reads as a button"]],
+  (p, S) => chipAt(S, p, "left"));
+
+add("Badge", "Today's chip, on the bottom right corner",
+  "The same chip on the pile's bottom right corner.",
+  [["pro", "The count ends the pile, where the eye finishes it"], ["con", "Covers a face-up discard's lower index (the upper one still shows)"], ["con", "On two piles side by side, the stock's chip sits in the gap next to the discard"]],
+  (p, S) => chipAt(S, p, "right"));
+
+add("Badge", "Today's chip, on the outer corners",
+  "Each pile's chip on its outer bottom corner: the stock's at its left, the discard's at its right, where today's chips sit, pulled onto the piles.",
+  [["pro", "Today's places and today's piece, only the row's width saved"], ["pro", "Neither chip sits in the gap between the piles"], ["con", "The discard's chip covers its lower index"]],
+  null, { drawAll: (piles, S, view) => outerSides(piles, view).map((side, i) => chipAt(S, piles[i], side)).join("") });
+
+add("On the pile", "A pill on the pile",
+  "A paper pill sits on the pile itself, low and centred, inside the card's outline.",
+  [["pro", "Zero space outside the pile, above, below or beside"], ["con", "Covers part of the card: fine on a back, but on a face-up discard it hides the pips"], ["con", "Can look like a sticker"]],
+  (p, S) => { const w = pillW(S, p.count), h = S.pill; return box("pill", p.x + (p.w - w) / 2, p.y + p.h - h - (S.compact ? 4 : 8), w, h, num(S, p.count, S.text)); });
+
+add("On the pile", "A band round the deck",
+  "A paper band wrapped round the stock like the seal on a new deck, edge to edge, the count on it. A face-up pile keeps a tab hanging below instead.",
+  [["pro", "A real-world object: a deck wrapped in a paper band"], ["pro", "No space outside the pile; wide enough for a word"], ["con", "Only works on a face-down pile, so the discard needs another form"]],
+  (p, S) => {
+    if (p.faceUp) { const w = tabW(S, p.count); return box("tab down", p.x + (p.w - w) / 2, p.y + p.h, w, S.tabH, num(S, p.count), `--r:${S.r}px`); }
+    const h = S.compact ? Math.max(12, Math.round(p.h * .2)) : 26; return box("band", p.x, p.y + p.h * .56 - h / 2, p.w, h, num(S, p.count, S.compact ? Math.min(S.text, h - 2) : S.font));
+  });
+
+add("On the pile", "A corner index",
+  "The count takes the pile's lower right corner, in a small paper square, where a card repeats its index.",
+  [["pro", "Borrows the card's own grammar: numbers live in the corners"], ["pro", "Inside the pile's outline"], ["con", "Covers the discard's lower index (the upper one still shows)"], ["con", "Very small on a phone's 32px cards"]],
+  (p, S) => { const h = S.compact ? 14 : 22, w = Math.max(h, (S.compact ? 6 : 9) * String(p.count).length + (S.compact ? 6 : 8)); const m = S.compact ? 3 : 6; return box("index", p.x + p.w - w - m, p.y + p.h - h - m, w, h, num(S, p.count, S.compact ? 11 : 14), `border-radius:${S.compact ? 4 : 6}px`); });
+
+add("On the pile", "The number printed on the back",
+  "A big white numeral set straight onto the back, no box, as if the back were printed with it. A face-up pile keeps a tab below.",
+  [["pro", "The boldest read: you see the number before the card"], ["pro", "No space outside the pile"], ["con", "Only on a face-down pile, and it fights the back's pattern"]],
+  (p, S) => {
+    if (p.faceUp) { const w = tabW(S, p.count); return box("tab down", p.x + (p.w - w) / 2, p.y + p.h, w, S.tabH, num(S, p.count), `--r:${S.r}px`); }
+    const f = Math.round(Math.min(p.w * .42, p.h * .3)); return box("numeral", p.x, p.y, p.w, p.h, num(S, p.count, f));
+  });
+
+add("On the pile", "A medallion on the back",
+  "The back's own centre medallion carries the count, in a paper disc. A face-up pile keeps a tab below.",
+  [["pro", "Sits where the back's design already puts its centre"], ["pro", "No space outside the pile; calmer than the printed numeral"], ["con", "Only on a face-down pile"]],
+  (p, S) => {
+    if (p.faceUp) { const w = tabW(S, p.count); return box("tab down", p.x + (p.w - w) / 2, p.y + p.h, w, S.tabH, num(S, p.count), `--r:${S.r}px`); }
+    const d = Math.round(Math.max(S.compact ? 18 : 30, Math.min(p.w * .44, 48))); return box("medal", p.x + (p.w - d) / 2, p.y + (p.h - d) / 2, d, d, num(S, p.count, Math.round(d * .46)));
+  });
+
+add("Felt text", "Plain count below",
+  "Just the number under the pile, in paper-coloured type on the felt, no box. On a desktop it says '40 left'.",
+  [["pro", "The lightest possible: type, no piece"], ["pro", "Leaves the pile and the space above untouched"], ["con", "Type straight on the felt is new on the table; everything else there sits on paper"]],
+  (p, S) => { const lh = S.text + 4; return box("felttext", p.x - 20, p.y + p.h + (S.compact ? 2 : 4), p.w + 40, lh, `<span style="font-size:${S.text}px;line-height:${lh}px">${p.count}${S.compact ? "" : "<small>left</small>"}</span>`); });
+
+add("Felt text", "Plain count above",
+  "The same type above the pile.",
+  [["pro", "Reads before the pile, like a caption over a picture"], ["con", "Above is where rummy and canasta have their meld rows, and cribbage the top seat"]],
+  (p, S) => { const lh = S.text + 4; return box("felttext", p.x - 20, p.y - lh - (S.compact ? 2 : 4), p.w + 40, lh, `<span style="font-size:${S.text}px;line-height:${lh}px">${p.count}${S.compact ? "" : "<small>left</small>"}</span>`); });
+
+add("Depth", "The pile shows its depth",
+  "The pile is drawn as a stack: one card edge peeks out below it for every ten cards, up to five, and the count is written under the stack.",
+  [["pro", "Tells 'how much' at a glance even without reading the number"], ["pro", "The only form where the pile itself carries the amount"], ["con", "Needs drawing in the card engine (the stack is one image today)"], ["con", "A thin pile and an empty one look the same"]],
+  (p, S) => {
+    const layers = Math.max(p.faceUp ? 0 : 1, Math.min(5, Math.round(p.count / 10))), d = S.compact ? 1.5 : 2.5;
+    let html = "";
+    for (let i = layers; i >= 1; i--) {
+      const top = p.y + p.h - p.radius, h = p.radius + i * d;
+      html += box("layer", p.x, top, p.w, h, "", `border-radius:0 0 ${p.radius}px ${p.radius}px;clip-path:inset(${p.radius - .5}px -1px -1px -1px)`);
+    }
+    const lh = S.text + 4, below = p.y + p.h + layers * d + (S.compact ? 2 : 3);
+    return html + box("felttext", p.x - 20, below, p.w + 40, lh, `<span style="font-size:${S.text}px;line-height:${lh}px">${p.count}</span>`);
+  });
+
+add("Depth", "A gauge under the pile",
+  "A thin track under the pile fills with paper for the cards left of the deal's deck, the number under it.",
+  [["pro", "Shows how far through the deck the hand is"], ["con", "Two things to read for one number"], ["con", "A new piece with no family on the table"]],
+  (p, S) => {
+    const g = S.compact ? 3 : 4, top = p.y + p.h + (S.compact ? 4 : 6), f = Math.max(0, Math.min(1, p.count / p.deck));
+    const lh = S.text + 4;
+    return box("gauge", p.x + 2, top, p.w - 4, g, `<i style="width:${(f * 100).toFixed(1)}%"></i>`) + box("felttext", p.x - 20, top + g + 1, p.w + 40, lh, `<span style="font-size:${S.text}px;line-height:${lh}px">${p.count}</span>`);
+  });
+
+add("Clip", "A label clipped on the top edge",
+  "A paper label straddles the pile's top edge, half on the card and half above it, like a tag clipped to a stack of papers.",
+  [["pro", "Needs only half its height above the pile"], ["pro", "Reads as attached to that pile, even with two side by side"], ["con", "Covers the top of a face-up discard's index"]],
+  (p, S) => { const w = pillW(S, p.count) + (S.compact ? 2 : 4), h = S.compact ? 16 : 22; return box("clip", p.x + (p.w - w) / 2, p.y - h / 2, w, h, num(S, p.count, S.text), `border-radius:${S.compact ? 4 : 6}px`); });
+
+add("Clip", "A label clipped on the bottom edge",
+  "The same label on the bottom edge: half on the card, half below it.",
+  [["pro", "Half the height below the pile, and the space above untouched"], ["pro", "Clear of a face-up card's upper index"], ["con", "Covers the discard's lower index"]],
+  (p, S) => { const w = pillW(S, p.count) + (S.compact ? 2 : 4), h = S.compact ? 16 : 22; return box("clip", p.x + (p.w - w) / 2, p.y + p.h - h / 2, w, h, num(S, p.count, S.text), `border-radius:${S.compact ? 4 : 6}px`); });
+
+// ---- the shortlist ---------------------------------------------------------------------------------
+// Holger's shortlist (23 Sep 2026): the side tabs and the centred bottom tab, each at two sizes, and nothing
+// else. "Show all variants" brings every other variant back, today's chip first.
+const SHORTLIST = [
+  "Side tabs at the outer sides · 32 / 24", "Side tabs at the outer sides · 24 / 20", "Side tabs at the outer sides · 20 / 16",
+  "Bottom tab, centred · 24 / 16", "Bottom tab, centred · 24 / 20", "Bottom tab, centred · 20 / 16",
+];
+const ALL_V = V.slice();
+const SHORT_V = SHORTLIST.map((n) => ALL_V.find((v) => v.name === n)).filter(Boolean);
+function useList(all) { V.splice(0, V.length, ...(all ? ALL_V : SHORT_V)); }
+useList(false);
+
+// ---- state -------------------------------------------------------------------------------------
+const SCENES = DATA.scenes, SCENE_IDS = Object.keys(SCENES);
+const VPS = [["pair", "Desktop + phone"], ["desktop", "Desktop"], ["iphone-portrait", "Phone portrait"], ["iphone-landscape", "Phone landscape"]];
+const COUNTS = [["shot", "As dealt"], ["one", "One digit"], ["three", "Three digits (Hand & Foot's deal: 173)"]];
+// The round badge's sizes, desktop and phone.
+const BADGES = [["18", "18 · phone 16", 18, 16], ["20", "20 · phone 17", 20, 17], ["22", "22 · phone 18", 22, 18], ["24", "24 · phone 20", 24, 20]];
+function badgeSize(S) { const b = BADGES.find((x) => x[0] === state.badge) || BADGES[2]; return S.compact ? b[3] : b[2]; }
+const state = { v: 0, scene: SCENE_IDS[0], vp: "pair", count: "shot", ghost: false, badge: "22", all: false };
+(function readHash() {
+  const h = new URLSearchParams(location.hash.slice(1));
+  if (h.get("all") === "1") { state.all = true; useList(true); }
+  if (h.has("v")) state.v = Math.max(0, Math.min(V.length - 1, +h.get("v") || 0));
+  if (h.has("s") && SCENES[h.get("s")]) state.scene = h.get("s");
+  if (h.has("vp") && VPS.some((x) => x[0] === h.get("vp"))) state.vp = h.get("vp");
+  if (h.has("c") && COUNTS.some((x) => x[0] === h.get("c"))) state.count = h.get("c");
+  const b = { s: "18", m: "22", l: "24" }[h.get("b")] || h.get("b");
+  if (BADGES.some((x) => x[0] === b)) state.badge = b;
+})();
+function writeHash() { history.replaceState(null, "", "#v=" + state.v + "&s=" + state.scene + "&vp=" + state.vp + "&c=" + state.count + "&b=" + state.badge + (state.all ? "&all=1" : "")); }
+
+// The screen a view draws: Desktop + phone draws both, and its close up is the phone's.
+function shot(vp) { return SCENES[state.scene].shots[vp || (state.vp === "pair" ? "desktop" : state.vp)]; }
+function countFor(pile, i) {
+  if (state.count === "one") return i === 0 ? 7 : 3;
+  if (state.count === "three") return i === 0 ? 173 : 104;
+  return pile.count;
+}
+
+// ---- drawing -----------------------------------------------------------------------------------
+function stageHtml(variant, vp) {
+  const s = shot(vp), S = sizes(s.compact);
+  const img = variant.today && state.count === "shot" ? s.img : s.bare;
+  let over = "";
+  if (!variant.today) {
+    const all = s.piles.map((pile, i) => ({ x: pile.rect[0], y: pile.rect[1], w: pile.rect[2], h: pile.rect[3], faceUp: pile.faceUp, count: pile.count == null ? null : countFor(pile, i), radius: pile.radius, deck: SCENES[state.scene].deck }));
+    const piles = all.filter((p) => p.count != null);
+    piles.forEach((p) => { p.all = all; });
+    over += variant.drawAll ? variant.drawAll(piles, S, s.view) : piles.map((p) => variant.draw(p, S)).join("");
+  } else if (state.count !== "shot") {
+    // Today's chip redrawn at the new count, in the chip's own place.
+    s.piles.forEach((pile, i) => { if (pile.chip) { const [x, y, w, h] = pile.chip; over += box("chipToday", x, y, w, h, chipNum(S, countFor(pile, i), w)); } });
+  }
+  if (state.ghost && !variant.today) s.piles.forEach((pile) => { if (pile.chip) { const [x, y, w, h] = pile.chip; over += box("ghost", x, y, w, h, ""); } });
+  return `<div class="stage" style="width:${s.view[0]}px;height:${s.view[1]}px"><img src="${img}" width="${s.view[0]}" height="${s.view[1]}" alt=""><div class="overlay">${over}</div></div>`;
+}
+
+function pilesCentre(s) {
+  const xs = s.piles.flatMap((p) => [p.rect[0], p.rect[0] + p.rect[2]]), ys = s.piles.flatMap((p) => [p.rect[1], p.rect[1] + p.rect[3]]);
+  return [(Math.min(...xs) + Math.max(...xs)) / 2, (Math.min(...ys) + Math.max(...ys)) / 2];
+}
+
+// ---- play ----------------------------------------------------------------------------------------
+// The chosen layout moving, on Hand & Foot: the pile counts as side tabs (24 / 20), the tabs above the
+// name plates square, and the round under the score board. The paint and the motion are the site's
+// (pieces.scss, base.scss and piece/chip.js Y.wocg.TabMotion): a tab slides out from behind what it
+// belongs to, a changed number rolls like the notice's countdown, and a tab that goes dissolves.
+const PLAY = DATA.play;
+let SLOW = 1;
+let CALM = false;
+const TAB_ENTER_MS = 300, TAB_SETTLE = "cubic-bezier(.22, 1, .36, 1)";
+const TAB_DISSOLVE_MS = 520, TAB_DISSOLVE_EASE = "cubic-bezier(.4, 0, .6, 1)";
+const TAB_REEL_MS = 750, TAB_REEL_EASE = "cubic-bezier(.22, 1.1, .34, 1)";
+const TAB_SHIFT_MS = 300, TAB_CALM_MS = 120;
+const TAB_LEAVE_MS = 220, TAB_SHARP = "cubic-bezier(.32, 0, .67, 0)";
+const PLATE_ORDER = ["selectedSuit", "showMeldsButton", "sortButton", "playerMore", "playerLiked", "support", "leaving"];
+const PLATE_ICONS = { support: "crown.svg", playerLiked: "playerLiked.svg", playerMore: "playerMore.svg", leaving: "playerLeaving.svg" };
+
+function tabInset(ownerSide, px) {
+  const s = { top: "-12px", right: "-12px", bottom: "-12px", left: "-12px" };
+  s[ownerSide] = px + "px";
+  return `inset(${s.top} ${s.right} ${s.bottom} ${s.left})`;
+}
+// Out from behind the edge it belongs to: pushed in under that edge by its visible length, and cut at
+// the edge the whole way out, so it grows out of the pile, the plate or the board.
+function tabOut(ownerSide, foot) { return { transform: "none", clipPath: tabInset(ownerSide, foot || 0) }; }
+function tabIn(node, ownerSide, foot) {
+  const horizontal = ownerSide === "left" || ownerSide === "right";
+  const length = (horizontal ? node.offsetWidth : node.offsetHeight) - (foot || 0);
+  const sign = ownerSide === "right" || ownerSide === "bottom" ? 1 : -1;
+  return { transform: `translate${horizontal ? "X" : "Y"}(${sign * length}px)`, clipPath: tabInset(ownerSide, (foot || 0) + length) };
+}
+function slideOut(node, ownerSide, foot) {
+  if (CALM) return node.animate([{ opacity: 0 }, { opacity: 1 }], { duration: TAB_CALM_MS * SLOW, easing: "linear" });
+  return node.animate([tabIn(node, ownerSide, foot), tabOut(ownerSide, foot)], { duration: TAB_ENTER_MS * SLOW, easing: TAB_SETTLE });
+}
+// Back in under its edge the way it came, on the notice's leave: how a tab goes when its owner stays
+function slideIn(node, ownerSide, foot) {
+  if (CALM) return node.animate([{ opacity: 1 }, { opacity: 0 }], { duration: TAB_CALM_MS * SLOW, easing: "linear", fill: "forwards" });
+  return node.animate([tabOut(ownerSide, foot), tabIn(node, ownerSide, foot)], { duration: TAB_LEAVE_MS * SLOW, easing: TAB_SHARP, fill: "forwards" });
+}
+// The hero's dissolve without the rise, and the tab going back in under its edge as it does: only for
+// a pile that is taken or has its last card taken
+function dissolveNode(node, ownerSide, foot) {
+  if (CALM) return node.animate([{ opacity: 1 }, { opacity: 0 }], { duration: TAB_CALM_MS * SLOW, easing: "linear", fill: "forwards" });
+  return node.animate([
+    Object.assign({ opacity: 1, filter: "blur(0px)" }, tabOut(ownerSide, foot)),
+    Object.assign({ opacity: 0, filter: "blur(4px)" }, tabIn(node, ownerSide, foot)),
+  ], { duration: TAB_DISSOLVE_MS * SLOW, easing: TAB_DISSOLVE_EASE, fill: "forwards" });
+}
+// A tab is always square: a count too wide for it takes a smaller size, just small enough to fit
+function fitSize(text, base, box, compact) {
+  const room = box - 2 * (compact ? 1 : 2), width = textW(text, base);
+  return width <= room ? base : Math.floor((base * room) / width * 2) / 2;
+}
+// The notice's reel (Table.rollNoticeNumber): the old and the new on one strip, a lower number coming
+// in from the top and a higher one from the bottom, on the live pill's curve with its small overshoot.
+function rollNumber(holder, numNode, next, sizeOf) {
+  if (holder.reel) holder.reel.finish();
+  const was = numNode.textContent;
+  const size = (text) => (sizeOf ? sizeOf(text) + "px" : "");
+  if (was === String(next)) return;
+  if (CALM || was === "") { numNode.textContent = next; numNode.style.fontSize = size(next); return; }
+  const a = parseFloat(was), b = parseFloat(next);
+  const down = !isNaN(a) && !isNaN(b) && b < a;
+  const width = Math.max(numNode.getBoundingClientRect().width, measureLike(numNode, next));
+  const line = parseFloat(getComputedStyle(numNode).lineHeight) || numNode.offsetHeight;
+  numNode.classList.add("tabReel");
+  numNode.style.width = width + "px";
+  numNode.style.height = line + "px";
+  const strip = document.createElement("span"), first = document.createElement("span"), second = document.createElement("span");
+  first.textContent = down ? next : was; second.textContent = down ? was : next;
+  first.style.height = second.style.height = line + "px";
+  first.style.fontSize = size(first.textContent); second.style.fontSize = size(second.textContent);
+  strip.append(first, second);
+  numNode.replaceChildren(strip);
+  const anim = strip.animate([{ transform: down ? "translateY(-50%)" : "none" }, { transform: down ? "none" : "translateY(-50%)" }],
+    { duration: TAB_REEL_MS * SLOW, easing: TAB_REEL_EASE, fill: "forwards" });
+  const reel = holder.reel = { finish() { anim.cancel(); numNode.classList.remove("tabReel"); numNode.style.width = ""; numNode.style.height = ""; numNode.textContent = next; numNode.style.fontSize = size(next); if (holder.reel === reel) holder.reel = null; } };
+  anim.onfinish = reel.finish;
+}
+function measureLike(node, text) {
+  const probe = node.cloneNode(false);
+  probe.classList.remove("tabReel"); probe.style.cssText = "position:absolute;visibility:hidden;white-space:nowrap"; probe.textContent = text;
+  node.parentNode.appendChild(probe);
+  const w = probe.getBoundingClientRect().width; probe.remove(); return w;
+}
+function glide(node, props) {
+  const from = {}, to = {};
+  Object.keys(props).forEach((k) => { from[k] = node.style[k]; to[k] = props[k] + "px"; node.style[k] = to[k]; });
+  if (CALM || Object.keys(props).every((k) => from[k] === to[k]) || Object.values(from).some((v) => !v)) return;
+  node.animate([from, to], { duration: TAB_SHIFT_MS * SLOW, easing: TAB_SETTLE });
+}
+
+function pileSizes(c) { return c ? { h: 20, font: 14, pad: 2, r: 10 } : { h: 24, font: 16, pad: 3, r: 12 }; }
+function plateSizes(c) { return c ? { h: 20, foot: 11, inset: 10, gap: 8, r: 10 } : { h: 24, foot: 14, inset: 12, gap: 8, r: 12 }; }
+// The round reads like the board's own Score, Limit and Meld row: 12px bold on a 20px line at every size
+function boardSizes() { return { h: 20, font: 12, pad: 8, r: 12, nudge: 2 }; }
+// Each suit's line height, measured so its ink sits in the middle of the tab's paper (pieces.scss)
+const SUIT_LH = { desktop: { "♠": 18, "♥": 19.5, "♦": 20, "♣": 19.5 }, phone: { "♠": 16, "♥": 17, "♦": 17, "♣": 17 } };
+function suitLine(ctx, text) { const t = SUIT_LH[ctx.c ? "phone" : "desktop"]; return t[text] || plateSizes(ctx.c).h - 3; }
+
+function playStageHtml(vp) {
+  const d = PLAY[vp];
+  return `<div class="stage" data-play="${vp}" style="width:${d.view[0]}px;height:${d.view[1]}px"><img src="${d.bare}" width="${d.view[0]}" height="${d.view[1]}" alt=""><div class="overlay"></div></div>`;
+}
+function playContext(stageEl) {
+  const vp = stageEl.dataset.play, d = PLAY[vp];
+  return { vp, d, c: d.compact, overlay: stageEl.querySelector(".overlay"), piles: {}, plates: {}, round: null };
+}
+
+// The pile tabs: out of the stock's left side and the discard's right side, 8px up from the pile's
+// bottom, always square: a count too wide takes a smaller size.
+function pileRect(ctx, which) { const p = ctx.d.piles.find((x) => x.spot === (which === "stock" ? "stockPile" : "discardPile")); return p.rect; }
+function pileWidth(ctx) { return pileSizes(ctx.c).h; }
+function pileFont(ctx) { const S = pileSizes(ctx.c); return (text) => fitSize(text, S.font, S.h, ctx.c); }
+function pileBox(ctx, which, w) {
+  const S = pileSizes(ctx.c), [x, y, pw, ph] = pileRect(ctx, which);
+  return { left: which === "stock" ? x - w : x + pw, top: y + ph - 8 - S.h, width: w, height: S.h };
+}
+function relayoutPiles(ctx, snap) {
+  const w = pileWidth(ctx);
+  Object.entries(ctx.piles).forEach(([which, t]) => {
+    if (!t.shown) return;
+    const b = pileBox(ctx, which, w);
+    if (t === snap) Object.assign(t.el.style, { left: b.left + "px", top: b.top + "px", width: b.width + "px", height: b.height + "px" });
+    else glide(t.el, { left: b.left, width: b.width });
+  });
+}
+function pileSet(ctx, which, value) {
+  const S = pileSizes(ctx.c);
+  let t = ctx.piles[which];
+  if (!t) {
+    const el = document.createElement("div");
+    el.className = "ptab " + (which === "stock" ? "onLeft" : "onRight");
+    el.style.cssText = `--h:${S.h}px;--r:${S.r}px;font-size:${S.font}px;visibility:hidden`;
+    const num = document.createElement("span"); num.className = "tabNum"; el.appendChild(num);
+    ctx.overlay.appendChild(el);
+    t = ctx.piles[which] = { el, num, value: 0, shown: false, anim: null };
+  }
+  const show = value > 0;
+  if (!t.shown && show) {
+    if (t.anim) t.anim.cancel();
+    if (t.reel) t.reel.finish();
+    t.value = value; t.shown = true; t.num.textContent = value; t.num.style.fontSize = pileFont(ctx)(value) + "px";
+    t.el.style.visibility = "";
+    relayoutPiles(ctx, t);
+    t.anim = slideOut(t.el, which === "stock" ? "right" : "left", 0);
+  } else if (t.shown && !show) {
+    t.shown = false;
+    if (t.anim) t.anim.cancel();
+    const anim = t.anim = dissolveNode(t.el, which === "stock" ? "right" : "left", 0);
+    anim.onfinish = () => { if (t.anim !== anim) return; t.el.style.visibility = "hidden"; anim.cancel(); t.anim = null; };
+    relayoutPiles(ctx);
+  } else if (t.shown && value !== t.value) {
+    t.value = value;
+    rollNumber(t, t.num, value, pileFont(ctx));
+  } else {
+    t.value = value;
+  }
+}
+
+// A hand ends and the table is cleared: the pile tabs just slide back in (the piles are not taken)
+function pileRemove(ctx, which) {
+  const t = ctx.piles[which];
+  if (!t || !t.shown) return;
+  t.shown = false;
+  if (t.anim) t.anim.cancel();
+  if (t.reel) t.reel.finish();
+  const anim = t.anim = slideIn(t.el, which === "stock" ? "right" : "left", 0);
+  anim.onfinish = () => { if (t.anim !== anim) return; t.el.style.visibility = "hidden"; anim.cancel(); t.anim = null; };
+}
+
+// The plate tabs: square, standing up from behind the plate, laid by the site's packer
+// (Table.positionSideTabs): from the plate's near end in the site's order, around the avatar and the
+// dealer chip, a right-edge seat mirrored.
+function plateTabs(ctx, seat) { return ctx.plates[seat] || (ctx.plates[seat] = []); }
+function packPlate(ctx, seat, animate) {
+  const plate = ctx.d.plates.find((p) => p.seat === seat), S = plateSizes(ctx.c);
+  const [pl, pt, pw] = plate.rect, pr = pl + pw, tabW = S.h;
+  const toFrame = (x) => (plate.rightEdge ? pl + pr - x : x), fromFrame = (x) => (plate.rightEdge ? pl + pr - x - tabW : x);
+  const bandTop = pt - S.h, bandBottom = pt + S.foot;
+  const blocks = plate.blocks.filter(([, y, , h]) => !(y + h <= bandTop || y >= bandBottom))
+    .map(([x, , w]) => { const a = toFrame(x), b = toFrame(x + w); return [Math.min(a, b), Math.max(a, b)]; }).sort((a, b) => a[0] - b[0]);
+  const nearEnd = pl + S.inset, farEnd = pr - S.inset, runs = [];
+  let cursor = nearEnd;
+  blocks.forEach((b) => { if (b[0] - S.gap > cursor) runs.push([cursor, b[0] - S.gap]); cursor = Math.max(cursor, b[1] + S.gap); });
+  if (farEnd > cursor) runs.push([cursor, farEnd]);
+  const tabs = plateTabs(ctx, seat).filter((t) => !t.leaving).sort((a, b) => PLATE_ORDER.indexOf(a.prefix) - PLATE_ORDER.indexOf(b.prefix));
+  const place = (t, xf) => {
+    const x = fromFrame(xf);
+    if (t.placed && animate) glide(t.el, { left: x }); else t.el.style.left = x + "px";
+    t.placed = true;
+  };
+  let ri = 0, next = runs.length ? runs[0][0] : null, last = null;
+  const overflow = [];
+  tabs.forEach((t) => {
+    while (ri < runs.length) {
+      if (next + tabW <= runs[ri][1]) { place(t, next); last = next; next += tabW + S.gap; return; }
+      ri++; next = ri < runs.length ? runs[ri][0] : null;
+    }
+    overflow.push(t);
+  });
+  if (overflow.length) {
+    let start = last === null ? nearEnd : last + tabW + S.gap;
+    const end = Math.max(nearEnd, farEnd - tabW);
+    if (start > end) start = end;
+    const step = overflow.length > 1 ? (end - start) / (overflow.length - 1) : 0;
+    overflow.forEach((t, i) => place(t, Math.round(start + i * step)));
+  }
+}
+function plateAdd(ctx, seat, prefix, text) {
+  const plate = ctx.d.plates.find((p) => p.seat === seat), S = plateSizes(ctx.c);
+  const el = document.createElement("div");
+  el.className = "ptab onPlate" + (text === "♥" || text === "♦" ? " red" : "");
+  el.style.cssText = `--h:${S.h}px;--r:${S.r}px;top:${plate.rect[1] - S.h}px;width:${S.h}px;height:${S.h}px;font-size:${S.h}px;line-height:${suitLine(ctx, text)}px;align-items:flex-start`;
+  if (PLATE_ICONS[prefix]) el.style.backgroundImage = `url("pile-count-lab/icons/${PLATE_ICONS[prefix]}")`;
+  const num = document.createElement("span"); num.className = "tabNum"; num.textContent = text || ""; el.appendChild(num);
+  ctx.overlay.appendChild(el);
+  const t = { prefix, el, num, placed: false };
+  plateTabs(ctx, seat).push(t);
+  packPlate(ctx, seat, true);
+  t.anim = slideOut(el, "bottom", 1);
+}
+function plateRemove(ctx, seat, prefix) {
+  const t = plateTabs(ctx, seat).find((x) => x.prefix === prefix && !x.leaving);
+  if (!t) return;
+  t.leaving = true;
+  if (t.anim) t.anim.cancel();
+  slideIn(t.el, "bottom", 1).onfinish = () => { t.el.remove(); ctx.plates[seat] = plateTabs(ctx, seat).filter((x) => x !== t); };
+  packPlate(ctx, seat, true);
+}
+function plateSet(ctx, seat, prefix, text) {
+  const t = plateTabs(ctx, seat).find((x) => x.prefix === prefix && !x.leaving);
+  if (!t) return;
+  t.el.classList.toggle("red", text === "♥" || text === "♦");
+  t.el.style.lineHeight = suitLine(ctx, text) + "px";
+  rollNumber(t, t.num, text);
+}
+
+// The round: a tab hanging from the score board's bottom edge, centred, 24px (16px on a phone).
+function roundSet(ctx, n) {
+  const S = boardSizes(ctx.c), [bx, by, bw, bh] = ctx.d.board;
+  if (!ctx.round) {
+    const el = document.createElement("div");
+    el.className = "ptab onBoard";
+    el.style.cssText = `--h:${S.h}px;--r:${S.r}px;left:${bx + bw / 2}px;top:${by + bh}px;height:${S.h}px;padding:${S.nudge}px ${S.pad}px 0;font-size:${S.font}px;line-height:${S.h}px;translate:-50% 0`;
+    el.innerHTML = `<span>Round&nbsp;</span><span class="tabNum">${n}</span><span>∕4</span>`;
+    ctx.overlay.insertBefore(el, ctx.overlay.firstChild);
+    ctx.round = { el, num: el.querySelector(".tabNum"), value: n };
+    ctx.round.anim = slideOut(el, "top", 1);
+    return;
+  }
+  ctx.round.value = n;
+  rollNumber(ctx.round, ctx.round.num, n);
+}
+
+const PLAY_STEPS = [
+  [0, () => {}, "A new hand. Nothing is on the table yet."],
+  [700, (x) => roundSet(x, 1), "The round slides out from under the score board."],
+  [1700, (x) => pileSet(x, "stock", 174), "The stock is dealt: its tab slides out of the pile's left side. A tab is always square, so 174 takes a smaller size."],
+  [2800, (x) => { pileSet(x, "discard", 1); pileSet(x, "stock", 173); }, "The first card is turned: the discard's tab slides out of its right side, and the stock counts down."],
+  [4300, (x) => plateAdd(x, 1, "support"), "A premium player's crown slides up from behind the plate."],
+  [5400, (x) => plateAdd(x, 3, "playerLiked"), "You like R2-D2: the star slides up. A seat on the right edge fills from its right end."],
+  [6700, (x) => pileSet(x, "stock", 171), "A player draws two: the stock rolls down, the lower number coming in from the top."],
+  [8000, (x) => pileSet(x, "discard", 2), "They discard: the discard rolls up, the higher number coming in from the bottom."],
+  [9100, (x) => pileSet(x, "discard", 3), null],
+  [10300, (x) => pileSet(x, "discard", 0), "The discard pile is taken: its tab dissolves as it goes back behind the card, and an empty pile shows no tab."],
+  [11700, (x) => pileSet(x, "discard", 1), "A new discard: the tab slides out again."],
+  [13000, (x) => plateAdd(x, 1, "playerLiked"), "You like Tin Man too: the star takes the first place and the crown moves along."],
+  [14400, (x) => plateRemove(x, 1, "playerLiked"), "You change your mind: the star just slides back into the plate, and the crown moves back."],
+  [15800, (x) => plateAdd(x, 3, "leaving"), "R2-D2's connection drops: the leaving tab slides up beside the star."],
+  [17100, (x) => plateRemove(x, 3, "leaving"), "R2-D2 is back: the leaving tab slides back into the plate."],
+  [18400, (x) => plateAdd(x, 2, "selectedSuit", "♠"), "A trump game's suit stands on the plate of the player who named it…"],
+  [19700, (x) => plateSet(x, 2, "selectedSuit", "♥"), "…and rolls when the suit changes."],
+  [21000, (x) => pileSet(x, "stock", 100), "The stock runs down to 100, still in the smaller size…"],
+  [22300, (x) => pileSet(x, "stock", 99), "…and under it the count rolls back to full size, the tab still square."],
+  [23700, (x) => pileSet(x, "stock", 0), "The stock's last card is taken: its tab dissolves as it goes back behind the pile."],
+  [25100, (x) => { pileRemove(x, "discard"); plateRemove(x, 2, "selectedSuit"); }, "The hand ends: the discard's tab and the suit just slide back in."],
+  [26500, (x) => roundSet(x, 2), "The next round: the round rolls on."],
+  [27900, (x) => pileSet(x, "stock", 174), "The next deal…"],
+  [28800, (x) => { pileSet(x, "discard", 1); pileSet(x, "stock", 173); }, null],
+];
+const PLAY_END = 30300;
+let playTimers = [];
+function showCaption(text) {
+  const cap = document.getElementById("caption");
+  if (!text) return;
+  cap.hidden = false;
+  cap.innerHTML = "";
+  cap.append(Object.assign(document.createElement("span"), { textContent: text }));
+}
+function stopPlay() {
+  playTimers.forEach(clearTimeout); playTimers = [];
+  document.getElementById("caption").hidden = true;
+}
+function startPlay() {
+  stopPlay();
+  const ctxs = [...document.querySelectorAll("#stageWrap .stage[data-play], #loupe .stage[data-play]")].filter((el) => !el.closest("[hidden]")).map(playContext);
+  PLAY_STEPS.forEach(([t, fn, text]) => playTimers.push(setTimeout(() => { showCaption(text); ctxs.forEach(fn); }, t * SLOW)));
+  playTimers.push(setTimeout(() => { state.play = "done"; document.getElementById("playBtn").textContent = "▶ Play again"; }, PLAY_END * SLOW));
+}
+
+// ---- desktop + phone ---------------------------------------------------------------------------
+// The desktop table at 1:1, as it looks in a browser on this screen, and the phone beside it at life
+// size. An iPhone draws 460 pixels per inch at 3 per CSS pixel, 153.3 CSS px per inch; this screen
+// draws its own pixels per inch over 2 (the sweep viewer's rule, and its stored setting: P to change),
+// so a phone pixel is 0.83 of this screen's on a 254 ppi MacBook Pro. When the window is too small for
+// the whole desktop table, its edges are cut around the piles: it is never scaled.
+const PHONE_CSS_PER_INCH = 460 / 3;
+const PHONE_FRAME = { device: [390, 844], top: 47, bottom: 133 };
+function screenPpi() { const v = +(localStorage.getItem("sweep-ppi") || 254); return v > 50 ? v : 254; }
+function askPpi() {
+  const v = prompt("Your screen's pixels per inch (14-inch and 16-inch MacBook Pro: 254. 13-inch and 15-inch MacBook Air: 224. Studio Display: 218):", String(screenPpi()));
+  if (v && +v > 50) localStorage.setItem("sweep-ppi", String(+v));
+  render();
+}
+function renderPair(variant, wrap, pairEl) {
+  const src = (vp) => (state.play ? PLAY[vp] : shot(vp)), html = (vp) => (state.play ? playStageHtml(vp) : stageHtml(variant, vp));
+  const d = src("desktop"), ph = src("iphone-portrait"), f = PHONE_FRAME;
+  const k = (screenPpi() / 2) / PHONE_CSS_PER_INCH;
+  const phoneW = Math.round(f.device[0] * k), phoneH = Math.round(f.device[1] * k);
+  const gap = 24, pad = 16, lab = 24;
+  const winW = Math.max(200, Math.min(d.view[0], wrap.clientWidth - 2 * pad - gap - phoneW));
+  const winH = Math.max(200, Math.min(d.view[1], wrap.clientHeight - 2 * pad - lab));
+  const [cx, cy] = pilesCentre(d);
+  const ox = Math.round(Math.max(0, Math.min(d.view[0] - winW, cx - winW / 2)));
+  const oy = Math.round(Math.max(0, Math.min(d.view[1] - winH, cy - winH / 2)));
+  const cut = winW < d.view[0] || winH < d.view[1];
+  const sw = Math.round(ph.view[0] * k), sh = Math.round(ph.view[1] * k);
+  pairEl.innerHTML = `<div class="pairRow">
+    <div class="pairCol"><div class="pairLab"><b>Desktop</b>${d.view[0]} × ${d.view[1]} at 1:1${cut ? ", its edges cut to fit this window (H hides the panel)" : ""}</div>
+      <div class="pairWin" style="width:${winW}px;height:${winH}px">${html("desktop")}</div></div>
+    <div class="pairCol"><div class="pairLab"><b>iPhone 12 Pro portrait</b>life size at ${screenPpi()} ppi (P to set)</div>
+      <div class="phoneBody" style="width:${phoneW}px;height:${phoneH}px;padding-top:${Math.round(f.top * k)}px;border-radius:${Math.round(40 * k)}px">
+        <div class="phoneScreen" style="width:${sw}px;height:${sh}px">${html("iphone-portrait")}</div>
+        <div class="sbar" style="height:${Math.round(f.bottom * k)}px;padding-top:${Math.round(10 * k)}px;font-size:${(13 * k).toFixed(1)}px"><span class="url" style="border-radius:${Math.round(10 * k)}px;padding:${Math.round(7 * k)}px ${Math.round(40 * k)}px">dev.worldofcardgames.com</span></div>
+      </div></div>
+  </div>`;
+  pairEl.querySelector(".pairWin > .stage").style.transform = `translate(${-ox}px, ${-oy}px)`;
+  pairEl.querySelector(".phoneScreen > .stage").style.transform = `scale(${k})`;
+}
+
+function render() {
+  stopPlay();
+  const variant = V[state.v], s = state.play ? PLAY[state.vp === "pair" ? "desktop" : state.vp] : shot();
+  // the table, fitted to the window
+  const wrap = document.getElementById("stageWrap"), boxEl = document.getElementById("stageBox"), pairEl = document.getElementById("pair");
+  boxEl.hidden = state.vp === "pair"; pairEl.hidden = state.vp !== "pair";
+  if (state.vp === "pair") renderPair(variant, wrap, pairEl);
+  else {
+    boxEl.innerHTML = state.play ? playStageHtml(state.vp) : stageHtml(variant);
+    const k = Math.min((wrap.clientWidth - 32) / s.view[0], (wrap.clientHeight - 32) / s.view[1], s.compact ? 1.6 : 1);
+    const st = boxEl.firstChild; st.style.transform = `scale(${k})`;
+    boxEl.style.width = s.view[0] * k + "px"; boxEl.style.height = s.view[1] * k + "px";
+    boxEl.style.left = (wrap.clientWidth - s.view[0] * k) / 2 + "px"; boxEl.style.top = (wrap.clientHeight - s.view[1] * k) / 2 + "px";
+  }
+  // the close up, centred on the piles
+  const loupe = document.getElementById("loupe"), lvp = state.vp === "pair" ? "iphone-portrait" : state.vp, ls0 = state.play ? PLAY[lvp] : shot(lvp);
+  loupe.innerHTML = state.play ? playStageHtml(lvp) : stageHtml(variant, lvp);
+  const [cx, cy] = pilesCentre(ls0);
+  const xs = ls0.piles.flatMap((p) => [p.rect[0], p.rect[0] + p.rect[2]]), ys = ls0.piles.flatMap((p) => [p.rect[1], p.rect[1] + p.rect[3]]);
+  const span = Math.max(Math.max(...xs) - Math.min(...xs) + 120, (Math.max(...ys) - Math.min(...ys) + 80) * loupe.clientWidth / loupe.clientHeight);
+  const z = Math.min(4, loupe.clientWidth / span);
+  const ls = loupe.firstChild;
+  ls.style.transform = `translate(${loupe.clientWidth / 2 - cx * z}px, ${loupe.clientHeight / 2 - cy * z}px) scale(${z})`;
+  // the panel
+  document.getElementById("vCount").textContent = (state.v + 1) + " / " + V.length;
+  document.getElementById("vFamily").textContent = variant.family;
+  document.getElementById("vName").textContent = variant.name;
+  document.getElementById("vDesc").textContent = variant.desc;
+  document.getElementById("vPc").innerHTML = variant.pc.map(([k, t]) => `<li class="${k}">${t}</li>`).join("");
+  const seg = (id, items, cur, key) => { document.getElementById(id).innerHTML = items.map(([v, l]) => `<button data-${key}="${v}" class="${v === cur ? "on" : ""}">${l}</button>`).join(""); };
+  seg("scenes", SCENE_IDS.map((id) => [id, SCENES[id].label]), state.scene, "scene");
+  seg("vps", VPS, state.vp, "vp");
+  seg("counts", COUNTS, state.count, "count");
+  seg("badges", BADGES.map((b) => [b[0], b[1]]), state.badge, "badge");
+  document.getElementById("badgeGroup").style.display = variant.sizes ? "" : "none";
+  document.getElementById("ghostBtn").className = state.ghost ? "on" : "";
+  document.getElementById("allBtn").className = state.all ? "on" : "";
+  document.getElementById("playBtn").textContent = state.play === true ? "■ Stop" : state.play === "done" ? "▶ Play again" : "▶ Play the tabs";
+  document.getElementById("playBtn").className = state.play === true ? "on" : "";
+  document.getElementById("slowBtn").className = SLOW > 1 ? "on" : "";
+  document.getElementById("calmBtn").className = CALM ? "on" : "";
+  document.getElementById("strip").innerHTML = V.map((x, i) => `<button data-v="${i}" class="${i === state.v ? "on" : ""}"><b>${i + 1}</b>${x.name}</button>`).join("");
+  const on = document.querySelector("#strip button.on"); if (on) on.scrollIntoView({ block: "nearest", inline: "nearest" });
+  writeHash();
+  if (state.play === true) startPlay();
+}
+
+function go(d) { state.play = false; state.v = (state.v + d + V.length) % V.length; render(); }
+function togglePlay() { state.play = state.play === true ? false : true; render(); }
+document.getElementById("prev").onclick = () => go(-1);
+document.getElementById("next").onclick = () => go(1);
+document.getElementById("ghostBtn").onclick = () => { state.ghost = !state.ghost; render(); };
+document.getElementById("allBtn").onclick = () => { state.play = false; state.all = !state.all; useList(state.all); state.v = 0; render(); };
+document.getElementById("playBtn").onclick = togglePlay;
+document.getElementById("slowBtn").onclick = () => { SLOW = SLOW > 1 ? 1 : 4; if (state.play) state.play = true; render(); };
+document.getElementById("calmBtn").onclick = () => { CALM = !CALM; if (state.play) state.play = true; render(); };
+document.addEventListener("click", (e) => {
+  const b = e.target.closest("button"); if (!b) return;
+  if (b.dataset.scene) { state.play = false; state.scene = b.dataset.scene; render(); }
+  else if (b.dataset.vp) { state.vp = b.dataset.vp; render(); }
+  else if (b.dataset.count) { state.count = b.dataset.count; render(); }
+  else if (b.dataset.badge) { state.badge = b.dataset.badge; render(); }
+  else if (b.dataset.v) { state.play = false; state.v = +b.dataset.v; render(); }
+});
+document.addEventListener("keydown", (e) => {
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  if (e.key === "ArrowRight") { go(1); e.preventDefault(); }
+  else if (e.key === "ArrowLeft") { go(-1); e.preventDefault(); }
+  else if (e.key >= "1" && e.key <= String(VPS.length)) { state.vp = VPS[+e.key - 1][0]; render(); }
+  else if (e.key === "p" || e.key === "P") askPpi();
+  else if (e.key === "h" || e.key === "H") { document.body.classList.toggle("noPanel"); render(); }
+  else if (e.key === " ") { togglePlay(); e.preventDefault(); }
+  else if (e.key === "s" || e.key === "S") { state.play = false; state.scene = SCENE_IDS[(SCENE_IDS.indexOf(state.scene) + 1) % SCENE_IDS.length]; render(); }
+  else if (e.key === "c" || e.key === "C") { state.count = COUNTS[(COUNTS.findIndex((x) => x[0] === state.count) + 1) % COUNTS.length][0]; render(); }
+  else if (e.key === "g" || e.key === "G") { state.ghost = !state.ghost; render(); }
+});
+window.addEventListener("resize", render);
+document.fonts.ready.then(render);
+render();
+</script>
+</body>
+</html>
