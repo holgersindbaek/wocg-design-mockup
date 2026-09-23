@@ -5,12 +5,16 @@ The still avatars carry a faint border drawn into the SVG (v9, `zz-tmp-build-ava
 The emotion animations did not, so a win/think/lose swapped the border off for two seconds. This
 pass puts the same line into the animations, with no baked geometry, so it survives the movement.
 
-    usage: zz-tmp-build-avatar-lottie.py [--out=DIR] [--js] [--jobs=N] [--limit=N] [names...]
+    usage: zz-tmp-build-avatar-lottie.py [--out=DIR] [--js] [--jobs=N] [--limit=N] [--cover-only]
+                                         [names...]
 
     --out=DIR   folder under game-assets/ to write into (default avatars-lottie-v9)
     --js        also write the lab copies, game-assets/<out>/js/<Name>_<emo>.js, which assign
                 window.AB_LOTTIE["<Name>_<emo>"]; a lab opened from file:// cannot fetch JSON
     --jobs=N    worker processes (default 8)
+    --cover-only  build nothing; put the band masks' covers (`cover_band_masks`) into the files
+                already in <out>. The input is the app's own folder, which holds the bordered
+                files once they ship, so a full run from it would border them twice.
     names       avatar names (ManBusinessman) or file stems (ManBusinessman_win); default all
 
 THE MECHANISM
@@ -1365,7 +1369,10 @@ def mask_from(item, M, t, inv=False):
     line went missing. A subtract mask that is first in the list gets a white rect instead, and
     lottie carries that one with `getInverseMatrix()` of the layer's transform, so it really does
     cover the composition. Same picture where the shape happens to sit inside 0,0..w,h; correct
-    everywhere else.
+    everywhere else. That white rect has a cost of its own: on a frame where the layer's matrix is
+    singular (a scale key of 0, or a flip passing through 0), its inverse is NaN, which Chrome logs
+    as an error. `cover_band_masks` therefore puts an additive cover in front of the subtract mask,
+    so lottie draws no rect at all; see there.
 
     The group transforms are static everywhere in the set, so this is an exact change of frame,
     not a bake: an animated path keeps all its keyframes and the border morphs with it."""
@@ -1389,6 +1396,66 @@ def mask_from(item, M, t, inv=False):
         raise Unsupported(ty or "?")
     return {"inv": False, "mode": "s" if inv else "a", "pt": pt, "o": {"a": 0, "k": 100, "ix": 3},
             "x": {"a": 0, "k": 0, "ix": 4}, "nm": "ab-out" if inv else "ab-self"}
+
+def _mask_path_points(pt):
+    """every vertex and tangent end of a mask's path, over all its keyframes, in layer space"""
+    paths = []
+    if pt.get("a"):
+        for kf in pt["k"]:
+            for side in ("s", "e"):
+                if kf.get(side): paths.extend(kf[side])
+    else:
+        paths.append(pt["k"])
+    pts = []
+    for p in paths:
+        for j, v in enumerate(p["v"]):
+            pts.append(v)
+            for side in ("i", "o"):
+                d = p[side][j]
+                pts.append((v[0] + d[0], v[1] + d[1]))
+    return pts
+
+def cover_band_masks(doc):
+    """put an additive cover in front of every lone subtract mask; returns how many it covered.
+
+    A subtract mask that is first in the list makes lottie draw a white rect under it and place
+    that rect with the INVERSE of the layer's matrix, every frame. Where the matrix is singular,
+    the inverse is NaN and Chrome logs `<rect> attribute transform: Expected number`. 94 of the
+    473 files hit that: a scale key of exactly 0 on the band or on a parent (a pop-in), or a flip
+    whose scale passes through 0 on a whole frame (`OtherWhiteRose_win` at frame 81). Nothing
+    shows there, since the layer is flat on those frames, but the console fills with errors.
+
+    The rect also lagged: lottie moves it only when the layer's OWN transform changes
+    (`finalTransform.mProp._mdf`), not a parent's, so on a band whose parent moves it fell behind
+    and cut the band off (39 files lost line on some frames, e.g. the cuff in WomanSickGirl_think).
+
+    With an additive mask first, lottie draws no rect: the mask is this white rectangle minus the
+    shape, and it moves with the layer. Measured over every frame of the 446 files it changes: no
+    NaN left, 332 files pixel for pixel the same, 75 below the eye, 39 gaining the line the rect
+    had cut, none losing any. The rectangle is the shape's own box over all its keyframes, grown
+    by the box's longer side on every edge, in the layer's space like the shape. The band's
+    stroke sits on the shape's edge and is at most a fifth of the shape across, so the cover
+    reaches past everything the layer draws (the stroke's outer half passes the edge by at most a
+    fifth of the smallest shape stroked), and unlike the `inv` rect it is not pinned at 0,0.
+    Idempotent: a layer that already has its cover has two masks and is left alone."""
+    n = 0
+    for L in doc.get("layers", []):
+        mp = L.get("masksProperties") or []
+        if len(mp) != 1 or mp[0].get("mode") != "s": continue
+        pts = _mask_path_points(mp[0]["pt"])
+        if not pts: continue
+        xs = [p[0] for p in pts]; ys = [p[1] for p in pts]
+        x0, x1, y0, y1 = min(xs), max(xs), min(ys), max(ys)
+        grow = max(x1 - x0, y1 - y0, 1.0)
+        x0, x1, y0, y1 = (round(x0 - grow, 3), round(x1 + grow, 3),
+                          round(y0 - grow, 3), round(y1 + grow, 3))
+        rect = {"i": [[0, 0], [0, 0], [0, 0], [0, 0]], "o": [[0, 0], [0, 0], [0, 0], [0, 0]],
+                "v": [[x0, y0], [x1, y0], [x1, y1], [x0, y1]], "c": True}
+        cover = {"inv": False, "mode": "a", "pt": {"a": 0, "k": rect, "ix": 1},
+                 "o": {"a": 0, "k": 100, "ix": 3}, "x": {"a": 0, "k": 0, "ix": 4}, "nm": "ab-cover"}
+        L["masksProperties"] = [cover, mp[0]]
+        n += 1
+    return n
 
 def xform_path(p, M):
     return {"i": [mvec(M, x) for x in p["i"]], "o": [mvec(M, x) for x in p["o"]],
@@ -2736,8 +2803,11 @@ def validate(doc):
             errs.append("ind %s parent %s missing" % (x.get("ind"), x["parent"]))
         mp = x.get("masksProperties") or []
         if x.get("hasMask") and not mp: errs.append("ind %s hasMask with no mask" % x.get("ind"))
-        if len(mp) > 1:
+        covered = len(mp) == 2 and mp[0].get("nm") == "ab-cover" and mp[1]["mode"] == "s"
+        if len(mp) > 1 and not covered:
             errs.append("ind %s has more than one mask" % x.get("ind"))
+        if mp and mp[0]["mode"] == "s":
+            errs.append("ind %s has a subtract mask first, whose rect lottie inverts" % x.get("ind"))
         for m in mp:
             if m["mode"] not in ("a", "s"):
                 errs.append("ind %s mask mode %r" % (x.get("ind"), m["mode"]))
@@ -2781,6 +2851,8 @@ def run_one(args):
     if apply_start_stretch(doc, stem): moved = True
     audit, stats = border_file(doc, stem)
     if moved: stats["moved-onto-its-still"] = stats.get("moved-onto-its-still", 0) + 1
+    covered = cover_band_masks(doc)
+    if covered: stats["band-cover-mask"] = stats.get("band-cover-mask", 0) + covered
     errs = validate(doc)
     dst = os.path.join(out_dir, stem + ".json")
     json.dump(doc, open(dst, "w"), separators=(",", ":"))
@@ -2791,6 +2863,35 @@ def run_one(args):
         open(os.path.join(out_dir, "js-plain", stem + ".js"), "w").write(
             js_wrap(stem, slim(json.load(open(src))), "AB_LOTTIE_PLAIN"))
     return stem, dict(stats), errs, os.path.getsize(src), os.path.getsize(dst), audit
+
+
+def cover_only(names, want_js):
+    """`cover_band_masks` over the files already in OUT, and their lab copies with --js. The pass
+    reads the app's folder, which holds these bordered files once they ship, so a full run from it
+    would border them twice; this repairs the output in place instead."""
+    stems = sorted(f[:-5] for f in os.listdir(OUT) if f.endswith(".json") and f != "borders.json")
+    if names:
+        keep = set(names)
+        stems = [s for s in stems if s in keep or s.rsplit("_", 1)[0] in keep]
+    files = masks = 0
+    bad = []
+    for stem in stems:
+        dst = os.path.join(OUT, stem + ".json")
+        doc = json.load(open(dst))
+        n = cover_band_masks(doc)
+        if not n: continue
+        errs = validate(doc)
+        if errs: bad.append((stem, errs))
+        json.dump(doc, open(dst, "w"), separators=(",", ":"))
+        if want_js and os.path.isdir(os.path.join(OUT, "js")):
+            open(os.path.join(OUT, "js", stem + ".js"), "w").write(js_wrap(stem, slim(doc)))
+        files += 1; masks += n
+    print("covered %d band masks in %d of %d files" % (masks, files, len(stems)))
+    if bad:
+        print("STRUCTURE ERRORS in %d files" % len(bad))
+        for s, e in bad[:10]: print("  %s: %s" % (s, e[:3]))
+    else:
+        print("  structure                validated clean")
 
 
 def main(argv):
@@ -2804,6 +2905,9 @@ def main(argv):
         if a.startswith("--jobs="): jobs = int(a.split("=", 1)[1])
         if a.startswith("--limit="): limit = int(a.split("=", 1)[1])
     names = [a for a in args if not a.startswith("--")]
+    if "--cover-only" in args:
+        cover_only(names, want_js)
+        return
     stems = sorted(f[:-5] for f in os.listdir(LOT) if f.endswith(".json"))
     if names:
         keep = set(names)

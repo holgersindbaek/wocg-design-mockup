@@ -440,6 +440,38 @@ they then align with no shift left at all. The other two the measurement turns u
 and must not be: `OtherRose` (a shift explains only 44% of its difference) and `ManClown` (17%). Those
 are drawn differently, not placed differently.
 
+## 6c. The band's white rect: the errors it logged and the line it lost (23 Sep 2026)
+
+Found on the site, where the files shipped on 10 Sep: 94 of the 473 files made Chrome log
+`<rect> attribute transform: Expected number, "matrix(NaN,…)"`. The rect is lottie's, not ours. A
+subtract mask that is first on a layer (every band, `mask_from(..., inv=True)`) makes lottie draw a
+white rect the size of the comp under it and place it with the INVERSE of the layer's matrix. Where
+that matrix is singular the inverse is NaN: a scale key of exactly 0 on the band or on a parent (93
+files, the pop-ins), or a flip whose scale crosses 0 on a whole frame (`OtherWhiteRose_win`, frame
+81). Nothing showed on those frames, since the layer is flat there.
+
+The same rect was also costing line. lottie moves it only when the layer's OWN transform changes
+(`finalTransform.mProp._mdf`), not when a parent's does, so on a band whose parent moves the rect
+lags behind and cuts the band where it no longer reaches. `WomanSickGirl_think` lost the line round
+the raised hand and the cuff, `AnimalDogGeek_win` the lower edge of the mouth.
+
+The fix is `cover_band_masks`: an additive `ab-cover` mask goes in front of each lone subtract mask,
+the shape's own box over all its keyframes grown by its longer side on every edge, in layer space.
+lottie then draws no rect, so there is nothing to invert and nothing to lag: the mask is the cover
+minus the shape and moves with the layer. It runs on every build, and `--cover-only` applies it to
+the files already in `avatars-lottie-v9/` (the pass reads the app's folder, which holds the bordered
+files since they shipped, so a full run from it would border them twice). `validate` now allows
+exactly one pair, `ab-cover` then the subtract, and refuses a subtract mask that comes first.
+
+Checked through the site's own player (lottie_light), every frame of the 446 files it changed, old
+file against new at 200 px: NaN writes 455 in 94 files before, **0** after. 332 files are pixel for
+pixel the same. 75 differ below the eye (no pixel moves more than 12 levels at 400 px). 39 gain line (up to 837 px on
+one 400 px frame) and **none loses any**. For the four that gain most, the old file rendered fresh
+at each frame (so its rect is placed for that frame) matches the new file with 0 differing frames:
+the whole gain is the lagging rect. The harness was `/tmp/cover-test/` (`verify.html`, `run2.mjs`,
+`signed.html`, `proof.mjs`); a control that drops the band masks moves 440 px, so the renders do
+see the masks.
+
 ## 7. What was checked, and what is still open
 
 The first build was audited against the stills: 8,987 renders, a numeric screen over all 473 files,
@@ -505,8 +537,11 @@ bezier segment and `AB_TRIM_MIN=0.004` the shortest stretch worth a group.
 
 Add names to do one avatar (`ManBusinessman`) or one file (`ManBusinessman_win`). `--js` also writes
 the lab copies. It validates every file it writes: unique inds, no layer with both `tt` and `td`,
-every `tt` with a `tp` that resolves to a matte source, every parent resolving, one mask per layer,
-and no mask using lottie's `inv`.
+every `tt` with a `tp` that resolves to a matte source, every parent resolving, one mask per layer
+(or a band's `ab-cover` then its subtract mask), no subtract mask first, and no mask using lottie's
+`inv`. `--cover-only` puts the band covers into the files already in the output folder and builds
+nothing else; see 6c. Do not run the full pass again from the app's folder once the bordered files
+are in it: it reads its input there and would border them a second time.
 
 The verification harness is not in this repo, it is under `/tmp/ablottie/`:
 `render.py` (one frame through the site's own player), `compare.py` (two animations side by side with
