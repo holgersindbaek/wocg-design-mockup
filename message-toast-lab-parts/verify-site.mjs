@@ -165,8 +165,9 @@ const SCENARIOS = {
     Y.fire("Notice:show", { message: "Connecting to server, please wait...", duration: 60000 });
     await sleep(600);
     const b = r(boxEl()), t = r(toastEl());
-    const out = { red: boxEl().classList.contains("resync"), gap: Math.round((t.y - b.b) * 10) / 10, boxBg: getComputedStyle(boxEl()).backgroundColor, toastBg: getComputedStyle(toastEl()).backgroundColor };
-    out.pass = out.red && Math.abs(out.gap - 8) <= 1 && out.boxBg !== out.toastBg;
+    // Since 23 Sep 2026 the alert keeps the notice's paper and says itself in red (--btn-danger)
+    const out = { red: boxEl().classList.contains("resync"), gap: Math.round((t.y - b.b) * 10) / 10, boxBg: getComputedStyle(boxEl()).backgroundColor, toastBg: getComputedStyle(toastEl()).backgroundColor, ink: getComputedStyle(boxEl()).color };
+    out.pass = out.red && Math.abs(out.gap - 8) <= 1 && out.boxBg === out.toastBg && out.ink === "rgb(201, 42, 42)";
     return out;
   `,
   // Reduced motion or Animations Off: a fade, nothing travels
