@@ -173,7 +173,9 @@
         row.appendChild(art);
         var meta = el('div', 'tkmeta');
         var name = item.name || item.value, code = handle(item, kind);
-        meta.appendChild(el('span', 'tkname', name));
+        var nameEl = el('span', 'tkname', name);
+        if (item.proposal) nameEl.appendChild(el('span', 'tkprop', 'proposal'));   // a value the site does not ship yet
+        meta.appendChild(nameEl);
         if (code && code !== name) meta.appendChild(el('code', 'tkval', code));   // a gap's name is its value
         meta.appendChild(el('span', 'tkuse', item.use));
         row.appendChild(meta);

@@ -1,0 +1,2944 @@
+{
+  "generated": "2026-09-23T10:27:31.495Z",
+  "repo": "/Users/holgersindbaek/CloudDrive/HolgerSindbaek/WorldOfCardGames/Programming/wocg/worldofcardgames",
+  "branch": "lobby-build (working tree)",
+  "tokens": {
+    "ink": "#141414",
+    "inkLabel": "#4e4d4c",
+    "inkQuiet": "#67635c",
+    "inkMark": "#9b9997",
+    "line": "#d2cfca",
+    "lineSoft": "#ebe7de",
+    "lineTray": "#c9c0ae",
+    "paperPage": "#f9f6f2",
+    "paperBand": "#f4eee5",
+    "paperCard": "#ffffff",
+    "plateTray": "#e4ddd0",
+    "btnGreen": "#43a038",
+    "btnGreenRing": "#347d2c",
+    "btnGreenHover": "#3e9334",
+    "btnQuiet": "#d2cfca",
+    "btnQuietRing": "#bfb5a1",
+    "btnQuietHover": "#d1c8b8",
+    "btnQuietDark": "#5e574b",
+    "btnQuietDarkRing": "#484136",
+    "btnQuietDarkHover": "#554e42",
+    "plateGreen": "#b2dd9b",
+    "plateGreenInk": "#305812",
+    "plateRed": "#fcbcb4",
+    "team2Ink": "#8b1a1a",
+    "plateBlueRing": "#83b5ef",
+    "plateBlueInk": "#1971c2",
+    "starFill": "#f5b81e",
+    "starStroke": "#ef7f27",
+    "felt": "#327333",
+    "feltLine": "#393939",
+    "textPrimary": "#212529",
+    "textSecondary": "#343A40",
+    "textMuted": "#868E96",
+    "textSubtle": "#495057",
+    "textLink": "#1665AD",
+    "textSuccess": "#4F800B",
+    "textWarning": "#C96800",
+    "textErrorStrong": "#C92A2A",
+    "bgBase": "#f8f9fa",
+    "bgElevated": "#E9ECEF",
+    "bgElevatedDark": "#DEE2E6",
+    "bgInfo": "#A5D8FF",
+    "bgSuccess": "#C0EB75",
+    "bgWarning": "#FFE066",
+    "bgDangerLight": "#FFA8A8",
+    "borderLight": "#ADB5BD",
+    "borderDefault": "#CED4DA",
+    "borderStrongLegacy": "#343A40",
+    "actionInfoBorder": "#63B4F2",
+    "actionInfoText": "#1971C2",
+    "actionSuccess": "#66A80F",
+    "actionSuccessActive": "#5C940D",
+    "actionSuccessLight": "#A9E34B",
+    "actionSuccessHover": "#74B816",
+    "timerRing": "#F4BD45",
+    "timerDanger": "#F67A7A",
+    "suitRed": "#EB1B28",
+    "suitBlack": "#000000"
+  },
+  "icons": [
+    {
+      "id": "modalCloseCross",
+      "kind": "icon",
+      "svg": "<svg viewBox=\"0 0 16 16\" width=\"20\" height=\"20\" aria-hidden=\"true\"><path d=\"M3 3l10 10M13 3L3 13\" stroke=\"rgba(0,0,0,.30)\" stroke-width=\"4.4\" stroke-linecap=\"round\" fill=\"none\"/><path d=\"M3 3l10 10M13 3L3 13\" stroke=\"#ffffff\" stroke-width=\"2.2\" stroke-linecap=\"round\" fill=\"none\"/></svg>",
+      "colours": [
+        {
+          "part": "top stroke, 2.2 wide",
+          "value": "#ffffff",
+          "token": "white (literal; same as --btn-ink)",
+          "source": "inline attribute, static/js/wocg/ModalShell.js:35"
+        },
+        {
+          "part": "under stroke, 4.4 wide (the outline)",
+          "value": "rgba(0,0,0,.30)",
+          "token": "the overlay ring's black 30% as a literal (--ring-overlay is 0 0 0 1px rgba(0,0,0,.30))",
+          "source": "inline attribute, static/js/wocg/ModalShell.js:34"
+        }
+      ],
+      "colourMode": "hardcoded in the markup; CSS sets no fill or stroke",
+      "uses": [
+        {
+          "where": {
+            "markup": [
+              "static/js/wocg/ModalShell.js:32-36 (CROSS), appended at :532-539 to every ModalShell dialog that is not nonDismissible",
+              "web/dust/common/auth_modals.dust:90 (#loginModal)",
+              "web/dust/common/auth_modals.dust:104 (#registerModal)",
+              "web/dust/common/password_modals.dust:36 (#forgotPasswordModal)",
+              "web/dust/common/profile_box.dust:89 (#profileBox, settings)"
+            ],
+            "css": [
+              "static/scss/Modals.scss:214-229 (desk: top 0, right -32px, 20px glyph, 6px padding)",
+              "static/scss/Modals.scss:807-810 (phone <=560px: top -32px, right 0, above the box's corner)",
+              "static/scss/Modals.scss:51-57 + _wm-tokens.scss:22-23 (the scrim behind it)"
+            ]
+          },
+          "ui": "The close cross of every dialog (confirm, input, error, block reason, legal consent, game options, table preview, invite players, player profile, stats, daily deal, sign in / sign up, account recovery, settings). It stands outside the box's top right corner; on a phone it stands above that corner. No chip and no button shape.",
+          "ground": {
+            "desc": "The scrim, not the box: --scrim rgba(0,0,0,.48) with blur(4px) over whatever page is behind",
+            "token": "--scrim",
+            "hex": "rgba(0,0,0,.48)",
+            "resolvedApprox": {
+              "overPaperPage": "#81807e",
+              "overPaperBand": "#7f7c77",
+              "overFelt": "#1a3c1b"
+            },
+            "rule": "static/scss/Modals.scss:51-57"
+          },
+          "size": "20x20 glyph (viewBox 16, strokes 2.2 over 4.4), 32x32 target with the 6px padding",
+          "states": [
+            {
+              "state": "hover / active / focus",
+              "note": "No rule changes the cross. cursor: pointer only (Modals.scss:223)."
+            }
+          ],
+          "flag": "both",
+          "flagNote": "The dialogs are shared at flag-off (FLAG-OFF-PARITY.md D1, D2)."
+        }
+      ],
+      "files": [
+        "modalCloseCross.svg"
+      ]
+    },
+    {
+      "id": "rowInfoI",
+      "kind": "icon",
+      "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'><circle cx='28.5' cy='14.5' r='4.6' fill='#4e4d4c'/><path fill='#4e4d4c' d='M23.5 24H33.5V43H36.5A3 3 0 0 1 36.5 49H21.5A3 3 0 0 1 21.5 43H26.5V30H23.5A3 3 0 0 1 23.5 24Z'/></svg>",
+      "colours": [
+        {
+          "part": "i (dot and stem), closed",
+          "value": "#4e4d4c",
+          "token": "--ink-label, written out (a data URL cannot read a token; Modals.scss:697-698)",
+          "source": "static/scss/Modals.scss:699"
+        },
+        {
+          "part": "i (dot and stem), tip open",
+          "value": "#ffffff",
+          "token": "white",
+          "source": "static/scss/Modals.scss:700 ($wm-info-i-open)"
+        }
+      ],
+      "colourMode": "hardcoded in two data URIs (closed and open); the disc behind is CSS",
+      "variants": [
+        {
+          "name": "open",
+          "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'><circle cx='28.5' cy='14.5' r='4.6' fill='#fff'/><path fill='#fff' d='M23.5 24H33.5V43H36.5A3 3 0 0 1 36.5 49H21.5A3 3 0 0 1 21.5 43H26.5V30H23.5A3 3 0 0 1 23.5 24Z'/></svg>"
+        }
+      ],
+      "uses": [
+        {
+          "where": {
+            "markup": [
+              "static/js/wocg/ModalShell.js:318-335 (explainRow: span.wmRowInfo, a word joiner as its only text)",
+              "callers: static/js/wocg/ProfileBox.js (settings rows), static/js/ModalGameOptions.js (table options rows)"
+            ],
+            "css": [
+              "static/scss/Modals.scss:699-700 (art)",
+              "static/scss/Modals.scss:702-789 (shown only at max-width 560px; disc, states, 32px target)"
+            ]
+          },
+          "ui": "The small round i after a settings or table-options row title on a phone. A tap opens the row's explainer line in the tooltip.",
+          "ground": {
+            "desc": "Its own 16px disc: --paper-band with an inset 1px --line ring; the disc sits on the white row card",
+            "token": "--paper-band (disc) on --paper-card (card)",
+            "hex": "#f4eee5 disc, ring #d2cfca, on #ffffff",
+            "rule": "static/scss/Modals.scss:745-757; card Modals.scss:434-440"
+          },
+          "size": "16x16 disc, the i drawn at 100% of it (viewBox 60); 32x32 invisible target",
+          "states": [
+            {
+              "state": "hover (pointer devices)",
+              "icon": "#4e4d4c",
+              "ground": "#d2cfca (--line)",
+              "rule": "static/scss/Modals.scss:787-789"
+            },
+            {
+              "state": "open (aria-expanded=true)",
+              "icon": "#ffffff ($wm-info-i-open)",
+              "ground": "#5e574b (--btn-quiet-dark), ring #484136 (--btn-quiet-dark-ring)",
+              "rule": "static/scss/Modals.scss:759-762"
+            },
+            {
+              "state": "focus-visible",
+              "icon": "unchanged",
+              "ground": "adds a 1px ring in --ink-mark #9b9997 at radius 11.5-12 of the 32px target",
+              "rule": "static/scss/Modals.scss:776-778"
+            }
+          ],
+          "flag": "both",
+          "flagNote": "Dialogs are shared; the icon draws only at max-width 560px (phones in portrait)."
+        }
+      ],
+      "files": [
+        "rowInfoI.svg",
+        "rowInfoI--open.svg"
+      ]
+    },
+    {
+      "id": "checkTick",
+      "kind": "icon",
+      "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M4.5 12.5l5 5 10-11' fill='none' stroke='#347d2c' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/><path d='M4.5 12.5l5 5 10-11' fill='none' stroke='#fff' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'/></svg>",
+      "colours": [
+        {
+          "part": "under stroke, 6 wide (the outline)",
+          "value": "#347d2c",
+          "token": "--btn-green-ring (color-mix(in srgb, #43a038 78%, black) = #347d2c), baked as %23347d2c",
+          "source": "static/scss/_wm-settings.scss:372"
+        },
+        {
+          "part": "top stroke, 3.4 wide",
+          "value": "#ffffff",
+          "token": "white",
+          "source": "static/scss/_wm-settings.scss:372"
+        }
+      ],
+      "colourMode": "Settings pick mark: hardcoded in a data URI. Game options checkbox: the same two paths inline with no attributes; CSS strokes them (#fff over var(--btn-green-ring)).",
+      "uses": [
+        {
+          "where": {
+            "markup": [
+              "static/js/wocg/MenuBar.js:465 (<i class=\"wmPickMark\"> on the picked tile)"
+            ],
+            "css": [
+              "static/scss/_wm-settings.scss:363-378 (the mark)",
+              "static/scss/_wm-settings.scss:212-221 (--wm-mark-size 20px, --wm-mark-in 8px, --wm-mark-line 1px)",
+              "static/scss/_wm-settings.scss:389-421 (arrival animation and placement per picker)"
+            ]
+          },
+          "ui": "The 'this one is yours' mark in the top right corner of the picked tile in Settings > Design: avatar, wallpaper, card front and card back pickers.",
+          "ground": {
+            "desc": "Its own disc: --btn-green, squircle, with a 1px rgba(0,0,0,.64) outer line and a small lift; the disc sits over the tile art (the avatar's --paper-band square, a wallpaper photo, or a card face)",
+            "token": "--btn-green",
+            "hex": "#43a038",
+            "rule": "static/scss/_wm-settings.scss:371-377"
+          },
+          "size": "20px disc; tick at 82% (about 16.4px, viewBox 24)",
+          "states": [
+            {
+              "state": "arrives",
+              "note": "scale .4 to 1 and fade in over 260ms (wmMarkIn) when the pick changes under the pointer",
+              "rule": "static/scss/_wm-settings.scss:389-400"
+            }
+          ],
+          "flag": "both",
+          "flagNote": "Settings are shared (FLAG-OFF-PARITY.md D2)."
+        },
+        {
+          "svg": "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M4.5 12.5l5 5 10-11\"/><path d=\"M4.5 12.5l5 5 10-11\"/></svg>",
+          "where": {
+            "markup": [
+              "static/js/ModalGameOptions.js:206-216 (buildChip), svg at :214"
+            ],
+            "css": [
+              "static/scss/_wm-dialogs.scss:144-238"
+            ]
+          },
+          "ui": "The seat-count checkboxes (2, 3, 4 ... players) in the table options dialog. The tick draws itself in when a box is picked.",
+          "colours": {
+            "top": "#ffffff (stroke, _wm-dialogs.scss:197, 3.4 wide)",
+            "under": "var(--btn-green-ring) #347d2c (stroke, _wm-dialogs.scss:206-209, 6 wide)"
+          },
+          "ground": {
+            "desc": "The 24px checkbox square on the white options card",
+            "token": "picked: --btn-green; rest: --paper-page",
+            "hex": "picked #43a038 ring #347d2c; rest #f9f6f2 ring #d2cfca; the card around it #ffffff",
+            "rule": "static/scss/_wm-dialogs.scss:164-175, 211-215"
+          },
+          "size": "20x20 inside a 24x24 box (inset 2px)",
+          "states": [
+            {
+              "state": "unpicked",
+              "icon": "hidden (opacity 0, scale .4)",
+              "ground": "#f9f6f2 (--paper-page), ring --line",
+              "rule": "static/scss/_wm-dialogs.scss:184-193"
+            },
+            {
+              "state": "picked",
+              "icon": "white over #347d2c",
+              "ground": "#43a038 (--btn-green), ring --btn-green-ring",
+              "rule": "static/scss/_wm-dialogs.scss:211-226"
+            },
+            {
+              "state": "focus-visible",
+              "ground": "ring becomes --ink-mark #9b9997",
+              "rule": "static/scss/_wm-dialogs.scss:179"
+            },
+            {
+              "state": "pressed",
+              "note": "box scales to .9",
+              "rule": "static/scss/_wm-dialogs.scss:177"
+            },
+            {
+              "state": "disabled (.wmOff)",
+              "note": "whole checkbox at opacity .45",
+              "rule": "static/scss/_wm-dialogs.scss:234-238"
+            }
+          ],
+          "flag": "both",
+          "flagNote": "The table options dialog is shared (D1)."
+        }
+      ],
+      "files": [
+        "checkTick.svg",
+        "checkTick--gameOptions.svg"
+      ]
+    },
+    {
+      "id": "rowChevron",
+      "kind": "icon",
+      "svg": "<svg class=\"wmChev\" viewBox=\"0 0 8 12\" width=\"8\" height=\"12\" aria-hidden=\"true\"><path d=\"M1.5 1l5 5-5 5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\"/></svg>",
+      "colours": [
+        {
+          "part": "stroke",
+          "value": "currentColor",
+          "resolves": [
+            {
+              "context": "both flags",
+              "token": "--ink-label",
+              "hex": "#4e4d4c",
+              "rule": "static/scss/_wm-settings.scss:119-124 (color: var(--ink-label))"
+            }
+          ]
+        }
+      ],
+      "colourMode": "currentColor",
+      "uses": [
+        {
+          "where": {
+            "markup": [
+              "static/js/wocg/ProfileBox.js:981-983 (chevron())",
+              "static/js/wocg/ProfileBox.js:709 (Account page: Raptive's privacy links as rows)",
+              "static/js/wocg/ProfileBox.js:1473-1480 (Game page: Blocked, Liked and Muted players rows)"
+            ],
+            "css": [
+              "static/scss/_wm-settings.scss:108-124"
+            ]
+          },
+          "ui": "The right-pointing chevron at the end of a settings row that opens something (a list of players, a privacy link).",
+          "ground": {
+            "desc": "The white row card",
+            "token": "--paper-card",
+            "hex": "#ffffff",
+            "rule": "static/scss/Modals.scss:434-440"
+          },
+          "size": "8x12 (viewBox 8x12, stroke 1.8)",
+          "states": [
+            {
+              "state": "hover",
+              "note": "No colour change; the whole row takes the pointer (cursor: pointer). A row waiting on the server (.wmOff) ignores clicks.",
+              "rule": "static/scss/_wm-settings.scss:110-117"
+            }
+          ],
+          "flag": "both"
+        }
+      ],
+      "files": [
+        "rowChevron.svg"
+      ]
+    },
+    {
+      "id": "star",
+      "kind": "icon",
+      "svg": "<svg class=\"gameRatingStarSvg\" height=\"32\" viewBox=\"0 0 32 32\" width=\"32\" xmlns=\"http://www.w3.org/2000/svg\"><path class=\"gameRatingStarFullPath\" d=\"m14.6848065 1.81345455c.7265464-.36677471 1.5310878-.40054444 2.2445203-.15863739.7135085.24193286 1.3358593.75960191 1.6979679 1.49551452l3.2067887 6.53222408 7.1492041 1.04475574c.5553088.0833404 1.0632813.3225337 1.4756159.6761403.4124457.3537019.7291513.8218946.9018423 1.3627347.1700218.539671.1815241 1.1048281.0499466 1.6334469-.1315614.5285535-.406151 1.0205976-.8085115 1.4141752l-5.1632041 5.0679653 1.2266966 7.1634228c.1099124.6448858.0070565 1.3084873-.2926725 1.8882313-.3766255.7284685-1.009092 1.2333691-1.7272193 1.4607647-.7180673.2273766-1.521771.1772902-2.2409291-.2041661l-6.4057572-3.395994-6.39985639 3.3880117c-.57077064.3025393-1.22384958.406806-1.85882366.2967593-.8002028-.1386757-1.46913822-.5927703-1.90380581-1.2148031-.43474411-.6221423-.63511485-1.4122789-.49819879-2.2227923l1.22078171-7.1614349-5.16323312-5.065996c-.40488213-.3949273-.68008418-.8899184-.81005947-1.4213474-.1299833-.5314617-.11471841-1.099367.06133283-1.6400657.17518614-.5373892.49230418-1.0019092.90378429-1.3529587.41152537-.3510882.91744572-.5886143 1.46971521-.6720862l7.1472991-1.04676352 3.1969205-6.5302118c.2849065-.57901179.7482109-1.04831048 1.3198549-1.33688943z\" fill-rule=\"evenodd\" transform=\"matrix(-1 0 0 1 32 0)\"></path></svg>",
+      "colours": [
+        {
+          "part": "fill and stroke",
+          "value": "set by CSS on the path class (no attributes in the art)",
+          "resolves": "see each use"
+        }
+      ],
+      "colourMode": "CSS on .gameRatingStarEmptyPath / .gameRatingStarFullPath / .canastaCompleteStarPath",
+      "artNote": "One star path (mirrored by matrix(-1 0 0 1 32 0), fill-rule evenodd) in three places. The rating star draws two layers: the empty star, and the full star inside a span clipped to 100% or 50% for a half star. Stroke width is the SVG default 1 (0.75px at 24px).",
+      "uses": [
+        {
+          "svg": "<svg class=\"gameRatingStarSymbols\" height=\"0\" width=\"0\" aria-hidden=\"true\" focusable=\"false\" xmlns=\"http://www.w3.org/2000/svg\">\n      <symbol id=\"gameRatingStarFallbackShape\" viewBox=\"0 0 32 32\">\n        <path d=\"m14.6848065 1.81345455c.7265464-.36677471 1.5310878-.40054444 2.2445203-.15863739.7135085.24193286 1.3358593.75960191 1.6979679 1.49551452l3.2067887 6.53222408 7.1492041 1.04475574c.5553088.0833404 1.0632813.3225337 1.4756159.6761403.4124457.3537019.7291513.8218946.9018423 1.3627347.1700218.539671.1815241 1.1048281.0499466 1.6334469-.1315614.5285535-.406151 1.0205976-.8085115 1.4141752l-5.1632041 5.0679653 1.2266966 7.1634228c.1099124.6448858.0070565 1.3084873-.2926725 1.8882313-.3766255.7284685-1.009092 1.2333691-1.7272193 1.4607647-.7180673.2273766-1.521771.1772902-2.2409291-.2041661l-6.4057572-3.395994-6.39985639 3.3880117c-.57077064.3025393-1.22384958.406806-1.85882366.2967593-.8002028-.1386757-1.46913822-.5927703-1.90380581-1.2148031-.43474411-.6221423-.63511485-1.4122789-.49819879-2.2227923l1.22078171-7.1614349-5.16323312-5.065996c-.40488213-.3949273-.68008418-.8899184-.81005947-1.4213474-.1299833-.5314617-.11471841-1.099367.06133283-1.6400657.17518614-.5373892.49230418-1.0019092.90378429-1.3529587.41152537-.3510882.91744572-.5886143 1.46971521-.6720862l7.1472991-1.04676352 3.1969205-6.5302118c.2849065-.57901179.7482109-1.04831048 1.3198549-1.33688943z\" transform=\"matrix(-1 0 0 1 32 0)\"></path>\n      </symbol>\n    </svg> + per button: <svg class=\"gameRatingStarSvg\" height=\"32\" viewBox=\"0 0 32 32\" width=\"32\" xmlns=\"http://www.w3.org/2000/svg\"><use class=\"gameRatingStarEmptyPath\" href=\"#gameRatingStarFallbackShape\"></use></svg><svg class=\"gameRatingStarSvg\" height=\"32\" viewBox=\"0 0 32 32\" width=\"32\" xmlns=\"http://www.w3.org/2000/svg\"><use class=\"gameRatingStarFullPath\" href=\"#gameRatingStarFallbackShape\"></use></svg>",
+          "where": {
+            "markup": [
+              "web/dust/common/game_rating_summary.dust:4-13 (one <symbol> and five <use>)",
+              "included by web/dust/game-descriptions/<game>.dust:5 on all 18 game pages",
+              "static/js/wocg/GameRating.js:134-160, 211, 246 (re-rendered with starHTML when the rating loads)"
+            ],
+            "css": [
+              "static/scss/GameRating.scss:52-152",
+              "static/scss/_wm-band.scss:189-205 (redesign colours)",
+              "static/scss/_wm-band.scss:155-187 (token bridge for the ground and the focus ring)"
+            ]
+          },
+          "ui": "The five rating stars in the rating callout on each game page's band ('Rated 4.5 by 1,234 players'). Hover previews a rating; click rates.",
+          "colours": {
+            "flagOn": {
+              "emptyFill": "#d2cfca (--line)",
+              "emptyStroke": "#9b9997 (--ink-mark)",
+              "fullFill": "#f5b81e (--star-fill)",
+              "fullStroke": "#ef7f27 (--star-stroke)",
+              "rule": "static/scss/_wm-band.scss:197-205"
+            },
+            "flagOff": {
+              "emptyFill": "#CED4DA",
+              "emptyStroke": "#868E96",
+              "fullFill": "#FCC419",
+              "fullStroke": "#DD7200",
+              "rule": "static/scss/GameRating.scss:66-74 (literal hex, Open Color gray 4/6, yellow 5, orange-ish #DD7200)"
+            }
+          },
+          "ground": {
+            "desc": "The rating callout",
+            "token": "--color-bg-elevated, bridged to --paper-band under body.wm .helpBox",
+            "hex": "flag-on #f4eee5; flag-off #E9ECEF",
+            "rule": "static/scss/GameRating.scss:3-15; static/scss/_wm-band.scss:163"
+          },
+          "size": "24x24 star in a 32x32 button (padding 0 2px)",
+          "states": [
+            {
+              "state": "hover (pointer)",
+              "note": "stars up to the pointer show the full layer",
+              "rule": "static/scss/GameRating.scss:94-127"
+            },
+            {
+              "state": "active / half",
+              "note": ".active shows the full star; .half clips it to 50% width",
+              "rule": "static/scss/GameRating.scss:86-107"
+            },
+            {
+              "state": "focus-visible",
+              "note": "2px outline in --color-action-info-border: flag-on --plate-blue-ring #83b5ef (bridge), flag-off #63B4F2",
+              "rule": "static/scss/GameRating.scss:148-151; static/scss/_wm-band.scss:185"
+            }
+          ],
+          "flag": "both",
+          "flagNote": "Warm colours only under body.wm .helpBox; flag-off keeps the cold pair."
+        },
+        {
+          "svg": "<span class=\"gameRatingStar\" aria-hidden=\"true\"><svg class=\"gameRatingStarSvg\" height=\"32\" viewBox=\"0 0 32 32\" width=\"32\" xmlns=\"http://www.w3.org/2000/svg\"><path class=\"gameRatingStarEmptyPath\" d=\"m14.6848065 1.81345455c.7265464-.36677471 1.5310878-.40054444 2.2445203-.15863739.7135085.24193286 1.3358593.75960191 1.6979679 1.49551452l3.2067887 6.53222408 7.1492041 1.04475574c.5553088.0833404 1.0632813.3225337 1.4756159.6761403.4124457.3537019.7291513.8218946.9018423 1.3627347.1700218.539671.1815241 1.1048281.0499466 1.6334469-.1315614.5285535-.406151 1.0205976-.8085115 1.4141752l-5.1632041 5.0679653 1.2266966 7.1634228c.1099124.6448858.0070565 1.3084873-.2926725 1.8882313-.3766255.7284685-1.009092 1.2333691-1.7272193 1.4607647-.7180673.2273766-1.521771.1772902-2.2409291-.2041661l-6.4057572-3.395994-6.39985639 3.3880117c-.57077064.3025393-1.22384958.406806-1.85882366.2967593-.8002028-.1386757-1.46913822-.5927703-1.90380581-1.2148031-.43474411-.6221423-.63511485-1.4122789-.49819879-2.2227923l1.22078171-7.1614349-5.16323312-5.065996c-.40488213-.3949273-.68008418-.8899184-.81005947-1.4213474-.1299833-.5314617-.11471841-1.099367.06133283-1.6400657.17518614-.5373892.49230418-1.0019092.90378429-1.3529587.41152537-.3510882.91744572-.5886143 1.46971521-.6720862l7.1472991-1.04676352 3.1969205-6.5302118c.2849065-.57901179.7482109-1.04831048 1.3198549-1.33688943z\" fill-rule=\"evenodd\" transform=\"matrix(-1 0 0 1 32 0)\"></path></svg><span class=\"gameRatingStarFill\"><svg class=\"gameRatingStarSvg\" height=\"32\" viewBox=\"0 0 32 32\" width=\"32\" xmlns=\"http://www.w3.org/2000/svg\"><path class=\"gameRatingStarFullPath\" d=\"m14.6848065 1.81345455c.7265464-.36677471 1.5310878-.40054444 2.2445203-.15863739.7135085.24193286 1.3358593.75960191 1.6979679 1.49551452l3.2067887 6.53222408 7.1492041 1.04475574c.5553088.0833404 1.0632813.3225337 1.4756159.6761403.4124457.3537019.7291513.8218946.9018423 1.3627347.1700218.539671.1815241 1.1048281.0499466 1.6334469-.1315614.5285535-.406151 1.0205976-.8085115 1.4141752l-5.1632041 5.0679653 1.2266966 7.1634228c.1099124.6448858.0070565 1.3084873-.2926725 1.8882313-.3766255.7284685-1.009092 1.2333691-1.7272193 1.4607647-.7180673.2273766-1.521771.1772902-2.2409291-.2041661l-6.4057572-3.395994-6.39985639 3.3880117c-.57077064.3025393-1.22384958.406806-1.85882366.2967593-.8002028-.1386757-1.46913822-.5927703-1.90380581-1.2148031-.43474411-.6221423-.63511485-1.4122789-.49819879-2.2227923l1.22078171-7.1614349-5.16323312-5.065996c-.40488213-.3949273-.68008418-.8899184-.81005947-1.4213474-.1299833-.5314617-.11471841-1.099367.06133283-1.6400657.17518614-.5373892.49230418-1.0019092.90378429-1.3529587.41152537-.3510882.91744572-.5886143 1.46971521-.6720862l7.1472991-1.04676352 3.1969205-6.5302118c.2849065-.57901179.7482109-1.04831048 1.3198549-1.33688943z\" fill-rule=\"evenodd\" transform=\"matrix(-1 0 0 1 32 0)\"></path></svg></span></span>",
+          "where": {
+            "markup": [
+              "static/js/wocg/GameRating.js:26 (STAR_PATH), :107-112 (starHTML), :146 (button)",
+              "static/js/wocg/GameRating.js:445-458 (redesign game over prompt row)",
+              "static/js/wocg/GameRating.js:502-513 (classic prompt, flag-off)"
+            ],
+            "css": [
+              "static/scss/GameRating.scss:52-152 (no redesign override reaches it)",
+              "static/scss/GameRating.scss:154-196 (the prompt card)",
+              "static/scss/pieces.scss:1996-2016 (--go-* panel tokens)"
+            ]
+          },
+          "ui": "The five rating stars in the game over panel's 'Rate <game>' prompt, after the player answers 'Good'.",
+          "colours": {
+            "bothFlags": {
+              "emptyFill": "#CED4DA",
+              "emptyStroke": "#868E96",
+              "fullFill": "#FCC419",
+              "fullStroke": "#DD7200",
+              "rule": "static/scss/GameRating.scss:66-74"
+            },
+            "note": "The band's warm override (_wm-band.scss:197-205) is scoped to .helpBox and never reaches the prompt. DESIGN-COLOUR.md open question 23."
+          },
+          "ground": {
+            "desc": "flag-on: the prompt's white card inside the game over panel; flag-off: the classic prompt surface",
+            "token": "--go-card (= --paper-card) / --color-bg-base",
+            "hex": "flag-on #ffffff; flag-off #f8f9fa",
+            "rule": "static/scss/GameRating.scss:158-162; flag-off static/scss/GameRating.scss:373-376"
+          },
+          "size": "24x24 star in a 32x32 button",
+          "states": [
+            {
+              "state": "hover / active / half / focus",
+              "note": "as the band stars; focus outline #63B4F2 at both flags (no bridge at the table)"
+            }
+          ],
+          "flag": "both"
+        },
+        {
+          "svg": "<svg class=\"canastaCompleteStar\" viewBox=\"0 0 32 32\" aria-hidden=\"true\" focusable=\"false\"><path class=\"canastaCompleteStarPath\" d=\"m14.6848065 1.81345455c.7265464-.36677471 1.5310878-.40054444 2.2445203-.15863739.7135085.24193286 1.3358593.75960191 1.6979679 1.49551452l3.2067887 6.53222408 7.1492041 1.04475574c.5553088.0833404 1.0632813.3225337 1.4756159.6761403.4124457.3537019.7291513.8218946.9018423 1.3627347.1700218.539671.1815241 1.1048281.0499466 1.6334469-.1315614.5285535-.406151 1.0205976-.8085115 1.4141752l-5.1632041 5.0679653 1.2266966 7.1634228c.1099124.6448858.0070565 1.3084873-.2926725 1.8882313-.3766255.7284685-1.009092 1.2333691-1.7272193 1.4607647-.7180673.2273766-1.521771.1772902-2.2409291-.2041661l-6.4057572-3.395994-6.39985639 3.3880117c-.57077064.3025393-1.22384958.406806-1.85882366.2967593-.8002028-.1386757-1.46913822-.5927703-1.90380581-1.2148031-.43474411-.6221423-.63511485-1.4122789-.49819879-2.2227923l1.22078171-7.1614349-5.16323312-5.065996c-.40488213-.3949273-.68008418-.8899184-.81005947-1.4213474-.1299833-.5314617-.11471841-1.099367.06133283-1.6400657.17518614-.5373892.49230418-1.0019092.90378429-1.3529587.41152537-.3510882.91744572-.5886143 1.46971521-.6720862l7.1472991-1.04676352 3.1969205-6.5302118c.2849065-.57901179.7482109-1.04831048 1.3198549-1.33688943z\" fill-rule=\"evenodd\" transform=\"matrix(-1 0 0 1 32 0)\"/></svg>",
+          "where": {
+            "markup": [
+              "static/js/wocg/game/canasta/canasta-game-ui.js:4 (CANASTA_COMPLETE_STAR_SVG)",
+              "static/js/wocg/game/canasta/canasta-game-ui.js:208 (drawn instead of the count once a meld reaches 7 cards)"
+            ],
+            "css": [
+              "static/scss/pieces.scss:1827-1866",
+              "static/scss/pieces.scss:1748-1789 (the count badge it sits in)",
+              "static/js/wocg/game/canasta/canasta-layout.js:423-445 (badge font 12/14/16px by card size)"
+            ]
+          },
+          "ui": "Canasta only: the star that replaces a meld's card count in the small badge under the meld once it is a complete canasta (natural or mixed).",
+          "colours": {
+            "natural": {
+              "fill": "#4F800B (--color-text-success)",
+              "rule": "static/scss/pieces.scss:1859-1861"
+            },
+            "mixed": {
+              "fill": "#C96800 (--color-text-warning)",
+              "rule": "static/scss/pieces.scss:1863-1865"
+            },
+            "stroke": "none"
+          },
+          "ground": {
+            "desc": "The meld badge under the cards",
+            "token": "natural --color-bg-success; mixed (wild cards) --color-bg-warning",
+            "hex": "natural #C0EB75 (lime); mixed #FFE066",
+            "rule": "static/scss/pieces.scss:1828-1845"
+          },
+          "size": "calc(1em + 2px): 14, 16 or 18px",
+          "states": [
+            {
+              "state": "none",
+              "note": "tooltip only"
+            }
+          ],
+          "flag": "both",
+          "flagNote": "No body.wm rule re-colours the canasta badge or its star."
+        }
+      ],
+      "files": [
+        "star.svg",
+        "star--empty.svg",
+        "star--gameOverFull.svg",
+        "star--gameOverEmpty.svg",
+        "star--canasta.svg",
+        "star--canastaMixed.svg"
+      ]
+    },
+    {
+      "id": "turnTimerRing",
+      "kind": "icon",
+      "svg": "<svg class=\"timer\" viewBox=\"0 0 80 80\"><circle cx=\"40\" cy=\"40\" r=\"36\" class=\"timer-circle-progress\"></circle></svg>",
+      "colours": [
+        {
+          "part": "circle stroke (the countdown arc, 8 wide)",
+          "value": "CSS",
+          "resolves": [
+            {
+              "context": "running",
+              "token": "--color-text-warning",
+              "hex": "#C96800"
+            },
+            {
+              "context": "last 5 seconds (.red)",
+              "token": "--color-text-error-strong",
+              "hex": "#C92A2A"
+            }
+          ],
+          "rule": "static/scss/pieces.scss:738-756"
+        }
+      ],
+      "colourMode": "CSS on the circle; the disc, its 4px inner ring and 1px outer line are the piece div's background and box-shadow",
+      "uses": [
+        {
+          "where": {
+            "markup": [
+              "static/js/wocg/piece/timer.js:38-48 (createElementNS: svg.timer viewBox 0 0 80 80, circle r 36)",
+              "static/js/wocg/piece/timer.js:109-110 (strokeDashoffset drains the arc)",
+              "static/js/wocg/Layout.js:1611-1622 (spot), :94-96 (size)"
+            ],
+            "css": [
+              "static/scss/pieces.scss:728-758",
+              "static/scss/base.scss:281-299 (kept round, not squircle)"
+            ]
+          },
+          "ui": "The turn timer by a player's name plate on the felt: a yellow disc whose orange arc drains, with the seconds in the middle; it turns red for the last five seconds.",
+          "ground": {
+            "desc": "Its own disc: --color-bg-warning with an inset 4px --color-timer-ring and a 1px outer --color-border-strong line, on the felt",
+            "token": "--color-bg-warning",
+            "hex": "#FFE066 disc, #F4BD45 inner ring, outer line #393939 at flag-on (--color-border-strong = --color-table-edge on body.wm) / #343A40 at flag-off; felt #327333 around it",
+            "rule": "static/scss/pieces.scss:728-733; token swap static/scss/_wocg-tokens.scss:106-110"
+          },
+          "size": "32px disc (24px on a compact board); the arc is 8/80 of it",
+          "states": [
+            {
+              "state": "red (<= 5 s)",
+              "icon": "#C92A2A (--color-text-error-strong)",
+              "ground": "#FFA8A8 (--color-bg-danger-light) with inner ring #F67A7A (--color-timer-danger)",
+              "rule": "static/scss/pieces.scss:750-757"
+            }
+          ],
+          "flag": "both",
+          "flagNote": "Only the outer line's token differs by flag. DESIGN-COLOUR.md open question 19 (the felt's unnamed yellows)."
+        }
+      ],
+      "files": [
+        "turnTimerRing.svg"
+      ]
+    },
+    {
+      "id": "tableClockRing",
+      "kind": "icon",
+      "svg": "<svg class=\"ltRing\" viewBox=\"0 0 16 16\" aria-hidden=\"true\"><circle cx=\"8\" cy=\"8\" r=\"7\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2\"/><path d=\"M8 8V1A7 7 0 0 1 15.00 8.00z\" fill=\"#fff\"/></svg>",
+      "colours": [
+        {
+          "part": "ring stroke and wedge fill",
+          "value": "#fff",
+          "token": "white (literal)",
+          "source": "static/js/wocg/TableListingBuilder.js:142-146, 173"
+        }
+      ],
+      "colourMode": "hardcoded white; CSS adds two drop shadows",
+      "variants": [
+        {
+          "name": "open (not started, host 'New table')",
+          "svg": "<svg class=\"ltRing\" viewBox=\"0 0 16 16\" aria-hidden=\"true\"><circle cx=\"8\" cy=\"8\" r=\"7\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2\"/></svg>"
+        },
+        {
+          "name": "quarter (started table)",
+          "svg": "<svg class=\"ltRing\" viewBox=\"0 0 16 16\" aria-hidden=\"true\"><circle cx=\"8\" cy=\"8\" r=\"7\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2\"/><path d=\"M8 8V1A7 7 0 0 1 15.00 8.00z\" fill=\"#fff\"/></svg>"
+        },
+        {
+          "name": "half (live progress example)",
+          "svg": "<svg class=\"ltRing\" viewBox=\"0 0 16 16\" aria-hidden=\"true\"><circle cx=\"8\" cy=\"8\" r=\"7\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2\"/><path d=\"M8 8V1A7 7 0 0 1 8.00 15.00z\" fill=\"#fff\"/></svg>"
+        },
+        {
+          "name": "full (fraction >= 1)",
+          "svg": "<svg class=\"ltRing\" viewBox=\"0 0 16 16\" aria-hidden=\"true\"><circle cx=\"8\" cy=\"8\" r=\"7\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2\"/><circle cx=\"8\" cy=\"8\" r=\"7\" fill=\"#fff\"/></svg>"
+        }
+      ],
+      "uses": [
+        {
+          "where": {
+            "markup": [
+              "static/js/wocg/TableListingBuilder.js:135-147 (ringWedge), :159-179 (feltTimeNode)",
+              "static/js/wocg/FrontpageTables.js:253 (open tiles), :861 (host tile, fraction 0), :975-986 (wedge flips when a table starts), :1254 and :1277-1287 (live tiles fill to game progress), :287-295 (put back after an invite lapses)"
+            ],
+            "css": [
+              "static/scss/_wm-shared.scss:502-534 (.ltTime svg: 9.5px, drop-shadow(0 0 1px rgba(0,0,0,.55)) drop-shadow(0 1px 1px rgba(0,0,0,.25)))",
+              "static/scss/_fp-open-tables.scss:135-141 (mixins applied on the frontpage)"
+            ]
+          },
+          "ui": "The small clock at the bottom left of a felt table tile on the frontpage (open tables and live tables), before '0 min', '12 min' or the live score. Open circle: not started; quarter wedge: in play; filled to progress on a live tile.",
+          "ground": {
+            "desc": "The tile's felt",
+            "token": "--color-table-felt",
+            "hex": "#327333",
+            "rule": "static/scss/_wm-shared.scss:385-403"
+          },
+          "size": "9.5x9.5 (viewBox 16, stroke 2)",
+          "states": [
+            {
+              "state": "none",
+              "note": "tooltip only (data-tip)"
+            }
+          ],
+          "flag": "on"
+        },
+        {
+          "where": {
+            "markup": [
+              "static/js/ModalTablePreview.js:266-277 (felt.time passed to the builder)"
+            ],
+            "css": [
+              "static/scss/_wm-shared.scss:1367-1376 (the felt mixins under .wmModal)"
+            ]
+          },
+          "ui": "The same clock on the big felt tile in the table preview dialog.",
+          "ground": {
+            "desc": "The tile's felt",
+            "token": "--color-table-felt",
+            "hex": "#327333"
+          },
+          "size": "9.5x9.5",
+          "flag": "both",
+          "flagNote": "The table preview dialog is shared (D1)."
+        }
+      ],
+      "files": [
+        "tableClockRing.svg",
+        "tableClockRing--open.svg",
+        "tableClockRing--full.svg"
+      ]
+    },
+    {
+      "id": "markRankedCrown",
+      "kind": "icon",
+      "svg": "<svg class=\"ltMark\" viewBox=\"0 0 18 18\" aria-hidden=\"true\"><path d=\"M2.6 14.2 2 6.4c0-.5.6-.8 1-.5l3.1 2.6c.3.2.7.1.9-.2L8.5 4c.2-.4.8-.4 1 0l1.5 4.3c.2.3.6.4.9.2L15 5.9c.4-.3 1 0 1 .5l-.6 7.8c0 .4-.4.7-.8.7H3.4c-.4 0-.8-.3-.8-.7z\" fill=\"#fff\"/></svg>",
+      "colours": [
+        {
+          "part": "fill",
+          "value": "#fff",
+          "token": "white (literal)"
+        }
+      ],
+      "colourMode": "hardcoded",
+      "uses": [
+        {
+          "where": {
+            "markup": [
+              "static/js/wocg/TableListingBuilder.js:121-133 (MARK_GLYPHS), :184-196 (feltMarksNode)",
+              "static/js/wocg/FrontpageTables.js:188-213 (marksFor), :216-229 (hostMarks), :997-1010 (syncMarks)"
+            ],
+            "css": [
+              "static/scss/_wm-shared.scss:478-493 (18px, drop-shadow(0 0 1px rgba(0,0,0,.6)) drop-shadow(0 1px 1px rgba(0,0,0,.3)))",
+              "static/scss/_fp-open-tables.scss:139"
+            ]
+          },
+          "ui": "'Ranked table' mark: a crown in the tile's bottom right corner (frontpage open, host and live tiles).",
+          "ground": {
+            "desc": "The tile's felt, bottom right corner",
+            "token": "--color-table-felt",
+            "hex": "#327333",
+            "rule": "static/scss/_wm-shared.scss:385-403"
+          },
+          "size": "18x18 (viewBox 18)",
+          "states": [
+            {
+              "state": "none",
+              "note": "tooltip only (data-tip)"
+            }
+          ],
+          "flag": "on"
+        }
+      ],
+      "files": [
+        "markRankedCrown.svg"
+      ]
+    },
+    {
+      "id": "markPrivateLock",
+      "kind": "icon",
+      "svg": "<svg class=\"ltMark\" viewBox=\"0 0 18 18\" aria-hidden=\"true\"><rect x=\"3.5\" y=\"8\" width=\"11\" height=\"8\" rx=\"2\" fill=\"#fff\"/><path d=\"M6 8V5.8a3 3 0 0 1 6 0V8\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2\"/><circle cx=\"9\" cy=\"12\" r=\"1.3\" fill=\"#327333\"/></svg>",
+      "colours": [
+        {
+          "part": "body and shackle",
+          "value": "#fff",
+          "token": "white (literal)"
+        },
+        {
+          "part": "keyhole",
+          "value": "#327333",
+          "token": "--color-table-felt, as a literal (punches the felt colour through the lock)"
+        }
+      ],
+      "colourMode": "hardcoded; the keyhole repeats the felt hex, so it breaks if the felt colour changes",
+      "uses": [
+        {
+          "where": {
+            "markup": [
+              "static/js/wocg/TableListingBuilder.js:121-133 (MARK_GLYPHS), :184-196 (feltMarksNode)",
+              "static/js/wocg/FrontpageTables.js:188-213 (marksFor), :216-229 (hostMarks), :997-1010 (syncMarks)"
+            ],
+            "css": [
+              "static/scss/_wm-shared.scss:478-493 (18px, drop-shadow(0 0 1px rgba(0,0,0,.6)) drop-shadow(0 1px 1px rgba(0,0,0,.3)))",
+              "static/scss/_fp-open-tables.scss:139"
+            ]
+          },
+          "ui": "'Private table' mark: a padlock (named private tables).",
+          "ground": {
+            "desc": "The tile's felt, bottom right corner",
+            "token": "--color-table-felt",
+            "hex": "#327333",
+            "rule": "static/scss/_wm-shared.scss:385-403"
+          },
+          "size": "18x18 (viewBox 18)",
+          "states": [
+            {
+              "state": "none",
+              "note": "tooltip only (data-tip)"
+            }
+          ],
+          "flag": "on"
+        }
+      ],
+      "files": [
+        "markPrivateLock.svg"
+      ]
+    },
+    {
+      "id": "markLimitedPerson",
+      "kind": "icon",
+      "svg": "<svg class=\"ltMark\" viewBox=\"0 0 18 18\" aria-hidden=\"true\"><circle cx=\"9\" cy=\"5.9\" r=\"2.9\" fill=\"#fff\"/><path d=\"M3.2 15.6c0-3.2 2.6-4.9 5.8-4.9s5.8 1.7 5.8 4.9z\" fill=\"#fff\"/></svg>",
+      "colours": [
+        {
+          "part": "fill",
+          "value": "#fff",
+          "token": "white (literal)"
+        }
+      ],
+      "colourMode": "hardcoded",
+      "uses": [
+        {
+          "where": {
+            "markup": [
+              "static/js/wocg/TableListingBuilder.js:121-133 (MARK_GLYPHS), :184-196 (feltMarksNode)",
+              "static/js/wocg/FrontpageTables.js:188-213 (marksFor), :216-229 (hostMarks), :997-1010 (syncMarks)"
+            ],
+            "css": [
+              "static/scss/_wm-shared.scss:478-493 (18px, drop-shadow(0 0 1px rgba(0,0,0,.6)) drop-shadow(0 1px 1px rgba(0,0,0,.3)))",
+              "static/scss/_fp-open-tables.scss:139"
+            ]
+          },
+          "ui": "'Limited table' mark: a person bust (registered only, experienced only, or no bots; the tip lists which).",
+          "ground": {
+            "desc": "The tile's felt, bottom right corner",
+            "token": "--color-table-felt",
+            "hex": "#327333",
+            "rule": "static/scss/_wm-shared.scss:385-403"
+          },
+          "size": "18x18 (viewBox 18)",
+          "states": [
+            {
+              "state": "none",
+              "note": "tooltip only (data-tip)"
+            }
+          ],
+          "flag": "on"
+        }
+      ],
+      "files": [
+        "markLimitedPerson.svg"
+      ]
+    },
+    {
+      "id": "markHouseRule",
+      "kind": "icon",
+      "svg": "<svg class=\"ltMark\" viewBox=\"0 0 18 18\" aria-hidden=\"true\"><path d=\"M9 3.4v11.2M4.15 6.2l9.7 5.6M13.85 6.2l-9.7 5.6\" stroke=\"#fff\" stroke-width=\"2.4\" stroke-linecap=\"round\"/></svg>",
+      "colours": [
+        {
+          "part": "stroke",
+          "value": "#fff",
+          "token": "white (literal)"
+        }
+      ],
+      "colourMode": "hardcoded",
+      "uses": [
+        {
+          "where": {
+            "markup": [
+              "static/js/wocg/TableListingBuilder.js:121-133 (MARK_GLYPHS), :184-196 (feltMarksNode)",
+              "static/js/wocg/FrontpageTables.js:188-213 (marksFor), :216-229 (hostMarks), :997-1010 (syncMarks)"
+            ],
+            "css": [
+              "static/scss/_wm-shared.scss:478-493 (18px, drop-shadow(0 0 1px rgba(0,0,0,.6)) drop-shadow(0 1px 1px rgba(0,0,0,.3)))",
+              "static/scss/_fp-open-tables.scss:139"
+            ]
+          },
+          "ui": "'House rule' mark: a six-armed asterisk (the table plays one of the game's optional rules; the tip names it).",
+          "ground": {
+            "desc": "The tile's felt, bottom right corner",
+            "token": "--color-table-felt",
+            "hex": "#327333",
+            "rule": "static/scss/_wm-shared.scss:385-403"
+          },
+          "size": "18x18 (viewBox 18)",
+          "states": [
+            {
+              "state": "none",
+              "note": "tooltip only (data-tip)"
+            }
+          ],
+          "flag": "on"
+        }
+      ],
+      "files": [
+        "markHouseRule.svg"
+      ]
+    },
+    {
+      "id": "hostPlus",
+      "kind": "icon",
+      "svg": "<svg class=\"ltPlus\" viewBox=\"0 0 16 16\" aria-hidden=\"true\"><path d=\"M8 2.2v11.6M2.2 8h11.6\" stroke=\"#fff\" stroke-width=\"3.4\" stroke-linecap=\"round\"/></svg>",
+      "colours": [
+        {
+          "part": "stroke",
+          "value": "#fff",
+          "token": "white (literal)"
+        }
+      ],
+      "colourMode": "hardcoded",
+      "uses": [
+        {
+          "where": {
+            "markup": [
+              "static/js/wocg/FrontpageTables.js:894-904 (dressHostClock: replaces the ring)"
+            ],
+            "css": [
+              "static/scss/_wm-shared.scss:539-558 (11px, top 1.5px, same drop shadows)"
+            ]
+          },
+          "ui": "The plus before 'New table' on the frontpage's host tile, where other tiles show the clock ring.",
+          "ground": {
+            "desc": "The tile's felt",
+            "token": "--color-table-felt",
+            "hex": "#327333"
+          },
+          "size": "11x11 (viewBox 16, stroke 3.4)",
+          "states": [
+            {
+              "state": "none"
+            }
+          ],
+          "flag": "on"
+        }
+      ],
+      "files": [
+        "hostPlus.svg"
+      ]
+    },
+    {
+      "id": "inviteEnvelope",
+      "kind": "icon",
+      "svg": "<svg class=\"ltInvite\" viewBox=\"0 0 16 16\" aria-hidden=\"true\"><path d=\"M2 4.2h12v7.6H2z\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.2\" stroke-linejoin=\"round\"/><path d=\"M2.6 5l5.4 4.2L13.4 5\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.2\" stroke-linejoin=\"round\"/></svg>",
+      "colours": [
+        {
+          "part": "stroke",
+          "value": "#fff",
+          "token": "white (literal)"
+        }
+      ],
+      "colourMode": "hardcoded",
+      "uses": [
+        {
+          "where": {
+            "markup": [
+              "static/js/wocg/FrontpageTables.js:273-285 (dressInviteClock), :960-968"
+            ],
+            "css": [
+              "static/scss/_wm-shared.scss:560-581 (12px, same drop shadows)"
+            ]
+          },
+          "ui": "The envelope before 'You're invited' on a frontpage table tile you were invited to, in place of the clock.",
+          "ground": {
+            "desc": "The tile's felt",
+            "token": "--color-table-felt",
+            "hex": "#327333"
+          },
+          "size": "12x12 (viewBox 16, stroke 2.2)",
+          "states": [
+            {
+              "state": "none"
+            }
+          ],
+          "flag": "on"
+        }
+      ],
+      "files": [
+        "inviteEnvelope.svg"
+      ]
+    },
+    {
+      "id": "friendsSearchMagnifier",
+      "kind": "icon",
+      "svg": "<svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M10.9999324,4 C14.865989,4 18,7.13401102 18,11 C18,14.8659889 14.865989,18 11,18 C7.13401109,18 4,14.8659889 4,11 C4.00421923,7.13583632 7.13570067,4.00429703 10.9999324,4 Z M10.9999614,7 C8.79182896,7.00245544 7.00241099,8.79190647 7,11 C7,13.2091365 8.79086348,15 11,15 C13.2091366,15 15,13.2091365 15,11 C15,8.79086344 13.2091366,7 10.9999614,7 Z\"/><path d=\"M15.4852814,15 L18.5147186,15 C19.6192881,15 20.5147186,15.8954305 20.5147186,17 C20.5147186,18.1045695 19.6192881,19 18.5147186,19 L15.4852814,19 C14.3807119,19 13.4852814,18.1045695 13.4852814,17 C13.4852814,15.8954305 14.3807119,15 15.4852814,15 Z\" transform=\"translate(17, 17) rotate(-315) translate(-17, -17)\"/></svg>",
+      "colours": [
+        {
+          "part": "fill",
+          "value": "unset in the art; CSS",
+          "resolves": [
+            {
+              "context": "both flags",
+              "token": "--color-text-muted",
+              "hex": "#868E96",
+              "rule": "static/scss/BoxForm.scss:1038-1042"
+            }
+          ]
+        }
+      ],
+      "colourMode": "CSS fill on the svg (inherited by the paths)",
+      "uses": [
+        {
+          "where": {
+            "markup": [
+              "web/dust/common/menu_bar.dust:114 (button.friendsSearchBtn)"
+            ],
+            "css": [
+              "static/scss/BoxForm.scss:1023-1051",
+              "static/scss/BoxForm.scss:1114-1141 (hidden while searching or when the list is empty)"
+            ]
+          },
+          "ui": "The search button in the header of the Friends panel (menu bar, and the right pill at the table). Opens the search field.",
+          "ground": {
+            "desc": "The 24px button's own fill, in the friends panel header",
+            "token": "--color-bg-elevated-dark (button), ring --color-border-light",
+            "hex": "#DEE2E6 button, ring #ADB5BD; header around it: flag-on #f9f6f2 (the panel's top 32px band), flag-off #f8f9fa",
+            "rule": "static/scss/BoxForm.scss:1023-1036; header static/scss/BoxForm.scss:1004-1015 and static/scss/_wm-chrome.scss:451-452, 500-514"
+          },
+          "size": "24x24 svg filling a 24x24 button",
+          "states": [
+            {
+              "state": "hover",
+              "icon": "#495057 (--color-text-subtle)",
+              "ground": "unchanged",
+              "rule": "static/scss/BoxForm.scss:1044-1050"
+            }
+          ],
+          "flag": "both",
+          "flagNote": "No body.wm rule reaches the button, so the redesign keeps the cold greys."
+        }
+      ],
+      "files": [
+        "friendsSearchMagnifier.svg"
+      ]
+    },
+    {
+      "id": "friendsSearchCloseCross",
+      "kind": "icon",
+      "svg": "<svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M4.82842712,10 L19.1715729,10 C20.2761424,10 21.1715729,10.8954305 21.1715729,12 C21.1715729,13.1045695 20.2761424,14 19.1715729,14 L4.82842712,14 C3.72385763,14 2.82842712,13.1045695 2.82842712,12 C2.82842712,10.8954305 3.72385763,10 4.82842712,10 Z\" transform=\"translate(12, 12) rotate(-405) translate(-12, -12)\"/><path d=\"M4.82842712,10 L19.1715729,10 C20.2761424,10 21.1715729,10.8954305 21.1715729,12 C21.1715729,13.1045695 20.2761424,14 19.1715729,14 L4.82842712,14 C3.72385763,14 2.82842712,13.1045695 2.82842712,12 C2.82842712,10.8954305 3.72385763,10 4.82842712,10 Z\" transform=\"translate(12, 12) rotate(-315) translate(-12, -12)\"/></svg>",
+      "colours": [
+        {
+          "part": "fill",
+          "value": "unset in the art; CSS",
+          "resolves": [
+            {
+              "context": "both flags",
+              "token": "--color-text-muted",
+              "hex": "#868E96",
+              "rule": "static/scss/BoxForm.scss:1099-1103"
+            }
+          ]
+        }
+      ],
+      "colourMode": "CSS fill",
+      "artNote": "A different cross from modalCloseCross: two filled round-ended bars rotated -45 and +45 degrees.",
+      "uses": [
+        {
+          "where": {
+            "markup": [
+              "web/dust/common/menu_bar.dust:117 (button.friendsSearchCloseBtn)"
+            ],
+            "css": [
+              "static/scss/BoxForm.scss:1084-1112",
+              "static/scss/BoxForm.scss:1114-1127 (shown only while searching)"
+            ]
+          },
+          "ui": "Closes the search field in the Friends panel header.",
+          "ground": {
+            "desc": "The 24px button's own fill, in the friends panel header",
+            "token": "--color-bg-elevated-dark (button), ring --color-border-light",
+            "hex": "#DEE2E6 button, ring #ADB5BD; header around it: flag-on #f9f6f2 (the panel's top 32px band), flag-off #f8f9fa",
+            "rule": "static/scss/BoxForm.scss:1023-1036; header static/scss/BoxForm.scss:1004-1015 and static/scss/_wm-chrome.scss:451-452, 500-514"
+          },
+          "size": "24x24 svg filling a 24x24 button",
+          "states": [
+            {
+              "state": "hover",
+              "icon": "#495057 (--color-text-subtle)",
+              "rule": "static/scss/BoxForm.scss:1105-1111"
+            }
+          ],
+          "flag": "both"
+        }
+      ],
+      "files": [
+        "friendsSearchCloseCross.svg"
+      ]
+    },
+    {
+      "id": "sendArrow",
+      "kind": "icon",
+      "svg": "<svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M17.6477927,5.11362737 L5.12850445,9.81862736 C4.49039377,10.0587094 4.0509719,10.6493903 4.00413289,11.3300334 C3.95729389,12.0106764 4.31165435,12.656069 4.9108534,12.9814329 L7.8186714,14.5323403 C8.49392522,14.8976232 9.32853299,14.7772876 9.87329729,14.2360996 L12.5982884,11.5089422 C12.8555604,11.269023 13.2564736,11.2761023 13.5051287,11.524955 C13.7537838,11.7738078 13.7608574,12.1750397 13.5211288,12.4325162 L10.7787256,15.1596737 C10.2462118,15.7018935 10.126414,16.5270396 10.4827202,17.198507 L12.0323957,20.0912107 C12.3575012,20.6908861 13.0023811,21.0455282 13.6824835,20.998652 C14.3625858,20.9517758 14.9527976,20.5120046 15.1926889,19.8733866 L19.8939515,7.34414588 C20.1276478,6.70486098 19.9679914,5.98791357 19.4851609,5.50844515 C19.0023305,5.02897674 18.2847318,4.87477754 17.6477927,5.11362737 Z\"/></svg>",
+      "colours": [
+        {
+          "part": "fill",
+          "value": "unset in the art; CSS",
+          "resolves": [
+            {
+              "context": "enabled",
+              "token": "--color-action-info-text",
+              "hex": "#1971C2"
+            },
+            {
+              "context": "hover",
+              "token": "--color-text-link",
+              "hex": "#1665AD"
+            },
+            {
+              "context": "disabled (empty message)",
+              "token": "--color-text-muted",
+              "hex": "#868E96"
+            }
+          ]
+        }
+      ],
+      "colourMode": "CSS fill",
+      "uses": [
+        {
+          "where": {
+            "markup": [
+              "web/dust/common/menu_bar.dust:133 (button.conversationSendBtn, disabled until there is text)"
+            ],
+            "css": [
+              "static/scss/BoxForm.scss:1486-1533",
+              "static/scss/BoxForm.scss:1428-1439 (input area ground)"
+            ]
+          },
+          "ui": "Send button in a Friends panel conversation (direct message to a friend).",
+          "ground": {
+            "desc": "The 32px button's own fill",
+            "token": "enabled --color-bg-info, border --color-action-info-border; disabled --color-bg-elevated-dark, border --color-border-light",
+            "hex": "enabled #A5D8FF / #63B4F2; disabled #DEE2E6 / #ADB5BD; the input area around it #f8f9fa (--color-bg-base) at both flags",
+            "rule": "static/scss/BoxForm.scss:1486-1498, 1514-1517"
+          },
+          "size": "24x24 in a 32x32 button",
+          "states": [
+            {
+              "state": "hover",
+              "icon": "#1665AD"
+            },
+            {
+              "state": "disabled",
+              "icon": "#868E96",
+              "ground": "#DEE2E6"
+            }
+          ],
+          "flag": "both",
+          "flagNote": "Not re-coloured under body.wm; the conversation's header and input area stay --color-bg-base too."
+        },
+        {
+          "where": {
+            "markup": [
+              "static/js/wocg/TableBar.js:354-367 (button.chatLogSendBtn in the table chat panel)"
+            ],
+            "css": [
+              "static/scss/TableBar.scss:606-652",
+              "static/scss/TableBar.scss:1822-1848 (body.wm chat panel paper)",
+              "static/scss/TableBar.scss:553-562 (hidden for spectators)"
+            ]
+          },
+          "ui": "Send button in the table chat panel.",
+          "ground": {
+            "desc": "The 32px button's own fill, in the chat panel's input area",
+            "token": "as above",
+            "hex": "enabled #A5D8FF / #63B4F2; disabled #DEE2E6 / #ADB5BD; the panel around it: flag-on #ffffff (--paper-card), flag-off #f8f9fa",
+            "rule": "static/scss/TableBar.scss:606-617, 633-651; panel static/scss/TableBar.scss:348-355, 1822-1830"
+          },
+          "size": "24x24 in a 32x32 button",
+          "states": [
+            {
+              "state": "hover",
+              "icon": "#1665AD"
+            },
+            {
+              "state": "disabled",
+              "icon": "#868E96",
+              "ground": "#DEE2E6"
+            }
+          ],
+          "flag": "both",
+          "flagNote": "The panel turns white under body.wm; the button keeps the Open Color blue and cold greys."
+        }
+      ],
+      "files": [
+        "sendArrow.svg",
+        "sendArrow--disabled.svg"
+      ]
+    },
+    {
+      "id": "inviteAddPerson",
+      "kind": "icon",
+      "svg": "<svg class=\"inviteIcon\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><g stroke=\"none\" fill=\"currentColor\"><path d=\"M10.5,4 C12.4329966,4 14,5.56700338 14,7.5 C14,9.43299662 12.4329966,11 10.5,11 C8.56700338,11 7,9.43299662 7,7.5 C7,5.56700338 8.56700338,4 10.5,4 Z\"/><path d=\"M10.5,12 C11.2729518,12 12.014392,12.130752 12.7020558,12.3706786 C13.0330811,12.5017851 13.0728455,12.9175403 12.8787066,13.1178442 C11.7215265,14.216024 11,15.7704023 11,17.4939037 C11,17.7627477 11.0175562,18.0274765 11.0515807,18.2869986 C11.1237183,18.6705508 11,19 10.6096792,19 C9.30135546,18.9998058 7.33886979,18.9995589 4.72222222,18.9992591 C4.3233499,18.9992591 4,18.6858916 4,18.2993332 C4,14.8203075 6.91014913,12 10.5,12 Z\"/><path d=\"M17,12.5 C19.7614237,12.5 22,14.7385763 22,17.5 C22,19.2273899 21.1240355,20.7501873 19.7920786,21.64842 C18.9947552,22.1861116 18.0340339,22.5 17,22.5 C14.2385763,22.5 12,20.2614237 12,17.5 C12,14.7385763 14.2385763,12.5 17,12.5 Z M17,14 C16.4477153,14 16,14.4477153 16,15 L16,16.5 L14.5,16.5 C13.9477153,16.5 13.5,16.9477153 13.5,17.5 C13.5,18.0522847 13.9477153,18.5 14.5,18.5 L16,18.5 L16,20 C16,20.5522847 16.4477153,21 17,21 C17.5522847,21 18,20.5522847 18,20 L18,18.5 L19.5,18.5 C20.0522847,18.5 20.5,18.0522847 20.5,17.5 C20.5,16.9477153 20.0522847,16.5 19.5,16.5 L18,16.5 L18,15 C18,14.4477153 17.5522847,14 17,14 Z\"/></g></svg>",
+      "colours": [
+        {
+          "part": "fill (g)",
+          "value": "currentColor",
+          "resolves": [
+            {
+              "context": "rest",
+              "token": "--color-action-info-text",
+              "hex": "#1971C2",
+              "rule": "static/scss/BoxForm.scss:952-957"
+            },
+            {
+              "context": "hover",
+              "token": "--color-text-link",
+              "hex": "#1665AD",
+              "rule": "static/scss/BoxForm.scss:963-969"
+            }
+          ]
+        }
+      ],
+      "colourMode": "currentColor",
+      "uses": [
+        {
+          "where": {
+            "markup": [
+              "static/js/wocg/User.js:84-85 (INVITE_ICON_SVG)",
+              "static/js/wocg/User.js:1280-1289 (button.friendInviteBtn, only when you sit at a table with a free seat and the friend is online)"
+            ],
+            "css": [
+              "static/scss/BoxForm.scss:939-986"
+            ]
+          },
+          "ui": "Invite-to-your-table button (person with a plus) on a friend's row in the Friends panel.",
+          "ground": {
+            "desc": "The 24px button's own fill, on the white list",
+            "token": "--color-bg-info, ring --color-action-info-border",
+            "hex": "#A5D8FF ring #63B4F2; list #ffffff",
+            "rule": "static/scss/BoxForm.scss:939-950; list static/scss/BoxForm.scss:1152-1159"
+          },
+          "size": "24x24 filling a 24x24 button",
+          "states": [
+            {
+              "state": "hover",
+              "icon": "#1665AD"
+            },
+            {
+              "state": "invited",
+              "note": "swaps to inviteSentCheck"
+            }
+          ],
+          "flag": "both"
+        }
+      ],
+      "files": [
+        "inviteAddPerson.svg"
+      ]
+    },
+    {
+      "id": "inviteSentCheck",
+      "kind": "icon",
+      "svg": "<svg class=\"inviteSuccessIcon\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><g stroke=\"none\" fill=\"currentColor\"><path d=\"M10.5,4 C12.4329966,4 14,5.56700338 14,7.5 C14,9.43299662 12.4329966,11 10.5,11 C8.56700338,11 7,9.43299662 7,7.5 C7,5.56700338 8.56700338,4 10.5,4 Z\"/><path d=\"M10.5,12 C11.2729518,12 12.014392,12.130752 12.7020558,12.3706786 C13.0330811,12.5017851 13.0728455,12.9175403 12.8787066,13.1178442 C11.7215265,14.216024 11,15.7704023 11,17.4939037 C11,17.7627477 11.0175562,18.0274765 11.0515807,18.2869986 C11.1237183,18.6705508 11,19 10.6096792,19 C9.30135546,18.9998058 7.33886979,18.9995589 4.72222222,18.9992591 C4.3233499,18.9992591 4,18.6858916 4,18.2993332 C4,14.8203075 6.91014913,12 10.5,12 Z\"/><path d=\"M17,12.5 C19.7614237,12.5 22,14.7385763 22,17.5 C22,20.2614237 19.7614237,22.5 17,22.5 C14.2385763,22.5 12,20.2614237 12,17.5 C12,14.7385763 14.2385763,12.5 17,12.5 Z M19.5303301,15.4696699 C19.2374369,15.1767767 18.7625631,15.1767767 18.4696699,15.4696699 L15.75,18.189 L15.5303301,17.9696699 C15.2374369,17.6767767 14.7625631,17.6767767 14.4696699,17.9696699 C14.1767767,18.2625631 14.1767767,18.7374369 14.4696699,19.0303301 L15.2196699,19.7803301 C15.5125631,20.0732233 15.9874369,20.0732233 16.2803301,19.7803301 L19.5303301,16.5303301 C19.8232233,16.2374369 19.8232233,15.7625631 19.5303301,15.4696699 Z\"/></g></svg>",
+      "colours": [
+        {
+          "part": "fill (g)",
+          "value": "currentColor",
+          "resolves": [
+            {
+              "context": "invited",
+              "token": "--color-text-muted",
+              "hex": "#868E96",
+              "rule": "static/scss/BoxForm.scss:980-984"
+            }
+          ]
+        }
+      ],
+      "colourMode": "currentColor",
+      "uses": [
+        {
+          "where": {
+            "markup": [
+              "static/js/wocg/User.js:86 (INVITE_SUCCESS_ICON_SVG), inside the same button as inviteAddPerson"
+            ],
+            "css": [
+              "static/scss/BoxForm.scss:959-961, 971-985"
+            ]
+          },
+          "ui": "The same button after the invite is sent: a person with a check, greyed out and inert.",
+          "ground": {
+            "desc": "The button, invited state",
+            "token": "--color-bg-elevated, ring --shadow-border-focus",
+            "hex": "#E9ECEF ring #ADB5BD",
+            "rule": "static/scss/BoxForm.scss:971-974"
+          },
+          "size": "24x24",
+          "states": [
+            {
+              "state": "only state",
+              "note": "cursor default"
+            }
+          ],
+          "flag": "both"
+        }
+      ],
+      "files": [
+        "inviteSentCheck.svg"
+      ]
+    },
+    {
+      "id": "friendMessageBubble",
+      "kind": "icon",
+      "svg": "<svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><g transform=\"translate(4, 5)\"><path d=\"M0,6.31600352 C0.0246024122,7.89620564 0.69996589,9.39074089 1.8573915,10.4521186 C2.02574158,10.6311035 2.02574158,10.8870087 1.92465791,11.0589389 C1.76186103,11.3836125 1.45385751,11.9978787 1.00064734,12.9017374 C0.799591064,13.3047333 0.872464819,13.5557113 1.05450439,13.7599792 C1.23654397,13.9642472 1.56671143,13.928772 1.81564664,13.8162542 C3.10778631,13.2148388 4.1057005,12.7503681 4.80938922,12.4228421 C5.1050415,12.2859497 5.41470315,12.3574765 5.56228603,12.3920218 C6.25155802,12.5533622 6.95774154,12.634239 7.66667029,12.632673 C11.8940057,12.632673 15.3333408,9.79933823 15.3333408,6.31600316 C15.3333408,2.83266808 11.8940057,0 7.66667029,0 C3.43933507,0 0,2.83333511 0,6.31600352 Z\"/></g></svg>",
+      "colours": [
+        {
+          "part": "fill",
+          "value": "unset in the art; CSS",
+          "resolves": [
+            {
+              "context": "rest",
+              "token": "--color-action-success-active",
+              "hex": "#5C940D",
+              "rule": "static/scss/BoxForm.scss:876-880"
+            },
+            {
+              "context": "hover",
+              "token": "--color-action-success-border",
+              "hex": "#4F800B",
+              "rule": "static/scss/BoxForm.scss:882-888"
+            }
+          ]
+        }
+      ],
+      "colourMode": "CSS fill",
+      "uses": [
+        {
+          "where": {
+            "markup": [
+              "static/js/wocg/User.js:1291-1304 (button.friendMessageBtn on every friend and liked player row; a red unread badge on its corner)"
+            ],
+            "css": [
+              "static/scss/BoxForm.scss:862-929"
+            ]
+          },
+          "ui": "Message button (speech bubble) on each row of the Friends panel.",
+          "ground": {
+            "desc": "The 24px button's own fill, on the white list",
+            "token": "--color-action-success-light, ring --color-action-success",
+            "hex": "#A9E34B (lime) ring #66A80F",
+            "rule": "static/scss/BoxForm.scss:862-874"
+          },
+          "size": "24x24 (the bubble is about 15x14 inside, translate(4,5))",
+          "states": [
+            {
+              "state": "hover",
+              "icon": "#4F800B"
+            }
+          ],
+          "flag": "both"
+        }
+      ],
+      "files": [
+        "friendMessageBubble.svg"
+      ]
+    },
+    {
+      "id": "conversationBackArrow",
+      "kind": "icon",
+      "svg": "file:static/images/sortArrowLeft.svg (CSS mask)",
+      "artFile": "sortArrowLeft",
+      "colours": [
+        {
+          "part": "mask fill (background-color)",
+          "value": "CSS",
+          "resolves": [
+            {
+              "context": "rest",
+              "token": "--color-text-muted",
+              "hex": "#868E96"
+            },
+            {
+              "context": "hover",
+              "token": "--color-text-subtle",
+              "hex": "#495057"
+            }
+          ],
+          "rule": "static/scss/BoxForm.scss:1254, 1261-1263"
+        }
+      ],
+      "colourMode": "CSS mask: background-color shows through the art's alpha; the file's own #212529 is ignored",
+      "uses": [
+        {
+          "where": {
+            "markup": [
+              "web/dust/common/menu_bar.dust:127 (button.conversationBack)"
+            ],
+            "css": [
+              "static/scss/BoxForm.scss:1249-1264"
+            ]
+          },
+          "ui": "Back arrow in a Friends panel conversation header, back to the friends list.",
+          "ground": {
+            "desc": "The conversation header",
+            "token": "--color-bg-base, lines --color-border-light",
+            "hex": "#f8f9fa at both flags",
+            "rule": "static/scss/BoxForm.scss:1236-1247 (no body.wm override; _wm-chrome.scss:558-563 only pads it)"
+          },
+          "size": "24x24 mask in a 32x32 button",
+          "states": [
+            {
+              "state": "hover",
+              "icon": "#495057 (--color-text-subtle, the cold blue-grey)"
+            }
+          ],
+          "flag": "both"
+        }
+      ],
+      "files": [
+        "conversationBackArrow.svg"
+      ]
+    },
+    {
+      "id": "caretDown",
+      "kind": "icon",
+      "svg": "file:static/images/arrowDown.svg (CSS mask, 9.7x8.59 rounded triangle)",
+      "artFile": "arrowDown",
+      "colours": [
+        {
+          "part": "mask fill (background-color)",
+          "value": "mostly currentColor; see each use"
+        }
+      ],
+      "colourMode": "CSS mask: every use paints background-color (currentColor or a token) through the file's alpha; the file's #000000 is ignored",
+      "uses": [
+        {
+          "where": {
+            "markup": [
+              "web/dust/common/menu_bar.dust:13 (span.mtri)"
+            ],
+            "css": [
+              "static/scss/_wm-chrome.scss:188-200",
+              "static/scss/_wm-chrome.scss:158-171 (link ink)",
+              "static/scss/_wm-chrome.scss:19-36 (bar paper)"
+            ]
+          },
+          "ui": "Caret after 'Games' in the redesigned menu bar (opens the five-column games panel).",
+          "colours": {
+            "icon": "currentColor = --ink #141414"
+          },
+          "ground": {
+            "token": "--paper-band",
+            "hex": "#f4eee5",
+            "rule": "static/scss/_wm-chrome.scss:29"
+          },
+          "size": "8x7",
+          "states": [
+            {
+              "state": "hover",
+              "note": "panel opens; caret unchanged"
+            }
+          ],
+          "flag": "on"
+        },
+        {
+          "where": {
+            "markup": [
+              "web/dust/common/menu_bar.dust:5-7 (#menuIconContainer)"
+            ],
+            "css": [
+              "static/scss/MenuBar.scss:34-66",
+              "static/scss/_wm-chrome.scss:154-156",
+              "static/scss/MenuBar.scss:280-283 and static/scss/_fp-responsive.scss:78-80 (narrow windows)"
+            ]
+          },
+          "ui": "Caret after 'Games' on the narrow-window menu trigger.",
+          "colours": {
+            "flagOn": "currentColor = --ink #141414",
+            "flagOff": "currentColor = --color-text-secondary #343A40"
+          },
+          "ground": {
+            "desc": "the menu bar",
+            "hex": "flag-on #f4eee5; flag-off #f8f9fa",
+            "rule": "static/scss/_wm-chrome.scss:29; static/scss/MenuBar.scss:9"
+          },
+          "size": "8x7",
+          "states": [
+            {
+              "state": "hover",
+              "note": "text underlines; caret unchanged"
+            }
+          ],
+          "flag": "both"
+        },
+        {
+          "where": {
+            "markup": [
+              "web/dust/common/menu_bar.dust:61-62 (li.dropdown 'All games', the last item)"
+            ],
+            "css": [
+              "static/scss/MenuBar.scss:97-128"
+            ]
+          },
+          "ui": "Caret after 'All games' on the classic 32px menu bar.",
+          "colours": {
+            "icon": "currentColor = --color-text-secondary #343A40"
+          },
+          "ground": {
+            "token": "--color-bg-base",
+            "hex": "#f8f9fa",
+            "rule": "static/scss/MenuBar.scss:9"
+          },
+          "size": "8x7",
+          "flag": "off",
+          "flagNote": "Hidden under body.wm (_wm-chrome.scss:147-149)."
+        },
+        {
+          "where": {
+            "markup": [
+              "web/dust/common/fp_catalog.dust:19 (span.gzarr in the tile's Play button)"
+            ],
+            "css": [
+              "static/scss/_fp-catalog.scss:167-200",
+              "static/scss/_fp-catalog.scss:230-239 (button colours)",
+              "static/scss/_fp-catalog.scss:274-293 (per-game tints)"
+            ]
+          },
+          "ui": "Caret in the right zone of each catalog tile's Play button on the frontpage (opens the Play menu upward).",
+          "colours": {
+            "icon": "currentColor = #fff, outlined 1px in --tintbtnring by four drop-shadows on the wrapper"
+          },
+          "ground": {
+            "desc": "The game's own tint (18 values), e.g. hearts #971f3e, spades #0065c3, euchre #3a8132",
+            "token": "--tint (per game)",
+            "hex": "per game; hover --tintbtnhover",
+            "rule": "static/scss/_fp-catalog.scss:274-293"
+          },
+          "size": "8x7",
+          "states": [
+            {
+              "state": "open",
+              "note": "rotates 180deg (_fp-catalog.scss:198-200)"
+            },
+            {
+              "state": "hover",
+              "ground": "--tintbtnhover"
+            }
+          ],
+          "flag": "on"
+        },
+        {
+          "where": {
+            "markup": [
+              "static/js/wocg/LobbyWidgets.js:1703 (span.lbUp / span.lbDown)"
+            ],
+            "css": [
+              "static/scss/_fp-cards.scss:182-222"
+            ]
+          },
+          "ui": "Arrow in the rank-movement chips on the frontpage leaderboard card (up rotated 180deg).",
+          "colours": {
+            "up": "currentColor = --plate-green-ink #305812",
+            "down": "currentColor = --color-team2-ink #8b1a1a"
+          },
+          "ground": {
+            "desc": "the chip",
+            "hex": "up #b2dd9b (--plate-green); down #fcbcb4 (--plate-red); chip ring rgba(0,0,0,.16); row #ffffff or #f4eee5 (alternate rows)",
+            "rule": "static/scss/_fp-cards.scss:210-222"
+          },
+          "size": "6x5",
+          "flag": "on"
+        },
+        {
+          "where": {
+            "markup": [
+              "node-maintenance/dailyRecordsGeneric.dust:467 (span.change-positive / .change-negative)"
+            ],
+            "css": [
+              "static/scss/_wm-leaderboard.scss:425-469"
+            ]
+          },
+          "ui": "The same movement-chip arrow on the per-game leaderboard pages.",
+          "colours": {
+            "up": "#305812",
+            "down": "#8b1a1a"
+          },
+          "ground": {
+            "hex": "up #b2dd9b; down #fcbcb4"
+          },
+          "size": "6x5",
+          "flag": "on",
+          "flagNote": "Flag-off pages draw arrowPlus.png / arrowMinus.png instead (dailyRecordsGeneric.dust:90)."
+        },
+        {
+          "where": {
+            "markup": [
+              "static/js/wocg/GameBar.js:26 (span.gbtri in the games bar's More button)"
+            ],
+            "css": [
+              "static/scss/_wm-shared.scss:828-869",
+              "static/scss/_wm-shared.scss:1050-1061 (on the thumb)",
+              "static/scss/_wm-shared.scss:681-702 (--ot-* tokens)"
+            ]
+          },
+          "ui": "Caret on the games bar's 'More' button: the frontpage's three bars (open tables, live tables, leaderboard and deal cards; fp_open_tables.dust:10, fp_live_tables.dust:7, fp_cards.dust:7), the daily deal dialog (LobbyWidgets.js:2267) and the Browse tables box (table_listings_box.dust:6).",
+          "colours": {
+            "rest": "--ot-ink = --ink-label #4e4d4c",
+            "picked": "--ot-thumbink = --btn-ink #ffffff, outlined in --btn-green-ring via drop-shadows"
+          },
+          "ground": {
+            "desc": "the tray",
+            "hex": "rest #e4ddd0 (--plate-tray), hover cell #d2cfca; picked #43a038 (the thumb)",
+            "rule": "static/scss/_wm-shared.scss:690-701"
+          },
+          "size": "8x7",
+          "states": [
+            {
+              "state": "hover",
+              "ground": "#d2cfca"
+            },
+            {
+              "state": "More is the picked cell",
+              "icon": "#ffffff",
+              "ground": "#43a038"
+            }
+          ],
+          "flag": "both",
+          "flagNote": "Frontpage and deal dialog: flag-on only. The Browse tables box is shared (FLAG-OFF-PARITY.md D3)."
+        },
+        {
+          "where": {
+            "markup": [
+              "static/js/wocg/LobbyWidgets.js:2313 (span.ldmNav)"
+            ],
+            "css": [
+              "static/scss/_wm-deal.scss:50-94"
+            ]
+          },
+          "ui": "Previous and next month arrows in the daily deal dialog (the caret rotated 90deg / -90deg).",
+          "colours": {
+            "icon": "currentColor = --ink #141414"
+          },
+          "ground": {
+            "desc": "24px button",
+            "hex": "#ffffff ring #d2cfca; hover #f4eee5",
+            "rule": "static/scss/_wm-deal.scss:50-79"
+          },
+          "size": "8x7",
+          "states": [
+            {
+              "state": "hover",
+              "ground": "#f4eee5"
+            },
+            {
+              "state": "spent (.wmOff)",
+              "note": "opacity .35"
+            }
+          ],
+          "flag": "on",
+          "flagNote": "The daily deal dialog cannot be opened at flag-off (FLAG-OFF-PARITY.md D4)."
+        },
+        {
+          "where": {
+            "markup": [
+              "static/js/wocg/StatsBox.js:408 (span.wmStChev)"
+            ],
+            "css": [
+              "static/scss/_wm-stats.scss:86-97",
+              "static/scss/_wm-stats.scss:50-68"
+            ]
+          },
+          "ui": "Caret of the game picker in the stats dialog's title row.",
+          "colours": {
+            "icon": "--ink #141414 (set directly, not currentColor)"
+          },
+          "ground": {
+            "desc": "the quiet button",
+            "hex": "#d2cfca (--btn-quiet), ring #bfb5a1; hover #d1c8b8",
+            "rule": "static/scss/_wm-stats.scss:62-67"
+          },
+          "size": "8x7",
+          "flag": "both"
+        },
+        {
+          "where": {
+            "markup": [
+              "web/dust/common/game_selector_container.dust:74-89 (.dropupButtonText 'Tables', 'Practice')"
+            ],
+            "css": [
+              "static/scss/base.scss:1210-1251",
+              "static/scss/GameSelectors.scss:2378-2413 (colours)"
+            ]
+          },
+          "ui": "Caret on the classic lobby tiles' 'Tables' and 'Practice' dropup buttons (rotates 180deg while open).",
+          "colours": {
+            "icon": "currentColor = --color-text-success #4F800B"
+          },
+          "ground": {
+            "desc": "lime dropup button",
+            "hex": "#C0EB75 (--color-bg-success), ring #74B816; hover/open #b8e46d",
+            "rule": "static/scss/GameSelectors.scss:2381-2412"
+          },
+          "size": "8x7",
+          "flag": "off",
+          "flagNote": "LobbyWidgets' own .ldMore dropups (LobbyWidgets.js:2046, 2558) never show in the redesign: their hosts are .fpLobbyRef, display none (_fp-open-tables.scss:114)."
+        },
+        {
+          "where": {
+            "markup": [
+              "static/js/wocg/TableBar.js:302-303 (.multiplayerDropdownLink)"
+            ],
+            "css": [
+              "static/scss/TableBar.scss:106-133",
+              "static/scss/TableBar.scss:30-60"
+            ]
+          },
+          "ui": "Caret on the 'Multiplayer' row of the classic table's Play dropup.",
+          "colours": {
+            "icon": "currentColor = --color-text-primary #212529"
+          },
+          "ground": {
+            "token": "--color-bg-base",
+            "hex": "#f8f9fa"
+          },
+          "size": "8x7",
+          "flag": "off",
+          "flagNote": "The classic table bar is hidden under body.wm (TableBar.scss:1529-1533)."
+        },
+        {
+          "where": {
+            "markup": [
+              "calendar day cells built by LobbyWidgets.js (renderDealModalMonth, :2403)"
+            ],
+            "css": [
+              "static/scss/GameSelectors.scss:85-88 ($dealDayPlayInk #FDC41B)",
+              "static/scss/GameSelectors.scss:405-433"
+            ]
+          },
+          "ui": "A 'play this day' glyph (the caret turned -90deg) drawn over a hovered past day in the daily deal calendar.",
+          "colours": {
+            "icon": "#FDC41B (literal)"
+          },
+          "ground": {
+            "desc": "calendar cell",
+            "hex": "#f4eee5 on hover"
+          },
+          "size": "14x16 mask",
+          "flag": "on",
+          "flagNote": "Meant to be off in the redesign: wm-deal-panel sets ::before content none (_wm-shared.scss:1355-1359). On the frontpage card that override wins (body.fp .lobbyscope, 0,3,2). In the deal dialog it is .wmModal .ldCalDay::before (0,2,1), which loses to .ldCalDay:not(.isFuture):hover::before (0,3,1), so on a desk the yellow triangle probably draws over the day's number (and over a won day's green check). Not confirmed in a browser."
+        }
+      ],
+      "files": [
+        "caretDown.svg"
+      ]
+    },
+    {
+      "id": "dealDayCheck",
+      "kind": "icon",
+      "svg": "file:static/images/dealDayCheck.svg (CSS mask, a filled round-ended check in a 32 box)",
+      "artFile": "dealDayCheck",
+      "colours": [
+        {
+          "part": "mask fill (background-color)",
+          "value": "var(--btn-green)",
+          "hex": "#43a038",
+          "rule": "static/scss/_wm-shared.scss:1349"
+        }
+      ],
+      "colourMode": "CSS mask; the file's own #43A038 is ignored",
+      "uses": [
+        {
+          "where": {
+            "markup": [
+              "calendar day cells built by LobbyWidgets.js (deal card :2114 renderDealChallenge; deal dialog :2403 renderDealModalMonth)"
+            ],
+            "css": [
+              "static/scss/_wm-shared.scss:1332-1353 (wm-deal-panel, ::after)",
+              "static/scss/_fp-cards.scss:273 (frontpage deal card)",
+              "static/scss/_wm-shared.scss:1385 (deal dialog)"
+            ]
+          },
+          "ui": "The green check that replaces the day's number on a day whose daily deal you won, in the frontpage deal card's calendar and the daily deal dialog.",
+          "ground": {
+            "desc": "the calendar cell",
+            "token": "--paper-card",
+            "hex": "#ffffff; hover or picked #f4eee5",
+            "rule": "static/scss/_wm-shared.scss:1282-1330"
+          },
+          "size": "32x32 mask on a 32px-tall cell",
+          "flag": "on"
+        },
+        {
+          "where": {
+            "css": [
+              "static/scss/GameSelectors.scss:374-403 (the classic ::before check in $dealDayWonInk = var(--btn-green))"
+            ]
+          },
+          "ui": "The older rule for the same check. Superseded in both hosts by the wm-deal-panel rule (content none on ::before).",
+          "ground": {
+            "hex": "n/a"
+          },
+          "size": "32x32",
+          "flag": "on",
+          "flagNote": "Dormant: overridden wherever a calendar is drawn today."
+        }
+      ],
+      "files": [
+        "dealDayCheck.svg"
+      ]
+    },
+    {
+      "id": "socialX",
+      "kind": "icon",
+      "svg": "file:static/images/frontpage/social-x.svg (CSS mask; Streamline Phosphor filled X, 16 grid)",
+      "artFile": "social-x",
+      "colours": [
+        {
+          "part": "mask fill",
+          "value": "var(--ink-label)",
+          "hex": "#4e4d4c"
+        },
+        {
+          "part": "hover",
+          "value": "#000000 (literal)"
+        }
+      ],
+      "colourMode": "CSS mask; the file's #000000 is ignored",
+      "uses": [
+        {
+          "where": {
+            "markup": [
+              "web/dust/common/site_footer.dust:71 (<a><img alt=\"X\"> kept at opacity 0 for its alt text)"
+            ],
+            "css": [
+              "static/scss/_wm-footer.scss:194-207 (fill --ink-label)",
+              "static/scss/_wm-footer.scss:209-213 (mask image)",
+              "static/scss/_wm-footer.scss:237-242 (mask size)",
+              "static/scss/_wm-footer.scss:266-276 (hover brand colour)"
+            ]
+          },
+          "ui": "X link in the legal row at the right end of the redesigned site footer.",
+          "ground": {
+            "desc": "The footer paper",
+            "token": "--paper-band (game and reading pages) / --paper-page (frontpage)",
+            "hex": "#f4eee5 on game and reading pages (_wm-footer.scss:14); #f9f6f2 on the frontpage (_fp-seams.scss:131-133)"
+          },
+          "size": "17x17 mask in a 18x20 box",
+          "states": [
+            {
+              "state": "hover",
+              "icon": "#000000 (brand colour, lands at once, no fade)"
+            }
+          ],
+          "flag": "on"
+        }
+      ],
+      "files": [
+        "socialX.svg"
+      ]
+    },
+    {
+      "id": "socialFacebook",
+      "kind": "icon",
+      "svg": "file:static/images/frontpage/social-facebook.svg (CSS mask; Simple Icons, 24 grid)",
+      "artFile": "social-facebook",
+      "colours": [
+        {
+          "part": "mask fill",
+          "value": "var(--ink-label)",
+          "hex": "#4e4d4c"
+        },
+        {
+          "part": "hover",
+          "value": "#0866FF (literal, Facebook blue)"
+        }
+      ],
+      "colourMode": "CSS mask",
+      "uses": [
+        {
+          "where": {
+            "markup": [
+              "web/dust/common/site_footer.dust:72 (<a><img alt=\"Facebook\"> kept at opacity 0 for its alt text)"
+            ],
+            "css": [
+              "static/scss/_wm-footer.scss:194-207 (fill --ink-label)",
+              "static/scss/_wm-footer.scss:215-219 (mask image)",
+              "static/scss/_wm-footer.scss:244-248 (mask size)",
+              "static/scss/_wm-footer.scss:266-276 (hover brand colour)"
+            ]
+          },
+          "ui": "Facebook link in the legal row at the right end of the redesigned site footer.",
+          "ground": {
+            "desc": "The footer paper",
+            "token": "--paper-band (game and reading pages) / --paper-page (frontpage)",
+            "hex": "#f4eee5 on game and reading pages (_wm-footer.scss:14); #f9f6f2 on the frontpage (_fp-seams.scss:131-133)"
+          },
+          "size": "19x19 mask in a 24x20 box",
+          "states": [
+            {
+              "state": "hover",
+              "icon": "#0866FF (brand colour, lands at once, no fade)"
+            }
+          ],
+          "flag": "on"
+        }
+      ],
+      "files": [
+        "socialFacebook.svg"
+      ]
+    },
+    {
+      "id": "socialYouTube",
+      "kind": "icon",
+      "svg": "file:static/images/frontpage/social-youtube.svg (CSS mask; Simple Icons, 24 grid)",
+      "artFile": "social-youtube",
+      "colours": [
+        {
+          "part": "mask fill",
+          "value": "var(--ink-label)",
+          "hex": "#4e4d4c"
+        },
+        {
+          "part": "hover",
+          "value": "#FF0000 (literal, YouTube red)"
+        }
+      ],
+      "colourMode": "CSS mask",
+      "uses": [
+        {
+          "where": {
+            "markup": [
+              "web/dust/common/site_footer.dust:73 (<a><img alt=\"YouTube\"> kept at opacity 0 for its alt text)"
+            ],
+            "css": [
+              "static/scss/_wm-footer.scss:194-207 (fill --ink-label)",
+              "static/scss/_wm-footer.scss:221-225 (mask image)",
+              "static/scss/_wm-footer.scss:250-254 (mask size)",
+              "static/scss/_wm-footer.scss:266-276 (hover brand colour)"
+            ]
+          },
+          "ui": "YouTube link in the legal row at the right end of the redesigned site footer.",
+          "ground": {
+            "desc": "The footer paper",
+            "token": "--paper-band (game and reading pages) / --paper-page (frontpage)",
+            "hex": "#f4eee5 on game and reading pages (_wm-footer.scss:14); #f9f6f2 on the frontpage (_fp-seams.scss:131-133)"
+          },
+          "size": "22x22 mask in a 24x20 box",
+          "states": [
+            {
+              "state": "hover",
+              "icon": "#FF0000 (brand colour, lands at once, no fade)"
+            }
+          ],
+          "flag": "on"
+        }
+      ],
+      "files": [
+        "socialYouTube.svg"
+      ]
+    },
+    {
+      "id": "socialXLegacy",
+      "kind": "icon",
+      "svg": "<svg viewBox=\"0 0 24 24\" role=\"img\" aria-hidden=\"true\" focusable=\"false\">\n                <path d=\"M18.244 2.25h3.308l-7.227 8.26 8.502 11.24h-6.657l-5.214-6.817-5.966 6.817H1.68l7.73-8.835L1.254 2.25h6.826l4.713 6.231 5.45-6.231Zm-1.16 17.52h1.833L7.084 4.126H5.117L17.083 19.77Z\"/>\n              </svg>",
+      "colours": [
+        {
+          "part": "fill",
+          "value": "currentColor (TableBar.scss:1058-1060)",
+          "resolves": [
+            {
+              "context": "flag-off",
+              "token": "--color-text-primary",
+              "hex": "#212529",
+              "rule": "static/scss/TableBar.scss:887-889 (.footer-basic color), links inherit (:1015-1017)"
+            }
+          ]
+        }
+      ],
+      "colourMode": "currentColor",
+      "artNote": "The official X logo path on a 24 grid, not the Phosphor X the redesign masks. Facebook and YouTube beside it are PNG images (/facebook-48.png, /youtube-48.png).",
+      "uses": [
+        {
+          "where": {
+            "markup": [
+              "web/dust/common/footer.dust:46-50",
+              "included by web/dust/common/page_footer.dust:5 and web/dust/game-descriptions/general.dust:66"
+            ],
+            "css": [
+              "static/scss/TableBar.scss:1034-1078",
+              "static/scss/_wm-band.scss:109-111 (hidden under body.wm)"
+            ]
+          },
+          "ui": "X link in the classic footer's ToS row.",
+          "ground": {
+            "token": "--color-bg-base (page)",
+            "hex": "#f8f9fa",
+            "rule": "static/scss/base.scss:58-59, 71-73"
+          },
+          "size": "20x20 in a 24x24 link (2px padding)",
+          "states": [
+            {
+              "state": "hover",
+              "note": "opacity .7 (TableBar.scss:1062-1066)"
+            }
+          ],
+          "flag": "off"
+        }
+      ],
+      "files": [
+        "socialXLegacy.svg"
+      ]
+    },
+    {
+      "id": "aboutPicRealPeople",
+      "kind": "decor",
+      "svg": "<svg viewBox=\"0 0 160 120\" role=\"img\" aria-label=\"Three players seated at a table with one empty seat\">\n              <rect width=\"160\" height=\"120\" fill=\"#327333\"></rect>\n              <rect x=\"6\" y=\"6\" width=\"148\" height=\"108\" rx=\"10\" fill=\"none\" stroke=\"rgba(255,255,255,.18)\" stroke-width=\"2\"></rect>\n              <circle cx=\"80\" cy=\"22\" r=\"15\" fill=\"#fff\"></circle>\n              <image href=\"assets/pieces/avatar/classic/WomanGirl2.svg?v=971\" x=\"66\" y=\"8\" width=\"28\" height=\"28\"></image>\n              <circle cx=\"22\" cy=\"60\" r=\"15\" fill=\"#fff\"></circle>\n              <image href=\"assets/pieces/avatar/classic/ManCowboy.svg?v=971\" x=\"8\" y=\"46\" width=\"28\" height=\"28\"></image>\n              <circle cx=\"138\" cy=\"60\" r=\"15\" fill=\"#fff\"></circle>\n              <image href=\"assets/pieces/avatar/classic/AnimalCat.svg?v=971\" x=\"124\" y=\"46\" width=\"28\" height=\"28\"></image>\n              <circle cx=\"80\" cy=\"98\" r=\"14\" fill=\"none\" stroke=\"#fff\" stroke-dasharray=\"3 3\" stroke-width=\"1.5\" opacity=\".8\"></circle>\n              <text x=\"80\" y=\"103\" text-anchor=\"middle\" font-size=\"16\" fill=\"#fff\" opacity=\".9\">+</text>\n              <rect x=\"58\" y=\"46\" width=\"18\" height=\"26\" rx=\"2.5\" fill=\"#fff\" stroke=\"rgba(0,0,0,.25)\" transform=\"rotate(-8 67 59)\"></rect>\n              <rect x=\"68\" y=\"46\" width=\"18\" height=\"26\" rx=\"2.5\" fill=\"#fff\" stroke=\"rgba(0,0,0,.25)\" transform=\"rotate(0 77 59)\"></rect>\n              <rect x=\"78\" y=\"46\" width=\"18\" height=\"26\" rx=\"2.5\" fill=\"#fff\" stroke=\"rgba(0,0,0,.25)\" transform=\"rotate(8 87 59)\"></rect>\n            </svg>",
+      "colours": [
+        {
+          "part": "fill",
+          "value": "#327333"
+        },
+        {
+          "part": "stroke",
+          "value": "rgba(255,255,255,.18)"
+        },
+        {
+          "part": "fill",
+          "value": "#fff"
+        },
+        {
+          "part": "stroke",
+          "value": "#fff"
+        },
+        {
+          "part": "stroke",
+          "value": "rgba(0,0,0,.25)"
+        }
+      ],
+      "colourMode": "hardcoded",
+      "notes": "Feature picture (three seated avatars, one open dashed seat with a plus, a fanned hand). It carries small pictograms, all hardcoded: the felt #327333, white, ink #141414, card edge rgba(0,0,0,.25), frame rgba(255,255,255,.18), and three colours off the token set: the Play pill #00a82d (the old result-won green, not --btn-green), the arrow #f4c360, the heart #e54e40. Avatars and bot badges are <image> hrefs to asset SVGs.",
+      "uses": [
+        {
+          "where": {
+            "markup": [
+              "web/dust/common/fp_about.dust:27-41"
+            ],
+            "css": [
+              "static/scss/_fp-about.scss:112-139 (4:3, full tile width, soft-light 1px inner ring)"
+            ]
+          },
+          "ui": "Picture on the 'Real people right now' card in the frontpage's 'Behind the games' section.",
+          "ground": {
+            "desc": "self-grounded (the felt rect is part of the art)",
+            "hex": "#327333"
+          },
+          "size": "fills the card width at 4:3 (viewBox 160x120)",
+          "flag": "on"
+        }
+      ],
+      "files": [
+        "aboutPicRealPeople.svg"
+      ]
+    },
+    {
+      "id": "aboutPicNeverWait",
+      "kind": "decor",
+      "svg": "<svg viewBox=\"0 0 160 120\" role=\"img\" aria-label=\"Three bots and a player at a table with a Play button\">\n              <rect width=\"160\" height=\"120\" fill=\"#327333\"></rect>\n              <rect x=\"6\" y=\"6\" width=\"148\" height=\"108\" rx=\"10\" fill=\"none\" stroke=\"rgba(255,255,255,.18)\" stroke-width=\"2\"></rect>\n              <image href=\"assets/images/botBadge.svg?v=971\" x=\"66\" y=\"8\" width=\"28\" height=\"28\"></image>\n              <image href=\"assets/images/botBadge.svg?v=971\" x=\"8\" y=\"46\" width=\"28\" height=\"28\"></image>\n              <image href=\"assets/images/botBadge.svg?v=971\" x=\"124\" y=\"46\" width=\"28\" height=\"28\"></image>\n              <circle cx=\"80\" cy=\"98\" r=\"15\" fill=\"#fff\"></circle>\n              <image href=\"assets/pieces/avatar/classic/WomanBusinesswoman.svg?v=971\" x=\"66\" y=\"84\" width=\"28\" height=\"28\"></image>\n              <rect x=\"52\" y=\"48\" width=\"56\" height=\"22\" rx=\"7\" fill=\"#00a82d\"></rect>\n              <text x=\"80\" y=\"63\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"bold\" fill=\"#fff\" font-family=\"BuloRounded, Verdana, sans-serif\">Play</text>\n            </svg>",
+      "colours": [
+        {
+          "part": "fill",
+          "value": "#327333"
+        },
+        {
+          "part": "stroke",
+          "value": "rgba(255,255,255,.18)"
+        },
+        {
+          "part": "fill",
+          "value": "#fff"
+        },
+        {
+          "part": "fill",
+          "value": "#00a82d"
+        }
+      ],
+      "colourMode": "hardcoded",
+      "notes": "Feature picture (three bot badges, a player, a green Play pill). It carries small pictograms, all hardcoded: the felt #327333, white, ink #141414, card edge rgba(0,0,0,.25), frame rgba(255,255,255,.18), and three colours off the token set: the Play pill #00a82d (the old result-won green, not --btn-green), the arrow #f4c360, the heart #e54e40. Avatars and bot badges are <image> hrefs to asset SVGs.",
+      "uses": [
+        {
+          "where": {
+            "markup": [
+              "web/dust/common/fp_about.dust:49-59"
+            ],
+            "css": [
+              "static/scss/_fp-about.scss:112-139 (4:3, full tile width, soft-light 1px inner ring)"
+            ]
+          },
+          "ui": "Picture on the 'You never wait' card in the frontpage's 'Behind the games' section.",
+          "ground": {
+            "desc": "self-grounded (the felt rect is part of the art)",
+            "hex": "#327333"
+          },
+          "size": "fills the card width at 4:3 (viewBox 160x120)",
+          "flag": "on"
+        }
+      ],
+      "files": [
+        "aboutPicNeverWait.svg"
+      ]
+    },
+    {
+      "id": "aboutPicTableWaits",
+      "kind": "decor",
+      "svg": "<svg viewBox=\"0 0 160 120\" role=\"img\" aria-label=\"A seat held open for a player who has dropped out\">\n              <rect width=\"160\" height=\"120\" fill=\"#327333\"></rect>\n              <rect x=\"6\" y=\"6\" width=\"148\" height=\"108\" rx=\"10\" fill=\"none\" stroke=\"rgba(255,255,255,.18)\" stroke-width=\"2\"></rect>\n              <circle cx=\"80\" cy=\"22\" r=\"15\" fill=\"#fff\"></circle>\n              <image href=\"assets/pieces/avatar/classic/WomanGirl2.svg?v=971\" x=\"66\" y=\"8\" width=\"28\" height=\"28\"></image>\n              <circle cx=\"22\" cy=\"60\" r=\"15\" fill=\"#fff\"></circle>\n              <image href=\"assets/pieces/avatar/classic/ManCowboy.svg?v=971\" x=\"8\" y=\"46\" width=\"28\" height=\"28\"></image>\n              <circle cx=\"138\" cy=\"60\" r=\"15\" fill=\"#fff\"></circle>\n              <image href=\"assets/pieces/avatar/classic/AnimalCat.svg?v=971\" x=\"124\" y=\"46\" width=\"28\" height=\"28\"></image>\n              <circle cx=\"80\" cy=\"98\" r=\"15\" fill=\"#fff\" opacity=\"0.38\"></circle>\n              <image href=\"assets/pieces/avatar/classic/WomanBusinesswoman.svg?v=971\" x=\"66\" y=\"84\" width=\"28\" height=\"28\" opacity=\"0.38\"></image>\n              <rect x=\"62\" y=\"46\" width=\"18\" height=\"26\" rx=\"2.5\" fill=\"#fff\" stroke=\"rgba(0,0,0,.25)\" transform=\"rotate(-4 71 59)\"></rect>\n              <rect x=\"72\" y=\"46\" width=\"18\" height=\"26\" rx=\"2.5\" fill=\"#fff\" stroke=\"rgba(0,0,0,.25)\" transform=\"rotate(4 81 59)\"></rect>\n              <circle cx=\"104\" cy=\"98\" r=\"11\" fill=\"#fff\"></circle>\n              <circle cx=\"104\" cy=\"98\" r=\"8.5\" fill=\"none\" stroke=\"#141414\" stroke-width=\"1.6\"></circle>\n              <path d=\"M104 93v5l3 2\" fill=\"none\" stroke=\"#141414\" stroke-width=\"1.6\" stroke-linecap=\"round\"></path>\n            </svg>",
+      "colours": [
+        {
+          "part": "fill",
+          "value": "#327333"
+        },
+        {
+          "part": "stroke",
+          "value": "rgba(255,255,255,.18)"
+        },
+        {
+          "part": "fill",
+          "value": "#fff"
+        },
+        {
+          "part": "stroke",
+          "value": "rgba(0,0,0,.25)"
+        },
+        {
+          "part": "stroke",
+          "value": "#141414"
+        }
+      ],
+      "colourMode": "hardcoded",
+      "notes": "Feature picture (a faded seat held open and a small clock). It carries small pictograms, all hardcoded: the felt #327333, white, ink #141414, card edge rgba(0,0,0,.25), frame rgba(255,255,255,.18), and three colours off the token set: the Play pill #00a82d (the old result-won green, not --btn-green), the arrow #f4c360, the heart #e54e40. Avatars and bot badges are <image> hrefs to asset SVGs.",
+      "uses": [
+        {
+          "where": {
+            "markup": [
+              "web/dust/common/fp_about.dust:67-83"
+            ],
+            "css": [
+              "static/scss/_fp-about.scss:112-139 (4:3, full tile width, soft-light 1px inner ring)"
+            ]
+          },
+          "ui": "Picture on the 'The table waits for you' card in the frontpage's 'Behind the games' section.",
+          "ground": {
+            "desc": "self-grounded (the felt rect is part of the art)",
+            "hex": "#327333"
+          },
+          "size": "fills the card width at 4:3 (viewBox 160x120)",
+          "flag": "on"
+        }
+      ],
+      "files": [
+        "aboutPicTableWaits.svg"
+      ]
+    },
+    {
+      "id": "aboutPicHelpArrow",
+      "kind": "decor",
+      "svg": "<svg viewBox=\"0 0 160 120\" role=\"img\" aria-label=\"An arrow pointing at a card in a fanned hand\">\n              <rect width=\"160\" height=\"120\" fill=\"#327333\"></rect>\n              <rect x=\"6\" y=\"6\" width=\"148\" height=\"108\" rx=\"10\" fill=\"none\" stroke=\"rgba(255,255,255,.18)\" stroke-width=\"2\"></rect>\n              <rect x=\"44\" y=\"70\" width=\"18\" height=\"26\" rx=\"2.5\" fill=\"#fff\" stroke=\"rgba(0,0,0,.25)\" transform=\"rotate(-16 53 83)\"></rect>\n              <rect x=\"54\" y=\"70\" width=\"18\" height=\"26\" rx=\"2.5\" fill=\"#fff\" stroke=\"rgba(0,0,0,.25)\" transform=\"rotate(-8 63 83)\"></rect>\n              <rect x=\"64\" y=\"70\" width=\"18\" height=\"26\" rx=\"2.5\" fill=\"#fff\" stroke=\"rgba(0,0,0,.25)\" transform=\"rotate(0 73 83)\"></rect>\n              <rect x=\"74\" y=\"70\" width=\"18\" height=\"26\" rx=\"2.5\" fill=\"#fff\" stroke=\"rgba(0,0,0,.25)\" transform=\"rotate(8 83 83)\"></rect>\n              <rect x=\"84\" y=\"70\" width=\"18\" height=\"26\" rx=\"2.5\" fill=\"#fff\" stroke=\"rgba(0,0,0,.25)\" transform=\"rotate(16 93 83)\"></rect>\n              <path d=\"M80 22v24\" stroke=\"#f4c360\" stroke-width=\"4\" stroke-linecap=\"round\"></path>\n              <path d=\"M71 39l9 10 9-10\" fill=\"none\" stroke=\"#f4c360\" stroke-width=\"4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"></path>\n            </svg>",
+      "colours": [
+        {
+          "part": "fill",
+          "value": "#327333"
+        },
+        {
+          "part": "stroke",
+          "value": "rgba(255,255,255,.18)"
+        },
+        {
+          "part": "fill",
+          "value": "#fff"
+        },
+        {
+          "part": "stroke",
+          "value": "rgba(0,0,0,.25)"
+        },
+        {
+          "part": "stroke",
+          "value": "#f4c360"
+        }
+      ],
+      "colourMode": "hardcoded",
+      "notes": "Feature picture (a gold arrow pointing at a fanned hand). It carries small pictograms, all hardcoded: the felt #327333, white, ink #141414, card edge rgba(0,0,0,.25), frame rgba(255,255,255,.18), and three colours off the token set: the Play pill #00a82d (the old result-won green, not --btn-green), the arrow #f4c360, the heart #e54e40. Avatars and bot badges are <image> hrefs to asset SVGs.",
+      "uses": [
+        {
+          "where": {
+            "markup": [
+              "web/dust/common/fp_about.dust:91-101"
+            ],
+            "css": [
+              "static/scss/_fp-about.scss:112-139 (4:3, full tile width, soft-light 1px inner ring)"
+            ]
+          },
+          "ui": "Picture on the 'Help while you learn' card in the frontpage's 'Behind the games' section.",
+          "ground": {
+            "desc": "self-grounded (the felt rect is part of the art)",
+            "hex": "#327333"
+          },
+          "size": "fills the card width at 4:3 (viewBox 160x120)",
+          "flag": "on"
+        }
+      ],
+      "files": [
+        "aboutPicHelpArrow.svg"
+      ]
+    },
+    {
+      "id": "aboutPicFriendly",
+      "kind": "decor",
+      "svg": "<svg viewBox=\"0 0 160 120\" role=\"img\" aria-label=\"Two players and a friendly chat message\">\n              <rect width=\"160\" height=\"120\" fill=\"#327333\"></rect>\n              <rect x=\"6\" y=\"6\" width=\"148\" height=\"108\" rx=\"10\" fill=\"none\" stroke=\"rgba(255,255,255,.18)\" stroke-width=\"2\"></rect>\n              <circle cx=\"22\" cy=\"60\" r=\"15\" fill=\"#fff\"></circle>\n              <image href=\"assets/pieces/avatar/classic/ManCowboy.svg?v=971\" x=\"8\" y=\"46\" width=\"28\" height=\"28\"></image>\n              <circle cx=\"138\" cy=\"60\" r=\"15\" fill=\"#fff\"></circle>\n              <image href=\"assets/pieces/avatar/classic/AnimalCat.svg?v=971\" x=\"124\" y=\"46\" width=\"28\" height=\"28\"></image>\n              <rect x=\"46\" y=\"30\" width=\"68\" height=\"30\" rx=\"10\" fill=\"#fff\"></rect>\n              <path d=\"M60 60l-6 8 14-8z\" fill=\"#fff\"></path>\n              <text x=\"80\" y=\"50\" text-anchor=\"middle\" font-size=\"12.5\" font-weight=\"bold\" fill=\"#141414\" font-family=\"BuloRounded, Verdana, sans-serif\">Good game!</text>\n              <path d=\"M104 84c-4-6-12 0-6 6l6 6 6-6c6-6-2-12-6-6z\" fill=\"#e54e40\"></path>\n            </svg>",
+      "colours": [
+        {
+          "part": "fill",
+          "value": "#327333"
+        },
+        {
+          "part": "stroke",
+          "value": "rgba(255,255,255,.18)"
+        },
+        {
+          "part": "fill",
+          "value": "#fff"
+        },
+        {
+          "part": "fill",
+          "value": "#141414"
+        },
+        {
+          "part": "fill",
+          "value": "#e54e40"
+        }
+      ],
+      "colourMode": "hardcoded",
+      "notes": "Feature picture (two players, a 'Good game!' speech bubble, a red heart). It carries small pictograms, all hardcoded: the felt #327333, white, ink #141414, card edge rgba(0,0,0,.25), frame rgba(255,255,255,.18), and three colours off the token set: the Play pill #00a82d (the old result-won green, not --btn-green), the arrow #f4c360, the heart #e54e40. Avatars and bot badges are <image> hrefs to asset SVGs.",
+      "uses": [
+        {
+          "where": {
+            "markup": [
+              "web/dust/common/fp_about.dust:109-120"
+            ],
+            "css": [
+              "static/scss/_fp-about.scss:112-139 (4:3, full tile width, soft-light 1px inner ring)"
+            ]
+          },
+          "ui": "Picture on the 'Tables stay friendly' card in the frontpage's 'Behind the games' section.",
+          "ground": {
+            "desc": "self-grounded (the felt rect is part of the art)",
+            "hex": "#327333"
+          },
+          "size": "fills the card width at 4:3 (viewBox 160x120)",
+          "flag": "on"
+        }
+      ],
+      "files": [
+        "aboutPicFriendly.svg"
+      ]
+    },
+    {
+      "id": "aboutPicOwnTable",
+      "kind": "decor",
+      "svg": "<svg viewBox=\"0 0 160 120\" role=\"img\" aria-label=\"A named private table with an invite link\">\n              <rect width=\"160\" height=\"120\" fill=\"#327333\"></rect>\n              <rect x=\"6\" y=\"6\" width=\"148\" height=\"108\" rx=\"10\" fill=\"none\" stroke=\"rgba(255,255,255,.18)\" stroke-width=\"2\"></rect>\n              <rect x=\"40\" y=\"10\" width=\"80\" height=\"22\" rx=\"7\" fill=\"#fff\"></rect>\n              <text x=\"80\" y=\"25\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"bold\" fill=\"#141414\" font-family=\"BuloRounded, Verdana, sans-serif\">maple</text>\n              <circle cx=\"22\" cy=\"60\" r=\"15\" fill=\"#fff\"></circle>\n              <image href=\"assets/pieces/avatar/classic/WomanGirl2.svg?v=971\" x=\"8\" y=\"46\" width=\"28\" height=\"28\"></image>\n              <circle cx=\"138\" cy=\"60\" r=\"15\" fill=\"#fff\"></circle>\n              <image href=\"assets/pieces/avatar/classic/WomanBusinesswoman.svg?v=971\" x=\"124\" y=\"46\" width=\"28\" height=\"28\"></image>\n              <circle cx=\"80\" cy=\"98\" r=\"14\" fill=\"none\" stroke=\"#fff\" stroke-dasharray=\"3 3\" stroke-width=\"1.5\" opacity=\".8\"></circle>\n              <text x=\"80\" y=\"103\" text-anchor=\"middle\" font-size=\"16\" fill=\"#fff\" opacity=\".9\">+</text>\n              <path d=\"M70 58a8 8 0 0 1 11-11l4 4M90 62a8 8 0 0 1-11 11l-4-4M74 74l12-12\" fill=\"none\" stroke=\"#fff\" stroke-width=\"3\" stroke-linecap=\"round\"></path>\n            </svg>",
+      "colours": [
+        {
+          "part": "fill",
+          "value": "#327333"
+        },
+        {
+          "part": "stroke",
+          "value": "rgba(255,255,255,.18)"
+        },
+        {
+          "part": "fill",
+          "value": "#fff"
+        },
+        {
+          "part": "fill",
+          "value": "#141414"
+        },
+        {
+          "part": "stroke",
+          "value": "#fff"
+        }
+      ],
+      "colourMode": "hardcoded",
+      "notes": "Feature picture (a 'maple' name pill, an open seat with a plus, a link glyph). It carries small pictograms, all hardcoded: the felt #327333, white, ink #141414, card edge rgba(0,0,0,.25), frame rgba(255,255,255,.18), and three colours off the token set: the Play pill #00a82d (the old result-won green, not --btn-green), the arrow #f4c360, the heart #e54e40. Avatars and bot badges are <image> hrefs to asset SVGs.",
+      "uses": [
+        {
+          "where": {
+            "markup": [
+              "web/dust/common/fp_about.dust:128-140"
+            ],
+            "css": [
+              "static/scss/_fp-about.scss:112-139 (4:3, full tile width, soft-light 1px inner ring)"
+            ]
+          },
+          "ui": "Picture on the 'Your own table' card in the frontpage's 'Behind the games' section.",
+          "ground": {
+            "desc": "self-grounded (the felt rect is part of the art)",
+            "hex": "#327333"
+          },
+          "size": "fills the card width at 4:3 (viewBox 160x120)",
+          "flag": "on"
+        }
+      ],
+      "files": [
+        "aboutPicOwnTable.svg"
+      ]
+    },
+    {
+      "id": "avatarLineFilter",
+      "kind": "decor",
+      "svg": "<svg id=\"wmAvatarLineDefs\" width=\"0\" height=\"0\" aria-hidden=\"true\" style=\"position:absolute;width:0;height:0\"><filter id=\"wmAvatarLine\" x=\"-6%\" y=\"-6%\" width=\"112%\" height=\"112%\" color-interpolation-filters=\"sRGB\"><feMorphology in=\"SourceAlpha\" operator=\"dilate\" radius=\"1\" result=\"fat\"/><feFlood flood-color=\"#252525\" result=\"ink\"/><feComposite in=\"ink\" in2=\"fat\" operator=\"in\" result=\"line\"/><feMerge><feMergeNode in=\"line\"/><feMergeNode in=\"SourceGraphic\"/></feMerge></filter></svg>",
+      "colours": [
+        {
+          "part": "feFlood flood-color",
+          "value": "#252525",
+          "token": "--color-drop-shadow (legacy, _variables.scss:170) as a literal"
+        }
+      ],
+      "colourMode": "hardcoded in the filter",
+      "notes": "Not an icon: an SVG filter (1px dilation of the avatar's alpha, inked #252525) that gives every off-felt avatar its outline, switched on by html.wmAvLine. Three identical copies.",
+      "uses": [
+        {
+          "where": {
+            "markup": [
+              "static/js/wocg/ModalShell.js:89-102 (added on domready, :712-716)",
+              "static/js/ModalInvitePlayers.js:40-50",
+              "static/js/ModalPlayerProfile.js:32-42"
+            ],
+            "css": [
+              "static/scss/_avatar-ink.scss:37-45 (filter: url(\"#wmAvatarLine\") under .wmAvLine; four drop-shadows as fallback)"
+            ]
+          },
+          "ui": "Outline round avatars in dialogs, settings, the menu bar and lobby tiles.",
+          "ground": {
+            "desc": "n/a"
+          },
+          "size": "0x0 defs",
+          "flag": "both"
+        }
+      ],
+      "files": [
+        "avatarLineFilter.svg"
+      ]
+    },
+    {
+      "id": "seamRule",
+      "kind": "decor",
+      "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 384 14' preserveAspectRatio='none'><rect y='6.5' width='384' height='1' fill='#D2CFCA'/></svg>",
+      "colours": [
+        {
+          "part": "rect fill",
+          "value": "#D2CFCA",
+          "token": "--line, baked (%23D2CFCA in the data URIs; RULE_COLOR in JS)"
+        }
+      ],
+      "colourMode": "hardcoded",
+      "notes": "The 1px section rule at y 6.5 in a 14px strip. Four forms: --divrulestretch (384x14, preserveAspectRatio none; the menu bar rule on every body.wm page via --divtile), --divrulefull (384x14; the sweep's resting rule), GAPSVG (20x14; fills the opening under a seam suit until the suit lands), headRule (width w; the rule broken round a seam title).",
+      "variants": [
+        {
+          "name": "divrulefull",
+          "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 384 14'><rect y='6.5' width='384' height='1' fill='#D2CFCA'/></svg>"
+        },
+        {
+          "name": "gapRule (GAPSVG)",
+          "svg": "<svg viewBox=\"0 0 20 14\"><rect y=\"6.5\" width=\"20\" height=\"1\" fill=\"#D2CFCA\"/></svg>"
+        },
+        {
+          "name": "headRule (w = 96 example)",
+          "svg": "<svg viewBox=\"0 0 96 14\" width=\"96\" height=\"14\"><rect y=\"6.5\" width=\"96\" height=\"1\" fill=\"#D2CFCA\"/></svg>"
+        }
+      ],
+      "uses": [
+        {
+          "where": {
+            "markup": [
+              "static/js/wocg/FrontpageSeams.js:31-32, 128-140"
+            ],
+            "css": [
+              "static/scss/_fp-seams.scss:13-19",
+              "static/scss/_fp-seams.scss:239-278, 382-387, 410-423"
+            ]
+          },
+          "ui": "Section seams on the frontpage and the rule under the menu bar on every redesigned page.",
+          "ground": {
+            "desc": "straddles two papers",
+            "hex": "#f4eee5 / #f9f6f2"
+          },
+          "size": "1px line, 14px strip",
+          "flag": "on"
+        }
+      ],
+      "files": [
+        "seamRule.svg"
+      ]
+    },
+    {
+      "id": "seamSuitMarks",
+      "kind": "decor",
+      "svg": "<svg viewBox=\"0 0 80 80\"><clipPath id=\"fpsu0\"><path d=\"M39.99,11 C47.76,11 54.06,17.3 54.06,25.06 C54.06,28.79 52.61,32.18 50.24,34.70 C51.98,33.93 53.90,33.50 55.93,33.50 C63.70,33.50 70,39.80 70,47.57 C70,55.33 63.70,61.63 55.93,61.63 C50.95,61.63 46.57,59.04 44.08,55.13 C44.14,55.40 44.21,55.66 44.27,55.93 L44.44,56.61 C44.47,56.73 44.49,56.84 44.52,56.96 L44.69,57.65 L44.85,58.33 C46.17,63.81 47.36,69 47.36,69 L32.93,69 C32.93,69 33.93,64.19 35.11,58.95 L35.27,58.26 L35.35,57.92 L35.51,57.23 C35.69,56.45 35.87,55.68 36.05,54.91 C33.57,58.94 29.13,61.63 24.06,61.63 C16.29,61.63 10,55.33 10,47.57 C10,39.80 16.29,33.50 24.06,33.50 C26.09,33.50 28.01,33.93 29.76,34.70 C27.38,32.19 25.93,28.80 25.93,25.06 C25.93,17.3 32.23,11 39.99,11 Z\"/></clipPath><path d=\"M39.99,11 C47.76,11 54.06,17.3 54.06,25.06 C54.06,28.79 52.61,32.18 50.24,34.70 C51.98,33.93 53.90,33.50 55.93,33.50 C63.70,33.50 70,39.80 70,47.57 C70,55.33 63.70,61.63 55.93,61.63 C50.95,61.63 46.57,59.04 44.08,55.13 C44.14,55.40 44.21,55.66 44.27,55.93 L44.44,56.61 C44.47,56.73 44.49,56.84 44.52,56.96 L44.69,57.65 L44.85,58.33 C46.17,63.81 47.36,69 47.36,69 L32.93,69 C32.93,69 33.93,64.19 35.11,58.95 L35.27,58.26 L35.35,57.92 L35.51,57.23 C35.69,56.45 35.87,55.68 36.05,54.91 C33.57,58.94 29.13,61.63 24.06,61.63 C16.29,61.63 10,55.33 10,47.57 C10,39.80 16.29,33.50 24.06,33.50 C26.09,33.50 28.01,33.93 29.76,34.70 C27.38,32.19 25.93,28.80 25.93,25.06 C25.93,17.3 32.23,11 39.99,11 Z\" fill=\"#262626\" fill-opacity=\"0.45\"/><path d=\"M39.99,11 C47.76,11 54.06,17.3 54.06,25.06 C54.06,28.79 52.61,32.18 50.24,34.70 C51.98,33.93 53.90,33.50 55.93,33.50 C63.70,33.50 70,39.80 70,47.57 C70,55.33 63.70,61.63 55.93,61.63 C50.95,61.63 46.57,59.04 44.08,55.13 C44.14,55.40 44.21,55.66 44.27,55.93 L44.44,56.61 C44.47,56.73 44.49,56.84 44.52,56.96 L44.69,57.65 L44.85,58.33 C46.17,63.81 47.36,69 47.36,69 L32.93,69 C32.93,69 33.93,64.19 35.11,58.95 L35.27,58.26 L35.35,57.92 L35.51,57.23 C35.69,56.45 35.87,55.68 36.05,54.91 C33.57,58.94 29.13,61.63 24.06,61.63 C16.29,61.63 10,55.33 10,47.57 C10,39.80 16.29,33.50 24.06,33.50 C26.09,33.50 28.01,33.93 29.76,34.70 C27.38,32.19 25.93,28.80 25.93,25.06 C25.93,17.3 32.23,11 39.99,11 Z\" fill=\"none\" stroke=\"#262626\" stroke-opacity=\"0.24\" stroke-width=\"9\" clip-path=\"url(#fpsu0)\"/></svg>",
+      "colours": [
+        {
+          "part": "black suits (club, spade) fill",
+          "value": "#262626 at fill-opacity .45",
+          "token": "off the token set"
+        },
+        {
+          "part": "black suits inner rim",
+          "value": "#262626 at stroke-opacity .24, 9 wide, clipped to the shape"
+        },
+        {
+          "part": "red suits (heart, diamond) fill",
+          "value": "#B54A3F at fill-opacity .5",
+          "token": "off the token set"
+        },
+        {
+          "part": "red suits inner rim",
+          "value": "#B54A3F at stroke-opacity .32"
+        }
+      ],
+      "colourMode": "hardcoded",
+      "notes": "Small suit marks that sweep in along each frontpage seam and the menu bar's rule. Built per mark with a unique clipPath id (fpsuN).",
+      "variants": [
+        {
+          "name": "diamond",
+          "svg": "<svg viewBox=\"0 0 80 80\"><clipPath id=\"fpsu1\"><path d=\"M40,3.68 L66.75,40.00 L40,76.31 L13.24,40.00 L40,3.68 Z\"/></clipPath><path d=\"M40,3.68 L66.75,40.00 L40,76.31 L13.24,40.00 L40,3.68 Z\" fill=\"#B54A3F\" fill-opacity=\"0.5\"/><path d=\"M40,3.68 L66.75,40.00 L40,76.31 L13.24,40.00 L40,3.68 Z\" fill=\"none\" stroke=\"#B54A3F\" stroke-opacity=\"0.32\" stroke-width=\"9\" clip-path=\"url(#fpsu1)\"/></svg>"
+        },
+        {
+          "name": "spade",
+          "svg": "<svg viewBox=\"0 0 80 80\"><clipPath id=\"fpsu2\"><path d=\"M39.95,9 C39.95,9 69.97,20.85 70,43.08 C70.01,52.75 62.13,60.61 52.39,60.62 C49.42,60.63 46.62,59.90 44.16,58.61 L48,71.00 L32,71.00 L35.82,58.65 C33.38,59.93 30.60,60.65 27.64,60.66 C17.91,60.67 10.01,52.83 10,43.16 C9.96,20.92 39.95,9 39.95,9 Z\"/></clipPath><path d=\"M39.95,9 C39.95,9 69.97,20.85 70,43.08 C70.01,52.75 62.13,60.61 52.39,60.62 C49.42,60.63 46.62,59.90 44.16,58.61 L48,71.00 L32,71.00 L35.82,58.65 C33.38,59.93 30.60,60.65 27.64,60.66 C17.91,60.67 10.01,52.83 10,43.16 C9.96,20.92 39.95,9 39.95,9 Z\" fill=\"#262626\" fill-opacity=\"0.45\"/><path d=\"M39.95,9 C39.95,9 69.97,20.85 70,43.08 C70.01,52.75 62.13,60.61 52.39,60.62 C49.42,60.63 46.62,59.90 44.16,58.61 L48,71.00 L32,71.00 L35.82,58.65 C33.38,59.93 30.60,60.65 27.64,60.66 C17.91,60.67 10.01,52.83 10,43.16 C9.96,20.92 39.95,9 39.95,9 Z\" fill=\"none\" stroke=\"#262626\" stroke-opacity=\"0.24\" stroke-width=\"9\" clip-path=\"url(#fpsu2)\"/></svg>"
+        },
+        {
+          "name": "heart",
+          "svg": "<svg viewBox=\"0 0 80 80\"><clipPath id=\"fpsu3\"><path d=\"M52.34,13.99 C56.93,13.99 61.08,15.95 64.09,19.13 C67.12,22.32 68.99,26.74 69.00,31.62 C69.02,53.20 43.52,65.35 40.04,66.90 C37.71,65.85 26.39,60.44 18.57,50.99 C14.26,45.79 11.00,39.34 10.99,31.70 C10.99,26.82 12.85,22.40 15.87,19.19 C18.87,16.01 23.02,14.03 27.60,14.03 C32.15,14.02 36.26,15.95 39.26,19.07 C39.51,19.33 39.75,19.60 39.98,19.87 C40.21,19.60 40.46,19.33 40.70,19.07 C43.70,15.94 47.80,14.00 52.34,13.99 Z\"/></clipPath><path d=\"M52.34,13.99 C56.93,13.99 61.08,15.95 64.09,19.13 C67.12,22.32 68.99,26.74 69.00,31.62 C69.02,53.20 43.52,65.35 40.04,66.90 C37.71,65.85 26.39,60.44 18.57,50.99 C14.26,45.79 11.00,39.34 10.99,31.70 C10.99,26.82 12.85,22.40 15.87,19.19 C18.87,16.01 23.02,14.03 27.60,14.03 C32.15,14.02 36.26,15.95 39.26,19.07 C39.51,19.33 39.75,19.60 39.98,19.87 C40.21,19.60 40.46,19.33 40.70,19.07 C43.70,15.94 47.80,14.00 52.34,13.99 Z\" fill=\"#B54A3F\" fill-opacity=\"0.5\"/><path d=\"M52.34,13.99 C56.93,13.99 61.08,15.95 64.09,19.13 C67.12,22.32 68.99,26.74 69.00,31.62 C69.02,53.20 43.52,65.35 40.04,66.90 C37.71,65.85 26.39,60.44 18.57,50.99 C14.26,45.79 11.00,39.34 10.99,31.70 C10.99,26.82 12.85,22.40 15.87,19.19 C18.87,16.01 23.02,14.03 27.60,14.03 C32.15,14.02 36.26,15.95 39.26,19.07 C39.51,19.33 39.75,19.60 39.98,19.87 C40.21,19.60 40.46,19.33 40.70,19.07 C43.70,15.94 47.80,14.00 52.34,13.99 Z\" fill=\"none\" stroke=\"#B54A3F\" stroke-opacity=\"0.32\" stroke-width=\"9\" clip-path=\"url(#fpsu3)\"/></svg>"
+        }
+      ],
+      "uses": [
+        {
+          "where": {
+            "markup": [
+              "static/js/wocg/FrontpageSeams.js:16-29 (paths, colours, sizes), :116-126 (suitSVG), :231-244 and :388-393 (placement)"
+            ],
+            "css": [
+              "static/scss/_fp-seams.scss:252-264"
+            ]
+          },
+          "ui": "Decorative suit row across the frontpage's section seams.",
+          "ground": {
+            "desc": "straddles two papers",
+            "hex": "#f4eee5 / #f9f6f2"
+          },
+          "size": "80 x scale: club 12.24, diamond 12.72, spade 11.36, heart 11.84 px",
+          "flag": "on"
+        }
+      ],
+      "files": [
+        "seamSuitMarks.svg",
+        "seamSuitMarks--club.svg",
+        "seamSuitMarks--diamond.svg",
+        "seamSuitMarks--spade.svg",
+        "seamSuitMarks--heart.svg"
+      ]
+    },
+    {
+      "id": "waveTiles",
+      "kind": "decor",
+      "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 8'><path d='M0 4C2.5 1 7.5 1 10 4C12.5 7 17.5 7 20 4L20 0L0 0Z' fill='white'/></svg>",
+      "colours": [
+        {
+          "part": "fill / stroke",
+          "value": "white (mask alpha only)"
+        }
+      ],
+      "colourMode": "hardcoded (mask)",
+      "notes": "--wavecutdown (filled wave, used as a mask) and --wavedivider (stroked wave). Declared twice. Neither draws today: the only mask use, body.wm #menuBarContainer::before, is display:none from _fp-seams.scss:406-408 (imported after _wm-chrome), and --wavedivider is never read.",
+      "variants": [
+        {
+          "name": "wavedivider",
+          "svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 8'><path d='M0 4C2.5 1 7.5 1 10 4C12.5 7 17.5 7 20 4' fill='none' stroke='white' stroke-width='2'/></svg>"
+        }
+      ],
+      "uses": [
+        {
+          "where": {
+            "css": [
+              "static/scss/_fp-seams.scss:11-12",
+              "static/scss/_wm-chrome.scss:12-13, 73-84"
+            ]
+          },
+          "ui": "The old wavy lower edge of the menu bar (retired).",
+          "ground": {
+            "hex": "#f4eee5"
+          },
+          "size": "20x8 tile",
+          "flag": "on",
+          "flagNote": "Declared, not drawn."
+        }
+      ],
+      "files": [
+        "waveTiles.svg",
+        "waveTiles--divider.svg"
+      ]
+    },
+    {
+      "id": "adRailSuitWallpaper",
+      "kind": "decor",
+      "svg": "<svg xmlns='http://www.w3.org/2000/svg' width='72' height='72'><g fill='black' fill-opacity='0.04'><path transform='translate(1,2) scale(0.3)' d='M52.34,13.99 C56.93,13.99 61.08,15.95 64.09,19.13 C67.12,22.32 68.99,26.74 69.00,31.62 C69.02,53.20 43.52,65.35 40.04,66.90 C37.71,65.85 26.39,60.44 18.57,50.99 C14.26,45.79 11.00,39.34 10.99,31.70 C10.99,26.82 12.85,22.40 15.87,19.19 C18.87,16.01 23.02,14.03 27.60,14.03 C32.15,14.02 36.26,15.95 39.26,19.07 C39.51,19.33 39.75,19.60 39.98,19.87 C40.21,19.60 40.46,19.33 40.70,19.07 C43.70,15.94 47.80,14.00 52.34,13.99 Z'/><path transform='translate(37,2) scale(0.3)' d='M39.95,9 C39.95,9 69.97,20.85 70,43.08 C70.01,52.75 62.13,60.61 52.39,60.62 C49.42,60.63 46.62,59.90 44.16,58.61 L48,71.00 L32,71.00 L35.82,58.65 C33.38,59.93 30.60,60.65 27.64,60.66 C17.91,60.67 10.01,52.83 10,43.16 C9.96,20.92 39.95,9 39.95,9 Z'/><path transform='translate(19,38) scale(0.3)' d='M40,3.68 L66.75,40.00 L40,76.31 L13.24,40.00 L40,3.68 Z'/><path transform='translate(55,38) scale(0.3)' d='M39.99,11 C47.76,11 54.06,17.3 54.06,25.06 C54.06,28.79 52.61,32.18 50.24,34.70 C51.98,33.93 53.90,33.50 55.93,33.50 C63.70,33.50 70,39.80 70,47.57 C70,55.33 63.70,61.63 55.93,61.63 C50.95,61.63 46.57,59.04 44.08,55.13 C44.14,55.40 44.21,55.66 44.27,55.93 L44.44,56.61 C44.47,56.73 44.49,56.84 44.52,56.96 L44.69,57.65 L44.85,58.33 C46.17,63.81 47.36,69 47.36,69 L32.93,69 C32.93,69 33.93,64.19 35.11,58.95 L35.27,58.26 L35.35,57.92 L35.51,57.23 C35.69,56.45 35.87,55.68 36.05,54.91 C33.57,58.94 29.13,61.63 24.06,61.63 C16.29,61.63 10,55.33 10,47.57 C10,39.80 16.29,33.50 24.06,33.50 C26.09,33.50 28.01,33.93 29.76,34.70 C27.38,32.19 25.93,28.80 25.93,25.06 C25.93,17.3 32.23,11 39.99,11 Z'/><path transform='translate(-17,38) scale(0.3)' d='M39.99,11 C47.76,11 54.06,17.3 54.06,25.06 C54.06,28.79 52.61,32.18 50.24,34.70 C51.98,33.93 53.90,33.50 55.93,33.50 C63.70,33.50 70,39.80 70,47.57 C70,55.33 63.70,61.63 55.93,61.63 C50.95,61.63 46.57,59.04 44.08,55.13 C44.14,55.40 44.21,55.66 44.27,55.93 L44.44,56.61 C44.47,56.73 44.49,56.84 44.52,56.96 L44.69,57.65 L44.85,58.33 C46.17,63.81 47.36,69 47.36,69 L32.93,69 C32.93,69 33.93,64.19 35.11,58.95 L35.27,58.26 L35.35,57.92 L35.51,57.23 C35.69,56.45 35.87,55.68 36.05,54.91 C33.57,58.94 29.13,61.63 24.06,61.63 C16.29,61.63 10,55.33 10,47.57 C10,39.80 16.29,33.50 24.06,33.50 C26.09,33.50 28.01,33.93 29.76,34.70 C27.38,32.19 25.93,28.80 25.93,25.06 C25.93,17.3 32.23,11 39.99,11 Z'/></g></svg>",
+      "colours": [
+        {
+          "part": "fill",
+          "value": "black at fill-opacity 0.04"
+        }
+      ],
+      "colourMode": "hardcoded (utf8 data URI)",
+      "notes": "A 72px tile of the four suits (same paths as the seam marks) at 4% black, the paper texture of the frontpage's fixed ad rail.",
+      "uses": [
+        {
+          "where": {
+            "css": [
+              "static/scss/_wm-chrome.scss:669-692"
+            ]
+          },
+          "ui": "Wallpaper of the ad rail at the frontpage's right edge.",
+          "ground": {
+            "token": "--paper-band",
+            "hex": "#f4eee5"
+          },
+          "size": "72x72 tile",
+          "flag": "on"
+        }
+      ],
+      "files": [
+        "adRailSuitWallpaper.svg"
+      ]
+    }
+  ],
+  "glyphs": [
+    {
+      "id": "successCheckGlyph",
+      "char": "✔",
+      "codepoint": "U+2714 HEAVY CHECK MARK",
+      "uses": [
+        {
+          "where": {
+            "markup": [
+              "static/js/BoxForm.js:200-207 (showSuccess prefixes the message with '✔ ')"
+            ],
+            "css": [
+              "static/scss/_wm-auth.scss:171-183"
+            ]
+          },
+          "ui": "Before the success message in the sign in, sign up and account recovery boxes.",
+          "colour": "#43a038 (--btn-green)",
+          "ground": "#f9f6f2 (the box)",
+          "size": "14px text (--type-small)",
+          "flag": "both"
+        },
+        {
+          "where": {
+            "css": [
+              "static/scss/BoxForm.scss:1846-1848 (color --color-text-success)",
+              "static/scss/_wm-settings.scss:660-665 (sets size only)"
+            ]
+          },
+          "ui": "Before the success message in the settings Account forms (change email, change password, delete account).",
+          "colour": "#4F800B (--color-text-success, the legacy lime-dark: _wm-settings.scss sets no colour)",
+          "ground": "#ffffff (the card)",
+          "size": "14px text",
+          "flag": "both"
+        }
+      ]
+    },
+    {
+      "id": "friendHeartGlyph",
+      "char": "♥",
+      "codepoint": "U+2665 BLACK HEART SUIT",
+      "uses": [
+        {
+          "where": {
+            "markup": [
+              "static/js/wocg/LobbyWidgets.js:1724"
+            ],
+            "css": [
+              "static/scss/_fp-cards.scss:168-170"
+            ]
+          },
+          "ui": "After a friend's name on the frontpage leaderboard card.",
+          "colour": "#f03e3e (literal; Open Color red 7; listed in DESIGN-GUIDE.md 3.5; DESIGN-COLOUR.md open question 24)",
+          "ground": "#ffffff or #f4eee5 (alternate rows)",
+          "size": "14px text",
+          "flag": "on"
+        }
+      ]
+    },
+    {
+      "id": "suitGlyphs",
+      "char": "♠ ♥ ♦ ♣",
+      "codepoint": "U+2660, U+2665, U+2666, U+2663",
+      "uses": [
+        {
+          "where": {
+            "markup": [
+              "shared/utils/index.js:660-668 (suitSymbol)",
+              "trump chips: euchre-game.js:776, whist-game.js:509, sheepshead-game.js:998, threefiveeight-game.js:1172, twentynine-game.js:1149, pinochle-game.js:970, pinochledd-game.js:782, Table.js:4905 (bridge contract), crazyeights-game-ui.js:219-231 (declared suit)"
+            ],
+            "css": [
+              "static/scss/pieces.scss:901-922 (flag-off round chip on suitChip.png)",
+              "static/scss/pieces.scss:2395-2456 (flag-on side tab on --paper-band)"
+            ]
+          },
+          "ui": "Trump / declared suit shown on the chip or side tab at a player's plate.",
+          "colour": "hearts, diamonds #EB1B28 (--color-suit-red); spades, clubs #000000 (--color-suit-black)",
+          "ground": "flag-on #f4eee5 tab with a #393939 line; flag-off suitChip.png",
+          "size": "24px text (20px compact)",
+          "flag": "both"
+        },
+        {
+          "where": {
+            "markup": [
+              "static/js/wocg/piece/suitSelector.js:39"
+            ],
+            "css": [
+              "static/scss/pieces.scss:1328-1356"
+            ]
+          },
+          "ui": "The four suit buttons when a player picks trump (card-like white tiles with a big suit).",
+          "colour": "#EB1B28 / #000000",
+          "ground": "#ffffff (--color-bg-surface); picked: 4px --color-highlight #FFE066 ring",
+          "size": "fitted to the tile (FitText)",
+          "flag": "both"
+        },
+        {
+          "where": {
+            "markup": [
+              "static/js/wocg/piece/miniCard.js:41-46"
+            ],
+            "css": [
+              "static/scss/pieces.scss:1313-1326"
+            ]
+          },
+          "ui": "Rank plus suit on mini cards.",
+          "colour": "#EB1B28 / #000000",
+          "ground": "#ffffff",
+          "flag": "both"
+        },
+        {
+          "where": {
+            "markup": [
+              "static/js/wocg/game/pinochle/pinochle-game.js:1199, 1270, 2091, 2156",
+              "static/js/wocg/game/pinochledd/pinochledd-game.js:1006, 1077, 1884, 1949"
+            ],
+            "css": [
+              "static/scss/base.scss:834-850 (.meldSuit, .meldTrumpSuit)"
+            ]
+          },
+          "ui": "Suits in the Pinochle meld and subtotal panels (trump in the player header, suit per meld).",
+          "colour": "#EB1B28 / #000000",
+          "ground": "the panel card",
+          "size": "1.125em",
+          "flag": "both"
+        },
+        {
+          "where": {
+            "markup": [
+              "static/js/wocg.js:516-523 (colorizeSuitSymbols: inline style 'color: red' on hearts and diamonds)",
+              "callers static/js/wocg/TableBar.js:582 (game page band), static/js/wocg/FooterBar.js:322 (in-game rules panel)"
+            ],
+            "css": [
+              "static/scss/TableBar.scss:1453-1456 (span.heart/.diamond: red)",
+              "static/scss/_wm-read-article.scss:411-427 (#f03e3e, strategy articles under body.wm only)"
+            ]
+          },
+          "ui": "Suits inside help and rules text.",
+          "colour": "hearts, diamonds: CSS named red #ff0000 (inline style), #f03e3e only in strategy articles at flag-on; spades, clubs: text ink",
+          "ground": "the page paper",
+          "flag": "both"
+        },
+        {
+          "where": {
+            "markup": [
+              "static/js/wocg/Table.js:4197-4213 (HTML entities in the turn hint toast)"
+            ]
+          },
+          "ui": "Card names in the hint toast ('Try the Q♠').",
+          "colour": "the toast's ink (no suit colour)",
+          "ground": "the toast paper",
+          "flag": "both"
+        }
+      ]
+    },
+    {
+      "id": "showMeldsLetter",
+      "char": "M",
+      "codepoint": "U+004D (a letter used as an icon)",
+      "uses": [
+        {
+          "where": {
+            "markup": [
+              "static/js/wocg/game/pinochle/pinochle-game.js:719-720",
+              "static/js/wocg/game/pinochledd/pinochledd-game.js:529-530"
+            ],
+            "css": [
+              "static/scss/pieces.scss:770-798 (chip colour --color-text-primary)",
+              "static/scss/pieces.scss:2432-2434 (flag-on tab, 20px)"
+            ]
+          },
+          "ui": "Show-melds chip / side tab at the Pinochle plates.",
+          "colour": "#212529 (--color-text-primary, the legacy ink; not bridged at the table)",
+          "ground": "flag-on #f4eee5 tab; flag-off suitChip.png",
+          "size": "20px text",
+          "flag": "both"
+        }
+      ]
+    },
+    {
+      "id": "dormantGlyphs",
+      "char": "○ ✓ ♣",
+      "codepoint": "U+25CB, U+2713, U+2663",
+      "uses": [
+        {
+          "where": {
+            "markup": [
+              "static/js/wocg/LobbyWidgets.js:1405-1417"
+            ],
+            "css": [
+              "static/scss/GameSelectors.scss:1520-1537"
+            ]
+          },
+          "ui": "Game Night panel crown line: '○ ' before, '✓ ' once earned.",
+          "colour": "#8d7a52 / #c9a24e (brass literals)",
+          "ground": "wood gradient #43301d to #372a1e",
+          "flag": "dormant",
+          "flagNote": "#lobbyNightPanel has no host in the current markup (LobbyWidgets.js:2746 finds nothing)."
+        },
+        {
+          "where": {
+            "markup": [
+              "static/js/wocg/LobbyWidgets.js:1084"
+            ]
+          },
+          "ui": "'♣ ' before a standing table's ceremony line in 'Your tables'.",
+          "colour": "inherits",
+          "flag": "dormant",
+          "flagNote": "#lobbyYourTables has no host in the current markup."
+        }
+      ]
+    },
+    {
+      "id": "separatorGlyphs",
+      "char": "· ×",
+      "codepoint": "U+00B7 MIDDLE DOT, U+00D7 MULTIPLICATION SIGN",
+      "notes": "Typographic separators, not icons, listed for completeness.",
+      "uses": [
+        {
+          "where": {
+            "css": [
+              "static/scss/_wm-shared.scss:760-770 (content '\\00B7' before a game's table count in the games bar)"
+            ]
+          },
+          "ui": "Dot between a game name and its count in the games bar.",
+          "colour": "#4e4d4c (--ot-ink); white on the thumb",
+          "flag": "both"
+        },
+        {
+          "where": {
+            "markup": [
+              "static/js/wocg/User.js:996 ('×' + games together)",
+              "static/js/wocg/game/pinochle/pinochle-game.js:821 and pinochledd-game.js:628 (meld counts)"
+            ]
+          },
+          "ui": "Multiplier before a count.",
+          "colour": "inherits (friends hint: --color-text-muted #868E96)",
+          "flag": "both"
+        }
+      ]
+    }
+  ],
+  "offTokenColours": [
+    {
+      "family": "cold grey (legacy Bootstrap / Open Color gray)",
+      "hex": "#868E96",
+      "token": "--color-text-muted",
+      "where": "friendsSearchMagnifier, friendsSearchCloseCross, conversationBackArrow (rest), sendArrow disabled, inviteSentCheck; star empty stroke in the game over prompt (both flags) and on the band at flag-off"
+    },
+    {
+      "family": "cold grey",
+      "hex": "#495057",
+      "token": "--color-text-subtle",
+      "where": "hover of friendsSearchMagnifier, friendsSearchCloseCross, conversationBackArrow"
+    },
+    {
+      "family": "cold grey",
+      "hex": "#DEE2E6",
+      "token": "--color-bg-elevated-dark",
+      "where": "fill of the friends search / close buttons; sendArrow disabled fill"
+    },
+    {
+      "family": "cold grey",
+      "hex": "#ADB5BD",
+      "token": "--color-border-light / --shadow-border-focus",
+      "where": "rings of those buttons; the invited button's ring; the conversation header's lines"
+    },
+    {
+      "family": "cold grey",
+      "hex": "#CED4DA",
+      "token": "literal in GameRating.scss:67",
+      "where": "star empty fill (game over prompt; band at flag-off)"
+    },
+    {
+      "family": "cold grey",
+      "hex": "#E9ECEF",
+      "token": "--color-bg-elevated",
+      "where": "inviteSentCheck button fill; rating callout at flag-off"
+    },
+    {
+      "family": "cold grey",
+      "hex": "#f8f9fa",
+      "token": "--color-bg-base",
+      "where": "ground of conversationBackArrow and the conversation send button at both flags; classic menu bar, page and table chat at flag-off"
+    },
+    {
+      "family": "cold ink",
+      "hex": "#212529",
+      "token": "--color-text-primary",
+      "where": "socialXLegacy (flag-off), the Pinochle 'M' glyph (both flags), the classic Multiplayer caret (flag-off)"
+    },
+    {
+      "family": "cold ink",
+      "hex": "#343A40",
+      "token": "--color-text-secondary / legacy --color-border-strong",
+      "where": "classic menu bar carets (flag-off); the timer's outer line at flag-off"
+    },
+    {
+      "family": "Open Color blue",
+      "hex": "#1971C2",
+      "token": "--color-action-info-text",
+      "where": "sendArrow (both uses), inviteAddPerson. Same hex as --plate-blue-ink, which the brief does not list"
+    },
+    {
+      "family": "Open Color blue",
+      "hex": "#1665AD",
+      "token": "--color-text-link",
+      "where": "hover of sendArrow and inviteAddPerson"
+    },
+    {
+      "family": "Open Color blue",
+      "hex": "#A5D8FF",
+      "token": "--color-bg-info",
+      "where": "fill of the send and invite buttons (the redesign's plate blue is #abd2ff)"
+    },
+    {
+      "family": "Open Color blue",
+      "hex": "#63B4F2",
+      "token": "--color-action-info-border",
+      "where": "ring of the send and invite buttons; star focus outline at the table"
+    },
+    {
+      "family": "lime",
+      "hex": "#A9E34B",
+      "token": "--color-action-success-light",
+      "where": "friendMessageBubble button fill"
+    },
+    {
+      "family": "lime",
+      "hex": "#66A80F",
+      "token": "--color-action-success",
+      "where": "friendMessageBubble button ring"
+    },
+    {
+      "family": "lime",
+      "hex": "#5C940D",
+      "token": "--color-action-success-active",
+      "where": "friendMessageBubble glyph"
+    },
+    {
+      "family": "lime",
+      "hex": "#4F800B",
+      "token": "--color-text-success",
+      "where": "friendMessageBubble hover; canasta star (natural); the settings success check glyph; the classic dropup caret (flag-off)"
+    },
+    {
+      "family": "lime",
+      "hex": "#C0EB75",
+      "token": "--color-bg-success",
+      "where": "canasta star's badge; the classic dropup button (flag-off)"
+    },
+    {
+      "family": "lime",
+      "hex": "#74B816",
+      "token": "--color-action-success-hover",
+      "where": "classic dropup ring (flag-off)"
+    },
+    {
+      "family": "green",
+      "hex": "#00a82d",
+      "token": "literal (the old result-won green)",
+      "where": "the Play pill in aboutPicNeverWait"
+    },
+    {
+      "family": "Open Color yellow / orange",
+      "hex": "#FCC419",
+      "token": "literal GameRating.scss:72",
+      "where": "star full fill in the game over prompt (both flags) and the band at flag-off"
+    },
+    {
+      "family": "orange",
+      "hex": "#DD7200",
+      "token": "literal GameRating.scss:73",
+      "where": "star full stroke, same places"
+    },
+    {
+      "family": "yellow",
+      "hex": "#FFE066",
+      "token": "--color-bg-warning",
+      "where": "turnTimerRing disc; mixed canasta star badge"
+    },
+    {
+      "family": "orange",
+      "hex": "#C96800",
+      "token": "--color-text-warning",
+      "where": "turnTimerRing arc; mixed canasta star"
+    },
+    {
+      "family": "yellow",
+      "hex": "#F4BD45",
+      "token": "--color-timer-ring",
+      "where": "turnTimerRing inner ring"
+    },
+    {
+      "family": "yellow",
+      "hex": "#FDC41B",
+      "token": "$dealDayPlayInk literal",
+      "where": "the calendar 'play' glyph (caretDown), meant to be suppressed in the redesign"
+    },
+    {
+      "family": "gold",
+      "hex": "#f4c360",
+      "token": "literal",
+      "where": "the arrow in aboutPicHelpArrow"
+    },
+    {
+      "family": "red",
+      "hex": "#FFA8A8 / #F67A7A",
+      "token": "--color-bg-danger-light / --color-timer-danger",
+      "where": "turnTimerRing red state disc and ring (its arc #C92A2A equals --btn-danger)"
+    },
+    {
+      "family": "red",
+      "hex": "#f03e3e",
+      "token": "literal (Open Color red 7; DESIGN-GUIDE.md 3.5)",
+      "where": "friendHeartGlyph; suit glyphs in strategy articles at flag-on"
+    },
+    {
+      "family": "red",
+      "hex": "#EB1B28 (with #000)",
+      "token": "--color-suit-red / --color-suit-black",
+      "where": "suitGlyphs at the table and in the meld panels"
+    },
+    {
+      "family": "red",
+      "hex": "#ff0000",
+      "token": "CSS named 'red', inline style",
+      "where": "hearts and diamonds in help and rules text (wocg.js:519-520) outside strategy articles; also the YouTube hover"
+    },
+    {
+      "family": "red",
+      "hex": "#e54e40",
+      "token": "literal",
+      "where": "the heart in aboutPicFriendly"
+    },
+    {
+      "family": "muted red / near ink",
+      "hex": "#B54A3F / #262626",
+      "token": "literals",
+      "where": "seamSuitMarks (decor)"
+    },
+    {
+      "family": "brand",
+      "hex": "#000000 / #0866FF / #FF0000",
+      "token": "literals",
+      "where": "hover colours of socialX / socialFacebook / socialYouTube"
+    },
+    {
+      "family": "near ink",
+      "hex": "#252525",
+      "token": "--color-drop-shadow as a literal",
+      "where": "avatarLineFilter (decor)"
+    }
+  ],
+  "notes": "Scope: SVG drawn inline (dust markup, JS strings, createElementNS), SVG data URIs in SCSS, and CSS masks. File SVGs and PNGs used through <img> or background-image (closeModal.svg in ModalRules.js:48 and ModalWebview.js:46, crown/playerLiked/playerMore/playerLeaving/sortArrow* on the felt tabs, botBadge/likedBadge/cleanMeldBadge/highReputationBadge, dailyChallenge*Small.svg, dealer.svg, menu*.svg, hint*.png, playMenu.svg, tableMenu.png, the chat bubble tails in themes/classic/classic.js:55) are not in this file. Lottie animations rendered as SVG at runtime (avatar emotions and the settings cheer, Table.js:9755, MenuBar.js:376; the game over ribbon re-painted in Table.js:6306-6324) are not icons and are left out. The shuffle-tests d3 chart (web/dust/shuffle-tests.dust:94) is a chart. Gradient masks (_fp-hero.scss:421, 453 number reels; pieces.scss:441) are not icons.\n\nCount: 26 icons and 11 decor pieces (6 of them the About pictures), plus 6 glyph groups. No icon font is in use.\n\nStandalone files in inline-svg/: markup as in the source, plus xmlns where the markup has none, and an iconlab <style> scoped to the root id that paints the ground as the root background and, for art the site colours from CSS, the default-state colour. Mask icons are the art file recoloured the same way. The JSON 'svg' fields are untouched source markup (dust's {VERSION_PREFIX}{V.image} rendered as ?v=971).\n\nHardcoded token copies (on the token set, but written as literals the lab would have to edit in place): #4e4d4c in the row info i data URI (Modals.scss:699, --ink-label); #347d2c in the pick mark data URI (_wm-settings.scss:372, --btn-green-ring); #D2CFCA in the seam rules (_fp-seams.scss:13-14, FrontpageSeams.js:31-32, --line); #327333 as the lock's keyhole (TableListingBuilder.js:128) and the About pictures' felt; rgba(0,0,0,.30) as the close cross outline.\n\nScrim values for the close cross: rgba(0,0,0,.48) over --paper-page is about #81807e, over --paper-band #7f7c77, over the felt #1a3c1b (before the 4px blur).\n\nPossible defect: in the daily deal dialog, GameSelectors.scss:405-433 (0,3,1) outranks the redesign's .wmModal .ldCalDay::before { content: none } (0,2,1), so hovering a past day on a desk likely draws the yellow #FDC41B play triangle over the day's number. The frontpage deal card is safe (body.fp .lobbyscope, 0,3,2). Not checked in a browser."
+}

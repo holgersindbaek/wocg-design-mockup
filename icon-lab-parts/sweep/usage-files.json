@@ -1,0 +1,1883 @@
+{
+  "meta": {
+    "repo": "/Users/holgersindbaek/CloudDrive/HolgerSindbaek/WorldOfCardGames/Programming/wocg (branch lobby-build, working tree as found)",
+    "snapshot": "2026-09-23 12:22 CEST. Another session was editing during this research: pieces.scss grew by 2 lines after line ~2000, base.scss by 8, and _classic-panels.scss / _classic-meld.scss were imported at the end of pieces.scss / base.scss at about 12:20. Line numbers below are from that snapshot.",
+    "paths": "All 'where' paths are relative to worldofcardgames/. Nothing under staging/, node_modules/, logs*, .claude/worktrees or static/css/*.css was read for the mapping (the compiled Modals.css and GameSelectors.css were loaded once, read-only, for one render check, see arrowDown use f).",
+    "flag": "The redesign flag is localStorage/URL 'wocgLobby' (web/dust/index.dust:83, static/js/wocg.js:1047-1064). With it on, index.dust adds body.wm (and body.fp on the lobby, GameSelectors.js:371). The native app (platform=mobile) and Arkadium never get it. 'on' = only with the flag, 'off' = only without it, 'both' = either.",
+    "grounds_used": {
+      "felt": "--color-table-felt #327333 under green-felt.jpg (app_shell.dust:7, Theme.js:15). A player can choose another wallpaper.",
+      "paper-band": "#f4eee5 (_wocg-tokens.scss:31)",
+      "paper-page": "#f9f6f2 (_wocg-tokens.scss:30)",
+      "paper-card": "#ffffff (_wocg-tokens.scss:32)",
+      "legacy bar grey": "--color-bg-base #f8f9fa (_variables.scss:72)",
+      "legacy scrim": "--color-bg-overlay rgba(0,0,0,.64) (_variables.scss:76)",
+      "plates flag-on": "--color-team1-bg #ABD2FF, --color-team2-bg #FCBCB4 (_variables.scss:90-92); felt tiles use --plate-blue #abd2ff / --plate-red #fcbcb4",
+      "plates flag-off": "_classic-table.scss:21-23 maps team1 to --color-bg-info #A5D8FF and team2 to --color-bg-error #FFC1BF"
+    }
+  },
+  "files": [
+    {
+      "name": "arrowDown",
+      "files": ["arrowDown.svg"],
+      "category": "controls",
+      "shipped_formats": ["svg"],
+      "used": true,
+      "drawn": true,
+      "art": "a plain black (#000000) triangle, viewBox 9.7x8.59. Every live use draws it as a CSS mask filled with a colour, so the file's own colour never shows.",
+      "uses": [
+        {
+          "file": "arrowDown.svg",
+          "where": "static/scss/MenuBar.scss:44-55 `#menuIconContainer::after`",
+          "ui": "the caret after the word 'Games' on the menubar's narrow-window trigger (shown at 924px and under)",
+          "ground": {"flagOn": "--paper-band #f4eee5 (_wm-chrome.scss:29, body.wm #menuBarContainer background)", "flagOff": "--color-bg-base #f8f9fa (MenuBar.scss:9, #menuBarContainer background)"},
+          "size": "8x7",
+          "state": "rest",
+          "recolour": "mask: url(arrowDown.svg) center/contain; background-color: currentColor = --color-text-secondary #343A40 flag-off (MenuBar.scss:40), --ink #141414 flag-on (_wm-chrome.scss:155)",
+          "flag": "both",
+          "note": "With the flag on the whole menubar is display:none at a table (MenuBar.scss:21)."
+        },
+        {
+          "file": "arrowDown.svg",
+          "where": "static/scss/MenuBar.scss:111-127 `#menuBar li:nth-last-child(1)::after`",
+          "ui": "the caret after 'All games' in the classic menubar",
+          "ground": {"flagOn": "n/a: body.wm #menuBar > li:not(.mclink) {display:none} (_wm-chrome.scss:147) hides this item", "flagOff": "--color-bg-base #f8f9fa (MenuBar.scss:9)"},
+          "size": "8x7",
+          "state": "rest",
+          "recolour": "mask; background-color: currentColor = --color-text-secondary #343A40 (MenuBar.scss:100)",
+          "flag": "off"
+        },
+        {
+          "file": "arrowDown.svg",
+          "where": "static/scss/_wm-chrome.scss:188-200 `body.wm .mtri`",
+          "ui": "the caret after 'Games' in the redesigned menubar's left links (opens the five-column games panel)",
+          "ground": {"flagOn": "--paper-band #f4eee5 (_wm-chrome.scss:29)", "flagOff": "n/a: body:not(.wm) #menuBar > li.mclink {display:none} (_wm-chrome.scss:130)"},
+          "size": "8x7",
+          "state": "rest",
+          "recolour": "mask; background-color: currentColor = --ink #141414 (_wm-chrome.scss:169)",
+          "flag": "on"
+        },
+        {
+          "file": "arrowDown.svg",
+          "where": "static/scss/TableBar.scss:117-131 `#gamesDropup .multiplayerDropdownLink span::after`",
+          "ui": "the caret after 'Multiplayer' in the classic table bar's Play dropup",
+          "ground": {"flagOn": "n/a: body.wm #tableBarContainer {display:none !important} (TableBar.scss:1533-1535)", "flagOff": "--color-bg-base #f8f9fa (TableBar.scss:40, #gamesDropup li background-color)"},
+          "size": "8x7",
+          "state": "rest",
+          "recolour": "mask; background-color: currentColor = --color-text-primary #212529 (TableBar.scss:60)",
+          "flag": "off"
+        },
+        {
+          "file": "arrowDown.svg",
+          "where": "static/scss/base.scss:1223-1252 `.dropup .dropupButton .dropupButtonText::after` (mask at 1242)",
+          "ui": "the caret on the 'Tables' and 'Practice' dropup buttons under each game tile of the classic lobby (web/dust/common/game_selector_container.dust:75, 89); it turns 180 degrees while the list is open",
+          "ground": {"flagOn": "n/a: the classic lobby grid is replaced by the body.fp frontpage. LobbyWidgets' own .ldMore dropups are never mounted (renderButtonRow has no caller; #lobbyTablesFilter is display:none, _fp-open-tables.scss:114)", "flagOff": "--color-bg-success #C0EB75 button (GameSelectors.scss:2384), hover/open --color-hover-bg-success"},
+          "size": "8x7",
+          "state": "rest / open (rotated 180)",
+          "recolour": "mask; background-color: currentColor = --color-text-success #4F800B (GameSelectors.scss:2386)",
+          "flag": "off"
+        },
+        {
+          "file": "arrowDown.svg",
+          "where": "static/scss/GameSelectors.scss:404-432 `.ldCalDay:not(.isFuture):hover` and its `::before` (plain background fallback at 408, mask at 427-428)",
+          "ui": "the yellow 'play this day' triangle (the arrow turned -90 degrees) on a hovered day of the Daily challenge month calendar",
+          "ground": {"flagOn": "in the Daily challenge dialog (.wmModal.wmDeal) the hovered cell is --paper-band #f4eee5 (_wm-shared.scss:1320-1331); the day number stays visible under the glyph, and on a won day the glyph lands on top of the green check. Not drawn on the frontpage card: body.fp .lobbyscope .ldCalDay::before {content:none} (0,3,2) beats it", "flagOff": "n/a: the month panel is only built by LobbyWidgets, which returns early without the flag (LobbyWidgets.js:79)"},
+          "size": "14x16",
+          "state": "hover",
+          "recolour": "mask 14x16 filled $dealDayPlayInk #FDC41B, transform: rotate(-90deg); the legacy drop-shadow(0 0 2px rgba(0,0,0,.24)) on the cell is cancelled in the dialog by filter:none",
+          "flag": "on",
+          "note": "A leak. The redesign meant to drop it (_wm-shared.scss:1357 .wmModal .ldCalDay::before {content:none}, specificity 0,2,1), but the legacy hover rule is 0,3,1 and still wins in the dialog. Verified in Playwright's bundled Chromium with the compiled GameSelectors.css + Modals.css: on hover ::before content '' with the arrowDown mask and background rgb(253,196,27), cell rgb(244,238,229)."
+        },
+        {
+          "file": "arrowDown.svg",
+          "where": "static/scss/_wm-shared.scss:850-868 `.otFilter .track .ov .ovbtn .zone .gbtri` (mixin wm-games-bar)",
+          "ui": "the caret on the games bar's 'More' cell (the tray of game names above a table listing)",
+          "ground": {"flagOn": "the tray --plate-tray #e4ddd0 (_wm-shared.scss:690 --ot-tray). When the pick is a game from the More list, the green thumb --btn-green #43a038 slides under it. Used on the frontpage bars (body.fp .otFilter, _fp-open-tables.scss:308), the Daily challenge dialog (.wmModal) and the Find-tables box", "flagOff": "same tray #e4ddd0 in the Find-tables box (#tableListingsBox .otFilter, TableListingsBar.scss:11): #tableListingsBox is a token root at both flags (_wocg-tokens.scss:24)"},
+          "size": "8x7",
+          "state": "rest / More holds the pick",
+          "recolour": "mask; background-color --ot-ink = --ink-label #4e4d4c; when picked --ot-thumbink = --btn-ink #ffffff with a 1px --btn-green-ring drop-shadow on the wrapper (_wm-shared.scss:1053-1060)",
+          "flag": "both"
+        },
+        {
+          "file": "arrowDown.svg",
+          "where": "static/scss/_wm-leaderboard.scss:432-469 `.change-positive::before / .change-negative::before`",
+          "ui": "the arrow in a movement chip (rank or rating up or down) on the generated per-game leaderboard pages",
+          "ground": {"flagOn": "up: --plate-green #b2dd9b chip (_wm-leaderboard.scss:458); down: --plate-red #fcbcb4 chip (_wm-leaderboard.scss:467)", "flagOff": "n/a: flag-off pages draw arrowPlus.png / arrowMinus.png instead"},
+          "size": "6x5",
+          "state": "up (rotated 180) / down",
+          "recolour": "mask; background-color currentColor = --plate-green-ink #305812 (up) / --color-team2-ink #8B1A1A (down)",
+          "flag": "on"
+        },
+        {
+          "file": "arrowDown.svg",
+          "where": "static/scss/_fp-cards.scss:183-222 `body.fp .lobbyscope .lbUp::before / .lbDown::before`",
+          "ui": "the arrow in a movement chip on the frontpage leaderboard card",
+          "ground": {"flagOn": "up: --plate-green #b2dd9b; down: --plate-red #fcbcb4 (_fp-cards.scss:210-222)", "flagOff": "n/a (body.fp only)"},
+          "size": "6x5",
+          "state": "up (rotated 180) / down",
+          "recolour": "mask; background-color currentColor = --plate-green-ink #305812 / --color-team2-ink #8B1A1A",
+          "flag": "on"
+        },
+        {
+          "file": "arrowDown.svg",
+          "where": "static/scss/_fp-catalog.scss:180-200 `.gplay .gzarr::before`",
+          "ui": "the dropdown arrow at the right end of each catalog tile's Play button on the frontpage; it turns 180 degrees while the tile's menu is open",
+          "ground": {"flagOn": "the game's own --tint (per game, _fp-catalog.scss:275-292, for example hearts #971f3e, spades #0065c3, euchre #3a8132); hover --tintbtnhover", "flagOff": "n/a (body.fp only)"},
+          "size": "8x7",
+          "state": "rest / open (rotated 180)",
+          "recolour": "mask; background-color currentColor = #ffffff (_fp-catalog.scss:233), ringed by a 1px drop-shadow in --tintbtnring on the wrapper",
+          "flag": "on"
+        },
+        {
+          "file": "arrowDown.svg",
+          "where": "static/scss/_wm-stats.scss:88-97 `.wmModal.wmStats .wmStChev`",
+          "ui": "the chevron on the Stats dialog's game picker",
+          "ground": {"flagOn": "--btn-quiet = --line #d2cfca (_wm-stats.scss:62; declared on .wmModal, _wm-tokens.scss:37)", "flagOff": "same: StatsBox.js:423 always builds a ModalShell, which is always .wmModal (ModalShell.js:474)"},
+          "size": "8x7",
+          "state": "rest",
+          "recolour": "mask; background-color --ink #141414",
+          "flag": "both",
+          "note": "Not shown for Arkadium (StatsBox.js)."
+        },
+        {
+          "file": "arrowDown.svg",
+          "where": "static/scss/_wm-deal.scss:50-85 `.wmModal.wmDeal .ldmNav::before` (mask at 70)",
+          "ui": "the previous and next month arrows in the Daily challenge dialog (rotated 90 / -90 degrees)",
+          "ground": {"flagOn": "--paper-card #ffffff button (_wm-deal.scss:61), hover --paper-band #f4eee5", "flagOff": "n/a (dialog built by LobbyWidgets only)"},
+          "size": "8x7",
+          "state": "rest / hover",
+          "recolour": "mask; background-color currentColor = --ink #141414",
+          "flag": "on"
+        }
+      ],
+      "used_check": "grep of arrowDown across scss/js/dust (26 hits) plus head_open_ads.dust:155 preload."
+    },
+    {
+      "name": "arrowMinus",
+      "files": ["arrowMinus.png"],
+      "category": "other",
+      "shipped_formats": ["png"],
+      "used": true,
+      "drawn": true,
+      "art": "a red (#B02020) down arrow, 39x39 px",
+      "uses": [
+        {
+          "file": "arrowMinus.png",
+          "where": "node-maintenance/dailyRecordsGeneric.dust:91 `body:not(.wm) .change-negative`",
+          "ui": "the red arrow before a negative rank or rating change on the generated per-game leaderboard pages (master look)",
+          "ground": {"flagOn": "n/a: body:not(.wm) only; the flag-on page draws the arrowDown chip instead", "flagOff": "the table row: white (dailyRecordsGeneric.dust:63) or #F8F9FA on even rows (dailyRecordsGeneric.dust:72)"},
+          "size": "16x16 (in a 20px left padding)",
+          "state": "rest",
+          "recolour": "none",
+          "flag": "off"
+        }
+      ],
+      "used_check": "only reference is dailyRecordsGeneric.dust:91"
+    },
+    {
+      "name": "arrowPlus",
+      "files": ["arrowPlus.png"],
+      "category": "other",
+      "shipped_formats": ["png"],
+      "used": true,
+      "drawn": true,
+      "art": "a green (#408000) up arrow, 39x39 px",
+      "uses": [
+        {
+          "file": "arrowPlus.png",
+          "where": "node-maintenance/dailyRecordsGeneric.dust:90 `body:not(.wm) .change-positive`",
+          "ui": "the green arrow before a positive rank or rating change on the generated per-game leaderboard pages (master look)",
+          "ground": {"flagOn": "n/a: body:not(.wm) only", "flagOff": "white row (dailyRecordsGeneric.dust:63) or #F8F9FA even row (line 72)"},
+          "size": "16x16",
+          "state": "rest",
+          "recolour": "none",
+          "flag": "off"
+        }
+      ],
+      "used_check": "only reference is dailyRecordsGeneric.dust:90"
+    },
+    {
+      "name": "botBadge",
+      "files": ["botBadge.svg"],
+      "category": "badges",
+      "shipped_formats": ["svg"],
+      "used": true,
+      "drawn": true,
+      "art": "a grey robot head (#AEB5BD, #646E78) with a 64% black outline, 20x20",
+      "uses": [
+        {
+          "file": "botBadge.svg",
+          "where": "static/scss/_wm-shared.scss:262-273 `.playerBadge.isBot` (mixin wm-felt-tile)",
+          "ui": "badge on a seated bot's name plate in a felt table tile. The same mixin serves the Find-tables box (#tableListingsBox), the frontpage open and live tables (body.fp .lobbyscope) and the table preview dialog (.wmModal)",
+          "ground": {"flagOn": "centred on the plate's top-left corner (20px box at left:-10px top:-10px): a quarter over the plate --plate-blue #abd2ff (_wm-shared.scss:175), or --plate-red #fcbcb4 on team seats 1 and 3 (_wm-shared.scss:77, 85), the rest over the tile's felt header #327333 + green-felt.jpg (_wm-shared.scss:101)", "flagOff": "same plates and felt in the Find-tables box and the table preview dialog, which carry the redesign tokens at both flags (#tableListingsBox and .wmModal are token roots, _wocg-tokens.scss:24; ModalShell is always .wmModal)"},
+          "size": "16x16 in a 20x20 box",
+          "state": "a bot is in the seat",
+          "recolour": "none",
+          "flag": "both",
+          "note": "Frontpage copy is flag-on only. The table preview dialog opens from the friends and activity panels at both flags (User.js:731, 2951, 3829)."
+        },
+        {
+          "file": "botBadge.svg",
+          "where": "static/scss/GameSelectors.scss:691-716 `.ltCard .tableListing .header .playersContainer .player .playerNameContainer .playerBadge.isBot`",
+          "ui": "the same badge through master's class chain on LobbyWidgets' lobby tiles",
+          "ground": {"flagOn": "same as above: the chain's own plate (--color-bg-info #A5D8FF, GameSelectors.scss:667; team --color-bg-error #FFC1BF, 542) is answered at id specificity on the frontpage, so the plate is #abd2ff / #fcbcb4", "flagOff": "n/a: LobbyWidgets returns early without the flag (LobbyWidgets.js:79)"},
+          "size": "16x16 in a 20x20 box",
+          "state": "a bot is in the seat",
+          "recolour": "none",
+          "flag": "on"
+        },
+        {
+          "file": "botBadge.svg",
+          "where": "web/dust/common/fp_about.dust:52-54 `<image href=botBadge.svg>`",
+          "ui": "three bots drawn as seat avatars in the 'You never wait' picture of the frontpage About section",
+          "ground": {"flagOn": "flat felt #327333 (the SVG's own <rect fill='#327333'>, fp_about.dust:50), no texture", "flagOff": "n/a: #fpPage is display:none without body.fp (Frontpage.scss:95)"},
+          "size": "28x28 units of a 160x120 viewBox that fills the card width (about 17.5% of the card's width)",
+          "state": "rest",
+          "recolour": "none",
+          "flag": "on"
+        }
+      ],
+      "used_check": "grep of botBadge: _wm-shared.scss:271, GameSelectors.scss:714, fp_about.dust:52-54"
+    },
+    {
+      "name": "chatMenu",
+      "files": ["chatMenu.png", "chatMenuActive.png", "chatMenuHover.png"],
+      "category": "table-menu-bar",
+      "shipped_formats": ["png"],
+      "used": true,
+      "drawn": true,
+      "art": "a green speech bubble (#60a000 family) with white lines, 60x60 px (3x of 20)",
+      "uses": [
+        {
+          "file": "chatMenu.png",
+          "where": "static/scss/TableBar.scss:280-282 `#tableBar > li.chatLogLink`",
+          "ui": "the Chat cell of the classic table menu bar that floats at the bottom of the felt",
+          "ground": {"flagOn": "n/a: TableBar.scss:1533-1535 hides #tableBarContainer under body.wm", "flagOff": "--color-bg-base #f8f9fa (TableBar.scss:9, #tableBarContainer background-color)"},
+          "size": "20x20 (TableBar.scss:213), top-centre of the cell with the label under it",
+          "state": "rest",
+          "recolour": "none",
+          "flag": "off"
+        },
+        {
+          "file": "chatMenuHover.png",
+          "where": "static/scss/TableBar.scss:286-290 `#tableBar > li.chatLogLink:not(.disabled):hover`",
+          "ui": "the same cell under a mouse",
+          "ground": {"flagOn": "n/a", "flagOff": "--color-bg-base #f8f9fa"},
+          "size": "20x20",
+          "state": "hover",
+          "recolour": "none",
+          "flag": "off"
+        },
+        {
+          "file": "chatMenuActive.png",
+          "where": "static/scss/TableBar.scss:283-285 `#tableBar > li.chatLogLink.active`",
+          "ui": "the same cell while the chat log is open",
+          "ground": {"flagOn": "n/a", "flagOff": "--color-bg-base #f8f9fa"},
+          "size": "20x20",
+          "state": "active",
+          "recolour": "none",
+          "flag": "off"
+        },
+        {
+          "file": "chatMenu.png",
+          "where": "static/scss/pieces.scss:2504-2518 `body.wm #mainContainer .piece.button.spotPrefix-chatButton:not(.seatNewGame)`",
+          "ui": "the Chat seat button at the right end of your own name plate",
+          "ground": {"flagOn": "--paper-band #f4eee5 button (pieces.scss:2472; hover and press keep the paper, 2482, 2488), standing on the felt", "flagOff": "n/a: the seat buttons only get a piece under the redesign (Table.updateSeatButtons, Table.js:10525)"},
+          "size": "24x24 on a 40px button; 20x20 on a 32px button in a compact playspace (pieces.scss:2556-2560)",
+          "state": "rest; hover = chatMenuHover.png (2507-2511); active (chat open) = chatMenuActive.png (2513-2516)",
+          "recolour": "none",
+          "flag": "on"
+        }
+      ],
+      "used_check": "grep chatMenu: TableBar.scss 281-289, pieces.scss 2505-2515, preloads head_open_ads.dust:165-166"
+    },
+    {
+      "name": "checkmark",
+      "files": ["checkmark.png", "checkmarkDisabled.png"],
+      "category": "controls",
+      "shipped_formats": ["png"],
+      "used": true,
+      "drawn": true,
+      "art": "checkmark: a green tick; checkmarkDisabled: a grey tick (#CED4DA), 72x72 px",
+      "uses": [
+        {
+          "file": "checkmarkDisabled.png",
+          "where": "static/scss/TableListingsBar.scss:212-225 `#tableListingsBox .tableListing .content .contentMiddle .option`",
+          "ui": "the tick before a table option (for example 'Experienced only') that is off, in a Find-tables listing tile",
+          "ground": {"flagOn": "white #ffffff, the tile's lower half (TableListingsBar.scss:127 .tableListing background-color #fff)", "flagOff": "same white"},
+          "size": "24x24, left centre of a 24px line",
+          "state": "option off",
+          "recolour": "none",
+          "flag": "both"
+        },
+        {
+          "file": "checkmark.png",
+          "where": "static/scss/TableListingsBar.scss:227-230 `.option.active`",
+          "ui": "the tick before a table option that is on",
+          "ground": {"flagOn": "white #ffffff", "flagOff": "white #ffffff"},
+          "size": "24x24",
+          "state": "option on",
+          "recolour": "none",
+          "flag": "both",
+          "note": "The Find-tables box opens from the classic lobby's Tables dropup (GameSelector.js:450), the table's Browse tables (TableBar.js:1383) and LobbyWidgets (LobbyWidgets.js:2795). Master also drew these ticks in the table preview dialog (ModalTablePreview.scss); the rewritten dialog does not."
+        }
+      ],
+      "used_check": "grep checkmark: only TableListingsBar.scss:219, 228"
+    },
+    {
+      "name": "cleanMeldBadge",
+      "files": ["cleanMeldBadge.svg"],
+      "category": "badges",
+      "shipped_formats": ["svg"],
+      "used": true,
+      "drawn": true,
+      "art": "a lime (#A9E34B) rosette with a 64% black outline, 20x20. The player's completion percentage (70 to 99) is written on it in --btn-green-ring, 12px bold.",
+      "uses": [
+        {
+          "file": "cleanMeldBadge.svg",
+          "where": "static/scss/TableListingsBar.scss:147-164 `#tableListingsBox .tableListing .playerNameContainer .completionBadge`",
+          "ui": "completion-rate badge on a human's name plate in a Find-tables listing tile (TableListingsBar.js:391-398)",
+          "ground": {"flagOn": "centred on the plate's top-right corner (right:-8px top:-8px): the plate --plate-blue #abd2ff / --plate-red #fcbcb4 and the felt header #327333", "flagOff": "same (token root at both flags)"},
+          "size": "16x16",
+          "state": "70-99% completion and 10+ finished games",
+          "recolour": "none (text colour --btn-green-ring on top)",
+          "flag": "both"
+        },
+        {
+          "file": "cleanMeldBadge.svg",
+          "where": "static/scss/_wm-shared.scss:621-639 `.completionBadge` (mixin wm-felt-chrome, emitted for body.fp #openTablesTop, body.fp #lobbyLiveTables, _fp-open-tables.scss:141)",
+          "ui": "the same badge on the frontpage's open and live table tiles",
+          "ground": {"flagOn": "the plate's top-right corner (right/top -10px): plate #abd2ff / #fcbcb4 and felt", "flagOff": "n/a (body.fp)"},
+          "size": "20x20",
+          "state": "70-99%",
+          "recolour": "none",
+          "flag": "on"
+        },
+        {
+          "file": "cleanMeldBadge.svg",
+          "where": "static/scss/_wm-shared.scss:1420-1429 `.wmModal .ltCard ... .playerNameContainer .completionBadge`",
+          "ui": "the same badge on the seat plates in the table preview dialog",
+          "ground": {"flagOn": "plate corner, plate #abd2ff / #fcbcb4 and felt", "flagOff": "same (.wmModal at both flags)"},
+          "size": "20x20",
+          "state": "70-99%",
+          "recolour": "none",
+          "flag": "both"
+        },
+        {
+          "file": "cleanMeldBadge.svg",
+          "where": "static/scss/GameSelectors.scss:718-739 master chain `.completionBadge` (16x16)",
+          "ui": "the same badge through master's chain on LobbyWidgets tiles; on the frontpage it is outranked by the id-scoped wm-felt-chrome rule, so it draws at 20x20 there",
+          "ground": {"flagOn": "plate corner, as above", "flagOff": "n/a (LobbyWidgets.js:79)"},
+          "size": "16x16 by this rule, 20x20 as rendered on the frontpage",
+          "state": "70-99%",
+          "recolour": "none",
+          "flag": "on"
+        }
+      ],
+      "used_check": "grep cleanMeldBadge: TableListingsBar.scss:156, _wm-shared.scss:630, 1426, GameSelectors.scss:727"
+    },
+    {
+      "name": "closeModal",
+      "files": ["closeModal.svg"],
+      "category": "controls",
+      "shipped_formats": ["svg"],
+      "used": true,
+      "drawn": true,
+      "art": "a pure white (#FFFFFF) cross, 32x32. It only reads on a dark ground.",
+      "uses": [
+        {
+          "file": "closeModal.svg",
+          "where": "static/scss/TableListingsBar.scss:53-69 `#tableListingsBox .tableListingsBoxContent::before`",
+          "ui": "the close cross outside the top-right corner of the Find-tables box",
+          "ground": {"flagOn": "the scrim --color-bg-overlay rgba(0,0,0,.64) over the page (TableListingsBar.scss:32). The cross sits 32px right of the box; at 832px and under it moves above the box's top-right corner, still on the scrim", "flagOff": "same"},
+          "size": "32x32",
+          "state": "rest",
+          "recolour": "none",
+          "flag": "both"
+        },
+        {
+          "file": "closeModal.svg",
+          "where": "static/scss/FooterBar.scss:195-211 `#faqBox .content::before`",
+          "ui": "the close cross of the Help / game rules box (FooterBar.js), opened from the lobby footer's Help pill, the classic table bar's Help cell (TableBar.js:1458) and the redesigned Table panel's Rules row (TableBar.js:770)",
+          "ground": {"flagOn": "scrim rgba(0,0,0,.64) (FooterBar.scss:174); the box is not restyled under body.wm", "flagOff": "same"},
+          "size": "32x32",
+          "state": "rest",
+          "recolour": "none",
+          "flag": "both"
+        },
+        {
+          "file": "closeModal.svg",
+          "where": "static/js/ModalRules.js:48 `<img class='close'>` + static/scss/ModalRules.scss:73-84",
+          "ui": "the close cross of the native app's rules sheet (GameSelector.js:494-499, app only)",
+          "ground": {"flagOn": "n/a (app never gets the flag)", "flagOff": "scrim rgba(0,0,0,.64) (ModalRules.scss:19)"},
+          "size": "32x32",
+          "state": "rest",
+          "recolour": "none",
+          "flag": "off"
+        },
+        {
+          "file": "closeModal.svg",
+          "where": "static/js/ModalWebview.js:46 `<img class='close'>` + static/scss/ModalWebview.scss:64-75",
+          "ui": "the close cross of the native app's web view (the leaderboard from a table, TableBar.js:1474; the leaderboards link, ProfileBox.js:1557)",
+          "ground": {"flagOn": "n/a (app only)", "flagOff": "scrim rgba(0,0,0,.64) (ModalWebview.scss:19)"},
+          "size": "32x32",
+          "state": "rest",
+          "recolour": "none",
+          "flag": "off"
+        },
+        {
+          "file": "closeModal.svg",
+          "where": "static/scss/MenuBar.scss:328-343 `.menu .content::before`; static/scss/StatsBox.scss:42-58 `.statsBoxContent::before`; static/scss/ProfileBox.scss:42-58 `.profileBoxContent::before`",
+          "ui": "dead rules: no code builds .menu, .statsBoxContent or .profileBoxContent any more (Stats is a ModalShell, StatsBox.js:423; settings is profile_box.dust's .wmModal)",
+          "ground": {"flagOn": "never drawn", "flagOff": "never drawn"},
+          "size": "32x32",
+          "state": "n/a",
+          "recolour": "none",
+          "flag": "none (dead CSS)"
+        }
+      ],
+      "used_check": "grep closeModal: 8 references (5 SCSS, 2 JS, 1 preload at head_open_ads.dust:160). The redesigned dialogs' cross is an inline SVG (ModalShell.js:518, Modals.scss:216), not this file."
+    },
+    {
+      "name": "cribbageBoard",
+      "files": ["cribbageBoard.svg"],
+      "category": "cribbage",
+      "shipped_formats": ["svg"],
+      "used": true,
+      "drawn": true,
+      "art": "a light-wood board (#fac281) with dark holes (#343a40) and blue (#abd2ff) / red (#fcbcb4) track strips, viewBox 160x520, 1.4 MB",
+      "uses": [
+        {
+          "file": "cribbageBoard.svg",
+          "where": "static/scss/pieces.scss:1622-1632 `body[data-active-game='cribbage'] .piece.text.spot-cribbageBoard`",
+          "ui": "the cribbage board standing on the right side of the table",
+          "ground": {"flagOn": "the felt #327333 + green-felt.jpg", "flagOff": "the felt"},
+          "size": "width = the stock pile's card width + the stock count's width (cribbage-layout.js:233-243), height = 3.25 x width; background-size 100% 100%",
+          "state": "rest",
+          "recolour": "none; box-shadow var(--shadow-low): flag-off an inset #343A40 ring (_variables.scss), flag-on the ring is --color-table-edge #393939 (_wocg-tokens.scss)",
+          "flag": "both"
+        }
+      ],
+      "used_check": "pieces.scss:1627 is the only image reference; cribbage-*.js only name the spot"
+    },
+    {
+      "name": "cribbagePinBlue",
+      "files": ["cribbagePinBlue.svg"],
+      "category": "cribbage",
+      "shipped_formats": ["svg"],
+      "used": true,
+      "drawn": true,
+      "art": "a blue (#1865ae) peg with a wood (#dba46e) band and #343a40 outline, 12x18",
+      "uses": [
+        {
+          "file": "cribbagePinBlue.svg",
+          "where": "static/scss/pieces.scss:1716-1724 `.piece.chip.spotPrefix-cribbagePinBlue`",
+          "ui": "a blue scoring peg standing in a hole of the cribbage board (two per colour, cribbage-game.js:73-74)",
+          "ground": {"flagOn": "the board art around the hole: wood #fac281 and the blue track strip #abd2ff (cribbageBoard.svg fills)", "flagOff": "same"},
+          "size": "12x18 units of the board's 160x520 viewBox, scaled to the board (about 7.5% of its width wide), background-size 100% 100% (cribbage-layout.js:343-360, cribbage.js:22)",
+          "state": "rest",
+          "recolour": "none (the chip's ::before disc is removed: content:none)",
+          "flag": "both"
+        }
+      ],
+      "used_check": "pieces.scss:1718 only"
+    },
+    {
+      "name": "cribbagePinRed",
+      "files": ["cribbagePinRed.svg"],
+      "category": "cribbage",
+      "shipped_formats": ["svg"],
+      "used": true,
+      "drawn": true,
+      "art": "a red (#b52726) peg with a wood band, 12x18",
+      "uses": [
+        {
+          "file": "cribbagePinRed.svg",
+          "where": "static/scss/pieces.scss:1706-1714 `.piece.chip.spotPrefix-cribbagePinRed`",
+          "ui": "a red scoring peg in a hole of the cribbage board (cribbage-game.js:71-72)",
+          "ground": {"flagOn": "board wood #fac281 and the red track strip #fcbcb4", "flagOff": "same"},
+          "size": "12x18 viewBox units scaled to the board",
+          "state": "rest",
+          "recolour": "none",
+          "flag": "both"
+        }
+      ],
+      "used_check": "pieces.scss:1708 only"
+    },
+    {
+      "name": "crown",
+      "files": ["crown.svg"],
+      "category": "seats-and-players",
+      "shipped_formats": ["svg"],
+      "used": true,
+      "drawn": true,
+      "art": "a yellow (#FDC41B) crown with an orange (#E67700) outline, 24x24",
+      "uses": [
+        {
+          "file": "crown.svg",
+          "where": "static/scss/pieces.scss:873-878 `.piece.chip.spotPrefix-support`",
+          "ui": "the 'Premium subscriber' chip at a seated human's name plate (Table.js:2293-2304)",
+          "ground": {"flagOn": "n/a: replaced by the side tab (pieces.scss:2405 background: var(--paper-band) !important)", "flagOff": "the chip's own suitChip.png disc #f8f9fa (second background layer, pieces.scss:877); the 24px chip is centred on the plate's top-left corner (Layout.js:642-652), so around it: the plate (#A5D8FF, team 2 #FFC1BF) and the felt"},
+          "size": "24x24 (the chip, Layout.js:1092; background-size 100% 100% !important, pieces.scss:772)",
+          "state": "rest",
+          "recolour": "none",
+          "flag": "off"
+        },
+        {
+          "file": "crown.svg",
+          "where": "static/scss/pieces.scss:2425 `body.wm #mainContainer .piece.chip.spotPrefix-support::before`",
+          "ui": "the same chip as a side tab standing up behind the name plate",
+          "ground": {"flagOn": "--paper-band #f4eee5 tab (pieces.scss:2405), 1px --color-table-edge #393939 ring, standing on the felt with its foot under the plate", "flagOff": "n/a"},
+          "size": "24x24 in the tab's top 24px (20x20 when the plate is under 40px or the playspace is compact, pieces.scss:2458-2462); the tab is 34 x scale px wide (Layout.js:117)",
+          "state": "rest",
+          "recolour": "none",
+          "flag": "on"
+        }
+      ],
+      "used_check": "grep crown.svg: pieces.scss:876, 2425"
+    },
+    {
+      "name": "dailyChallengeBronzeSmall",
+      "files": ["dailyChallengeBronzeSmall.svg"],
+      "category": "medals-and-daily",
+      "shipped_formats": ["svg"],
+      "used": true,
+      "drawn": true,
+      "art": "a bronze trophy (#FF932A, stroke #F76706), 34x32; the threshold number is written on the cup in #f2f2f2 with a #f76706 outline",
+      "uses": [
+        {
+          "file": "dailyChallengeBronzeSmall.svg",
+          "where": "static/scss/_wm-shared.scss:1197-1210 `.ldAwardBar.isBronze .ldAwardBadge` (mixin wm-deal-panel, emitted for body.fp .lobbyscope at _fp-cards.scss:273 and .wmModal at _wm-shared.scss:1385)",
+          "ui": "the bronze threshold trophy on the Daily challenge award strip, overhanging the right end of the bronze progress segment (frontpage card and dialog)",
+          "ground": {"flagOn": "the award strip --paper-band #f4eee5 (_wm-shared.scss:1150); its bottom 8px sit over the bronze bar (track #ffc178, fill #f76706)", "flagOff": "n/a: LobbyWidgets.js:79 (the dialog is only opened by LobbyWidgets)"},
+          "size": "34x32",
+          "state": "rest",
+          "recolour": "none",
+          "flag": "on"
+        },
+        {
+          "file": "dailyChallengeBronzeSmall.svg",
+          "where": "static/scss/GameSelectors.scss:280-285 legacy `.ldAwardBar.isBronze .ldAwardBadge`",
+          "ui": "the same element; outranked in both mounts by the wm-deal-panel rule above (legacy ground would be .ldPanel --color-bg-base #f8f9fa, GameSelectors.scss:208-212)",
+          "ground": {"flagOn": "no separate paint", "flagOff": "n/a"},
+          "size": "34x32",
+          "state": "rest",
+          "recolour": "none",
+          "flag": "on (shadowed)"
+        }
+      ],
+      "used_check": "grep: GameSelectors.scss:283, _wm-shared.scss:1208"
+    },
+    {
+      "name": "dailyChallengeGoldSmall",
+      "files": ["dailyChallengeGoldSmall.svg"],
+      "category": "medals-and-daily",
+      "shipped_formats": ["svg"],
+      "used": true,
+      "drawn": true,
+      "art": "a gold trophy, 34x32; number in #f2f2f2 with a #f59e02 outline",
+      "uses": [
+        {
+          "file": "dailyChallengeGoldSmall.svg",
+          "where": "static/scss/_wm-shared.scss:1227-1240 `.ldAwardBar.isGold .ldAwardBadge` (wm-deal-panel)",
+          "ui": "the gold threshold trophy at the right end of the Daily challenge award strip",
+          "ground": {"flagOn": "--paper-band #f4eee5 strip; bottom 8px over the gold bar (track #ffec99, fill #f59e02)", "flagOff": "n/a"},
+          "size": "34x32",
+          "state": "rest",
+          "recolour": "none",
+          "flag": "on"
+        },
+        {
+          "file": "dailyChallengeGoldSmall.svg",
+          "where": "static/scss/GameSelectors.scss:315-319 legacy rule, shadowed as for bronze",
+          "ui": "same element",
+          "ground": {"flagOn": "no separate paint", "flagOff": "n/a"},
+          "size": "34x32",
+          "state": "rest",
+          "recolour": "none",
+          "flag": "on (shadowed)"
+        }
+      ],
+      "used_check": "grep: GameSelectors.scss:317, _wm-shared.scss:1238"
+    },
+    {
+      "name": "dailyChallengeSilverSmall",
+      "files": ["dailyChallengeSilverSmall.svg"],
+      "category": "medals-and-daily",
+      "shipped_formats": ["svg"],
+      "used": true,
+      "drawn": true,
+      "art": "a silver trophy, 34x32; number in #f2f2f2 with a #878e96 outline",
+      "uses": [
+        {
+          "file": "dailyChallengeSilverSmall.svg",
+          "where": "static/scss/_wm-shared.scss:1213-1226 `.ldAwardBar.isSilver .ldAwardBadge` (wm-deal-panel)",
+          "ui": "the silver threshold trophy on the Daily challenge award strip",
+          "ground": {"flagOn": "--paper-band #f4eee5 strip; bottom 8px over the silver bar (track #dee2e6, fill #878e96)", "flagOff": "n/a"},
+          "size": "34x32",
+          "state": "rest",
+          "recolour": "none",
+          "flag": "on"
+        },
+        {
+          "file": "dailyChallengeSilverSmall.svg",
+          "where": "static/scss/GameSelectors.scss:296-300 legacy rule, shadowed",
+          "ui": "same element",
+          "ground": {"flagOn": "no separate paint", "flagOff": "n/a"},
+          "size": "34x32",
+          "state": "rest",
+          "recolour": "none",
+          "flag": "on (shadowed)"
+        }
+      ],
+      "used_check": "grep: GameSelectors.scss:298, _wm-shared.scss:1222"
+    },
+    {
+      "name": "dealDayCheck",
+      "files": ["dealDayCheck.svg"],
+      "category": "medals-and-daily",
+      "shipped_formats": ["svg"],
+      "used": true,
+      "drawn": true,
+      "art": "a green (#43A038) check, 32x32",
+      "uses": [
+        {
+          "file": "dealDayCheck.svg",
+          "where": "static/scss/_wm-shared.scss:1338-1352 `.ldCalDay.isDealDone::after` (wm-deal-panel)",
+          "ui": "the check on a won day in the Daily challenge month calendar (frontpage card and dialog)",
+          "ground": {"flagOn": "the white calendar cell --paper-card #ffffff (_wm-shared.scss:1292); --paper-band #f4eee5 while hovered, and in the dialog the leaked yellow play arrow draws over it (see arrowDown use f)", "flagOff": "n/a (LobbyWidgets.js:79)"},
+          "size": "32x32 mask in a 32px row",
+          "state": "won day",
+          "recolour": "mask: url(dealDayCheck.svg) center / 32px 32px; background-color --btn-green #43a038",
+          "flag": "on"
+        },
+        {
+          "file": "dealDayCheck.svg",
+          "where": "static/scss/GameSelectors.scss:378-402 legacy `.ldCalDay.isDealDone` (plain background, and a masked ::before in $dealDayWonInk = --btn-green with a drop-shadow)",
+          "ui": "same element; reset in both mounts (the ::before is content:none: ties and wins on load order in the dialog, wins on specificity on the card). Confirmed in Chromium: ::before content none, ::after draws the check",
+          "ground": {"flagOn": "no separate paint", "flagOff": "n/a"},
+          "size": "32x32",
+          "state": "won day",
+          "recolour": "mask filled --btn-green (unused)",
+          "flag": "on (shadowed)"
+        }
+      ],
+      "used_check": "grep: GameSelectors.scss:380, 398-399; _wm-shared.scss:1350-1351"
+    },
+    {
+      "name": "dealer",
+      "files": ["dealer.svg", "dealerSmall.svg"],
+      "category": "seats-and-players",
+      "shipped_formats": ["svg"],
+      "used": true,
+      "drawn": true,
+      "art": "a self-contained chip: #F8F9FA disc, #212529 mark, #252525 ring. dealer.svg 32x32, dealerSmall.svg 24x24",
+      "uses": [
+        {
+          "file": "dealer.svg",
+          "where": "static/scss/pieces.scss:844-858 `.piece.chip.spotPrefix-dealerChip`",
+          "ui": "the dealer chip on the current dealer's name plate (Table.js:7635-7651)",
+          "ground": {"flagOn": "centred on the name plate's top-right corner (top-left for a right-edge seat): Layout.js:1593-1606 puts it above the plate, 50% down and 50% across. So a quarter sits over the plate (--color-team1-bg #ABD2FF, team 2 --color-team2-bg #FCBCB4) and the rest over the felt. On your own seat it slides inward to clear the Chat seat button (Layout.js:1580-1585)", "flagOff": "same corner; plates #A5D8FF / #FFC1BF (_classic-table.scss:21-23) and the felt"},
+          "size": "32x32 (Layout.js:94-96)",
+          "state": "rest",
+          "recolour": "none; filter: drop-shadow(0 0 8px rgba(0,0,0,.24)) (pieces.scss:846)",
+          "flag": "both"
+        },
+        {
+          "file": "dealerSmall.svg",
+          "where": "static/scss/pieces.scss:850-853 `#mainContainer.playspace-compact .piece.chip.spotPrefix-dealerChip`",
+          "ui": "the same dealer chip on a compact playspace",
+          "ground": {"flagOn": "same plate corner and felt", "flagOff": "same"},
+          "size": "24x24",
+          "state": "compact playspace",
+          "recolour": "none; same drop-shadow",
+          "flag": "both"
+        }
+      ],
+      "used_check": "grep: pieces.scss:845, 852 (master used dealer.png / dealerSmall.png, deleted on this branch)"
+    },
+    {
+      "name": "experiencedBadge",
+      "files": ["experiencedBadge.png"],
+      "category": "badges",
+      "shipped_formats": ["png"],
+      "used": false,
+      "drawn": false,
+      "art": "a lime rosette with a dark check, 60x60 px",
+      "uses": [
+        {
+          "file": "experiencedBadge.png",
+          "where": "static/scss/GameSelectors.scss:705-707 `.playerBadge.isExperienced`",
+          "ui": "dead rule: no code adds .isExperienced to a badge. Commit a6ae304e3 (18 Jan 2026) removed playerBadge.addClass('isExperienced') from TableListingsBar.js; TableListingBuilder.js only sets isBot and isLiked",
+          "ground": {"flagOn": "never drawn (would be the plate's top-left corner)", "flagOff": "never drawn"},
+          "size": "16x16 in a 20x20 box (if it were drawn)",
+          "state": "n/a",
+          "recolour": "none",
+          "flag": "none (dead CSS)"
+        }
+      ],
+      "used_check": "grep isExperienced in static/js and web/dust: no addClass; git log -S confirms the removal in a6ae304e3"
+    },
+    {
+      "name": "gameOverHeader",
+      "files": ["gameOverHeader.json"],
+      "category": "game-over-and-hand-over",
+      "shipped_formats": ["json"],
+      "used": true,
+      "drawn": true,
+      "art": "Lottie: a cup and a green ribbon",
+      "uses": [
+        {
+          "file": "gameOverHeader.json",
+          "where": "static/js/wocg/Layout.js:1873-1896 createGameOverTitleBackground (lottie, path at 1887); pieces made in Table.js:6566 (redesign) and Table.js:6884 (showGameOverModalClassic)",
+          "ui": "the cup-and-ribbon header animation at the top of the Game over panel, behind the 'X wins!' title",
+          "ground": {"flagOn": "the panel paper --go-paper = var(--paper-page, #f9f6f2) (pieces.scss:2036, defined on .playspace at 2000)", "flagOff": "the same #f9f6f2: --paper-page is not defined on the playspace without body.wm, so the fallback applies; _classic-panels.scss restores only the panel's shadow. Master drew the panel as .backdrop rgba(248,249,250,.88) over the veil"},
+          "size": "320x140 (height 0 when the header is hidden on a condensed panel)",
+          "state": "plays once on open",
+          "recolour": "flag on, team games: Table.paintEndModalRibbon (Table.js:6308-6333, called at 6579) repaints the ribbon's green paths to the winning team's plate, fill #ABD2FF edge #75A4D2 or fill #FCBCB4 edge #D4837E (Table.js:6163-6166). Flag off: none",
+          "flag": "both"
+        }
+      ],
+      "used_check": "Layout.js:1887, Table.js:1026 preload"
+    },
+    {
+      "name": "gameOverStar",
+      "files": ["gameOverStar.svg"],
+      "category": "game-over-and-hand-over",
+      "shipped_formats": ["svg"],
+      "used": true,
+      "drawn": true,
+      "art": "a yellow (#fcc419) star with an orange (#dd7200) outline, 32x32",
+      "uses": [
+        {
+          "file": "gameOverStar.svg",
+          "where": "static/js/Animation.js:538-561 runPartySparkles, called every 480 ms from Table.js:6873 (showGameOverModalClassic)",
+          "ui": "party.js sparkle stars that burst from the Game over panel's cup",
+          "ground": {"flagOn": "n/a: the redesigned Game over has no sparkles", "flagOff": "the veil rgba(0,0,0,.32) over the felt (_classic-panels.scss:138); the stars sit at z 9102, under the panel (9600), so they show around it"},
+          "size": "32x32 base (Animation.js:549), scaled by party.js",
+          "state": "only with animations set to 'all'",
+          "recolour": "none",
+          "flag": "off",
+          "note": "Also preloaded at both flags (Table.js:1033)."
+        }
+      ],
+      "used_check": "Animation.js:561, Table.js:1033"
+    },
+    {
+      "name": "handOverBackground",
+      "files": ["handOverBackground.svg"],
+      "category": "game-over-and-hand-over",
+      "shipped_formats": ["svg"],
+      "used": true,
+      "drawn": true,
+      "art": "a 1600x1600 ray wheel with its own low opacities",
+      "uses": [
+        {
+          "file": "handOverBackground.svg",
+          "where": "static/scss/pieces.scss:403-418 and 424-446 `.piece.spotPrefix-gameOverBackground::after, .spotPrefix-handOverBackground::after`",
+          "ui": "the slowly spinning ray wheel behind the Game over and Hand over panels, centred on the panel's cup (Table.updateEndModalBackgroundCenter)",
+          "ground": {"flagOn": "the veil rgba(0,0,0,.48) with backdrop-filter blur(4px) over the felt (pieces.scss:931-938). The veil is z 9100 and the panel 9600, so the wheel shows only around the panel", "flagOff": "the veil rgba(0,0,0,.32), no blur (_classic-panels.scss:137-140)"},
+          "size": "100vmax x 100vmax, background-size contain",
+          "state": "spinning (40s per turn)",
+          "recolour": "flag on: opacity .16, filter blur(6px), mask radial-gradient(circle, #000 0, #000 33%, transparent 56%), the yellow glow ::before is display:none (pieces.scss:424-446). Flag off: opacity .28, no filter, no mask, plus the pulsing yellow radial glow ::before at .22 (_classic-panels.scss:142-158)",
+          "flag": "both"
+        }
+      ],
+      "used_check": "pieces.scss:413, Table.js:1032 preload"
+    },
+    {
+      "name": "handOverHeader",
+      "files": ["handOverHeader.json"],
+      "category": "game-over-and-hand-over",
+      "shipped_formats": ["json"],
+      "used": true,
+      "drawn": true,
+      "art": "Lottie header for the Hand over panel",
+      "uses": [
+        {
+          "file": "handOverHeader.json",
+          "where": "static/js/wocg/Layout.js:2328-2350 createHandOverTitleBackground (path at 2343); pieces made in Table.js:5299 (redesign) and 5714 (classic)",
+          "ui": "the header animation at the top of the Hand over panel, behind 'Hand N over!'",
+          "ground": {"flagOn": "the panel paper #f9f6f2 (--go-paper, pieces.scss:2036). The box is lifted 14px (topInternalMargin -10 of 140px, Spot.js:510-513), so its top edge crosses onto the veil rgba(0,0,0,.48)", "flagOff": "panel paper #f9f6f2 (fallback, as for gameOverHeader); top edge over the veil rgba(0,0,0,.32)"},
+          "size": "320x140",
+          "state": "plays once on open",
+          "recolour": "none (paintEndModalRibbon is only called for the Game over header)",
+          "flag": "both"
+        }
+      ],
+      "used_check": "Layout.js:2343, Table.js:1027 preload"
+    },
+    {
+      "name": "helpMenu",
+      "files": ["helpMenu.png", "helpMenuHover.png"],
+      "category": "table-menu-bar",
+      "shipped_formats": ["png"],
+      "used": true,
+      "drawn": true,
+      "art": "a pink and red (#f0a0a0, #e03030) help mark, 60x60 px",
+      "uses": [
+        {
+          "file": "helpMenu.png",
+          "where": "static/scss/TableBar.scss:316-318 `#tableBar > li.helpLink`",
+          "ui": "the Help cell of the classic table menu bar",
+          "ground": {"flagOn": "n/a (TableBar.scss:1533-1535)", "flagOff": "--color-bg-base #f8f9fa (TableBar.scss:9)"},
+          "size": "20x20",
+          "state": "rest",
+          "recolour": "none",
+          "flag": "off"
+        },
+        {
+          "file": "helpMenuHover.png",
+          "where": "static/scss/TableBar.scss:320-322 `li.helpLink:not(.disabled):hover`",
+          "ui": "the same cell under a mouse",
+          "ground": {"flagOn": "n/a", "flagOff": "#f8f9fa"},
+          "size": "20x20",
+          "state": "hover",
+          "recolour": "none",
+          "flag": "off"
+        }
+      ],
+      "used_check": "TableBar.scss:317, 321; preloads head_open_ads.dust:175-176. The redesign moves Help into the Table panel's Rules row (text)."
+    },
+    {
+      "name": "highReputationBadge",
+      "files": ["highReputationBadge.svg"],
+      "category": "badges",
+      "shipped_formats": ["svg"],
+      "used": true,
+      "drawn": true,
+      "art": "a lime (#A9E34B) rosette with a dark-green (#5C940D) centre and a 64% black outline, 20x20; no number is written on it",
+      "uses": [
+        {
+          "file": "highReputationBadge.svg",
+          "where": "static/scss/TableListingsBar.scss:165-167 `.completionBadge.is100`",
+          "ui": "the 100%-completion badge on a human's name plate in a Find-tables listing tile",
+          "ground": {"flagOn": "the plate's top-right corner: plate #abd2ff / #fcbcb4 and the felt header #327333", "flagOff": "same"},
+          "size": "16x16",
+          "state": "100% completion",
+          "recolour": "none",
+          "flag": "both"
+        },
+        {
+          "file": "highReputationBadge.svg",
+          "where": "static/scss/_wm-shared.scss:638 (frontpage tiles, wm-felt-chrome) and _wm-shared.scss:1428 (table preview dialog)",
+          "ui": "the same badge on the frontpage open and live tables, and in the table preview dialog",
+          "ground": {"flagOn": "plate corner, plate #abd2ff / #fcbcb4 and felt", "flagOff": "the dialog copy only (.wmModal at both flags)"},
+          "size": "20x20",
+          "state": "100% completion",
+          "recolour": "none",
+          "flag": "on (frontpage) / both (dialog)"
+        },
+        {
+          "file": "highReputationBadge.svg",
+          "where": "static/scss/GameSelectors.scss:736-738 master chain `.completionBadge.is100`",
+          "ui": "same badge on LobbyWidgets tiles; outranked on the frontpage by _wm-shared.scss:638 (draws 20x20)",
+          "ground": {"flagOn": "plate corner", "flagOff": "n/a"},
+          "size": "16x16 by this rule",
+          "state": "100% completion",
+          "recolour": "none",
+          "flag": "on"
+        }
+      ],
+      "used_check": "grep: TableListingsBar.scss:166, _wm-shared.scss:638, 1428, GameSelectors.scss:737"
+    },
+    {
+      "name": "hintArrow",
+      "files": ["hintArrowDown.svg", "hintArrowLeft.svg", "hintArrowRight.svg", "hintArrowUp.svg"],
+      "category": "hints",
+      "shipped_formats": ["svg"],
+      "used": true,
+      "drawn": true,
+      "art": "a yellow (#FFE852) arrow; down and up 24x40, left and right 40x24",
+      "uses": [
+        {
+          "file": "hintArrowDown.svg",
+          "where": "static/scss/pieces.scss:3-19 `.piece.hint-suggested::before, .spot.hint-suggested::before`",
+          "ui": "the blinking turn-hint arrow 44px above the card or button the hint suggests (Table.showTurnHint, Table.js:3880)",
+          "ground": {"flagOn": "the felt #327333 + green-felt.jpg: it sits outside the target, above a card in your hand or beside a table button", "flagOff": "the felt"},
+          "size": "24x40, background-size contain",
+          "state": "blinking (turnHintArrowBlink), fades out when hiding",
+          "recolour": "none",
+          "flag": "both"
+        },
+        {
+          "file": "hintArrowUp.svg",
+          "where": "static/scss/pieces.scss:41-46 `.hint-suggested-below::before`",
+          "ui": "the same arrow 44px below a target that sits near the top",
+          "ground": {"flagOn": "the felt", "flagOff": "the felt"},
+          "size": "24x40",
+          "state": "blinking",
+          "recolour": "none",
+          "flag": "both"
+        },
+        {
+          "file": "hintArrowRight.svg",
+          "where": "static/scss/pieces.scss:48-56 `.hint-suggested-left::before`",
+          "ui": "the arrow 44px to the left of the target, pointing right",
+          "ground": {"flagOn": "the felt", "flagOff": "the felt"},
+          "size": "40x24",
+          "state": "blinking",
+          "recolour": "none",
+          "flag": "both"
+        },
+        {
+          "file": "hintArrowLeft.svg",
+          "where": "static/scss/pieces.scss:58-67 `.hint-suggested-right::before`",
+          "ui": "the arrow 44px to the right of the target, pointing left",
+          "ground": {"flagOn": "the felt", "flagOff": "the felt"},
+          "size": "40x24",
+          "state": "blinking",
+          "recolour": "none",
+          "flag": "both"
+        }
+      ],
+      "used_check": "pieces.scss:5, 43, 50, 60; preloads head_open_ads.dust:171-174 (Table.js:3902 'hintArrowLefts' is a variable name, not the file)"
+    },
+    {
+      "name": "hintMenu",
+      "files": ["hintMenu.png", "hintMenuHover.png"],
+      "category": "table-menu-bar",
+      "shipped_formats": ["png"],
+      "used": true,
+      "drawn": true,
+      "art": "a yellow light bulb, 60x60 px",
+      "uses": [
+        {
+          "file": "hintMenu.png",
+          "where": "static/scss/TableBar.scss:306-314 `#tableBar > li.hintLink` (hover art at 310-312)",
+          "ui": "the Hint cell of the classic table menu bar",
+          "ground": {"flagOn": "n/a (TableBar.scss:1533-1535)", "flagOff": "--color-bg-base #f8f9fa (TableBar.scss:9)"},
+          "size": "20x20",
+          "state": "rest; hover = hintMenuHover.png",
+          "recolour": "none",
+          "flag": "off"
+        },
+        {
+          "file": "hintMenu.png",
+          "where": "static/scss/pieces.scss:2494-2502 `body.wm #mainContainer .piece.button.spotPrefix-hintButton` (hover art at 2499)",
+          "ui": "the Hint seat button at the left end of your own name plate",
+          "ground": {"flagOn": "--paper-band #f4eee5 button (pieces.scss:2472), standing on the felt", "flagOff": "n/a"},
+          "size": "24x24 on a 40px button; 20x20 in a compact playspace",
+          "state": "rest; hover = hintMenuHover.png",
+          "recolour": "none",
+          "flag": "on"
+        }
+      ],
+      "used_check": "TableBar.scss:307, 311; pieces.scss:2495, 2499; preloads head_open_ads.dust:169-170"
+    },
+    {
+      "name": "likedBadge",
+      "files": ["likedBadge.svg"],
+      "category": "badges",
+      "shipped_formats": ["svg"],
+      "used": true,
+      "drawn": true,
+      "art": "a yellow (#FFD43B) mark with a 64% black outline, 20x20",
+      "uses": [
+        {
+          "file": "likedBadge.svg",
+          "where": "static/scss/_wm-shared.scss:272 `.playerBadge.isLiked` (wm-felt-tile)",
+          "ui": "badge on the name plate of a player you liked, in a felt table tile (Find-tables box, frontpage tiles, table preview dialog)",
+          "ground": {"flagOn": "the plate's top-left corner: plate #abd2ff / #fcbcb4 and the felt header #327333", "flagOff": "same in the Find-tables box and the table preview dialog"},
+          "size": "16x16 in a 20x20 box",
+          "state": "you liked this player",
+          "recolour": "none",
+          "flag": "both"
+        },
+        {
+          "file": "likedBadge.svg",
+          "where": "static/scss/GameSelectors.scss:709-711 master chain `.playerBadge.isLiked`",
+          "ui": "same badge on LobbyWidgets tiles (same image and size)",
+          "ground": {"flagOn": "plate corner, as above", "flagOff": "n/a (LobbyWidgets.js:79)"},
+          "size": "16x16",
+          "state": "you liked this player",
+          "recolour": "none",
+          "flag": "on"
+        }
+      ],
+      "used_check": "grep: _wm-shared.scss:272, GameSelectors.scss:710"
+    },
+    {
+      "name": "logo",
+      "files": ["logo.png"],
+      "category": "brand",
+      "shipped_formats": ["png"],
+      "used": true,
+      "drawn": true,
+      "art": "the card-fan mark plus the 'World of Card Games' wordmark in #202020, 510x96 px (3x of 170x32)",
+      "uses": [
+        {
+          "file": "logo.png",
+          "where": "web/dust/common/menu_bar.dust:2-4 `#menuLogoContainer img`; static/scss/MenuBar.scss:68-75; static/scss/_wm-chrome.scss:105-126",
+          "ui": "the site logo in the menubar (also on the generated leaderboard pages, dailyRecordsGeneric.dust:157)",
+          "ground": {"flagOn": "--paper-band #f4eee5 (_wm-chrome.scss:29)", "flagOff": "--color-bg-base #f8f9fa (MenuBar.scss:9)"},
+          "size": "flag off: the 170x32 image in a 38px-wide box with overflow hidden (MenuBar.scss:73-74), so only the card fan shows at the left; flag on: auto x 32px, the full wordmark, absolutely centred in the 56px bar",
+          "state": "rest",
+          "recolour": "none",
+          "flag": "both",
+          "note": "With the flag on the menubar is display:none at a table (MenuBar.scss:21)."
+        },
+        {
+          "file": "logo.png",
+          "where": "node-user/server-user.js:1598, node-user/user.js:1985/3043/3241/3345, node-payments/server-payments.js:562, node-periodic/server-periodic.js:1463 (logoURL) into node-user/emails/*.dust",
+          "ui": "the logo at the top of every account email",
+          "ground": {"flagOn": "white #FFFFFF email card (for example emails/subscriptionCancelled.dust:137 td.t42)", "flagOff": "same"},
+          "size": "180x42",
+          "state": "rest",
+          "recolour": "none",
+          "flag": "both (email, no flag)"
+        }
+      ],
+      "used_check": "grep logo.png; preload head_open_ads.dust:154"
+    },
+    {
+      "name": "logoIcon",
+      "files": ["logoIcon.png"],
+      "category": "brand",
+      "shipped_formats": ["png"],
+      "used": true,
+      "drawn": true,
+      "art": "the card-fan mark, 1280x1280 px",
+      "uses": [
+        {
+          "file": "logoIcon.png",
+          "where": "down/index.html:69",
+          "ui": "the logo on the 'Temporarily down for maintenance' page",
+          "ground": {"flagOn": "#F1F3F5 (down/index.html:27 body background)", "flagOff": "same"},
+          "size": "160x160",
+          "state": "rest",
+          "recolour": "none",
+          "flag": "both (static page, no flag)"
+        }
+      ],
+      "used_check": "only down/index.html:69"
+    },
+    {
+      "name": "menuActivity",
+      "files": ["menuActivity.svg", "menuActivityHover.svg", "menuActivityNotification.svg", "menuActivityNotificationHover.svg", "menuActivityNotification.json", "menuActivityNotificationHover.json", "menuActivityNotificationTransition.json", "menuActivityNotificationHoverTransition.json"],
+      "category": "menubar",
+      "shipped_formats": ["svg", "json"],
+      "used": true,
+      "drawn": true,
+      "art": "a yellow bell (#ffd43b, #f59f00 outline), 40x32; hover is a step deeper (#fdc41b, #e67700); the Notification versions add a red dot (#f03e3e, #c92a2a)",
+      "uses": [
+        {
+          "file": "menuActivity.svg",
+          "where": "web/dust/common/menu_bar.dust:80-86 + static/scss/BoxForm.scss:41-67, 258-321 `#userBar .activityIcon img.activityIconImg*`",
+          "ui": "the bell (Activity) in the menubar's user cluster",
+          "ground": {"flagOn": "--paper-band #f4eee5 (_wm-chrome.scss:29) on every redesigned page away from a table", "flagOff": "--color-bg-base #f8f9fa (MenuBar.scss:9)"},
+          "size": "40x32",
+          "state": "rest = menuActivity.svg; hover or panel open = menuActivityHover.svg; new activity = menuActivityNotification.svg; new activity + hover/open = menuActivityNotificationHover.svg (stacked imgs swapped by opacity)",
+          "recolour": "none",
+          "flag": "both"
+        },
+        {
+          "file": "menuActivity.svg",
+          "where": "static/scss/TableBar.scss:1690-1735 `body.wm .chromePillRight #userBar` (TableBar.js:428-463 moves #userBar into #chromePillRight at table time)",
+          "ui": "the same bell in the right pill in the felt's top-right corner",
+          "ground": {"flagOn": "--paper-band #f4eee5 (TableBar.scss:1545 .chromePill), the pill on the felt", "flagOff": "n/a (the pill is only built under body.wm, TableBar.js:375)"},
+          "size": "40x32 in a 40x40 cell; 30x24 in a 32x32 cell on a compact playspace (TableBar.scss:1792-1796)",
+          "state": "same four states",
+          "recolour": "none",
+          "flag": "on"
+        },
+        {
+          "file": "menuActivityNotification.json",
+          "where": "static/js/wocg/User.js:2539-2543 getActivityAnimationPath, played at 3423-3430 into `.activityLottieContainer` (BoxForm.scss:260-274, 44x36 at -2px,-2px)",
+          "ui": "the ring animation over the bell when a new activity arrives",
+          "ground": {"flagOn": "same as the bell: --paper-band (menubar or pill)", "flagOff": "#f8f9fa"},
+          "size": "44x36 box (scaled 0.75 in the compact pill, TableBar.scss:1799-1804)",
+          "state": "notification = menuActivityNotification.json; while the panel is open = menuActivityNotificationHover.json; first notification from zero = menuActivityNotificationTransition.json. Only with animations set to 'all' (User.js:2561)",
+          "recolour": "none",
+          "flag": "both"
+        },
+        {
+          "file": "menuActivityNotificationHoverTransition.json",
+          "where": "static/js/wocg/User.js:2540-2541",
+          "ui": "never requested: for 'first notification while the panel is open' the code builds base + 'Hover.json' = 'menuActivityNotificationTransitionHover.json', which does not exist (404, then data_failed shows the static icon)",
+          "ground": {"flagOn": "never drawn", "flagOff": "never drawn"},
+          "size": "n/a",
+          "state": "n/a",
+          "recolour": "none",
+          "flag": "none (name mismatch)"
+        }
+      ],
+      "used_check": "menu_bar.dust:82-85; User.js:2540-2541; preload head_open_ads.dust:158"
+    },
+    {
+      "name": "menuBurger",
+      "files": ["menuBurger.svg"],
+      "category": "menubar",
+      "shipped_formats": ["svg"],
+      "used": false,
+      "drawn": false,
+      "art": "a #212529 burger, 32x32",
+      "uses": [
+        {
+          "file": "menuBurger.svg",
+          "where": "web/dust/common/head_open_ads.dust:156 `<link rel=preload>` only",
+          "ui": "nothing draws it. Master's generated leaderboard page drew menuBurger.png (deleted on this branch); the SVG port is only preloaded",
+          "ground": {"flagOn": "never drawn", "flagOff": "never drawn"},
+          "size": "n/a",
+          "state": "n/a",
+          "recolour": "none",
+          "flag": "none (preload only)"
+        }
+      ],
+      "used_check": "case-insensitive grep of 'menuburger' / 'burger' across the repo (outside staging, node_modules, Design): only the preload"
+    },
+    {
+      "name": "menuClose",
+      "files": ["menuClose.svg"],
+      "category": "controls",
+      "shipped_formats": ["svg"],
+      "used": true,
+      "drawn": false,
+      "art": "a #212529 cross, 32x32",
+      "uses": [
+        {
+          "file": "menuClose.svg",
+          "where": "static/js/wocg/FooterBar.js:114-122 swaps `#footerIconContainer img` to menuClose.svg when the lobby footer bar opens",
+          "ui": "the close state of the lobby footer bar's round help toggle. It never paints: `#footerIconContainer img {display:none}` (FooterBar.scss:35-42) and nothing shows it",
+          "ground": {"flagOn": "n/a (footer bar hidden on body.fp, Frontpage.scss:142-145)", "flagOff": "would be the tab rgba(0,0,0,.9) (FooterBar.scss:32); a dark #212529 cross there would barely show"},
+          "size": "24x24 + 8px padding (if shown)",
+          "state": "footer bar open",
+          "recolour": "none",
+          "flag": "off (hidden)"
+        }
+      ],
+      "used_check": "only FooterBar.js:120"
+    },
+    {
+      "name": "menuFriends",
+      "files": ["menuFriends.svg", "menuFriendsHover.svg", "menuFriendsCount.svg", "menuFriendsCountHover.svg", "menuFriendsNotification.svg", "menuFriendsNotificationHover.svg", "menuFriendsNotification.json", "menuFriendsNotificationHover.json", "menuFriendsNotificationTransition.json", "menuFriendsNotificationHoverTransition.json"],
+      "category": "menubar",
+      "shipped_formats": ["svg", "json"],
+      "used": true,
+      "drawn": true,
+      "art": "two people, orange (#ffc078, #fd7e14) and blue (#91a7ff, #4c6ef5), 40x32; hover a step deeper; Count adds a blue (#4c6ef5) badge; Notification adds red (#f03e3e, #c92a2a)",
+      "uses": [
+        {
+          "file": "menuFriends.svg",
+          "where": "web/dust/common/menu_bar.dust:99-107 + static/scss/BoxForm.scss:579-666 `#userBar .friendsIcon img.friendsIconImg*`",
+          "ui": "the Friends icon in the menubar's user cluster",
+          "ground": {"flagOn": "--paper-band #f4eee5 (_wm-chrome.scss:29)", "flagOff": "--color-bg-base #f8f9fa (MenuBar.scss:9)"},
+          "size": "40x32",
+          "state": "rest = menuFriends; hover or open = menuFriendsHover; friends online = menuFriendsCount; online + hover/open = menuFriendsCountHover; unread messages = menuFriendsNotification; unread + hover/open = menuFriendsNotificationHover",
+          "recolour": "none",
+          "flag": "both"
+        },
+        {
+          "file": "menuFriends.svg",
+          "where": "static/scss/TableBar.scss:1690-1735 `body.wm .chromePillRight #userBar`",
+          "ui": "the same icon in the right pill on the felt at table time",
+          "ground": {"flagOn": "--paper-band #f4eee5 (TableBar.scss:1545)", "flagOff": "n/a"},
+          "size": "40x32; 30x24 compact",
+          "state": "same six states",
+          "recolour": "none",
+          "flag": "on"
+        },
+        {
+          "file": "menuFriendsNotification.json",
+          "where": "static/js/wocg/User.js:2528-2532 getFriendsAnimationPath, played at 2766-2770 into `.friendsLottieContainer` (BoxForm.scss:583-597)",
+          "ui": "the animation over the Friends icon when an unread message arrives",
+          "ground": {"flagOn": "--paper-band", "flagOff": "#f8f9fa"},
+          "size": "44x36 box",
+          "state": "notification / open (Hover.json) / first from zero (Transition.json); animations 'all' only",
+          "recolour": "none",
+          "flag": "both"
+        },
+        {
+          "file": "menuFriendsNotificationHoverTransition.json",
+          "where": "static/js/wocg/User.js:2529-2530",
+          "ui": "never requested: the code asks for 'menuFriendsNotificationTransitionHover.json', which does not exist",
+          "ground": {"flagOn": "never drawn", "flagOff": "never drawn"},
+          "size": "n/a",
+          "state": "n/a",
+          "recolour": "none",
+          "flag": "none (name mismatch)"
+        }
+      ],
+      "used_check": "menu_bar.dust:101-106; User.js:2529-2530; preload head_open_ads.dust:159"
+    },
+    {
+      "name": "menuQuestion",
+      "files": ["menuQuestion.png"],
+      "category": "controls",
+      "shipped_formats": ["png"],
+      "used": true,
+      "drawn": false,
+      "art": "a white (#f0f0f0 to #ffffff) question mark, 48x48 px, made for a dark ground",
+      "uses": [
+        {
+          "file": "menuQuestion.png",
+          "where": "web/dust/common/footer_bar.dust:3 `#footerIconContainer img` + static/js/wocg/FooterBar.js:117",
+          "ui": "the lobby footer bar's round help toggle. It never paints: FooterBar.scss:37 sets the img to display:none and no rule shows it",
+          "ground": {"flagOn": "n/a (footer bar hidden on body.fp)", "flagOff": "would be the tab rgba(0,0,0,.9) (FooterBar.scss:32)"},
+          "size": "24x24 + 8px padding (if shown)",
+          "state": "footer bar closed",
+          "recolour": "none",
+          "flag": "off (hidden)"
+        }
+      ],
+      "used_check": "footer_bar.dust:3, FooterBar.js:117, preload head_open_ads.dust:157"
+    },
+    {
+      "name": "onlineBadge",
+      "files": ["onlineBadge.svg"],
+      "category": "badges",
+      "shipped_formats": ["svg"],
+      "used": false,
+      "drawn": false,
+      "art": "a green (#64CD00, #479100 outline) dot, 20x20",
+      "uses": [
+        {
+          "file": "onlineBadge.svg",
+          "where": "static/scss/ProfileBox.scss:121-127 and 565-570 `.playerOnline`",
+          "ui": "dead rules: no element has .playerOnline since 4853095e1 (2026-02-20) removed it from ProfileBox.js",
+          "ground": {"flagOn": "never drawn", "flagOff": "never drawn"},
+          "size": "20x20 (if drawn)",
+          "state": "n/a",
+          "recolour": "none",
+          "flag": "none (dead CSS)"
+        }
+      ],
+      "used_check": "grep playerOnline in static/js and web/dust: none; git log -S playerOnline"
+    },
+    {
+      "name": "pauseMenu",
+      "files": ["pauseMenu.png", "pauseMenuActive.png", "pauseMenuHover.png"],
+      "category": "table-menu-bar",
+      "shipped_formats": ["png"],
+      "used": true,
+      "drawn": true,
+      "art": "a yellow and orange pause mark (#f0d030, #f09000), 60x60 px",
+      "uses": [
+        {
+          "file": "pauseMenu.png",
+          "where": "static/scss/TableBar.scss:266-278 `#tableBar > li.pauseLink`",
+          "ui": "the Pause / Resume cell of the classic table menu bar",
+          "ground": {"flagOn": "n/a (TableBar.scss:1533-1535; the redesign has a text Pause row in the Table panel, TableBar.js:549)", "flagOff": "--color-bg-base #f8f9fa (TableBar.scss:9)"},
+          "size": "20x20",
+          "state": "rest = pauseMenu.png (often .disabled: the label goes muted, the icon stays); hover = pauseMenuHover.png (not when disabled); paused ('Resume') = pauseMenuActive.png (Table.js:10234)",
+          "recolour": "none",
+          "flag": "off"
+        }
+      ],
+      "used_check": "TableBar.scss:267, 270, 275; preloads head_open_ads.dust:163-164"
+    },
+    {
+      "name": "playerLeaving",
+      "files": ["playerLeaving.svg"],
+      "category": "seats-and-players",
+      "shipped_formats": ["svg"],
+      "used": true,
+      "drawn": true,
+      "art": "a #212529 figure leaving, 14px glyph in a 24x24 box, drawn walking right",
+      "uses": [
+        {
+          "file": "playerLeaving.svg",
+          "where": "static/scss/pieces.scss:894-899 `.piece.chip.spotPrefix-leaving`",
+          "ui": "the 'player is leaving' chip at a seat's name plate (Table.js:3385-3396)",
+          "ground": {"flagOn": "n/a (replaced by the side tab)", "flagOff": "the suitChip.png disc #f8f9fa (pieces.scss:898); the chip straddles the plate's top-left corner: plate #A5D8FF / #FFC1BF and felt"},
+          "size": "24x24",
+          "state": "rest",
+          "recolour": "none",
+          "flag": "off"
+        },
+        {
+          "file": "playerLeaving.svg",
+          "where": "static/scss/pieces.scss:2428 `body.wm ... .chip.spotPrefix-leaving::before`",
+          "ui": "the same as a side tab behind the name plate",
+          "ground": {"flagOn": "--paper-band #f4eee5 tab (pieces.scss:2405) on the felt", "flagOff": "n/a"},
+          "size": "24x24 (20x20 small plate / compact)",
+          "state": "rest",
+          "recolour": "none",
+          "flag": "on"
+        },
+        {
+          "file": "playerLeaving.svg",
+          "where": "static/scss/TableBar.scss:1586-1594 `.chromePill .pillCell.leaveCell::before`",
+          "ui": "the Leave cell (first cell) of the redesigned top-left pill on the felt",
+          "ground": {"flagOn": "--paper-band #f4eee5 (TableBar.scss:1545)", "flagOff": "n/a"},
+          "size": "32x32 background box (glyph about 20px) in a 40x40 cell; the cell is 32x32 on a compact playspace",
+          "state": "rest",
+          "recolour": "transform: scaleX(-1) (walks out to the left)",
+          "flag": "on"
+        }
+      ],
+      "used_check": "pieces.scss:897, 2428; TableBar.scss:1592"
+    },
+    {
+      "name": "playerLiked",
+      "files": ["playerLiked.svg"],
+      "category": "seats-and-players",
+      "shipped_formats": ["svg"],
+      "used": true,
+      "drawn": true,
+      "art": "a yellow (#FDC41B) mark with an orange (#E67700) outline, 24x24",
+      "uses": [
+        {
+          "file": "playerLiked.svg",
+          "where": "static/scss/pieces.scss:880-885 `.piece.chip.spotPrefix-playerLiked`",
+          "ui": "the 'Player liked' chip at the name plate of a player you liked (Table.js:2317-2330)",
+          "ground": {"flagOn": "n/a", "flagOff": "suitChip.png disc #f8f9fa (pieces.scss:884); plate corner: plate #A5D8FF / #FFC1BF and felt"},
+          "size": "24x24",
+          "state": "rest",
+          "recolour": "none",
+          "flag": "off"
+        },
+        {
+          "file": "playerLiked.svg",
+          "where": "static/scss/pieces.scss:2426 `body.wm ... .chip.spotPrefix-playerLiked::before`",
+          "ui": "the same as a side tab",
+          "ground": {"flagOn": "--paper-band #f4eee5 tab", "flagOff": "n/a"},
+          "size": "24x24 (20x20)",
+          "state": "rest",
+          "recolour": "none",
+          "flag": "on"
+        }
+      ],
+      "used_check": "pieces.scss:883, 2426"
+    },
+    {
+      "name": "playerMore",
+      "files": ["playerMore.svg"],
+      "category": "seats-and-players",
+      "shipped_formats": ["svg"],
+      "used": true,
+      "drawn": true,
+      "art": "#212529 dots, 24x24",
+      "uses": [
+        {
+          "file": "playerMore.svg",
+          "where": "static/scss/pieces.scss:887-892 `.piece.chip.spotPrefix-playerMore`",
+          "ui": "the 'Like, block and mute player' chip at another player's name plate (Table.js:2341-2352)",
+          "ground": {"flagOn": "n/a", "flagOff": "suitChip.png disc #f8f9fa (pieces.scss:891); plate corner and felt"},
+          "size": "24x24",
+          "state": "rest",
+          "recolour": "none",
+          "flag": "off"
+        },
+        {
+          "file": "playerMore.svg",
+          "where": "static/scss/pieces.scss:2427 `body.wm ... .chip.spotPrefix-playerMore::before`",
+          "ui": "the same as a side tab",
+          "ground": {"flagOn": "--paper-band #f4eee5 tab", "flagOff": "n/a"},
+          "size": "24x24 (20x20)",
+          "state": "rest",
+          "recolour": "none",
+          "flag": "on"
+        }
+      ],
+      "used_check": "pieces.scss:890, 2427"
+    },
+    {
+      "name": "playMenu",
+      "files": ["playMenu.svg", "playMenuHover.svg"],
+      "category": "table-menu-bar",
+      "shipped_formats": ["svg"],
+      "used": true,
+      "drawn": true,
+      "art": "a fan of cards with red (#EB1B28) and black suits, #252525 outlines, 40x32",
+      "uses": [
+        {
+          "file": "playMenu.svg",
+          "where": "static/scss/TableBar.scss:294-304 `#tableBar > li.gamesLink`",
+          "ui": "the Play cell (opens the games dropup) of the classic table menu bar",
+          "ground": {"flagOn": "n/a (TableBar.scss:1533-1535)", "flagOff": "--color-bg-base #f8f9fa (TableBar.scss:9)"},
+          "size": "40x32 (padding-top 32px)",
+          "state": "rest; hover = playMenuHover.svg",
+          "recolour": "none",
+          "flag": "off"
+        },
+        {
+          "file": "playMenu.svg",
+          "where": "static/scss/TableBar.scss:1603-1606 `.chromePill .pillCell.playCell`",
+          "ui": "the Play cell (third cell) of the redesigned top-left pill",
+          "ground": {"flagOn": "--paper-band #f4eee5 (TableBar.scss:1545)", "flagOff": "n/a"},
+          "size": "25x20",
+          "state": "rest; the cell gets .active while its dropdown is open, with no art change; no hover art",
+          "recolour": "none",
+          "flag": "on"
+        },
+        {
+          "file": "playMenu.svg",
+          "where": "static/scss/pieces.scss:2578-2587 `body.wm .piece.button.spotPrefix-chatButton.seatNewGame`",
+          "ui": "stand-in art on a solo table's second seat button (New game)",
+          "ground": {"flagOn": "--paper-band #f4eee5 button (pieces.scss:2472) on the felt", "flagOff": "n/a"},
+          "size": "25x20; 20x16 compact",
+          "state": "rest (the same art on hover and active)",
+          "recolour": "none",
+          "flag": "on"
+        }
+      ],
+      "used_check": "TableBar.scss:295, 301, 1605; pieces.scss:2581; preloads head_open_ads.dust:167-168"
+    },
+    {
+      "name": "profileMenu",
+      "files": ["profileMenu.png", "profileMenuHover.png"],
+      "category": "table-menu-bar",
+      "shipped_formats": ["png"],
+      "used": true,
+      "drawn": true,
+      "art": "a blue and orange person mark (#90a0f0, #4060f0, #f0c070), 60x60 px",
+      "uses": [
+        {
+          "file": "profileMenu.png",
+          "where": "static/scss/TableBar.scss:326-334 `#tableBar > li.profileLink`",
+          "ui": "the Profile cell (opens settings) of the classic table menu bar",
+          "ground": {"flagOn": "n/a", "flagOff": "--color-bg-base #f8f9fa (TableBar.scss:9)"},
+          "size": "20x20",
+          "state": "rest; hover = profileMenuHover.png",
+          "recolour": "none",
+          "flag": "off"
+        }
+      ],
+      "used_check": "TableBar.scss:327, 331; preloads head_open_ads.dust:179-180"
+    },
+    {
+      "name": "ranksMenu",
+      "files": ["ranksMenu.png", "ranksMenuHover.png"],
+      "category": "table-menu-bar",
+      "shipped_formats": ["png"],
+      "used": false,
+      "drawn": false,
+      "art": "a yellow and orange ranks mark, 60x60 px",
+      "uses": [
+        {
+          "file": "ranksMenu.png",
+          "where": "web/dust/common/head_open_ads.dust:177-178 `<link rel=preload>` only",
+          "ui": "nothing draws it: the classic table bar has no ranks cell (web/dust/common/table_bar_container.dust)",
+          "ground": {"flagOn": "never drawn", "flagOff": "never drawn"},
+          "size": "n/a",
+          "state": "n/a",
+          "recolour": "none",
+          "flag": "none (preload only)"
+        }
+      ],
+      "used_check": "case-insensitive grep of 'ranksmenu': only the preloads"
+    },
+    {
+      "name": "shootTheMoon",
+      "files": ["shootTheMoon.svg"],
+      "category": "game-over-and-hand-over",
+      "shipped_formats": ["svg"],
+      "used": true,
+      "drawn": true,
+      "art": "a celebration banner, 296x118",
+      "uses": [
+        {
+          "file": "shootTheMoon.svg",
+          "where": "static/scss/pieces.scss:501-515 `.piece.spot-shotImage.moon`",
+          "ui": "the Hearts 'shoot the moon' celebration banner (hearts-game.js:819), inside the shot panel with the caption drawn over it",
+          "ground": {"flagOn": "the shot panel --paper-band #f4eee5 (pieces.scss:2523-2525 body.wm .piece.backdrop)", "flagOff": "the shot panel .piece.backdrop rgba(248,249,250,.88) over the felt (pieces.scss:925-929)"},
+          "size": "296x118 (hearts-layout.js:100-101)",
+          "state": "rest",
+          "recolour": "none",
+          "flag": "both"
+        }
+      ],
+      "used_check": "pieces.scss:514"
+    },
+    {
+      "name": "shootTheSun",
+      "files": ["shootTheSun.svg"],
+      "category": "game-over-and-hand-over",
+      "shipped_formats": ["svg"],
+      "used": true,
+      "drawn": true,
+      "art": "a celebration banner, 296x118",
+      "uses": [
+        {
+          "file": "shootTheSun.svg",
+          "where": "static/scss/pieces.scss:501-511 `.piece.spot-shotImage.sun`",
+          "ui": "the Hearts 'shoot the sun' celebration banner (hearts-game.js:839)",
+          "ground": {"flagOn": "--paper-band #f4eee5 shot panel", "flagOff": "rgba(248,249,250,.88) shot panel over the felt"},
+          "size": "296x118",
+          "state": "rest",
+          "recolour": "none",
+          "flag": "both"
+        }
+      ],
+      "used_check": "pieces.scss:510"
+    },
+    {
+      "name": "slam",
+      "files": ["slam.svg"],
+      "category": "game-over-and-hand-over",
+      "shipped_formats": ["svg"],
+      "used": true,
+      "drawn": true,
+      "art": "a ribbon-and-cup banner, drawn at 296x112; the words are laid over it by the shotCaption / shotAward spots",
+      "uses": [
+        {
+          "file": "slam.svg",
+          "where": "static/scss/pieces.scss:519-522 `.piece.spot-shotImage.slam`",
+          "ui": "Bridge's slam / rubber celebration banner (bridge-game-event-handler.js:730-731)",
+          "ground": {"flagOn": "--paper-band #f4eee5 shot panel", "flagOff": "rgba(248,249,250,.88) shot panel over the felt"},
+          "size": "296x112 (bridge-layout.js:385-386)",
+          "state": "rest",
+          "recolour": "none",
+          "flag": "both"
+        }
+      ],
+      "used_check": "pieces.scss:520"
+    },
+    {
+      "name": "sortArrowLeft",
+      "files": ["sortArrowLeft.svg"],
+      "category": "seats-and-players",
+      "shipped_formats": ["svg"],
+      "used": true,
+      "drawn": true,
+      "art": "a #212529 left arrow, 24x24",
+      "uses": [
+        {
+          "file": "sortArrowLeft.svg",
+          "where": "static/scss/pieces.scss:860-865 `.piece.chip.left`",
+          "ui": "the sort-hand chip at your own name plate, arrow left (Gin Rummy, Rummy, Crazy Eights, Bridge: ginrummy-game.js:2665 and kin)",
+          "ground": {"flagOn": "n/a", "flagOff": "suitChip.png disc #f8f9fa (pieces.scss:864); plate corner and felt"},
+          "size": "24x24",
+          "state": "rest",
+          "recolour": "none",
+          "flag": "off"
+        },
+        {
+          "file": "sortArrowLeft.svg",
+          "where": "static/scss/pieces.scss:2429 `body.wm ... .spotPrefix-sortButton.left::before`",
+          "ui": "the same as a side tab",
+          "ground": {"flagOn": "--paper-band #f4eee5 tab", "flagOff": "n/a"},
+          "size": "24x24 (20x20)",
+          "state": "rest",
+          "recolour": "none",
+          "flag": "on"
+        },
+        {
+          "file": "sortArrowLeft.svg",
+          "where": "static/scss/BoxForm.scss:1249-1263 `.conversationBack`",
+          "ui": "the Back arrow in the conversation view of the menubar's Friends panel",
+          "ground": {"flagOn": "--color-bg-base #f8f9fa: .conversationHeader keeps master's background (BoxForm.scss:1245); the redesign only changes its padding (_wm-chrome.scss:558-563)", "flagOff": "--color-bg-base #f8f9fa (BoxForm.scss:1245)"},
+          "size": "24x24 mask in a 32x32 button",
+          "state": "rest / hover",
+          "recolour": "mask; background-color --color-text-muted #868E96, hover --color-text-subtle #495057",
+          "flag": "both"
+        }
+      ],
+      "used_check": "pieces.scss:863, 2429; BoxForm.scss:1255-1256"
+    },
+    {
+      "name": "sortArrowRight",
+      "files": ["sortArrowRight.svg"],
+      "category": "seats-and-players",
+      "shipped_formats": ["svg"],
+      "used": true,
+      "drawn": true,
+      "art": "a #212529 right arrow, 24x24",
+      "uses": [
+        {
+          "file": "sortArrowRight.svg",
+          "where": "static/scss/pieces.scss:866-871 `.piece.chip.right`",
+          "ui": "the sort-hand chip at your own name plate, arrow right",
+          "ground": {"flagOn": "n/a", "flagOff": "suitChip.png disc #f8f9fa (pieces.scss:870); plate corner and felt"},
+          "size": "24x24",
+          "state": "rest",
+          "recolour": "none",
+          "flag": "off"
+        },
+        {
+          "file": "sortArrowRight.svg",
+          "where": "static/scss/pieces.scss:2430 `body.wm ... .spotPrefix-sortButton.right::before`",
+          "ui": "the same as a side tab",
+          "ground": {"flagOn": "--paper-band #f4eee5 tab", "flagOff": "n/a"},
+          "size": "24x24 (20x20)",
+          "state": "rest",
+          "recolour": "none",
+          "flag": "on"
+        }
+      ],
+      "used_check": "pieces.scss:869, 2430"
+    },
+    {
+      "name": "suitChip",
+      "files": ["suitChip.png"],
+      "category": "seats-and-players",
+      "shipped_formats": ["png"],
+      "used": true,
+      "drawn": true,
+      "art": "a #f8f9fa disc with a translucent black ring, 72x72 px (3x of 24). It is itself the ground for the flag-off seat chip glyphs",
+      "uses": [
+        {
+          "file": "suitChip.png",
+          "where": "static/scss/pieces.scss:770-778 `.piece.chip`",
+          "ui": "the round chip under the trump suit glyph (selectedSuit), the Show melds 'M' button and the other side-row chips at a name plate's corner",
+          "ground": {"flagOn": "only for chips outside the side-tab list, for example the Sheepshead tutorial's callOptions chip (sheepshead-tutorial.js:122); the side-row chips become --paper-band tabs (pieces.scss:2403-2405)", "flagOff": "the chip straddles the name plate's top-left corner (Layout.js:642-652): plate #A5D8FF / #FFC1BF and the felt"},
+          "size": "24x24 (background-size 100% 100% !important)",
+          "state": "rest; the trump chip brightens on hover (filter: brightness(1.1))",
+          "recolour": "none",
+          "flag": "both (mostly off)"
+        },
+        {
+          "file": "suitChip.png",
+          "where": "static/scss/pieces.scss:864, 870, 877, 884, 891, 898",
+          "ui": "the second background layer under the sort arrows, crown, liked, more and leaving glyphs",
+          "ground": {"flagOn": "n/a: background: var(--paper-band) !important removes both layers (pieces.scss:2405)", "flagOff": "plate corner and felt"},
+          "size": "24x24",
+          "state": "rest",
+          "recolour": "none",
+          "flag": "off"
+        }
+      ],
+      "used_check": "pieces.scss 7 references"
+    },
+    {
+      "name": "suit",
+      "files": ["suitClub.svg", "suitDiamond.svg", "suitHeart.svg", "suitSpade.svg"],
+      "category": "suits",
+      "shipped_formats": ["svg"],
+      "used": true,
+      "drawn": true,
+      "art": "80x80: club and spade black (#000000), heart and diamond red (#EB1B28, #CE1823 outline)",
+      "uses": [
+        {
+          "file": "suitHeart.svg",
+          "where": "static/js/Animation.js:347-389 runPartyConfetti (path built as 'images/suit' + Suit + '.svg' at 379)",
+          "ui": "suit confetti that bursts from a played card: the Queen of Spades or hearts in Hearts (hearts-game.js:643-652), spades in Spades (spades-game.js:333, 366), the left bower in Euchre (euchre-game.js:769), the trump jack in Twenty-Nine (twentynine-game.js:936, 1160), the called suit in Sheepshead (sheepshead-game.js:348)",
+          "ground": {"flagOn": "the felt #327333 + green-felt.jpg, and the cards they fly over", "flagOff": "same"},
+          "size": "40px base (Animation.js:358) scaled 0.4 to 1.0 per particle (16 to 40px)",
+          "state": "only with animations set to 'all'",
+          "recolour": "none",
+          "flag": "both"
+        },
+        {
+          "file": "suitSpade.svg",
+          "where": "static/js/Animation.js:732-770 runFloater (path built at 750)",
+          "ui": "a suit that rises and fades from the trump chip when trump is chosen (Euchre, Pinochle, Double Deck Pinochle, Sergeant Major, Twenty-Nine, Whist, Bridge contract, Sheepshead)",
+          "ground": {"flagOn": "starts over the trump side tab --paper-band #f4eee5 and rises over the felt", "flagOff": "starts over the trump chip's suitChip disc #f8f9fa and rises over the felt"},
+          "size": "0.8 x the chip's width: about 19px on a 24px chip, about 27px on a 34px tab",
+          "state": "only with animations set to 'all'",
+          "recolour": "none",
+          "flag": "both"
+        }
+      ],
+      "used_check": "Animation.js:379, 750 build the path by concatenation; Table.js:1037-1040 preload them when animations are 'all'. All four files are used the same way."
+    },
+    {
+      "name": "tableHelp",
+      "files": ["tableHelp.svg"],
+      "category": "table-panel-icons",
+      "shipped_formats": ["svg"],
+      "used": true,
+      "drawn": true,
+      "art": "an orange (#dd7200) help glyph, 24x24",
+      "uses": [
+        {
+          "file": "tableHelp.svg",
+          "where": "static/scss/FooterBar.scss:69-71 `#footerBar li.faqLink`",
+          "ui": "the Help pill of the lobby's floating footer bar (top right, under the menubar). The icon only shows when the pill collapses to an icon: at 640px and under, or at 1024px and under with ads showing (FooterBar.scss:85-99); otherwise background-size 0% and the word shows",
+          "ground": {"flagOn": "n/a: hidden on body.fp (Frontpage.scss:142-145), and with the flag on the lobby is always body.fp", "flagOff": "--color-bg-warning #FFE066 pill with an inset --color-action-warning #FAB005 ring (FooterBar.scss:50-51); hover --color-hover-bg-warning"},
+          "size": "24x24 (background-size cover in a 24px pill)",
+          "state": "narrow windows only; rest / hover",
+          "recolour": "none",
+          "flag": "off",
+          "note": "Hidden at tables and in the app (FooterBar.scss:22-24)."
+        }
+      ],
+      "used_check": "FooterBar.scss:70"
+    },
+    {
+      "name": "tableLeaderboard",
+      "files": ["tableLeaderboard.svg"],
+      "category": "table-panel-icons",
+      "shipped_formats": ["svg"],
+      "used": true,
+      "drawn": false,
+      "art": "an orange (#dd7200) leaderboard glyph, 24x24",
+      "uses": [
+        {
+          "file": "tableLeaderboard.svg",
+          "where": "static/scss/FooterBar.scss:77-79 `#footerBar li.leaderboardLink`",
+          "ui": "the Leaderboard pill of the lobby footer bar. In practice it does not show: FooterBar.js:503-504 adds .disabled (display:none, FooterBar.scss:113-115) whenever the lobby shows the bar, and it is only re-enabled when a table opens, which hides the whole bar",
+          "ground": {"flagOn": "n/a", "flagOff": "would be --color-bg-warning #FFE066"},
+          "size": "24x24 (narrow windows only)",
+          "state": "n/a",
+          "recolour": "none",
+          "flag": "off (effectively hidden)"
+        }
+      ],
+      "used_check": "FooterBar.scss:78"
+    },
+    {
+      "name": "tableMenu",
+      "files": ["tableMenu.png", "tableMenuActive.png", "tableMenuHover.png"],
+      "category": "table-menu-bar",
+      "shipped_formats": ["png"],
+      "used": true,
+      "drawn": true,
+      "art": "a blue 'i' disc; Active is a deeper blue (#2080e0) with a white i; 60x60 px",
+      "uses": [
+        {
+          "file": "tableMenu.png",
+          "where": "static/scss/TableBar.scss:252-264 `#tableBar > li.tableInfoLink`",
+          "ui": "the Info cell of the classic table menu bar (opens the table info panel)",
+          "ground": {"flagOn": "n/a (TableBar.scss:1533-1535)", "flagOff": "--color-bg-base #f8f9fa (TableBar.scss:9)"},
+          "size": "20x20",
+          "state": "rest; hover = tableMenuHover.png (260-262); panel open = tableMenuActive.png (255-257)",
+          "recolour": "none",
+          "flag": "off"
+        },
+        {
+          "file": "tableMenu.png",
+          "where": "static/scss/TableBar.scss:1596-1602 `.chromePill .pillCell.tableCell`",
+          "ui": "the Table cell (middle) of the redesigned top-left pill on the felt",
+          "ground": {"flagOn": "--paper-band #f4eee5 (TableBar.scss:1545)", "flagOff": "n/a"},
+          "size": "20x20 in a 40x40 cell (32x32 compact)",
+          "state": "rest; panel open = tableMenuActive.png (TableBar.js:959); no hover art (tableMenuHover.png is flag-off only)",
+          "recolour": "none",
+          "flag": "on"
+        }
+      ],
+      "used_check": "TableBar.scss:253, 256, 261, 1597, 1600; preloads head_open_ads.dust:161-162. Modals.scss:692-701 only names it: the settings rows' info icon is a data-URL redraw of this 'i' (#4e4d4c, white when open), not the file."
+    },
+    {
+      "name": "tableRules",
+      "files": ["tableRules.svg"],
+      "category": "table-panel-icons",
+      "shipped_formats": ["svg"],
+      "used": true,
+      "drawn": false,
+      "art": "an orange (#dd7200) rules glyph, 24x24",
+      "uses": [
+        {
+          "file": "tableRules.svg",
+          "where": "static/scss/FooterBar.scss:73-75 `#footerBar li.helpLink`",
+          "ui": "the Rules pill of the lobby footer bar. Same as Leaderboard: disabled (display:none) whenever the lobby shows the bar (FooterBar.js:503-504), enabled only when a table opens and the bar is hidden",
+          "ground": {"flagOn": "n/a", "flagOff": "would be --color-bg-warning #FFE066"},
+          "size": "24x24 (narrow windows only)",
+          "state": "n/a",
+          "recolour": "none",
+          "flag": "off (effectively hidden)"
+        }
+      ],
+      "used_check": "FooterBar.scss:74"
+    },
+    {
+      "name": "tableSettings",
+      "files": ["tableSettings.svg"],
+      "category": "table-panel-icons",
+      "shipped_formats": ["svg"],
+      "used": true,
+      "drawn": true,
+      "art": "an orange (#dd7200) gear, 24x24",
+      "uses": [
+        {
+          "file": "tableSettings.svg",
+          "where": "static/scss/FooterBar.scss:81-83 `#footerBar li.settings`",
+          "ui": "the Settings pill of the lobby footer bar (icon only in narrow windows)",
+          "ground": {"flagOn": "n/a (body.fp)", "flagOff": "--color-bg-warning #FFE066 pill, #FAB005 inset ring; hover --color-hover-bg-warning"},
+          "size": "24x24",
+          "state": "narrow windows only; rest / hover",
+          "recolour": "none",
+          "flag": "off"
+        }
+      ],
+      "used_check": "FooterBar.scss:82"
+    },
+    {
+      "name": "tableTables",
+      "files": ["tableTables.svg"],
+      "category": "table-panel-icons",
+      "shipped_formats": ["svg"],
+      "used": true,
+      "drawn": true,
+      "art": "an orange (#dd7200) tables glyph, 24x24",
+      "uses": [
+        {
+          "file": "tableTables.svg",
+          "where": "static/scss/FooterBar.scss:65-67 `#footerBar li.findTables`",
+          "ui": "the Tables pill of the lobby footer bar (opens the Find-tables box; icon only in narrow windows)",
+          "ground": {"flagOn": "n/a (body.fp)", "flagOff": "--color-bg-warning #FFE066 pill, #FAB005 inset ring; hover --color-hover-bg-warning"},
+          "size": "24x24",
+          "state": "narrow windows only; rest / hover",
+          "recolour": "none",
+          "flag": "off"
+        }
+      ],
+      "used_check": "FooterBar.scss:66"
+    },
+    {
+      "name": "social-facebook",
+      "files": ["frontpage/social-facebook.svg"],
+      "category": "social",
+      "shipped_formats": ["svg"],
+      "used": true,
+      "drawn": true,
+      "art": "the Simple Icons Facebook mark, one black path on a 24 grid",
+      "uses": [
+        {
+          "file": "frontpage/social-facebook.svg",
+          "where": "web/dust/common/site_footer.dust:72 + static/scss/_wm-footer.scss:193-276 `body.fp/body.wm .sitefooter .social > a:has(img[alt='Facebook'])`",
+          "ui": "the Facebook mark at the end of the site footer's legal row",
+          "ground": {"flagOn": "--paper-band #f4eee5 on redesigned pages (_wm-footer.scss:14); --paper-page #f9f6f2 on the frontpage, where the footer follows the About band (_fp-seams.scss:131)", "flagOff": "n/a: site_footer is hidden without the flag (body:not(.wm) .helpBox .sitefooter {display:none}, _wm-band.scss:121; #fpPage hidden, Frontpage.scss:95). The flag-off footer (common/footer.dust:51) draws /facebook-48.png from the web root instead"},
+          "size": "19x19 mask in a 24x20 anchor (_wm-footer.scss:244-248)",
+          "state": "rest / hover",
+          "recolour": "the <img> is opacity 0; the anchor paints the shape with mask-image and background-color --ink-label #4e4d4c; hover #0866FF (_wm-footer.scss:274)",
+          "flag": "on"
+        }
+      ],
+      "used_check": "site_footer.dust:72, _wm-footer.scss:217-218"
+    },
+    {
+      "name": "social-x",
+      "files": ["frontpage/social-x.svg"],
+      "category": "social",
+      "shipped_formats": ["svg"],
+      "used": true,
+      "drawn": true,
+      "art": "the Phosphor filled X, one black path on a 16 grid",
+      "uses": [
+        {
+          "file": "frontpage/social-x.svg",
+          "where": "web/dust/common/site_footer.dust:71 + static/scss/_wm-footer.scss:209-242 `.sitefooter .social > a:has(img[alt='X'])`",
+          "ui": "the X mark at the end of the site footer's legal row",
+          "ground": {"flagOn": "--paper-band #f4eee5 on redesigned pages; --paper-page #f9f6f2 on the frontpage (_fp-seams.scss:131)", "flagOff": "n/a (the flag-off footer draws an inline X svg, common/footer.dust:47-49)"},
+          "size": "17x17 mask in an 18x20 anchor",
+          "state": "rest / hover",
+          "recolour": "mask-image; background-color --ink-label #4e4d4c; hover #000000 (_wm-footer.scss:272)",
+          "flag": "on"
+        }
+      ],
+      "used_check": "site_footer.dust:71, _wm-footer.scss:211-212"
+    },
+    {
+      "name": "social-youtube",
+      "files": ["frontpage/social-youtube.svg"],
+      "category": "social",
+      "shipped_formats": ["svg"],
+      "used": true,
+      "drawn": true,
+      "art": "the Simple Icons YouTube mark, one black path on a 24 grid",
+      "uses": [
+        {
+          "file": "frontpage/social-youtube.svg",
+          "where": "web/dust/common/site_footer.dust:73 + static/scss/_wm-footer.scss:221-254 `.sitefooter .social > a:has(img[alt='YouTube'])`",
+          "ui": "the YouTube mark at the end of the site footer's legal row",
+          "ground": {"flagOn": "--paper-band #f4eee5 on redesigned pages; --paper-page #f9f6f2 on the frontpage", "flagOff": "n/a (the flag-off footer draws /youtube-48.png, common/footer.dust:52)"},
+          "size": "22x22 mask in a 24x20 anchor",
+          "state": "rest / hover",
+          "recolour": "mask-image; background-color --ink-label #4e4d4c; hover #FF0000 (_wm-footer.scss:276)",
+          "flag": "on"
+        }
+      ],
+      "used_check": "site_footer.dust:73, _wm-footer.scss:223-224"
+    }
+  ],
+  "extra": [
+    {"file": "static/images/holger-avatar.jpg", "where": "node-shared/dustData.js:250, node-shared/dustDataTutorial.js:237 (data.aboutPhotoURL)", "what": "a photo, not an icon"},
+    {"file": "static/images/frontpage/holger-avatar.jpg", "where": "web/dust/common/fp_about.dust:14", "what": "56x56 photo in the frontpage About section (flag on)"},
+    {"file": "static/images/frontpage/signature-caveat-ink.png", "where": "web/dust/common/fp_about.dust:17, web/dust/about.dust:18, web/dust/contact.dust:16", "what": "194x39 handwritten signature"},
+    {"file": "static/images/frontpage/gameplay-preview.mp4", "where": "static/js/wocg/FrontpageHero.js:21, 752", "what": "a video in the frontpage hero, not an image"},
+    {"file": "static/images/frontpage/logos/*_logo@2x.png and *_logo@tile.webp (36 files)", "where": "static/js/wocg/FrontpageTables.js:121, static/js/ModalTablePreview.js:63-64, web/compile.js:148-199 (logoFile)", "what": "per-game logos on the frontpage tiles and the table preview; not in the excluded folders of the brief, but they are game art, not icons"},
+    {"file": "static/images/ad-placeholder-160px.png", "where": "sandbox/info.txt:803 only (a note, not code)", "what": "the file does not exist; nothing in the code references it"}
+  ],
+  "notes": "1) .wmModal is not a flag gate. ModalShell.js:474 always builds .wmModal, and #tableListingsBox is a token root at both flags (_wocg-tokens.scss:24). So the table preview dialog, the Stats dialog and the Find-tables box draw their icons (bot/liked/completion badges, the games-bar caret, the Stats chevron, the ticks) on the redesign palette with the flag off too. 2) The Daily challenge month panel, the frontpage and LobbyWidgets tiles only exist with the flag (LobbyWidgets.js:79), so the medals, dealDayCheck and the GameSelectors.scss badge chain are flag-on in practice. 3) Master shipped PNG versions of many of these icons (closeModal.png, dealer.png, dealerSmall.png, crown.png, botBadge.png, likedBadge.png, cleanMeldBadge.png, highReputationBadge.png, onlineBadge.png, playerLiked/More/Leaving.png, sortArrowLeft/Right.png, shootTheMoon/Sun.png, playMenu*.png, menuBurger.png, menuClose.png, arrowDown*.png; git diff --name-status master). This branch deleted them, so flag-off draws the SVG ports, not master's PNGs. 4) Outside static/images, the flag-off footer uses /facebook-48.png and /youtube-48.png from the web root (common/footer.dust:51-52), and the chat bubble tails come from pieces/chatBubble/classic/frame* (svg with the flag, png without, static/themes/classic/classic.js:58). static/themes/classic/classic.js and classic.css name no icon from the list. 5) Surprises: (a) the legacy yellow 'play this day' arrowDown leaks into the Daily challenge dialog on hover, over the day number and over the green check on a won day (specificity 0,3,1 beats the 0,2,1 reset; confirmed in Chromium); (b) the *NotificationHoverTransition.json Lotties are never loaded because User.js asks for *NotificationTransitionHover.json (404); (c) closeModal.svg and menuQuestion.png are white glyphs that need a dark ground, and the classic close crosses are still drawn on the legacy black scrim at both flags (Find-tables box, Help/Rules box); (d) the Friends panel's conversation header keeps master's #f8f9fa under the redesign, so the masked back arrow (sortArrowLeft) sits on the old grey, not the paper; (e) with the flag on, the seat side-row icons (crown, liked, more, leaving, sort arrows) moved from master's #f8f9fa chip disc onto the #f4eee5 band-paper tab, and the chat/hint/play/table icons moved from the #f8f9fa bottom bar onto the band-paper pills and seat buttons, all standing on the felt; (f) the dealer chip, cribbage board and pegs, hint arrows and suit particles keep their own art at both flags; (g) the completion badge draws 16px in the Find-tables box but 20px on the frontpage and in the preview dialog, although TableListingsBar.scss:135-140 says the two should match; (h) master's 88% #f8f9fa Game over / Hand over panel is now an opaque #f9f6f2 at flag-off too (the --go-paper fallback), so the header Lotties sit on the new paper in both states; (i) dead or hidden files: menuBurger.svg, ranksMenu*.png (preload only), experiencedBadge.png, onlineBadge.svg (dead CSS), menuQuestion.png, menuClose.svg (display:none), tableRules.svg and tableLeaderboard.svg (their pills are always disabled while the bar shows)."
+}

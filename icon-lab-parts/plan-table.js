@@ -1,0 +1,99 @@
+// Writes the change list of the picked version into ICON-COLOURS.md, between <!-- icon-plan:start --> and
+// <!-- icon-plan:end -->: every icon the redesign draws that the version changes, with its site files and
+// its colours old to new, and every icon that stays, with the reason. Run it after make-versions.js:
+//
+//   node icon-lab-parts/plan-table.js
+//
+// The folded groups (the old look, the files never shown, the Sketch-only drawings) are left out, as on
+// icon-lab-all.html: the plan does not touch them.
+const fs = require('fs');
+const path = require('path');
+const inv = require('./inventory.js');
+const versions = require('./versions.js');
+const { SQUIRCLES } = require('./build.js');
+
+const PICK = 'schemeinks';
+const DOC = path.join(__dirname, '..', '..', '..', 'Programming', 'wocg', 'ICON-COLOURS.md');
+const START = '<!-- icon-plan:start -->', END = '<!-- icon-plan:end -->';
+
+// why an icon stays as built, grouped so the list reads as a handful of reasons
+const STAYS = [
+  ['Already the scheme’s colours (the pick mark, the seat count box and the movement chips have the squircle corner already)', ['infoI', 'pickMark', 'seatCheck', 'rowChevron', 'dealDayCheck', 'moveChips', 'ratingStars']],
+  ['White marks, coloured by the tile or the felt under them', ['tableClock', 'markRanked', 'markPrivate', 'markLimited', 'markHouseRule', 'hostPlus', 'inviteEnvelope']],
+  ['Black and white', ['closeCross', 'closeModal']],
+  ['The fanned cards keep the cards’ own colours', ['playMenu']],
+  ['Another session is reworking the board and the pegs (uncommitted on 23 Sep); its one cold grey, `#343A40`, is left to that work', ['cribbageBoard', 'cribbagePins']],
+  ['The ink at rest and the brand’s own colour on hover', ['socialX', 'socialFacebook', 'socialYouTube']],
+];
+// what the site ships, where the lab's own files do not say it
+const SHIPS = {
+  medals: 'Lottie `static/pieces/medal/classic/1.json` to `6.json` (the lab draws the Sketch stills)',
+  gameOverHeader: 'Lottie `gameOverHeader.json` (the lab draws the Sketch still); the team ribbon is repainted in `Table.js`',
+  handOverHeader: 'Lottie `handOverHeader.json` (the lab draws the Sketch still); the team ribbon is repainted in `Table.js`',
+};
+
+const ver = versions.find((v) => v.id === PICK);
+if (!ver) throw new Error('no version ' + PICK);
+const number = versions.indexOf(ver) + 2;
+const code = (t) => '`' + t + '`';
+
+const rows = [], stays = new Set(), all = [];
+inv.categories.filter((c) => !c.fold).forEach((cat) => cat.icons.forEach((def) => {
+  all.push(def.id);
+  // old colour -> new colour -> the states that map it so; one old colour can take a different new one per
+  // state (the chat's #5C940D is the stripes at rest and the ring when open)
+  const pairs = new Map();
+  def.states.forEach((st) => Object.entries(ver.state[def.id + '/' + st.key] || {}).forEach(([a, b]) => {
+    if (!pairs.has(a)) pairs.set(a, new Map());
+    const m = pairs.get(a);
+    if (!m.has(b)) m.set(b, []);
+    m.get(b).push(st.label.toLowerCase());
+  }));
+  // new art for a state (ver.art) says what it is in its note
+  const arts = [...new Set(def.states.map((st) => ver.art && ver.art[def.id + '/' + st.key]).filter(Boolean).map((a) => a.note))];
+  if (!pairs.size && !arts.length) { stays.add(def.id); return; }
+  const files = [];
+  def.states.forEach((st) => {
+    if (st.file) files.push(code(st.file) + (/\.png$/.test(st.file) ? ' (PNG)' : ''));
+    else if (st.inline) files.push('drawn in code (' + code(st.inline.replace(/\.svg$/, '')) + ')');
+  });
+  (def.lottie || []).forEach((lt) => { if (!SHIPS[def.id]) files.push('Lottie ' + code(lt.file)); });
+  if (SHIPS[def.id]) files.push(SHIPS[def.id]);
+  // a key that names its property ("stroke:#C96800") reads as that colour where it is a stroke
+  const hexOf = (a) => a.replace(/^[a-z-]+:/, '');
+  const label = (a) => (a === hexOf(a) ? code(a) : code(hexOf(a)) + ' as a ' + a.split(':')[0]);
+  const colours = [...pairs].sort((x, y) => (hexOf(x[0]) + x[0] < hexOf(y[0]) + y[0] ? -1 : 1)).map(([a, m]) => {
+    if (m.size === 1 && [...m.keys()][0] === hexOf(a)) return label(a) + ' stays';
+    return label(a) + ' → ' + (m.size === 1 ? code([...m.keys()][0]) : [...m].map(([b, sts]) => code(b) + ' (' + sts.join(', ') + ')').join(' or '));
+  });
+  const cell = colours.concat(arts.map((n) => 'New art: ' + n)).join(', ') + (SQUIRCLES.has(def.id) ? '. Corners: the squircle, at twice the round radius' : '');
+  rows.push('| ' + def.name + ' ' + code(def.id) + ' | ' + (def.flag === 'both' ? 'yes' : 'no') + ' | ' + [...new Set(files)].join(', ') + ' | ' + cell + ' |');
+}));
+
+const named = new Set(STAYS.flatMap((s) => s[1]));
+const unnamed = [...stays].filter((id) => !named.has(id));
+if (unnamed.length) throw new Error('say why these stay: ' + unnamed.join(', '));
+const moved = [...named].filter((id) => !stays.has(id));
+if (moved.length) throw new Error('these no longer stay: ' + moved.join(', '));
+
+const out = [START,
+  '*Generated by `Design/WoCG-3/icon-lab-parts/plan-table.js` from version ' + number + ', ' + ver.title + ', on ' + new Date().toISOString().slice(0, 10) +
+  '. Run it again after the version changes. “Old look too” means the old look draws the same file or rule, so it would change as well (see the flag choice above).*',
+  '',
+  '**What changes: ' + rows.length + ' of the ' + all.length + ' icons the redesign draws.**',
+  '',
+  '| Icon | Old look too | Site files | What changes: colours old → new, new art, corners |',
+  '|---|---|---|---|',
+  ...rows,
+  '',
+  '**What stays: ' + stays.size + ' icons.**',
+  '',
+  ...STAYS.map(([why, ids]) => '- ' + why + ': ' + ids.map(code).join(', ') + '.'),
+  END].join('\n');
+
+let doc = fs.readFileSync(DOC, 'utf8');
+const i = doc.indexOf(START), j = doc.indexOf(END);
+if (i < 0 || j < 0) throw new Error('ICON-COLOURS.md has no ' + START + ' and ' + END + ' markers');
+doc = doc.slice(0, i) + out + doc.slice(j + END.length);
+fs.writeFileSync(DOC, doc);
+console.log('ICON-COLOURS.md: the change list of version ' + number + ',', rows.length, 'icons change,', stays.size, 'stay');

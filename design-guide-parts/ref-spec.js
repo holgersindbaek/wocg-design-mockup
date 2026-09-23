@@ -11,9 +11,10 @@ window.Spec = {
       { token: '--paper-card', name: 'Card paper', use: 'Cards, tiles, panels, dropdowns, fields, chips, the tooltip' },
       { value: '#327333', name: 'The felt', use: 'Behind a table: a table tile and the game table itself' }
     ] },
-    { group: 'Ink', note: 'The two darknesses text is written in: everything, and the quiet line under it.', items: [
+    { group: 'Ink', note: 'What text is written in: everything, the quiet line under it, and a link.', items: [
       { token: '--ink', name: 'Ink', use: 'Every word: titles, running text, names, figures, table cells, a sub-line under a title, an explainer, a placeholder' },
-      { token: '--ink-quiet', name: 'Quiet ink', use: 'By-lines, timestamps, a quote attribution, the tooltip hint, an empty list' }
+      { token: '--ink-quiet', name: 'Quiet ink', use: 'By-lines, timestamps, a quote attribution, the tooltip hint, an empty list' },
+      { token: '--plate-blue-ink', name: 'Link ink', use: 'Every text link on paper, and its underline on the frontpage. Its token is named for the blue plate, but a name plate writes in the deeper team ink below' }
     ] },
     { group: 'Labels and marks', note: 'Not text: what a label on a thing, and what a mark that is not a line, is drawn in.', items: [
       { token: '--ink-label', name: 'Label ink', use: 'A tag, a field\u2019s label, a group label, a table\u2019s second figure' },
@@ -35,14 +36,22 @@ window.Spec = {
       { fill: '#ffd43b', ring: '#f5af23', ink: '#3d2b00', name: 'Yellow', use: 'The table action: Play, Join, Watch, Accept' }
     ] },
     { group: 'Light plates', note: 'A pale fill with its own deep ink, used where a colour has to carry small words.', kind: 'plate', items: [
-      { fill: '--plate-blue', ink: '--plate-blue-ink', name: 'Blue plate', use: 'A name plate at the table' },
-      { fill: '--plate-red', ink: '#8b1a1a', name: 'Red plate', use: 'A rating that went down, the red team' },
-      { fill: '--plate-green', ink: '--plate-green-ink', name: 'Green plate', use: 'A rating that went up: the movement chip and .rankUp' },
+      { fill: '--plate-blue', ink: '--color-team1-ink', name: 'Blue plate', use: 'A name plate at the table, in the ink the table writes its names in' },
+      { fill: '--plate-red', ink: '--color-team2-ink', name: 'Red plate', use: 'A rating that went down, the red team' },
+      { fill: '--plate-green', ink: '--plate-green-ink', name: 'Green plate', use: 'A rating that went up: the movement chip and .rankUp. The icons on it: the Message button in the friends panel, a meld\u2019s count and the complete canasta\u2019s star' },
+      { fill: '#f2d767', ring: '#d4ba47', ink: '#664411', name: 'Yellow plate', use: 'The turn timer, a meld\u2019s count with wild cards and the canasta star on it, and the rosette of medals 4 to 6: a pale yellow that carries small words in its own deep ink, as deep as the other plates\u2019 inks. Never a button on the felt, where the yellow button owns yellow' },
       { fill: '--plate-tray', ink: '--ink-label', name: 'Tray paper', use: 'The track a tray or the games bar sits in, and a tag' }
     ] },
-    { group: 'Accents', note: 'Two colours that only mark a rating.', items: [
-      { token: '--star-fill', name: 'Star fill', use: 'A full rating star' },
-      { token: '--star-stroke', name: 'Star stroke', use: 'The line around a rating star' }
+    { group: 'Accents', note: 'Colours that only mark something: a rating, a place, a star, a notice, a suit. The icons draw in them (ICON-COLOURS.md).', items: [
+      { token: '--star-fill', name: 'Star fill', use: 'A full rating star, on the band and in the game over panel' },
+      { token: '--star-stroke', name: 'Star stroke', use: 'The line around a rating star' },
+      { value: '#fcc419', name: 'Gold', use: 'The first place medal, the daily deal\u2019s gold trophy, the game over cup, the hand, the sun and the slam. Its ribbon is #fab005 and its line #9f6713' },
+      { value: '#bec5cc', name: 'Silver', use: 'The second place medal, the silver trophy and the moon: a cool metal, not a paper grey. Its ribbon is #9ba2aa and its line #5d646c' },
+      { value: '#e29c65', name: 'Bronze', use: 'The third place medal and the bronze trophy. Its ribbon is #c97847 and its line #854325' },
+      { value: '#aa6413', name: 'Gold star', use: 'A star on the yellow plate or on the gold: the mixed canasta\u2019s star and the star in the game over cup' },
+      { value: '#dd3030', name: 'Notice dot', use: 'The dot on the bell and on Friends, and on a conversation with unread messages. Its ring is #89060f' },
+      { value: '#d51a22', name: 'Suit red', use: 'The hearts and diamonds that burst from a played card, and a friend\u2019s heart on the board: the classic deck\u2019s red' },
+      { value: '#0e0d0d', name: 'Suit black', use: 'The clubs and spades that burst from a played card: the classic deck\u2019s black' }
     ] }
   ],
 
