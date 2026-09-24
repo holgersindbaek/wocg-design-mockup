@@ -92,6 +92,12 @@ module.exports = [
    "sortArrows/right": {
     "#212529": "#141414"
    },
+   "menuBurger/rest": {
+    "#212529": "#141414"
+   },
+   "menuClose/rest": {
+    "#212529": "#141414"
+   },
    "crown/rest": {
     "#E67700": "#DA6C00"
    },
@@ -300,6 +306,12 @@ module.exports = [
    "sortArrows/right": {
     "#212529": "#141414"
    },
+   "menuBurger/rest": {
+    "#212529": "#141414"
+   },
+   "menuClose/rest": {
+    "#212529": "#141414"
+   },
    "crown/rest": {
     "#E67700": "#CA5E00",
     "#FDC41B": "#FAAE04"
@@ -495,6 +507,12 @@ module.exports = [
     "#212529": "#141414"
    },
    "sortArrows/right": {
+    "#212529": "#141414"
+   },
+   "menuBurger/rest": {
+    "#212529": "#141414"
+   },
+   "menuClose/rest": {
     "#212529": "#141414"
    },
    "crown/rest": {
@@ -703,6 +721,12 @@ module.exports = [
     "#212529": "#141414"
    },
    "sortArrows/right": {
+    "#212529": "#141414"
+   },
+   "menuBurger/rest": {
+    "#212529": "#141414"
+   },
+   "menuClose/rest": {
     "#212529": "#141414"
    },
    "crown/rest": {
@@ -930,6 +954,12 @@ module.exports = [
    "sortArrows/right": {
     "#212529": "#141414"
    },
+   "menuBurger/rest": {
+    "#212529": "#141414"
+   },
+   "menuClose/rest": {
+    "#212529": "#141414"
+   },
    "crown/rest": {
     "#E67700": "#CA5E00",
     "#FDC41B": "#FAAE04"
@@ -1153,6 +1183,12 @@ module.exports = [
     "#212529": "#141414"
    },
    "sortArrows/right": {
+    "#212529": "#141414"
+   },
+   "menuBurger/rest": {
+    "#212529": "#141414"
+   },
+   "menuClose/rest": {
     "#212529": "#141414"
    },
    "crown/rest": {
@@ -1380,6 +1416,12 @@ module.exports = [
    "sortArrows/right": {
     "#212529": "#141414"
    },
+   "menuBurger/rest": {
+    "#212529": "#141414"
+   },
+   "menuClose/rest": {
+    "#212529": "#141414"
+   },
    "crown/rest": {
     "#E67700": "#CA5E00",
     "#FDC41B": "#FAAE04"
@@ -1603,6 +1645,12 @@ module.exports = [
     "#212529": "#141414"
    },
    "sortArrows/right": {
+    "#212529": "#141414"
+   },
+   "menuBurger/rest": {
+    "#212529": "#141414"
+   },
+   "menuClose/rest": {
     "#212529": "#141414"
    },
    "crown/rest": {
@@ -1830,6 +1878,12 @@ module.exports = [
    "sortArrows/right": {
     "#212529": "#141414"
    },
+   "menuBurger/rest": {
+    "#212529": "#141414"
+   },
+   "menuClose/rest": {
+    "#212529": "#141414"
+   },
    "crown/rest": {
     "#E67700": "#CA5E00",
     "#FDC41B": "#FAAE04"
@@ -2053,6 +2107,12 @@ module.exports = [
     "#212529": "#141414"
    },
    "sortArrows/right": {
+    "#212529": "#141414"
+   },
+   "menuBurger/rest": {
+    "#212529": "#141414"
+   },
+   "menuClose/rest": {
     "#212529": "#141414"
    },
    "crown/rest": {
@@ -2280,6 +2340,12 @@ module.exports = [
    "sortArrows/right": {
     "#212529": "#141414"
    },
+   "menuBurger/rest": {
+    "#212529": "#141414"
+   },
+   "menuClose/rest": {
+    "#212529": "#141414"
+   },
    "crown/rest": {
     "#E67700": "#CA5E00",
     "#FDC41B": "#FAAE04"
@@ -2505,6 +2571,12 @@ module.exports = [
    "sortArrows/right": {
     "#212529": "#141414"
    },
+   "menuBurger/rest": {
+    "#212529": "#141414"
+   },
+   "menuClose/rest": {
+    "#212529": "#141414"
+   },
    "crown/rest": {
     "#E67700": "#CA5E00",
     "#FDC41B": "#FAAE04"
@@ -2519,7 +2591,7 @@ module.exports = [
     "#5C940D": "#507F0A"
    },
    "friendMessage/hover": {
-    "#A9E34B": "#A5D37C",
+    "#A9E34B": "#B0E084",
     "#66A80F": "#8AC647",
     "#4F800B": "#375612"
    },
@@ -2531,27 +2603,29 @@ module.exports = [
     "#C92A2A": "#89060F"
    },
    "friendInvite/rest": {
-    "#A5D8FF": "#ABD2FF",
-    "#63B4F2": "#83B5EF"
+    "#A5D8FF": "#B0E084",
+    "#63B4F2": "#8AC647",
+    "#1971C2": "#507F0A"
    },
    "friendInvite/hover": {
-    "#A5D8FF": "#A3CCFB",
-    "#63B4F2": "#83B5EF",
-    "#1665AD": "#124F7E"
+    "#A5D8FF": "#B0E084",
+    "#63B4F2": "#8AC647",
+    "#1665AD": "#375612"
    },
    "friendInvite/sent": {
-    "#E9ECEF": "#E4DDD0",
-    "#ADB5BD": "#C9C0AE",
-    "#868E96": "#67635C"
+    "#E9ECEF": "#B0E084",
+    "#ADB5BD": "#8AC647",
+    "#868E96": "#507F0A"
    },
    "send/rest": {
-    "#A5D8FF": "#ABD2FF",
-    "#63B4F2": "#83B5EF"
+    "#A5D8FF": "#B0E084",
+    "#63B4F2": "#8AC647",
+    "#1971C2": "#507F0A"
    },
    "send/hover": {
-    "#A5D8FF": "#A3CCFB",
-    "#63B4F2": "#83B5EF",
-    "#1665AD": "#124F7E"
+    "#A5D8FF": "#B0E084",
+    "#63B4F2": "#8AC647",
+    "#1665AD": "#375612"
    },
    "send/off": {
     "#DEE2E6": "#E4DDD0",
@@ -2564,7 +2638,7 @@ module.exports = [
     "#868E96": "#67635C"
    },
    "friendSearch/hover": {
-    "#DEE2E6": "#D9D2C4",
+    "#DEE2E6": "#E4DDD0",
     "#ADB5BD": "#C9C0AE",
     "#495057": "#4E4D4C"
    },
@@ -2574,7 +2648,7 @@ module.exports = [
     "#868E96": "#67635C"
    },
    "friendSearchClose/hover": {
-    "#DEE2E6": "#D9D2C4",
+    "#DEE2E6": "#E4DDD0",
     "#ADB5BD": "#C9C0AE",
     "#495057": "#4E4D4C"
    },
@@ -2884,6 +2958,12 @@ module.exports = [
    "sortArrows/right": {
     "#212529": "#141414"
    },
+   "menuBurger/rest": {
+    "#212529": "#141414"
+   },
+   "menuClose/rest": {
+    "#212529": "#141414"
+   },
    "crown/rest": {
     "#E67700": "#CA5E00",
     "#FDC41B": "#FAAE04"
@@ -3107,6 +3187,12 @@ module.exports = [
     "#212529": "#141414"
    },
    "sortArrows/right": {
+    "#212529": "#141414"
+   },
+   "menuBurger/rest": {
+    "#212529": "#141414"
+   },
+   "menuClose/rest": {
     "#212529": "#141414"
    },
    "crown/rest": {

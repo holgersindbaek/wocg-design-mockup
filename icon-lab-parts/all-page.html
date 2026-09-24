@@ -8,9 +8,10 @@
 <link rel="stylesheet" href="guide-fonts.css">
 <style>
   /* Every icon the redesign draws, in its groups, at the size the site draws it, each state on the paper it
-     sits on. z switches the whole page between the colours the site has today and the picked version; h shows
-     the hover states, which stay hidden at first so the icons sit close. An icon no version changes wears a
-     "stays" tag; a state's name is its tooltip. */
+     sits on. z switches the whole page between the colours the site has today and the picked version, and the
+     page keeps the choice over a reload; h shows the hover states, which stay hidden at first so the icons sit
+     close, and the pointer on a state that has a hover shows the hover in its place. An icon no version
+     changes wears a "stays" tag; a state's name is its tooltip. */
   html { background: #F9F6F2; }
   body { margin: 0; padding: 0 24px 48px; color: #262626; font: 15px/21px BuloRounded, Verdana, sans-serif; }
   header { position: sticky; top: 0; z-index: 2; margin: 0 -24px 4px; padding: 12px 24px 10px; background: rgba(249, 246, 242, .94);
@@ -39,10 +40,12 @@
   body.new img.o { display: none; }
   body.new img.n { display: block; }
   body:not(.hovers) .hv { display: none !important; }
+  img[data-hk] { cursor: pointer; }
   footer { margin-top: 28px; color: #67635c; max-width: 820px; font-size: 13px; line-height: 19px; }
 </style>
 </head>
 <body>
+<script>try { if (localStorage.getItem('iconLabAllNew') === '1') document.body.classList.add('new'); } catch (e) {}</script>
 <header>
   <h1>Every icon, old and new</h1>
   <p>At the size the site draws them. Press <b>z</b> to switch between the colours the site has today and <b>/*@@PICK@@*/</b>. /*@@COUNT@@*/</p>
@@ -58,7 +61,33 @@
     mode.innerHTML = (body.classList.contains('new') ? 'New colours' : 'Old colours') + '<span>z</span>';
     hov.innerHTML = (body.classList.contains('hovers') ? 'Hover states shown' : 'Hover states hidden') + '<span>h</span>';
   }
-  function flip() { body.classList.toggle('new'); show(); }
+  function flip() {
+    body.classList.toggle('new');
+    try { localStorage.setItem('iconLabAllNew', body.classList.contains('new') ? '1' : '0'); } catch (e) {}
+    show();
+  }
+  // The pointer on a state that has a hover shows that hover's picture in its place, in the colours on show
+  function hoverArt(img) {
+    var all = document.querySelectorAll('img[data-k="' + img.getAttribute('data-hk') + '"]');
+    var want = img.classList.contains('n') ? 'n' : img.classList.contains('o') ? 'o' : (body.classList.contains('new') ? 'n' : 'o');
+    for (var i = 0; i < all.length; i++) if (all[i].classList.contains(want)) return all[i];
+    for (var j = 0; j < all.length; j++) if (all[j].classList.contains('b')) return all[j];
+    return null;
+  }
+  document.addEventListener('mouseover', function (e) {
+    var img = e.target;
+    if (!img || img.tagName !== 'IMG' || !img.hasAttribute('data-hk') || img.hasAttribute('data-rest')) return;
+    var art = hoverArt(img);
+    if (!art) return;
+    img.setAttribute('data-rest', img.getAttribute('src'));
+    img.setAttribute('src', art.getAttribute('src'));
+  });
+  document.addEventListener('mouseout', function (e) {
+    var img = e.target;
+    if (!img || img.tagName !== 'IMG' || !img.hasAttribute('data-rest')) return;
+    img.setAttribute('src', img.getAttribute('data-rest'));
+    img.removeAttribute('data-rest');
+  });
   function hovers() { body.classList.toggle('hovers'); show(); }
   document.addEventListener('keydown', function (e) {
     if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey || e.repeat) return;

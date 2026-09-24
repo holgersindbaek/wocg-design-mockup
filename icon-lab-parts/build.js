@@ -197,14 +197,19 @@ function writeAll(a, versions) {
       // every state at the size the site draws it (the pegs at their board's scale)
       const k = ic.siteSize ? ic.siteSize[0] / ic.size[0] : 1;
       let changes = false;
-      // states on the same ground share one tile; a hover state hides until the page shows hovers
+      // states on the same ground share one tile; a hover state hides until the page shows hovers. Every
+      // image names its state (data-k), and a state with a hover names that hover (data-hk), so the page
+      // shows the hover in its place while the pointer is on it: rest takes hover, note noteHover
+      const keys = new Set(states.map((st) => st.key));
+      const hoverKey = (key) => { const h = key === 'rest' ? 'hover' : key + 'Hover'; return keys.has(h) ? h : null; };
       const tiles = [];
       states.forEach((st) => {
         const g = st.ground || ic.stage;
         if (!tiles.length || tiles[tiles.length - 1].g !== g) tiles.push({ g, imgs: [] });
         const hover = /hover/i.test(st.key);
         const style = 'width:' + +(st.w * k).toFixed(1) + 'px;height:' + +(st.h * k).toFixed(1) + 'px;' + (st.flip ? 'transform:scaleX(-1);' : '') + (st.css || '');
-        const tip = esc(st.label) + (hover ? ' (hover)' : '');
+        const hk = hover ? null : hoverKey(st.key);
+        const tip = esc(st.label) + (hover ? ' (hover)' : '') + '" data-k="' + esc(id + '/' + st.key) + (hk ? '" data-hk="' + esc(id + '/' + hk) : '');
         const cls = hover ? ' hv' : '';
         // a version may redraw a state (ver.art): new art in its new colours, `pad` px bigger on every side
         // where it draws past the icon's box (an outline), laid out at the icon's own size

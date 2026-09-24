@@ -31,7 +31,7 @@ const ROLES = {
   chatMenu: { fam: { m: 'lime' }, all: { '#A9E34B': R('m', 'fill'), '#66A80F': R('m', 'ring'), '#5C940D': R('m', 'glyph') }, states: { hover: SOLID_LIME, active: SOLID_LIME } },
   hintMenu: { fam: { m: 'yellow' }, all: { '#FFD43B': R('m', 'fill'), '#F59F00': R('m', 'ring'), '#D8D8D8': R('base', 'base') },
     states: { hover: { '#F59F00': R('m', 'fillHover'), '#E67700': R('m', 'ringHover'), '#D8D8D8': R('base', 'base') } } },
-  playerLeaving: INK, playerMore: INK, sortArrows: INK,
+  playerLeaving: INK, playerMore: INK, sortArrows: INK, menuBurger: INK, menuClose: INK,
   crown: GOLD, playerLiked: GOLD,
   friendMessage: { fam: { m: 'lime' }, all: Object.assign({ '#A9E34B': R('m', 'fill'), '#66A80F': R('m', 'ring'), '#5C940D': R('m', 'glyph'), '#4F800B': R('m', 'glyphHover') }, DOT) },
   friendInvite: { fam: { m: 'blue', g: 'grey' }, all: { '#A5D8FF': R('m', 'fill'), '#63B4F2': R('m', 'ring'), '#1971C2': R('m', 'glyph'), '#1665AD': R('m', 'glyphHover'),
@@ -63,21 +63,22 @@ const ROLES = {
 const TROPHY = { fam: { y: 'medalGold', g: 'go', s: 'goldStar' }, all: { '#FDC41B': R('y', 'fill'), '#FCC419': R('y', 'fill'), '#F59E02': R('y', 'ring'), '#E67700': R('s', 'star'),
   '#60C400': R('g', 'fill'), '#5CBC00': R('g', 'fillHover'), '#4D9D00': R('g', 'ring'), '#4A9600': R('g', 'ring') } };
 // a button on a light plate: the plate, its ring and its glyph in the link ink, and under the pointer the
-// plate's hover with the glyph in the deep ink (Holger, 23 Sep 2026: the deep ink read almost black as a
-// solid glyph; the link ink alone falls to 2.74:1 on the green hover, so the glyph deepens there, as the
-// friends panel's buttons deepen theirs today). Words on a plate keep the deep ink
+// same plate with the glyph in the deep ink (Holger, 23 Sep 2026: the deep ink read almost black as a
+// solid glyph at rest, so it is the hover's; 24 Sep: the plate keeps its colour under the pointer and only
+// the glyph darkens). Words on a plate keep the deep ink
 const onPlate = (slot, fill, ring, glyph, hoverGlyph) => ({ rest: { [fill]: R(slot, 'fill'), [ring]: R(slot, 'ring'), [glyph]: R(slot, 'mark') },
-  hover: { [fill]: R(slot, 'fillHover'), [ring]: R(slot, 'ring'), [hoverGlyph]: R(slot, 'glyph') } });
+  hover: { [fill]: R(slot, 'fill'), [ring]: R(slot, 'ring'), [hoverGlyph]: R(slot, 'glyph') } });
 const TRAY_BTN = { fam: { g: 'tray' }, all: onPlate('g', '#DEE2E6', '#ADB5BD', '#868E96', '#495057').rest, states: { hover: onPlate('g', '#DEE2E6', '#ADB5BD', '#868E96', '#495057').hover } };
 const ROLES_REST = {
-  // the friends panel (Holger, 23 Sep 2026: its light buttons take the light plates): the message the
-  // green plate, as the chat is green; the invite and the send the blue plate; the grey ones, a sent
-  // invite and a send with nothing typed the tray paper, whose hover is the tray cell's (--ot-hover)
+  // the friends panel (Holger, 23 Sep 2026: its light buttons take the light plates; 24 Sep: the invite, a
+  // sent one too, and the send take the message's green plate, the blue and the solid green both gone): the
+  // message, the invite and the send the green plate, as the chat is green; the search, its close and a
+  // send with nothing typed the tray paper. Under the pointer every plate keeps its colour (onPlate)
   friendMessage: { fam: { m: 'plateGreen' }, all: Object.assign(onPlate('m', '#A9E34B', '#66A80F', '#5C940D', '#4F800B').rest, DOT),
     states: { hover: onPlate('m', '#A9E34B', '#66A80F', '#5C940D', '#4F800B').hover } },
-  friendInvite: { fam: { m: 'plateBlue', g: 'tray' }, all: Object.assign(onPlate('m', '#A5D8FF', '#63B4F2', '#1971C2', '#1665AD').rest, onPlate('g', '#E9ECEF', '#ADB5BD', '#868E96', '#495057').rest),
+  friendInvite: { fam: { m: 'plateGreen' }, all: Object.assign(onPlate('m', '#A5D8FF', '#63B4F2', '#1971C2', '#1665AD').rest, onPlate('m', '#E9ECEF', '#ADB5BD', '#868E96', '#495057').rest),
     states: { hover: onPlate('m', '#A5D8FF', '#63B4F2', '#1971C2', '#1665AD').hover } },
-  send: { fam: { m: 'plateBlue', g: 'tray' }, all: Object.assign(onPlate('m', '#A5D8FF', '#63B4F2', '#1971C2', '#1665AD').rest, onPlate('g', '#DEE2E6', '#ADB5BD', '#868E96', '#495057').rest),
+  send: { fam: { m: 'plateGreen', g: 'tray' }, all: Object.assign(onPlate('m', '#A5D8FF', '#63B4F2', '#1971C2', '#1665AD').rest, onPlate('g', '#DEE2E6', '#ADB5BD', '#868E96', '#495057').rest),
     states: { hover: onPlate('m', '#A5D8FF', '#63B4F2', '#1971C2', '#1665AD').hover } },
   friendSearch: TRAY_BTN, friendSearchClose: TRAY_BTN,
   friendBack: { fam: { g: 'tray' }, all: { '#868E96': R('g', 'glyph'), '#495057': R('g', 'glyphHover') } },
@@ -151,7 +152,7 @@ if (TIMER_TRACK_YELLOW !== '#C4AA34' || TIMER_TRACK_RED !== '#D7867D') throw new
 if (GREEN_PLATE.fill !== '#B0E084' || GREEN_PLATE.glyph !== '#375612' || GREEN_PLATE.mark !== '#507F0A') throw new Error('the green plate moved: ' + JSON.stringify(GREEN_PLATE));
 // the scheme's own colours those roles take
 const REST_PALETTES = {
-  go: { fill: '#43A038', fillHover: '#3E9334', ring: '#347D2C' },
+  go: { fill: '#43A038', fillHover: '#3E9334', ring: '#347D2C', glyph: W, mark: W },
   star: { fill: '#F5B81E', ring: '#EF7F27' }, starEmpty: { fill: '#D2CFCA', ring: '#9B9997' },
   // the light plates (DESIGN-COLOUR 4.3): fill, hover, ring, deep ink and, as `mark`, the link ink a glyph
   // takes at rest. The arc is the turn timer's: the yellow walk's deepest step and the danger red, one step

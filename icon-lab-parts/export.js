@@ -22,6 +22,7 @@ const SVGS = [
   ['menuFriendsCountHover.svg', 'menuFriends/countHover'], ['menuFriendsNotification.svg', 'menuFriends/note'],
   ['menuFriendsNotificationHover.svg', 'menuFriends/noteHover'],
   ['crown.svg', 'crown/rest'], ['playerLiked.svg', 'playerLiked/rest'], ['playerMore.svg', 'playerMore/rest'], ['playerLeaving.svg', 'playerLeaving/rest'],
+  ['menuBurger.svg', 'menuBurger/rest'], ['menuClose.svg', 'menuClose/rest'],
   ['sortArrowLeft.svg', 'sortArrows/left'], ['sortArrowRight.svg', 'sortArrows/right'], ['dealer.svg', 'dealer/rest'], ['dealerSmall.svg', 'dealer/small'],
   ['likedBadge.svg', 'likedBadge/rest'], ['botBadge.svg', 'botBadge/rest'], ['highReputationBadge.svg', 'highReputationBadge/rest'],
   ['cleanMeldBadge.svg', 'cleanMeldBadge/rest'],
