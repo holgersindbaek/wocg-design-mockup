@@ -144,6 +144,7 @@
     if (kind === 'button' || kind === 'plate') {
       var parts = [(item.fill.slice(0, 2) === '--' ? item.fill : 'literal') + ' ' + shown(item, item.fill)];
       if (item.ring) parts.push('ring ' + shown(item, item.ring));
+      if (item.hover) parts.push('hover ' + shown(item, item.hover));
       if (item.ink) parts.push('ink ' + shown(item, item.ink));
       return parts.join('  ·  ');
     }

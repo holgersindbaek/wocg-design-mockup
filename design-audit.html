@@ -183,6 +183,8 @@
   .tkval:not(.site *) { display: block; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 11.5px;
     line-height: 17px; color: var(--ink-quiet); margin: 1px 0 3px; word-break: break-word; }
   .tkuse:not(.site *) { display: block; font-size: 13px; line-height: 18px; color: var(--ink-label); }
+  .tkprop:not(.site *) { display: inline-block; margin-left: 8px; padding: 0 7px; border-radius: 9px; background: var(--plate-tray); color: var(--ink-label);
+    font-size: 11px; font-weight: normal; line-height: 18px; vertical-align: 1px; }
 
   .sw:not(.site *) { display: block; width: 76px; height: 44px; border-radius: 10px; font-style: normal;
     box-shadow: inset 0 0 0 1px rgba(0,0,0,.10); }
@@ -359,6 +361,7 @@
         add('--ink-mark', '#9b9997', mixed);
         add('--ink-quiet', '#67635c');
         add('--line', '#d2cfca');
+        add('--line-warm', '#d9d2c4');
         add('--line-soft', '#ebe7de');
         add('--plate-tray', '#e4ddd0');
         add('--line-tray', '#c9c0ae');
@@ -533,7 +536,7 @@
         add('--size-narrow', '400px');
         add('--size-wide', '640px');
         add('--btn-danger', '#c92a2a');
-        add('--btn-quiet', '#d2cfca');
+        add('--btn-quiet', '#d9d2c4');
         add('--btn-quiet-ring', '#bfb5a1');
         add('--btn-quiet-hover', '#d1c8b8');
         add('--motion-speed', '220ms');
@@ -1378,7 +1381,7 @@
   <div class="card">
     <div class="body">
       <h3>Roles: the bar, the panels and the footer <span class="tag built">built</span></h3>
-      <p class="rule-text">Guide 4.4, the chrome rows: a menu link 16 / 1 700 in the ink, a games panel column head 16 / 32 700 in the ink, a games panel link and a dropdown item 16 / 24 400 in the ink, a footer column head 16 / 28 700, a footer link 16 / 28 and the legal row 16 / 20, both in the ink.</p>
+      <p class="rule-text">Guide 4.4, the chrome rows: a menu link 16 / 1 700 in the ink, a games panel column head 16 / 40 700 in the ink, a games panel link and a dropdown item 16 / 24 400 in the ink, a footer column head 16 / 28 700, a footer link 16 / 28 and the legal row 16 / 20, both in the ink.</p>
       <div class="demo">
         <div data-demo style="padding:10px;background:var(--paper-band)">
           <div class="site wm">
@@ -1493,7 +1496,7 @@
         }
         Lab.table(card, [
           role('a menu link, #menuBar > li.mclink > a', p('mclink'), '16px / 16px / 700 / #141414'),
-          role('a panel column head, .mghead', p('mghead'), '16px / 32px / 700 / #141414'),
+          role('a panel column head, .mghead', p('mghead'), '16px / 40px / 700 / #141414'),
           role('a panel link, .mgcol a', p('mgcola'), '16px / 24px / 400 / #141414'),
           role('a dropdown item, .dropdownItem', p('dropitem'), '16px / 24px / 400 / #141414'),
           role('a footer column head, .footerGroup > strong', p('foothead'), '16px / 28px / 700 / #141414'),
@@ -3136,7 +3139,7 @@
 
   <div class="card"><div class="body">
     <h3>Control heights: 32 <span class="tag built">built</span></h3>
-    <p class="rule-text">32 is a big button, the lobby .button (the one 32px control at 20px bold), the catalog’s Play, the live capsule, a panel’s head strip and a compact table row. A field is 34, the 32 plus the 2px its ring takes, and the search field in a table head is 26.</p>
+    <p class="rule-text">32 is a big button, the lobby .button (the one 32px control at 20px bold), the catalog’s Play, the live capsule and a compact table row. A panel’s head strip is 40, 12 above and below its 16px line. A field is 34, the 32 plus the 2px its ring takes, and the search field in a table head is 26.</p>
     <div class="demo"><div class="rw">
       <div class="site wm" style="width:250px">
         <div class="wmModal wmOpen modalInstant" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
@@ -3189,7 +3192,7 @@
         { what: '.wmFld input, a field: 32 plus its ring', got: oh('.wmFld input'), want: '34px' },
         { what: '.lobbyscope .button', got: oh('.button.green'), want: '32px' },
         { what: '.statsCapsule .capsule', got: oh('.capsule'), want: '32px' },
-        { what: '.mphead, a panel’s head strip', got: Lab.cs(q('.mphead'), 'height'), want: '32px' },
+        { what: '.mphead, a panel’s head strip', got: Lab.cs(q('.mphead'), 'height'), want: '40px' },
         { what: '.lbRow > span, a compact row', got: oh('.lbRow > span'), want: '32px' },
         { what: '.gplay, the catalog’s Play', got: oh('.gplay'), want: '32px' },
         { what: '--size-big and --size-field', got: Lab.token(q('.wmModal'), '--size-big') + ' / ' + Lab.token(q('.wmModal'), '--size-field'), want: '32px / 34px' }
@@ -3694,7 +3697,7 @@
   <div class="card">
     <div class="body">
       <h3>The quiet button, the danger pair and the inert pill <span class="tag built">built</span></h3>
-      <p class="rule-text">The quiet button is #d2cfca ringed #bfb5a1 with --ink words. Danger is #c92a2a ringed #9d2121, and Delete account wears the same solid red. The quiet dark button, #5e574b ringed #484136 with white outlined words, is the quiet button beside a filled one: Cancel beside Host, Watch game beside Join table, the game over panel's Leave and Chat beside Play again, and a picked block reason. Two quiet buttons with no filled one beside them stay the quiet button. An invite that has gone out is the inert pill: band paper, a --line ring, --ink-label words, no hand.</p>
+      <p class="rule-text">The quiet button is --line-warm #d9d2c4 ringed #bfb5a1 with --ink words. Danger is #c92a2a ringed #9d2121, and Delete account wears the same solid red. The quiet dark button, #5e574b ringed #484136 with white outlined words, is the quiet button beside a filled one: Cancel beside Host, Watch game beside Join table, the game over panel's Leave and Chat beside Play again, and a picked block reason. Two quiet buttons with no filled one beside them stay the quiet button. An invite that has gone out is the inert pill: band paper, a --line ring, --ink-label words, no hand.</p>
       <div class="demo">
         <div class="site wm" data-demo>
           <div class="wmModal wmOpen modalInstant" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
@@ -3726,7 +3729,7 @@
         var invited = root.querySelector('.wmBtn.wmInvited');
         var picked = root.querySelector('.wmReasons .wmBtn.wmPicked');
         Lab.table(card, B5.rows(quiet, {
-          h: '32px', fs: '18px', lh: '32px', pad: '0 8px', bg: '#d2cfca',
+          h: '32px', fs: '18px', lh: '32px', pad: '0 8px', bg: '#d9d2c4',
           sh: 'inset 0 0 0 1px #bfb5a1', ink: '#141414', ts: 'inherit'
         }), '.wmBtn, the quiet button');
         Lab.table(card, B5.rows(kill, {
@@ -3949,7 +3952,7 @@
   <div class="card">
     <div class="body">
       <h3>Links <span class="tag built">built</span></h3>
-      <p class="rule-text">A prose link is #1971c2 with no underline at rest and a plain underline on hover. The about zone's link keeps a resting 1px line under it that turns #1971c2 on hover. Menubar links, the games panel, a dropdown item and the footer are --ink with no underline, and draw a 1px ::after in currentColor inset 1px at both ends on hover.</p>
+      <p class="rule-text">A prose link is #1971c2 with no underline at rest and a plain underline on hover. The about zone's link has no line at rest and a 1px #1971c2 line on hover. Menubar links, the games panel, a dropdown item and the footer are --ink with no underline, and draw a 1px ::after in currentColor inset 1px at both ends on hover.</p>
       <div class="demo">
         <div class="site wm" data-read>
           <div id="mainContainer" class="general" style="min-height:0">
@@ -4057,7 +4060,7 @@
           { what: 'a reading page’s prose link', got: pair(prose), want: 'colour #1971c2, underline none' },
           { what: 'a table cell link', got: pair(cell), want: 'colour #1971c2, underline none' },
           { what: 'the about zone’s link', got: pair(mail), want: 'colour #1971c2, underline none' },
-          { what: 'its resting line under', got: Lab.cs(mail, 'border-bottom'), want: '1px solid #d2cfca' },
+          { what: 'its line at rest, none', got: Lab.cs(mail, 'border-bottom'), want: '1px solid rgba(0, 0, 0, 0)' },
           { what: 'a menubar link', got: pair(mclink), want: 'colour #141414, underline none' },
           { what: 'a games panel link', got: pair(panel), want: 'colour #141414, underline none' },
           { what: 'a dropdown item', got: pair(item), want: 'colour #141414, underline none' },
@@ -4078,7 +4081,7 @@
           { what: 'its offset', got: Lab.rule('.site.fp .divhead .ttl:focus-visible', 'outline-offset', about), want: '4px', tag: 'rule' },
           { what: 'a focus ring for prose links and controls', got: 'none is designed', want: 'open item 6', tag: 'open' }
         ], 'Focus');
-        Lab.note(card, 'The about link rests on a --line #d2cfca line, and 7.2 and 4.4 both name it there (_fp-about.scss:39): a divider on the band or the canvas takes --line, not the soft line.');
+        Lab.note(card, 'The about link keeps a transparent 1px border at rest, so the line that comes on hover moves nothing (_fp-about.scss). It had a --line line at rest until 24 Sep 2026, when Holger saw the email read as underlined.');
         Lab.note(card, 'The games panel and the user dropdown are simply shown; they keep the place they take on hover, and the demo is given room under the bar for them. The reading shell\u2019s #mainContainer is let off its 100vh floor, which is the lab\u2019s own layout. The catalog’s Play answers focus with the hover paper, so the seam title carries the only drawn focus ring on the redesign.');
       })();
       </script>
@@ -4160,7 +4163,7 @@
           { what: '.gmenu corner', got: Lab.cs(menu, 'border-radius') + ', ' + Lab.cs(menu, 'corner-shape'), want: '12px 12px 0 0, superellipse(2)' },
           { what: '.gmenu padding, the lattice edge', got: Lab.cs(menu, 'padding'), want: '1px' },
           { what: '.gmGrid tracks and gap', got: Lab.cs(grid, 'grid-template-columns').split(' ').length + ' tracks, gap ' + Lab.cs(grid, 'gap'), want: '2 tracks, gap 1px' },
-          { what: '.gmGrid paper, the lattice', got: Lab.cs(grid, 'background-color'), want: '#d2cfca' },
+          { what: '.gmGrid paper, the lattice', got: Lab.cs(grid, 'background-color'), want: '#d9d2c4' },
           { what: '.gmenu lift', got: Lab.cs(menu, 'box-shadow'), want: '0 -3px 8px rgba(60,45,25,.07)' },
           { what: '.gmenu off the button', got: Lab.cs(menu, 'bottom') + ', in ' + Lab.cs(menu, 'left'), want: '43px, in 12px' },
           { what: 'the button while the paper is out', got: Lab.cs(q('.gplay'), 'border-top-left-radius') + ' at the top, ' + Lab.cs(q('.gplay'), 'border-bottom-left-radius') + ' at the foot', want: '0px at the top, 12px at the foot' },
@@ -4169,7 +4172,7 @@
         Lab.table(card, [
           { what: 'hearts .gmTop paper and ink', got: Lab.cs(top, 'background-color') + ', ' + Lab.cs(top, 'color'), want: '#971f3e, #ffffff' },
           { what: 'hearts .gmTop ring', got: Lab.cs(top, 'box-shadow'), want: '0 0 0 1px #761830' },
-          { what: 'hearts .gmenu frame', got: Lab.cs(menu, 'background-image'), want: 'linear-gradient(#761830 0px, #761830 50px, #d2cfca 50px)' },
+          { what: 'hearts .gmenu frame', got: Lab.cs(menu, 'background-image'), want: 'linear-gradient(#761830 0px, #761830 50px, #d9d2c4 50px)' },
           { what: 'canasta .gmTop paper', got: Lab.cs(canasta.querySelector('.gmTop'), 'background-color'), want: '#008969' },
           { what: 'canasta .gmTop ring', got: Lab.cs(canasta.querySelector('.gmTop'), 'box-shadow'), want: '0 0 0 1px #006b52' },
           { what: '.gmItem paper, on a tinted tile', got: Lab.cs(item, 'background-color'), want: '#ffffff' },
@@ -4851,7 +4854,7 @@
         Lab.table(card, F6.trackRows(seg, cell, { rad: '14px', tray: '#e4ddd0', ring: '#c9c0ae' }), 'The board’s tray');
         Lab.table(card, F6.thumbRows(t.thumb, { rad: '10.5px', travel: 'left, width, top, height, opacity over 0.22s, 0.22s, 0.22s, 0.22s, 0.11s' }).concat([
           { what: '--lb-thspd', got: Lab.cs(seg, '--lb-thspd').trim(), want: '220ms' },
-          { what: '--ot-hover, the unpicked cell’s paper', got: Lab.token(cell, '--ot-hover'), want: '#d2cfca' },
+          { what: '--ot-hover, the unpicked cell’s paper', got: Lab.token(cell, '--ot-hover'), want: '#dcd4c5' },
           { what: 'the picked cell’s hand', got: Lab.cs(seg.querySelector('.lbPicked'), 'cursor'), want: 'default' }
         ]), 'Its thumb, and what the page adds');
         Lab.note(card, 'The board’s tray is live, and it is the one tray on the site that already shows no hand on the cell you are standing on.');
@@ -4864,7 +4867,7 @@
   <div class="card" style="overflow:visible;min-width:0">
     <div class="body">
       <h3>The games bar <span class="tag built">built</span></h3>
-      <p class="rule-text">The games bar is the same 28px tray at a 14px corner, with 24px cells at 0 8px and a 10.5px corner in bold 16 / 24 --ink-label, a 12.3px count after a middle dot, a 1px --line-tray divider, a green thumb with its ring and drop travelling over 220ms, a --line hover paper on an unpicked cell, no hand on the picked one, and a More cell whose list keeps the control's 12px corner. The cells are 8 apart rather than 10 so one more game stands on the bar before the fold. The corners are the shared tray pair, --radius-tray and --radius-tray-cell, on the track, the empty host that stands in for it, the cells, the thumb and the count cells in the list's foot.</p>
+      <p class="rule-text">The games bar is the same 28px tray at a 14px corner, with 24px cells at 0 8px and a 10.5px corner in bold 16 / 24 --ink-label, a 12.3px count after a middle dot, a 1px --line-tray divider, a green thumb with its ring and drop travelling over 220ms, a --plate-tray-hover paper on an unpicked cell, no hand on the picked one, and a More cell whose list keeps the control's 12px corner. The cells are 8 apart rather than 10 so one more game stands on the bar before the fold. The corners are the shared tray pair, --radius-tray and --radius-tray-cell, on the track, the empty host that stands in for it, the cells, the thumb and the count cells in the list's foot.</p>
       <div class="demo" style="overflow:visible">
         <div class="site fp wm" data-demo>
           <div class="lobbyscope" id="openTablesTop">
@@ -4922,8 +4925,8 @@
         Lab.table(card, F6.thumbRows(bar.thumb, { rad: '10.5px', travel: 'left, width, top, height, opacity over 0.22s, 0.22s, 0.22s, 0.22s, 0.11s' }), 'The thumb');
         Lab.table(card, [
           { what: 'divider width / colour', got: Lab.rule('.site.fp .otFilter .track > .s + .s::before', 'width', track) + ' / ' + Lab.rule('.site.fp .otFilter .track > .s + .s::before', 'background', track), want: '1px / #c9c0ae', tag: 'rule' },
-          { what: '--ot-hover', got: Lab.token(track, '--ot-hover'), want: '#d2cfca' },
-          { what: 'the hover paper on an unpicked cell', got: Lab.rule('.site.fp .otFilter .track:not(.tcopy) > .s:not(.on):hover::after', 'background', track), want: '#d2cfca', tag: 'rule' },
+          { what: '--ot-hover', got: Lab.token(track, '--ot-hover'), want: '#dcd4c5' },
+          { what: 'the hover paper on an unpicked cell', got: Lab.rule('.site.fp .otFilter .track:not(.tcopy) > .s:not(.on):hover::after', 'background', track), want: '#dcd4c5', tag: 'rule' },
           { what: 'the list’s corner', got: Lab.cs(list, 'border-radius'), want: '12px' },
           { what: 'a count cell in the list’s foot, its corner', got: Lab.cs(list.querySelector('.foot [data-amt]'), 'border-radius'), want: '10.5px' },
           { what: 'the list’s paper and line', got: Lab.cs(list, 'background-color') + ', ' + Lab.cs(list, 'border-color'), want: '#ffffff, #c9c0ae' },
@@ -5109,7 +5112,7 @@
 
   <div class="card"><div class="body">
     <h3>Dots <span class="tag built">built</span></h3>
-    <p class="rule-text">A presence dot is 8px round, --ink-mark off and --btn-green on. The hero's live dot is 8px round in --btn-green.</p>
+    <p class="rule-text">A presence dot is 8px round, a light fill in a 1px border of a darker shade: --line in --ink-mark off, --btn-green in --btn-green-ring on. The hero's live dot is 8px round in --btn-green, with no ring.</p>
     <div class="demo"><div class="site wm" data-demo="modal">
       <div class="wmModal wmOpen modalInstant" role="dialog" style="position:static;display:block;opacity:1">
         <div class="wmScrim" style="position:static;height:0"></div>
@@ -5152,15 +5155,18 @@
       Lab.table(card, [
         { what: ".wmDot size", got: Lab.cs(off, "width") + " " + Lab.cs(off, "height"), want: "8px 8px" },
         { what: ".wmDot border-radius", got: Lab.cs(off, "border-radius"), want: "50%" },
-        { what: ".wmDot off", got: Lab.cs(off, "background-color"), want: "#9b9997" },
-        { what: ".wmDot on", got: Lab.cs(on, "background-color"), want: "#43a038" },
+        { what: ".wmDot off, fill", got: Lab.cs(off, "background-color"), want: "#d2cfca" },
+        { what: ".wmDot off, ring", got: Lab.cs(off, "border-top-width") + " " + Lab.cs(off, "border-top-color"), want: "1px #9b9997" },
+        { what: ".wmDot on, fill", got: Lab.cs(on, "background-color"), want: "#43a038" },
+        { what: ".wmDot on, ring", got: Lab.cs(on, "border-top-width") + " " + Lab.cs(on, "border-top-color"), want: "1px #347d2c" },
+        { what: ".wmDot box-sizing, the ring inside the 8px", got: Lab.cs(off, "box-sizing"), want: "border-box" },
         { what: ".wmDot corner-shape, the round rung", got: Lab.cs(off, "corner-shape"), want: "superellipse(1)" },
         { what: ".ldot size", got: Lab.cs(live, "width") + " " + Lab.cs(live, "height"), want: "8px 8px" },
         { what: ".ldot border-radius", got: Lab.cs(live, "border-radius"), want: "50%" },
         { what: ".ldot fill", got: Lab.cs(live, "background-color"), want: "#43a038" },
         { what: ".ldot corner-shape", got: Lab.cs(live, "corner-shape"), want: "superellipse(1)" }
       ], "The presence dot and the live dot");
-      Lab.note(card, "The box carries .modalInstant, the site's own class for a box that opens with no entrance, and its fixed positioning is neutralised inline. base.scss squircles every element under the root, so a dot must ask for the round rung itself. Modals.scss:531 does since 14 Sep (corner-shape: round beside the radius), as the hero's .ldot always did; before that a presence dot drew a rounded square.");
+      Lab.note(card, "The box carries .modalInstant, the site's own class for a box that opens with no entrance, and its fixed positioning is neutralised inline. base.scss squircles every element under the root, so a dot must ask for the round rung itself. Modals.scss:531 does since 14 Sep (corner-shape: round beside the radius), as the hero's .ldot always did; before that a presence dot drew a rounded square. Since 24 Sep the ring is a real border, not an inset shadow: an inset ring inside a round edge draws at half strength.");
     })();</script>
   </div></div>
 
@@ -5757,7 +5763,7 @@
 
   <div class="card"><div class="body">
     <h3>The floating containers, geometry <span class="tag built">built</span></h3>
-    <p class="rule-text">A dropdown panel is a 20px squircle in --paper-card with a 32px --paper-page head strip and an --line rule under it, a real --line border, --lift and 0 12px 6px of padding on the games panel, 0 12px 8px on the user one. The toast is a 20px squircle on --paper-band with a 1px ring and --lift plus 0 8px 20px rgba(0,0,0,.18), padded 14px 26px. The tooltip is a 12px squircle in --paper-card with the inset --line ring and --lift, padded 7px 11px 8px, at most 230 wide.</p>
+    <p class="rule-text">A dropdown panel is a 20px squircle in --paper-card with a 40px --paper-page head strip and an --line rule under it, a real --line border, --lift and 0 12px 6px of padding on the games panel, 0 12px 8px on the user one. The toast is a 20px squircle on --paper-band with a 1px ring and --lift plus 0 8px 20px rgba(0,0,0,.18), padded 14px 26px. The tooltip is a 12px squircle in --paper-card with the inset --line ring and --lift, padded 7px 11px 8px, at most 230 wide.</p>
     <div class="demo"><div class="site wm" data-demo="menu">
       <ul id="menuBar" style="display:block;height:auto;margin:0;padding:0">
         <li class="mclink mgames" style="display:block;height:auto">
@@ -5800,16 +5806,16 @@
       Lab.table(card, [
         { what: ".mgdrop border-radius", got: Lab.cs(drop, "border-radius"), want: "20px" },
         { what: ".mgdrop paper", got: Lab.cs(drop, "background-image").replace(/\s+/g, " "), want: "linear-gradient(#f9f6f2, #f9f6f2)", tag: "note" },
-        { what: ".mgdrop head strip", got: Lab.cs(drop, "background-size") + " on " + Lab.cs(drop, "background-color"), want: "100% 32px, auto on #ffffff" },
+        { what: ".mgdrop head strip", got: Lab.cs(drop, "background-size") + " on " + Lab.cs(drop, "background-color"), want: "100% 40px, auto on #ffffff" },
         { what: ".mgdrop border", got: Lab.cs(drop, "border"), want: "1px solid #d2cfca" },
         { what: ".mgdrop lift", got: Lab.cs(drop, "box-shadow"), want: lift },
         { what: ".mgdrop padding", got: Lab.cs(drop, "padding"), want: "0 12px 6px" },
-        { what: ".mgdrop::after rule", got: "top " + Lab.cs(drop, "top", "::after") + ", " + Lab.cs(drop, "height", "::after") + " of " + Lab.cs(drop, "background-color", "::after"), want: "top 32px, 1px of #d2cfca" },
+        { what: ".mgdrop::after rule", got: "top " + Lab.cs(drop, "top", "::after") + ", " + Lab.cs(drop, "height", "::after") + " of " + Lab.cs(drop, "background-color", "::after"), want: "top 40px, 1px of #d2cfca" },
         { what: ".mgdrop column gap", got: Lab.rule(".site.wm #menuBar > li.mgames:hover > .mgdrop", "gap", drop), want: "12px", tag: "rule" },
         { what: ".userDropdown padding", got: Lab.cs(user, "padding"), want: "0 12px 8px" },
         { what: ".userDropdown min-width", got: Lab.cs(user, "min-width"), want: "150px" },
         { what: ".userDropdown border and lift", got: Lab.cs(user, "border") + ", " + Lab.cs(user, "box-shadow"), want: "1px solid #d2cfca, " + lift },
-        { what: ".mphead height and line", got: Lab.cs(mphead, "height") + ", " + Lab.cs(mphead, "line-height"), want: "32px, 32px" },
+        { what: ".mphead height and line", got: Lab.cs(mphead, "height") + ", " + Lab.cs(mphead, "line-height"), want: "40px, 40px" },
         { what: ".mphead margin and padding", got: Lab.cs(mphead, "margin") + ", " + Lab.cs(mphead, "padding"), want: "0 -12px 7px, 0 12px" },
         { what: ".mphead rule under it", got: Lab.cs(mphead, "border-bottom"), want: "1px solid #d2cfca" },
         { what: "#Notice border-radius, the box rung", got: Lab.cs(toast, "border-radius"), want: "20px" },
@@ -6905,7 +6911,7 @@
 
 <div class="card"><div class="body">
 <h3>The games panel <span class="tag built">built</span></h3>
-<p class="rule-text">The games panel opens on hover as five columns 12px apart with a 32px canvas head strip, soft line dividers from the third column, heads 16 / 32 bold in the ink, and links 16 / 24 in the ink that take a drawn underline on hover.</p>
+<p class="rule-text">The games panel opens on hover as five columns 12px apart with a 40px canvas head strip, soft line dividers from the third column, heads 16 / 40 bold in the ink, and links 16 / 24 in the ink that take a drawn underline on hover.</p>
 <div class="demo" style="background:#f9f6f2;padding:14px">
   <div class="site wm" data-demo style="background:transparent;display:flex;align-items:flex-start">
     <div class="mpanel mgdrop" style="position:static;display:flex;gap:12px">
@@ -7023,8 +7029,8 @@ Lab.table(card,[
  {what:'border',got:Lab.cs(pan,'border-top-width')+' solid '+Lab.cs(pan,'border-top-color'),want:'1px solid #d2cfca'},
  {what:'lift',got:Lab.cs(pan,'box-shadow'),want:'0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09)'},
  {what:'paper under the strip',got:Lab.cs(pan,'background-color'),want:'#ffffff'},
- {what:'head strip',got:Lab.cs(pan,'background-size').split(',')[0].trim(),want:'100% 32px'},
- {what:'strip rule top',got:Lab.cs(pan, 'top', '::after'),want:'32px'},
+ {what:'head strip',got:Lab.cs(pan,'background-size').split(',')[0].trim(),want:'100% 40px'},
+ {what:'strip rule top',got:Lab.cs(pan, 'top', '::after'),want:'40px'},
  {what:'strip rule height',got:Lab.cs(pan, 'height', '::after'),want:'1px'},
  {what:'strip rule colour',got:Lab.cs(pan, 'background-color', '::after'),want:'#d2cfca'}
 ],'The panel');
@@ -7032,16 +7038,16 @@ Lab.table(card,[
  {what:'columns',got:String(cols.length),want:'5'},
  {what:'column 3 padding-left',got:Lab.cs(col3,'padding-left'),want:'12px'},
  {what:'divider width',got:Lab.cs(col3, 'width', '::before'),want:'1px'},
- {what:'divider top',got:Lab.cs(col3, 'top', '::before'),want:'33px'},
+ {what:'divider top',got:Lab.cs(col3, 'top', '::before'),want:'41px'},
  {what:'divider bottom',got:Lab.cs(col3, 'bottom', '::before'),want:'-6px'},
  {what:'divider colour',got:Lab.cs(col3, 'background-color', '::before'),want:'#ebe7de'},
- {what:'strip divider height',got:Lab.cs(col3, 'height', '::after'),want:'32px'},
+ {what:'strip divider height',got:Lab.cs(col3, 'height', '::after'),want:'40px'},
  {what:'strip divider colour',got:Lab.cs(col3, 'background-color', '::after'),want:'#d2cfca'}
 ],'The columns and their dividers');
 Lab.table(card,[
  {what:'head weight',got:Lab.cs(head,'font-weight'),want:'700'},
  {what:'head size',got:Lab.cs(head,'font-size'),want:'16px'},
- {what:'head line',got:Lab.cs(head,'line-height'),want:'32px'},
+ {what:'head line',got:Lab.cs(head,'line-height'),want:'40px'},
  {what:'head ink',got:Lab.cs(head,'color'),want:'#141414'},
  {what:'head margin-bottom',got:Lab.cs(head,'margin-bottom'),want:'8px'},
  {what:'link size',got:Lab.cs(link,'font-size'),want:'16px'},
@@ -7065,7 +7071,7 @@ Lab.note(card,'The caret is measured on the live bar, where it takes the link’
 
 <div class="card"><div class="body">
 <h3>The user cluster and its three dropdowns <span class="tag built">built</span></h3>
-<p class="rule-text">The bell and friends icons are 40 by 32, the avatar 28px in .avFoot, the name 16px bold in the ink, 6px apart; the three dropdowns take the panel chrome with a 32px head strip, 16 / 24 items and the drawn underline on hover.</p>
+<p class="rule-text">The bell and friends icons are 40 by 32, the avatar 28px in .avFoot, the name 16px bold in the ink, 6px apart; the three dropdowns take the panel chrome with a 40px head strip, 16 / 24 items and the drawn underline on hover. The bell's and the friends' lists run from the strip's rule to the panel's foot with no gap, their row rules the full width, and an empty line carries 12 on every side; the account keeps 0 12px 8px.</p>
 <div class="demo">
   <div class="site wm" data-cluster>
     <nav id="menuBarContainer" class="mbcenter" aria-label="Main navigation">
@@ -7163,13 +7169,13 @@ Lab.table(card,[
  {what:'panel lift',got:Lab.cs(act,'box-shadow'),want:'0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09)'}
 ],'The panel chrome');
 Lab.table(card,[
- {what:'head strip height',got:Lab.cs(hd,'height'),want:'32px'},
+ {what:'head strip height',got:Lab.cs(hd,'height'),want:'40px'},
  {what:'head strip rule',got:Lab.cs(hd,'border-bottom-width')+' solid '+Lab.cs(hd,'border-bottom-color'),want:'1px solid #d2cfca'},
- {what:'head strip margin',got:Lab.cs(hd,'margin'),want:'0 -12px 7px'},
+ {what:'head strip margin, the bell',got:Lab.cs(hd,'margin'),want:'0px'},
  {what:'count',got:Lab.cs(cnt,'font-size')+' '+Lab.cs(cnt,'color'),want:'14px #4e4d4c'},
  {what:'empty state',got:Lab.cs(empty,'font-size')+'/'+Lab.cs(empty,'line-height')+' '+Lab.cs(empty,'color'),want:'16px/24px #67635c'},
- {what:'empty state width',got:Lab.cs(empty,'width'),want:'230px'},
- {what:'account head',got:Lab.cs(mph,'height')+' '+Lab.cs(mph,'font-size')+' '+Lab.cs(mph,'color'),want:'32px 16px #141414'},
+ {what:'empty state width and padding',got:Lab.cs(empty,'width')+', '+Lab.cs(empty,'padding'),want:'254px, 12px'},
+ {what:'account head',got:Lab.cs(mph,'height')+' '+Lab.cs(mph,'font-size')+' '+Lab.cs(mph,'color'),want:'40px 16px #141414'},
  {what:'item',got:Lab.cs(item,'font-size')+'/'+Lab.cs(item,'line-height')+' '+Lab.cs(item,'color'),want:'16px/24px #141414'},
  {what:'item padding',got:Lab.cs(item,'padding'),want:'2px 0'},
  {what:'item hover line bottom',got:Lab.rule('.site.wm #userBar .userAvatarContainer .userDropdown .dropdownItem:hover::after','bottom',pans),want:'6px',tag:'rule'},

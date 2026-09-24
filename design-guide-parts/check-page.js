@@ -8,7 +8,7 @@ const pw = require('/Users/holgersindbaek/.npm/_npx/705bc6b22212b352/node_module
 const DIR = path.resolve(__dirname, '..'); const file = process.argv[2] || 'design-audit.html';
 const mime = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.woff2': 'font/woff2', '.png': 'image/png', '.svg': 'image/svg+xml', '.jpg': 'image/jpeg', '.webp': 'image/webp', '.gif': 'image/gif' };
 const srv = http.createServer((q, r) => { const p = path.join(DIR, decodeURIComponent(q.url.split('?')[0])); fs.readFile(p, (e, d) => { if (e) { r.writeHead(404); r.end(); return; } r.writeHead(200, { 'Content-Type': mime[path.extname(p)] || 'application/octet-stream' }); r.end(d); }); });
-const RETIRED = ['#8a857c', '#d9d2c4', '#dad2c4', '--ink-soft', '--faint', '--muted', '--hairline', '--rule', '--edge', '--wm-paper', '--wm-ring',
+const RETIRED = ['#8a857c', '#dad2c4', '--ink-soft', '--faint', '--muted', '--hairline', '--rule', '--edge', '--wm-paper', '--wm-ring',
   '--wm-accent', '--panelline', '--wm-leather', '--wm-kill-soft', '--line-overlay', '--lift-btn', 'font-weight: 900', '12px 900', 'corner notice',
   'green focus', 'segmented control', 'chooser', 'tick chip', 'soft ink', 'dark tray', 'quiet brown', 'tray button', 'hairline'];
 function proseLint() {

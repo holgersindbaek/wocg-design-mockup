@@ -23,6 +23,7 @@ window.Spec = {
     { group: 'Lines', note: 'A border sits between two surfaces and is darker than both. A divider sits on one surface and is that surface one step down.', items: [
       { token: '--line', name: 'Line', use: 'Every 1px line the page draws: around a card, tile, field, chip, panel or dropdown, and along a section seam, under the bar and over the footer' },
       { token: '--line-soft', name: 'Soft line', use: 'The divider between two rows inside a white card' },
+      { token: '--line-warm', name: 'Warm line', use: 'The quiet button\u2019s paper and the catalog menu\u2019s lattice: the rung the line stood on until 22 Sep, a warmer and lighter grey than the line' },
       { token: '--line-tray', name: 'Tray line', use: 'Around a tray or the games bar, and between its cells' },
       { token: '--color-table-edge', name: 'Felt line', use: 'A name plate and a notice over the felt' },
       { value: 'rgba(0, 0, 0, .30)', name: 'Overlay ring', use: 'The modal box, and any paper floating over the felt or the dark sheet' }
@@ -40,7 +41,7 @@ window.Spec = {
       { fill: '--plate-red', ink: '--color-team2-ink', name: 'Red plate', use: 'A rating that went down, the red team' },
       { fill: '--plate-green', ink: '--plate-green-ink', name: 'Green plate', use: 'A rating that went up: the movement chip and .rankUp. The icons on it: the Message button in the friends panel, a meld\u2019s count and the complete canasta\u2019s star' },
       { fill: '#f2d767', ring: '#d4ba47', ink: '#664411', name: 'Yellow plate', use: 'The turn timer, a meld\u2019s count with wild cards and the canasta star on it, and the rosette of medals 4 to 6: a pale yellow that carries small words in its own deep ink, as deep as the other plates\u2019 inks. Never a button on the felt, where the yellow button owns yellow' },
-      { fill: '--plate-tray', ink: '--ink-label', name: 'Tray paper', use: 'The track a tray or the games bar sits in, and a tag' }
+      { fill: '--plate-tray', hover: '--plate-tray-hover', ink: '--ink-label', name: 'Tray paper', use: 'The track a tray or the games bar sits in, and a tag. A cell under the pointer takes the hover, one small step under the tray' }
     ] },
     { group: 'Accents', note: 'Colours that only mark something: a rating, a place, a star, a notice, a suit. The icons draw in them (ICON-COLOURS.md).', items: [
       { token: '--star-fill', name: 'Star fill', use: 'A full rating star, on the band and in the game over panel' },
