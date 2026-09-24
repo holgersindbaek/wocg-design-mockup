@@ -18,7 +18,7 @@ window.Spec = {
     ] },
     { group: 'Labels and marks', note: 'Not text: what a label on a thing, and what a mark that is not a line, is drawn in.', items: [
       { token: '--ink-label', name: 'Label ink', use: 'A tag, a field\u2019s label, a group label, a table\u2019s second figure' },
-      { token: '--ink-mark', name: 'Mark', use: 'The dot that says someone is away, and the empty rating star\u2019s outline' }
+      { token: '--ink-mark', name: 'Mark', use: 'The ring of the dot that says someone is away, and the empty rating star\u2019s outline' }
     ] },
     { group: 'Lines', note: 'A border sits between two surfaces and is darker than both. A divider sits on one surface and is that surface one step down.', items: [
       { token: '--line', name: 'Line', use: 'Every 1px line the page draws: around a card, tile, field, chip, panel or dropdown, and along a section seam, under the bar and over the footer' },

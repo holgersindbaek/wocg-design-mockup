@@ -121,7 +121,7 @@
 
   <div class="card"><div class="body">
     <h3>Dots <span class="tag built">built</span></h3>
-    <p class="rule-text">A presence dot is 8px round, --ink-mark off and --btn-green on. The hero's live dot is 8px round in --btn-green.</p>
+    <p class="rule-text">A presence dot is 8px round, a light fill in a 1px border of a darker shade: --line in --ink-mark off, --btn-green in --btn-green-ring on. The hero's live dot is 8px round in --btn-green, with no ring.</p>
     <div class="demo"><div class="site wm" data-demo="modal">
       <div class="wmModal wmOpen modalInstant" role="dialog" style="position:static;display:block;opacity:1">
         <div class="wmScrim" style="position:static;height:0"></div>
@@ -164,15 +164,18 @@
       Lab.table(card, [
         { what: ".wmDot size", got: Lab.cs(off, "width") + " " + Lab.cs(off, "height"), want: "8px 8px" },
         { what: ".wmDot border-radius", got: Lab.cs(off, "border-radius"), want: "50%" },
-        { what: ".wmDot off", got: Lab.cs(off, "background-color"), want: "#9b9997" },
-        { what: ".wmDot on", got: Lab.cs(on, "background-color"), want: "#43a038" },
+        { what: ".wmDot off, fill", got: Lab.cs(off, "background-color"), want: "#d2cfca" },
+        { what: ".wmDot off, ring", got: Lab.cs(off, "border-top-width") + " " + Lab.cs(off, "border-top-color"), want: "1px #9b9997" },
+        { what: ".wmDot on, fill", got: Lab.cs(on, "background-color"), want: "#43a038" },
+        { what: ".wmDot on, ring", got: Lab.cs(on, "border-top-width") + " " + Lab.cs(on, "border-top-color"), want: "1px #347d2c" },
+        { what: ".wmDot box-sizing, the ring inside the 8px", got: Lab.cs(off, "box-sizing"), want: "border-box" },
         { what: ".wmDot corner-shape, the round rung", got: Lab.cs(off, "corner-shape"), want: "superellipse(1)" },
         { what: ".ldot size", got: Lab.cs(live, "width") + " " + Lab.cs(live, "height"), want: "8px 8px" },
         { what: ".ldot border-radius", got: Lab.cs(live, "border-radius"), want: "50%" },
         { what: ".ldot fill", got: Lab.cs(live, "background-color"), want: "#43a038" },
         { what: ".ldot corner-shape", got: Lab.cs(live, "corner-shape"), want: "superellipse(1)" }
       ], "The presence dot and the live dot");
-      Lab.note(card, "The box carries .modalInstant, the site's own class for a box that opens with no entrance, and its fixed positioning is neutralised inline. base.scss squircles every element under the root, so a dot must ask for the round rung itself. Modals.scss:531 does since 14 Sep (corner-shape: round beside the radius), as the hero's .ldot always did; before that a presence dot drew a rounded square.");
+      Lab.note(card, "The box carries .modalInstant, the site's own class for a box that opens with no entrance, and its fixed positioning is neutralised inline. base.scss squircles every element under the root, so a dot must ask for the round rung itself. Modals.scss:531 does since 14 Sep (corner-shape: round beside the radius), as the hero's .ldot always did; before that a presence dot drew a rounded square. Since 24 Sep the ring is a real border, not an inset shadow: an inset ring inside a round edge draws at half strength.");
     })();</script>
   </div></div>
 
