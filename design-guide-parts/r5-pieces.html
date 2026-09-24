@@ -169,13 +169,12 @@ Lab.note = function () { return document.createElement("p"); };
       return rect;
     }
 
+    /* only across, as wocg.GameBar places it: the thumb's top and height are the track's own */
     function place(p) {
       thumb.style.left = p.left + 'px';
-      thumb.style.top = p.top + 'px';
       thumb.style.width = p.width + 'px';
-      thumb.style.height = p.height + 'px';
-      copy.style.clipPath = 'inset(' + p.top + 'px ' + (track.clientWidth - p.left - p.width) + 'px ' +
-        (track.clientHeight - p.top - p.height) + 'px ' + p.left + 'px)';
+      copy.style.clipPath = 'inset(var(--space-tray, 2px) ' + (track.clientWidth - p.left - p.width) + 'px var(--space-tray, 2px) ' +
+        p.left + 'px)';
     }
 
     function paint(instant) {
@@ -872,12 +871,12 @@ Lab.note = function () { return document.createElement("p"); };
           { what: 'canasta .gmTop ring', got: Lab.cs(canasta.querySelector('.gmTop'), 'box-shadow'), want: '0 0 0 1px #006b52' },
           { what: '.gmItem paper, on a tinted tile', got: Lab.cs(item, 'background-color'), want: '#ffffff' },
           { what: 'the top cell with no game on it', got: Lab.rule('.site.fp .gmenu .gmGrid .gmTop', 'background', root), want: '#43a038', tag: 'rule' },
-          { what: 'the row with no game on it', got: Lab.rule('.site.fp .gmenu .gmGrid .gmItem', 'background', root), want: '#f9f6f2', tag: 'rule' }
+          { what: 'the row with no game on it', got: Lab.rule('.site.fp .gmenu .gmGrid .gmItem', 'background', root), want: '#ffffff', tag: 'rule' }
         ], "Each tile in its own game's colour");
         Lab.table(card, [
-          { what: '.gmItem on hover', got: Lab.rule('.site.fp .catgrid .gtile .gmenu .gmGrid .gmItem:hover', 'background', hearts), want: '#ffe3e7', tag: 'rule' },
+          { what: '.gmItem on hover, on every tile', got: Lab.rule('.site.fp .gmenu .gmGrid .gmItem:hover', 'background', hearts), want: '#f9f6f2', tag: 'rule' },
           { what: '.gmTop on hover', got: Lab.rule('.site.fp .catgrid .gtile .gmenu .gmGrid .gmTop:hover', 'background', hearts), want: '#8b1d39', tag: 'rule' },
-          { what: 'a cell pressed', got: Lab.rule('.site.fp .gmenu .gmGrid .gmItem:active', 'box-shadow', root), want: 'inset 0 1px 2px rgba(60,45,25,.06)', tag: 'rule' },
+          { what: 'a cell pressed, no shrink', got: Lab.rule('.site.fp .gmenu .gmGrid .gmItem:active', 'transform', root), want: 'none', tag: 'rule' },
           { what: 'the paper feeding out', got: Lab.cs(menu, 'animation-name') + ' ' + Lab.cs(menu, 'animation-duration') + ' ' + Lab.cs(menu, 'animation-delay') + ' ' + Lab.cs(menu, 'animation-fill-mode'), want: 'fpGmenuFeed 400ms 80ms both' },
           { what: 'its curve', got: Lab.cs(menu, 'animation-timing-function'), want: 'cubic-bezier(0.22, 1, 0.36, 1)' },
           { what: 'and back in', got: 'fpGmenuBack 240ms cubic-bezier(.5, 0, .8, .4) both', want: 'the sheet, _fp-catalog.scss:324', tag: 'note' },
@@ -1094,22 +1093,27 @@ Lab.note = function () { return document.createElement("p"); };
         var cellA = segs[0].querySelector('.wmCell');
         var second = segs[0].querySelectorAll('.wmCell')[1];
         var inkCell = segs[0].querySelector('.wmTrayInk .wmCell');
-        Lab.table(card, F6.trackRows(segs[0], cellA, { rad: '14px', tray: '#e4ddd0', ring: '#c9c0ae' }).concat([
+        Lab.table(card, F6.trackRows(segs[0], cellA, { rad: '14px', tray: '#ebe7de', ring: '#cfc9bc' }).concat([
           { what: 'cursor on the picked cell', got: Lab.cs(segs[0].querySelector('.wmCell.wmPicked'), 'cursor'), want: 'default, 7.4’s wish', tag: 'note' }
         ]), 'The tray on the box’s paper');
         Lab.table(card, [
           { what: 'divider width', got: Lab.rule('.site .wmModal .wmTray .wmCell + .wmCell::before', 'width', segs[0]), want: '1px', tag: 'rule' },
           { what: 'divider top / bottom', got: Lab.rule('.site .wmModal .wmTray .wmCell + .wmCell::before', 'top', segs[0]) + ' / ' + Lab.rule('.site .wmModal .wmTray .wmCell + .wmCell::before', 'bottom', segs[0]), want: '-2px / -2px', tag: 'rule' },
-          { what: 'divider colour', got: Lab.rule('.site .wmModal .wmTray .wmCell + .wmCell::before', 'background', segs[0]), want: '#c9c0ae', tag: 'rule' },
+          { what: 'divider colour', got: Lab.rule('.site .wmModal .wmTray .wmCell + .wmCell::before', 'background', segs[0]), want: '#cfc9bc', tag: 'rule' },
           { what: 'divider beside the pick', got: Lab.rule('.site .wmModal .wmTray .wmCell.wmPicked::before', 'opacity', segs[0]), want: '0', tag: 'rule' }
         ], 'The divider');
-        Lab.table(card, F6.thumbRows(a.thumb, { rad: '10.5px', travel: 'left, width, top, height, opacity over 0.22s, 0.22s, 0.22s, 0.22s, 0.11s' }).concat([
+        Lab.table(card, F6.thumbRows(a.thumb, { rad: '10.5px', travel: 'left, width, opacity over 0.22s, 0.22s, 0.11s' }).concat([
           { what: 'the white copy’s ink', got: Lab.cs(inkCell, 'color'), want: '#ffffff' },
           { what: 'its outline', got: Lab.cs(inkCell, 'text-shadow'), want: '-1px -1px 0 #347d2c, 1px -1px 0 #347d2c, -1px 1px 0 #347d2c, 1px 1px 0 #347d2c' }
         ]), 'The thumb, and the words it turns white');
         Lab.table(card, F6.trackRows(segs[1], segs[1].querySelector('.wmCell'), { rad: '14px', tray: '#f4eee5', ring: '#d2cfca' }).slice(3, 5).concat([
-          { what: 'divider colour on a card', got: Lab.rule('.site .wmModal .wmCard .wmTray .wmCell + .wmCell::before', 'background', segs[1]), want: '#d2cfca', tag: 'rule' }
+          { what: 'divider colour on a card', got: Lab.rule('.site .wmModal .wmTray .wmCell + .wmCell::before', 'background', segs[1]), want: '#d2cfca', tag: 'rule' }
         ]), 'The same tray on a white card');
+        Lab.table(card, [
+          { what: 'a cell under the pointer, on the box’s paper', got: Lab.rule('.site .wmModal .wmTray > .wmCell:not(.wmPicked):hover::after', 'background', segs[0]), want: '#e4ddd0', tag: 'rule' },
+          { what: 'a cell under the pointer, on a white card', got: Lab.rule('.site .wmModal .wmTray > .wmCell:not(.wmPicked):hover::after', 'background', segs[1]), want: '#ebe7de', tag: 'rule' },
+          { what: 'the hover’s reach, 1px into the track’s padding', got: Lab.rule('.site .wmModal .wmTray > .wmCell:not(.wmPicked):hover::after', 'top', segs[0]) + ' / ' + Lab.rule('.site .wmModal .wmTray > .wmCell:not(.wmPicked):hover::after', 'bottom', segs[0]), want: '-1px / -1px', tag: 'rule' }
+        ], 'The hover, one rung under the track');
         Lab.table(card, [
           { what: 'the modal tray’s corner', got: Lab.cs(segs[0], 'border-radius'), want: '14px' },
           { what: 'the picked cell’s hand', got: Lab.cs(segs[0].querySelector('.wmCell.wmPicked'), 'cursor'), want: 'the games bar shows none; this one still does', tag: 'open' }
@@ -1223,7 +1227,7 @@ Lab.note = function () { return document.createElement("p"); };
         var t = Lab.seg(tabs, { cell: 'wmCell', picked: 'wmPicked', thumb: 'wmTrayThumb', ink: 'wmTrayInk', still: 'wmStill' });
         var cell = tabs.querySelector('.wmCell');
         Lab.table(card, F6.trackRows(tabs, cell, {
-          rad: '14px', tray: '#e4ddd0', ring: '#c9c0ae', trackH: '36px', cellH: '32px', cellFont: '700 18px / 32px'
+          rad: '14px', tray: '#ebe7de', ring: '#cfc9bc', trackH: '36px', cellH: '32px', cellFont: '700 18px / 32px'
         }).concat([
           { what: 'track width', got: Lab.cs(tabs, 'width'), want: '616px' },
           { what: 'cell flex', got: Lab.cs(cell, 'flex-grow') + ' ' + Lab.cs(cell, 'flex-shrink') + ' ' + Lab.cs(cell, 'flex-basis'), want: '1 1 0px' },
@@ -1283,20 +1287,20 @@ Lab.note = function () { return document.createElement("p"); };
           { what: 'the count', got: Lab.cs(count, 'font-size') + ' ' + Lab.cs(count, 'font-weight'), want: '12.3px 700' },
           { what: 'the picked cell’s hand', got: Lab.cs(track.querySelector('.s.on'), 'cursor'), want: 'default' },
           { what: 'the More cell’s corner', got: Lab.cs(host.querySelector('.ovbtn'), 'border-radius'), want: '10.5px' },
-          { what: 'an empty host', got: Lab.cs(empty, 'min-height') + ', ' + Lab.cs(empty, 'background-color') + ', ' + Lab.cs(empty, 'border-radius'), want: '28px, #e4ddd0, 14px' }
+          { what: 'an empty host', got: Lab.cs(empty, 'min-height') + ', ' + Lab.cs(empty, 'background-color') + ', ' + Lab.cs(empty, 'border-radius'), want: '28px, #ebe7de, 14px' }
         ]), 'The track, its cells and the host that stands in for it');
-        Lab.table(card, F6.thumbRows(bar.thumb, { rad: '10.5px', travel: 'left, width, top, height, opacity over 0.22s, 0.22s, 0.22s, 0.22s, 0.11s' }), 'The thumb');
+        Lab.table(card, F6.thumbRows(bar.thumb, { rad: '10.5px', travel: 'left, width, opacity over 0.22s, 0.22s, 0.11s' }), 'The thumb');
         Lab.table(card, [
           { what: 'divider width / colour', got: Lab.rule('.site.fp .otFilter .track > .s + .s::before', 'width', track) + ' / ' + Lab.rule('.site.fp .otFilter .track > .s + .s::before', 'background', track), want: '1px / #c9c0ae', tag: 'rule' },
           { what: '--ot-hover', got: Lab.token(track, '--ot-hover'), want: '#dcd4c5' },
           { what: 'the hover paper on an unpicked cell', got: Lab.rule('.site.fp .otFilter .track:not(.tcopy) > .s:not(.on):hover::after', 'background', track), want: '#dcd4c5', tag: 'rule' },
           { what: 'the list’s corner', got: Lab.cs(list, 'border-radius'), want: '12px' },
           { what: 'a count cell in the list’s foot, its corner', got: Lab.cs(list.querySelector('.foot [data-amt]'), 'border-radius'), want: '10.5px' },
-          { what: 'the list’s paper and line', got: Lab.cs(list, 'background-color') + ', ' + Lab.cs(list, 'border-color'), want: '#ffffff, #c9c0ae' },
+          { what: 'the list’s paper and line', got: Lab.cs(list, 'background-color') + ', ' + Lab.cs(list, 'border-color'), want: '#ffffff, #cfc9bc' },
           { what: 'a row in it', got: Lab.cs(row, 'background-color') + ', ' + Lab.cs(row, 'border-bottom-color'), want: '#f9f6f2, #d2cfca' }
         ], 'The divider, the hover and the More list');
         Lab.note(card, 'The bar is live: pick a game and the thumb travels, the count grows its word, the lines beside the pick fade and the white copy of the words is clipped to the thumb. Hover More to open the list and pick from it, and the game takes the last cell. The card is left with its overflow showing so the list can hang below the bar.');
-        Lab.note(card, 'The list itself is white with a #c9c0ae border and only its rows take --ot-listrow and --ot-listline, which is what the two rows above report.');
+        Lab.note(card, 'The list itself is white with a #cfc9bc border, the page paper’s tray line, and only its rows take --ot-listrow and --ot-listline, which is what the two rows above report.');
       })();
       </script>
   </div></div>
@@ -2103,16 +2107,16 @@ Lab.note = function () { return document.createElement("p"); };
       Lab.table(card, [
         { what: ".mgdrop border-radius", got: Lab.cs(drop, "border-radius"), want: "20px" },
         { what: ".mgdrop paper", got: Lab.cs(drop, "background-image").replace(/\s+/g, " "), want: "linear-gradient(#f9f6f2, #f9f6f2)", tag: "note" },
-        { what: ".mgdrop head strip", got: Lab.cs(drop, "background-size") + " on " + Lab.cs(drop, "background-color"), want: "100% 40px, auto on #ffffff" },
+        { what: ".mgdrop head strip", got: Lab.cs(drop, "background-size") + " on " + Lab.cs(drop, "background-color"), want: "100% 32px, auto on #ffffff" },
         { what: ".mgdrop border", got: Lab.cs(drop, "border"), want: "1px solid #d2cfca" },
         { what: ".mgdrop lift", got: Lab.cs(drop, "box-shadow"), want: lift },
         { what: ".mgdrop padding", got: Lab.cs(drop, "padding"), want: "0 12px 6px" },
-        { what: ".mgdrop::after rule", got: "top " + Lab.cs(drop, "top", "::after") + ", " + Lab.cs(drop, "height", "::after") + " of " + Lab.cs(drop, "background-color", "::after"), want: "top 40px, 1px of #d2cfca" },
+        { what: ".mgdrop::after rule", got: "top " + Lab.cs(drop, "top", "::after") + ", " + Lab.cs(drop, "height", "::after") + " of " + Lab.cs(drop, "background-color", "::after"), want: "top 32px, 1px of #d2cfca" },
         { what: ".mgdrop column gap", got: Lab.rule(".site.wm #menuBar > li.mgames:hover > .mgdrop", "gap", drop), want: "12px", tag: "rule" },
         { what: ".userDropdown padding", got: Lab.cs(user, "padding"), want: "0 12px 8px" },
         { what: ".userDropdown min-width", got: Lab.cs(user, "min-width"), want: "150px" },
         { what: ".userDropdown border and lift", got: Lab.cs(user, "border") + ", " + Lab.cs(user, "box-shadow"), want: "1px solid #d2cfca, " + lift },
-        { what: ".mphead height and line", got: Lab.cs(mphead, "height") + ", " + Lab.cs(mphead, "line-height"), want: "40px, 40px" },
+        { what: ".mphead height and line", got: Lab.cs(mphead, "height") + ", " + Lab.cs(mphead, "line-height"), want: "32px, 32px" },
         { what: ".mphead margin and padding", got: Lab.cs(mphead, "margin") + ", " + Lab.cs(mphead, "padding"), want: "0 -12px 7px, 0 12px" },
         { what: ".mphead rule under it", got: Lab.cs(mphead, "border-bottom"), want: "1px solid #d2cfca" },
         { what: "#Notice border-radius, the box rung", got: Lab.cs(toast, "border-radius"), want: "20px" },
@@ -2190,7 +2194,7 @@ Lab.note = function () { return document.createElement("p"); };
         { what: '.isAlt background', got: cs(alt, 'background-color'), want: '#f4eee5' },
         { what: '.lbName max-width', got: cs(name, 'max-width'), want: '0px' },
         { what: '.lbName text-overflow', got: cs(name, 'text-overflow'), want: 'ellipsis' },
-        { what: '.lbHeart colour', got: cs(heart, 'color'), want: '#f03e3e' },
+        { what: '.lbHeart colour', got: cs(heart, 'color'), want: '#d51a22' },
         { what: '.lbFoot padding', got: cs(foot, 'padding'), want: '12px' },
         { what: '.lbFoot type', got: cs(foot, 'font-size') + ' / ' + cs(foot, 'line-height'), want: '14px / 24px' },
         { what: '.lbFoot colour', got: cs(foot, 'color'), want: '#4e4d4c' },
@@ -2726,13 +2730,13 @@ Lab.note = function () { return document.createElement("p"); };
         { what: '.wmRow border-bottom', got: Lab.cs(q('.wmRow'), 'border-bottom'), want: '1px solid #ebe7de' },
         { what: '--line-soft', got: Lab.token(q('.wmCard'), '--line-soft'), want: '#ebe7de' },
         { what: '.lbRow + .lbRow > span border-top', got: Lab.cs(card.querySelectorAll('.lbRow')[1].querySelector('span'), 'border-top'), want: '1px solid #d2cfca' },
-        { what: 'a tray on the box, cell line', got: Lab.cs(q('.baretray .wmCell + .wmCell'), 'background-color', '::before'), want: '#c9c0ae' },
+        { what: 'a tray on the box, cell line', got: Lab.cs(q('.baretray .wmCell + .wmCell'), 'background-color', '::before'), want: '#cfc9bc' },
         { what: 'a tray on a white card, cell line', got: Lab.cs(q('.cardtray .wmCell + .wmCell'), 'background-color', '::before'), want: '#d2cfca' },
         { what: 'the cell line, width', got: Lab.cs(q('.baretray .wmCell + .wmCell'), 'width', '::before'), want: '1px' },
         { what: 'the cell line, top and bottom', got: Lab.cs(q('.baretray .wmCell + .wmCell'), 'top', '::before') + ' / ' + Lab.cs(q('.baretray .wmCell + .wmCell'), 'bottom', '::before'), want: '-2px / -2px' },
         { what: '.footerLegal border-top', got: Lab.cs(q('.footerLegal'), 'border-top'), want: '1px solid #d2cfca' }
       ]);
-      Lab.note(card, 'The tray’s line runs 2px past the cell at each end, which is the tray’s own padding, so it reaches the tray’s inside edge rather than stopping at the words. On a white card the same line steps to --line.');
+      Lab.note(card, 'The tray’s line runs 2px past the cell at each end, which is the tray’s own padding, so it reaches the tray’s inside edge rather than stopping at the words. On the box’s paper it is --line-tray-paper and on a white card it steps to --line: a tray’s cell line is always its ring.');
       Lab.note(card, 'The leaderboard card’s rows are a table, so the line is the next row’s border-top rather than the first row’s border-bottom.');
     })();</script>
   </div></div>
@@ -2891,14 +2895,15 @@ Lab.note = function () { return document.createElement("p"); };
         { what: '.wmCard', got: Lab.cs(q('.wmCard'), 'box-shadow'), want: 'inset 0 0 0 1px #d2cfca, 0 1px 2px rgba(60,45,25,.04), 0 2px 5px rgba(60,45,25,.05)' },
         { what: '.wmFld input', got: Lab.cs(q('.wmFld input'), 'box-shadow'), want: 'inset 0 0 0 1px #d2cfca' },
         { what: '.wmCheck i, the checkbox', got: Lab.cs(q('.wmCheck i'), 'box-shadow'), want: 'inset 0 0 0 1px #d2cfca' },
-        { what: '.wmTray', got: Lab.cs(q('.wmTray'), 'box-shadow'), want: 'inset 0 0 0 1px #c9c0ae' },
+        { what: '.wmTray, on the box’s paper', got: Lab.cs(q('.wmTray'), 'box-shadow'), want: 'inset 0 0 0 1px #cfc9bc' },
         { what: '.wmBtn', got: Lab.cs(q('.wmBtn'), 'box-shadow'), want: 'inset 0 0 0 1px #bfb5a1' },
         { what: '.fpic', got: Lab.cs(q('.fpic'), 'box-shadow'), want: 'inset 0 0 0 1px #d2cfca, 0 1px 2px rgba(60,45,25,.04), 0 2px 6px rgba(60,45,25,.06)' },
         { what: '--line', got: Lab.token(q('.wmCard'), '--line'), want: '#d2cfca' },
-        { what: '--line-tray, the tray’s ring', got: Lab.token(q('.wmTray'), '--line-tray'), want: '#c9c0ae' },
+        { what: '--tray-ring, the tray’s ring on the box’s paper (--line-tray-paper)', got: Lab.token(q('.wmTray'), '--tray-ring'), want: '#cfc9bc' },
+        { what: '--line-tray, the tray’s ring on the band', got: Lab.token(q('.wmTray'), '--line-tray'), want: '#c9c0ae' },
         { what: '--btn-quiet-ring, the button’s ring', got: Lab.token(q('.wmBtn'), '--btn-quiet-ring'), want: '#bfb5a1' }
       ]);
-      Lab.note(card, 'The lift is measured with the ring, since they are one string. A chip rings itself in --line and a tray in --line-tray, which are the two steps either side of --line: a ring follows the paper it is cut into, not one token for all.');
+      Lab.note(card, 'The lift is measured with the ring, since they are one string. A chip rings itself in --line and a tray in its ground’s tray line: --line-tray-paper on the page paper, as here, --line-tray on the band and --line on a white card. A ring follows the paper it is cut into, not one token for all.');
       Lab.note(card, 'The picture card is on the frontpage, so its lift is the lighter frontpage pair (.04 and .06). Every modal piece here reads the shared pair.');
     })();</script>
   </div></div>
@@ -3717,8 +3722,8 @@ Lab.table(card,[
  {what:'border',got:Lab.cs(pan,'border-top-width')+' solid '+Lab.cs(pan,'border-top-color'),want:'1px solid #d2cfca'},
  {what:'lift',got:Lab.cs(pan,'box-shadow'),want:'0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09)'},
  {what:'paper under the strip',got:Lab.cs(pan,'background-color'),want:'#ffffff'},
- {what:'head strip',got:Lab.cs(pan,'background-size').split(',')[0].trim(),want:'100% 40px'},
- {what:'strip rule top',got:Lab.cs(pan, 'top', '::after'),want:'40px'},
+ {what:'head strip',got:Lab.cs(pan,'background-size').split(',')[0].trim(),want:'100% 32px'},
+ {what:'strip rule top',got:Lab.cs(pan, 'top', '::after'),want:'32px'},
  {what:'strip rule height',got:Lab.cs(pan, 'height', '::after'),want:'1px'},
  {what:'strip rule colour',got:Lab.cs(pan, 'background-color', '::after'),want:'#d2cfca'}
 ],'The panel');
@@ -3726,16 +3731,16 @@ Lab.table(card,[
  {what:'columns',got:String(cols.length),want:'5'},
  {what:'column 3 padding-left',got:Lab.cs(col3,'padding-left'),want:'12px'},
  {what:'divider width',got:Lab.cs(col3, 'width', '::before'),want:'1px'},
- {what:'divider top',got:Lab.cs(col3, 'top', '::before'),want:'41px'},
+ {what:'divider top',got:Lab.cs(col3, 'top', '::before'),want:'33px'},
  {what:'divider bottom',got:Lab.cs(col3, 'bottom', '::before'),want:'-6px'},
  {what:'divider colour',got:Lab.cs(col3, 'background-color', '::before'),want:'#ebe7de'},
- {what:'strip divider height',got:Lab.cs(col3, 'height', '::after'),want:'40px'},
+ {what:'strip divider height',got:Lab.cs(col3, 'height', '::after'),want:'32px'},
  {what:'strip divider colour',got:Lab.cs(col3, 'background-color', '::after'),want:'#d2cfca'}
 ],'The columns and their dividers');
 Lab.table(card,[
  {what:'head weight',got:Lab.cs(head,'font-weight'),want:'700'},
  {what:'head size',got:Lab.cs(head,'font-size'),want:'16px'},
- {what:'head line',got:Lab.cs(head,'line-height'),want:'40px'},
+ {what:'head line',got:Lab.cs(head,'line-height'),want:'32px'},
  {what:'head ink',got:Lab.cs(head,'color'),want:'#141414'},
  {what:'head margin-bottom',got:Lab.cs(head,'margin-bottom'),want:'8px'},
  {what:'link size',got:Lab.cs(link,'font-size'),want:'16px'},
@@ -3855,13 +3860,13 @@ Lab.table(card,[
  {what:'panel lift',got:Lab.cs(act,'box-shadow'),want:'0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09)'}
 ],'The panel chrome');
 Lab.table(card,[
- {what:'head strip height',got:Lab.cs(hd,'height'),want:'40px'},
+ {what:'head strip height',got:Lab.cs(hd,'height'),want:'32px'},
  {what:'head strip rule',got:Lab.cs(hd,'border-bottom-width')+' solid '+Lab.cs(hd,'border-bottom-color'),want:'1px solid #d2cfca'},
  {what:'head strip margin, the bell',got:Lab.cs(hd,'margin'),want:'0px'},
  {what:'count',got:Lab.cs(cnt,'font-size')+' '+Lab.cs(cnt,'color'),want:'14px #4e4d4c'},
  {what:'empty state',got:Lab.cs(empty,'font-size')+'/'+Lab.cs(empty,'line-height')+' '+Lab.cs(empty,'color'),want:'16px/24px #67635c'},
  {what:'empty state width and padding',got:Lab.cs(empty,'width')+', '+Lab.cs(empty,'padding'),want:'254px, 12px'},
- {what:'account head',got:Lab.cs(mph,'height')+' '+Lab.cs(mph,'font-size')+' '+Lab.cs(mph,'color'),want:'40px 16px #141414'},
+ {what:'account head',got:Lab.cs(mph,'height')+' '+Lab.cs(mph,'font-size')+' '+Lab.cs(mph,'color'),want:'32px 16px #141414'},
  {what:'item',got:Lab.cs(item,'font-size')+'/'+Lab.cs(item,'line-height')+' '+Lab.cs(item,'color'),want:'16px/24px #141414'},
  {what:'item padding',got:Lab.cs(item,'padding'),want:'2px 0'},
  {what:'item hover line bottom',got:Lab.rule('.site.wm #userBar .userAvatarContainer .userDropdown .dropdownItem:hover::after','bottom',pans),want:'6px',tag:'rule'},

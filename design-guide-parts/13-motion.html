@@ -35,17 +35,18 @@ window.MO = (function () {
       ink.classList.add(c.still);
       return;
     }
-    /* to the fraction, as placeTrayThumb measures it: offsetLeft and offsetWidth round */
-    var tb = seg.getBoundingClientRect(), pb = picked.getBoundingClientRect(), scale = tb.width / seg.offsetWidth || 1;
-    var left = (pb.left - tb.left) / scale - seg.clientLeft, top = (pb.top - tb.top) / scale - seg.clientTop;
-    var w = pb.width / scale, h = pb.height / scale;
+    /* as placeTrayThumb measures it: only across, the thumb's top and height being the track's own, and to the
+       fraction, offsetLeft and offsetWidth rounding; the scale is taken against the tray's unrounded width */
+    var st = getComputedStyle(seg), lw = parseFloat(st.width);
+    if (st.boxSizing !== 'border-box') lw += parseFloat(st.paddingLeft) + parseFloat(st.paddingRight) + parseFloat(st.borderLeftWidth) + parseFloat(st.borderRightWidth);
+    var tb = seg.getBoundingClientRect(), pb = picked.getBoundingClientRect(), scale = tb.width / (lw || seg.offsetWidth) || 1;
+    var left = (pb.left - tb.left) / scale - seg.clientLeft;
+    var w = pb.width / scale;
     thumb.style.left = left + 'px';
-    thumb.style.top = top + 'px';
     thumb.style.width = w + 'px';
-    thumb.style.height = h + 'px';
     thumb.style.opacity = '1';
-    ink.style.clipPath = 'inset(' + top + 'px ' + (tb.width / scale - left - w) + 'px ' +
-      (tb.height / scale - top - h) + 'px ' + left + 'px)';
+    ink.style.clipPath = 'inset(var(--space-tray, 2px) ' + (tb.width / scale - left - w) + 'px var(--space-tray, 2px) ' +
+      left + 'px)';
     if (thumb.classList.contains(c.still)) {
       void thumb.offsetWidth;
       thumb.classList.remove(c.still);
@@ -108,14 +109,12 @@ window.MO = (function () {
       var target = track.querySelector('.s.on');
       if (!target) return;
       var r = target.getBoundingClientRect(), t = track.getBoundingClientRect();
-      var p = { left: r.left - t.left, top: r.top - t.top, width: r.width, height: r.height };
+      var p = { left: r.left - t.left, width: r.width };
       thumb.style.left = p.left + 'px';
-      thumb.style.top = p.top + 'px';
       thumb.style.width = p.width + 'px';
-      thumb.style.height = p.height + 'px';
       thumb.style.opacity = '1';
-      copy.style.clipPath = 'inset(' + p.top + 'px ' + (track.clientWidth - p.left - p.width) + 'px ' +
-        (track.clientHeight - p.top - p.height) + 'px ' + p.left + 'px)';
+      copy.style.clipPath = 'inset(var(--space-tray, 2px) ' + (track.clientWidth - p.left - p.width) + 'px var(--space-tray, 2px) ' +
+        p.left + 'px)';
       thumb.classList.remove('still');
       copy.classList.remove('still');
     }
@@ -262,7 +261,7 @@ window.MO = (function () {
 
   <div class="card"><div class="body">
     <h3>A thumb travelling <span class="tag built">built</span></h3>
-    <p class="rule-text">A tray's thumb and the games bar's move over 220ms on cubic-bezier(.645, .045, .355, 1): the thumb on left, width, top and height, the white copy of the words on clip-path, the dividers beside the pick fading on the same clock. The first placement lands instead of sliding.</p>
+    <p class="rule-text">A tray's thumb and the games bar's move over 220ms on cubic-bezier(.645, .045, .355, 1): the thumb on left and width (its top and height are the track's own, so they never move), the white copy of the words on clip-path, the dividers beside the pick fading on the same clock. The first placement lands instead of sliding.</p>
     <div class="demo"><div class="site wm" data-demo="tray" style="padding:12px">
       <div class="wmModal wmOpen modalInstant" role="dialog" style="position:static;display:block;opacity:1">
         <div class="wmScrim" style="position:static;height:0"></div>
@@ -338,22 +337,22 @@ window.MO = (function () {
 
       var modal = trayRoot.querySelector('.wmModal');
       var page = lbRoot.querySelector('.gameLeaderboardPage');
-      var four = ['left', 'width', 'top', 'height'].map(function (p) { return p + ' 0.22s ' + MO.EASE; }).join(', ');
+      var two = ['left', 'width'].map(function (p) { return p + ' 0.22s ' + MO.EASE; }).join(', ');
 
       Lab.table(card, [
-        { what: '.wmTrayThumb transition', got: Lab.cs(seg.querySelector('.wmTrayThumb'), 'transition'), want: four + ', opacity 0.11s linear' },
+        { what: '.wmTrayThumb transition', got: Lab.cs(seg.querySelector('.wmTrayThumb'), 'transition'), want: two + ', opacity 0.11s linear' },
         { what: '.wmTrayInk transition', got: Lab.cs(seg.querySelector('.wmTrayInk'), 'transition'), want: 'clip-path 0.22s ' + MO.EASE },
         { what: '.wmCell + .wmCell::before transition', got: Lab.hex(getComputedStyle(seg.querySelectorAll(':scope > .wmCell')[1], '::before').transition), want: 'opacity 0.22s ' + MO.EASE },
         { what: '--motion-speed', got: Lab.token(modal, '--motion-speed'), want: '220ms' },
         { what: '--motion-ease', got: Lab.token(modal, '--motion-ease'), want: 'cubic-bezier(.645, .045, .355, 1)' },
         { what: '.wmTrayThumb.wmStill transition', got: MO.rule('.site .wmModal .wmTray .wmTrayThumb.wmStill', 'transition'), want: 'none', tag: 'rule' },
-        { what: '.otFilter .thumb transition', got: Lab.cs(gb.thumb, 'transition'), want: four + ', opacity 0.11s linear' },
+        { what: '.otFilter .thumb transition', got: Lab.cs(gb.thumb, 'transition'), want: two + ', opacity 0.11s linear' },
         { what: '.otFilter .tcopy transition', got: Lab.cs(gb.copy, 'transition'), want: 'clip-path 0.22s ' + MO.EASE + ', opacity 0.11s linear' },
         { what: '.track > .s + .s::before transition', got: Lab.hex(getComputedStyle(host.querySelectorAll('.track[data-row] > .s')[1], '::before').transition), want: 'opacity 0.22s ' + MO.EASE },
         { what: '.otFilter --bar-speed', got: Lab.token(host, '--bar-speed'), want: '220ms' },
         { what: '.otFilter --bar-ease', got: Lab.token(host, '--bar-ease'), want: 'cubic-bezier(.645, .045, .355, 1)' },
         { what: '.track.still transition', got: MO.rule('.site.fp .otFilter .track.still', 'transition'), want: 'none', tag: 'rule' },
-        { what: '.lbTrayThumb transition', got: Lab.cs(lbTray.querySelector('.lbTrayThumb'), 'transition'), want: four + ', opacity 0.11s linear' },
+        { what: '.lbTrayThumb transition', got: Lab.cs(lbTray.querySelector('.lbTrayThumb'), 'transition'), want: two + ', opacity 0.11s linear' },
         { what: '--lb-thspd', got: Lab.token(page, '--lb-thspd'), want: '220ms' },
         { what: '--lb-thease', got: Lab.token(page, '--lb-thease'), want: 'cubic-bezier(.645, .045, .355, 1)' },
         { what: 'the word that grows with the pick', got: Lab.cs(host.querySelector('.s.on .w'), 'transition'), want: 'width 0.22s ' + MO.EASE }

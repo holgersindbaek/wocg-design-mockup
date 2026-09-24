@@ -131,13 +131,12 @@
       return rect;
     }
 
+    /* only across, as wocg.GameBar places it: the thumb's top and height are the track's own */
     function place(p) {
       thumb.style.left = p.left + 'px';
-      thumb.style.top = p.top + 'px';
       thumb.style.width = p.width + 'px';
-      thumb.style.height = p.height + 'px';
-      copy.style.clipPath = 'inset(' + p.top + 'px ' + (track.clientWidth - p.left - p.width) + 'px ' +
-        (track.clientHeight - p.top - p.height) + 'px ' + p.left + 'px)';
+      copy.style.clipPath = 'inset(var(--space-tray, 2px) ' + (track.clientWidth - p.left - p.width) + 'px var(--space-tray, 2px) ' +
+        p.left + 'px)';
     }
 
     function paint(instant) {
@@ -432,7 +431,7 @@
   <div class="card">
     <div class="body">
       <h3>The tray, in a modal and on a white card <span class="tag built">built</span></h3>
-      <p class="rule-text">The track is 28px with 2px of padding, a 14px squircle (--radius-tray), --plate-tray #e4ddd0 paper and an inset --line-tray #c9c0ae. Cells are 24px, 0 10px, a 10.5px squircle like the thumb (--radius-tray-cell), 16 / 24 bold in --ink-label, with a 1px divider in the ring colour that spans the track and fades beside the pick. On a white card the track is --paper-band with a #d2cfca ring. Off stands first. Several options at once is the checkbox, below.</p>
+      <p class="rule-text">The track is 28px with 2px of padding and a 14px squircle (--radius-tray), and it takes its colours from the ground it stands on (--tray-track, --tray-ring, --tray-hover). On the page paper, which is the box's paper, the track is --line-soft #ebe7de with an inset --line-tray-paper #cfc9bc, and a cell under the pointer is --plate-tray #e4ddd0. Cells are 24px, 0 10px, a 10.5px squircle like the thumb (--radius-tray-cell), 16 / 24 bold in --ink-label, with a 1px divider in the ring colour that spans the track and fades beside the pick. On a white card the track is --paper-band #f4eee5 with a #d2cfca ring and a --line-soft #ebe7de hover; on the band it is --plate-tray #e4ddd0 with the --line-tray #c9c0ae and a --plate-tray-hover #dcd4c5 hover. Off stands first. Several options at once is the checkbox, below.</p>
       <div class="demo">
         <div class="site wm" data-demo>
           <div class="wmModal wmOpen modalInstant" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
@@ -474,22 +473,27 @@
         var cellA = segs[0].querySelector('.wmCell');
         var second = segs[0].querySelectorAll('.wmCell')[1];
         var inkCell = segs[0].querySelector('.wmTrayInk .wmCell');
-        Lab.table(card, F6.trackRows(segs[0], cellA, { rad: '14px', tray: '#e4ddd0', ring: '#c9c0ae' }).concat([
+        Lab.table(card, F6.trackRows(segs[0], cellA, { rad: '14px', tray: '#ebe7de', ring: '#cfc9bc' }).concat([
           { what: 'cursor on the picked cell', got: Lab.cs(segs[0].querySelector('.wmCell.wmPicked'), 'cursor'), want: 'default, 7.4’s wish', tag: 'note' }
         ]), 'The tray on the box’s paper');
         Lab.table(card, [
           { what: 'divider width', got: Lab.rule('.site .wmModal .wmTray .wmCell + .wmCell::before', 'width', segs[0]), want: '1px', tag: 'rule' },
           { what: 'divider top / bottom', got: Lab.rule('.site .wmModal .wmTray .wmCell + .wmCell::before', 'top', segs[0]) + ' / ' + Lab.rule('.site .wmModal .wmTray .wmCell + .wmCell::before', 'bottom', segs[0]), want: '-2px / -2px', tag: 'rule' },
-          { what: 'divider colour', got: Lab.rule('.site .wmModal .wmTray .wmCell + .wmCell::before', 'background', segs[0]), want: '#c9c0ae', tag: 'rule' },
+          { what: 'divider colour', got: Lab.rule('.site .wmModal .wmTray .wmCell + .wmCell::before', 'background', segs[0]), want: '#cfc9bc', tag: 'rule' },
           { what: 'divider beside the pick', got: Lab.rule('.site .wmModal .wmTray .wmCell.wmPicked::before', 'opacity', segs[0]), want: '0', tag: 'rule' }
         ], 'The divider');
-        Lab.table(card, F6.thumbRows(a.thumb, { rad: '10.5px', travel: 'left, width, top, height, opacity over 0.22s, 0.22s, 0.22s, 0.22s, 0.11s' }).concat([
+        Lab.table(card, F6.thumbRows(a.thumb, { rad: '10.5px', travel: 'left, width, opacity over 0.22s, 0.22s, 0.11s' }).concat([
           { what: 'the white copy’s ink', got: Lab.cs(inkCell, 'color'), want: '#ffffff' },
           { what: 'its outline', got: Lab.cs(inkCell, 'text-shadow'), want: '-1px -1px 0 #347d2c, 1px -1px 0 #347d2c, -1px 1px 0 #347d2c, 1px 1px 0 #347d2c' }
         ]), 'The thumb, and the words it turns white');
         Lab.table(card, F6.trackRows(segs[1], segs[1].querySelector('.wmCell'), { rad: '14px', tray: '#f4eee5', ring: '#d2cfca' }).slice(3, 5).concat([
-          { what: 'divider colour on a card', got: Lab.rule('.site .wmModal .wmCard .wmTray .wmCell + .wmCell::before', 'background', segs[1]), want: '#d2cfca', tag: 'rule' }
+          { what: 'divider colour on a card', got: Lab.rule('.site .wmModal .wmTray .wmCell + .wmCell::before', 'background', segs[1]), want: '#d2cfca', tag: 'rule' }
         ]), 'The same tray on a white card');
+        Lab.table(card, [
+          { what: 'a cell under the pointer, on the box’s paper', got: Lab.rule('.site .wmModal .wmTray > .wmCell:not(.wmPicked):hover::after', 'background', segs[0]), want: '#e4ddd0', tag: 'rule' },
+          { what: 'a cell under the pointer, on a white card', got: Lab.rule('.site .wmModal .wmTray > .wmCell:not(.wmPicked):hover::after', 'background', segs[1]), want: '#ebe7de', tag: 'rule' },
+          { what: 'the hover’s reach, 1px into the track’s padding', got: Lab.rule('.site .wmModal .wmTray > .wmCell:not(.wmPicked):hover::after', 'top', segs[0]) + ' / ' + Lab.rule('.site .wmModal .wmTray > .wmCell:not(.wmPicked):hover::after', 'bottom', segs[0]), want: '-1px / -1px', tag: 'rule' }
+        ], 'The hover, one rung under the track');
         Lab.table(card, [
           { what: 'the modal tray’s corner', got: Lab.cs(segs[0], 'border-radius'), want: '14px' },
           { what: 'the picked cell’s hand', got: Lab.cs(segs[0].querySelector('.wmCell.wmPicked'), 'cursor'), want: 'the games bar shows none; this one still does', tag: 'open' }
@@ -578,7 +582,7 @@
   <div class="card">
     <div class="body">
       <h3>The settings tabs <span class="tag built">built</span></h3>
-      <p class="rule-text">The settings box's tabs are the same tray one rung up: a 36px track holding 32px cells at 18px bold, each cell sharing the width.</p>
+      <p class="rule-text">The settings box's tabs are the same tray one rung up: a 36px track holding 32px cells at 18px bold, each cell sharing the width. They stand on the box's paper, so they take the page paper's tray colours.</p>
       <div class="demo">
         <div class="site wm" data-demo>
           <div class="wmModal wmWide wmSettings wmOpen modalInstant" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
@@ -605,7 +609,7 @@
         var t = Lab.seg(tabs, { cell: 'wmCell', picked: 'wmPicked', thumb: 'wmTrayThumb', ink: 'wmTrayInk', still: 'wmStill' });
         var cell = tabs.querySelector('.wmCell');
         Lab.table(card, F6.trackRows(tabs, cell, {
-          rad: '14px', tray: '#e4ddd0', ring: '#c9c0ae', trackH: '36px', cellH: '32px', cellFont: '700 18px / 32px'
+          rad: '14px', tray: '#ebe7de', ring: '#cfc9bc', trackH: '36px', cellH: '32px', cellFont: '700 18px / 32px'
         }).concat([
           { what: 'track width', got: Lab.cs(tabs, 'width'), want: '616px' },
           { what: 'cell flex', got: Lab.cs(cell, 'flex-grow') + ' ' + Lab.cs(cell, 'flex-shrink') + ' ' + Lab.cs(cell, 'flex-basis'), want: '1 1 0px' },
@@ -620,7 +624,7 @@
   <div class="card">
     <div class="body">
       <h3>The tray on a page <span class="tag built">built</span></h3>
-      <p class="rule-text">The per-game leaderboard draws the same tray on its own markup: the same 28 / 2 / 14 track in --plate-tray with the --line-tray, the same 10.5 cells, the same green thumb and the same 220ms travel, written as --lb-thspd on the page.</p>
+      <p class="rule-text">The per-game leaderboard draws the same tray on its own markup: the same 28 / 2 / 14 track in the page paper's tray colours (--line-soft with the --line-tray-paper ring, --plate-tray under the pointer), the same 10.5 cells, the same green thumb and the same 220ms travel, written as --lb-thspd on the page.</p>
       <div class="demo">
         <div class="site wm" data-demo>
           <div id="mainContainer" class="general" style="min-height:0">
@@ -649,10 +653,10 @@
         var seg = root.querySelector('.lbTray');
         var t = Lab.seg(seg, { cell: 'lbCell', picked: 'lbPicked', thumb: 'lbTrayThumb', ink: 'lbTrayInk', still: 'lbStill' });
         var cell = seg.querySelector('.lbCell');
-        Lab.table(card, F6.trackRows(seg, cell, { rad: '14px', tray: '#e4ddd0', ring: '#c9c0ae' }), 'The board’s tray');
-        Lab.table(card, F6.thumbRows(t.thumb, { rad: '10.5px', travel: 'left, width, top, height, opacity over 0.22s, 0.22s, 0.22s, 0.22s, 0.11s' }).concat([
+        Lab.table(card, F6.trackRows(seg, cell, { rad: '14px', tray: '#ebe7de', ring: '#cfc9bc' }), 'The board’s tray');
+        Lab.table(card, F6.thumbRows(t.thumb, { rad: '10.5px', travel: 'left, width, opacity over 0.22s, 0.22s, 0.11s' }).concat([
           { what: '--lb-thspd', got: Lab.cs(seg, '--lb-thspd').trim(), want: '220ms' },
-          { what: '--ot-hover, the unpicked cell’s paper', got: Lab.token(cell, '--ot-hover'), want: '#dcd4c5' },
+          { what: '--ot-hover, the unpicked cell’s paper', got: Lab.token(cell, '--ot-hover'), want: '#e4ddd0' },
           { what: 'the picked cell’s hand', got: Lab.cs(seg.querySelector('.lbPicked'), 'cursor'), want: 'default' }
         ]), 'Its thumb, and what the page adds');
         Lab.note(card, 'The board’s tray is live, and it is the one tray on the site that already shows no hand on the cell you are standing on.');
@@ -665,7 +669,7 @@
   <div class="card" style="overflow:visible;min-width:0">
     <div class="body">
       <h3>The games bar <span class="tag built">built</span></h3>
-      <p class="rule-text">The games bar is the same 28px tray at a 14px corner, with 24px cells at 0 8px and a 10.5px corner in bold 16 / 24 --ink-label, a 12.3px count after a middle dot, a 1px --line-tray divider, a green thumb with its ring and drop travelling over 220ms, a --plate-tray-hover paper on an unpicked cell, no hand on the picked one, and a More cell whose list keeps the control's 12px corner. The cells are 8 apart rather than 10 so one more game stands on the bar before the fold. The corners are the shared tray pair, --radius-tray and --radius-tray-cell, on the track, the empty host that stands in for it, the cells, the thumb and the count cells in the list's foot.</p>
+      <p class="rule-text">The games bar is the same 28px tray at a 14px corner, with 24px cells at 0 8px and a 10.5px corner in bold 16 / 24 --ink-label, a 12.3px count after a middle dot, a 1px divider in the tray's ring, a green thumb with its ring and drop travelling over 220ms, the tray's hover paper on an unpicked cell, no hand on the picked one, and a More cell whose list keeps the control's 12px corner. The cells are 8 apart rather than 10 so one more game stands on the bar before the fold. The corners are the shared tray pair, --radius-tray and --radius-tray-cell, on the track, the empty host that stands in for it, the cells, the thumb and the count cells in the list's foot. The colours are the ground's tray: on the open tables' band (the bar below) --plate-tray with the --line-tray and a --plate-tray-hover hover, and on the page paper (the empty host below) --line-soft with the --line-tray-paper and a --plate-tray hover. The More list is the page paper's tray wherever the bar stands, since its rows are the page paper.</p>
       <div class="demo" style="overflow:visible">
         <div class="site fp wm" data-demo>
           <div class="lobbyscope" id="openTablesTop">
@@ -718,20 +722,20 @@
           { what: 'the count', got: Lab.cs(count, 'font-size') + ' ' + Lab.cs(count, 'font-weight'), want: '12.3px 700' },
           { what: 'the picked cell’s hand', got: Lab.cs(track.querySelector('.s.on'), 'cursor'), want: 'default' },
           { what: 'the More cell’s corner', got: Lab.cs(host.querySelector('.ovbtn'), 'border-radius'), want: '10.5px' },
-          { what: 'an empty host', got: Lab.cs(empty, 'min-height') + ', ' + Lab.cs(empty, 'background-color') + ', ' + Lab.cs(empty, 'border-radius'), want: '28px, #e4ddd0, 14px' }
+          { what: 'an empty host', got: Lab.cs(empty, 'min-height') + ', ' + Lab.cs(empty, 'background-color') + ', ' + Lab.cs(empty, 'border-radius'), want: '28px, #ebe7de, 14px' }
         ]), 'The track, its cells and the host that stands in for it');
-        Lab.table(card, F6.thumbRows(bar.thumb, { rad: '10.5px', travel: 'left, width, top, height, opacity over 0.22s, 0.22s, 0.22s, 0.22s, 0.11s' }), 'The thumb');
+        Lab.table(card, F6.thumbRows(bar.thumb, { rad: '10.5px', travel: 'left, width, opacity over 0.22s, 0.22s, 0.11s' }), 'The thumb');
         Lab.table(card, [
           { what: 'divider width / colour', got: Lab.rule('.site.fp .otFilter .track > .s + .s::before', 'width', track) + ' / ' + Lab.rule('.site.fp .otFilter .track > .s + .s::before', 'background', track), want: '1px / #c9c0ae', tag: 'rule' },
           { what: '--ot-hover', got: Lab.token(track, '--ot-hover'), want: '#dcd4c5' },
           { what: 'the hover paper on an unpicked cell', got: Lab.rule('.site.fp .otFilter .track:not(.tcopy) > .s:not(.on):hover::after', 'background', track), want: '#dcd4c5', tag: 'rule' },
           { what: 'the list’s corner', got: Lab.cs(list, 'border-radius'), want: '12px' },
           { what: 'a count cell in the list’s foot, its corner', got: Lab.cs(list.querySelector('.foot [data-amt]'), 'border-radius'), want: '10.5px' },
-          { what: 'the list’s paper and line', got: Lab.cs(list, 'background-color') + ', ' + Lab.cs(list, 'border-color'), want: '#ffffff, #c9c0ae' },
+          { what: 'the list’s paper and line', got: Lab.cs(list, 'background-color') + ', ' + Lab.cs(list, 'border-color'), want: '#ffffff, #cfc9bc' },
           { what: 'a row in it', got: Lab.cs(row, 'background-color') + ', ' + Lab.cs(row, 'border-bottom-color'), want: '#f9f6f2, #d2cfca' }
         ], 'The divider, the hover and the More list');
         Lab.note(card, 'The bar is live: pick a game and the thumb travels, the count grows its word, the lines beside the pick fade and the white copy of the words is clipped to the thumb. Hover More to open the list and pick from it, and the game takes the last cell. The card is left with its overflow showing so the list can hang below the bar.');
-        Lab.note(card, 'The list itself is white with a #c9c0ae border and only its rows take --ot-listrow and --ot-listline, which is what the two rows above report.');
+        Lab.note(card, 'The list itself is white with a #cfc9bc border, the page paper’s tray line, and only its rows take --ot-listrow and --ot-listline, which is what the two rows above report.');
       })();
       </script>
     </div>
@@ -740,7 +744,7 @@
   <div class="card" style="overflow:visible;min-width:0">
     <div class="body">
       <h3>The games bar in a modal <span class="tag built">built</span></h3>
-      <p class="rule-text">A dialog draws the same bar through the same mixin, so nothing about it changes: the modal calls wm-games-bar with its own scope rather than keeping a copy.</p>
+      <p class="rule-text">A dialog draws the same bar through the same mixin, so only its ground changes it: the modal calls wm-games-bar with its own scope rather than keeping a copy, and on the box's paper the bar takes the page paper's tray colours.</p>
       <div class="demo" style="overflow:visible">
         <div class="site wm" data-demo>
           <div class="wmModal wmOpen modalInstant" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
@@ -773,11 +777,11 @@
         bar.thumb.classList.remove('still');
         var track = bar.track;
         var cell = track.querySelector('.s');
-        Lab.table(card, F6.trackRows(track, cell, { rad: '14px', cellPad: '0 8px', tray: '#e4ddd0', ring: '#c9c0ae' }).concat([
+        Lab.table(card, F6.trackRows(track, cell, { rad: '14px', cellPad: '0 8px', tray: '#ebe7de', ring: '#cfc9bc' }).concat([
           { what: 'the host’s width', got: Lab.cs(host, 'width'), want: '376px' },
           { what: 'the picked cell’s hand', got: Lab.cs(track.querySelector('.s.on'), 'cursor'), want: 'default' }
         ]), 'The same bar, in a 400 box');
-        Lab.table(card, F6.thumbRows(bar.thumb, { rad: '10.5px', travel: 'left, width, top, height, opacity over 0.22s, 0.22s, 0.22s, 0.22s, 0.11s' }), 'Its thumb');
+        Lab.table(card, F6.thumbRows(bar.thumb, { rad: '10.5px', travel: 'left, width, opacity over 0.22s, 0.22s, 0.11s' }), 'Its thumb');
       })();
       </script>
     </div>

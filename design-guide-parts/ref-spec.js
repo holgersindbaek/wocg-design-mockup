@@ -24,16 +24,17 @@ window.Spec = {
       { token: '--line', name: 'Line', use: 'Every 1px line the page draws: around a card, tile, field, chip, panel or dropdown, and along a section seam, under the bar and over the footer' },
       { token: '--line-soft', name: 'Soft line', use: 'The divider between two rows inside a white card' },
       { token: '--line-warm', name: 'Warm line', use: 'The quiet button\u2019s paper and the catalog menu\u2019s lattice: the rung the line stood on until 22 Sep, a warmer and lighter grey than the line' },
-      { token: '--line-tray', name: 'Tray line', use: 'Around a tray or the games bar, and between its cells' },
+      { token: '--line-tray', name: 'Tray line', use: 'Around a tray or the games bar on the band paper, and between its cells, and around a tag' },
+      { token: '--line-tray-paper', name: 'Tray line on paper', use: 'Around a tray or the games bar on the page paper, and between its cells. On a white card a tray takes the line' },
       { token: '--color-table-edge', name: 'Felt line', use: 'A name plate and a notice over the felt' },
       { value: 'rgba(0, 0, 0, .30)', name: 'Overlay ring', use: 'The modal box, and any paper floating over the felt or the dark sheet' }
     ] },
     { group: 'Buttons', note: 'Each button is a fill, a ring one step darker, a hover, and its ink. Change the fill and the rest should be rebuilt from it.', kind: 'button', items: [
-      { fill: '--btn-green', ring: '--btn-green-ring', ink: '#ffffff', outline: true, name: 'Green', use: 'Every go-ahead button, the tray thumb, a picked checkbox' },
-      { fill: '--btn-blue', ring: '--btn-blue-ring', ink: '#ffffff', outline: true, name: 'Blue', use: 'The second solid action: Manage, and its kind' },
-      { fill: '--btn-quiet', ring: '--btn-quiet-ring', ink: '--ink', root: 'modal', name: 'Quiet', use: 'Cancel, Close, Got it: the button that does not commit you, when no filled button stands beside it' },
-      { fill: '--btn-danger', ring: '--btn-danger-ring', ink: '#ffffff', outline: true, root: 'modal', name: 'Danger', use: 'Delete, Leave now, Cancel subscription' },
       { fill: '--btn-quiet-dark', ring: '--btn-quiet-dark-ring', ink: '#ffffff', outline: true, name: 'Quiet dark', use: 'The quiet button beside a filled one (Cancel beside Host, Watch game beside Join table), and the way back rather than the thing to do: the game over panel\u2019s Leave and Chat, Back to table, a picked block reason' },
+      { fill: '--btn-quiet', ring: '--btn-quiet-ring', ink: '--ink', root: 'modal', name: 'Quiet', use: 'Cancel, Close, Got it: the button that does not commit you, when no filled button stands beside it' },
+      { fill: '--btn-green', ring: '--btn-green-ring', ink: '#ffffff', outline: true, name: 'Green', use: 'Every go-ahead button, the tray thumb, a picked checkbox' },
+      { fill: '--btn-danger', ring: '--btn-danger-ring', ink: '#ffffff', outline: true, root: 'modal', name: 'Danger', use: 'Delete, Leave now, Cancel subscription' },
+      { fill: '#298ae9', ring: '#206cb6', ink: '#ffffff', outline: true, option: true, name: 'Blue', use: 'Kept as an option. No button draws it since 22 Sep 2026, when the blue buttons became the quiet dark one. It is the second solid action beside the green, with the hover #267fd6' },
       { fill: '#ffd43b', ring: '#f5af23', ink: '#3d2b00', name: 'Yellow', use: 'The table action: Play, Join, Watch, Accept' }
     ] },
     { group: 'Light plates', note: 'A pale fill with its own deep ink, used where a colour has to carry small words.', kind: 'plate', items: [
@@ -41,7 +42,9 @@ window.Spec = {
       { fill: '--plate-red', ink: '--color-team2-ink', name: 'Red plate', use: 'A rating that went down, the red team' },
       { fill: '--plate-green', ink: '--plate-green-ink', name: 'Green plate', use: 'A rating that went up: the movement chip and .rankUp. The icons on it: the Message button in the friends panel, a meld\u2019s count and the complete canasta\u2019s star' },
       { fill: '#f2d767', ring: '#d4ba47', ink: '#664411', name: 'Yellow plate', use: 'The turn timer, a meld\u2019s count with wild cards and the canasta star on it, and the rosette of medals 4 to 6: a pale yellow that carries small words in its own deep ink, as deep as the other plates\u2019 inks. Never a button on the felt, where the yellow button owns yellow' },
-      { fill: '--plate-tray', hover: '--plate-tray-hover', ink: '--ink-label', name: 'Tray paper', use: 'The track a tray or the games bar sits in, and a tag. A cell under the pointer takes the hover, one small step under the tray' }
+      { fill: '--paper-band', ring: '--line', hover: '--line-soft', ink: '--ink-label', name: 'Tray on white', use: 'The track a tray sits in on a white card: the settings rows, the table options, the cards prompt. Two rungs under the white, with the line round it and between its cells, and the soft rung under the pointer' },
+      { fill: '--line-soft', ring: '--line-tray-paper', hover: '--plate-tray', ink: '--ink-label', name: 'Tray on paper', use: 'The track on the page paper: the settings tabs, the frontpage\u2019s games bars, the daily challenge and the stats. Two rungs under the paper, with its own line, and the tray plate under the pointer' },
+      { fill: '--plate-tray', ring: '--line-tray', hover: '--plate-tray-hover', ink: '--ink-label', name: 'Tray on the band', use: 'The track on the band paper, the open tables\u2019 games bar, and a tag. Two rungs under the band, with the tray line, and the hover one small step under the tray' }
     ] },
     { group: 'Accents', note: 'Colours that only mark something: a rating, a place, a star, a notice, a suit. The icons draw in them (ICON-COLOURS.md).', items: [
       { token: '--star-fill', name: 'Star fill', use: 'A full rating star, on the band and in the game over panel' },

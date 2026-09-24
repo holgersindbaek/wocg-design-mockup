@@ -173,14 +173,18 @@
           thumb.style.opacity = '0'; ink.style.clipPath = 'inset(0 100% 0 0)';
           thumb.classList.add(c.still); ink.classList.add(c.still); return;
         }
-        // to the fraction, as the site measures it: offsetLeft and offsetWidth round, which left the thumb 1px short
-        // of the track's end on a last cell. The scale divides out any transform the tray is drawn under.
-        var tb = node.getBoundingClientRect(), cb = cell.getBoundingClientRect(), scale = tb.width / node.offsetWidth || 1;
-        var tw = tb.width / scale, th = tb.height / scale;
-        var left = (cb.left - tb.left) / scale - node.clientLeft, top = (cb.top - tb.top) / scale - node.clientTop;
-        var w = cb.width / scale, h = cb.height / scale;
-        thumb.style.left = left + 'px'; thumb.style.top = top + 'px'; thumb.style.width = w + 'px'; thumb.style.height = h + 'px'; thumb.style.opacity = '1';
-        ink.style.clipPath = 'inset(' + top + 'px ' + (tw - left - w) + 'px ' + (th - top - h) + 'px ' + left + 'px)';
+        // as the site measures it: only across, since the thumb's top and height are the track's own (the site's
+        // sheets), so no measurement can make it taller than its cell. To the fraction: offsetLeft and offsetWidth
+        // round, which left the thumb 1px short of the track's end on a last cell, and the scale that divides out a
+        // transform is taken against the tray's unrounded width, since a tray 221.7 wide reads as 222 in offsetWidth.
+        var st = getComputedStyle(node), lw = parseFloat(st.width);
+        if (st.boxSizing !== 'border-box') lw += parseFloat(st.paddingLeft) + parseFloat(st.paddingRight) + parseFloat(st.borderLeftWidth) + parseFloat(st.borderRightWidth);
+        var tb = node.getBoundingClientRect(), cb = cell.getBoundingClientRect(), scale = tb.width / (lw || node.offsetWidth) || 1;
+        var tw = tb.width / scale;
+        var left = (cb.left - tb.left) / scale - node.clientLeft;
+        var w = cb.width / scale;
+        thumb.style.left = left + 'px'; thumb.style.width = w + 'px'; thumb.style.opacity = '1';
+        ink.style.clipPath = 'inset(var(--space-tray, 2px) ' + (tw - left - w) + 'px var(--space-tray, 2px) ' + left + 'px)';
         if (thumb.classList.contains(c.still)) { void thumb.offsetWidth; thumb.classList.remove(c.still); ink.classList.remove(c.still); }
       }
       node.addEventListener('click', function (e) {

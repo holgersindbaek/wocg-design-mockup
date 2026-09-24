@@ -66,6 +66,7 @@
       var b = el('i', 'sw plate', 'Aa 12');
       b.style.background = colourOf(item, item.fill);
       b.style.color = colourOf(item, item.ink);
+      if (item.ring) b.style.boxShadow = 'inset 0 0 0 1px ' + colourOf(item, item.ring);
       return b;
     },
     face: function (item) {
@@ -176,6 +177,7 @@
         var name = item.name || item.value, code = handle(item, kind);
         var nameEl = el('span', 'tkname', name);
         if (item.proposal) nameEl.appendChild(el('span', 'tkprop', 'proposal'));   // a value the site does not ship yet
+        if (item.option) nameEl.appendChild(el('span', 'tkprop', 'option'));   // a value the site keeps to hand but draws nowhere now
         meta.appendChild(nameEl);
         if (code && code !== name) meta.appendChild(el('code', 'tkval', code));   // a gap's name is its value
         meta.appendChild(el('span', 'tkuse', item.use));

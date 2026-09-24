@@ -525,7 +525,7 @@
   <div class="card">
     <div class="body">
       <h3>The catalog's dropup <span class="tag built">built</span></h3>
-      <p class="rule-text">The Play control feeds a paper out of its own top edge and squares its top corners while the sheet is out. The paper is a 1px lattice in a 12px squircle open at the foot: two top cells 48 tall, each an 18 / 20 label over a 12 / 15 sub-line, then six rows 28 tall at 14 bold, going to the tile's own pale tint under the pointer. These are the one pair of heights in the kit that is not a button height: 7.1 names them as menu items. Every tile dresses its dropup in its own game's colour, so the two below are the same paper in two inks.</p>
+      <p class="rule-text">The Play control feeds a paper out of its own top edge and squares its top corners while the sheet is out. The paper is a 1px lattice in a 12px squircle open at the foot: two top cells 48 tall, each an 18 / 20 label over a 12 / 15 sub-line, then six rows 28 tall at 14 bold, white with the page paper under the pointer, the same on every tile. The top cells' words are white. A press changes nothing. These are the one pair of heights in the kit that is not a button height: 7.1 names them as menu items. Every tile dresses its dropup in its own game's colour, so the two below are the same paper in two inks.</p>
       <div class="demo">
         <div class="site fp wm" data-cat>
           <div class="gamesec" style="padding:0">
@@ -611,12 +611,12 @@
           { what: 'canasta .gmTop ring', got: Lab.cs(canasta.querySelector('.gmTop'), 'box-shadow'), want: '0 0 0 1px #006b52' },
           { what: '.gmItem paper, on a tinted tile', got: Lab.cs(item, 'background-color'), want: '#ffffff' },
           { what: 'the top cell with no game on it', got: Lab.rule('.site.fp .gmenu .gmGrid .gmTop', 'background', root), want: '#43a038', tag: 'rule' },
-          { what: 'the row with no game on it', got: Lab.rule('.site.fp .gmenu .gmGrid .gmItem', 'background', root), want: '#f9f6f2', tag: 'rule' }
+          { what: 'the row with no game on it', got: Lab.rule('.site.fp .gmenu .gmGrid .gmItem', 'background', root), want: '#ffffff', tag: 'rule' }
         ], "Each tile in its own game's colour");
         Lab.table(card, [
-          { what: '.gmItem on hover', got: Lab.rule('.site.fp .catgrid .gtile .gmenu .gmGrid .gmItem:hover', 'background', hearts), want: '#ffe3e7', tag: 'rule' },
+          { what: '.gmItem on hover, on every tile', got: Lab.rule('.site.fp .gmenu .gmGrid .gmItem:hover', 'background', hearts), want: '#f9f6f2', tag: 'rule' },
           { what: '.gmTop on hover', got: Lab.rule('.site.fp .catgrid .gtile .gmenu .gmGrid .gmTop:hover', 'background', hearts), want: '#8b1d39', tag: 'rule' },
-          { what: 'a cell pressed', got: Lab.rule('.site.fp .gmenu .gmGrid .gmItem:active', 'box-shadow', root), want: 'inset 0 1px 2px rgba(60,45,25,.06)', tag: 'rule' },
+          { what: 'a cell pressed, no shrink', got: Lab.rule('.site.fp .gmenu .gmGrid .gmItem:active', 'transform', root), want: 'none', tag: 'rule' },
           { what: 'the paper feeding out', got: Lab.cs(menu, 'animation-name') + ' ' + Lab.cs(menu, 'animation-duration') + ' ' + Lab.cs(menu, 'animation-delay') + ' ' + Lab.cs(menu, 'animation-fill-mode'), want: 'fpGmenuFeed 400ms 80ms both' },
           { what: 'its curve', got: Lab.cs(menu, 'animation-timing-function'), want: 'cubic-bezier(0.22, 1, 0.36, 1)' },
           { what: 'and back in', got: 'fpGmenuBack 240ms cubic-bezier(.5, 0, .8, .4) both', want: 'the sheet, _fp-catalog.scss:324', tag: 'note' },

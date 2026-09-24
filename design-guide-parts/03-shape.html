@@ -256,8 +256,8 @@
       (function () {
         var cell = q('.track > .s.on'), thumb = q('.track .thumb');
         if (!cell || !thumb) return;
-        thumb.style.left = cell.offsetLeft + 'px'; thumb.style.top = cell.offsetTop + 'px';
-        thumb.style.width = cell.offsetWidth + 'px'; thumb.style.height = cell.offsetHeight + 'px'; thumb.style.opacity = '1';
+        thumb.style.left = cell.offsetLeft + 'px';
+        thumb.style.width = cell.offsetWidth + 'px'; thumb.style.opacity = '1';
       }());
       /* a token that is a calc() of other tokens reads back unworked, so a probe is given it and its corner is read */
       var px = function (expr) {
@@ -581,14 +581,15 @@
         { what: '.wmCard', got: Lab.cs(q('.wmCard'), 'box-shadow'), want: 'inset 0 0 0 1px #d2cfca, 0 1px 2px rgba(60,45,25,.04), 0 2px 5px rgba(60,45,25,.05)' },
         { what: '.wmFld input', got: Lab.cs(q('.wmFld input'), 'box-shadow'), want: 'inset 0 0 0 1px #d2cfca' },
         { what: '.wmCheck i, the checkbox', got: Lab.cs(q('.wmCheck i'), 'box-shadow'), want: 'inset 0 0 0 1px #d2cfca' },
-        { what: '.wmTray', got: Lab.cs(q('.wmTray'), 'box-shadow'), want: 'inset 0 0 0 1px #c9c0ae' },
+        { what: '.wmTray, on the box’s paper', got: Lab.cs(q('.wmTray'), 'box-shadow'), want: 'inset 0 0 0 1px #cfc9bc' },
         { what: '.wmBtn', got: Lab.cs(q('.wmBtn'), 'box-shadow'), want: 'inset 0 0 0 1px #bfb5a1' },
         { what: '.fpic', got: Lab.cs(q('.fpic'), 'box-shadow'), want: 'inset 0 0 0 1px #d2cfca, 0 1px 2px rgba(60,45,25,.04), 0 2px 6px rgba(60,45,25,.06)' },
         { what: '--line', got: Lab.token(q('.wmCard'), '--line'), want: '#d2cfca' },
-        { what: '--line-tray, the tray’s ring', got: Lab.token(q('.wmTray'), '--line-tray'), want: '#c9c0ae' },
+        { what: '--tray-ring, the tray’s ring on the box’s paper (--line-tray-paper)', got: Lab.token(q('.wmTray'), '--tray-ring'), want: '#cfc9bc' },
+        { what: '--line-tray, the tray’s ring on the band', got: Lab.token(q('.wmTray'), '--line-tray'), want: '#c9c0ae' },
         { what: '--btn-quiet-ring, the button’s ring', got: Lab.token(q('.wmBtn'), '--btn-quiet-ring'), want: '#bfb5a1' }
       ]);
-      Lab.note(card, 'The lift is measured with the ring, since they are one string. A chip rings itself in --line and a tray in --line-tray, which are the two steps either side of --line: a ring follows the paper it is cut into, not one token for all.');
+      Lab.note(card, 'The lift is measured with the ring, since they are one string. A chip rings itself in --line and a tray in its ground’s tray line: --line-tray-paper on the page paper, as here, --line-tray on the band and --line on a white card. A ring follows the paper it is cut into, not one token for all.');
       Lab.note(card, 'The picture card is on the frontpage, so its lift is the lighter frontpage pair (.04 and .06). Every modal piece here reads the shared pair.');
     })();</script>
   </div></div>
@@ -778,7 +779,7 @@
 
   <div class="card"><div class="body">
     <h3>Dividers <span class="tag built">built</span></h3>
-    <p class="rule-text">A row line is border-bottom 1px in the surface’s own divider token: --line-soft on white, --line on the band and the canvas, --line-tray in a tray. A divider parts two regions of one colour and is never the border token.</p>
+    <p class="rule-text">A row line is border-bottom 1px in the surface’s own divider token: --line-soft on white, --line on the band and the canvas, and in a tray the tray’s own ring (--line-tray-paper on the page paper, --line-tray on the band, --line on a white card). A divider parts two regions of one colour and is never the border token.</p>
     <div class="demo"><div class="rw">
       <div class="site wm" style="width:250px">
         <div class="wmModal wmOpen modalInstant wmWide wmSettings" role="dialog" aria-modal="true" style="position:static;display:block;opacity:1">
@@ -830,13 +831,13 @@
         { what: '.wmRow border-bottom', got: Lab.cs(q('.wmRow'), 'border-bottom'), want: '1px solid #ebe7de' },
         { what: '--line-soft', got: Lab.token(q('.wmCard'), '--line-soft'), want: '#ebe7de' },
         { what: '.lbRow + .lbRow > span border-top', got: Lab.cs(card.querySelectorAll('.lbRow')[1].querySelector('span'), 'border-top'), want: '1px solid #d2cfca' },
-        { what: 'a tray on the box, cell line', got: Lab.cs(q('.baretray .wmCell + .wmCell'), 'background-color', '::before'), want: '#c9c0ae' },
+        { what: 'a tray on the box, cell line', got: Lab.cs(q('.baretray .wmCell + .wmCell'), 'background-color', '::before'), want: '#cfc9bc' },
         { what: 'a tray on a white card, cell line', got: Lab.cs(q('.cardtray .wmCell + .wmCell'), 'background-color', '::before'), want: '#d2cfca' },
         { what: 'the cell line, width', got: Lab.cs(q('.baretray .wmCell + .wmCell'), 'width', '::before'), want: '1px' },
         { what: 'the cell line, top and bottom', got: Lab.cs(q('.baretray .wmCell + .wmCell'), 'top', '::before') + ' / ' + Lab.cs(q('.baretray .wmCell + .wmCell'), 'bottom', '::before'), want: '-2px / -2px' },
         { what: '.footerLegal border-top', got: Lab.cs(q('.footerLegal'), 'border-top'), want: '1px solid #d2cfca' }
       ]);
-      Lab.note(card, 'The tray’s line runs 2px past the cell at each end, which is the tray’s own padding, so it reaches the tray’s inside edge rather than stopping at the words. On a white card the same line steps to --line.');
+      Lab.note(card, 'The tray’s line runs 2px past the cell at each end, which is the tray’s own padding, so it reaches the tray’s inside edge rather than stopping at the words. On the box’s paper it is --line-tray-paper and on a white card it steps to --line: a tray’s cell line is always its ring.');
       Lab.note(card, 'The leaderboard card’s rows are a table, so the line is the next row’s border-top rather than the first row’s border-bottom.');
     })();</script>
   </div></div>
@@ -1064,8 +1065,8 @@
       (function () {
         var cell = q('.track > .s.on'), thumb = q('.track .thumb');
         if (!cell || !thumb) return;
-        thumb.style.left = cell.offsetLeft + 'px'; thumb.style.top = cell.offsetTop + 'px';
-        thumb.style.width = cell.offsetWidth + 'px'; thumb.style.height = cell.offsetHeight + 'px'; thumb.style.opacity = '1';
+        thumb.style.left = cell.offsetLeft + 'px';
+        thumb.style.width = cell.offsetWidth + 'px'; thumb.style.opacity = '1';
       }());
       Lab.seg(q('.wmTray'));
       Lab.table(card, [
