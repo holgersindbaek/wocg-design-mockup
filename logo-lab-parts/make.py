@@ -411,7 +411,8 @@ def glyph_transforms(sh):
     rot = ln.get('rot')
     if arc:
         W = sh['adv'] * s
-        rise = arc * W
+        down = arc < 0
+        rise = abs(arc) * W
         R = (W * W / 4 + rise * rise) / (2 * rise)
         cx, cy = W / 2, R - rise
         L = 2 * R * math.asin(min(1.0, (W / 2) / R))
@@ -422,6 +423,8 @@ def glyph_transforms(sh):
             th = (mid - L / 2) / R
             px, py = cx + R * math.sin(th), cy - R * math.cos(th)
             ux, uy = math.cos(th), math.sin(th)
+            if down:
+                py, uy = -py, -uy
             out.append(Transform(s * ux, s * uy, s * uy, -s * ux, px - ux * adv / 2, py - uy * adv / 2))
         return out
     if rot:
@@ -444,15 +447,18 @@ SUIT_COLOUR = {'spade': INK, 'club': INK, 'heart': RED, 'diamond': RED}
 
 
 def real_carded_line(sh, pips):
-    """Like carded_line, but each card is a playing card: portrait, with a suit pip in two corners, the letter
-    centred and coloured like its suit. The cards count toward the line's height."""
+    """A word-initial on a playing card. cardStyle 'real' adds a suit pip in two corners and colours the letter
+    like its suit; 'plain' keeps a card's shape with no suit. cardIndex repeats the letter small in the top-left
+    and bottom-right corners, as a card's rank; cardPair puts a second card behind ('white' or 'red'). The cards
+    count toward the line's height."""
     f, s, ln = sh['face'], sh['s'], sh['ln']
+    style = ln.get('cardStyle', 'real')
     angles = list(ln.get('angles', [-9, 7, -6, 10]))
     suits = list(ln.get('suits', ['spade', 'heart', 'club', 'diamond']))
     cap = f.cap * s
     hc = ln.get('cardHeight', 1.5) * cap
-    ratio = 0.72
-    pad_x, pad_y, trail, stroke = 0.10 * cap, 0.16 * cap, ln.get('cardTrail', 0.16) * cap, 0.05 * cap
+    ratio = 0.714 if style == 'plain' else 0.72
+    pad_x, pad_y, trail, stroke = 0.10 * cap, 0.16 * cap, ln.get('cardTrail', 0.16) * cap, ln.get('cardStroke', 0.05) * cap
     names, text = sh['names'], sh['text']
     starts = [i for i, ch in enumerate(text) if ch != ' ' and (i == 0 or text[i - 1] == ' ')][ln.get('skip', 0):]
     pen = 0.0
@@ -478,7 +484,9 @@ def real_carded_line(sh, pips):
             r = math.radians(ang)
             hw = (wc * abs(math.cos(r)) + hc * abs(math.sin(r))) / 2
             hh = (wc * abs(math.sin(r)) + hc * abs(math.cos(r))) / 2
-            cx = pen + hw
+            pair = ln.get('cardPair')
+            lead_in = 0.1 * wc if pair else 0.0
+            cx = pen + lead_in + hw
             cy = -cap / 2
             sg = s * k
             gx = cx - ((gx0 + gx1) / 2) * sg
@@ -486,18 +494,33 @@ def real_carded_line(sh, pips):
             flat = Transform(sg, 0, 0, -sg, gx, gy)
             rot = Transform().translate(cx, cy).rotate(math.radians(-ang)).translate(-cx, -cy)
             transforms.append(rot.transform(flat))
-            ph = 0.17 * hc
-            padc = 0.085 * hc
-            px0, py0, px1, py1 = pips[suit]['box']
-            pf = ph / (py1 - py0)
-            pw = (px1 - px0) * pf
-            corners = []
-            for (ccx, ccy, flip) in ((cx - wc / 2 + padc + pw / 2, cy - hc / 2 + padc + ph / 2, False),
-                                     (cx + wc / 2 - padc - pw / 2, cy + hc / 2 - padc - ph / 2, True)):
-                corners.append(dict(name=suit, cx=ccx, cy=ccy, flip=flip,
-                                    place='translate(%s,%s) scale(%s)' % (fmt(ccx - (px0 + (px1 - px0) / 2) * pf, 3), fmt(ccy - (py0 + (py1 - py0) / 2) * pf, 3), fmt(pf, 5))))
-            cards.append(dict(cx=cx, cy=cy, w=wc, h=hc, angle=ang, rx=0.07 * wc, stroke=stroke, pips=corners))
-            colours[i] = SUIT_COLOUR[suit]
+            card = dict(cx=cx, cy=cy, w=wc, h=hc, angle=ang, rx=(0.06 if style == 'plain' else 0.07) * wc, stroke=stroke, pips=[], index=[], pair=None)
+            if style == 'real':
+                ph = 0.17 * hc
+                padc = 0.085 * hc
+                px0, py0, px1, py1 = pips[suit]['box']
+                pf = ph / (py1 - py0)
+                pw = (px1 - px0) * pf
+                for (ccx, ccy, flip) in ((cx - wc / 2 + padc + pw / 2, cy - hc / 2 + padc + ph / 2, False),
+                                         (cx + wc / 2 - padc - pw / 2, cy + hc / 2 - padc - ph / 2, True)):
+                    card['pips'].append(dict(name=suit, cx=ccx, cy=ccy, flip=flip,
+                                             place='translate(%s,%s) scale(%s)' % (fmt(ccx - (px0 + (px1 - px0) / 2) * pf, 3), fmt(ccy - (py0 + (py1 - py0) / 2) * pf, 3), fmt(pf, 5))))
+                colours[i] = SUIT_COLOUR[suit]
+            if ln.get('cardIndex'):
+                si = sg * 0.3
+                iw, ih = (gx1 - gx0) * si, (gy1 - gy0) * si
+                padc = 0.075 * hc
+                for (icx, icy, flip) in ((cx - wc / 2 + padc + iw / 2, cy - hc / 2 + padc + ih / 2, False),
+                                         (cx + wc / 2 - padc - iw / 2, cy + hc / 2 - padc - ih / 2, True)):
+                    t = Transform(si, 0, 0, -si, icx - ((gx0 + gx1) / 2) * si, icy + ((gy0 + gy1) / 2) * si)
+                    if flip:
+                        t = Transform().translate(icx, icy).rotate(math.pi).translate(-icx, -icy).transform(t)
+                    card['index'].append(rot.transform(t))
+            if pair:
+                card['pair'] = dict(dx=-0.11 * wc, dy=-0.07 * hc, angle=ang - 8, fill=RED if pair == 'red' else WHITE)
+                boxes_.append((cx - hw - 0.14 * wc, cy - hh - 0.12 * hc, cx + hw, cy + hh))
+            cards.append(card)
+            colours.setdefault(i, INK)
             boxes_.append((cx - hw - stroke / 2, cy - hh - stroke / 2, cx + hw + stroke / 2, cy + hh + stroke / 2))
             pen = cx + hw + trail
         else:
@@ -513,6 +536,76 @@ def real_carded_line(sh, pips):
     sh['ink'] = ink
     sh['adv'] = pen / s
 
+
+def enlarge_initials(sh, k):
+    """The first glyph of every word drawn k times its size on the same baseline; the rest of the word moves along."""
+    f, s = sh['face'], sh['s']
+    names, text = sh['names'], sh['text']
+    starts = {i for i, ch in enumerate(text) if ch != ' ' and (i == 0 or text[i - 1] == ' ')}
+    out, extra = [], 0.0
+    for i, (g, x) in enumerate(zip(names, sh['xs'])):
+        if i in starts:
+            out.append(Transform(s * k, 0, 0, -s * k, x * s + extra, 0))
+            extra += f.hmtx[g][0] * s * (k - 1)
+        else:
+            out.append(Transform(s, 0, 0, -s, x * s + extra, 0))
+    sh['t0'] = out
+    sh['ink'] = f.bounds_t(names, out)
+    sh['adv'] = sh['adv'] + extra / s
+
+
+def swash_shape(x0, x1, y, cap, depth=0.42, thick=0.05):
+    """A tapered stroke under a line of words: a shallow bowl from under the first letter to under the last,
+    thickest in the middle, pointed at both ends. Returns an SVG path in the line's own coordinates."""
+    W = x1 - x0
+    P = [(x0 - 0.02 * W, y + 0.18 * cap), (x0 + 0.28 * W, y + depth * cap), (x0 + 0.74 * W, y + depth * cap), (x1 + 0.03 * W, y + 0.06 * cap)]
+    def bez(t):
+        u = 1 - t
+        return (u**3 * P[0][0] + 3 * u * u * t * P[1][0] + 3 * u * t * t * P[2][0] + t**3 * P[3][0],
+                u**3 * P[0][1] + 3 * u * u * t * P[1][1] + 3 * u * t * t * P[2][1] + t**3 * P[3][1])
+    n = 48
+    pts = [bez(i / n) for i in range(n + 1)]
+    left, right = [], []
+    for i, (px, py) in enumerate(pts):
+        ax, ay = pts[max(i - 1, 0)]
+        bx, by = pts[min(i + 1, n)]
+        tx, ty = bx - ax, by - ay
+        ln = math.hypot(tx, ty) or 1.0
+        nx, ny = -ty / ln, tx / ln
+        w = thick * cap * math.sin(math.pi * i / n) ** 0.7
+        left.append((px + nx * w / 2, py + ny * w / 2))
+        right.append((px - nx * w / 2, py - ny * w / 2))
+    poly = left + right[::-1]
+    return 'M' + ' L'.join('%s,%s' % (fmt(a), fmt(b)) for a, b in poly) + ' Z'
+
+
+def layout_badge(v, boxes, pips):
+    """The small line arched over the mark, the big line under it: the oldest badge there is. For square places."""
+    small, big = shape_line(v['lines'][0]), shape_line(v['lines'][1])
+    b = boxes[v['mark']]
+    f = MH / b['h']
+    mw = b['w'] * f
+    parts = []
+    x0, y0, x1, y1 = small['ink']
+    sw = x1 - x0
+    total_w = max(sw, mw, big['ink'][2] - big['ink'][0])
+    ox = (total_w - sw) / 2 - x0
+    oy = -(y1) - v.get('gapTop', 0.06) * MH
+    parts.append(dict(kind='line', sh=small, transforms=[Transform().translate(ox, oy).transform(t) for t in small['t0']], box=(x0 + ox, y0 + oy, x1 + ox, y1 + oy)))
+    mx0 = (total_w - mw) / 2
+    parts.append(dict(kind='mark', mark=v['mark'], transform='translate(%s,%s) scale(%s)' % (fmt(mx0 - b['x'] * f, 3), fmt(-b['y'] * f, 3), fmt(f, 5)), box=(mx0, 0, mx0 + mw, MH)))
+    x0, y0, x1, y1 = big['ink']
+    bw = x1 - x0
+    ox = (total_w - bw) / 2 - x0
+    oy = MH + v.get('gap', 0.12) * MH - y0
+    parts.append(dict(kind='line', sh=big, transforms=[Transform().translate(ox, oy).transform(t) for t in big['t0']], box=(x0 + ox, y0 + oy, x1 + ox, y1 + oy)))
+    xs0 = min(p['box'][0] for p in parts)
+    ys0 = min(p['box'][1] for p in parts)
+    xs1 = max(p['box'][2] for p in parts)
+    ys1 = max(p['box'][3] for p in parts)
+    m = 0.03 * (ys1 - ys0)
+    vb = (xs0 - m, ys0 - m, (xs1 - xs0) + 2 * m, (ys1 - ys0) + 2 * m)
+    return dict(parts=parts, vb=vb, block=(total_w, ys1 - ys0), shaped=[small, big], ratio=vb[2] / vb[3], pips=pips)
 
 def shape_line(ln):
     f = face(ln['face'])
@@ -583,7 +676,9 @@ def layout(v, boxes, pips):
     shaped = [shape_line(ln) for ln in v['lines']]
     for sh in shaped:
         if sh['ln'].get('initials'):
-            real_carded_line(sh, pips) if sh['ln'].get('cardStyle') == 'real' else carded_line(sh)
+            real_carded_line(sh, pips) if sh['ln'].get('cardStyle') in ('real', 'plain') else carded_line(sh)
+        elif sh['ln'].get('bigInitials'):
+            enlarge_initials(sh, sh['ln']['bigInitials'])
 
     fixed = [width(sh['ink']) for sh in shaped if not sh['ln'].get('justify')]
     target = max(fixed) if fixed else max(width(sh['ink']) for sh in shaped)
@@ -609,6 +704,10 @@ def layout(v, boxes, pips):
             ox = (block_w - (x1 - x0)) / 2 - x0
         elif align == 'right':
             ox = block_w - (x1 - x0) - x0
+        elif align == 'indent':
+            # the small line starts where the big line's second letter starts (past a first letter's card)
+            bigl = shaped[-1]
+            ox = (bigl['t0'][1].dx - bigl['ink'][0]) - x0
         else:
             ox = -x0
         oy = y - y0
@@ -622,6 +721,12 @@ def layout(v, boxes, pips):
             r = math.radians(c['angle'])
             hw = (c['w'] * abs(math.cos(r)) + c['h'] * abs(math.sin(r))) / 2
             hh = (c['w'] * abs(math.sin(r)) + c['h'] * abs(math.cos(r))) / 2
+            if c.get('pair'):
+                pr = c['pair']
+                pcx, pcy = cx + pr['dx'], cy + pr['dy']
+                extras.append(dict(kind='rect', role='card', box=(pcx - hw, pcy - hh, pcx + hw, pcy + hh), rx=c['rx'], fill=pr['fill'], stroke=INK, stroke_width=c['stroke'],
+                                   cx=pcx, cy=pcy, angle=pr['angle'], rect=(pcx - c['w'] / 2, pcy - c['h'] / 2, c['w'], c['h']),
+                                   transform='rotate(%s %s %s)' % (fmt(-pr['angle']), fmt(pcx), fmt(pcy))))
             extras.append(dict(kind='rect', role='card', box=(cx - hw, cy - hh, cx + hw, cy + hh), rx=c['rx'], fill=WHITE, stroke=INK, stroke_width=c['stroke'],
                                cx=cx, cy=cy, angle=c['angle'], rect=(cx - c['w'] / 2, cy - c['h'] / 2, c['w'], c['h']),
                                transform='rotate(%s %s %s)' % (fmt(-c['angle']), fmt(cx), fmt(cy))))
@@ -631,6 +736,14 @@ def layout(v, boxes, pips):
                     turn += 'rotate(180 %s %s) ' % (fmt(pp['cx'] + ox), fmt(pp['cy'] + oy))
                 extras.append(dict(kind='pip', name=pp['name'], box=(cx - hw, cy - hh, cx + hw, cy + hh),
                                    transform=turn + 'translate(%s,%s) ' % (fmt(ox, 3), fmt(oy, 3)) + pp['place']))
+            for t in c.get('index', []):
+                idx = sorted(sh['initials'])[sh['cards'].index(c)]
+                extras.append(dict(kind='glyph', sh=sh, names=[sh['names'][idx]], transforms=[Transform().translate(ox, oy).transform(t)],
+                                   box=(cx - hw, cy - hh, cx + hw, cy + hh), colour=sh.get('initial_colours', {}).get(idx, INK)))
+        if sh['ln'].get('swash') and sh is shaped[-1]:
+            x0b, y0b, x1b, y1b = sh['box']
+            extras.append(dict(kind='shape', d=swash_shape(x0b, x1b, oy, cap_s), colour=sh['ln']['swash'] if isinstance(sh['ln']['swash'], str) else INK,
+                               box=(x0b - 0.03 * (x1b - x0b), oy, x1b + 0.04 * (x1b - x0b), oy + 0.5 * cap_s)))
         if sh['ln'].get('ribbon'):
             pad_x, pad_y = 0.55 * cap_s, 0.32 * cap_s
             rect = (sh['box'][0] - pad_x, sh['box'][1] - pad_y, sh['box'][2] + pad_x, sh['box'][3] + pad_y)
@@ -680,6 +793,10 @@ def layout(v, boxes, pips):
             x, y, w, h = e['rect']
             e2['rect'] = (x + mx, y, w, h)
             e2['transform'] = 'rotate(%s %s %s)' % (fmt(-e['angle']), fmt(e['cx'] + mx), fmt(e['cy']))
+        if e['kind'] == 'glyph':
+            e2['transforms'] = [shift.transform(t) for t in e['transforms']]
+        if e['kind'] == 'shape':
+            e2['transform'] = 'translate(%s,0)' % fmt(mx, 3)
         parts.append(e2)
     for sh in shaped:
         T = [shift.transform(t) for t in sh['T']]
@@ -766,6 +883,11 @@ def render(lay, mode, defs=None, marks=None, ink=INK):
         elif k == 'pip':
             fill = ink if dark or p['name'] in ('spade', 'club') else RED
             body.append('<path d="%s" transform="%s" fill="%s"/>' % (lay['pips'][p['name']]['d'], p['transform'], fill))
+        elif k == 'glyph':
+            body.append('<path fill="%s" d="%s"/>' % (p.get('colour', INK), p['sh']['face'].path_t(p['names'], p['transforms'])))
+        elif k == 'shape':
+            fill = ink if dark else p.get('colour', INK)
+            body.append('<path fill="%s" d="%s" transform="%s"/>' % (fill, p['d'], p.get('transform', '')))
         else:
             sh = p['sh']
             ln = sh['ln']
@@ -817,60 +939,60 @@ BIG = L('Card Games', 'glca-500', 1.0)
 WORDS_AT = 85  # the words' height as a share of the fan's, Holger's pick from round 2
 
 
-def V(num, name, vid, title, lead, small, gap=0.14, big=None, **kw):
-    v = dict(id='%02d-%s' % (num, vid), num=num, name=name, title=title, lead=lead, lines=[small, big or BIG], gap=gap,
+def V(num, name, vid, title, lead, small, gap=0.14, big=None, family=None, **kw):
+    v = dict(id=vid, num=num, name=name, title=title, lead=lead, lines=[small, big or BIG], gap=gap, family=family or num.rstrip('abcdefgh'),
              mark='fan', markScale=100.0 / WORDS_AT, markGap=0.16, gapOf='mark')
     v.update(kw)
     return v
 
 
+FAMILIES = [
+    dict(key='1', title='1 Plain, and the small things', lead='The safest and nicest, you said. Logos are made of small things: a bolder small line, tighter letters, bigger capitals, the lines closing up, a swash. Each row changes one of them.'),
+    dict(key='12', title='12 Arc, and what else the curve can do', lead='World of on a gentle arc. Here the curve goes the other way, both lines curve like a seal, the arc takes capitals, red, a bolder face, hugs the words, and finally arches over the fan itself.'),
+    dict(key='25', title='25 Letter cards, more like cards', lead='C and G on cards, no fan. The cards take a playing card\u2019s proportion and corners with no suits, then a corner letter like a card\u2019s rank, a second card behind, a red back, and World of tried in four places.'),
+]
+
+CARD = dict(initials=True, cardStyle='plain', angles=[-6, 8], cardHeight=1.45)
+
 VARIATIONS = [
-    V(1, 'Plain', 'plain', 'B1 as you picked it', 'GLCA Medium on both lines, the words at 85% of the fan, the small line at 56% of the big one.', L('World of', 'glca-500', 0.56)),
-    V(2, 'Label', 'label', 'The small line at 40%', 'The board\u2019s first lesson: the small line as a label. Card Games grows to fill the same height.', L('World of', 'glca-500', 0.40), gap=0.18),
-    V(3, 'Light', 'light', 'A lighter small line', 'World of in GLCA Regular over Card Games in Medium. The same face with less weight.', L('World of', 'glca-400', 0.56)),
-    V(4, 'Red', 'red', 'The small line in the deck\u2019s red', 'World of takes the red of the hearts in the fan.', L('World of', 'glca-500', 0.56, colour=RED)),
-    V(5, 'Quiet', 'quiet', 'The small line in the quiet ink', 'World of steps back a shade, as a by-line does on the site.', L('World of', 'glca-500', 0.56, colour=QUIET)),
-    V(6, 'Capitals', 'capitals', 'Spaced capitals', 'WORLD OF in small spaced capitals, the Twinings and Whole Foods way.', L('World of', 'glca-500', 0.40, caps=True, tracking=0.14), gap=0.2),
-    V(7, 'Spread', 'spread', 'Capitals spread to the width', 'WORLD OF spread across the full width of Card Games, so the two lines make one block.', L('World of', 'glca-500', 0.40, caps=True, tracking=0.06, justify=True), gap=0.2),
-    V(8, 'Centred', 'centred', 'Centred', 'World of centred over Card Games instead of flush left.', L('World of', 'glca-500', 0.56, align='center')),
-    V(9, 'Signature', 'signature', 'Flush right', 'World of ends where Card Games ends, like a signature.', L('World of', 'glca-500', 0.56, align='right')),
-    V(10, 'Rules', 'rules', 'Between two rules', 'World of centred between two hairlines that run to the edges of Card Games.', L('World of', 'glca-500', 0.5, align='center', rules='plain'), gap=0.18),
-    V(11, 'Suits', 'suits', 'Rules with a spade and a heart', 'The same hairlines, ending in a spade and a heart taken from the fan\u2019s cards.', L('World of', 'glca-500', 0.5, align='center', rules='pips'), gap=0.18),
-    V(12, 'Arc', 'arc', 'On a gentle arc', 'World of set on a slight curve, like a label.', L('World of', 'glca-500', 0.52, align='center', arc=0.08), gap=0.16),
-    V(13, 'Bow', 'bow', 'On a stronger arc', 'The same with more curve.', L('World of', 'glca-500', 0.52, align='center', arc=0.16), gap=0.16),
-    V(14, 'Stamp', 'stamp', 'Tilted like a stamp', 'World of turned six degrees, rising to the right.', L('World of', 'glca-500', 0.56, rot=6), gap=0.18),
-    V(15, 'Ribbon', 'ribbon', 'On a ribbon', 'World of in the paper colour on a small ribbon in the ink.', L('World of', 'glca-500', 0.46, ribbon=True), gap=0.22),
-    V(16, 'Pacifico', 'pacifico', 'Pacifico over GLCA', 'The script you pointed at, over Card Games in GLCA. The f\u2019s tail reaches down toward the big line.', L('World of', 'pacifico-400', 0.5, bottom='baseline'), gap=0.34),
-    V(17, 'Courgette', 'courgette', 'A calmer script over GLCA', 'Courgette, a rounder and quieter script, over Card Games in GLCA.', L('World of', 'courgette-400', 0.52, bottom='baseline'), gap=0.3),
-    dict(id='18-middle', num=18, name='Middle', title='The fan in the middle, even words', layout='middle', mark='fan',
-         lead='World of to the left of the fan and Card Games to its right, at one size, their capitals half the fan\u2019s height.',
-         lines=[L('World of', 'glca-500', capsize(0.5)), L('Card Games', 'glca-500', capsize(0.5))]),
-    dict(id='19-middle-small', num=19, name='Middle small', title='The fan in the middle, World of smaller', layout='middle', mark='fan',
-         lead='The same, with World of at 70% of Card Games, both on one baseline.',
-         lines=[L('World of', 'glca-500', capsize(0.35)), L('Card Games', 'glca-500', capsize(0.5))]),
-    dict(id='20-middle-capitals', num=20, name='Middle capitals', title='The fan in the middle, spaced capitals', layout='middle', mark='fan',
-         lead='WORLD OF and CARD GAMES in small spaced capitals either side of the fan.',
-         lines=[L('World of', 'glca-500', capsize(0.4), caps=True, tracking=0.12), L('Card Games', 'glca-500', capsize(0.4), caps=True, tracking=0.12)]),
-    V(21, 'Initials', 'initials', 'The first letter of every word on a tilted card', 'W, o, C and G each sit on a small white card, every card at its own angle, and the rest of the word follows.',
-      L('World of', 'glca-500', 0.56, initials=True, angles=[-7, 6]), gap=0.34, big=L('Card Games', 'glca-500', 1.0, initials=True, angles=[-6, 8])),
-    V(22, 'Initials big', 'initials-big', 'Only Card and Games on cards', 'World of stays plain; C and G sit on tilted cards.',
-      L('World of', 'glca-500', 0.56), gap=0.28, big=L('Card Games', 'glca-500', 1.0, initials=True, angles=[-6, 8])),
-    V(23, 'Letter fan', 'letter-fan', 'The fan\u2019s corners spell W O C G', 'The four cards keep their fan, but the A in each corner becomes the first letter of a word, in the same black and red.',
-      L('World of', 'glca-500', 0.56), mark='letterfan'),
-    V(24, 'Letter cards', 'letter-cards', 'The initials\u2019 cards are the mark; no fan', 'W, o, C and G on their tilted cards carry the whole logo. Nothing else beside the words.',
-      L('World of', 'glca-500', 0.56, initials=True, angles=[-7, 6]), gap=0.34, big=L('Card Games', 'glca-500', 1.0, initials=True, angles=[-6, 8]), mark=None),
-    V(25, 'Letter cards big', 'letter-cards-big', 'Only Card and Games on cards; no fan', 'World of stays plain above; C and G sit on tilted cards and are the mark.',
+    # -- 1 Plain --------------------------------------------------------------------------------------------------
+    V('1', 'Plain', '01-plain', 'B1 as you picked it', 'GLCA Medium on both lines, the words at 85% of the fan, the small line at 56% of the big one.', L('World of', 'glca-500', 0.56)),
+    V('1a', 'Bolder World of', '01a-bolder', 'The small line in GLCA SemiBold', 'World of a weight up, so the small line holds its own against Card Games. The rest of this family keeps it.', L('World of', 'glca-600', 0.56)),
+    V('1b', 'Both SemiBold', '01b-semibold', 'Both lines a weight up', 'World of and Card Games in GLCA SemiBold. Heavier, closer to how Medium and Etsy set their names.', L('World of', 'glca-600', 0.56), big=L('Card Games', 'glca-600', 1.0)),
+    V('1c', 'Tighter', '01c-tighter', 'The letters closed up', 'Card Games tracked in a little, the way a wordmark is set tighter than text, so the word reads as one shape.', L('World of', 'glca-600', 0.56, tracking=-0.01), big=L('Card Games', 'glca-500', 1.0, tracking=-0.025)),
+    V('1d', 'Bigger capitals', '01d-capitals', 'The C and the G a tenth bigger', 'The two capitals stand up out of the word, an old typographer\u2019s touch (The New Yorker\u2019s Irvin capitals do it).', L('World of', 'glca-600', 0.56), big=L('Card Games', 'glca-500', 1.0, bigInitials=1.1)),
+    V('1e', 'Close lines', '01e-close', 'The two lines almost touching', 'The gap between the lines closes, so the d\u2019s ascender rises into the small line\u2019s row and the two lines lock together.', L('World of', 'glca-600', 0.56), gap=0.02),
+    V('1f', 'Swash', '01f-swash', 'A tapered stroke under Card Games', 'A swash from under the C to under the s, thickest in the middle: the oldest wordmark flourish (Coca-Cola\u2019s ribbon, Kellogg\u2019s tails).', L('World of', 'glca-600', 0.56), big=L('Card Games', 'glca-500', 1.0, swash=True)),
+    V('1g', 'Swash in red', '01g-swash-red', 'The same swash in the deck\u2019s red', 'The flourish takes the red of the fan\u2019s hearts, so the words carry one drop of the mark\u2019s colour.', L('World of', 'glca-600', 0.56), big=L('Card Games', 'glca-500', 1.0, swash=RED)),
+    # -- 12 Arc ---------------------------------------------------------------------------------------------------
+    V('12', 'Arc', '12-arc', 'On a gentle arc', 'World of set on a slight curve, like a label.', L('World of', 'glca-500', 0.52, align='center', arc=0.08), gap=0.16),
+    V('12a', 'Bowl', '12a-bowl', 'Card Games curves down, World of stays straight', 'The other way round: the big line dips like a smile under a straight small line.', L('World of', 'glca-500', 0.52, align='center'), big=L('Card Games', 'glca-500', 1.0, align='center', arc=-0.05), gap=0.14),
+    V('12b', 'Seal', '12b-seal', 'World of arches up, Card Games curves down', 'Both lines curve away from each other, as the words on a seal or a bottle cap do (Harley-Davidson, Budweiser).', L('World of', 'glca-500', 0.52, align='center', arc=0.08), big=L('Card Games', 'glca-500', 1.0, align='center', arc=-0.05), gap=0.16),
+    V('12c', 'Arc, capitals', '12c-arc-capitals', 'WORLD OF in spaced capitals on the arc', 'The arc with small spaced capitals, the way a label or a badge carries its top line.', L('World of', 'glca-500', 0.42, caps=True, tracking=0.12, align='center', arc=0.09), gap=0.2),
+    V('12d', 'Arc in red', '12d-arc-red', 'The arc in the deck\u2019s red', 'World of on its arc in the red of the hearts.', L('World of', 'glca-500', 0.52, align='center', arc=0.08, colour=RED), gap=0.16),
+    V('12e', 'Arc hugging', '12e-arc-hug', 'The arc pulled down onto the words', 'No gap: the arc\u2019s ends sit on the C and the s, so the small line rests on the big one.', L('World of', 'glca-500', 0.52, align='center', arc=0.1), gap=0.0),
+    V('12f', 'Arc, bolder', '12f-arc-bold', 'World of in SemiBold on the arc', 'The arc with the heavier small line from 1a.', L('World of', 'glca-600', 0.52, align='center', arc=0.08), gap=0.16),
+    V('12g', 'Arc over the fan', '12g-arc-badge', 'WORLD OF arched over the fan, Card Games under it', 'The oldest badge there is: the words arch over the mark. For square places, the app icon and a splash; on the bar it is a stamp.',
+      L('World of', 'glca-500', 0.5, caps=True, tracking=0.14, align='center', arc=0.16), big=L('Card Games', 'glca-500', 0.9, align='center'), layout='badge', gapTop=0.05, gap=0.1),
+    # -- 25 Letter cards -----------------------------------------------------------------------------------------
+    V('25', 'Letter cards big', '25-letter-cards-big', 'Only Card and Games on cards; no fan', 'World of stays plain above; C and G sit on tilted cards and are the mark.',
       L('World of', 'glca-500', 0.56), gap=0.28, big=L('Card Games', 'glca-500', 1.0, initials=True, angles=[-6, 8]), mark=None),
-    V(26, 'Letter cards bold', 'letter-cards-bold', 'Bigger cards, stronger tilt; no fan', 'The four cards grow around their letters and lean further, so they read as cards at bar size.',
-      L('World of', 'glca-500', 0.56, initials=True, angles=[-11, 9], cardPad=(0.26, 0.24), cardStroke=0.07, cardTrail=0.2), gap=0.42,
-      big=L('Card Games', 'glca-500', 1.0, initials=True, angles=[-9, 12], cardPad=(0.26, 0.24), cardStroke=0.07, cardTrail=0.2), mark=None),
-    V(27, 'Real cards', 'real-cards', 'One line, the initials on playing cards', 'World of Card Games on one line. W, o, C and G sit on four small playing cards: portrait, a pip in two corners, one suit each, the red suits in red.',
-      L('World of Card Games', 'glca-500', 1.0, initials=True, cardStyle='real', angles=[-9, 7, -6, 10]), lines=[L('World of Card Games', 'glca-500', 1.0, initials=True, cardStyle='real', angles=[-9, 7, -6, 10])], mark=None),
-    V(28, 'Real cards big', 'real-cards-big', 'One line, only Card and Games on playing cards', 'World of stays plain; C and G sit on the club and the diamond card.',
-      L('World of Card Games', 'glca-500', 1.0), lines=[L('World of Card Games', 'glca-500', 1.0, initials=True, cardStyle='real', angles=[-6, 10], suits=['club', 'diamond'], skip=2)], mark=None),
-    V(29, 'Real cards stacked', 'real-cards-stacked', 'Two lines, the initials on playing cards', 'The same four cards, with World of over Card Games.',
-      L('World of', 'glca-500', 0.6, initials=True, cardStyle='real', angles=[-9, 7], suits=['spade', 'heart']), gap=0.3,
-      big=L('Card Games', 'glca-500', 1.0, initials=True, cardStyle='real', angles=[-6, 10], suits=['club', 'diamond']), mark=None),
+    V('25a', 'Card shapes', '25a-card-shapes', 'The cards in a playing card\u2019s proportion', 'Five wide to seven tall, a card\u2019s corner radius, a thin edge, no suits. The proportion alone says card.',
+      L('World of', 'glca-500', 0.56), gap=0.26, big=L('Card Games', 'glca-500', 1.0, **CARD), mark=None),
+    V('25b', 'Corner letters', '25b-corner-letters', 'The letter repeated small in two corners', 'Each card carries its letter small in the top-left and bottom-right corners, where a card keeps its rank. No suits needed.',
+      L('World of', 'glca-500', 0.56), gap=0.26, big=L('Card Games', 'glca-500', 1.0, cardIndex=True, **CARD), mark=None),
+    V('25c', 'A pair', '25c-pair', 'A second card behind each letter', 'A white card peeks out behind each letter card, so each letter is a pair in a hand.',
+      L('World of', 'glca-500', 0.56), gap=0.26, big=L('Card Games', 'glca-500', 1.0, cardPair='white', **CARD), mark=None),
+    V('25d', 'A red back', '25d-red-back', 'The card behind is a red back', 'The second card shows its back in the deck\u2019s red, the way a dealt pair lies on the felt.',
+      L('World of', 'glca-500', 0.56), gap=0.26, big=L('Card Games', 'glca-500', 1.0, cardPair='red', cardIndex=True, **CARD), mark=None),
+    V('25e', 'World of centred', '25e-centred', 'World of centred over the words', 'The card shapes with the small line centred above Card Games.',
+      L('World of', 'glca-500', 0.56, align='center'), gap=0.26, big=L('Card Games', 'glca-500', 1.0, **CARD), mark=None),
+    V('25f', 'World of flush right', '25f-right', 'World of ending over the G card', 'The small line ends where the words end, so it reads like a signature over the second card.',
+      L('World of', 'glca-500', 0.56, align='right'), gap=0.26, big=L('Card Games', 'glca-500', 1.0, **CARD), mark=None),
+    V('25g', 'World of indented', '25g-indent', 'World of starting past the C card', 'The small line starts where the a of Card starts, so the C card stands alone at the left edge.',
+      L('World of', 'glca-500', 0.56, align='indent'), gap=0.26, big=L('Card Games', 'glca-500', 1.0, **CARD), mark=None),
+    V('25h', 'One line', '25h-one-line', 'World of before the words on one line', 'World of Card Games on one line, the C and the G on card shapes.',
+      L('World of Card Games', 'glca-500', 1.0), lines=[L('World of Card Games', 'glca-500', 1.0, skip=2, **CARD)], mark=None),
 ]
 TODAY_W32 = 170  # logo.png, 510x96, drawn at 32px
 
@@ -928,7 +1050,7 @@ def row(v, lay, svg):
     else:
         note = ('On the bar: %s px wide (today 170), the big line\u2019s capitals %s px tall, the small line\u2019s %s px. On a phone: %s px wide. File: logo-lab-out/%s.svg'
                 % (fmt(lay['ratio'] * 32, 0), fmt(cap_px(lay, big, 32), 0), fmt(cap_px(lay, small, 32), 0), fmt(lay['ratio'] * 24, 0), v['id']))
-    return ROW % dict(id=v['id'], vkey=v['id'], num=str(v['num']), name=escape(v['name']), title=escape(v['title']), lead=escape(v['lead']), note=escape(note), svg=svg)
+    return ROW % dict(id=v['id'], vkey=v['id'], num=v['num'], name=escape(v['name']), title=escape(v['title']), lead=escape(v['lead']), note=escape(note), svg=svg)
 
 
 def today_row(text_group):
@@ -941,13 +1063,19 @@ def today_row(text_group):
 
 
 def toc_html(variations):
-    items = ['<a href="#00-today"><span class="ll-num">0</span>Today</a>']
-    items += ['<a href="#%s"><span class="ll-num">%d</span>%s</a>' % (v['id'], v['num'], escape(v['name'])) for v in variations]
-    return ''.join(items)
+    return ''.join('<a href="#%s"><span class="ll-num">%s</span>%s</a>' % (v['id'], v['num'], escape(v['name'])) for v in variations)
 
 
-def page_html(rows, defs, marks, toc):
-    return PAGE % dict(defs=hidden_defs(defs, {'fan': marks['fan'], 'letterfan': marks['letterfan']}), rows=''.join(rows), toc=toc, css=CSS, js=JS)
+def grouped(rows_by_id):
+    out = []
+    for fam in FAMILIES:
+        out.append('<h2 class="ll-fam" id="fam-%s">%s</h2><p class="ll-desc">%s</p>' % (fam['key'], escape(fam['title']), escape(fam['lead'])))
+        out += [rows_by_id[v['id']] for v in VARIATIONS if v['family'] == fam['key']]
+    return ''.join(out)
+
+
+def page_html(rows_html, defs, marks, toc):
+    return PAGE % dict(defs=hidden_defs(defs, {'fan': marks['fan']}), rows=rows_html, toc=toc, css=CSS, js=JS)
 
 
 def check_html(rows):
@@ -983,19 +1111,19 @@ def main():
     for src, name in BAR_IMAGES:
         (STATIC / name).write_bytes((WOCG / 'static' / src).read_bytes())
 
-    rows = []
+    rows = {}
     check_rows = []
     for v in VARIATIONS:
-        lay = layout_middle(v, boxes, pips) if v.get('layout') == 'middle' else layout(v, boxes, pips)
+        lay = layout_badge(v, boxes, pips) if v.get('layout') == 'badge' else layout_middle(v, boxes, pips) if v.get('layout') == 'middle' else layout(v, boxes, pips)
         (OUT / ('%s.svg' % v['id'])).write_text(render(lay, 'file', defs, marks))
         (OUT / ('%s-white.svg' % v['id'])).write_text(render(lay, 'file', defs, marks, ink=WHITE))
-        rows.append(row(v, lay, render(lay, 'inline')))
+        rows[v['id']] = row(v, lay, render(lay, 'inline'))
         for p in lay['parts']:
             if p['kind'] != 'line':
                 continue
             sh = p['sh']
             ln = sh['ln']
-            if ln.get('arc') or ln.get('rot') or ln.get('initials') or p.get('onCard'):
+            if ln.get('arc') or ln.get('rot') or ln.get('initials') or ln.get('bigInitials') or p.get('onCard'):
                 continue  # the browser cannot draw these flat, so the flat shaping is checked through the other rows
             px = S * ln.get('size', 1.0)
             spacing = (ln.get('tracking', 0.0) * sh['face'].upm + sh['extra']) * sh['s']
@@ -1007,11 +1135,10 @@ def main():
                 v['id'], sh['text'], fmt(sh['adv'] * sh['s'], 3), vb, fmt(x1 - x0 + 8), fmt(y1 - y0 + 8),
                 sh['face'].path_t(sh['names'], p['transforms']),
                 fmt(ox, 3), fmt(oy, 3), spec['family'], spec['weight'], fmt(px), fmt(spacing, 3), escape(sh['text'])))
-        print('%-12s %3s px on the bar, big capitals %2s px, small %s px'
+        print('%-22s %3s px on the bar, big capitals %2s px, small %s px'
               % (v['id'], fmt(lay['ratio'] * 32, 0), fmt(cap_px(lay, lay['shaped'][-1], 32), 0), fmt(cap_px(lay, lay['shaped'][0], 32), 0)))
 
-    rows.insert(0, today_row(text_group))
-    (ROOT / 'logo-lab.html').write_text(page_html(rows, defs, marks, toc_html(VARIATIONS)))
+    (ROOT / 'logo-lab.html').write_text(page_html(grouped(rows), defs, marks, toc_html(VARIATIONS)))
     (ROOT / 'logo-lab-bar.html').write_text(BAR)
     (ROOT / 'logo-lab-check.html').write_text(check_html(check_rows))
     print('wrote logo-lab.html (%d KB), logo-lab-bar.html, logo-lab-check.html, %d files in logo-lab-out/'
@@ -1033,6 +1160,8 @@ CSS = r'''
   .ll-switches button { border: 0; border-radius: 16px; padding: 5px 14px; cursor: pointer; font: 700 14px/20px "BuloRounded", Verdana, sans-serif; background: #e4ddd0; color: var(--ll-ink); box-shadow: inset 0 0 0 1px #c9c0ae; }
   .ll-switches button.on { background: var(--ll-ink); color: #fff; box-shadow: none; }
   .ll-page { padding: 8px 28px 96px; }
+  .ll-fam { font: 500 30px/36px "GLCA", Georgia, serif; margin: 44px 0 6px; }
+  .ll-desc { color: var(--ll-label); font-size: 14px; line-height: 20px; max-width: 900px; margin: 0 0 4px; }
   .ll-row { margin: 0; padding: 26px 0 32px; border-top: 1px solid var(--ll-line); }
   .ll-row:first-of-type { border-top: 0; padding-top: 14px; }
   .ll-row-name { display: flex; align-items: center; gap: 12px; margin: 0 0 14px; }
@@ -1096,8 +1225,8 @@ PAGE = r'''<!DOCTYPE html>
 <body>
 %(defs)s
 <header class="ll-head">
-  <h1>The logo: B1, the small line</h1>
-  <p>Holger, 25 Sep: GLCA Medium stays. Can World of talk to Card Games in a more interesting, cohesive way, without a second face? Seventeen answers, all B1 with the words at 85%% of the fan, after the logo as it is today, and then three with the fan in the middle of the words. Every row has a number and a name to refer to it by (say &ldquo;4 Red&rdquo; or &ldquo;12 Arc&rdquo;). Each row: the logo at 64px, then the site&rsquo;s bar at a desktop width with the logo 32px tall, and a phone with it 24px tall.</p>
+  <h1>The logo: three directions</h1>
+  <p>Holger, 25 Sep: keep 1, 12 and 25 and make real variations of each; hide the rest. Three families: 1 Plain and the small things a wordmark is made of; 12 Arc and what else the curve can do; 25 Letter cards, more like cards, with World of tried in four places. Every row has a number and a name to refer to it by (say &ldquo;1d&rdquo; or &ldquo;25b Corner letters&rdquo;). Each row: the logo at 64px, then the site&rsquo;s bar at a desktop width with the logo 32px tall, and a phone with it 24px tall.</p>
   <div class="ll-switches"><button id="llToday" type="button"></button><button id="llTall" type="button"></button><button id="llZoom" type="button"></button></div>
 </header>
 <main class="ll-page">
