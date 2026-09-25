@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""The logo lab, round 4: B1, and how the small line talks to the big one.
+"""The logo lab, rounds 4 and 5: B1, how the small line talks to the big one, and the fan in the middle.
 
 Holger, 25 Sep 2026, after the board of logos: "I still like GLCA Medium (B1 today) the best. Pacifico over
 Fraunces is interesting as well. I don't know if we can somehow make the top part of the logotype interact in an
@@ -526,6 +526,43 @@ def layout(v, boxes, pips):
     return dict(parts=parts, vb=vb, block=(block_w, block_h), shaped=shaped, ratio=vb[2] / vb[3], pips=pips)
 
 
+MH = 100.0  # the mark's height in the middle layout; the words are set by their capital height as a share of it
+
+
+def capsize(share):
+    """The font size (as a share of S) that gives GLCA capitals this share of the mark's height."""
+    f = face('glca-500')
+    return share * MH / (f.cap / f.upm) / S
+
+
+def layout_middle(v, boxes, pips):
+    """World of to the left of the mark and Card Games to its right, on one baseline, the capitals centred on the mark."""
+    left, right = shape_line(v['lines'][0]), shape_line(v['lines'][1])
+    b = boxes[v['mark']]
+    f = MH / b['h']
+    mw = b['w'] * f
+    cap_r = right['face'].cap * right['s']
+    baseline = MH / 2 + cap_r / 2
+    gap = v.get('markGap', 0.38) * cap_r
+    parts = []
+    x0, y0, x1, y1 = left['ink']
+    ox, oy = -x0, baseline
+    parts.append(dict(kind='line', sh=left, transforms=[Transform().translate(ox, oy).transform(t) for t in left['t0']], box=(x0 + ox, y0 + oy, x1 + ox, y1 + oy)))
+    x = x1 + ox + gap
+    parts.append(dict(kind='mark', mark=v['mark'], transform='translate(%s,%s) scale(%s)' % (fmt(x - b['x'] * f, 3), fmt(-b['y'] * f, 3), fmt(f, 5)), box=(x, 0, x + mw, MH)))
+    x += mw + gap
+    x0, y0, x1, y1 = right['ink']
+    ox, oy = x - x0, baseline
+    parts.append(dict(kind='line', sh=right, transforms=[Transform().translate(ox, oy).transform(t) for t in right['t0']], box=(x0 + ox, y0 + oy, x1 + ox, y1 + oy)))
+    xs0 = min(p['box'][0] for p in parts)
+    ys0 = min(p['box'][1] for p in parts)
+    xs1 = max(p['box'][2] for p in parts)
+    ys1 = max(p['box'][3] for p in parts)
+    m = 0.03 * (ys1 - ys0)
+    vb = (xs0 - m, ys0 - m, (xs1 - xs0) + 2 * m, (ys1 - ys0) + 2 * m)
+    return dict(parts=parts, vb=vb, block=(xs1 - xs0, MH), shaped=[left, right], ratio=vb[2] / vb[3], pips=pips)
+
+
 def render(lay, mode, defs=None, marks=None, ink=INK):
     """mode 'inline': <use> the page's shared marks. mode 'file': a self-contained svg with the mark embedded.
     ink WHITE gives the version for dark grounds: every word white, the ribbon white with words in the ink."""
@@ -622,6 +659,15 @@ VARIATIONS = [
     V(15, 'Ribbon', 'ribbon', 'On a ribbon', 'World of in the paper colour on a small ribbon in the ink.', L('World of', 'glca-500', 0.46, ribbon=True), gap=0.22),
     V(16, 'Pacifico', 'pacifico', 'Pacifico over GLCA', 'The script you pointed at, over Card Games in GLCA. The f\u2019s tail reaches down toward the big line.', L('World of', 'pacifico-400', 0.5, bottom='baseline'), gap=0.34),
     V(17, 'Courgette', 'courgette', 'A calmer script over GLCA', 'Courgette, a rounder and quieter script, over Card Games in GLCA.', L('World of', 'courgette-400', 0.52, bottom='baseline'), gap=0.3),
+    dict(id='18-middle', num=18, name='Middle', title='The fan in the middle, even words', layout='middle', mark='fan',
+         lead='World of to the left of the fan and Card Games to its right, at one size, their capitals half the fan\u2019s height.',
+         lines=[L('World of', 'glca-500', capsize(0.5)), L('Card Games', 'glca-500', capsize(0.5))]),
+    dict(id='19-middle-small', num=19, name='Middle small', title='The fan in the middle, World of smaller', layout='middle', mark='fan',
+         lead='The same, with World of at 70% of Card Games, both on one baseline.',
+         lines=[L('World of', 'glca-500', capsize(0.35)), L('Card Games', 'glca-500', capsize(0.5))]),
+    dict(id='20-middle-capitals', num=20, name='Middle capitals', title='The fan in the middle, spaced capitals', layout='middle', mark='fan',
+         lead='WORLD OF and CARD GAMES in small spaced capitals either side of the fan.',
+         lines=[L('World of', 'glca-500', capsize(0.4), caps=True, tracking=0.12), L('Card Games', 'glca-500', capsize(0.4), caps=True, tracking=0.12)]),
 ]
 TODAY_W32 = 170  # logo.png, 510x96, drawn at 32px
 
@@ -670,8 +716,12 @@ ROW = '''
 
 def row(v, lay, svg):
     small, big = lay['shaped'][0], lay['shaped'][-1]
-    note = ('On the bar: %s px wide (today 170), the big line\u2019s capitals %s px tall, the small line\u2019s %s px. On a phone: %s px wide. File: logo-lab-out/%s.svg'
-            % (fmt(lay['ratio'] * 32, 0), fmt(cap_px(lay, big, 32), 0), fmt(cap_px(lay, small, 32), 0), fmt(lay['ratio'] * 24, 0), v['id']))
+    if v.get('layout') == 'middle':
+        note = ('On the bar: %s px wide (today 170), World of\u2019s capitals %s px tall, Card Games\u2019 %s px. On a phone: %s px wide. File: logo-lab-out/%s.svg'
+                % (fmt(lay['ratio'] * 32, 0), fmt(cap_px(lay, small, 32), 0), fmt(cap_px(lay, big, 32), 0), fmt(lay['ratio'] * 24, 0), v['id']))
+    else:
+        note = ('On the bar: %s px wide (today 170), the big line\u2019s capitals %s px tall, the small line\u2019s %s px. On a phone: %s px wide. File: logo-lab-out/%s.svg'
+                % (fmt(lay['ratio'] * 32, 0), fmt(cap_px(lay, big, 32), 0), fmt(cap_px(lay, small, 32), 0), fmt(lay['ratio'] * 24, 0), v['id']))
     return ROW % dict(id=v['id'], vkey=v['id'], num=str(v['num']), name=escape(v['name']), title=escape(v['title']), lead=escape(v['lead']), note=escape(note), svg=svg)
 
 
@@ -729,7 +779,7 @@ def main():
     rows = []
     check_rows = []
     for v in VARIATIONS:
-        lay = layout(v, boxes, pips)
+        lay = layout_middle(v, boxes, pips) if v.get('layout') == 'middle' else layout(v, boxes, pips)
         (OUT / ('%s.svg' % v['id'])).write_text(render(lay, 'file', defs, marks))
         (OUT / ('%s-white.svg' % v['id'])).write_text(render(lay, 'file', defs, marks, ink=WHITE))
         rows.append(row(v, lay, render(lay, 'inline')))
@@ -840,7 +890,7 @@ PAGE = r'''<!DOCTYPE html>
 %(defs)s
 <header class="ll-head">
   <h1>The logo: B1, the small line</h1>
-  <p>Holger, 25 Sep: GLCA Medium stays. Can World of talk to Card Games in a more interesting, cohesive way, without a second face? Seventeen answers, all B1 with the words at 85%% of the fan, after the logo as it is today. Every row has a number and a name to refer to it by (say &ldquo;4 Red&rdquo; or &ldquo;12 Arc&rdquo;). Each row: the logo at 64px, then the site&rsquo;s bar at a desktop width with the logo 32px tall, and a phone with it 24px tall.</p>
+  <p>Holger, 25 Sep: GLCA Medium stays. Can World of talk to Card Games in a more interesting, cohesive way, without a second face? Seventeen answers, all B1 with the words at 85%% of the fan, after the logo as it is today, and then three with the fan in the middle of the words. Every row has a number and a name to refer to it by (say &ldquo;4 Red&rdquo; or &ldquo;12 Arc&rdquo;). Each row: the logo at 64px, then the site&rsquo;s bar at a desktop width with the logo 32px tall, and a phone with it 24px tall.</p>
   <div class="ll-switches"><button id="llToday" type="button"></button><button id="llTall" type="button"></button><button id="llZoom" type="button"></button></div>
 </header>
 <main class="ll-page">
