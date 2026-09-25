@@ -332,6 +332,29 @@ def build_marks(logo):
         ET.SubElement(suits, q('path'), {'d': pips[name]['d'], 'fill': colour,
                                          'transform': 'translate(%s,%s) scale(%s)' % (fmt(cx - (x0 + w / 2) * f, 3), fmt(cy - (y0 + h / 2) * f, 3), fmt(f, 5))})
     marks['suits'] = suits
+
+    # the letter fan: the corner index of each card (the A and its small pip) becomes the first letter of a word
+    lf = copy.deepcopy(logo)
+    lf.set('id', 'mark-letterfan')
+    glca = face('glca-500')
+    for card_id, letter in (('small_spade_1', 'W'), ('small_diamond_1', 'O'), ('small_clover_1', 'C'), ('small_heart_1', 'G')):
+        g = next(x for x in lf.iter(q('g')) if x.get('id') == card_id)
+        a = next(x for x in g if x.get('id') == 'A')
+        small = next(x for x in g if (x.get('id') or '').endswith('-small'))
+        bp = BoundsPen(None)
+        parse_path(a.get('d'), bp)
+        ax0, ay0, ax1, ay1 = bp.bounds
+        fill = a.get('fill')
+        g.remove(a)
+        g.remove(small)
+        gname = glca.cmap[ord(letter)]
+        gb = BoundsPen(glca.gs)
+        glca.gs[gname].draw(gb)
+        gx0, gy0, gx1, gy1 = gb.bounds
+        sc = (ay1 - ay0) * 1.3 / (gy1 - gy0)
+        t = Transform(sc, 0, 0, -sc, ax0 - gx0 * sc, ay0 + gy1 * sc)
+        ET.SubElement(g, q('path'), {'d': glca.path_t([gname], [t]), 'fill': fill})
+    marks['letterfan'] = rename_masks(lf, 'l')
     return marks
 
 
@@ -431,9 +454,61 @@ def width(box):
     return box[2] - box[0]
 
 
+def carded_line(sh):
+    """The first glyph of every word goes on its own small tilted card. Rewrites the line's transforms, adds the
+    cards (line-local: centre, size, angle) and widens the ink box to hold them."""
+    f, s, ln = sh['face'], sh['s'], sh['ln']
+    angles = list(ln.get('angles', [-7, 6, -6, 8]))
+    cap = f.cap * s
+    pad_x, pad_y, trail, stroke = 0.16 * cap, 0.13 * cap, 0.14 * cap, 0.06 * cap
+    names, text = sh['names'], sh['text']
+    starts = [i for i, ch in enumerate(text) if ch != ' ' and (i == 0 or text[i - 1] == ' ')]
+    pen = 0.0
+    transforms, cards, boxes_ = [], [], []
+    ai = 0
+    for i, g in enumerate(names):
+        adv = f.hmtx[g][0] * s
+        kern = f.kern(names[i - 1], g) * s if i else 0.0
+        pen += kern
+        if i in starts:
+            ang = angles[ai % len(angles)]
+            ai += 1
+            gb = BoundsPen(f.gs)
+            f.gs[g].draw(gb)
+            gx0, gy0, gx1, gy1 = gb.bounds
+            w = (gx1 - gx0) * s + 2 * pad_x
+            h = (gy1 - gy0) * s + 2 * pad_y
+            r = math.radians(ang)
+            hw = (w * abs(math.cos(r)) + h * abs(math.sin(r))) / 2
+            hh = (w * abs(math.sin(r)) + h * abs(math.cos(r))) / 2
+            cx = pen + hw
+            cy = -((gy0 + gy1) / 2) * s
+            gx = cx - ((gx0 + gx1) / 2) * s  # the glyph origin that centres it on the card
+            flat = Transform(s, 0, 0, -s, gx, 0)
+            rot = Transform().translate(cx, cy).rotate(math.radians(-ang)).translate(-cx, -cy)
+            transforms.append(rot.transform(flat))
+            cards.append(dict(cx=cx, cy=cy, w=w, h=h, angle=ang, rx=0.12 * h, stroke=stroke))
+            boxes_.append((cx - hw - stroke / 2, cy - hh - stroke / 2, cx + hw + stroke / 2, cy + hh + stroke / 2))
+            pen = cx + hw + trail
+        else:
+            transforms.append(Transform(s, 0, 0, -s, pen, 0))
+            pen += adv + ln.get('tracking', 0.0) * f.upm * s
+    sh['t0'] = transforms
+    sh['initials'] = starts
+    sh['cards'] = cards
+    ink = f.bounds_t(names, transforms)
+    for b in boxes_:
+        ink = (min(ink[0], b[0]), ink[1], max(ink[2], b[2]), ink[3])
+    sh['ink'] = ink
+    sh['adv'] = pen / s
+
+
 def layout(v, boxes, pips):
     """Shape and stack the lines, add rules, pips or a ribbon, place the mark."""
     shaped = [shape_line(ln) for ln in v['lines']]
+    for sh in shaped:
+        if sh['ln'].get('initials'):
+            carded_line(sh)
 
     fixed = [width(sh['ink']) for sh in shaped if not sh['ln'].get('justify')]
     target = max(fixed) if fixed else max(width(sh['ink']) for sh in shaped)
@@ -467,6 +542,14 @@ def layout(v, boxes, pips):
         sh['box'] = (x0 + ox, y0 + oy, x1 + ox, y1 + oy)
         cap_s = sh['face'].cap * sh['s']
         bottom = oy if sh['ln'].get('bottom') == 'baseline' else y1 + oy
+        for c in sh.get('cards', []):
+            cx, cy = c['cx'] + ox, c['cy'] + oy
+            r = math.radians(c['angle'])
+            hw = (c['w'] * abs(math.cos(r)) + c['h'] * abs(math.sin(r))) / 2
+            hh = (c['w'] * abs(math.sin(r)) + c['h'] * abs(math.cos(r))) / 2
+            extras.append(dict(kind='rect', role='card', box=(cx - hw, cy - hh, cx + hw, cy + hh), rx=c['rx'], fill=WHITE, stroke=INK, stroke_width=c['stroke'],
+                               cx=cx, cy=cy, angle=c['angle'], rect=(cx - c['w'] / 2, cy - c['h'] / 2, c['w'], c['h']),
+                               transform='rotate(%s %s %s)' % (fmt(-c['angle']), fmt(cx), fmt(cy))))
         if sh['ln'].get('ribbon'):
             pad_x, pad_y = 0.55 * cap_s, 0.32 * cap_s
             rect = (sh['box'][0] - pad_x, sh['box'][1] - pad_y, sh['box'][2] + pad_x, sh['box'][3] + pad_y)
@@ -512,10 +595,22 @@ def layout(v, boxes, pips):
         e2['box'] = (e['box'][0] + mx, e['box'][1], e['box'][2] + mx, e['box'][3])
         if e['kind'] == 'pip':
             e2['transform'] = 'translate(%s,0) ' % fmt(mx, 3) + e['transform']
+        if e.get('rect'):
+            x, y, w, h = e['rect']
+            e2['rect'] = (x + mx, y, w, h)
+            e2['transform'] = 'rotate(%s %s %s)' % (fmt(-e['angle']), fmt(e['cx'] + mx), fmt(e['cy']))
         parts.append(e2)
     for sh in shaped:
-        parts.append(dict(kind='line', sh=sh, transforms=[shift.transform(t) for t in sh['T']],
-                          box=(sh['box'][0] + mx, sh['box'][1], sh['box'][2] + mx, sh['box'][3])))
+        T = [shift.transform(t) for t in sh['T']]
+        box = (sh['box'][0] + mx, sh['box'][1], sh['box'][2] + mx, sh['box'][3])
+        init = set(sh.get('initials', []))
+        if init:
+            keep = [i for i in range(len(sh['names'])) if i not in init]
+            parts.append(dict(kind='line', sh=sh, names=[sh['names'][i] for i in keep], transforms=[T[i] for i in keep], box=box))
+            for i in sorted(init):
+                parts.append(dict(kind='line', sh=sh, names=[sh['names'][i]], transforms=[T[i]], box=box, onCard=True))
+        else:
+            parts.append(dict(kind='line', sh=sh, transforms=T, box=box))
 
     xs0 = min(p['box'][0] for p in parts)
     ys0 = min(p['box'][1] for p in parts)
@@ -580,25 +675,32 @@ def render(lay, mode, defs=None, marks=None, ink=INK):
                 g.set('transform', p['transform'])
                 body.append(ser(g))
         elif k == 'rect':
-            x0, y0, x1, y1 = p['box']
-            body.append('<rect x="%s" y="%s" width="%s" height="%s" rx="%s" fill="%s"/>' % (fmt(x0), fmt(y0), fmt(x1 - x0), fmt(y1 - y0), fmt(p['rx']), ink))
+            if p.get('rect'):
+                x, y, w, h = p['rect']
+                body.append('<rect x="%s" y="%s" width="%s" height="%s" rx="%s" fill="%s" stroke="%s" stroke-width="%s" transform="%s"/>'
+                            % (fmt(x), fmt(y), fmt(w), fmt(h), fmt(p['rx']), p['fill'], p['stroke'], fmt(p['stroke_width']), p['transform']))
+            else:
+                x0, y0, x1, y1 = p['box']
+                body.append('<rect x="%s" y="%s" width="%s" height="%s" rx="%s" fill="%s"/>' % (fmt(x0), fmt(y0), fmt(x1 - x0), fmt(y1 - y0), fmt(p['rx']), ink))
         elif k == 'pip':
             fill = ink if dark or p['name'] in ('spade', 'club') else RED
             body.append('<path d="%s" transform="%s" fill="%s"/>' % (lay['pips'][p['name']]['d'], p['transform'], fill))
         else:
             sh = p['sh']
             ln = sh['ln']
-            if ln.get('ribbon'):
+            if p.get('onCard'):
+                fill = INK
+            elif ln.get('ribbon'):
                 fill = INK if dark else PAPER
             elif ln.get('colour') and not dark:
                 fill = ln['colour']
             else:
                 fill = ink
-            body.append('<path fill="%s" d="%s"/>' % (fill, sh['face'].path_t(sh['names'], p['transforms'])))
+            body.append('<path fill="%s" d="%s"/>' % (fill, sh['face'].path_t(p.get('names', sh['names']), p['transforms'])))
     view = 'viewBox="%s %s %s %s"' % tuple(fmt(x, 2) for x in vb)
     if mode == 'inline':
         return '<svg %s>%s</svg>' % (view, ''.join(body))
-    needs_defs = any(p['kind'] == 'mark' and p['mark'] in ('fan', 'flat') for p in lay['parts'])
+    needs_defs = any(p['kind'] == 'mark' and p['mark'] in ('fan', 'flat', 'letterfan') for p in lay['parts'])
     d = ser(defs) if needs_defs and defs is not None else ''
     return ('<?xml version="1.0" encoding="UTF-8"?>\n<svg xmlns="%s" xmlns:xlink="%s" %s width="%s" height="%s">%s%s</svg>\n'
             % (SVG_NS, XLINK_NS, view, fmt(vb[2], 2), fmt(vb[3], 2), d, ''.join(body)))
@@ -634,8 +736,8 @@ BIG = L('Card Games', 'glca-500', 1.0)
 WORDS_AT = 85  # the words' height as a share of the fan's, Holger's pick from round 2
 
 
-def V(num, name, vid, title, lead, small, gap=0.14, **kw):
-    v = dict(id='%02d-%s' % (num, vid), num=num, name=name, title=title, lead=lead, lines=[small, BIG], gap=gap,
+def V(num, name, vid, title, lead, small, gap=0.14, big=None, **kw):
+    v = dict(id='%02d-%s' % (num, vid), num=num, name=name, title=title, lead=lead, lines=[small, big or BIG], gap=gap,
              mark='fan', markScale=100.0 / WORDS_AT, markGap=0.16, gapOf='mark')
     v.update(kw)
     return v
@@ -668,6 +770,12 @@ VARIATIONS = [
     dict(id='20-middle-capitals', num=20, name='Middle capitals', title='The fan in the middle, spaced capitals', layout='middle', mark='fan',
          lead='WORLD OF and CARD GAMES in small spaced capitals either side of the fan.',
          lines=[L('World of', 'glca-500', capsize(0.4), caps=True, tracking=0.12), L('Card Games', 'glca-500', capsize(0.4), caps=True, tracking=0.12)]),
+    V(21, 'Initials', 'initials', 'The first letter of every word on a tilted card', 'W, o, C and G each sit on a small white card, every card at its own angle, and the rest of the word follows.',
+      L('World of', 'glca-500', 0.56, initials=True, angles=[-7, 6]), gap=0.34, big=L('Card Games', 'glca-500', 1.0, initials=True, angles=[-6, 8])),
+    V(22, 'Initials big', 'initials-big', 'Only Card and Games on cards', 'World of stays plain; C and G sit on tilted cards.',
+      L('World of', 'glca-500', 0.56), gap=0.28, big=L('Card Games', 'glca-500', 1.0, initials=True, angles=[-6, 8])),
+    V(23, 'Letter fan', 'letter-fan', 'The fan\u2019s corners spell W O C G', 'The four cards keep their fan, but the A in each corner becomes the first letter of a word, in the same black and red.',
+      L('World of', 'glca-500', 0.56), mark='letterfan'),
 ]
 TODAY_W32 = 170  # logo.png, 510x96, drawn at 32px
 
@@ -741,7 +849,7 @@ def toc_html(variations):
 
 
 def page_html(rows, defs, marks, toc):
-    return PAGE % dict(defs=hidden_defs(defs, {'fan': marks['fan']}), rows=''.join(rows), toc=toc, css=CSS, js=JS)
+    return PAGE % dict(defs=hidden_defs(defs, {'fan': marks['fan'], 'letterfan': marks['letterfan']}), rows=''.join(rows), toc=toc, css=CSS, js=JS)
 
 
 def check_html(rows):
@@ -766,6 +874,7 @@ def main():
         print('measured:', {k: (round(b['w']), round(b['h'])) for k, b in boxes.items()})
     else:
         boxes = json.loads(MARKS_JSON.read_text())
+    boxes['letterfan'] = boxes['fan']
 
     OUT.mkdir(exist_ok=True)
     for old in OUT.glob('*.svg'):
@@ -788,7 +897,7 @@ def main():
                 continue
             sh = p['sh']
             ln = sh['ln']
-            if ln.get('arc') or ln.get('rot'):
+            if ln.get('arc') or ln.get('rot') or ln.get('initials') or p.get('onCard'):
                 continue  # the browser cannot draw these flat, so the flat shaping is checked through the other rows
             px = S * ln.get('size', 1.0)
             spacing = (ln.get('tracking', 0.0) * sh['face'].upm + sh['extra']) * sh['s']
