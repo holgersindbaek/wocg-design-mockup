@@ -460,7 +460,8 @@ def carded_line(sh):
     f, s, ln = sh['face'], sh['s'], sh['ln']
     angles = list(ln.get('angles', [-7, 6, -6, 8]))
     cap = f.cap * s
-    pad_x, pad_y, trail, stroke = 0.16 * cap, 0.13 * cap, 0.14 * cap, 0.06 * cap
+    px_, py_ = ln.get('cardPad', (0.16, 0.13))
+    pad_x, pad_y, trail, stroke = px_ * cap, py_ * cap, ln.get('cardTrail', 0.14) * cap, ln.get('cardStroke', 0.06) * cap
     names, text = sh['names'], sh['text']
     starts = [i for i, ch in enumerate(text) if ch != ' ' and (i == 0 or text[i - 1] == ' ')]
     pen = 0.0
@@ -776,6 +777,13 @@ VARIATIONS = [
       L('World of', 'glca-500', 0.56), gap=0.28, big=L('Card Games', 'glca-500', 1.0, initials=True, angles=[-6, 8])),
     V(23, 'Letter fan', 'letter-fan', 'The fan\u2019s corners spell W O C G', 'The four cards keep their fan, but the A in each corner becomes the first letter of a word, in the same black and red.',
       L('World of', 'glca-500', 0.56), mark='letterfan'),
+    V(24, 'Letter cards', 'letter-cards', 'The initials\u2019 cards are the mark; no fan', 'W, o, C and G on their tilted cards carry the whole logo. Nothing else beside the words.',
+      L('World of', 'glca-500', 0.56, initials=True, angles=[-7, 6]), gap=0.34, big=L('Card Games', 'glca-500', 1.0, initials=True, angles=[-6, 8]), mark=None),
+    V(25, 'Letter cards big', 'letter-cards-big', 'Only Card and Games on cards; no fan', 'World of stays plain above; C and G sit on tilted cards and are the mark.',
+      L('World of', 'glca-500', 0.56), gap=0.28, big=L('Card Games', 'glca-500', 1.0, initials=True, angles=[-6, 8]), mark=None),
+    V(26, 'Letter cards bold', 'letter-cards-bold', 'Bigger cards, stronger tilt; no fan', 'The four cards grow around their letters and lean further, so they read as cards at bar size.',
+      L('World of', 'glca-500', 0.56, initials=True, angles=[-11, 9], cardPad=(0.26, 0.24), cardStroke=0.07, cardTrail=0.2), gap=0.42,
+      big=L('Card Games', 'glca-500', 1.0, initials=True, angles=[-9, 12], cardPad=(0.26, 0.24), cardStroke=0.07, cardTrail=0.2), mark=None),
 ]
 TODAY_W32 = 170  # logo.png, 510x96, drawn at 32px
 
