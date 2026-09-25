@@ -597,30 +597,31 @@ BIG = L('Card Games', 'glca-500', 1.0)
 WORDS_AT = 85  # the words' height as a share of the fan's, Holger's pick from round 2
 
 
-def V(vid, title, lead, small, gap=0.14, **kw):
-    v = dict(id=vid, title=title, lead=lead, lines=[small, BIG], gap=gap, mark='fan', markScale=100.0 / WORDS_AT, markGap=0.16, gapOf='mark')
+def V(num, name, vid, title, lead, small, gap=0.14, **kw):
+    v = dict(id='%02d-%s' % (num, vid), num=num, name=name, title=title, lead=lead, lines=[small, BIG], gap=gap,
+             mark='fan', markScale=100.0 / WORDS_AT, markGap=0.16, gapOf='mark')
     v.update(kw)
     return v
 
 
 VARIATIONS = [
-    V('b1', 'B1 as you picked it', 'GLCA Medium on both lines, the words at 85% of the fan, the small line at 56% of the big one.', L('World of', 'glca-500', 0.56)),
-    V('small40', 'The small line at 40%', 'The board’s first lesson: the small line as a label. Card Games grows to fill the same height.', L('World of', 'glca-500', 0.40), gap=0.18),
-    V('light', 'A lighter small line', 'World of in GLCA Regular over Card Games in Medium. The same face with less weight.', L('World of', 'glca-400', 0.56)),
-    V('red', 'The small line in the deck’s red', 'World of takes the red of the hearts in the fan.', L('World of', 'glca-500', 0.56, colour=RED)),
-    V('quiet', 'The small line in the quiet ink', 'World of steps back a shade, as a by-line does on the site.', L('World of', 'glca-500', 0.56, colour=QUIET)),
-    V('caps', 'Spaced capitals', 'WORLD OF in small spaced capitals, the Twinings and Whole Foods way.', L('World of', 'glca-500', 0.40, caps=True, tracking=0.14), gap=0.2),
-    V('capsSpread', 'Capitals spread to the width', 'WORLD OF spread across the full width of Card Games, so the two lines make one block.', L('World of', 'glca-500', 0.40, caps=True, tracking=0.06, justify=True), gap=0.2),
-    V('centred', 'Centred', 'World of centred over Card Games instead of flush left.', L('World of', 'glca-500', 0.56, align='center')),
-    V('right', 'Flush right', 'World of ends where Card Games ends, like a signature.', L('World of', 'glca-500', 0.56, align='right')),
-    V('rules', 'Between two rules', 'World of centred between two hairlines that run to the edges of Card Games.', L('World of', 'glca-500', 0.5, align='center', rules='plain'), gap=0.18),
-    V('rulesPips', 'Rules with a spade and a heart', 'The same hairlines, ending in a spade and a heart taken from the fan’s cards.', L('World of', 'glca-500', 0.5, align='center', rules='pips'), gap=0.18),
-    V('arc', 'On a gentle arc', 'World of set on a slight curve, like a label.', L('World of', 'glca-500', 0.52, align='center', arc=0.08), gap=0.16),
-    V('arcMore', 'On a stronger arc', 'The same with more curve.', L('World of', 'glca-500', 0.52, align='center', arc=0.16), gap=0.16),
-    V('tilt', 'Tilted like a stamp', 'World of turned six degrees, rising to the right.', L('World of', 'glca-500', 0.56, rot=6), gap=0.18),
-    V('ribbon', 'On a ribbon', 'World of in the paper colour on a small ribbon in the ink.', L('World of', 'glca-500', 0.46, ribbon=True), gap=0.22),
-    V('pacifico', 'Pacifico over GLCA', 'The script you pointed at, over Card Games in GLCA. The f’s tail reaches down toward the big line.', L('World of', 'pacifico-400', 0.5, bottom='baseline'), gap=0.34),
-    V('courgette', 'A calmer script over GLCA', 'Courgette, a rounder and quieter script, over Card Games in GLCA.', L('World of', 'courgette-400', 0.52, bottom='baseline'), gap=0.3),
+    V(1, 'Plain', 'plain', 'B1 as you picked it', 'GLCA Medium on both lines, the words at 85% of the fan, the small line at 56% of the big one.', L('World of', 'glca-500', 0.56)),
+    V(2, 'Label', 'label', 'The small line at 40%', 'The board\u2019s first lesson: the small line as a label. Card Games grows to fill the same height.', L('World of', 'glca-500', 0.40), gap=0.18),
+    V(3, 'Light', 'light', 'A lighter small line', 'World of in GLCA Regular over Card Games in Medium. The same face with less weight.', L('World of', 'glca-400', 0.56)),
+    V(4, 'Red', 'red', 'The small line in the deck\u2019s red', 'World of takes the red of the hearts in the fan.', L('World of', 'glca-500', 0.56, colour=RED)),
+    V(5, 'Quiet', 'quiet', 'The small line in the quiet ink', 'World of steps back a shade, as a by-line does on the site.', L('World of', 'glca-500', 0.56, colour=QUIET)),
+    V(6, 'Capitals', 'capitals', 'Spaced capitals', 'WORLD OF in small spaced capitals, the Twinings and Whole Foods way.', L('World of', 'glca-500', 0.40, caps=True, tracking=0.14), gap=0.2),
+    V(7, 'Spread', 'spread', 'Capitals spread to the width', 'WORLD OF spread across the full width of Card Games, so the two lines make one block.', L('World of', 'glca-500', 0.40, caps=True, tracking=0.06, justify=True), gap=0.2),
+    V(8, 'Centred', 'centred', 'Centred', 'World of centred over Card Games instead of flush left.', L('World of', 'glca-500', 0.56, align='center')),
+    V(9, 'Signature', 'signature', 'Flush right', 'World of ends where Card Games ends, like a signature.', L('World of', 'glca-500', 0.56, align='right')),
+    V(10, 'Rules', 'rules', 'Between two rules', 'World of centred between two hairlines that run to the edges of Card Games.', L('World of', 'glca-500', 0.5, align='center', rules='plain'), gap=0.18),
+    V(11, 'Suits', 'suits', 'Rules with a spade and a heart', 'The same hairlines, ending in a spade and a heart taken from the fan\u2019s cards.', L('World of', 'glca-500', 0.5, align='center', rules='pips'), gap=0.18),
+    V(12, 'Arc', 'arc', 'On a gentle arc', 'World of set on a slight curve, like a label.', L('World of', 'glca-500', 0.52, align='center', arc=0.08), gap=0.16),
+    V(13, 'Bow', 'bow', 'On a stronger arc', 'The same with more curve.', L('World of', 'glca-500', 0.52, align='center', arc=0.16), gap=0.16),
+    V(14, 'Stamp', 'stamp', 'Tilted like a stamp', 'World of turned six degrees, rising to the right.', L('World of', 'glca-500', 0.56, rot=6), gap=0.18),
+    V(15, 'Ribbon', 'ribbon', 'On a ribbon', 'World of in the paper colour on a small ribbon in the ink.', L('World of', 'glca-500', 0.46, ribbon=True), gap=0.22),
+    V(16, 'Pacifico', 'pacifico', 'Pacifico over GLCA', 'The script you pointed at, over Card Games in GLCA. The f\u2019s tail reaches down toward the big line.', L('World of', 'pacifico-400', 0.5, bottom='baseline'), gap=0.34),
+    V(17, 'Courgette', 'courgette', 'A calmer script over GLCA', 'Courgette, a rounder and quieter script, over Card Games in GLCA.', L('World of', 'courgette-400', 0.52, bottom='baseline'), gap=0.3),
 ]
 TODAY_W32 = 170  # logo.png, 510x96, drawn at 32px
 
@@ -655,26 +656,42 @@ def cap_px(lay, sh, h):
 
 ROW = '''
 <section class="ll-row" id="%(id)s">
+  <div class="ll-row-name"><span class="ll-num">%(num)s</span><h2>%(name)s</h2><span class="ll-sub">%(title)s</span></div>
   <div class="ll-row-head">
     <div class="ll-draw">%(svg)s</div>
-    <div class="ll-row-words"><b>%(title)s</b><p>%(lead)s</p><span>%(note)s</span></div>
+    <div class="ll-row-words"><p>%(lead)s</p><span>%(note)s</span></div>
   </div>
   <div class="ll-pair">
-    <iframe class="ll-bar" data-v="%(id)s" src="logo-lab-bar.html?v=%(id)s" width="940" height="57" loading="lazy" scrolling="no" title="The bar at a desktop width"></iframe>
-    <iframe class="ll-bar" data-v="%(id)s" src="logo-lab-bar.html?v=%(id)s" width="390" height="57" loading="lazy" scrolling="no" title="A phone"></iframe>
+    <iframe class="ll-bar" data-v="%(vkey)s" src="logo-lab-bar.html?v=%(vkey)s" width="940" height="57" loading="lazy" scrolling="no" title="The bar at a desktop width"></iframe>
+    <iframe class="ll-bar" data-v="%(vkey)s" src="logo-lab-bar.html?v=%(vkey)s" width="390" height="57" loading="lazy" scrolling="no" title="A phone"></iframe>
   </div>
 </section>'''
 
 
 def row(v, lay, svg):
     small, big = lay['shaped'][0], lay['shaped'][-1]
-    note = ('On the bar: %s px wide (today 170), the big line’s capitals %s px tall, the small line’s %s px. On a phone: %s px wide.'
-            % (fmt(lay['ratio'] * 32, 0), fmt(cap_px(lay, big, 32), 0), fmt(cap_px(lay, small, 32), 0), fmt(lay['ratio'] * 24, 0)))
-    return ROW % dict(id=v['id'], title=escape(v['title']), lead=escape(v['lead']), note=escape(note), svg=svg)
+    note = ('On the bar: %s px wide (today 170), the big line\u2019s capitals %s px tall, the small line\u2019s %s px. On a phone: %s px wide. File: logo-lab-out/%s.svg'
+            % (fmt(lay['ratio'] * 32, 0), fmt(cap_px(lay, big, 32), 0), fmt(cap_px(lay, small, 32), 0), fmt(lay['ratio'] * 24, 0), v['id']))
+    return ROW % dict(id=v['id'], vkey=v['id'], num=str(v['num']), name=escape(v['name']), title=escape(v['title']), lead=escape(v['lead']), note=escape(note), svg=svg)
 
 
-def page_html(rows, defs, marks):
-    return PAGE % dict(defs=hidden_defs(defs, {'fan': marks['fan']}), rows=''.join(rows), css=CSS, js=JS)
+def today_row(text_group):
+    """Row 0: the logo as the bar draws it now. The drawing is the source art; the bars draw the site's logo.png."""
+    svg = ('<svg viewBox="0 190 5464 900"><use href="#mark-fan" transform="translate(-102,0)"/><g transform="translate(1246.9,288)">%s</g></svg>'
+           % ''.join(ser(el) for el in text_group))
+    return ROW % dict(id='00-today', vkey='today', num='0', name='Today', title='The logo as it is', svg=svg,
+                      lead='The fan and World of Card Games on one line in Bariol Bold, as the bar draws it now.',
+                      note='On the bar: 170 px wide, its capitals about 9 px tall. On a phone: 128 px wide. File: the site\u2019s static/images/logo.png')
+
+
+def toc_html(variations):
+    items = ['<a href="#00-today"><span class="ll-num">0</span>Today</a>']
+    items += ['<a href="#%s"><span class="ll-num">%d</span>%s</a>' % (v['id'], v['num'], escape(v['name'])) for v in variations]
+    return ''.join(items)
+
+
+def page_html(rows, defs, marks, toc):
+    return PAGE % dict(defs=hidden_defs(defs, {'fan': marks['fan']}), rows=''.join(rows), toc=toc, css=CSS, js=JS)
 
 
 def check_html(rows):
@@ -736,7 +753,8 @@ def main():
         print('%-12s %3s px on the bar, big capitals %2s px, small %s px'
               % (v['id'], fmt(lay['ratio'] * 32, 0), fmt(cap_px(lay, lay['shaped'][-1], 32), 0), fmt(cap_px(lay, lay['shaped'][0], 32), 0)))
 
-    (ROOT / 'logo-lab.html').write_text(page_html(rows, defs, marks))
+    rows.insert(0, today_row(text_group))
+    (ROOT / 'logo-lab.html').write_text(page_html(rows, defs, marks, toc_html(VARIATIONS)))
     (ROOT / 'logo-lab-bar.html').write_text(BAR)
     (ROOT / 'logo-lab-check.html').write_text(check_html(check_rows))
     print('wrote logo-lab.html (%d KB), logo-lab-bar.html, logo-lab-check.html, %d files in logo-lab-out/'
@@ -758,12 +776,20 @@ CSS = r'''
   .ll-switches button { border: 0; border-radius: 16px; padding: 5px 14px; cursor: pointer; font: 700 14px/20px "BuloRounded", Verdana, sans-serif; background: #e4ddd0; color: var(--ll-ink); box-shadow: inset 0 0 0 1px #c9c0ae; }
   .ll-switches button.on { background: var(--ll-ink); color: #fff; box-shadow: none; }
   .ll-page { padding: 8px 28px 96px; }
-  .ll-row { margin: 18px 0 26px; }
-  .ll-row-head { display: flex; align-items: center; gap: 18px; margin: 0 0 8px; }
+  .ll-row { margin: 0; padding: 26px 0 32px; border-top: 1px solid var(--ll-line); }
+  .ll-row:first-of-type { border-top: 0; padding-top: 14px; }
+  .ll-row-name { display: flex; align-items: center; gap: 12px; margin: 0 0 14px; }
+  .ll-row-name h2 { margin: 0; font: 500 26px/32px "GLCA", Georgia, serif; }
+  .ll-row-name .ll-sub { color: var(--ll-quiet); font-size: 14px; line-height: 20px; padding-top: 4px; }
+  .ll-num { display: inline-flex; align-items: center; justify-content: center; min-width: 30px; height: 26px; padding: 0 9px; border-radius: 13px; background: var(--ll-ink); color: #fff; font: 700 14px/26px "BuloRounded", Verdana, sans-serif; box-sizing: border-box; }
+  .ll-toc { display: flex; flex-wrap: wrap; gap: 8px 10px; margin: 14px 0 10px; font-size: 14px; }
+  .ll-toc a { display: inline-flex; align-items: center; gap: 7px; color: var(--ll-ink); text-decoration: none; padding: 3px 11px 3px 3px; border-radius: 16px; background: #fff; box-shadow: inset 0 0 0 1px var(--ll-line); font-weight: 700; }
+  .ll-toc a:hover { background: var(--ll-band); }
+  .ll-toc .ll-num { min-width: 24px; height: 20px; font-size: 12px; line-height: 20px; padding: 0 7px; border-radius: 10px; }
+  .ll-row-head { display: flex; align-items: center; gap: 18px; margin: 0 0 10px; }
   .ll-draw { flex: none; display: flex; align-items: center; height: 88px; padding: 0 14px; background: var(--ll-band); border-radius: 10px; corner-shape: squircle; }
   .ll-draw svg { height: 64px; width: auto; display: block; }
-  .ll-row-words b { display: block; font-size: 16px; line-height: 22px; }
-  .ll-row-words p { margin: 2px 0; font-size: 14px; line-height: 20px; color: var(--ll-label); max-width: 760px; }
+  .ll-row-words p { margin: 0 0 2px; font-size: 14px; line-height: 20px; color: var(--ll-label); max-width: 760px; }
   .ll-row-words span { font-size: 12px; line-height: 16px; color: var(--ll-quiet); }
   .ll-pair { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-start; }
   .ll-bar { display: block; border: 0; border-radius: 8px; background: var(--ll-band); box-shadow: inset 0 0 0 1px var(--ll-line); }
@@ -814,12 +840,13 @@ PAGE = r'''<!DOCTYPE html>
 %(defs)s
 <header class="ll-head">
   <h1>The logo: B1, the small line</h1>
-  <p>Holger, 25 Sep: GLCA Medium stays. Can World of talk to Card Games in a more interesting, cohesive way, without a second face? Seventeen answers, all B1 with the words at 85%% of the fan. Each row: the logo at 64px, then the site&rsquo;s bar at a desktop width with the logo 32px tall, and a phone with it 24px tall. The first row is B1 as you picked it.</p>
+  <p>Holger, 25 Sep: GLCA Medium stays. Can World of talk to Card Games in a more interesting, cohesive way, without a second face? Seventeen answers, all B1 with the words at 85%% of the fan, after the logo as it is today. Every row has a number and a name to refer to it by (say &ldquo;4 Red&rdquo; or &ldquo;12 Arc&rdquo;). Each row: the logo at 64px, then the site&rsquo;s bar at a desktop width with the logo 32px tall, and a phone with it 24px tall.</p>
   <div class="ll-switches"><button id="llToday" type="button"></button><button id="llTall" type="button"></button><button id="llZoom" type="button"></button></div>
 </header>
 <main class="ll-page">
+  <nav class="ll-toc">%(toc)s</nav>
 %(rows)s
-  <p class="ll-files">Every row is a file: <code>logo-lab-out/arc.svg</code>, <code>rules.svg</code> and so on, with a <code>-white</code> copy for dark grounds. The type is outlined, so they need no font. The switch for 40px shows what the bar could draw if the logo were allowed more of its 56px.</p>
+  <p class="ll-files">Every row is a file: <code>logo-lab-out/12-arc.svg</code>, <code>10-rules.svg</code> and so on, with a <code>-white</code> copy for dark grounds. The type is outlined, so they need no font. The switch for 40px shows what the bar could draw if the logo were allowed more of its 56px.</p>
 </main>
 <script>
 %(js)s
