@@ -440,6 +440,80 @@ def finish(sh):
     sh['ink'] = sh['face'].bounds_t(sh['names'], sh['t0'])
 
 
+SUIT_COLOUR = {'spade': INK, 'club': INK, 'heart': RED, 'diamond': RED}
+
+
+def real_carded_line(sh, pips):
+    """Like carded_line, but each card is a playing card: portrait, with a suit pip in two corners, the letter
+    centred and coloured like its suit. The cards count toward the line's height."""
+    f, s, ln = sh['face'], sh['s'], sh['ln']
+    angles = list(ln.get('angles', [-9, 7, -6, 10]))
+    suits = list(ln.get('suits', ['spade', 'heart', 'club', 'diamond']))
+    cap = f.cap * s
+    hc = ln.get('cardHeight', 1.5) * cap
+    ratio = 0.72
+    pad_x, pad_y, trail, stroke = 0.10 * cap, 0.16 * cap, ln.get('cardTrail', 0.16) * cap, 0.05 * cap
+    names, text = sh['names'], sh['text']
+    starts = [i for i, ch in enumerate(text) if ch != ' ' and (i == 0 or text[i - 1] == ' ')][ln.get('skip', 0):]
+    pen = 0.0
+    transforms, cards, boxes_, colours = [], [], [], {}
+    ai = 0
+    for i, g in enumerate(names):
+        adv = f.hmtx[g][0] * s
+        kern = f.kern(names[i - 1], g) * s if i else 0.0
+        pen += kern
+        if i in starts:
+            ang = angles[ai % len(angles)]
+            suit = suits[ai % len(suits)]
+            ai += 1
+            gb = BoundsPen(f.gs)
+            f.gs[g].draw(gb)
+            gx0, gy0, gx1, gy1 = gb.bounds
+            gw, gh = (gx1 - gx0) * s, (gy1 - gy0) * s
+            wc = ratio * hc
+            k = min(1.0, (wc - 2 * pad_x) / gw, (hc - 2 * pad_y) / gh)
+            if k < 0.85:
+                k = 0.85
+                wc = gw * k + 2 * pad_x
+            r = math.radians(ang)
+            hw = (wc * abs(math.cos(r)) + hc * abs(math.sin(r))) / 2
+            hh = (wc * abs(math.sin(r)) + hc * abs(math.cos(r))) / 2
+            cx = pen + hw
+            cy = -cap / 2
+            sg = s * k
+            gx = cx - ((gx0 + gx1) / 2) * sg
+            gy = cy + ((gy0 + gy1) / 2) * sg
+            flat = Transform(sg, 0, 0, -sg, gx, gy)
+            rot = Transform().translate(cx, cy).rotate(math.radians(-ang)).translate(-cx, -cy)
+            transforms.append(rot.transform(flat))
+            ph = 0.17 * hc
+            padc = 0.085 * hc
+            px0, py0, px1, py1 = pips[suit]['box']
+            pf = ph / (py1 - py0)
+            pw = (px1 - px0) * pf
+            corners = []
+            for (ccx, ccy, flip) in ((cx - wc / 2 + padc + pw / 2, cy - hc / 2 + padc + ph / 2, False),
+                                     (cx + wc / 2 - padc - pw / 2, cy + hc / 2 - padc - ph / 2, True)):
+                corners.append(dict(name=suit, cx=ccx, cy=ccy, flip=flip,
+                                    place='translate(%s,%s) scale(%s)' % (fmt(ccx - (px0 + (px1 - px0) / 2) * pf, 3), fmt(ccy - (py0 + (py1 - py0) / 2) * pf, 3), fmt(pf, 5))))
+            cards.append(dict(cx=cx, cy=cy, w=wc, h=hc, angle=ang, rx=0.07 * wc, stroke=stroke, pips=corners))
+            colours[i] = SUIT_COLOUR[suit]
+            boxes_.append((cx - hw - stroke / 2, cy - hh - stroke / 2, cx + hw + stroke / 2, cy + hh + stroke / 2))
+            pen = cx + hw + trail
+        else:
+            transforms.append(Transform(s, 0, 0, -s, pen, 0))
+            pen += adv + ln.get('tracking', 0.0) * f.upm * s
+    sh['t0'] = transforms
+    sh['initials'] = starts
+    sh['initial_colours'] = colours
+    sh['cards'] = cards
+    ink = f.bounds_t(names, transforms)
+    for b in boxes_:
+        ink = (min(ink[0], b[0]), min(ink[1], b[1]), max(ink[2], b[2]), max(ink[3], b[3]))
+    sh['ink'] = ink
+    sh['adv'] = pen / s
+
+
 def shape_line(ln):
     f = face(ln['face'])
     text = ln['text'].upper() if ln.get('caps') else ln['text']
@@ -509,7 +583,7 @@ def layout(v, boxes, pips):
     shaped = [shape_line(ln) for ln in v['lines']]
     for sh in shaped:
         if sh['ln'].get('initials'):
-            carded_line(sh)
+            real_carded_line(sh, pips) if sh['ln'].get('cardStyle') == 'real' else carded_line(sh)
 
     fixed = [width(sh['ink']) for sh in shaped if not sh['ln'].get('justify')]
     target = max(fixed) if fixed else max(width(sh['ink']) for sh in shaped)
@@ -551,6 +625,12 @@ def layout(v, boxes, pips):
             extras.append(dict(kind='rect', role='card', box=(cx - hw, cy - hh, cx + hw, cy + hh), rx=c['rx'], fill=WHITE, stroke=INK, stroke_width=c['stroke'],
                                cx=cx, cy=cy, angle=c['angle'], rect=(cx - c['w'] / 2, cy - c['h'] / 2, c['w'], c['h']),
                                transform='rotate(%s %s %s)' % (fmt(-c['angle']), fmt(cx), fmt(cy))))
+            for pp in c.get('pips', []):
+                turn = 'rotate(%s %s %s) ' % (fmt(-c['angle']), fmt(cx), fmt(cy))
+                if pp['flip']:
+                    turn += 'rotate(180 %s %s) ' % (fmt(pp['cx'] + ox), fmt(pp['cy'] + oy))
+                extras.append(dict(kind='pip', name=pp['name'], box=(cx - hw, cy - hh, cx + hw, cy + hh),
+                                   transform=turn + 'translate(%s,%s) ' % (fmt(ox, 3), fmt(oy, 3)) + pp['place']))
         if sh['ln'].get('ribbon'):
             pad_x, pad_y = 0.55 * cap_s, 0.32 * cap_s
             rect = (sh['box'][0] - pad_x, sh['box'][1] - pad_y, sh['box'][2] + pad_x, sh['box'][3] + pad_y)
@@ -609,7 +689,7 @@ def layout(v, boxes, pips):
             keep = [i for i in range(len(sh['names'])) if i not in init]
             parts.append(dict(kind='line', sh=sh, names=[sh['names'][i] for i in keep], transforms=[T[i] for i in keep], box=box))
             for i in sorted(init):
-                parts.append(dict(kind='line', sh=sh, names=[sh['names'][i]], transforms=[T[i]], box=box, onCard=True))
+                parts.append(dict(kind='line', sh=sh, names=[sh['names'][i]], transforms=[T[i]], box=box, onCard=True, colour=sh.get('initial_colours', {}).get(i, INK)))
         else:
             parts.append(dict(kind='line', sh=sh, transforms=T, box=box))
 
@@ -690,7 +770,7 @@ def render(lay, mode, defs=None, marks=None, ink=INK):
             sh = p['sh']
             ln = sh['ln']
             if p.get('onCard'):
-                fill = INK
+                fill = p.get('colour', INK)
             elif ln.get('ribbon'):
                 fill = INK if dark else PAPER
             elif ln.get('colour') and not dark:
@@ -784,6 +864,13 @@ VARIATIONS = [
     V(26, 'Letter cards bold', 'letter-cards-bold', 'Bigger cards, stronger tilt; no fan', 'The four cards grow around their letters and lean further, so they read as cards at bar size.',
       L('World of', 'glca-500', 0.56, initials=True, angles=[-11, 9], cardPad=(0.26, 0.24), cardStroke=0.07, cardTrail=0.2), gap=0.42,
       big=L('Card Games', 'glca-500', 1.0, initials=True, angles=[-9, 12], cardPad=(0.26, 0.24), cardStroke=0.07, cardTrail=0.2), mark=None),
+    V(27, 'Real cards', 'real-cards', 'One line, the initials on playing cards', 'World of Card Games on one line. W, o, C and G sit on four small playing cards: portrait, a pip in two corners, one suit each, the red suits in red.',
+      L('World of Card Games', 'glca-500', 1.0, initials=True, cardStyle='real', angles=[-9, 7, -6, 10]), lines=[L('World of Card Games', 'glca-500', 1.0, initials=True, cardStyle='real', angles=[-9, 7, -6, 10])], mark=None),
+    V(28, 'Real cards big', 'real-cards-big', 'One line, only Card and Games on playing cards', 'World of stays plain; C and G sit on the club and the diamond card.',
+      L('World of Card Games', 'glca-500', 1.0), lines=[L('World of Card Games', 'glca-500', 1.0, initials=True, cardStyle='real', angles=[-6, 10], suits=['club', 'diamond'], skip=2)], mark=None),
+    V(29, 'Real cards stacked', 'real-cards-stacked', 'Two lines, the initials on playing cards', 'The same four cards, with World of over Card Games.',
+      L('World of', 'glca-500', 0.6, initials=True, cardStyle='real', angles=[-9, 7], suits=['spade', 'heart']), gap=0.3,
+      big=L('Card Games', 'glca-500', 1.0, initials=True, cardStyle='real', angles=[-6, 10], suits=['club', 'diamond']), mark=None),
 ]
 TODAY_W32 = 170  # logo.png, 510x96, drawn at 32px
 
@@ -832,7 +919,10 @@ ROW = '''
 
 def row(v, lay, svg):
     small, big = lay['shaped'][0], lay['shaped'][-1]
-    if v.get('layout') == 'middle':
+    if len(lay['shaped']) == 1:
+        note = ('On the bar: %s px wide (today 170), the capitals %s px tall. On a phone: %s px wide. File: logo-lab-out/%s.svg'
+                % (fmt(lay['ratio'] * 32, 0), fmt(cap_px(lay, big, 32), 0), fmt(lay['ratio'] * 24, 0), v['id']))
+    elif v.get('layout') == 'middle':
         note = ('On the bar: %s px wide (today 170), World of\u2019s capitals %s px tall, Card Games\u2019 %s px. On a phone: %s px wide. File: logo-lab-out/%s.svg'
                 % (fmt(lay['ratio'] * 32, 0), fmt(cap_px(lay, small, 32), 0), fmt(cap_px(lay, big, 32), 0), fmt(lay['ratio'] * 24, 0), v['id']))
     else:
