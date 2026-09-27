@@ -1008,50 +1008,29 @@ def V(num, name, vid, title, lead, small, gap=0.14, big=None, family=None, **kw)
 
 
 FAMILIES = [
-    dict(key='1a', title='1a Bolder World of, built on', lead='GLCA SemiBold on the small line over Medium on the big one. Four small moves on it.'),
-    dict(key='12a', title='12a Bowl, the curve as a continuation of the cards', lead='Card Games curving down under a straight World of. You felt the curve continues the cards; these push that feeling: deeper, both lines, the words falling away from the card\u2019s corner, the letters fanned like more cards, and the bowl with the bolder small line.'),
-    dict(key='12f', title='12f Arc, bolder, built on', lead='World of in SemiBold on a gentle arc. A little more curve, a little bigger, pulled onto the words, and in red.'),
-    dict(key='25', title='25 Letter cards big, built on', lead='C and G on tilted tiles, no fan. The bolder small line, taller tiles, and tiles turned further.'),
-    dict(key='N', title='New marks: stand-ins for the illustrator', lead='Toca Boca is a mouth. These are the simplest code-drawn stand-ins for marks an illustrator could draw for real: a face on a card, a face on the heart, a joker\u2019s cap, two cards as friends, a king card. Judge the size and the silhouette at 32 and 24px, not the drawing.'),
+    dict(key='1a', title='1a Bolder World of', lead='GLCA SemiBold on the small line over Medium on the big one. Kept as it is.'),
+    dict(key='12a', title='12a Bowl, and the words as an extension of the cards', lead='Card Games curving down under World of. 12a.3 turned the big line four degrees so it falls away from the front card\u2019s corner and follows the cards\u2019 flow. Now World of goes on the same line: bowed and turned with Card Games, turned only, steeper, from the card\u2019s corner, with the bolder small line, and as a turned seal with 12f.3\u2019s arc.'),
+    dict(key='12f', title='12f.3 Arc onto the words', lead='World of in SemiBold on a gentle arc, the gap closed so the arc\u2019s ends rest on the C and the s. Kept as it is.'),
 ]
 
 SB = L('World of', 'glca-600', 0.56)  # 1a's small line
+BOWL = dict(align='center', arc=-0.05)
 
 VARIATIONS = [
     # -- 1a ---------------------------------------------------------------------------------------------------
     V('1a', 'Bolder World of', '01a-bolder', 'The small line in GLCA SemiBold', 'World of a weight up, so the small line holds its own against Card Games.', SB),
-    V('1a.1', 'A touch bigger', '01a1-bigger', 'World of at 60% instead of 56%', 'The small line grows a little, so the two lines sit closer in weight and size.', L('World of', 'glca-600', 0.6)),
-    V('1a.2', 'Card Games tighter', '01a2-tighter', 'The big line tracked in', 'Card Games closed up a little, the way a wordmark is set tighter than text.', SB, big=L('Card Games', 'glca-500', 1.0, tracking=-0.02)),
-    V('1a.3', 'World of open', '01a3-open', 'The small line tracked out', 'World of given a little air between its letters, so it reads as a label over the name.', L('World of', 'glca-600', 0.56, tracking=0.03)),
-    V('1a.4', 'Lines closer', '01a4-closer', 'The gap between the lines halved', 'The small line sits down onto the big one.', SB, gap=0.07),
     # -- 12a --------------------------------------------------------------------------------------------------
-    V('12a', 'Bowl', '12a-bowl', 'Card Games curves down, World of stays straight', 'The big line dips like a smile under a straight small line.', L('World of', 'glca-500', 0.52, align='center'), big=L('Card Games', 'glca-500', 1.0, align='center', arc=-0.05), gap=0.14),
-    V('12a.1', 'Deeper bowl', '12a1-deeper', 'The same curve, deeper', 'The dip at 8% of the line\u2019s width instead of 5%.', L('World of', 'glca-500', 0.52, align='center'), big=L('Card Games', 'glca-500', 1.0, align='center', arc=-0.08), gap=0.14),
-    V('12a.2', 'Both lines bowl', '12a2-both', 'World of curves down with Card Games', 'The two lines run as one curved band, the way a fan of cards is one curved band.', L('World of', 'glca-500', 0.52, align='center', arc=-0.05), big=L('Card Games', 'glca-500', 1.0, align='center', arc=-0.05), gap=0.14),
-    V('12a.3', 'Falling from the card', '12a3-falling', 'The bowl tilted, high at the fan\u2019s corner', 'The whole big line turns four degrees, so it starts up by the front card\u2019s corner and falls away to the right, then rises: the card\u2019s slanted edge runs on into the words.', L('World of', 'glca-500', 0.52, align='center'), big=L('Card Games', 'glca-500', 1.0, align='center', arc=-0.05, rot=-4), gap=0.14, markNudge=0.04),
-    V('12a.4', 'Fanned like the cards', '12a4-fanned', 'Card Games arched up instead, the letters leaning one after another', 'On an arch the letters turn a little more each, left to right, the way the cards turn one after another in the fan. The other reading of continuation.', L('World of', 'glca-500', 0.52, align='center'), big=L('Card Games', 'glca-500', 1.0, align='center', arc=0.05), gap=0.16),
-    V('12a.5', 'Bowl, bolder', '12a5-bolder', 'The bowl with 1a\u2019s small line', 'The two you like together: Card Games curving down under World of in SemiBold.', L('World of', 'glca-600', 0.52, align='center'), big=L('Card Games', 'glca-500', 1.0, align='center', arc=-0.05), gap=0.14),
+    V('12a', 'Bowl', '12a-bowl', 'Card Games curves down, World of stays straight', 'The big line dips like a smile under a straight small line.', L('World of', 'glca-500', 0.52, align='center'), big=L('Card Games', 'glca-500', 1.0, **BOWL), gap=0.14),
+    V('12a.3', 'Falling from the card', '12a3-falling', 'The bowl turned four degrees, World of straight', 'The big line starts up by the front card\u2019s corner and falls away to the right, then rises: the card\u2019s slanted edge runs on into the words.', L('World of', 'glca-500', 0.52, align='center'), big=L('Card Games', 'glca-500', 1.0, rot=-4, **BOWL), gap=0.14, markNudge=0.04),
+    V('12a.6', 'World of on the same line', '12a6-same-line', 'Both lines bowed and turned four degrees', 'World of takes the same curve and the same turn as Card Games, so the two lines run as one band falling away from the cards.', L('World of', 'glca-500', 0.52, rot=-4, **BOWL), big=L('Card Games', 'glca-500', 1.0, rot=-4, **BOWL), gap=0.1, markNudge=0.04),
+    V('12a.7', 'World of turned, not bowed', '12a7-turned', 'World of straight but turned with Card Games', 'The small line keeps its straight baseline and only takes the four-degree turn, so it sits like a label along the same slant.', L('World of', 'glca-500', 0.52, align='center', rot=-4), big=L('Card Games', 'glca-500', 1.0, rot=-4, **BOWL), gap=0.1, markNudge=0.04),
+    V('12a.8', 'Steeper', '12a8-steeper', 'Both lines at six degrees', 'The same band turned further, nearer the front card\u2019s own ten degrees.', L('World of', 'glca-500', 0.52, rot=-6, **BOWL), big=L('Card Games', 'glca-500', 1.0, rot=-6, **BOWL), gap=0.1, markNudge=0.05),
+    V('12a.9', 'Steeper still', '12a9-steepest', 'Both lines at eight degrees', 'As far as the words can lean and still read as a wordmark rather than a sticker.', L('World of', 'glca-500', 0.52, rot=-8, **BOWL), big=L('Card Games', 'glca-500', 1.0, rot=-8, **BOWL), gap=0.1, markNudge=0.06),
+    V('12a.10', 'From the card\u2019s corner', '12a10-corner', 'Both lines flush left, so they start at the card', 'The band\u2019s left edge stands at the front card\u2019s corner instead of being centred, so the cards and the words share one edge.', L('World of', 'glca-500', 0.52, arc=-0.05, rot=-4), big=L('Card Games', 'glca-500', 1.0, arc=-0.05, rot=-4), gap=0.1, markNudge=0.04),
+    V('12a.11', 'On the same line, bolder', '12a11-bolder', '12a.6 with 1a\u2019s small line', 'Both lines bowed and turned, World of in SemiBold.', L('World of', 'glca-600', 0.52, rot=-4, **BOWL), big=L('Card Games', 'glca-500', 1.0, rot=-4, **BOWL), gap=0.1, markNudge=0.04),
+    V('12a.12', 'A turned seal', '12a12-seal', 'World of arched up onto Card Games, the whole turned four degrees', '12f.3\u2019s arc over 12a.3\u2019s bowl: the lines curve away from each other and the pair leans with the cards.', L('World of', 'glca-600', 0.52, align='center', arc=0.09, rot=-4), big=L('Card Games', 'glca-500', 1.0, rot=-4, **BOWL), gap=0.02, markNudge=0.04),
     # -- 12f --------------------------------------------------------------------------------------------------
-    V('12f', 'Arc, bolder', '12f-arc-bold', 'World of in SemiBold on the arc', 'The arc with the heavier small line.', L('World of', 'glca-600', 0.52, align='center', arc=0.08), gap=0.16),
-    V('12f.1', 'A little more curve', '12f1-more', 'The rise at 11% instead of 8%', 'The arc a touch more pronounced, so it reads as an arc at bar size too.', L('World of', 'glca-600', 0.52, align='center', arc=0.11), gap=0.16),
-    V('12f.2', 'A little bigger', '12f2-bigger', 'World of at 58% on the arc', 'The small line grows so the arc carries more weight.', L('World of', 'glca-600', 0.58, align='center', arc=0.08), gap=0.14),
-    V('12f.3', 'Onto the words', '12f3-hug', 'The arc pulled down onto Card Games', 'The gap closed, so the arc\u2019s ends rest on the C and the s.', L('World of', 'glca-600', 0.52, align='center', arc=0.09), gap=0.02),
-    V('12f.4', 'In red', '12f4-red', 'The bold arc in the deck\u2019s red', 'World of on its arc in the red of the fan\u2019s hearts.', L('World of', 'glca-600', 0.52, align='center', arc=0.08, colour=RED), gap=0.16),
-    # -- 25 ---------------------------------------------------------------------------------------------------
-    V('25', 'Letter cards big', '25-letter-cards-big', 'Only Card and Games on cards; no fan', 'World of stays plain above; C and G sit on tilted tiles and are the mark.',
-      L('World of', 'glca-500', 0.56), gap=0.28, big=L('Card Games', 'glca-500', 1.0, initials=True, angles=[-6, 8]), mark=None),
-    V('25.1', 'With the bolder World of', '25-1-bolder', '25 with 1a\u2019s small line', 'The tiles under World of in SemiBold.',
-      SB, gap=0.28, big=L('Card Games', 'glca-500', 1.0, initials=True, angles=[-6, 8]), mark=None),
-    V('25.2', 'Taller tiles', '25-2-taller', 'The tiles taller than wide', 'More room above and below the letter, so each tile leans toward a card\u2019s shape without becoming one.',
-      L('World of', 'glca-500', 0.56), gap=0.3, big=L('Card Games', 'glca-500', 1.0, initials=True, angles=[-6, 8], cardPad=(0.14, 0.3)), mark=None),
-    V('25.3', 'Turned further', '25-3-turned', 'The tiles at nine and twelve degrees', 'The two tiles lean more, so the tilt reads at bar size.',
-      L('World of', 'glca-500', 0.56), gap=0.3, big=L('Card Games', 'glca-500', 1.0, initials=True, angles=[-10, 12]), mark=None),
-    # -- N ----------------------------------------------------------------------------------------------------
-    V('N1', 'Happy card', 'n1-happy-card', 'A card with a face', 'One tilted card with two eyes, a smile and a heart in its corner. The face gives it a mood at any size, the way Toca Boca\u2019s mouth does.', SB, mark='happycard', markScale=1.0 / 0.85, markGap=0.16),
-    V('N2', 'Smiling heart', 'n2-smiling-heart', 'The heart as a face', 'The ace of hearts\u2019 pip with white eyes and a smile: one colour, one shape, a mood.', SB, mark='smileheart', markScale=1.0 / 0.85, markGap=0.16),
-    V('N3', 'Joker\u2019s cap', 'n3-jokers-cap', 'The card figure with a face of its own', 'Three points and three bells: the one character every deck already has.', SB, mark='jokercap', markScale=1.0 / 0.85, markGap=0.16),
-    V('N4', 'Two friends', 'n4-two-friends', 'Two cards leaning together, each with a face', 'The company in the name: two cards as two people at the table.', SB, mark='friends', markScale=1.0 / 0.85, markGap=0.16),
-    V('N5', 'King card', 'n5-king-card', 'A crown on a card', 'A card wearing the crown the site already gives its leaders.', SB, mark='kingcard', markScale=1.0 / 0.85, markGap=0.16),
+    V('12f.3', 'Onto the words', '12f3-hug', 'The bold arc pulled down onto Card Games', 'World of in SemiBold on a gentle arc, the gap closed, so the arc\u2019s ends rest on the C and the s.', L('World of', 'glca-600', 0.52, align='center', arc=0.09), gap=0.02, family='12f'),
 ]
 TODAY_W32 = 170  # logo.png, 510x96, drawn at 32px
 
@@ -1285,8 +1264,8 @@ PAGE = r'''<!DOCTYPE html>
 <body>
 %(defs)s
 <header class="ll-head">
-  <h1>The logo: four keepers and new marks</h1>
-  <p>Holger, 27 Sep: 12a is interesting, the arch of Card Games feels like a continuation of the cards; also 12f, 1a and 25. Remove the rest, see what improves them, and try totally new concepts, the way Toca Boca is simply a happy mouth. Four families built on the keepers, then five stand-ins for marks an illustrator could draw. Every row has a number and a name (say &ldquo;12a.3&rdquo; or &ldquo;N2&rdquo;). Each row: the logo at 64px, then the site&rsquo;s bar at a desktop width with the logo 32px tall, and a phone with it 24px tall.</p>
+  <h1>The logo: the words as an extension of the cards</h1>
+  <p>Holger, 27 Sep: 12f.3, 1a and 12a stay, and 12a.3 is interesting because it follows the flow of the cards. Could World of sit above Card Games on the same line, so the text feels like an extension of the cards? Seven versions of that in the 12a family, and the keepers as they are. Every row has a number and a name (say &ldquo;12a.6&rdquo;). Each row: the logo at 64px, then the site&rsquo;s bar at a desktop width with the logo 32px tall, and a phone with it 24px tall.</p>
   <div class="ll-switches"><button id="llToday" type="button"></button><button id="llTall" type="button"></button><button id="llZoom" type="button"></button></div>
 </header>
 <main class="ll-page">
