@@ -1080,6 +1080,7 @@ def layout_block(v, boxes, pips, marks, ref):
     for sh in shaped:
         T = [R.transform(Transform().translate(sh['ox'], sh['oy']).transform(t)) for t in sh['t0']]
         sh['k'] = k
+        sh['T_final'] = T
         parts.append(dict(kind='line', sh=sh, transforms=T, box=sh['face'].bounds_t(sh['names'], T), nocheck=True))
     xs0 = min(p['box'][0] for p in parts)
     ys0 = min(p['box'][1] for p in parts)
@@ -1087,7 +1088,12 @@ def layout_block(v, boxes, pips, marks, ref):
     ys1 = max(p['box'][3] for p in parts)
     m = 0.03 * (ys1 - ys0)
     vb = (xs0 - m, ys0 - m, (xs1 - xs0) + 2 * m, (ys1 - ys0) + 2 * m)
-    return dict(parts=parts, vb=vb, block=(block_w * k, block_h * k), shaped=shaped, ratio=vb[2] / vb[3], pips=pips, startGaps=start_gaps, anchorAt=(ax, cy))
+    big, small = shaped[-1], shaped[0]
+    n = len(big['text'].split(' ')[0])
+    word = big['face'].bounds_t(big['names'][:n], big['T_final'][:n])
+    sm = small['face'].bounds_t(small['names'], small['T_final'])
+    fit = dict(small_x0=sm[0], small_x1=sm[2], word_x0=word[0], word_x1=word[2])
+    return dict(parts=parts, vb=vb, block=(block_w * k, block_h * k), shaped=shaped, ratio=vb[2] / vb[3], pips=pips, startGaps=start_gaps, anchorAt=(ax, cy), fit=fit)
 
 
 def render(lay, mode, defs=None, marks=None, ink=INK):
@@ -1184,8 +1190,8 @@ FAMILIES = [
     dict(key='1a', title='1a Bolder World of', lead='GLCA SemiBold on the small line over Medium on the big one. Kept as it is.'),
     dict(key='12a', title='12a Bowl, and 12a.3', lead='Card Games curving down under World of; in 12a.3 the big line is turned four degrees so it falls away from the front card\u2019s corner. Kept as they are.'),
     dict(key='12f', title='12f.3 Arc onto the words', lead='World of in SemiBold on a gentle arc, the gap closed so the arc\u2019s ends rest on the C and the s. Kept as it is.'),
-    dict(key='K', title='K1 To the card\u2019s lean, as it was', lead='The closest so far: World of in GLCA SemiBold on a circle tangent to Card Games\u2019 at the start and two thirds its size, the two starts on the card\u2019s lean, Card Games 16 from the card\u2019s edge, the block at two degrees on the card\u2019s centre line, the gap between the lines 0.40 of the capitals. Kept for the comparison.'),
-    dict(key='L', title='L K1 with no turn at all', lead='Holger: try not to rotate it at all, and see if the starting point on the left can be the same. So the block at zero degrees: Card Games\u2019 chord is level and only the bowl bends it, falling 11 degrees at the C and rising 11 at the s; the block still sits on the card\u2019s centre line with Card Games 16 from the edge. Three rows for the two readings of the same starting point: the starts kept where K1 has them, on the card\u2019s lean; the two starts at the same x, World of directly over Card Games; and half way between.'),
+    dict(key='L', title='L1 No turn, the starts as in K1, as it was', lead='The closest so far: the block level, World of in GLCA SemiBold on a circle tangent to Card Games\u2019 at the start and two thirds its size, the two starts on the card\u2019s lean, Card Games 16 from the card\u2019s edge, the block on the card\u2019s centre line, the gap between the lines 0.40 of the capitals. Kept for the comparison.'),
+    dict(key='M', title='M L1 with a smaller arch on World of, fitted to Card', lead='Holger: make the top line\u2019s arch a bit less, and the top line should fit in the space where it says Card, it is a bit too long now. So World of\u2019s circle grows back toward Card Games\u2019 (less bend), and World of is sized so that it ends over the end of the d, its start left where the lean rule puts it. Two rows step the arch with the fit, and two move one thing only.'),
 ]
 
 SB = L('World of', 'glca-600', 0.56)  # 1a's small line
@@ -1218,15 +1224,22 @@ def L0(num, name, vid, title, lead, **kw):
     return K(num, name, vid, title, lead, **d)
 
 
+def M(num, name, vid, title, lead, **kw):
+    d = dict(family='M', smallCurve=1.25, fitTo='word')
+    d.update(kw)
+    return L0(num, name, vid, title, lead, **d)
+
+
 VARIATIONS = [
     V('1a', 'Bolder World of', '01a-bolder', 'The small line in GLCA SemiBold', 'World of a weight up, so the small line holds its own against Card Games.', SB),
     V('12a', 'Bowl', '12a-bowl', 'Card Games curves down, World of stays straight', 'The big line dips like a smile under a straight small line.', L('World of', 'glca-500', 0.52, align='center'), big=L('Card Games', 'glca-500', 1.0, **BOWL), gap=0.14),
     V('12a.3', 'Falling from the card', '12a3-falling', 'The bowl turned four degrees, World of straight', 'The big line starts up by the front card\u2019s corner and falls away to the right, then rises.', L('World of', 'glca-500', 0.52, align='center'), big=L('Card Games', 'glca-500', 1.0, rot=-4, **BOWL), gap=0.14, markNudge=0.04),
     V('12f.3', 'Onto the words', '12f3-hug', 'The bold arc pulled down onto Card Games', 'World of in SemiBold on a gentle arc, the gap closed, so the arc\u2019s ends rest on the C and the s.', L('World of', 'glca-600', 0.52, align='center', arc=0.09), gap=0.02, family='12f'),
-    K('K1', 'To the card\u2019s lean', 'k1-lean', 'The block at two degrees, the starts on the card\u2019s lean', 'As Holger saw it.'),
-    L0('L1', 'No turn, the starts as in K1', 'l1-no-turn', 'The block level, the two starts kept on the card\u2019s lean', 'Card Games\u2019 chord level, only the bowl bending it. World of and Card Games begin where K1 had them: on one line leaning as the card\u2019s edge leans, so both sit the same distance from the card.'),
-    L0('L2', 'No turn, the same x', 'l2-same-x', 'The block level, World of directly over Card Games', 'The two starts at the same x, as in 1a: the W over the C. World of sits nearer the leaning card than Card Games does.', startLean=0.0),
-    L0('L3', 'No turn, half way', 'l3-half', 'The block level, the starts half way between', 'The starts on a line half way between the vertical and the card\u2019s lean.', startLean=0.5),
+    L0('L1', 'No turn, the starts as in K1', 'l1-no-turn', 'The block level, World of on the two-thirds circle at 56%', 'As Holger saw it.'),
+    M('M1', 'Arch a bit less, fitted to Card', 'm1-less-fit', 'World of\u2019s circle at four fifths of Card Games\u2019, sized to end over the d', 'Less bend than L1\u2019s two thirds, more than the concentric circle. World of ends where Card ends.'),
+    M('M2', 'The bottom line\u2019s own arch, fitted', 'm2-same-fit', 'World of on the concentric circle, sized to end over the d', 'No extra bend at all: World of bends exactly as Card Games does under it, as I4 had it, and ends where Card ends.', smallCurve=1.0),
+    M('M3', 'The arch as it was, fitted', 'm3-was-fit', 'L1\u2019s two-thirds circle, World of sized to end over the d', 'Only the length changes.', smallCurve=1.5),
+    M('M4', 'Arch a bit less, the length as it was', 'm4-less-only', 'World of\u2019s circle at four fifths, at 56% as before', 'Only the arch changes.', fitTo=None),
 ]
 TODAY_W32 = 170  # logo.png, 510x96, drawn at 32px
 
@@ -1359,8 +1372,23 @@ def main():
     rows = {}
     check_rows = []
     for v in VARIATIONS:
+        if v.get('fitTo') == 'word':
+            # World of sized so that it ends over the end of Card, its start left where the start rule puts it
+            v['lines'] = [dict(v['lines'][0]), v['lines'][1]]
+            for _ in range(8):
+                lay = layout_block(v, boxes, pips, marks, ref)
+                f_ = lay['fit']
+                have, want = f_['small_x1'] - f_['small_x0'], f_['word_x1'] - f_['small_x0']
+                if abs(have - want) < 0.05:
+                    break
+                v['lines'][0]['size'] *= want / have
+            print('%-22s World of fitted to Card: size %.3f of the big line (was 0.56); it starts %.1f right of the C and ends %.1f right of the d'
+                  % (v['id'], v['lines'][0]['size'], f_['small_x0'] - f_['word_x0'], f_['small_x1'] - f_['word_x1']))
         lay = (layout_block(v, boxes, pips, marks, ref) if v.get('layout') == 'block' else layout_badge(v, boxes, pips) if v.get('layout') == 'badge'
                else layout_middle(v, boxes, pips) if v.get('layout') == 'middle' else layout(v, boxes, pips))
+        if lay.get('fit') and not v.get('fitTo'):
+            f_ = lay['fit']
+            print('%-22s World of starts %.1f right of the C and ends %.1f right of the d' % (v['id'], f_['small_x0'] - f_['word_x0'], f_['small_x1'] - f_['word_x1']))
         (OUT / ('%s.svg' % v['id'])).write_text(render(lay, 'file', defs, marks))
         (OUT / ('%s-white.svg' % v['id'])).write_text(render(lay, 'file', defs, marks, ink=WHITE))
         rows[v['id']] = row(v, lay, render(lay, 'inline'))
@@ -1478,8 +1506,8 @@ PAGE = r'''<!DOCTYPE html>
 <body>
 %(defs)s
 <header class="ll-head">
-  <h1>The logo: K1 with no turn at all</h1>
-  <p>Holger, 27 Sep: try not to rotate it at all, and see if the starting point on the left can be the same. So the block at zero degrees, Card Games&rsquo; chord level and only the bowl bending it, the block still on the card&rsquo;s centre line with Card Games 16 from the edge. Three rows for the two readings of the same starting point: the starts kept where K1 has them, the two starts at the same x, and half way. K1 is kept as it was. The keepers stay as they are. Every row has a number and a name (say &ldquo;L2&rdquo;). Each row: the logo at 64px, then the site&rsquo;s bar at a desktop width with the logo 32px tall, and a phone with it 24px tall.</p>
+  <h1>The logo: L1 with a smaller arch on World of, fitted to Card</h1>
+  <p>Holger, 27 Sep: L1 is best; make the top line&rsquo;s arch a bit less, and the top line should fit in the space where it says Card, it is a bit too long now. So World of bends less, and it is sized to end over the end of the d with its start left where the lean rule puts it. Two rows step the arch with the fit, two move one thing only, and L1 is kept as it was. The keepers stay as they are. Every row has a number and a name (say &ldquo;M2&rdquo;). Each row: the logo at 64px, then the site&rsquo;s bar at a desktop width with the logo 32px tall, and a phone with it 24px tall.</p>
   <div class="ll-switches"><button id="llToday" type="button"></button><button id="llTall" type="button"></button><button id="llZoom" type="button"></button></div>
 </header>
 <main class="ll-page">
