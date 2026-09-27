@@ -962,20 +962,15 @@ def fan_cards(boxes, marks):
     return {k: [((x - b['x']) * f, (y - b['y']) * f) for x, y in fan_card_corners(marks, cid)] for k, cid in FAN_CARDS}
 
 
-def layout_block(v, boxes, pips, marks):
-    """Both lines flush left as one block, as in 1a, the block turned as one and as tall as a card, to the right of
-    the fan. height: 'front' (the front card's own height, 89 of the fan's 100), 'second' (the card behind it,
-    74) or 'fan' (the cards top to bottom, 99). angle: the block's lean, clockwise (12a.3's line is 4, the front
-    card 10). place: 'centre' (the block centred on the fan, as the keepers are) or 'corner' (the block's top-left
-    corner on the front card's top edge carried on past the gap, so the words hang off the card's corner)."""
-    cards = fan_cards(boxes, marks)
-    own = lambda c: math.hypot(c[3][0] - c[0][0], c[3][1] - c[0][1])
-    which = v.get('height', 'front')
-    if which == 'fan':
-        ys = [pt[1] for c in cards.values() for pt in c]
-        target = max(ys) - min(ys)
-    else:
-        target = own(cards[which])
+def layout_block(v, boxes, pips, marks, ref):
+    """Both lines flush left as one block, as in 1a, turned as one on 12a.3's line and at 12a.3's size, to the
+    right of the fan and centred on the front card. The big line's capitals are capShare of the fan's height
+    (12a.3's own share unless the row says otherwise, times size). angle is the block's lean, clockwise. The block
+    turns about the midpoint of its left edge, and that point is set on the front card's centre height (place
+    'card') or on the midpoint of the card's right edge (place 'edge'). The gap to the fan is measured as the
+    keepers measure it, from the fan's box to the leftmost ink (gapFrom 'fan'), or from the card's right edge at
+    the block's centre height to the block's left edge (gapFrom 'edge')."""
+    tl, tr, br, bl = fan_cards(boxes, marks)['front']
     shaped = [shape_line(ln) for ln in v['lines']]
     big = shaped[-1]
     cap_b = big['face'].cap * big['s']
@@ -987,20 +982,20 @@ def layout_block(v, boxes, pips, marks):
         sh['ox'], sh['oy'] = -x0, y - y0
         y = y1 + sh['oy']
     block_h, block_w = y, max(width(sh['ink']) for sh in shaped)
-    k = target / block_h
-    R0 = Transform().rotate(math.radians(v.get('angle', 4))).scale(k)
+    k = v.get('capShare', ref['capShare']) * v.get('size', 1.0) * MH / cap_b
+    R0 = Transform().rotate(math.radians(v.get('angle', 4))).scale(k).translate(0, -block_h / 2)
     corners = [R0.transformPoint(pt) for pt in ((0, 0), (block_w, 0), (block_w, block_h), (0, block_h))]
-    xs, ys = [pt[0] for pt in corners], [pt[1] for pt in corners]
+    cy = (tr[1] + br[1]) / 2 if v.get('place') == 'edge' else (tl[1] + tr[1] + br[1] + bl[1]) / 4
+    cy += v.get('nudge', 0.0) * MH
     b = boxes['fan']
     f = MH / b['h']
     mw = b['w'] * f
-    ax = mw + v.get('markGap', 0.16) * MH - min(xs)
-    if v.get('place') == 'corner':
-        tl, tr = cards['front'][0], cards['front'][1]
-        ay = tr[1] + (ax - tr[0]) * (tr[1] - tl[1]) / (tr[0] - tl[0])
+    gap = v.get('markGap', 0.16) * MH
+    if v.get('gapFrom') == 'edge':
+        ax = tr[0] + (cy - tr[1]) * (br[0] - tr[0]) / (br[1] - tr[1]) + gap
     else:
-        ay = MH / 2 - (min(ys) + max(ys)) / 2 + v.get('nudge', 0.0) * MH
-    R = Transform().translate(ax, ay).transform(R0)
+        ax = mw + gap - min(pt[0] for pt in corners)
+    R = Transform().translate(ax, cy).transform(R0)
     parts = [dict(kind='mark', mark='fan', transform='translate(%s,%s) scale(%s)' % (fmt(-b['x'] * f, 3), fmt(-b['y'] * f, 3), fmt(f, 5)), box=(0, 0, mw, MH))]
     for sh in shaped:
         T = [R.transform(Transform().translate(sh['ox'], sh['oy']).transform(t)) for t in sh['t0']]
@@ -1012,7 +1007,7 @@ def layout_block(v, boxes, pips, marks):
     ys1 = max(p['box'][3] for p in parts)
     m = 0.03 * (ys1 - ys0)
     vb = (xs0 - m, ys0 - m, (xs1 - xs0) + 2 * m, (ys1 - ys0) + 2 * m)
-    return dict(parts=parts, vb=vb, block=(block_w * k, block_h * k), shaped=shaped, ratio=vb[2] / vb[3], pips=pips, cardHeight=target)
+    return dict(parts=parts, vb=vb, block=(block_w * k, block_h * k), shaped=shaped, ratio=vb[2] / vb[3], pips=pips)
 
 
 def render(lay, mode, defs=None, marks=None, ink=INK):
@@ -1109,16 +1104,16 @@ FAMILIES = [
     dict(key='1a', title='1a Bolder World of', lead='GLCA SemiBold on the small line over Medium on the big one. Kept as it is.'),
     dict(key='12a', title='12a Bowl, and 12a.3', lead='Card Games curving down under World of; in 12a.3 the big line is turned four degrees so it falls away from the front card\u2019s corner. Kept as they are.'),
     dict(key='12f', title='12f.3 Arc onto the words', lead='World of in SemiBold on a gentle arc, the gap closed so the arc\u2019s ends rest on the C and the s. Kept as it is.'),
-    dict(key='F', title='F One block on the cards\u2019 line', lead='1a\u2019s two lines, both starting at the same place, turned as one block on the falling line of 12a.3, and the block as tall as a card: the front card (89 of the fan\u2019s 100), the card behind it (74) or the cards top to bottom (99). Nothing else changes: GLCA SemiBold over Medium, 1a\u2019s gap between the lines, and the fan as it is.'),
+    dict(key='G', title='G 12a.3, World of on the same line', lead='12a.3 as it is, Card Games on its bowl at four degrees and at its size, with one change: World of starts where Card Games starts and turns with it, so the two lines make one block. The block is centred on the front card, its left edge\u2019s midpoint on the card\u2019s centre height, so World of begins level with the card\u2019s top corner and the words fall away from the card as the card leans.'),
 ]
 
 SB = L('World of', 'glca-600', 0.56)  # 1a's small line
 BOWL = dict(align='center', arc=-0.05)
 
 
-def F(num, name, vid, title, lead, **kw):
-    v = dict(id=vid, num=num, name=name, title=title, lead=lead, family='F', layout='block', mark='fan',
-             lines=[SB, L('Card Games', 'glca-500', 1.0)], gap=0.14, angle=4, height='front', place='centre', markGap=0.16)
+def G(num, name, vid, title, lead, **kw):
+    v = dict(id=vid, num=num, name=name, title=title, lead=lead, family='G', layout='block', mark='fan',
+             lines=[L('World of', 'glca-500', 0.52), L('Card Games', 'glca-500', 1.0, arc=-0.05)], gap=0.14, angle=4, place='card', gapFrom='fan', markGap=0.16)
     v.update(kw)
     return v
 
@@ -1128,14 +1123,12 @@ VARIATIONS = [
     V('12a', 'Bowl', '12a-bowl', 'Card Games curves down, World of stays straight', 'The big line dips like a smile under a straight small line.', L('World of', 'glca-500', 0.52, align='center'), big=L('Card Games', 'glca-500', 1.0, **BOWL), gap=0.14),
     V('12a.3', 'Falling from the card', '12a3-falling', 'The bowl turned four degrees, World of straight', 'The big line starts up by the front card\u2019s corner and falls away to the right, then rises.', L('World of', 'glca-500', 0.52, align='center'), big=L('Card Games', 'glca-500', 1.0, rot=-4, **BOWL), gap=0.14, markNudge=0.04),
     V('12f.3', 'Onto the words', '12f3-hug', 'The bold arc pulled down onto Card Games', 'World of in SemiBold on a gentle arc, the gap closed, so the arc\u2019s ends rest on the C and the s.', L('World of', 'glca-600', 0.52, align='center', arc=0.09), gap=0.02, family='12f'),
-    F('F1', 'A card tall', 'f1-card', 'The block as tall as the front card, at four degrees, centred on the fan', 'World of over Card Games, both starting at the same place as in 1a, turned four degrees as one block (12a.3\u2019s line) and as tall as the front card. The block sits centred on the fan, as the keepers do.'),
-    F('F2', 'The second card\u2019s height', 'f2-second', 'The same block as tall as the card behind the front one', 'The card behind the front one is drawn smaller (74 against 89), so the block is smaller too, and the turned block fits inside the fan\u2019s height: the fan keeps its full size on the bar.', height='second'),
-    F('F3', 'The cards\u2019 full height', 'f3-fan', 'The same block as tall as the cards top to bottom', 'The block takes the whole height of the fan, so the turned block reaches a little above and below it.', height='fan'),
-    F('F4', 'Off the card\u2019s corner', 'f4-corner', 'The block hung from the front card\u2019s top edge, carried on', 'F1 moved so that its top-left corner, where both lines start, sits on the front card\u2019s top edge carried on past the gap: the words hang off the card\u2019s corner and fall away with it. The logo grows taller, so it draws smaller on the bar.', place='corner'),
-    F('F5', 'Off the corner, the second card\u2019s height', 'f5-corner-second', 'F4 with the block as tall as the second card', 'The same hanging block at the smaller card\u2019s height, so it drops less below the fan.', place='corner', height='second'),
-    F('F6', 'Seven degrees', 'f6-seven', 'F1 leaning seven degrees', 'Between 12a.3\u2019s four and the front card\u2019s ten.', angle=7),
-    F('F7', 'The card\u2019s own ten', 'f7-ten', 'F1 leaning ten degrees, parallel to the front card', 'The block turned exactly as the front card, so its lines run along the card\u2019s edges.', angle=10),
-    F('F8', 'With the bowl', 'f8-bowl', 'F1 with Card Games curving down', '12a.3\u2019s bowl on the big line, World of straight, both still starting at the same place.', lines=[SB, L('Card Games', 'glca-500', 1.0, arc=-0.05)]),
+    G('G1', 'Same start, same line', 'g1-same-line', '12a.3 with World of flush left and turned with Card Games', 'The same bowl, the same four degrees, the same size as 12a.3. World of starts where Card Games starts and leans with it, straight. The block is centred on the front card.'),
+    G('G2', 'Bolder World of', 'g2-bolder', 'G1 with 1a\u2019s SemiBold World of', 'The small line a weight up and a little bigger, as in 1a, so it holds its own on the line.', lines=[SB, L('Card Games', 'glca-500', 1.0, arc=-0.05)]),
+    G('G3', 'On the card\u2019s edge', 'g3-edge', 'G1 centred on the front card\u2019s right edge', 'The block\u2019s left edge centred on the midpoint of the card\u2019s right edge instead of the card\u2019s centre, so the words sit a touch lower and come out of the edge they follow.', place='edge'),
+    G('G4', 'Closer to the card', 'g4-closer', 'G1 with the gap measured from the card\u2019s edge', 'The keepers measure the gap from the card\u2019s top corner, the fan\u2019s widest point. Here it is measured from the card\u2019s right edge at the block\u2019s centre height, so the words move in against the card.', gapFrom='edge'),
+    G('G5', 'A step smaller', 'g5-smaller', 'G1 with the words at nine tenths', 'The same block, the capitals a tenth smaller against the fan.', size=0.9),
+    G('G6', 'World of on the arch too', 'g6-arched', 'G1 with the small line on the same circle', 'World of bowed as Card Games is, its dip scaled to its width so both lines follow one curve, still starting at the same place.', lines=[L('World of', 'glca-500', 0.52, arc=-0.021), L('Card Games', 'glca-500', 1.0, arc=-0.05)]),
 ]
 TODAY_W32 = 170  # logo.png, 510x96, drawn at 32px
 
@@ -1191,8 +1184,8 @@ def row(v, lay, svg):
         note = ('On the bar: %s px wide (today 170), World of\u2019s capitals %s px tall, Card Games\u2019 %s px. On a phone: %s px wide. File: logo-lab-out/%s.svg'
                 % (fmt(lay['ratio'] * 32, 0), fmt(cap_px(lay, small, 32), 0), fmt(cap_px(lay, big, 32), 0), fmt(lay['ratio'] * 24, 0), v['id']))
     elif v.get('layout') == 'block':
-        note = ('On the bar: %s px wide (today 170), the fan %s px tall, the big line\u2019s capitals %s px tall, the small line\u2019s %s px, the block %s px. On a phone: %s px wide. File: logo-lab-out/%s.svg'
-                % (fmt(lay['ratio'] * 32, 0), fmt(MH * 32 / lay['vb'][3], 0), fmt(cap_px(lay, big, 32), 0), fmt(cap_px(lay, small, 32), 0), fmt(lay['cardHeight'] * 32 / lay['vb'][3], 0), fmt(lay['ratio'] * 24, 0), v['id']))
+        note = ('On the bar: %s px wide (today 170), the fan %s px tall, the big line\u2019s capitals %s px tall, the small line\u2019s %s px. On a phone: %s px wide. File: logo-lab-out/%s.svg'
+                % (fmt(lay['ratio'] * 32, 0), fmt(MH * 32 / lay['vb'][3], 0), fmt(cap_px(lay, big, 32), 0), fmt(cap_px(lay, small, 32), 0), fmt(lay['ratio'] * 24, 0), v['id']))
     else:
         note = ('On the bar: %s px wide (today 170), the big line\u2019s capitals %s px tall, the small line\u2019s %s px. On a phone: %s px wide. File: logo-lab-out/%s.svg'
                 % (fmt(lay['ratio'] * 32, 0), fmt(cap_px(lay, big, 32), 0), fmt(cap_px(lay, small, 32), 0), fmt(lay['ratio'] * 24, 0), v['id']))
@@ -1258,10 +1251,17 @@ def main():
     for src, name in BAR_IMAGES:
         (STATIC / name).write_bytes((WOCG / 'static' / src).read_bytes())
 
+    # 12a.3's text size, the big line's capitals as a share of the fan's height, for the rows built on it
+    lay_ref = layout(next(v for v in VARIATIONS if v['num'] == '12a.3'), boxes, pips)
+    mark_ref = next(p for p in lay_ref['parts'] if p['kind'] == 'mark')['box']
+    big_ref = lay_ref['shaped'][-1]
+    ref = dict(capShare=big_ref['face'].cap * big_ref['s'] / (mark_ref[3] - mark_ref[1]))
+    print('12a.3 capitals: %.3f of the fan' % ref['capShare'])
+
     rows = {}
     check_rows = []
     for v in VARIATIONS:
-        lay = (layout_block(v, boxes, pips, marks) if v.get('layout') == 'block' else layout_badge(v, boxes, pips) if v.get('layout') == 'badge'
+        lay = (layout_block(v, boxes, pips, marks, ref) if v.get('layout') == 'block' else layout_badge(v, boxes, pips) if v.get('layout') == 'badge'
                else layout_middle(v, boxes, pips) if v.get('layout') == 'middle' else layout(v, boxes, pips))
         (OUT / ('%s.svg' % v['id'])).write_text(render(lay, 'file', defs, marks))
         (OUT / ('%s-white.svg' % v['id'])).write_text(render(lay, 'file', defs, marks, ink=WHITE))
@@ -1373,8 +1373,8 @@ PAGE = r'''<!DOCTYPE html>
 <body>
 %(defs)s
 <header class="ll-head">
-  <h1>The logo: one block on the cards&rsquo; line</h1>
-  <p>Holger, 27 Sep: the same-line tries were not it. It should be like 1a, where the top and the bottom line start at the same place, and the two lines together should be as tall as the cards, or as the second card. So: 1a&rsquo;s two lines as one flush-left block, turned as one on 12a.3&rsquo;s falling line, and as tall as a card, eight ways: three heights, centred or hung off the card&rsquo;s corner, three angles, and the bowl. The keepers stay as they are. Every row has a number and a name (say &ldquo;F2&rdquo;). Each row: the logo at 64px, then the site&rsquo;s bar at a desktop width with the logo 32px tall, and a phone with it 24px tall.</p>
+  <h1>The logo: 12a.3, World of on the same line</h1>
+  <p>Holger, 27 Sep, on the F rows: still not good enough; the text is too big and does not feel like a continuation of the last card. It should have the same arch and rotation as 12a.3, but World of should have the same start and rotation as Card Games and feel like a continuation of the card, centred on the last card. So: 12a.3 exactly, its bowl, its four degrees and its size, with World of flush left on the same line, and the block centred on the front card, six ways. The keepers stay as they are. Every row has a number and a name (say &ldquo;G3&rdquo;). Each row: the logo at 64px, then the site&rsquo;s bar at a desktop width with the logo 32px tall, and a phone with it 24px tall.</p>
   <div class="ll-switches"><button id="llToday" type="button"></button><button id="llTall" type="button"></button><button id="llZoom" type="button"></button></div>
 </header>
 <main class="ll-page">
