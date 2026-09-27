@@ -962,6 +962,37 @@ def fan_cards(boxes, marks):
     return {k: [((x - b['x']) * f, (y - b['y']) * f) for x, y in fan_card_corners(marks, cid)] for k, cid in FAN_CARDS}
 
 
+def follow_curve(small, big):
+    """The small line laid along the big line's bowl: on the concentric circle one line-space nearer the bowl's
+    centre, starting at the same x as the big line, its letters turned as the big line's are at that point. So
+    the two lines are the same curve and the same turn, and the small line, being shorter, rides the falling
+    part of it. Called after the flat stacking, which gives the lines' distance at the start."""
+    ln = big['ln']
+    W = big['adv'] * big['s']
+    rise = abs(ln['arc']) * W
+    R = (W * W / 4 + rise * rise) / (2 * rise)
+    L = 2 * R * math.asin(min(1.0, (W / 2) / R))
+    d = big['oy'] - small['oy']
+    Rp = R - d
+    ths = -math.asin(W / (2 * Rp))
+    Rp = R - d * math.cos(ths)
+    ths = -math.asin(W / (2 * Rp))
+    cx, cy = W / 2, -(R - rise)
+    x_shift = big['ink_flat'][0] - small['ink_flat'][0]
+    sm = small['s']
+    out = []
+    for g, x in zip(small['names'], small['xs']):
+        adv = small['face'].hmtx[g][0] * sm
+        th = ths + (x * sm + adv / 2 + x_shift) * (L / W) / Rp
+        px, py = cx + Rp * math.sin(th), cy + Rp * math.cos(th)
+        ux, uy = math.cos(th), -math.sin(th)
+        out.append(Transform(sm * ux, sm * uy, sm * uy, -sm * ux, px - ux * adv / 2, py - uy * adv / 2))
+    small['t0'] = out
+    small['ink'] = small['face'].bounds_t(small['names'], out)
+    small['ox'], small['oy'] = big['ox'], big['oy']
+    small['followed'] = dict(d=d, start_y=cy + Rp * math.cos(ths), end_y=py, slope=math.degrees(-ths), end_slope=math.degrees(-th))
+
+
 def layout_block(v, boxes, pips, marks, ref):
     """Both lines flush left as one block, as in 1a, turned as one on 12a.3's line and at 12a.3's size, to the
     right of the fan and centred on the front card. The big line's capitals are capShare of the fan's height
@@ -981,6 +1012,8 @@ def layout_block(v, boxes, pips, marks, ref):
         x0, y0, x1, y1 = sh['ink']
         sh['ox'], sh['oy'] = -x0, y - y0
         y = y1 + sh['oy']
+    if v.get('follow'):
+        follow_curve(shaped[0], shaped[-1])
     block_h, block_w = y, max(width(sh['ink']) for sh in shaped)
     k = v.get('capShare', ref['capShare']) * v.get('size', 1.0) * MH / cap_b
     R0 = Transform().rotate(math.radians(v.get('angle', 4))).scale(k).translate(0, -block_h / 2)
@@ -1104,7 +1137,7 @@ FAMILIES = [
     dict(key='1a', title='1a Bolder World of', lead='GLCA SemiBold on the small line over Medium on the big one. Kept as it is.'),
     dict(key='12a', title='12a Bowl, and 12a.3', lead='Card Games curving down under World of; in 12a.3 the big line is turned four degrees so it falls away from the front card\u2019s corner. Kept as they are.'),
     dict(key='12f', title='12f.3 Arc onto the words', lead='World of in SemiBold on a gentle arc, the gap closed so the arc\u2019s ends rest on the C and the s. Kept as it is.'),
-    dict(key='G', title='G 12a.3, World of on the same line', lead='12a.3 as it is, Card Games on its bowl at four degrees and at its size, with one change: World of starts where Card Games starts and turns with it, so the two lines make one block. The block is centred on the front card, its left edge\u2019s midpoint on the card\u2019s centre height, so World of begins level with the card\u2019s top corner and the words fall away from the card as the card leans.'),
+    dict(key='G', title='G 12a.3, World of on the same curve', lead='12a.3 as it is, Card Games on its bowl at four degrees and at its size, and World of laid on the very same curve: the concentric circle one line-space nearer the bowl\u2019s centre, starting where Card Games starts, each letter turned as the letter under it is turned. World of is shorter, so it rides the falling part of the bowl and runs parallel to Card. The block is centred on the front card.'),
 ]
 
 SB = L('World of', 'glca-600', 0.56)  # 1a's small line
@@ -1112,7 +1145,7 @@ BOWL = dict(align='center', arc=-0.05)
 
 
 def G(num, name, vid, title, lead, **kw):
-    v = dict(id=vid, num=num, name=name, title=title, lead=lead, family='G', layout='block', mark='fan',
+    v = dict(id=vid, num=num, name=name, title=title, lead=lead, family='G', layout='block', mark='fan', follow=True,
              lines=[L('World of', 'glca-500', 0.52), L('Card Games', 'glca-500', 1.0, arc=-0.05)], gap=0.14, angle=4, place='card', gapFrom='fan', markGap=0.16)
     v.update(kw)
     return v
@@ -1123,12 +1156,12 @@ VARIATIONS = [
     V('12a', 'Bowl', '12a-bowl', 'Card Games curves down, World of stays straight', 'The big line dips like a smile under a straight small line.', L('World of', 'glca-500', 0.52, align='center'), big=L('Card Games', 'glca-500', 1.0, **BOWL), gap=0.14),
     V('12a.3', 'Falling from the card', '12a3-falling', 'The bowl turned four degrees, World of straight', 'The big line starts up by the front card\u2019s corner and falls away to the right, then rises.', L('World of', 'glca-500', 0.52, align='center'), big=L('Card Games', 'glca-500', 1.0, rot=-4, **BOWL), gap=0.14, markNudge=0.04),
     V('12f.3', 'Onto the words', '12f3-hug', 'The bold arc pulled down onto Card Games', 'World of in SemiBold on a gentle arc, the gap closed, so the arc\u2019s ends rest on the C and the s.', L('World of', 'glca-600', 0.52, align='center', arc=0.09), gap=0.02, family='12f'),
-    G('G1', 'Same start, same line', 'g1-same-line', '12a.3 with World of flush left and turned with Card Games', 'The same bowl, the same four degrees, the same size as 12a.3. World of starts where Card Games starts and leans with it, straight. The block is centred on the front card.'),
-    G('G2', 'Bolder World of', 'g2-bolder', 'G1 with 1a\u2019s SemiBold World of', 'The small line a weight up and a little bigger, as in 1a, so it holds its own on the line.', lines=[SB, L('Card Games', 'glca-500', 1.0, arc=-0.05)]),
-    G('G3', 'On the card\u2019s edge', 'g3-edge', 'G1 centred on the front card\u2019s right edge', 'The block\u2019s left edge centred on the midpoint of the card\u2019s right edge instead of the card\u2019s centre, so the words sit a touch lower and come out of the edge they follow.', place='edge'),
+    G('G1', 'Same curve', 'g1-same-curve', '12a.3 with World of on Card Games\u2019 own curve', 'The same bowl, the same four degrees, the same size as 12a.3. World of starts where Card Games starts and lies on the same circle one line-space up, so it falls with Card, letter for letter.'),
+    G('G2', 'Its own bowl', 'g2-own-bowl', 'World of bowed like Card Games, but on its own width', 'For comparison: World of dips five per cent of its own width, as Card Games does of its, so it curves down and back up over its own length rather than following the big line.', follow=False, lines=[L('World of', 'glca-500', 0.52, arc=-0.05), L('Card Games', 'glca-500', 1.0, arc=-0.05)]),
+    G('G3', 'Bolder World of', 'g3-bolder', 'G1 with 1a\u2019s SemiBold World of', 'The small line a weight up and a little bigger, as in 1a, on the same curve.', lines=[SB, L('Card Games', 'glca-500', 1.0, arc=-0.05)]),
     G('G4', 'Closer to the card', 'g4-closer', 'G1 with the gap measured from the card\u2019s edge', 'The keepers measure the gap from the card\u2019s top corner, the fan\u2019s widest point. Here it is measured from the card\u2019s right edge at the block\u2019s centre height, so the words move in against the card.', gapFrom='edge'),
-    G('G5', 'A step smaller', 'g5-smaller', 'G1 with the words at nine tenths', 'The same block, the capitals a tenth smaller against the fan.', size=0.9),
-    G('G6', 'World of on the arch too', 'g6-arched', 'G1 with the small line on the same circle', 'World of bowed as Card Games is, its dip scaled to its width so both lines follow one curve, still starting at the same place.', lines=[L('World of', 'glca-500', 0.52, arc=-0.021), L('Card Games', 'glca-500', 1.0, arc=-0.05)]),
+    G('G5', 'On the card\u2019s edge', 'g5-edge', 'G1 centred on the front card\u2019s right edge', 'The block\u2019s left edge centred on the midpoint of the card\u2019s right edge instead of the card\u2019s centre, so the words sit a touch lower.', place='edge'),
+    G('G6', 'A step smaller', 'g6-smaller', 'G1 with the words at nine tenths', 'The same block, the capitals a tenth smaller against the fan.', size=0.9),
 ]
 TODAY_W32 = 170  # logo.png, 510x96, drawn at 32px
 
@@ -1283,6 +1316,10 @@ def main():
                 v['id'], sh['text'], fmt(sh['adv'] * sh['s'], 3), vb, fmt(x1 - x0 + 8), fmt(y1 - y0 + 8),
                 sh['face'].path_t(sh['names'], p['transforms']),
                 fmt(ox, 3), fmt(oy, 3), spec['family'], spec['weight'], fmt(px), fmt(spacing, 3), escape(sh['text'])))
+        fl = lay['shaped'][0].get('followed')
+        if fl:
+            print('%-22s World of on the curve: %.1f above Card Games at the start, %.1f at its end; falling %.1f degrees at the start, %.1f at its end (before the block\'s turn)'
+                  % (v['id'], -fl['start_y'], -fl['end_y'], fl['slope'], fl['end_slope']))
         print('%-22s %3s px on the bar, big capitals %2s px, small %s px'
               % (v['id'], fmt(lay['ratio'] * 32, 0), fmt(cap_px(lay, lay['shaped'][-1], 32), 0), fmt(cap_px(lay, lay['shaped'][0], 32), 0)))
 
@@ -1373,8 +1410,8 @@ PAGE = r'''<!DOCTYPE html>
 <body>
 %(defs)s
 <header class="ll-head">
-  <h1>The logo: 12a.3, World of on the same line</h1>
-  <p>Holger, 27 Sep, on the F rows: still not good enough; the text is too big and does not feel like a continuation of the last card. It should have the same arch and rotation as 12a.3, but World of should have the same start and rotation as Card Games and feel like a continuation of the card, centred on the last card. So: 12a.3 exactly, its bowl, its four degrees and its size, with World of flush left on the same line, and the block centred on the front card, six ways. The keepers stay as they are. Every row has a number and a name (say &ldquo;G3&rdquo;). Each row: the logo at 64px, then the site&rsquo;s bar at a desktop width with the logo 32px tall, and a phone with it 24px tall.</p>
+  <h1>The logo: 12a.3, World of on the same curve</h1>
+  <p>Holger, 27 Sep, on the last rows: World of does not have the same arch and rotation as Card Games. Now it does. 12a.3 as it is, its bowl, its four degrees and its size, and World of laid on the very same curve, one line-space up, starting where Card Games starts and turned as it is turned, so the two lines are one band falling away from the card. Six rows: the curve itself, World of on a bowl of its own for comparison, the bolder World of, closer to the card, on the card&rsquo;s edge, and a step smaller. The keepers stay as they are. Every row has a number and a name (say &ldquo;G3&rdquo;). Each row: the logo at 64px, then the site&rsquo;s bar at a desktop width with the logo 32px tall, and a phone with it 24px tall.</p>
   <div class="ll-switches"><button id="llToday" type="button"></button><button id="llTall" type="button"></button><button id="llZoom" type="button"></button></div>
 </header>
 <main class="ll-page">
