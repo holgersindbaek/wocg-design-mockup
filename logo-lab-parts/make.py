@@ -1174,27 +1174,24 @@ FAMILIES = [
     dict(key='1a', title='1a Bolder World of', lead='GLCA SemiBold on the small line over Medium on the big one. Kept as it is.'),
     dict(key='12a', title='12a Bowl, and 12a.3', lead='Card Games curving down under World of; in 12a.3 the big line is turned four degrees so it falls away from the front card\u2019s corner. Kept as they are.'),
     dict(key='12f', title='12f.3 Arc onto the words', lead='World of in SemiBold on a gentle arc, the gap closed so the arc\u2019s ends rest on the C and the s. Kept as it is.'),
-    dict(key='G', title='G4 Closer to the card, as it was', lead='The closest so far: World of on Card Games\u2019 own curve, the gap measured from the card\u2019s edge, the block centred on the card. Kept for the comparison.'),
-    dict(key='H', title='H G4 with the three fixes', lead='Holger: the two lines should start in the same place in relation to their rotation, so that both sit the same distance from the card; they should not overlap, so more distance between them; and the two lines should be centred on the line of the rotated big card. So: the two starts on one line that leans like the card\u2019s right edge, so World of and Card Games each begin the same 16 from the edge; the air between the lines doubled; and the block\u2019s midpoint set on the front card\u2019s centre line carried on past its edge.'),
+    dict(key='H', title='H5 Bolder World of, as it was', lead='The closest so far: 1a\u2019s SemiBold World of on Card Games\u2019 own curve, the two starts on the card\u2019s lean 16 from its edge, the gap between the lines 0.30 of the capitals, the block on the card\u2019s centre line. Kept for the comparison.'),
+    dict(key='I', title='I H5 with more air and more room', lead='Holger: H5 is the closest; it should be a bit further from the bottom line and a bit further from the card. So the gap between World of and Card Games grows, and the whole block moves out from the card, both starts still the same distance from its edge. The rows step the two amounts, and two of them move one thing only.'),
 ]
 
 SB = L('World of', 'glca-600', 0.56)  # 1a's small line
 BOWL = dict(align='center', arc=-0.05)
 
 
-def G(num, name, vid, title, lead, **kw):
-    v = dict(id=vid, num=num, name=name, title=title, lead=lead, family='G', layout='block', mark='fan', follow=True,
-             lines=[L('World of', 'glca-500', 0.52), L('Card Games', 'glca-500', 1.0, arc=-0.05)], gap=0.14, angle=4, place='card', gapFrom='fan', markGap=0.16)
-    v.update(kw)
-    return v
-
-
 def H(num, name, vid, title, lead, **kw):
     v = dict(id=vid, num=num, name=name, title=title, lead=lead, family='H', layout='block', mark='fan', follow=True,
-             lines=[L('World of', 'glca-500', 0.52), L('Card Games', 'glca-500', 1.0, arc=-0.05)], gap=0.30, angle=4,
+             lines=[SB, L('Card Games', 'glca-500', 1.0, arc=-0.05)], gap=0.30, angle=4,
              startAlign='card', anchor='starts', place='line', markGap=0.16)
     v.update(kw)
     return v
+
+
+def I(num, name, vid, title, lead, **kw):
+    return H(num, name, vid, title, lead, family='I', **kw)
 
 
 VARIATIONS = [
@@ -1202,14 +1199,16 @@ VARIATIONS = [
     V('12a', 'Bowl', '12a-bowl', 'Card Games curves down, World of stays straight', 'The big line dips like a smile under a straight small line.', L('World of', 'glca-500', 0.52, align='center'), big=L('Card Games', 'glca-500', 1.0, **BOWL), gap=0.14),
     V('12a.3', 'Falling from the card', '12a3-falling', 'The bowl turned four degrees, World of straight', 'The big line starts up by the front card\u2019s corner and falls away to the right, then rises.', L('World of', 'glca-500', 0.52, align='center'), big=L('Card Games', 'glca-500', 1.0, rot=-4, **BOWL), gap=0.14, markNudge=0.04),
     V('12f.3', 'Onto the words', '12f3-hug', 'The bold arc pulled down onto Card Games', 'World of in SemiBold on a gentle arc, the gap closed, so the arc\u2019s ends rest on the C and the s.', L('World of', 'glca-600', 0.52, align='center', arc=0.09), gap=0.02, family='12f'),
-    G('G4', 'Closer to the card', 'g4-closer', 'World of on Card Games\u2019 curve, the gap measured from the card\u2019s edge', 'As Holger saw it: World of starts at the same x as Card Games, so it sits nearer the leaning card than Card Games does; the lines almost touch; the block is centred on the card\u2019s centre, not on its line.', gapFrom='edge'),
-    H('H1', 'The three fixes', 'h1-fixes', 'G4 with the starts on the card\u2019s lean, twice the air, and the block on the card\u2019s centre line', 'World of and Card Games each begin 16 from the card\u2019s right edge, on one line leaning as the edge leans. The gap between the lines is 0.30 of the capitals instead of 0.14. The midpoint between the two starts sits on the front card\u2019s centre line, carried on past its edge, so the words hang where the card points.'),
-    H('H2', 'A little less air', 'h2-less-air', 'H1 with the gap between the lines at 0.22', 'Between G4\u2019s 0.14 and H1\u2019s 0.30.', gap=0.22),
-    H('H3', 'More air', 'h3-more-air', 'H1 with the gap between the lines at 0.40', 'The lines clearly apart, World of a label over Card Games.', gap=0.40),
-    H('H4', 'Starts square to the lines', 'h4-square', 'H1 with the two starts aligned square to the lines themselves', 'The other reading of \u201cin relation to their rotation\u201d: the starts on a line at right angles to the lines\u2019 own direction where they begin (they fall at twelve degrees there), which leans a little more than the card\u2019s edge, so World of sits a touch further from the card than Card Games.', startAlign='lines'),
-    H('H5', 'Bolder World of', 'h5-bolder', 'H1 with 1a\u2019s SemiBold World of', 'The small line a weight up and a little bigger, as in 1a.', lines=[SB, L('Card Games', 'glca-500', 1.0, arc=-0.05)]),
-    H('H6', 'Turned with the card', 'h6-ten', 'H1 with the block at the card\u2019s own ten degrees', 'The block leaning as the front card leans, so its centre line is the card\u2019s centre line all the way along, not only at the start. The one row that leaves 12a.3\u2019s four degrees.', angle=10),
+    H('H5', 'Bolder World of', 'h5-bolder', 'World of in SemiBold on the curve, with the three fixes', 'As Holger saw it: the gap between the lines 0.30 of the capitals, both starts 16 from the card\u2019s edge.'),
+    I('I1', 'A bit more of both', 'i1-both', 'H5 with the gap between the lines at 0.40 and the block 22 from the card', 'World of a third further from Card Games, and the whole block six of the fan\u2019s 100 further from the card\u2019s edge.'),
+    I('I2', 'Half the step', 'i2-half', 'H5 with the gap at 0.35 and the block 19 from the card', 'The same two moves, half as far.', gap=0.35, markGap=0.19),
+    I('I3', 'A bigger step', 'i3-bigger', 'H5 with the gap at 0.46 and the block 26 from the card', 'The same two moves, half as far again.', gap=0.46, markGap=0.26),
+    I('I4', 'More air only', 'i4-air', 'H5 with the gap at 0.40, the block where it was', 'Only World of moves: further from the bottom line, the block still 16 from the card.', gap=0.40, markGap=0.16),
+    I('I5', 'More room only', 'i5-room', 'H5 with the block 22 from the card, the gap where it was', 'Only the block moves: further from the card, the lines as close as in H5.', gap=0.30, markGap=0.22),
 ]
+for v in VARIATIONS:
+    if v['num'] == 'I1':
+        v.update(gap=0.40, markGap=0.22)
 TODAY_W32 = 170  # logo.png, 510x96, drawn at 32px
 
 
@@ -1460,8 +1459,8 @@ PAGE = r'''<!DOCTYPE html>
 <body>
 %(defs)s
 <header class="ll-head">
-  <h1>The logo: G4 with the three fixes</h1>
-  <p>Holger, 27 Sep: G4 seems the closest, but the two lines should start in the same place in relation to their rotation, so that they both have the same distance to the card; they should not overlap, so there should be more distance between them; and the two lines should be centred on the line of the rotated big card. So: the two starts on one line that leans as the card&rsquo;s right edge leans, each the same distance from it; the air between the lines doubled; and the block&rsquo;s midpoint on the front card&rsquo;s centre line carried on. Six rows on that, and G4 kept as it was for the comparison. The keepers stay as they are. Every row has a number and a name (say &ldquo;H2&rdquo;). Each row: the logo at 64px, then the site&rsquo;s bar at a desktop width with the logo 32px tall, and a phone with it 24px tall.</p>
+  <h1>The logo: H5 with more air and more room</h1>
+  <p>Holger, 27 Sep: H5 is the closest; it should be a bit further from the bottom line and a bit further from the card. So World of moves up from Card Games, and the whole block moves out from the card with both starts still the same distance from its edge. Five rows step the two amounts, two of them move one thing only, and H5 is kept as it was for the comparison. The keepers stay as they are. Every row has a number and a name (say &ldquo;I2&rdquo;). Each row: the logo at 64px, then the site&rsquo;s bar at a desktop width with the logo 32px tall, and a phone with it 24px tall.</p>
   <div class="ll-switches"><button id="llToday" type="button"></button><button id="llTall" type="button"></button><button id="llZoom" type="button"></button></div>
 </header>
 <main class="ll-page">
