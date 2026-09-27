@@ -1054,12 +1054,17 @@ def layout_block(v, boxes, pips, marks, ref):
     gap = v.get('markGap', 0.16) * MH
     edge_x = lambda yy: tr[0] + (yy - tr[1]) * (br[0] - tr[0]) / (br[1] - tr[1])
     if v.get('place') == 'line':
-        # the anchor on the front card's centre line carried on past its edge, the gap measured from the edge at that height
+        # the anchor on the front card's centre line carried on past its edge, the gap measured from the edge at that
+        # height; gapAt 'big' measures it to the big line's start instead, so the small line can move without moving it
         mx, my = (tl[0] + tr[0] + br[0] + bl[0]) / 4, (tl[1] + tr[1] + br[1] + bl[1]) / 4
         lean = (tr[1] - tl[1]) / (tr[0] - tl[0])
+        offx, offy = 0.0, 0.0
+        if v.get('gapAt') == 'big':
+            sC = first_ink(shaped[-1])
+            offx, offy = R0.transformPoint((sC[0] + shaped[-1]['ox'], sC[1] + shaped[-1]['oy']))
         cy = my
         for _ in range(8):
-            ax = edge_x(cy) + gap
+            ax = edge_x(cy + offy) + gap - offx
             cy = my + (ax - mx) * lean + v.get('nudge', 0.0) * MH
     else:
         cy = (tr[1] + br[1]) / 2 if v.get('place') == 'edge' else (tl[1] + tr[1] + br[1] + bl[1]) / 4
@@ -1179,8 +1184,8 @@ FAMILIES = [
     dict(key='1a', title='1a Bolder World of', lead='GLCA SemiBold on the small line over Medium on the big one. Kept as it is.'),
     dict(key='12a', title='12a Bowl, and 12a.3', lead='Card Games curving down under World of; in 12a.3 the big line is turned four degrees so it falls away from the front card\u2019s corner. Kept as they are.'),
     dict(key='12f', title='12f.3 Arc onto the words', lead='World of in SemiBold on a gentle arc, the gap closed so the arc\u2019s ends rest on the C and the s. Kept as it is.'),
-    dict(key='I', title='I4 More air only, as it was', lead='The closest so far: 1a\u2019s SemiBold World of on Card Games\u2019 own curve, the gap between the lines 0.40 of the capitals, the two starts on the card\u2019s lean 16 from its edge, the block on the card\u2019s centre line. Kept for the comparison.'),
-    dict(key='J', title='J I4 with a bigger arch on World of, moved a little left', lead='Holger: the arch of the first line should be a bit bigger if it is to match the bottom line, and it should move a little to the left. So World of\u2019s circle shrinks, kept tangent to Card Games\u2019 at the start, so it begins at the same point in the same direction and bends faster from there; and its start moves left, half way from the card\u2019s lean back to the same x as the C. Three sizes of arch, the move all the way left, and then the block turned a bit counter-clockwise, because the lines\u2019 start (they fall at twelve degrees on the bowl, plus the block\u2019s four) does not quite match the big card\u2019s ten.'),
+    dict(key='J', title='J5 Turned back two degrees, as it was', lead='The closest so far: World of in GLCA SemiBold on a circle tangent to Card Games\u2019 at the start and two thirds its size, its start half way from the card\u2019s lean back to the C\u2019s x, the block at two degrees, the gap between the lines 0.40 of the capitals. Kept for the comparison.'),
+    dict(key='K', title='K J5 with World of moved to the right', lead='Holger: J5 is the best; move World of to the right a bit. World of\u2019s start moves right in three steps: to the card\u2019s lean (both starts the same distance from the card\u2019s edge, round 13\u2019s rule), and one and two steps past it. Card Games stays where it is, 16 from the edge; only World of moves. The fourth row answers the other question: World of has been GLCA SemiBold since 1a; here it is in GLCA Medium like Card Games, for the comparison.'),
 ]
 
 SB = L('World of', 'glca-600', 0.56)  # 1a's small line
@@ -1201,18 +1206,22 @@ def J(num, name, vid, title, lead, **kw):
     return H(num, name, vid, title, lead, **d)
 
 
+def K(num, name, vid, title, lead, **kw):
+    d = dict(family='K', angle=2, startLean=1.0, gapAt='big')
+    d.update(kw)
+    return J(num, name, vid, title, lead, **d)
+
+
 VARIATIONS = [
     V('1a', 'Bolder World of', '01a-bolder', 'The small line in GLCA SemiBold', 'World of a weight up, so the small line holds its own against Card Games.', SB),
     V('12a', 'Bowl', '12a-bowl', 'Card Games curves down, World of stays straight', 'The big line dips like a smile under a straight small line.', L('World of', 'glca-500', 0.52, align='center'), big=L('Card Games', 'glca-500', 1.0, **BOWL), gap=0.14),
     V('12a.3', 'Falling from the card', '12a3-falling', 'The bowl turned four degrees, World of straight', 'The big line starts up by the front card\u2019s corner and falls away to the right, then rises.', L('World of', 'glca-500', 0.52, align='center'), big=L('Card Games', 'glca-500', 1.0, rot=-4, **BOWL), gap=0.14, markNudge=0.04),
     V('12f.3', 'Onto the words', '12f3-hug', 'The bold arc pulled down onto Card Games', 'World of in SemiBold on a gentle arc, the gap closed, so the arc\u2019s ends rest on the C and the s.', L('World of', 'glca-600', 0.52, align='center', arc=0.09), gap=0.02, family='12f'),
-    H('I4', 'More air only', 'i4-air', 'World of in SemiBold on the curve, the gap between the lines 0.40', 'As Holger saw it: World of on the concentric circle, its start on the card\u2019s lean.', family='I', gap=0.40),
-    J('J1', 'A bigger arch, a little left', 'j1-arch', 'World of\u2019s circle at two thirds of Card Games\u2019, its start half way back to the C', 'World of begins at the same point in the same direction as before and bends one and a half times as fast, so it turns from falling to level over its own length. Its start sits half way between the card\u2019s lean and the same x as the C.'),
-    J('J2', 'Bigger still', 'j2-arch-2', 'World of\u2019s circle at half of Card Games\u2019', 'Twice the bend: World of begins to rise again by its end.', smallCurve=2.0),
-    J('J3', 'Its own smile', 'j3-smile', 'World of\u2019s circle at the size its own five per cent bowl would give', 'The bend at which World of dips and rises over its own length as Card Games does over its: a small smile over a big one.', smallCurve=2.3),
-    J('J4', 'All the way left', 'j4-left', 'J1 with World of starting at the same x as the C', 'The start moved the whole way back, as G4 had it, so the W sits nearer the leaning card than the C does.', startLean=0.0),
-    J('J5', 'Turned back two degrees', 'j5-two', 'J1 with the block at two degrees instead of four', 'Both lines two degrees counter-clockwise, so their start falls at fourteen degrees instead of sixteen.', angle=2),
-    J('J6', 'At the card\u2019s lean', 'j6-card-lean', 'J1 with the block turned so the lines\u2019 start falls at the card\u2019s own ten degrees', 'Both lines six degrees counter-clockwise: the block at minus two, so the twelve degrees of the bowl\u2019s start less two is the ten the card leans. The words leave the card along its top edge\u2019s line.', angle=-2),
+    J('J5', 'Turned back two degrees', 'j5-two', 'The bigger arch, the start half way left, the block at two degrees', 'As Holger saw it.', angle=2),
+    K('K1', 'To the card\u2019s lean', 'k1-lean', 'J5 with World of\u2019s start on the card\u2019s lean', 'World of moves right until its start and Card Games\u2019 sit the same distance from the card\u2019s edge, on a line leaning as the edge leans.'),
+    K('K2', 'A step past it', 'k2-past', 'J5 with World of\u2019s start one step past the card\u2019s lean', 'The same move again: World of starts a little further from the card than Card Games does.', startLean=1.75),
+    K('K3', 'Two steps past it', 'k3-past-2', 'J5 with World of\u2019s start two steps past the card\u2019s lean', 'And again.', startLean=2.5),
+    K('K4', 'Not bolder', 'k4-medium', 'K1 with World of in GLCA Medium, the weight of Card Games', 'The answer to the question: World of has been in GLCA SemiBold since 1a. This is the same row in Medium, at the same size.', lines=[L('World of', 'glca-500', 0.56), L('Card Games', 'glca-500', 1.0, arc=-0.05)]),
 ]
 TODAY_W32 = 170  # logo.png, 510x96, drawn at 32px
 
@@ -1464,8 +1473,8 @@ PAGE = r'''<!DOCTYPE html>
 <body>
 %(defs)s
 <header class="ll-head">
-  <h1>The logo: I4 with a bigger arch on World of, moved a little left</h1>
-  <p>Holger, 27 Sep: I4 is best for now; the arch of the first line should be a bit bigger to match the bottom line, and it should move a little to the left; then a variation with both lines turned a bit counter-clockwise, since the lines&rsquo; start rotation does not quite match the big card. So: World of&rsquo;s circle shrinks, tangent to Card Games&rsquo; at the start, in three sizes; its start moves left, half way or all the way; and the block turns back two degrees, or six so that the lines leave the card at its own ten. I4 is kept as it was for the comparison. The keepers stay as they are. Every row has a number and a name (say &ldquo;J2&rdquo;). Each row: the logo at 64px, then the site&rsquo;s bar at a desktop width with the logo 32px tall, and a phone with it 24px tall.</p>
+  <h1>The logo: J5 with World of moved to the right</h1>
+  <p>Holger, 27 Sep: J5 is the best; move World of to the right a bit; and is that a bolder font on World of? It is: GLCA SemiBold, 1a&rsquo;s small line, over Card Games in GLCA Medium. So: World of&rsquo;s start moved right in three steps, to the card&rsquo;s lean and one and two steps past it, and a fourth row with World of in Medium for the comparison. J5 is kept as it was. The keepers stay as they are. Every row has a number and a name (say &ldquo;K2&rdquo;). Each row: the logo at 64px, then the site&rsquo;s bar at a desktop width with the logo 32px tall, and a phone with it 24px tall.</p>
   <div class="ll-switches"><button id="llToday" type="button"></button><button id="llTall" type="button"></button><button id="llZoom" type="button"></button></div>
 </header>
 <main class="ll-page">
