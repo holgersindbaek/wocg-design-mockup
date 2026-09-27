@@ -962,11 +962,13 @@ def fan_cards(boxes, marks):
     return {k: [((x - b['x']) * f, (y - b['y']) * f) for x, y in fan_card_corners(marks, cid)] for k, cid in FAN_CARDS}
 
 
-def follow_curve(small, big, x_extra=0.0):
+def follow_curve(small, big, x_extra=0.0, curve=1.0):
     """The small line laid along the big line's bowl: on the concentric circle one line-space nearer the bowl's
     centre, starting at the same x as the big line, its letters turned as the big line's are at that point. So
     the two lines are the same curve and the same turn, and the small line, being shorter, rides the falling
-    part of it. Called after the flat stacking, which gives the lines' distance at the start."""
+    part of it. curve > 1 bends the small line more: its circle shrinks by that factor, kept tangent to the
+    concentric one at the start, so it begins at the same point in the same direction and turns faster from
+    there. Called after the flat stacking, which gives the lines' distance at the start."""
     ln = big['ln']
     W = big['adv'] * big['s']
     rise = abs(ln['arc']) * W
@@ -978,19 +980,21 @@ def follow_curve(small, big, x_extra=0.0):
     Rp = R - d * math.cos(ths)
     ths = -math.asin(W / (2 * Rp))
     cx, cy = W / 2, -(R - rise)
+    R2 = Rp / curve
+    cx, cy = cx + (Rp - R2) * math.sin(ths), cy + (Rp - R2) * math.cos(ths)
     x_shift = big['ink_flat'][0] - small['ink_flat'][0] + x_extra
     sm = small['s']
     out = []
     for g, x in zip(small['names'], small['xs']):
         adv = small['face'].hmtx[g][0] * sm
-        th = ths + (x * sm + adv / 2 + x_shift) * (L / W) / Rp
-        px, py = cx + Rp * math.sin(th), cy + Rp * math.cos(th)
+        th = ths + (x * sm + adv / 2 + x_shift) * (L / W) / R2
+        px, py = cx + R2 * math.sin(th), cy + R2 * math.cos(th)
         ux, uy = math.cos(th), -math.sin(th)
         out.append(Transform(sm * ux, sm * uy, sm * uy, -sm * ux, px - ux * adv / 2, py - uy * adv / 2))
     small['t0'] = out
     small['ink'] = small['face'].bounds_t(small['names'], out)
     small['ox'], small['oy'] = big['ox'], big['oy']
-    small['followed'] = dict(d=d, start_y=cy + Rp * math.cos(ths), end_y=py, slope=math.degrees(-ths), end_slope=math.degrees(-th))
+    small['followed'] = dict(d=d, start_y=cy + R2 * math.cos(ths), end_y=py, slope=math.degrees(-ths), end_slope=math.degrees(-th))
 
 
 def first_ink(sh):
@@ -1027,13 +1031,14 @@ def layout_block(v, boxes, pips, marks, ref):
             small_, big_ = shaped[0], shaped[-1]
             dy = (first_ink(big_)[1] + big_['oy']) - (first_ink(small_)[1] + small_['oy'])
             if v['startAlign'] == 'card':
-                tilt = math.degrees(math.atan2(tr[0] - br[0], br[1] - tr[1])) - angle
+                # the starts on a line leaning like the card's edge, or a share of the way from the block's own vertical to it
+                tilt = (math.degrees(math.atan2(tr[0] - br[0], br[1] - tr[1])) - angle) * v.get('startLean', 1.0)
             else:
                 W_ = big_['adv'] * big_['s']
                 rise_ = abs(big_['ln']['arc']) * W_
                 tilt = math.degrees(math.asin(W_ / (2 * ((W_ * W_ / 4 + rise_ * rise_) / (2 * rise_)))))
             x_extra = dy * math.tan(math.radians(tilt))
-        follow_curve(shaped[0], shaped[-1], x_extra)
+        follow_curve(shaped[0], shaped[-1], x_extra, v.get('smallCurve', 1.0))
     block_h, block_w = y, max(width(sh['ink']) for sh in shaped)
     k = v.get('capShare', ref['capShare']) * v.get('size', 1.0) * MH / cap_b
     if v.get('anchor') == 'starts':
@@ -1174,8 +1179,8 @@ FAMILIES = [
     dict(key='1a', title='1a Bolder World of', lead='GLCA SemiBold on the small line over Medium on the big one. Kept as it is.'),
     dict(key='12a', title='12a Bowl, and 12a.3', lead='Card Games curving down under World of; in 12a.3 the big line is turned four degrees so it falls away from the front card\u2019s corner. Kept as they are.'),
     dict(key='12f', title='12f.3 Arc onto the words', lead='World of in SemiBold on a gentle arc, the gap closed so the arc\u2019s ends rest on the C and the s. Kept as it is.'),
-    dict(key='H', title='H5 Bolder World of, as it was', lead='The closest so far: 1a\u2019s SemiBold World of on Card Games\u2019 own curve, the two starts on the card\u2019s lean 16 from its edge, the gap between the lines 0.30 of the capitals, the block on the card\u2019s centre line. Kept for the comparison.'),
-    dict(key='I', title='I H5 with more air and more room', lead='Holger: H5 is the closest; it should be a bit further from the bottom line and a bit further from the card. So the gap between World of and Card Games grows, and the whole block moves out from the card, both starts still the same distance from its edge. The rows step the two amounts, and two of them move one thing only.'),
+    dict(key='I', title='I4 More air only, as it was', lead='The closest so far: 1a\u2019s SemiBold World of on Card Games\u2019 own curve, the gap between the lines 0.40 of the capitals, the two starts on the card\u2019s lean 16 from its edge, the block on the card\u2019s centre line. Kept for the comparison.'),
+    dict(key='J', title='J I4 with a bigger arch on World of, moved a little left', lead='Holger: the arch of the first line should be a bit bigger if it is to match the bottom line, and it should move a little to the left. So World of\u2019s circle shrinks, kept tangent to Card Games\u2019 at the start, so it begins at the same point in the same direction and bends faster from there; and its start moves left, half way from the card\u2019s lean back to the same x as the C. Three sizes of arch, the move all the way left, and then the block turned a bit counter-clockwise, because the lines\u2019 start (they fall at twelve degrees on the bowl, plus the block\u2019s four) does not quite match the big card\u2019s ten.'),
 ]
 
 SB = L('World of', 'glca-600', 0.56)  # 1a's small line
@@ -1190,8 +1195,10 @@ def H(num, name, vid, title, lead, **kw):
     return v
 
 
-def I(num, name, vid, title, lead, **kw):
-    return H(num, name, vid, title, lead, family='I', **kw)
+def J(num, name, vid, title, lead, **kw):
+    d = dict(family='J', gap=0.40, smallCurve=1.5, startLean=0.5)
+    d.update(kw)
+    return H(num, name, vid, title, lead, **d)
 
 
 VARIATIONS = [
@@ -1199,16 +1206,14 @@ VARIATIONS = [
     V('12a', 'Bowl', '12a-bowl', 'Card Games curves down, World of stays straight', 'The big line dips like a smile under a straight small line.', L('World of', 'glca-500', 0.52, align='center'), big=L('Card Games', 'glca-500', 1.0, **BOWL), gap=0.14),
     V('12a.3', 'Falling from the card', '12a3-falling', 'The bowl turned four degrees, World of straight', 'The big line starts up by the front card\u2019s corner and falls away to the right, then rises.', L('World of', 'glca-500', 0.52, align='center'), big=L('Card Games', 'glca-500', 1.0, rot=-4, **BOWL), gap=0.14, markNudge=0.04),
     V('12f.3', 'Onto the words', '12f3-hug', 'The bold arc pulled down onto Card Games', 'World of in SemiBold on a gentle arc, the gap closed, so the arc\u2019s ends rest on the C and the s.', L('World of', 'glca-600', 0.52, align='center', arc=0.09), gap=0.02, family='12f'),
-    H('H5', 'Bolder World of', 'h5-bolder', 'World of in SemiBold on the curve, with the three fixes', 'As Holger saw it: the gap between the lines 0.30 of the capitals, both starts 16 from the card\u2019s edge.'),
-    I('I1', 'A bit more of both', 'i1-both', 'H5 with the gap between the lines at 0.40 and the block 22 from the card', 'World of a third further from Card Games, and the whole block six of the fan\u2019s 100 further from the card\u2019s edge.'),
-    I('I2', 'Half the step', 'i2-half', 'H5 with the gap at 0.35 and the block 19 from the card', 'The same two moves, half as far.', gap=0.35, markGap=0.19),
-    I('I3', 'A bigger step', 'i3-bigger', 'H5 with the gap at 0.46 and the block 26 from the card', 'The same two moves, half as far again.', gap=0.46, markGap=0.26),
-    I('I4', 'More air only', 'i4-air', 'H5 with the gap at 0.40, the block where it was', 'Only World of moves: further from the bottom line, the block still 16 from the card.', gap=0.40, markGap=0.16),
-    I('I5', 'More room only', 'i5-room', 'H5 with the block 22 from the card, the gap where it was', 'Only the block moves: further from the card, the lines as close as in H5.', gap=0.30, markGap=0.22),
+    H('I4', 'More air only', 'i4-air', 'World of in SemiBold on the curve, the gap between the lines 0.40', 'As Holger saw it: World of on the concentric circle, its start on the card\u2019s lean.', family='I', gap=0.40),
+    J('J1', 'A bigger arch, a little left', 'j1-arch', 'World of\u2019s circle at two thirds of Card Games\u2019, its start half way back to the C', 'World of begins at the same point in the same direction as before and bends one and a half times as fast, so it turns from falling to level over its own length. Its start sits half way between the card\u2019s lean and the same x as the C.'),
+    J('J2', 'Bigger still', 'j2-arch-2', 'World of\u2019s circle at half of Card Games\u2019', 'Twice the bend: World of begins to rise again by its end.', smallCurve=2.0),
+    J('J3', 'Its own smile', 'j3-smile', 'World of\u2019s circle at the size its own five per cent bowl would give', 'The bend at which World of dips and rises over its own length as Card Games does over its: a small smile over a big one.', smallCurve=2.3),
+    J('J4', 'All the way left', 'j4-left', 'J1 with World of starting at the same x as the C', 'The start moved the whole way back, as G4 had it, so the W sits nearer the leaning card than the C does.', startLean=0.0),
+    J('J5', 'Turned back two degrees', 'j5-two', 'J1 with the block at two degrees instead of four', 'Both lines two degrees counter-clockwise, so their start falls at fourteen degrees instead of sixteen.', angle=2),
+    J('J6', 'At the card\u2019s lean', 'j6-card-lean', 'J1 with the block turned so the lines\u2019 start falls at the card\u2019s own ten degrees', 'Both lines six degrees counter-clockwise: the block at minus two, so the twelve degrees of the bowl\u2019s start less two is the ten the card leans. The words leave the card along its top edge\u2019s line.', angle=-2),
 ]
-for v in VARIATIONS:
-    if v['num'] == 'I1':
-        v.update(gap=0.40, markGap=0.22)
 TODAY_W32 = 170  # logo.png, 510x96, drawn at 32px
 
 
@@ -1459,8 +1464,8 @@ PAGE = r'''<!DOCTYPE html>
 <body>
 %(defs)s
 <header class="ll-head">
-  <h1>The logo: H5 with more air and more room</h1>
-  <p>Holger, 27 Sep: H5 is the closest; it should be a bit further from the bottom line and a bit further from the card. So World of moves up from Card Games, and the whole block moves out from the card with both starts still the same distance from its edge. Five rows step the two amounts, two of them move one thing only, and H5 is kept as it was for the comparison. The keepers stay as they are. Every row has a number and a name (say &ldquo;I2&rdquo;). Each row: the logo at 64px, then the site&rsquo;s bar at a desktop width with the logo 32px tall, and a phone with it 24px tall.</p>
+  <h1>The logo: I4 with a bigger arch on World of, moved a little left</h1>
+  <p>Holger, 27 Sep: I4 is best for now; the arch of the first line should be a bit bigger to match the bottom line, and it should move a little to the left; then a variation with both lines turned a bit counter-clockwise, since the lines&rsquo; start rotation does not quite match the big card. So: World of&rsquo;s circle shrinks, tangent to Card Games&rsquo; at the start, in three sizes; its start moves left, half way or all the way; and the block turns back two degrees, or six so that the lines leave the card at its own ten. I4 is kept as it was for the comparison. The keepers stay as they are. Every row has a number and a name (say &ldquo;J2&rdquo;). Each row: the logo at 64px, then the site&rsquo;s bar at a desktop width with the logo 32px tall, and a phone with it 24px tall.</p>
   <div class="ll-switches"><button id="llToday" type="button"></button><button id="llTall" type="button"></button><button id="llZoom" type="button"></button></div>
 </header>
 <main class="ll-page">
