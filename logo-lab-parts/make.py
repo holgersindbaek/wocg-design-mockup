@@ -997,6 +997,62 @@ def follow_curve(small, big, x_extra=0.0, curve=1.0):
     small['followed'] = dict(d=d, start_y=cy + R2 * math.cos(ths), end_y=py, slope=math.degrees(-ths), end_slope=math.degrees(-th))
 
 
+def stem_right(f, gname, share=0.5):
+    """The right side of a letter's upright stem, in glyph units: the outline's rightmost crossing of the line at
+    half the x-height, where a d or an f has nothing but its stem."""
+    from fontTools.pens.recordingPen import RecordingPen
+    pen = RecordingPen()
+    f.gs[gname].draw(pen)
+    y = share * f.xh
+    best = [None]
+
+    def seg(a, b):
+        if (a[1] - y) * (b[1] - y) <= 0 and a[1] != b[1]:
+            t = (y - a[1]) / (b[1] - a[1])
+            x = a[0] + t * (b[0] - a[0])
+            best[0] = x if best[0] is None else max(best[0], x)
+
+    def bez(points, n=24):
+        out = []
+        for i in range(n + 1):
+            t = i / n
+            P = list(points)
+            while len(P) > 1:
+                P = [((1 - t) * P[k][0] + t * P[k + 1][0], (1 - t) * P[k][1] + t * P[k + 1][1]) for k in range(len(P) - 1)]
+            out.append(P[0])
+        return out
+
+    def run(pts):
+        for a, b in zip(pts, pts[1:]):
+            seg(a, b)
+
+    cur = start = None
+    for op, args in pen.value:
+        if op == 'moveTo':
+            cur = start = args[0]
+        elif op == 'lineTo':
+            seg(cur, args[0])
+            cur = args[0]
+        elif op == 'curveTo':
+            run(bez([cur] + list(args)))
+            cur = args[-1]
+        elif op == 'qCurveTo':
+            offs, end = list(args[:-1]), args[-1]
+            prev = cur
+            for i, c in enumerate(offs):
+                mid = ((c[0] + offs[i + 1][0]) / 2, (c[1] + offs[i + 1][1]) / 2) if i < len(offs) - 1 else end
+                run(bez([prev, c, mid]))
+                prev = mid
+            if not offs:
+                seg(prev, end)
+            cur = end
+        elif op in ('closePath', 'endPath'):
+            if cur is not None and start is not None:
+                seg(cur, start)
+            cur = None
+    return best[0]
+
+
 def first_ink(sh):
     """The first letter's leftmost ink point, at the letter's mid height, in the line's own coordinates."""
     x0, y0, x1, y1 = sh['face'].bounds_t([sh['names'][0]], [sh['t0'][0]])
@@ -1187,11 +1243,11 @@ def V(num, name, vid, title, lead, small, gap=0.14, big=None, family=None, **kw)
 
 
 FAMILIES = [
-    dict(key='1a', title='1a Bolder World of', lead='GLCA SemiBold on the small line over Medium on the big one. Kept as it is.'),
+    dict(key='1a', title='1a Bolder World of, and a bit less wide', lead='GLCA SemiBold on the small line over Medium on the big one, kept as it is; and, at Holger\u2019s word, the same a bit less wide: the words at 78% of the fan\u2019s height instead of 85%, so the logo is 10px narrower on the bar.'),
     dict(key='12a', title='12a Bowl, and 12a.3', lead='Card Games curving down under World of; in 12a.3 the big line is turned four degrees so it falls away from the front card\u2019s corner. Kept as they are.'),
     dict(key='12f', title='12f.3 Arc onto the words', lead='World of in SemiBold on a gentle arc, the gap closed so the arc\u2019s ends rest on the C and the s. Kept as it is.'),
-    dict(key='L', title='L1 No turn, the starts as in K1, as it was', lead='The closest so far: the block level, World of in GLCA SemiBold on a circle tangent to Card Games\u2019 at the start and two thirds its size, the two starts on the card\u2019s lean, Card Games 16 from the card\u2019s edge, the block on the card\u2019s centre line, the gap between the lines 0.40 of the capitals. Kept for the comparison.'),
-    dict(key='M', title='M L1 with a smaller arch on World of, fitted to Card', lead='Holger: make the top line\u2019s arch a bit less, and the top line should fit in the space where it says Card, it is a bit too long now. So World of\u2019s circle grows back toward Card Games\u2019 (less bend), and World of is sized so that it ends over the end of the d, its start left where the lean rule puts it. Two rows step the arch with the fit, and two move one thing only.'),
+    dict(key='M', title='M1 Arch a bit less, fitted to Card, as it was', lead='The closest so far: the block level, World of in GLCA SemiBold on a circle tangent to Card Games\u2019 at the start and four fifths its size, sized so that its ink ends over the d\u2019s ink, the two starts on the card\u2019s lean, Card Games 16 from the card\u2019s edge, the block on the card\u2019s centre line, the gap between the lines 0.40 of the capitals. Kept for the comparison.'),
+    dict(key='N', title='N M1 a bit wider, stem to stem, and wider still', lead='Holger: use M1, but a bit wider, just so that the long parts of the d in Card and the f in of align on their right sides; then a bit wider still. So World of is sized until the right side of the f\u2019s stem sits on the right side of the d\u2019s stem (N1), and then two steps past it (N2, N3). M1 had the f\u2019s hook on the d\u2019s edge, which put the stem itself short of the d by the hook\u2019s reach.'),
 ]
 
 SB = L('World of', 'glca-600', 0.56)  # 1a's small line
@@ -1232,14 +1288,14 @@ def M(num, name, vid, title, lead, **kw):
 
 VARIATIONS = [
     V('1a', 'Bolder World of', '01a-bolder', 'The small line in GLCA SemiBold', 'World of a weight up, so the small line holds its own against Card Games.', SB),
+    V('1a.5', 'A bit less wide', '01a5-narrower', '1a with the words at 78% of the fan', 'The same lockup with the words a little smaller against the fan, so the whole is a little narrower. Round 2\u2019s five heights had 85% as Holger\u2019s pick; this is the next step down.', SB, family='1a', markScale=100.0 / 78),
     V('12a', 'Bowl', '12a-bowl', 'Card Games curves down, World of stays straight', 'The big line dips like a smile under a straight small line.', L('World of', 'glca-500', 0.52, align='center'), big=L('Card Games', 'glca-500', 1.0, **BOWL), gap=0.14),
     V('12a.3', 'Falling from the card', '12a3-falling', 'The bowl turned four degrees, World of straight', 'The big line starts up by the front card\u2019s corner and falls away to the right, then rises.', L('World of', 'glca-500', 0.52, align='center'), big=L('Card Games', 'glca-500', 1.0, rot=-4, **BOWL), gap=0.14, markNudge=0.04),
     V('12f.3', 'Onto the words', '12f3-hug', 'The bold arc pulled down onto Card Games', 'World of in SemiBold on a gentle arc, the gap closed, so the arc\u2019s ends rest on the C and the s.', L('World of', 'glca-600', 0.52, align='center', arc=0.09), gap=0.02, family='12f'),
-    L0('L1', 'No turn, the starts as in K1', 'l1-no-turn', 'The block level, World of on the two-thirds circle at 56%', 'As Holger saw it.'),
-    M('M1', 'Arch a bit less, fitted to Card', 'm1-less-fit', 'World of\u2019s circle at four fifths of Card Games\u2019, sized to end over the d', 'Less bend than L1\u2019s two thirds, more than the concentric circle. World of ends where Card ends.'),
-    M('M2', 'The bottom line\u2019s own arch, fitted', 'm2-same-fit', 'World of on the concentric circle, sized to end over the d', 'No extra bend at all: World of bends exactly as Card Games does under it, as I4 had it, and ends where Card ends.', smallCurve=1.0),
-    M('M3', 'The arch as it was, fitted', 'm3-was-fit', 'L1\u2019s two-thirds circle, World of sized to end over the d', 'Only the length changes.', smallCurve=1.5),
-    M('M4', 'Arch a bit less, the length as it was', 'm4-less-only', 'World of\u2019s circle at four fifths, at 56% as before', 'Only the arch changes.', fitTo=None),
+    M('M1', 'Arch a bit less, fitted to Card', 'm1-less-fit', 'World of\u2019s circle at four fifths of Card Games\u2019, its ink ending over the d\u2019s ink', 'As Holger saw it.'),
+    M('N1', 'Stem to stem', 'n1-stems', 'M1 with the f\u2019s stem on the d\u2019s stem', 'World of a little wider than M1, so that the right side of the f\u2019s long stroke sits on the right side of the d\u2019s. The f\u2019s hook reaches a little past the d.', family='N', fitTo='stems'),
+    M('N2', 'A bit wider still', 'n2-wider', 'N1 with the f\u2019s stem three past the d\u2019s', 'World of wider again: the f\u2019s stem three of the fan\u2019s 100 past the d\u2019s stem.', family='N', fitTo='stems', fitPast=3.0),
+    M('N3', 'Wider again', 'n3-wider-2', 'N1 with the f\u2019s stem six past the d\u2019s', 'And the same step once more.', family='N', fitTo='stems', fitPast=6.0),
 ]
 TODAY_W32 = 170  # logo.png, 510x96, drawn at 32px
 
@@ -1372,18 +1428,29 @@ def main():
     rows = {}
     check_rows = []
     for v in VARIATIONS:
-        if v.get('fitTo') == 'word':
-            # World of sized so that it ends over the end of Card, its start left where the start rule puts it
+        if v.get('fitTo') in ('word', 'stems'):
+            # World of sized so that it ends over the end of Card ('word': the f's ink on the d's ink; 'stems': the right
+            # side of the f's stem on the right side of the d's stem), its start left where the start rule puts it
             v['lines'] = [dict(v['lines'][0]), v['lines'][1]]
             for _ in range(8):
                 lay = layout_block(v, boxes, pips, marks, ref)
                 f_ = lay['fit']
-                have, want = f_['small_x1'] - f_['small_x0'], f_['word_x1'] - f_['small_x0']
+                if v['fitTo'] == 'stems':
+                    small, big = lay['shaped'][0], lay['shaped'][-1]
+                    n = len(big['text'].split(' ')[0])
+                    xd = big['T_final'][n - 1].transformPoint((stem_right(big['face'], big['names'][n - 1]), 0.5 * big['face'].xh))[0]
+                    xf = small['T_final'][-1].transformPoint((stem_right(small['face'], small['names'][-1]), 0.5 * small['face'].xh))[0]
+                    have, want = xf - f_['small_x0'], xd + v.get('fitPast', 0.0) - f_['small_x0']
+                    f_.update(f_stem=xf, d_stem=xd)
+                else:
+                    have, want = f_['small_x1'] - f_['small_x0'], f_['word_x1'] - f_['small_x0']
                 if abs(have - want) < 0.05:
                     break
                 v['lines'][0]['size'] *= want / have
             print('%-22s World of fitted to Card: size %.3f of the big line (was 0.56); it starts %.1f right of the C and ends %.1f right of the d'
                   % (v['id'], v['lines'][0]['size'], f_['small_x0'] - f_['word_x0'], f_['small_x1'] - f_['word_x1']))
+            if 'f_stem' in f_:
+                print('%-22s the f\'s stem ends %.2f right of the d\'s stem; the f\'s hook reaches %.1f past its stem' % (v['id'], f_['f_stem'] - f_['d_stem'], f_['small_x1'] - f_['f_stem']))
         lay = (layout_block(v, boxes, pips, marks, ref) if v.get('layout') == 'block' else layout_badge(v, boxes, pips) if v.get('layout') == 'badge'
                else layout_middle(v, boxes, pips) if v.get('layout') == 'middle' else layout(v, boxes, pips))
         if lay.get('fit') and not v.get('fitTo'):
@@ -1506,8 +1573,8 @@ PAGE = r'''<!DOCTYPE html>
 <body>
 %(defs)s
 <header class="ll-head">
-  <h1>The logo: L1 with a smaller arch on World of, fitted to Card</h1>
-  <p>Holger, 27 Sep: L1 is best; make the top line&rsquo;s arch a bit less, and the top line should fit in the space where it says Card, it is a bit too long now. So World of bends less, and it is sized to end over the end of the d with its start left where the lean rule puts it. Two rows step the arch with the fit, two move one thing only, and L1 is kept as it was. The keepers stay as they are. Every row has a number and a name (say &ldquo;M2&rdquo;). Each row: the logo at 64px, then the site&rsquo;s bar at a desktop width with the logo 32px tall, and a phone with it 24px tall.</p>
+  <h1>The logo: M1 a bit wider, stem to stem, and wider still</h1>
+  <p>Holger, 27 Sep: use M1, but a bit wider, just so that the long parts of the d in Card and the f in of align on their right sides. So World of is sized until the right side of the f&rsquo;s stem sits on the right side of the d&rsquo;s stem, and then, at his next word, two steps wider still. M1 is kept as it was. And 1a a bit less wide: the words at 78%% of the fan instead of 85%%, as row 1a.5 beside 1a. The keepers stay as they are. Every row has a number and a name. Each row: the logo at 64px, then the site&rsquo;s bar at a desktop width with the logo 32px tall, and a phone with it 24px tall.</p>
   <div class="ll-switches"><button id="llToday" type="button"></button><button id="llTall" type="button"></button><button id="llZoom" type="button"></button></div>
 </header>
 <main class="ll-page">
