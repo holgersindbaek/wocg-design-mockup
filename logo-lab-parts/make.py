@@ -1334,24 +1334,27 @@ def layout_today_swap(v, boxes):
     fan's height with its right edge where the fan's box ended, and the words at today's size, distance and height
     against the mark, so only the mark changes."""
     img = CHARS[v['image']]
-    w = MH * img['w'] / img['h']
+    mk = MH * v.get('markScale', 1.0)                      # the figure's height against the fan's 100
+    w = mk * img['w'] / img['h']
     b = boxes['fan']
     mw = b['w'] * MH / b['h']
     f = MH / TODAY['fan_h']
-    ox, oy = mw + TODAY['origin'][0] * f, TODAY['origin'][1] * f
     x0, y0, x1, y1 = TODAY['box']
-    parts = [dict(kind='image', image=v['image'], box=(mw - w, 0.0, mw, MH)),
+    # the words at today's size, today's distance from the mark's box, and centred on the mark as they are on the fan
+    ox = mw + TODAY['origin'][0] * f
+    oy = TODAY['origin'][1] * f + (mk - MH) / 2
+    parts = [dict(kind='image', image=v['image'], box=(mw - w, 0.0, mw, mk)),
              dict(kind='todaytext', transform='translate(%s,%s) scale(%s)' % (fmt(ox, 3), fmt(oy, 3), fmt(f, 5)), box=(ox + x0 * f, oy + y0 * f, ox + x1 * f, oy + y1 * f))]
     xs0 = min(p['box'][0] for p in parts)
     ys0 = min(p['box'][1] for p in parts)
     xs1 = max(p['box'][2] for p in parts)
     ys1 = max(p['box'][3] for p in parts)
-    # the site's logo file carries air above and below its art (the art is 0.844 of logo.png's height), so the fan
-    # stands 27px tall in the bar's 32; these rows take the same air, so the bar shows them as today's logo sits
-    mv = (1 / 0.844 - 1) / 2 * (ys1 - ys0)
+    # today's logo file carries air above and below its art (the art is 0.844 of logo.png), so the fan stands 27px
+    # tall in the bar's 32; a row asks for that air with todayAir, else it takes the lab's 3% margin and fills the bar
+    mv = ((1 / 0.844 - 1) / 2 if v.get('todayAir') else 0.03) * (ys1 - ys0)
     mh = 0.03 * (ys1 - ys0)
     vb = (xs0 - mh, ys0 - mv, (xs1 - xs0) + 2 * mh, (ys1 - ys0) + 2 * mv)
-    return dict(parts=parts, vb=vb, block=(xs1 - xs0, ys1 - ys0), shaped=[], ratio=vb[2] / vb[3], pips=None, capPx=TODAY['cap'] * f * 32 / vb[3], figurePx=(MH * 32 / vb[3], w * 32 / vb[3]))
+    return dict(parts=parts, vb=vb, block=(xs1 - xs0, ys1 - ys0), shaped=[], ratio=vb[2] / vb[3], pips=None, capPx=TODAY['cap'] * f * 32 / vb[3], figurePx=(mk * 32 / vb[3], w * 32 / vb[3]))
 
 
 def layout_any(v, boxes, pips, marks, ref):
@@ -1462,7 +1465,7 @@ FAMILIES = [
     dict(key='12f', title='12f.3 Arc onto the words', lead='World of in SemiBold on a gentle arc, the gap closed so the arc\u2019s ends rest on the C and the s. Kept as it is.'),
     dict(key='N', title='N2 A bit wider still, as it was', lead='The closest so far: World of in GLCA SemiBold on a circle tangent to Card Games\u2019 bowl at the start and four fifths its size, its f\u2019s stem three past the d\u2019s, both starts on the card\u2019s lean, Card Games 16 from the card\u2019s edge, the block level on the card\u2019s centre line, the gap between the lines 0.40 of the capitals. Kept for the comparison.'),
     dict(key='O', title='O The words on one wave with the cards', lead='Holger, with a sketch of two red lines: the wavy one is better, but can it feel even more like a wave; if you drew a helping line through the cards and the text, would that make it feel more connected, part of the same wave? So: a sine leaves the front card\u2019s top-right corner at the card\u2019s own lean, dips to a trough under the words and rises again, and to the left of the corner it runs back along the card\u2019s top edge. Both lines are parallel offsets of that one curve, inside a band as tall as the card, so the band\u2019s top edge is the card\u2019s top edge carried on and its bottom edge the card\u2019s bottom edge carried on. Nothing else changes from N2: the size, the weight, the air between the lines, the starts, the gap to the card. One row draws the helping lines.'),
-    dict(key='P', title='P The apps\u2019 figures as the mark, with today\u2019s logotype', lead='Holger: the characters from the game logos as the icon, the whole figure with no shadow, the bottom finished with rounded corners, and the words of the logo the site uses now. So the queen of Pinochle, the jack of Euchre, the queen of Gin Rummy, the king of Rummy and the joker of Canasta each stand in the fan\u2019s place, scaled to the fan\u2019s height with their right edge where the fan\u2019s box ended, and the words are today\u2019s outlined Bariol Bold at today\u2019s size, distance and height against the mark. Each figure is read off its own layer in the app icon\u2019s Photoshop source with psd-tools (the sticker outline is part of the figure; the drop shadow sits on the parent group and is left behind), from the larger original inside the smart object. The figure\u2019s bottom is the illustrator\u2019s straight cut; here its corners are rounded at 7% of the height and the white outline is carried along the cut and round the corners, so it ends like a die-cut sticker. The rows carry the air the site\u2019s logo file carries above and below its art, so on the bar the figure stands 27px tall as the fan does today.'),
+    dict(key='P', title='P The apps\u2019 characters as the mark, with today\u2019s logotype', lead='Holger: the character alone, no cards; the bottom with the same black line as the rest of the character; every character facing away from the words; and the character about 30% bigger against the words. So the queen of Pinochle, the jack of Euchre, the queen of Gin Rummy, the king of Rummy and the joker of Canasta each stand in the fan\u2019s place at 1.3 times the fan\u2019s height, their right edge where the fan\u2019s box ended, with today\u2019s outlined Bariol Bold words at today\u2019s size and distance, centred on the mark. Each character is read off its own layer in the app icon\u2019s Photoshop source with psd-tools, without the card layers and without the group\u2019s drop shadow; its white sticker outline is a stroke on its own group and comes with it. The illustrator\u2019s straight cut at the bottom is finished with rounded corners at 7% of the height, the black line at the thickness of the character\u2019s own line art, and the white outline outside it, so the bottom edge reads like every other edge. The jack, the king and the joker face the words as drawn and are mirrored; the two queens face away as drawn.')
 ]
 
 SB = L('World of', 'glca-600', 0.56)  # 1a's small line
@@ -1501,8 +1504,10 @@ def M(num, name, vid, title, lead, **kw):
     return L0(num, name, vid, title, lead, **d)
 
 
-def P(num, name, vid, title, lead, image):
-    return dict(id=vid, num=num, name=name, title=title, lead=lead, family='P', layout='todayswap', image=image)
+def P(num, name, vid, title, lead, image, **kw):
+    v = dict(id=vid, num=num, name=name, title=title, lead=lead, family='P', layout='todayswap', image=image, markScale=1.3)
+    v.update(kw)
+    return v
 
 
 def O(num, name, vid, title, lead, **kw):
@@ -1524,11 +1529,11 @@ VARIATIONS = [
     O('O3', 'The trough later', 'o3-trough-later', 'O1 with the trough at six tenths of the words', 'The wave falls longer and rises shorter, so the trough sits under the G, as the top line of the sketch has it. A later trough on the same slope is also a deeper one.', trough=0.62),
     O('O4', 'A deeper wave', 'o4-deeper', 'O1 leaving the corner at fourteen degrees instead of the card\u2019s ten', 'The same trough, a steeper fall into it and a steeper rise out, so the words dip more; the wave no longer lies on the card\u2019s top edge but leaves its corner a little more steeply than the edge.', waveSlope=14.0),
     O('O5', 'The trough earlier', 'o5-trough-earlier', 'O1 with the trough at four tenths of the words', 'The wave falls shorter and rises longer, so the trough sits under the r, as the bottom line of the sketch has it.', trough=0.38),
-    P('P1', 'The queen of Pinochle', 'p1-pinochle-queen', 'Pinochle\u2019s queen in the fan\u2019s place, with today\u2019s words', 'The black-haired queen with her sceptre and the jack and queen of spades, whole, to the illustrator\u2019s cut.', 'pinochle'),
-    P('P2', 'The jack of Euchre', 'p2-euchre-jack', 'Euchre\u2019s jack in the fan\u2019s place, with today\u2019s words', 'The curly jack with his staff, whole; the narrowest of the five.', 'euchre'),
-    P('P3', 'The queen of Gin Rummy', 'p3-ginrummy-queen', 'Gin Rummy\u2019s queen in the fan\u2019s place, with today\u2019s words', 'The fair queen with her heart sceptre and a run of hearts, whole.', 'ginrummy'),
-    P('P4', 'The king of Rummy', 'p4-rummy-king', 'Rummy\u2019s king in the fan\u2019s place, with today\u2019s words', 'The king of spades with his sword and three kings, whole.', 'rummy'),
-    P('P5', 'The joker of Canasta', 'p5-canasta-joker', 'Canasta\u2019s joker in the fan\u2019s place, with today\u2019s words', 'The joker in his cap with a seven of hearts and a two of spades, whole.', 'canasta'),
+    P('P1', 'The queen of Pinochle', 'p1-pinochle-queen', 'Pinochle\u2019s queen in the fan\u2019s place, with today\u2019s words', 'The black-haired queen with her spade sceptre, as drawn, facing away from the words.', 'pinochle'),
+    P('P2', 'The jack of Euchre', 'p2-euchre-jack', 'Euchre\u2019s jack in the fan\u2019s place, with today\u2019s words', 'The curly jack with his staff, mirrored to face away from the words.', 'euchre'),
+    P('P3', 'The queen of Gin Rummy', 'p3-ginrummy-queen', 'Gin Rummy\u2019s queen in the fan\u2019s place, with today\u2019s words', 'The fair queen with her heart sceptre, as drawn, facing away from the words.', 'ginrummy'),
+    P('P4', 'The king of Rummy', 'p4-rummy-king', 'Rummy\u2019s king in the fan\u2019s place, with today\u2019s words', 'The king of spades with his sword, mirrored to face away from the words.', 'rummy'),
+    P('P5', 'The joker of Canasta', 'p5-canasta-joker', 'Canasta\u2019s joker in the fan\u2019s place, with today\u2019s words', 'The joker in his cap, mirrored to face away from the words.', 'canasta'),
 ]
 TODAY_W32 = 170  # logo.png, 510x96, drawn at 32px
 
@@ -1835,7 +1840,7 @@ PAGE = r'''<!DOCTYPE html>
 %(defs)s
 <header class="ll-head">
   <h1>The logo: the words on one wave with the cards</h1>
-  <p>Holger, 28 Sep, with a sketch: the wavy one is better, but can it feel even more like a wave; if you drew a helping line through the cards and the text, would that help it feel more connected, part of the same wave? So: the two lines on one sine that leaves the front card&rsquo;s corner at the card&rsquo;s own lean and runs back along its top edge, inside a band as tall as the card, five ways: the trough at the middle, the helping lines drawn, the trough later, a deeper wave, the trough earlier. N2 is kept as it was. Then, at his next word, the apps&rsquo; figures as the mark: the queen of Pinochle, the jack of Euchre, the queen of Gin Rummy, the king of Rummy and the joker of Canasta, whole, read off their Photoshop layers with no shadow and their bottoms finished with rounded corners, in the fan&rsquo;s place with the words of the logo the site uses now. The keepers stay as they are. Every row has a number and a name (say &ldquo;O3&rdquo;). Each row: the logo at 64px, then the site&rsquo;s bar at a desktop width with the logo 32px tall, and a phone with it 24px tall.</p>
+  <p>Holger, 28 Sep, with a sketch: the wavy one is better, but can it feel even more like a wave; if you drew a helping line through the cards and the text, would that help it feel more connected, part of the same wave? So: the two lines on one sine that leaves the front card&rsquo;s corner at the card&rsquo;s own lean and runs back along its top edge, inside a band as tall as the card, five ways: the trough at the middle, the helping lines drawn, the trough later, a deeper wave, the trough earlier. N2 is kept as it was. Then, at his next word, the apps&rsquo; characters as the mark: the queen of Pinochle, the jack of Euchre, the queen of Gin Rummy, the king of Rummy and the joker of Canasta, each alone without the cards, read off its Photoshop layer with no shadow, its bottom finished with rounded corners and the black line, facing away from the words, at 1.3 times the fan&rsquo;s height beside the words of the logo the site uses now. The keepers stay as they are. Every row has a number and a name (say &ldquo;O3&rdquo;). Each row: the logo at 64px, then the site&rsquo;s bar at a desktop width with the logo 32px tall, and a phone with it 24px tall.</p>
   <div class="ll-switches"><button id="llToday" type="button"></button><button id="llTall" type="button"></button><button id="llZoom" type="button"></button></div>
 </header>
 <main class="ll-page">
