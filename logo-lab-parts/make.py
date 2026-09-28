@@ -1460,7 +1460,7 @@ def V(num, name, vid, title, lead, small, gap=0.14, big=None, family=None, **kw)
 
 
 FAMILIES = [
-    dict(key='1a', title='1a Bolder World of, and a bit less wide', lead='GLCA SemiBold on the small line over Medium on the big one, kept as it is; and the same a bit less wide: the words at 78% of the fan\u2019s height instead of 85%.'),
+    dict(key='1a', title='1 Plain, the first pick; 1a Bolder World of; and 1a a bit less wide', lead='Row 1 is the lab\u2019s first logo, B1 as Holger picked it in round 2: GLCA Medium on both lines, World of at 56% of the big line, the words at 85% of the fan\u2019s height. 1a puts the small line in SemiBold; 1a.5 is 1a with the words at 78% of the fan.'),
     dict(key='12a', title='12a Bowl, and 12a.3', lead='Card Games curving down under World of; in 12a.3 the big line is turned four degrees so it falls away from the front card\u2019s corner. Kept as they are.'),
     dict(key='12f', title='12f.3 Arc onto the words', lead='World of in SemiBold on a gentle arc, the gap closed so the arc\u2019s ends rest on the C and the s. Kept as it is.'),
     dict(key='N', title='N2 A bit wider still, as it was', lead='The closest so far: World of in GLCA SemiBold on a circle tangent to Card Games\u2019 bowl at the start and four fifths its size, its f\u2019s stem three past the d\u2019s, both starts on the card\u2019s lean, Card Games 16 from the card\u2019s edge, the block level on the card\u2019s centre line, the gap between the lines 0.40 of the capitals. Kept for the comparison.'),
@@ -1518,6 +1518,7 @@ def O(num, name, vid, title, lead, **kw):
 
 
 VARIATIONS = [
+    V('1', 'Plain', '01-plain', 'B1 as picked in round 2', 'GLCA Medium on both lines, World of at 56% of the big line, the words at 85% of the fan: the first logo of the lab, and the base of every row after it.', L('World of', 'glca-500', 0.56), family='1a'),
     V('1a', 'Bolder World of', '01a-bolder', 'The small line in GLCA SemiBold', 'World of a weight up, so the small line holds its own against Card Games.', SB),
     V('1a.5', 'A bit less wide', '01a5-narrower', '1a with the words at 78% of the fan', 'The same lockup with the words a little smaller against the fan, so the whole is a little narrower.', SB, family='1a', markScale=100.0 / 78),
     V('12a', 'Bowl', '12a-bowl', 'Card Games curves down, World of stays straight', 'The big line dips like a smile under a straight small line.', L('World of', 'glca-500', 0.52, align='center'), big=L('Card Games', 'glca-500', 1.0, **BOWL), gap=0.14),
@@ -1752,7 +1753,10 @@ def main():
         print('%-22s %3s px on the bar, big capitals %2s px, small %s px'
               % (v['id'], fmt(lay['ratio'] * 32, 0), fmt(cap_px(lay, lay['shaped'][-1], 32), 0), fmt(cap_px(lay, lay['shaped'][0], 32), 0)))
 
-    (ROOT / 'logo-lab.html').write_text(page_html(grouped(rows), defs, marks, toc_html(VARIATIONS)))
+    today = ('<h2 class="ll-fam" id="fam-0">0 Today</h2><p class="ll-desc">The logo as the site draws it now: the fan and World of Card Games on one line in Bariol Bold, 32px tall on the bar. Every row below is measured against it.</p>'
+             + today_row(text_group))
+    toc = '<a href="#00-today"><span class="ll-num">0</span>Today</a>' + toc_html(VARIATIONS)
+    (ROOT / 'logo-lab.html').write_text(page_html(today + grouped(rows), defs, marks, toc))
     (ROOT / 'logo-lab-bar.html').write_text(BAR)
     (ROOT / 'logo-lab-check.html').write_text(check_html(check_rows))
     print('wrote logo-lab.html (%d KB), logo-lab-bar.html, logo-lab-check.html, %d files in logo-lab-out/'
