@@ -1465,7 +1465,7 @@ FAMILIES = [
     dict(key='12f', title='12f.3 Arc onto the words', lead='World of in SemiBold on a gentle arc, the gap closed so the arc\u2019s ends rest on the C and the s. Kept as it is.'),
     dict(key='N', title='N2 A bit wider still, as it was', lead='The closest so far: World of in GLCA SemiBold on a circle tangent to Card Games\u2019 bowl at the start and four fifths its size, its f\u2019s stem three past the d\u2019s, both starts on the card\u2019s lean, Card Games 16 from the card\u2019s edge, the block level on the card\u2019s centre line, the gap between the lines 0.40 of the capitals. Kept for the comparison.'),
     dict(key='O', title='O The words on one wave with the cards', lead='Holger, with a sketch of two red lines: the wavy one is better, but can it feel even more like a wave; if you drew a helping line through the cards and the text, would that make it feel more connected, part of the same wave? So: a sine leaves the front card\u2019s top-right corner at the card\u2019s own lean, dips to a trough under the words and rises again, and to the left of the corner it runs back along the card\u2019s top edge. Both lines are parallel offsets of that one curve, inside a band as tall as the card, so the band\u2019s top edge is the card\u2019s top edge carried on and its bottom edge the card\u2019s bottom edge carried on. Nothing else changes from N2: the size, the weight, the air between the lines, the starts, the gap to the card. One row draws the helping lines.'),
-    dict(key='P', title='P The apps\u2019 characters as the mark, with today\u2019s logotype', lead='Holger: the character alone, no cards; the bottom with the same black line as the rest of the character; every character facing away from the words; and the character about 30% bigger against the words, then 15% bigger again. So the queen of Pinochle, the jack of Euchre, the queen of Gin Rummy, the king of Rummy and the joker of Canasta each stand in the fan\u2019s place at 1.5 times the fan\u2019s height, their right edge where the fan\u2019s box ended, with today\u2019s outlined Bariol Bold words at today\u2019s size and distance, centred on the mark. Each character is read off its own layer in the app icon\u2019s Photoshop source with psd-tools, without the card layers and without the group\u2019s drop shadow; its white sticker outline is a stroke on its own group and comes with it. The illustrator\u2019s straight cut at the bottom is finished with rounded corners at 7% of the height, the black line at the thickness of the character\u2019s own line art, and the white outline outside it, so the bottom edge reads like every other edge. The jack and the joker face the words as drawn and are mirrored; the king and the two queens face away as drawn.')
+    dict(key='P', title='P The apps\u2019 characters as the mark, with today\u2019s logotype', lead='Holger: the character alone, no cards; the bottom with the same black line as the rest of the character; every character facing away from the words; and the character about 30% bigger against the words, then 15% bigger again, then 10% more, with the words at the size they have today. So the queen of Pinochle, the jack of Euchre, the queen of Gin Rummy, the king of Rummy and the joker of Canasta each stand in the fan\u2019s place at 1.65 times the fan\u2019s height, their right edge where the fan\u2019s box ended, with today\u2019s outlined Bariol Bold words at today\u2019s size and distance, centred on the mark; these rows are drawn and barred at the height that keeps the words at today\u2019s size, so the logo stands taller than today\u2019s 32px on the bar. Each character is read off its own layer in the app icon\u2019s Photoshop source with psd-tools, without the card layers and without the group\u2019s drop shadow; its white sticker outline is a stroke on its own group and comes with it. The illustrator\u2019s straight cut at the bottom is finished with rounded corners at 7% of the height, the black line at the thickness of the character\u2019s own line art, and the white outline outside it, so the bottom edge reads like every other edge. The jack and the joker face the words as drawn and are mirrored; the king and the two queens face away as drawn.')
 ]
 
 SB = L('World of', 'glca-600', 0.56)  # 1a's small line
@@ -1505,7 +1505,7 @@ def M(num, name, vid, title, lead, **kw):
 
 
 def P(num, name, vid, title, lead, image, **kw):
-    v = dict(id=vid, num=num, name=name, title=title, lead=lead, family='P', layout='todayswap', image=image, markScale=1.3 * 1.15)
+    v = dict(id=vid, num=num, name=name, title=title, lead=lead, family='P', layout='todayswap', image=image, markScale=1.3 * 1.15 * 1.10)
     v.update(kw)
     return v
 
@@ -1575,17 +1575,26 @@ ROW = '''
     <div class="ll-row-words"><p>%(lead)s</p><span>%(note)s</span></div>
   </div>
   <div class="ll-pair">
-    <iframe class="ll-bar" data-v="%(vkey)s" src="logo-lab-bar.html?v=%(vkey)s" width="940" height="57" loading="lazy" scrolling="no" title="The bar at a desktop width"></iframe>
-    <iframe class="ll-bar" data-v="%(vkey)s" src="logo-lab-bar.html?v=%(vkey)s" width="390" height="57" loading="lazy" scrolling="no" title="A phone"></iframe>
+    <iframe class="ll-bar" data-v="%(vkey)s" data-h="%(h)s" src="logo-lab-bar.html?v=%(vkey)s" width="940" height="57" loading="lazy" scrolling="no" title="The bar at a desktop width"></iframe>
+    <iframe class="ll-bar" data-v="%(vkey)s" data-h="%(h)s" src="logo-lab-bar.html?v=%(vkey)s" width="390" height="57" loading="lazy" scrolling="no" title="A phone"></iframe>
   </div>
 </section>'''
 
 
+TODAY_FAN_PX = 32 * 0.844        # the fan's height on the bar today: logo.png's art is 0.844 of the 32px file
+TODAY_DRAW_UNITS = 900 / 862.5 * MH   # the today row's drawing is 900 file units tall for the fan's 862.5
+
+
 def row(v, lay, svg):
     if v.get('layout') == 'todayswap':
-        note = ('On the bar: %s px wide (today 170), the figure %s px tall and %s px wide, the capitals %s px tall. On a phone: %s px wide. File: logo-lab-out/%s.svg'
-                % (fmt(lay['ratio'] * 32, 0), fmt(lay['figurePx'][0], 0), fmt(lay['figurePx'][1], 0), fmt(lay['capPx'], 0), fmt(lay['ratio'] * 24, 0), v['id']))
-        return ROW % dict(id=v['id'], vkey=v['id'], num=v['num'], name=escape(v['name']), title=escape(v['title']), lead=escape(v['lead']), note=escape(note), svg=svg)
+        # drawn and barred so that today's words keep today's size: the drawing and the bar grow with the mark
+        units = lay['vb'][3]
+        bar_h = TODAY_FAN_PX * units / MH
+        draw_h = 64 * units / TODAY_DRAW_UNITS
+        svg = svg.replace('<svg ', '<svg style="height:%spx" ' % fmt(draw_h, 0), 1)
+        note = ('On the bar: %s px tall (today 32) and %s px wide (today 170), the figure %s px tall and %s px wide, the capitals %s px tall as today. On a phone: %s px wide. File: logo-lab-out/%s.svg'
+                % (fmt(bar_h, 0), fmt(lay['ratio'] * bar_h, 0), fmt(lay['figurePx'][0] * bar_h / 32, 0), fmt(lay['figurePx'][1] * bar_h / 32, 0), fmt(lay['capPx'] * bar_h / 32, 0), fmt(lay['ratio'] * bar_h * 24 / 32, 0), v['id']))
+        return ROW % dict(id=v['id'], vkey=v['id'], num=v['num'], name=escape(v['name']), title=escape(v['title']), lead=escape(v['lead']), note=escape(note), svg=svg, h=fmt(bar_h, 0))
     small, big = lay['shaped'][0], lay['shaped'][-1]
     if len(lay['shaped']) == 1:
         note = ('On the bar: %s px wide (today 170), the capitals %s px tall. On a phone: %s px wide. File: logo-lab-out/%s.svg'
@@ -1599,14 +1608,14 @@ def row(v, lay, svg):
     else:
         note = ('On the bar: %s px wide (today 170), the big line\u2019s capitals %s px tall, the small line\u2019s %s px. On a phone: %s px wide. File: logo-lab-out/%s.svg'
                 % (fmt(lay['ratio'] * 32, 0), fmt(cap_px(lay, big, 32), 0), fmt(cap_px(lay, small, 32), 0), fmt(lay['ratio'] * 24, 0), v['id']))
-    return ROW % dict(id=v['id'], vkey=v['id'], num=v['num'], name=escape(v['name']), title=escape(v['title']), lead=escape(v['lead']), note=escape(note), svg=svg)
+    return ROW % dict(id=v['id'], vkey=v['id'], num=v['num'], name=escape(v['name']), title=escape(v['title']), lead=escape(v['lead']), note=escape(note), svg=svg, h='32')
 
 
 def today_row(text_group):
     """Row 0: the logo as the bar draws it now. The drawing is the source art; the bars draw the site's logo.png."""
     svg = ('<svg viewBox="0 190 5464 900"><use href="#mark-fan" transform="translate(-102,0)"/><g transform="translate(1246.9,288)">%s</g></svg>'
            % ''.join(ser(el) for el in text_group))
-    return ROW % dict(id='00-today', vkey='today', num='0', name='Today', title='The logo as it is', svg=svg,
+    return ROW % dict(id='00-today', vkey='today', num='0', name='Today', title='The logo as it is', svg=svg, h='32',
                       lead='The fan and World of Card Games on one line in Bariol Bold, as the bar draws it now.',
                       note='On the bar: 170 px wide, its capitals about 9 px tall. On a phone: 128 px wide. File: the site\u2019s static/images/logo.png')
 
@@ -1817,7 +1826,11 @@ JS = r'''
     bZoom.classList.toggle('on', zoom);
     document.body.classList.toggle('ll-zoom', zoom);
     document.querySelectorAll('iframe.ll-bar').forEach(function (f) {
-      var want = 'logo-lab-bar.html?v=' + (today ? 'today' : f.getAttribute('data-v')) + (tall ? '&h=40' : '');
+      // a row may ask for its own height (the figure rows keep today's words at today's size, so they stand taller);
+      // the 40px switch scales every row by the same 1.25
+      var base = today ? 32 : parseInt(f.getAttribute('data-h') || '32', 10);
+      var h = tall ? Math.round(base * 1.25) : base;
+      var want = 'logo-lab-bar.html?v=' + (today ? 'today' : f.getAttribute('data-v')) + (h !== 32 ? '&h=' + h : '');
       if (f.getAttribute('src') !== want) f.setAttribute('src', want);
     });
   }
@@ -1844,7 +1857,7 @@ PAGE = r'''<!DOCTYPE html>
 %(defs)s
 <header class="ll-head">
   <h1>The logo: the words on one wave with the cards</h1>
-  <p>Holger, 28 Sep, with a sketch: the wavy one is better, but can it feel even more like a wave; if you drew a helping line through the cards and the text, would that help it feel more connected, part of the same wave? So: the two lines on one sine that leaves the front card&rsquo;s corner at the card&rsquo;s own lean and runs back along its top edge, inside a band as tall as the card, five ways: the trough at the middle, the helping lines drawn, the trough later, a deeper wave, the trough earlier. N2 is kept as it was. Then, at his next word, the apps&rsquo; characters as the mark: the queen of Pinochle, the jack of Euchre, the queen of Gin Rummy, the king of Rummy and the joker of Canasta, each alone without the cards, read off its Photoshop layer with no shadow, its bottom finished with rounded corners and the black line, facing away from the words, at 1.5 times the fan&rsquo;s height beside the words of the logo the site uses now. The keepers stay as they are. Every row has a number and a name (say &ldquo;O3&rdquo;). Each row: the logo at 64px, then the site&rsquo;s bar at a desktop width with the logo 32px tall, and a phone with it 24px tall.</p>
+  <p>Holger, 28 Sep, with a sketch: the wavy one is better, but can it feel even more like a wave; if you drew a helping line through the cards and the text, would that help it feel more connected, part of the same wave? So: the two lines on one sine that leaves the front card&rsquo;s corner at the card&rsquo;s own lean and runs back along its top edge, inside a band as tall as the card, five ways: the trough at the middle, the helping lines drawn, the trough later, a deeper wave, the trough earlier. N2 is kept as it was. Then, at his next word, the apps&rsquo; characters as the mark: the queen of Pinochle, the jack of Euchre, the queen of Gin Rummy, the king of Rummy and the joker of Canasta, each alone without the cards, read off its Photoshop layer with no shadow, its bottom finished with rounded corners and the black line, facing away from the words, at 1.65 times the fan&rsquo;s height beside the words of the logo the site uses now, at their size today. The keepers stay as they are. Every row has a number and a name (say &ldquo;O3&rdquo;). Each row: the logo at 64px, then the site&rsquo;s bar at a desktop width with the logo 32px tall, and a phone with it 24px tall.</p>
   <div class="ll-switches"><button id="llToday" type="button"></button><button id="llTall" type="button"></button><button id="llZoom" type="button"></button></div>
 </header>
 <main class="ll-page">
