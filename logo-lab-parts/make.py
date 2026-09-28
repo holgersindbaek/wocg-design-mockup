@@ -1271,6 +1271,35 @@ def layout_wave(v, boxes, pips, marks, ref):
     return dict(parts=parts, vb=vb, block=(xs1 - xs0, block_h * k), shaped=shaped, ratio=vb[2] / vb[3], pips=pips, startGaps=start_gaps, anchorAt=(x_trough, tr[1] + W['A']), fit=fit, wave=wave)
 
 
+CHARS = {}   # key: dict(w, h, b64) for the figures cut from the apps' logos, logo-lab-parts/chars/<key>.webp
+
+
+def load_chars():
+    from PIL import Image
+    for q in sorted((HERE / 'chars').glob('*.webp')):
+        im = Image.open(q)
+        CHARS[q.stem] = dict(w=im.size[0], h=im.size[1], b64=b64(q))
+    return CHARS
+
+
+def layout_swap(v, base):
+    """The base row's words as they are, with a figure in the fan's place: the picture scaled to the fan's height,
+    its right edge where the fan's box ended, so the words keep their distance from the mark."""
+    img = CHARS[v['image']]
+    w = MH * img['w'] / img['h']
+    mw = next(p for p in base['parts'] if p['kind'] == 'mark')['box'][2]
+    parts = [dict(kind='image', image=v['image'], box=(mw - w, 0.0, mw, MH))] + [p for p in base['parts'] if p['kind'] not in ('mark', 'stroke')]
+    xs0 = min(p['box'][0] for p in parts)
+    ys0 = min(p['box'][1] for p in parts)
+    xs1 = max(p['box'][2] for p in parts)
+    ys1 = max(p['box'][3] for p in parts)
+    m = 0.03 * (ys1 - ys0)
+    vb = (xs0 - m, ys0 - m, (xs1 - xs0) + 2 * m, (ys1 - ys0) + 2 * m)
+    lay = dict(base)
+    lay.update(parts=parts, vb=vb, ratio=vb[2] / vb[3])
+    return lay
+
+
 def layout_any(v, boxes, pips, marks, ref):
     return layout_wave(v, boxes, pips, marks, ref) if v.get('layout') == 'wave' else layout_block(v, boxes, pips, marks, ref)
 
@@ -1304,6 +1333,10 @@ def render(lay, mode, defs=None, marks=None, ink=INK):
             body.append('<path d="%s" transform="%s" fill="%s"/>' % (lay['pips'][p['name']]['d'], p['transform'], fill))
         elif k == 'glyph':
             body.append('<path fill="%s" d="%s"/>' % (p.get('colour', INK), p['sh']['face'].path_t(p['names'], p['transforms'])))
+        elif k == 'image':
+            x0, y0, x1, y1 = p['box']
+            href = ('data:image/webp;base64,' + CHARS[p['image']]['b64']) if mode == 'file' else 'logo-lab-parts/chars/%s.webp' % p['image']
+            body.append('<image href="%s" x="%s" y="%s" width="%s" height="%s"/>' % (href, fmt(x0), fmt(y0), fmt(x1 - x0), fmt(y1 - y0)))
         elif k == 'stroke':
             body.append('<path fill="none" stroke="%s" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" d="%s"/>' % (RED if not dark else ink, p['d']))
         elif k == 'shape':
@@ -1373,6 +1406,7 @@ FAMILIES = [
     dict(key='12f', title='12f.3 Arc onto the words', lead='World of in SemiBold on a gentle arc, the gap closed so the arc\u2019s ends rest on the C and the s. Kept as it is.'),
     dict(key='N', title='N2 A bit wider still, as it was', lead='The closest so far: World of in GLCA SemiBold on a circle tangent to Card Games\u2019 bowl at the start and four fifths its size, its f\u2019s stem three past the d\u2019s, both starts on the card\u2019s lean, Card Games 16 from the card\u2019s edge, the block level on the card\u2019s centre line, the gap between the lines 0.40 of the capitals. Kept for the comparison.'),
     dict(key='O', title='O The words on one wave with the cards', lead='Holger, with a sketch of two red lines: the wavy one is better, but can it feel even more like a wave; if you drew a helping line through the cards and the text, would that make it feel more connected, part of the same wave? So: a sine leaves the front card\u2019s top-right corner at the card\u2019s own lean, dips to a trough under the words and rises again, and to the left of the corner it runs back along the card\u2019s top edge. Both lines are parallel offsets of that one curve, inside a band as tall as the card, so the band\u2019s top edge is the card\u2019s top edge carried on and its bottom edge the card\u2019s bottom edge carried on. Nothing else changes from N2: the size, the weight, the air between the lines, the starts, the gap to the card. One row draws the helping lines.'),
+    dict(key='P', title='P The apps\u2019 figures as the mark, with O1\u2019s words', lead='Holger: versions of the logo with the characters from some of the game logos as the icon, and the text from the default logo. So the queen of Pinochle, the jack of Euchre, the queen of Gin Rummy, the king of Rummy and the joker of Canasta each stand in the fan\u2019s place, scaled to the fan\u2019s height with their right edge where the fan\u2019s box ended, and the words are O1\u2019s, untouched. Each figure is cut from the app\u2019s logo just above the game name\u2019s sticker, so it ends where the name covered it: a bust with a straight foot. The whole figures live in the Photoshop sources (.psb), which nothing on this machine reads; with the psd-tools Python package, or an export from Photoshop, they could stand here in full.'),
 ]
 
 SB = L('World of', 'glca-600', 0.56)  # 1a's small line
@@ -1411,6 +1445,10 @@ def M(num, name, vid, title, lead, **kw):
     return L0(num, name, vid, title, lead, **d)
 
 
+def P(num, name, vid, title, lead, image):
+    return dict(id=vid, num=num, name=name, title=title, lead=lead, family='P', layout='swap', swapOf='o1-wave', image=image, lines=[SB, L('Card Games', 'glca-500', 1.0)])
+
+
 def O(num, name, vid, title, lead, **kw):
     v = dict(id=vid, num=num, name=name, title=title, lead=lead, family='O', layout='wave', mark='fan',
              lines=[SB, L('Card Games', 'glca-500', 1.0)], gap=0.40, markGap=0.16, trough=0.5, fitTo='stems', fitPast=3.0)
@@ -1430,6 +1468,11 @@ VARIATIONS = [
     O('O3', 'The trough later', 'o3-trough-later', 'O1 with the trough at six tenths of the words', 'The wave falls longer and rises shorter, so the trough sits under the G, as the top line of the sketch has it. A later trough on the same slope is also a deeper one.', trough=0.62),
     O('O4', 'A deeper wave', 'o4-deeper', 'O1 leaving the corner at fourteen degrees instead of the card\u2019s ten', 'The same trough, a steeper fall into it and a steeper rise out, so the words dip more; the wave no longer lies on the card\u2019s top edge but leaves its corner a little more steeply than the edge.', waveSlope=14.0),
     O('O5', 'The trough earlier', 'o5-trough-earlier', 'O1 with the trough at four tenths of the words', 'The wave falls shorter and rises longer, so the trough sits under the r, as the bottom line of the sketch has it.', trough=0.38),
+    P('P1', 'The queen of Pinochle', 'p1-pinochle-queen', 'Pinochle\u2019s queen in the fan\u2019s place, with O1\u2019s words', 'The black-haired queen with her sceptre and the jack and queen of spades.', 'pinochle'),
+    P('P2', 'The jack of Euchre', 'p2-euchre-jack', 'Euchre\u2019s jack in the fan\u2019s place, with O1\u2019s words', 'The curly jack with his staff, and no cards in view above the name.', 'euchre'),
+    P('P3', 'The queen of Gin Rummy', 'p3-ginrummy-queen', 'Gin Rummy\u2019s queen in the fan\u2019s place, with O1\u2019s words', 'The fair queen with her heart sceptre and a run of hearts.', 'ginrummy'),
+    P('P4', 'The king of Rummy', 'p4-rummy-king', 'Rummy\u2019s king in the fan\u2019s place, with O1\u2019s words', 'The king of spades with his sword and three kings; his cards are as wide as his name, so the cut sits higher, at his chest.', 'rummy'),
+    P('P5', 'The joker of Canasta', 'p5-canasta-joker', 'Canasta\u2019s joker in the fan\u2019s place, with O1\u2019s words', 'The joker in his cap, with a seven of hearts and a two of spades.', 'canasta'),
 ]
 TODAY_W32 = 170  # logo.png, 510x96, drawn at 32px
 
@@ -1484,7 +1527,7 @@ def row(v, lay, svg):
     elif v.get('layout') == 'middle':
         note = ('On the bar: %s px wide (today 170), World of\u2019s capitals %s px tall, Card Games\u2019 %s px. On a phone: %s px wide. File: logo-lab-out/%s.svg'
                 % (fmt(lay['ratio'] * 32, 0), fmt(cap_px(lay, small, 32), 0), fmt(cap_px(lay, big, 32), 0), fmt(lay['ratio'] * 24, 0), v['id']))
-    elif v.get('layout') in ('block', 'wave'):
+    elif v.get('layout') in ('block', 'wave', 'swap'):
         note = ('On the bar: %s px wide (today 170), the fan %s px tall, the big line\u2019s capitals %s px tall, the small line\u2019s %s px. On a phone: %s px wide. File: logo-lab-out/%s.svg'
                 % (fmt(lay['ratio'] * 32, 0), fmt(MH * 32 / lay['vb'][3], 0), fmt(cap_px(lay, big, 32), 0), fmt(cap_px(lay, small, 32), 0), fmt(lay['ratio'] * 24, 0), v['id']))
     else:
@@ -1559,9 +1602,19 @@ def main():
     ref = dict(capShare=big_ref['face'].cap * big_ref['s'] / (mark_ref[3] - mark_ref[1]))
     print('12a.3 capitals: %.3f of the fan' % ref['capShare'])
 
+    load_chars()
     rows = {}
     check_rows = []
+    lays = {}
     for v in VARIATIONS:
+        if v.get('swapOf'):
+            lay = layout_swap(v, lays[v['swapOf']])
+            lays[v['id']] = lay
+            (OUT / ('%s.svg' % v['id'])).write_text(render(lay, 'file', defs, marks))
+            (OUT / ('%s-white.svg' % v['id'])).write_text(render(lay, 'file', defs, marks, ink=WHITE))
+            rows[v['id']] = row(v, lay, render(lay, 'inline'))
+            print('%-22s %3s px on the bar, the figure %s px wide' % (v['id'], fmt(lay['ratio'] * 32, 0), fmt(MH * 32 / lay['vb'][3] * CHARS[v['image']]['w'] / CHARS[v['image']]['h'], 0)))
+            continue
         if v.get('fitTo') in ('word', 'stems'):
             # World of sized so that it ends over the end of Card ('word': the f's ink on the d's ink; 'stems': the right
             # side of the f's stem on the right side of the d's stem), its start left where the start rule puts it
@@ -1590,6 +1643,7 @@ def main():
         if lay.get('fit') and not v.get('fitTo'):
             f_ = lay['fit']
             print('%-22s World of starts %.1f right of the C and ends %.1f right of the d' % (v['id'], f_['small_x0'] - f_['word_x0'], f_['small_x1'] - f_['word_x1']))
+        lays[v['id']] = lay
         (OUT / ('%s.svg' % v['id'])).write_text(render(lay, 'file', defs, marks))
         (OUT / ('%s-white.svg' % v['id'])).write_text(render(lay, 'file', defs, marks, ink=WHITE))
         rows[v['id']] = row(v, lay, render(lay, 'inline'))
@@ -1712,7 +1766,7 @@ PAGE = r'''<!DOCTYPE html>
 %(defs)s
 <header class="ll-head">
   <h1>The logo: the words on one wave with the cards</h1>
-  <p>Holger, 28 Sep, with a sketch: the wavy one is better, but can it feel even more like a wave; if you drew a helping line through the cards and the text, would that help it feel more connected, part of the same wave? So: the two lines on one sine that leaves the front card&rsquo;s corner at the card&rsquo;s own lean and runs back along its top edge, inside a band as tall as the card, five ways: the trough at the middle, the helping lines drawn, the trough later, a deeper wave, the trough earlier. N2 is kept as it was. The keepers stay as they are. Every row has a number and a name (say &ldquo;O3&rdquo;). Each row: the logo at 64px, then the site&rsquo;s bar at a desktop width with the logo 32px tall, and a phone with it 24px tall.</p>
+  <p>Holger, 28 Sep, with a sketch: the wavy one is better, but can it feel even more like a wave; if you drew a helping line through the cards and the text, would that help it feel more connected, part of the same wave? So: the two lines on one sine that leaves the front card&rsquo;s corner at the card&rsquo;s own lean and runs back along its top edge, inside a band as tall as the card, five ways: the trough at the middle, the helping lines drawn, the trough later, a deeper wave, the trough earlier. N2 is kept as it was. Then, at his next word, the apps&rsquo; figures as the mark: the queen of Pinochle, the jack of Euchre, the queen of Gin Rummy, the king of Rummy and the joker of Canasta in the fan&rsquo;s place, with O1&rsquo;s words as they are. The keepers stay as they are. Every row has a number and a name (say &ldquo;O3&rdquo;). Each row: the logo at 64px, then the site&rsquo;s bar at a desktop width with the logo 32px tall, and a phone with it 24px tall.</p>
   <div class="ll-switches"><button id="llToday" type="button"></button><button id="llTall" type="button"></button><button id="llZoom" type="button"></button></div>
 </header>
 <main class="ll-page">
