@@ -1152,6 +1152,129 @@ def layout_block(v, boxes, pips, marks, ref):
     return dict(parts=parts, vb=vb, block=(block_w * k, block_h * k), shaped=shaped, ratio=vb[2] / vb[3], pips=pips, startGaps=start_gaps, anchorAt=(ax, cy), fit=fit)
 
 
+def layout_wave(v, boxes, pips, marks, ref):
+    """The words on one wave with the cards. A sine leaves the front card's top-right corner at the card's own lean
+    (waveSlope, degrees; the card's ten unless the row says otherwise), dips to a trough under the words (trough:
+    where along the words, 0.5 the middle) and rises again; to the left of the corner it runs back along the
+    card's top edge, within a unit. The two lines are parallel offsets of that curve, set inside a band as tall
+    as the card, so the band's top edge is the card's top edge carried on and its bottom edge the card's bottom
+    edge carried on. Card Games starts markGap from the card's right edge; both starts sit on one line square to
+    the wave, which at the start is the card's lean. showGuides draws the band's two edges in red."""
+    cards = fan_cards(boxes, marks)
+    tl, tr, br, bl = cards['front']
+    b = boxes['fan']
+    f = MH / b['h']
+    mw = b['w'] * f
+    shaped = [shape_line(ln) for ln in v['lines']]
+    big, small = shaped[-1], shaped[0]
+    cap_b = big['face'].cap * big['s']
+    y = 0.0
+    for i, sh in enumerate(shaped):
+        if i:
+            y += v.get('gap', 0.14) * cap_b
+        x0, y0, x1, y1 = sh['ink']
+        sh['ox'], sh['oy'] = -x0, y - y0
+        y = y1 + sh['oy']
+    block_h = y
+    k = v.get('capShare', ref['capShare']) * v.get('size', 1.0) * MH / cap_b
+    band = math.hypot(bl[0] - tl[0], bl[1] - tl[1])
+    margin = (band - block_h * k) / 2
+    lean = math.degrees(math.atan2(tr[1] - tl[1], tr[0] - tl[0]))
+    slope = math.tan(math.radians(v.get('waveSlope') or lean))
+    gap = v.get('markGap', 0.16) * MH
+    edge_x = lambda yy: tr[0] + (yy - tr[1]) * (br[0] - tr[0]) / (br[1] - tr[1])
+    offsets = [margin + (sh['oy'] - 0.0) * k for sh in shaped]  # each baseline's distance below the band's top edge
+
+    def build(x_trough):
+        lam = 4 * (x_trough - tr[0])
+        A = slope * lam / (2 * math.pi)
+        xs = [tl[0] + i * 0.5 for i in range(int((tr[0] + 900 - tl[0]) / 0.5))]
+        pts, ths = [], []
+        for x in xs:
+            ph = 2 * math.pi * (x - tr[0]) / lam
+            pts.append((x, tr[1] + A * math.sin(ph)))
+            ths.append(math.atan(A * (2 * math.pi / lam) * math.cos(ph)))
+        curves = {}
+        for d in set(offsets + [0.0, band]):
+            op = [(px - d * math.sin(th), py + d * math.cos(th)) for (px, py), th in zip(pts, ths)]
+            cum = [0.0]
+            for (ax, ay), (bx, by) in zip(op, op[1:]):
+                cum.append(cum[-1] + math.hypot(bx - ax, by - ay))
+            curves[d] = (op, cum)
+        return dict(lam=lam, A=A, xs=xs, pts=pts, ths=ths, curves=curves)
+
+    def at(curve, s_):
+        op, cum = curve
+        j = max(0, min(len(cum) - 2, next((i for i in range(len(cum) - 1) if cum[i + 1] > s_), len(cum) - 2)))
+        t = (s_ - cum[j]) / (cum[j + 1] - cum[j]) if cum[j + 1] > cum[j] else 0.0
+        return (op[j][0] + t * (op[j + 1][0] - op[j][0]), op[j][1] + t * (op[j + 1][1] - op[j][1])), j, t
+
+    def place(sh, d, s0, W):
+        op, cum = W['curves'][d]
+        sm, kk = sh['s'], k
+        T = []
+        for g, x in zip(sh['names'], sh['xs']):
+            adv = sh['face'].hmtx[g][0] * sm * kk
+            (px, py), j, t = at((op, cum), s0 + x * sm * kk + adv / 2)
+            th = W['ths'][j] + t * (W['ths'][min(j + 1, len(W['ths']) - 1)] - W['ths'][j])
+            ux, uy = math.cos(th), math.sin(th)
+            T.append(Transform(sm * kk * ux, sm * kk * uy, sm * kk * uy, -sm * kk * ux, px - ux * adv / 2, py - uy * adv / 2))
+        return T
+
+    def section_s(W, x_guide):
+        """The arc length, on every offset curve, of the cross-section through the guide point at x_guide."""
+        j = max(0, min(len(W['xs']) - 1, int((x_guide - W['xs'][0]) / 0.5)))
+        return {d: W['curves'][d][1][j] for d in W['curves']}
+
+    x_trough = v.get('troughX') or tr[0] + gap + 150.0
+    x_start = tr[0] + gap
+    for _ in range(6):
+        W = build(x_trough)
+        for _ in range(6):
+            sec = section_s(W, x_start)
+            T_big = place(big, offsets[-1], sec[offsets[-1]] + big['ox'] * 0 - 0.0, W)
+            cx0, cy0 = first_ink(dict(face=big['face'], names=big['names'], t0=T_big))
+            x_start += gap - (cx0 - edge_x(cy0))
+        sec = section_s(W, x_start)
+        T_big = place(big, offsets[-1], sec[offsets[-1]], W)
+        bx0, _, bx1, _ = big['face'].bounds_t(big['names'], T_big)
+        x_trough = bx0 + v.get('trough', 0.5) * (bx1 - bx0)
+    parts = [dict(kind='mark', mark='fan', transform='translate(%s,%s) scale(%s)' % (fmt(-b['x'] * f, 3), fmt(-b['y'] * f, 3), fmt(f, 5)), box=(0, 0, mw, MH))]
+    start_gaps = []
+    for sh, d in zip(shaped, offsets):
+        # every line's ink starts on the cross-section through the start, so the starts sit square to the wave
+        T = place(sh, d, sec[d] + (big['ink_flat'][0] * big['s'] - sh['ink_flat'][0] * sh['s']) * k / (big['s'] * 0 + 1) * 0 + (big['ink_flat'][0] - sh['ink_flat'][0]) * k, W)
+        sh['k'] = k
+        sh['T_final'] = T
+        sx, sy = first_ink(dict(face=sh['face'], names=sh['names'], t0=T))
+        start_gaps.append(sx - edge_x(sy))
+        parts.append(dict(kind='line', sh=sh, transforms=T, box=sh['face'].bounds_t(sh['names'], T), nocheck=True))
+    xs0 = min(p['box'][0] for p in parts)
+    ys0 = min(p['box'][1] for p in parts)
+    xs1 = max(p['box'][2] for p in parts)
+    ys1 = max(p['box'][3] for p in parts)
+    if v.get('showGuides'):
+        # the band's edges: over the cards' top corners, along the front card's edges, then the wave to past the words
+        end_x = xs1 + 30
+        top = [cards['spade'][0], cards['diamond'][0], cards['second'][0], tl] + [pt for pt in W['pts'] if tl[0] <= pt[0] <= end_x]
+        bot_op = W['curves'][band][0]
+        bot = [cards['spade'][3], bl] + [pt for pt, gx in zip(bot_op, W['xs']) if tl[0] <= gx <= end_x]
+        for pts_ in (top, bot):
+            parts.append(dict(kind='stroke', d='M' + ' L'.join('%s,%s' % (fmt(x_, 2), fmt(y_, 2)) for x_, y_ in pts_), box=(xs0, ys0, xs1, ys1)))
+    m = 0.03 * (ys1 - ys0)
+    vb = (xs0 - m, ys0 - m, (xs1 - xs0) + 2 * m, (ys1 - ys0) + 2 * m)
+    n = len(big['text'].split(' ')[0])
+    word = big['face'].bounds_t(big['names'][:n], big['T_final'][:n])
+    smb = small['face'].bounds_t(small['names'], small['T_final'])
+    fit = dict(small_x0=smb[0], small_x1=smb[2], word_x0=word[0], word_x1=word[2])
+    wave = dict(trough_x=x_trough, depth=W['A'], lam=W['lam'], slope=math.degrees(math.atan(slope)), margin=margin, band=band, text=(bx0, bx1))
+    return dict(parts=parts, vb=vb, block=(xs1 - xs0, block_h * k), shaped=shaped, ratio=vb[2] / vb[3], pips=pips, startGaps=start_gaps, anchorAt=(x_trough, tr[1] + W['A']), fit=fit, wave=wave)
+
+
+def layout_any(v, boxes, pips, marks, ref):
+    return layout_wave(v, boxes, pips, marks, ref) if v.get('layout') == 'wave' else layout_block(v, boxes, pips, marks, ref)
+
+
 def render(lay, mode, defs=None, marks=None, ink=INK):
     """mode 'inline': <use> the page's shared marks. mode 'file': a self-contained svg with the mark embedded.
     ink WHITE gives the version for dark grounds: every word white, the ribbon white with words in the ink."""
@@ -1181,6 +1304,8 @@ def render(lay, mode, defs=None, marks=None, ink=INK):
             body.append('<path d="%s" transform="%s" fill="%s"/>' % (lay['pips'][p['name']]['d'], p['transform'], fill))
         elif k == 'glyph':
             body.append('<path fill="%s" d="%s"/>' % (p.get('colour', INK), p['sh']['face'].path_t(p['names'], p['transforms'])))
+        elif k == 'stroke':
+            body.append('<path fill="none" stroke="%s" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" d="%s"/>' % (RED if not dark else ink, p['d']))
         elif k == 'shape':
             fill = ink if dark else p.get('colour', INK)
             body.append('<path fill="%s" d="%s" transform="%s"/>' % (fill, p['d'], p.get('transform', '')))
@@ -1243,11 +1368,11 @@ def V(num, name, vid, title, lead, small, gap=0.14, big=None, family=None, **kw)
 
 
 FAMILIES = [
-    dict(key='1a', title='1a Bolder World of, and a bit less wide', lead='GLCA SemiBold on the small line over Medium on the big one, kept as it is; and, at Holger\u2019s word, the same a bit less wide: the words at 78% of the fan\u2019s height instead of 85%, so the logo is 10px narrower on the bar.'),
+    dict(key='1a', title='1a Bolder World of, and a bit less wide', lead='GLCA SemiBold on the small line over Medium on the big one, kept as it is; and the same a bit less wide: the words at 78% of the fan\u2019s height instead of 85%.'),
     dict(key='12a', title='12a Bowl, and 12a.3', lead='Card Games curving down under World of; in 12a.3 the big line is turned four degrees so it falls away from the front card\u2019s corner. Kept as they are.'),
     dict(key='12f', title='12f.3 Arc onto the words', lead='World of in SemiBold on a gentle arc, the gap closed so the arc\u2019s ends rest on the C and the s. Kept as it is.'),
-    dict(key='M', title='M1 Arch a bit less, fitted to Card, as it was', lead='The closest so far: the block level, World of in GLCA SemiBold on a circle tangent to Card Games\u2019 at the start and four fifths its size, sized so that its ink ends over the d\u2019s ink, the two starts on the card\u2019s lean, Card Games 16 from the card\u2019s edge, the block on the card\u2019s centre line, the gap between the lines 0.40 of the capitals. Kept for the comparison.'),
-    dict(key='N', title='N M1 a bit wider, stem to stem, and wider still', lead='Holger: use M1, but a bit wider, just so that the long parts of the d in Card and the f in of align on their right sides; then a bit wider still. So World of is sized until the right side of the f\u2019s stem sits on the right side of the d\u2019s stem (N1), and then two steps past it (N2, N3). M1 had the f\u2019s hook on the d\u2019s edge, which put the stem itself short of the d by the hook\u2019s reach.'),
+    dict(key='N', title='N2 A bit wider still, as it was', lead='The closest so far: World of in GLCA SemiBold on a circle tangent to Card Games\u2019 bowl at the start and four fifths its size, its f\u2019s stem three past the d\u2019s, both starts on the card\u2019s lean, Card Games 16 from the card\u2019s edge, the block level on the card\u2019s centre line, the gap between the lines 0.40 of the capitals. Kept for the comparison.'),
+    dict(key='O', title='O The words on one wave with the cards', lead='Holger, with a sketch of two red lines: the wavy one is better, but can it feel even more like a wave; if you drew a helping line through the cards and the text, would that make it feel more connected, part of the same wave? So: a sine leaves the front card\u2019s top-right corner at the card\u2019s own lean, dips to a trough under the words and rises again, and to the left of the corner it runs back along the card\u2019s top edge. Both lines are parallel offsets of that one curve, inside a band as tall as the card, so the band\u2019s top edge is the card\u2019s top edge carried on and its bottom edge the card\u2019s bottom edge carried on. Nothing else changes from N2: the size, the weight, the air between the lines, the starts, the gap to the card. One row draws the helping lines.'),
 ]
 
 SB = L('World of', 'glca-600', 0.56)  # 1a's small line
@@ -1286,16 +1411,25 @@ def M(num, name, vid, title, lead, **kw):
     return L0(num, name, vid, title, lead, **d)
 
 
+def O(num, name, vid, title, lead, **kw):
+    v = dict(id=vid, num=num, name=name, title=title, lead=lead, family='O', layout='wave', mark='fan',
+             lines=[SB, L('Card Games', 'glca-500', 1.0)], gap=0.40, markGap=0.16, trough=0.5, fitTo='stems', fitPast=3.0)
+    v.update(kw)
+    return v
+
+
 VARIATIONS = [
     V('1a', 'Bolder World of', '01a-bolder', 'The small line in GLCA SemiBold', 'World of a weight up, so the small line holds its own against Card Games.', SB),
-    V('1a.5', 'A bit less wide', '01a5-narrower', '1a with the words at 78% of the fan', 'The same lockup with the words a little smaller against the fan, so the whole is a little narrower. Round 2\u2019s five heights had 85% as Holger\u2019s pick; this is the next step down.', SB, family='1a', markScale=100.0 / 78),
+    V('1a.5', 'A bit less wide', '01a5-narrower', '1a with the words at 78% of the fan', 'The same lockup with the words a little smaller against the fan, so the whole is a little narrower.', SB, family='1a', markScale=100.0 / 78),
     V('12a', 'Bowl', '12a-bowl', 'Card Games curves down, World of stays straight', 'The big line dips like a smile under a straight small line.', L('World of', 'glca-500', 0.52, align='center'), big=L('Card Games', 'glca-500', 1.0, **BOWL), gap=0.14),
     V('12a.3', 'Falling from the card', '12a3-falling', 'The bowl turned four degrees, World of straight', 'The big line starts up by the front card\u2019s corner and falls away to the right, then rises.', L('World of', 'glca-500', 0.52, align='center'), big=L('Card Games', 'glca-500', 1.0, rot=-4, **BOWL), gap=0.14, markNudge=0.04),
     V('12f.3', 'Onto the words', '12f3-hug', 'The bold arc pulled down onto Card Games', 'World of in SemiBold on a gentle arc, the gap closed, so the arc\u2019s ends rest on the C and the s.', L('World of', 'glca-600', 0.52, align='center', arc=0.09), gap=0.02, family='12f'),
-    M('M1', 'Arch a bit less, fitted to Card', 'm1-less-fit', 'World of\u2019s circle at four fifths of Card Games\u2019, its ink ending over the d\u2019s ink', 'As Holger saw it.'),
-    M('N1', 'Stem to stem', 'n1-stems', 'M1 with the f\u2019s stem on the d\u2019s stem', 'World of a little wider than M1, so that the right side of the f\u2019s long stroke sits on the right side of the d\u2019s. The f\u2019s hook reaches a little past the d.', family='N', fitTo='stems'),
-    M('N2', 'A bit wider still', 'n2-wider', 'N1 with the f\u2019s stem three past the d\u2019s', 'World of wider again: the f\u2019s stem three of the fan\u2019s 100 past the d\u2019s stem.', family='N', fitTo='stems', fitPast=3.0),
-    M('N3', 'Wider again', 'n3-wider-2', 'N1 with the f\u2019s stem six past the d\u2019s', 'And the same step once more.', family='N', fitTo='stems', fitPast=6.0),
+    M('N2', 'A bit wider still', 'n2-wider', 'World of on its own circle, the f\u2019s stem three past the d\u2019s', 'As Holger saw it.', family='N', fitTo='stems', fitPast=3.0),
+    O('O1', 'One wave', 'o1-wave', 'The words on the wave that leaves the card\u2019s corner at the card\u2019s lean, the trough at the middle of the words', 'The band\u2019s top edge is the front card\u2019s top edge carried on as a sine; World of hangs under it and Card Games sits over the bottom edge, the card\u2019s bottom edge carried on. The wave leaves the corner at ten degrees, dips 18 of the fan\u2019s 100 by the middle of the words, and rises at ten degrees again by their end.'),
+    O('O2', 'One wave, the helping lines drawn', 'o2-wave-lines', 'O1 with the band\u2019s two edges drawn in red', 'The construction, as in the sketch: one line over the cards\u2019 corners and along the front card\u2019s top edge into the wave, one along the card\u2019s bottom edge into the same wave a card\u2019s height lower.', showGuides=True),
+    O('O3', 'The trough later', 'o3-trough-later', 'O1 with the trough at six tenths of the words', 'The wave falls longer and rises shorter, so the trough sits under the G, as the top line of the sketch has it. A later trough on the same slope is also a deeper one.', trough=0.62),
+    O('O4', 'A deeper wave', 'o4-deeper', 'O1 leaving the corner at fourteen degrees instead of the card\u2019s ten', 'The same trough, a steeper fall into it and a steeper rise out, so the words dip more; the wave no longer lies on the card\u2019s top edge but leaves its corner a little more steeply than the edge.', waveSlope=14.0),
+    O('O5', 'The trough earlier', 'o5-trough-earlier', 'O1 with the trough at four tenths of the words', 'The wave falls shorter and rises longer, so the trough sits under the r, as the bottom line of the sketch has it.', trough=0.38),
 ]
 TODAY_W32 = 170  # logo.png, 510x96, drawn at 32px
 
@@ -1350,7 +1484,7 @@ def row(v, lay, svg):
     elif v.get('layout') == 'middle':
         note = ('On the bar: %s px wide (today 170), World of\u2019s capitals %s px tall, Card Games\u2019 %s px. On a phone: %s px wide. File: logo-lab-out/%s.svg'
                 % (fmt(lay['ratio'] * 32, 0), fmt(cap_px(lay, small, 32), 0), fmt(cap_px(lay, big, 32), 0), fmt(lay['ratio'] * 24, 0), v['id']))
-    elif v.get('layout') == 'block':
+    elif v.get('layout') in ('block', 'wave'):
         note = ('On the bar: %s px wide (today 170), the fan %s px tall, the big line\u2019s capitals %s px tall, the small line\u2019s %s px. On a phone: %s px wide. File: logo-lab-out/%s.svg'
                 % (fmt(lay['ratio'] * 32, 0), fmt(MH * 32 / lay['vb'][3], 0), fmt(cap_px(lay, big, 32), 0), fmt(cap_px(lay, small, 32), 0), fmt(lay['ratio'] * 24, 0), v['id']))
     else:
@@ -1433,7 +1567,7 @@ def main():
             # side of the f's stem on the right side of the d's stem), its start left where the start rule puts it
             v['lines'] = [dict(v['lines'][0]), v['lines'][1]]
             for _ in range(8):
-                lay = layout_block(v, boxes, pips, marks, ref)
+                lay = layout_any(v, boxes, pips, marks, ref)
                 f_ = lay['fit']
                 if v['fitTo'] == 'stems':
                     small, big = lay['shaped'][0], lay['shaped'][-1]
@@ -1451,7 +1585,7 @@ def main():
                   % (v['id'], v['lines'][0]['size'], f_['small_x0'] - f_['word_x0'], f_['small_x1'] - f_['word_x1']))
             if 'f_stem' in f_:
                 print('%-22s the f\'s stem ends %.2f right of the d\'s stem; the f\'s hook reaches %.1f past its stem' % (v['id'], f_['f_stem'] - f_['d_stem'], f_['small_x1'] - f_['f_stem']))
-        lay = (layout_block(v, boxes, pips, marks, ref) if v.get('layout') == 'block' else layout_badge(v, boxes, pips) if v.get('layout') == 'badge'
+        lay = (layout_any(v, boxes, pips, marks, ref) if v.get('layout') in ('block', 'wave') else layout_badge(v, boxes, pips) if v.get('layout') == 'badge'
                else layout_middle(v, boxes, pips) if v.get('layout') == 'middle' else layout(v, boxes, pips))
         if lay.get('fit') and not v.get('fitTo'):
             f_ = lay['fit']
@@ -1479,6 +1613,10 @@ def main():
         if lay.get('startGaps'):
             print('%-22s World of starts %.1f right of the card\'s edge, Card Games %.1f; the block\'s midpoint at y %.1f of the fan\'s 100'
                   % (v['id'], lay['startGaps'][0], lay['startGaps'][1], lay['anchorAt'][1]))
+        if lay.get('wave'):
+            wv = lay['wave']
+            print('%-22s the wave: leaves the corner at %.1f degrees, the trough %.1f below the corner at x %.0f (%.2f of the words), the band %.1f with %.1f of air above and below the words'
+                  % (v['id'], wv['slope'], wv['depth'], wv['trough_x'], (wv['trough_x'] - wv['text'][0]) / (wv['text'][1] - wv['text'][0]), wv['band'], wv['margin']))
         fl = lay['shaped'][0].get('followed')
         if fl:
             print('%-22s World of on the curve: %.1f above Card Games at the start, %.1f at its end; falling %.1f degrees at the start, %.1f at its end (before the block\'s turn)'
@@ -1573,8 +1711,8 @@ PAGE = r'''<!DOCTYPE html>
 <body>
 %(defs)s
 <header class="ll-head">
-  <h1>The logo: M1 a bit wider, stem to stem, and wider still</h1>
-  <p>Holger, 27 Sep: use M1, but a bit wider, just so that the long parts of the d in Card and the f in of align on their right sides. So World of is sized until the right side of the f&rsquo;s stem sits on the right side of the d&rsquo;s stem, and then, at his next word, two steps wider still. M1 is kept as it was. And 1a a bit less wide: the words at 78%% of the fan instead of 85%%, as row 1a.5 beside 1a. The keepers stay as they are. Every row has a number and a name. Each row: the logo at 64px, then the site&rsquo;s bar at a desktop width with the logo 32px tall, and a phone with it 24px tall.</p>
+  <h1>The logo: the words on one wave with the cards</h1>
+  <p>Holger, 28 Sep, with a sketch: the wavy one is better, but can it feel even more like a wave; if you drew a helping line through the cards and the text, would that help it feel more connected, part of the same wave? So: the two lines on one sine that leaves the front card&rsquo;s corner at the card&rsquo;s own lean and runs back along its top edge, inside a band as tall as the card, five ways: the trough at the middle, the helping lines drawn, the trough later, a deeper wave, the trough earlier. N2 is kept as it was. The keepers stay as they are. Every row has a number and a name (say &ldquo;O3&rdquo;). Each row: the logo at 64px, then the site&rsquo;s bar at a desktop width with the logo 32px tall, and a phone with it 24px tall.</p>
   <div class="ll-switches"><button id="llToday" type="button"></button><button id="llTall" type="button"></button><button id="llZoom" type="button"></button></div>
 </header>
 <main class="ll-page">
