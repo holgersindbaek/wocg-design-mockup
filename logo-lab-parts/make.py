@@ -99,6 +99,95 @@ FACES = {
     'poynter-600': dict(file=ROOT / 'PoynterOSDisp-Semibold.woff2', web=ROOT / 'PoynterOSDisp-Semibold.woff2', family='LabPoynter', weight=600, label='Poynter Old Style Display Semibold'),
     'poynter-700': dict(file=ROOT / 'PoynterOSDisp-Bold.woff2', web=ROOT / 'PoynterOSDisp-Bold.woff2', family='LabPoynter', weight=700, label='Poynter Old Style Display Bold'),
     'mackinac-700': dict(file=ROOT / 'Mackinac-Bold.otf', web=ROOT / 'Mackinac-Bold.otf', family='LabMackinac', weight=700, label='P22 Mackinac Bold'),
+    # the rest of the mockup's font menu (29 Sep): the design folder's own files, Google's (fonts/google, the variable ones
+    # cut to static instances), Fontshare's (fonts/fontshare) and Mailchimp's Means (fonts/means)
+    'recoleta-400': dict(file=ROOT / 'Recoleta-Regular.otf', web=ROOT / 'Recoleta-Regular.otf', family='LabRecoleta', weight=400, label='Recoleta Regular'),
+    'canela-500': dict(file=ROOT / 'Canela-Medium.otf', web=ROOT / 'Canela-Medium.otf', family='LabCanela', weight=500, label='Canela Medium'),
+    'gtsuper-500': dict(file=ROOT / 'GTSuper-Medium.otf', web=ROOT / 'GTSuper-Medium.otf', family='LabGTSuper', weight=500, label='GT Super Medium'),
+    'ppedit-400': dict(file=ROOT / 'PPEditorialNew-Regular.otf', web=ROOT / 'PPEditorialNew-Regular.otf', family='LabPPEditNew', weight=400, label='PP Editorial New Regular'),
+    'ppeditold-400': dict(file=ROOT / 'PPEditorialOld-Regular.woff', web=ROOT / 'PPEditorialOld-Regular.woff', family='LabPPEditOld', weight=400, label='PP Editorial Old Regular'),
+    'vollkorn-400': dict(file=ROOT / 'fonts/google/Vollkorn-400.ttf', web=ROOT / 'fonts/google/Vollkorn-400.ttf', family='LabVollkorn', weight=400, label='Vollkorn Regular'),
+    'vollkorn-700': dict(file=ROOT / 'fonts/google/Vollkorn-700.ttf', web=ROOT / 'fonts/google/Vollkorn-700.ttf', family='LabVollkorn', weight=700, label='Vollkorn Bold'),
+    'newyork-500': dict(file=ROOT / 'fonts/NewYork-72-500.ttf', web=ROOT / 'fonts/NewYork-72-500.ttf', family='LabNewYork', weight=500, label='New York Medium (opsz 72)'),
+    'newyork-600': dict(file=ROOT / 'fonts/NewYork-72-600.ttf', web=ROOT / 'fonts/NewYork-72-600.ttf', family='LabNewYork', weight=600, label='New York SemiBold (opsz 72)'),
+    'fraunces-480d': dict(file=ROOT / 'fonts/google/Fraunces-144-480.ttf', web=ROOT / 'fonts/google/Fraunces-144-480.ttf', family='LabFrauncesD', weight=480, label='Fraunces 480 (opsz 144)'),
+    'fraunces-600d': dict(file=ROOT / 'fonts/google/Fraunces-144-600.ttf', web=ROOT / 'fonts/google/Fraunces-144-600.ttf', family='LabFrauncesD', weight=600, label='Fraunces SemiBold (opsz 144)'),
+    'tiempos-500': dict(file=ROOT / 'TiemposFine-Medium.otf', web=ROOT / 'TiemposFine-Medium.otf', family='LabTiempos', weight=500, label='Tiempos Fine Medium'),
+    'argesta-400': dict(file=ROOT / 'Argesta-Headline.otf', web=ROOT / 'Argesta-Headline.otf', family='LabArgesta', weight=400, label='Argesta Headline'),
+    'gooper-600': dict(file=ROOT / 'Gooper-SemiBold.otf', web=ROOT / 'Gooper-SemiBold.otf', family='LabGooper', weight=600, label='Gooper SemiBold'),
+    'quincy-400': dict(file=ROOT / 'Quincy-Regular.ttf', web=ROOT / 'Quincy-Regular.ttf', family='LabQuincy', weight=400, label='Quincy Regular'),
+    'erode-600': dict(file=ROOT / 'fonts/fontshare/Erode-600.woff2', web=ROOT / 'fonts/fontshare/Erode-600.woff2', family='LabErode', weight=600, label='Erode SemiBold'),
+    'erode-700': dict(file=ROOT / 'fonts/fontshare/Erode-700.woff2', web=ROOT / 'fonts/fontshare/Erode-700.woff2', family='LabErode', weight=700, label='Erode Bold'),
+    'garamond-600': dict(file=ROOT / 'fonts/google/EBGaramond-600.ttf', web=ROOT / 'fonts/google/EBGaramond-600.ttf', family='LabGaramond', weight=600, label='EB Garamond SemiBold'),
+    'garamond-700': dict(file=ROOT / 'fonts/google/EBGaramond-700.ttf', web=ROOT / 'fonts/google/EBGaramond-700.ttf', family='LabGaramond', weight=700, label='EB Garamond Bold'),
+    'caslon-400': dict(file=ROOT / 'fonts/google/LibreCaslonDisplay-400.ttf', web=ROOT / 'fonts/google/LibreCaslonDisplay-400.ttf', family='LabCaslon', weight=400, label='Libre Caslon Display'),
+    'playfair-600': dict(file=ROOT / 'fonts/google/PlayfairDisplay-600.ttf', web=ROOT / 'fonts/google/PlayfairDisplay-600.ttf', family='LabPlayfair', weight=600, label='Playfair Display SemiBold'),
+    'playfair-700': dict(file=ROOT / 'fonts/google/PlayfairDisplay-700.ttf', web=ROOT / 'fonts/google/PlayfairDisplay-700.ttf', family='LabPlayfair', weight=700, label='Playfair Display Bold'),
+    'besley-600': dict(file=ROOT / 'fonts/google/Besley-600.ttf', web=ROOT / 'fonts/google/Besley-600.ttf', family='LabBesley', weight=600, label='Besley SemiBold'),
+    'besley-700': dict(file=ROOT / 'fonts/google/Besley-700.ttf', web=ROOT / 'fonts/google/Besley-700.ttf', family='LabBesley', weight=700, label='Besley Bold'),
+    'spectral-600': dict(file=ROOT / 'fonts/google/Spectral-600.ttf', web=ROOT / 'fonts/google/Spectral-600.ttf', family='LabSpectral', weight=600, label='Spectral SemiBold'),
+    'spectral-700': dict(file=ROOT / 'fonts/google/Spectral-700.ttf', web=ROOT / 'fonts/google/Spectral-700.ttf', family='LabSpectral', weight=700, label='Spectral Bold'),
+    'marcellus-400': dict(file=ROOT / 'fonts/google/Marcellus-400.ttf', web=ROOT / 'fonts/google/Marcellus-400.ttf', family='LabMarcellus', weight=400, label='Marcellus'),
+    'melodrama-500': dict(file=ROOT / 'fonts/fontshare/Melodrama-500.woff2', web=ROOT / 'fonts/fontshare/Melodrama-500.woff2', family='LabMelodrama', weight=500, label='Melodrama Medium'),
+    'melodrama-600': dict(file=ROOT / 'fonts/fontshare/Melodrama-600.woff2', web=ROOT / 'fonts/fontshare/Melodrama-600.woff2', family='LabMelodrama', weight=600, label='Melodrama SemiBold'),
+    'bespoke-700': dict(file=ROOT / 'fonts/fontshare/BespokeSerif-700.woff2', web=ROOT / 'fonts/fontshare/BespokeSerif-700.woff2', family='LabBespoke', weight=700, label='Bespoke Serif Bold'),
+    'bespoke-800': dict(file=ROOT / 'fonts/fontshare/BespokeSerif-800.woff2', web=ROOT / 'fonts/fontshare/BespokeSerif-800.woff2', family='LabBespoke', weight=800, label='Bespoke Serif ExtraBold'),
+    'young-400': dict(file=ROOT / 'fonts/google/YoungSerif-400.ttf', web=ROOT / 'fonts/google/YoungSerif-400.ttf', family='LabYoung', weight=400, label='Young Serif'),
+    'caprasimo-400': dict(file=ROOT / 'fonts/google/Caprasimo-400.ttf', web=ROOT / 'fonts/google/Caprasimo-400.ttf', family='LabCaprasimo', weight=400, label='Caprasimo'),
+    'gambetta-700': dict(file=ROOT / 'fonts/fontshare/Gambetta-700.woff2', web=ROOT / 'fonts/fontshare/Gambetta-700.woff2', family='LabGambetta', weight=700, label='Gambetta Bold'),
+    'zodiak-700': dict(file=ROOT / 'fonts/fontshare/Zodiak-700.woff2', web=ROOT / 'fonts/fontshare/Zodiak-700.woff2', family='LabZodiak', weight=700, label='Zodiak Bold'),
+    'zodiak-800': dict(file=ROOT / 'fonts/fontshare/Zodiak-800.woff2', web=ROOT / 'fonts/fontshare/Zodiak-800.woff2', family='LabZodiak', weight=800, label='Zodiak ExtraBold'),
+    'sentient-700': dict(file=ROOT / 'fonts/fontshare/Sentient-700.woff2', web=ROOT / 'fonts/fontshare/Sentient-700.woff2', family='LabSentient', weight=700, label='Sentient Bold'),
+    'means-400': dict(file=ROOT / 'fonts/means/Means-Regular-Web.woff2', web=ROOT / 'fonts/means/Means-Regular-Web.woff2', family='LabMeans', weight=400, label='Means Regular'),
+    # the sans set (29 Sep): classic and friendly faces, some condensed; the system ones are pulled from macOS's collections into
+    # fonts/system (not for the repo), the rest from Google and Fontshare
+    'futura-500': dict(file=ROOT / 'fonts/system/Futura-Medium.ttf', web=ROOT / 'fonts/system/Futura-Medium.ttf', family='LabFutura', weight=500, label='Futura Medium'),
+    'futura-700': dict(file=ROOT / 'fonts/system/Futura-Bold.ttf', web=ROOT / 'fonts/system/Futura-Bold.ttf', family='LabFutura', weight=700, label='Futura Bold'),
+    'futuracond-500': dict(file=ROOT / 'fonts/system/Futura-CondensedMedium.ttf', web=ROOT / 'fonts/system/Futura-CondensedMedium.ttf', family='LabFuturaCond', weight=500, label='Futura Condensed Medium'),
+    'futuracond-800': dict(file=ROOT / 'fonts/system/Futura-CondensedExtraBold.ttf', web=ROOT / 'fonts/system/Futura-CondensedExtraBold.ttf', family='LabFuturaCond', weight=800, label='Futura Condensed ExtraBold'),
+    'gillsans-600': dict(file=ROOT / 'fonts/system/GillSans-SemiBold.ttf', web=ROOT / 'fonts/system/GillSans-SemiBold.ttf', family='LabGillSans', weight=600, label='Gill Sans SemiBold'),
+    'gillsans-700': dict(file=ROOT / 'fonts/system/GillSans-Bold.ttf', web=ROOT / 'fonts/system/GillSans-Bold.ttf', family='LabGillSans', weight=700, label='Gill Sans Bold'),
+    'avenir-600': dict(file=ROOT / 'fonts/system/AvenirNext-DemiBold.ttf', web=ROOT / 'fonts/system/AvenirNext-DemiBold.ttf', family='LabAvenir', weight=600, label='Avenir Next Demi Bold'),
+    'avenir-700': dict(file=ROOT / 'fonts/system/AvenirNext-Bold.ttf', web=ROOT / 'fonts/system/AvenirNext-Bold.ttf', family='LabAvenir', weight=700, label='Avenir Next Bold'),
+    'avenircond-600': dict(file=ROOT / 'fonts/system/AvenirNextCondensed-DemiBold.ttf', web=ROOT / 'fonts/system/AvenirNextCondensed-DemiBold.ttf', family='LabAvenirCond', weight=600, label='Avenir Next Condensed Demi Bold'),
+    'avenircond-700': dict(file=ROOT / 'fonts/system/AvenirNextCondensed-Bold.ttf', web=ROOT / 'fonts/system/AvenirNextCondensed-Bold.ttf', family='LabAvenirCond', weight=700, label='Avenir Next Condensed Bold'),
+    'helvcond-700': dict(file=ROOT / 'fonts/system/HelveticaNeue-CondensedBold.ttf', web=ROOT / 'fonts/system/HelveticaNeue-CondensedBold.ttf', family='LabHelvCond', weight=700, label='Helvetica Neue Condensed Bold'),
+    'helvcond-900': dict(file=ROOT / 'fonts/system/HelveticaNeue-CondensedBlack.ttf', web=ROOT / 'fonts/system/HelveticaNeue-CondensedBlack.ttf', family='LabHelvCond', weight=900, label='Helvetica Neue Condensed Black'),
+    'jost-500': dict(file=ROOT / 'fonts/google/Jost-500.ttf', web=ROOT / 'fonts/google/Jost-500.ttf', family='LabJost', weight=500, label='Jost Medium'),
+    'jost-600': dict(file=ROOT / 'fonts/google/Jost-600.ttf', web=ROOT / 'fonts/google/Jost-600.ttf', family='LabJost', weight=600, label='Jost SemiBold'),
+    'josefin-600': dict(file=ROOT / 'fonts/google/JosefinSans-600.ttf', web=ROOT / 'fonts/google/JosefinSans-600.ttf', family='LabJosefin', weight=600, label='Josefin Sans SemiBold'),
+    'josefin-700': dict(file=ROOT / 'fonts/google/JosefinSans-700.ttf', web=ROOT / 'fonts/google/JosefinSans-700.ttf', family='LabJosefin', weight=700, label='Josefin Sans Bold'),
+    'oswald-500': dict(file=ROOT / 'fonts/google/Oswald-500.ttf', web=ROOT / 'fonts/google/Oswald-500.ttf', family='LabOswald', weight=500, label='Oswald Medium'),
+    'oswald-600': dict(file=ROOT / 'fonts/google/Oswald-600.ttf', web=ROOT / 'fonts/google/Oswald-600.ttf', family='LabOswald', weight=600, label='Oswald SemiBold'),
+    'leaguegothic-400': dict(file=ROOT / 'fonts/google/LeagueGothic-400.ttf', web=ROOT / 'fonts/google/LeagueGothic-400.ttf', family='LabLeagueGothic', weight=400, label='League Gothic'),
+    'bebas-400': dict(file=ROOT / 'fonts/google/BebasNeue-400.ttf', web=ROOT / 'fonts/google/BebasNeue-400.ttf', family='LabBebas', weight=400, label='Bebas Neue'),
+    'nunito-700': dict(file=ROOT / 'fonts/google/Nunito-700.ttf', web=ROOT / 'fonts/google/Nunito-700.ttf', family='LabNunito', weight=700, label='Nunito Bold'),
+    'nunito-800': dict(file=ROOT / 'fonts/google/Nunito-800.ttf', web=ROOT / 'fonts/google/Nunito-800.ttf', family='LabNunito', weight=800, label='Nunito ExtraBold'),
+    'quicksand-600': dict(file=ROOT / 'fonts/google/Quicksand-600.ttf', web=ROOT / 'fonts/google/Quicksand-600.ttf', family='LabQuicksand', weight=600, label='Quicksand SemiBold'),
+    'quicksand-700': dict(file=ROOT / 'fonts/google/Quicksand-700.ttf', web=ROOT / 'fonts/google/Quicksand-700.ttf', family='LabQuicksand', weight=700, label='Quicksand Bold'),
+    'fredoka-600': dict(file=ROOT / 'fonts/google/Fredoka-600.ttf', web=ROOT / 'fonts/google/Fredoka-600.ttf', family='LabFredoka', weight=600, label='Fredoka SemiBold'),
+    'fredoka-700': dict(file=ROOT / 'fonts/google/Fredoka-700.ttf', web=ROOT / 'fonts/google/Fredoka-700.ttf', family='LabFredoka', weight=700, label='Fredoka Bold'),
+    'baloo-700': dict(file=ROOT / 'fonts/google/Baloo2-700.ttf', web=ROOT / 'fonts/google/Baloo2-700.ttf', family='LabBaloo', weight=700, label='Baloo 2 Bold'),
+    'baloo-800': dict(file=ROOT / 'fonts/google/Baloo2-800.ttf', web=ROOT / 'fonts/google/Baloo2-800.ttf', family='LabBaloo', weight=800, label='Baloo 2 ExtraBold'),
+    'lilita-400': dict(file=ROOT / 'fonts/google/LilitaOne-400.ttf', web=ROOT / 'fonts/google/LilitaOne-400.ttf', family='LabLilita', weight=400, label='Lilita One'),
+    'boogaloo-400': dict(file=ROOT / 'fonts/google/Boogaloo-400.ttf', web=ROOT / 'fonts/google/Boogaloo-400.ttf', family='LabBoogaloo', weight=400, label='Boogaloo'),
+    'paytone-400': dict(file=ROOT / 'fonts/google/PaytoneOne-400.ttf', web=ROOT / 'fonts/google/PaytoneOne-400.ttf', family='LabPaytone', weight=400, label='Paytone One'),
+    'grandstander-700': dict(file=ROOT / 'fonts/google/Grandstander-700.ttf', web=ROOT / 'fonts/google/Grandstander-700.ttf', family='LabGrandstander', weight=700, label='Grandstander Bold'),
+    'grandstander-800': dict(file=ROOT / 'fonts/google/Grandstander-800.ttf', web=ROOT / 'fonts/google/Grandstander-800.ttf', family='LabGrandstander', weight=800, label='Grandstander ExtraBold'),
+    'rubik-600': dict(file=ROOT / 'fonts/google/Rubik-600.ttf', web=ROOT / 'fonts/google/Rubik-600.ttf', family='LabRubik', weight=600, label='Rubik SemiBold'),
+    'rubik-700': dict(file=ROOT / 'fonts/google/Rubik-700.ttf', web=ROOT / 'fonts/google/Rubik-700.ttf', family='LabRubik', weight=700, label='Rubik Bold'),
+    'barlowcond-600': dict(file=ROOT / 'fonts/google/BarlowCondensed-600.ttf', web=ROOT / 'fonts/google/BarlowCondensed-600.ttf', family='LabBarlowCond', weight=600, label='Barlow Condensed SemiBold'),
+    'barlowcond-700': dict(file=ROOT / 'fonts/google/BarlowCondensed-700.ttf', web=ROOT / 'fonts/google/BarlowCondensed-700.ttf', family='LabBarlowCond', weight=700, label='Barlow Condensed Bold'),
+    'yanone-600': dict(file=ROOT / 'fonts/google/YanoneKaffeesatz-600.ttf', web=ROOT / 'fonts/google/YanoneKaffeesatz-600.ttf', family='LabYanone', weight=600, label='Yanone Kaffeesatz SemiBold'),
+    'yanone-700': dict(file=ROOT / 'fonts/google/YanoneKaffeesatz-700.ttf', web=ROOT / 'fonts/google/YanoneKaffeesatz-700.ttf', family='LabYanone', weight=700, label='Yanone Kaffeesatz Bold'),
+    'passion-700': dict(file=ROOT / 'fonts/google/PassionOne-700.ttf', web=ROOT / 'fonts/google/PassionOne-700.ttf', family='LabPassion', weight=700, label='Passion One Bold'),
+    'passion-900': dict(file=ROOT / 'fonts/google/PassionOne-900.ttf', web=ROOT / 'fonts/google/PassionOne-900.ttf', family='LabPassion', weight=900, label='Passion One Black'),
+    'clash-600': dict(file=ROOT / 'fonts/fontshare/ClashDisplay-600.woff2', web=ROOT / 'fonts/fontshare/ClashDisplay-600.woff2', family='LabClash', weight=600, label='Clash Display SemiBold'),
+    'clash-700': dict(file=ROOT / 'fonts/fontshare/ClashDisplay-700.woff2', web=ROOT / 'fonts/fontshare/ClashDisplay-700.woff2', family='LabClash', weight=700, label='Clash Display Bold'),
+    'chillax-600': dict(file=ROOT / 'fonts/fontshare/Chillax-600.woff2', web=ROOT / 'fonts/fontshare/Chillax-600.woff2', family='LabChillax', weight=600, label='Chillax SemiBold'),
+    'chillax-700': dict(file=ROOT / 'fonts/fontshare/Chillax-700.woff2', web=ROOT / 'fonts/fontshare/Chillax-700.woff2', family='LabChillax', weight=700, label='Chillax Bold'),
+    'tanker-400': dict(file=ROOT / 'fonts/fontshare/Tanker-400.woff2', web=ROOT / 'fonts/fontshare/Tanker-400.woff2', family='LabTanker', weight=400, label='Tanker'),
+    'telma-700': dict(file=ROOT / 'fonts/fontshare/Telma-700.woff2', web=ROOT / 'fonts/fontshare/Telma-700.woff2', family='LabTelma', weight=700, label='Telma Bold'),
 }
 
 
@@ -1555,11 +1644,86 @@ def R(num, name, vid, title, lead, **kw):
     return M(num, name, vid, title, lead, **d)
 
 
-def FV(num, name, vid, title, lead, small_face, big_face, **kw):
+def FV(num, name, vid, title, lead, small_face, big_face, caps=False, **kw):
     # R2 in another title face: World of one weight up where the family has one, Card Games in the favourite's cut
-    d = dict(family='S', smallCurve=1.0, lines=[L('World of', small_face, 0.56), L('Card Games', big_face, 1.0, arc=-0.05)])
+    d = dict(family='S', smallCurve=1.0, lines=[L('World of', small_face, 0.56, caps=caps), L('Card Games', big_face, 1.0, arc=-0.05, caps=caps)])
     d.update(kw)
     return R(num, name, vid, title, lead, **d)
+
+
+# the sheet (logo-faces.html): R2 in every title face of the frontpage mockup's font menu, in the menu's order; Card Games
+# in the menu's cut, World of one weight up where the family has one here, else the same cut
+SHEET = [
+    ('default', 'BuloRounded (the site today)', 'bulo-700', 'bulo-900'),
+    ('fraunbulo', 'Fraunces 600', 'fraunces-600', 'fraunces-700'),
+    ('recoleta', 'Recoleta', 'recoleta-400', 'recoleta-400'),
+    ('mackinac', 'P22 Mackinac', 'mackinac-700', 'mackinac-700'),
+    ('canela', 'Canela', 'canela-500', 'canela-500'),
+    ('gtsuper', 'GT Super', 'gtsuper-500', 'gtsuper-500'),
+    ('ppedit', 'PP Editorial New', 'ppedit-400', 'ppedit-400'),
+    ('ppeditold', 'PP Editorial Old (Where Cards Fall)', 'ppeditold-400', 'ppeditold-400'),
+    ('vollkorn', 'Vollkorn 500 (Art of Fauna)', 'vollkorn-500', 'vollkorn-600'),
+    ('vollkornsb', 'Vollkorn 600', 'vollkorn-600', 'vollkorn-700'),
+    ('fauna', 'Vollkorn 400 (Fauna; the mockup squeezes it 90%, not here)', 'vollkorn-400', 'vollkorn-500'),
+    ('newyork', 'New York (Apple, the FAUNA logo face)', 'newyork-500', 'newyork-600'),
+    ('poynter', 'Poynter Old Style Semibold (COPAG)', 'poynter-600', 'poynter-700'),
+    ('poynterbold', 'Poynter Old Style Bold (COPAG)', 'poynter-700', 'poynter-700'),
+    ('frauncesoa', 'Fraunces 480 display (Ordinary Abundance)', 'fraunces-480d', 'fraunces-600d'),
+    ('tiempos', 'Tiempos Fine', 'tiempos-500', 'tiempos-500'),
+    ('argesta', 'Argesta', 'argesta-400', 'argesta-400'),
+    ('gooper', 'Gooper', 'gooper-600', 'gooper-600'),
+    ('quincy', 'Quincy', 'quincy-400', 'quincy-400'),
+    ('rza', 'Rza Medium (Wonderbly)', 'rza-500', 'rza-500'),
+    ('gelica', 'Gelica 400 (Superr)', 'glca-400', 'glca-500'),
+    ('gelicamd', 'Gelica 500 (Superr, medium): R2', 'glca-500', 'glca-600'),
+    ('gelicasb', 'Gelica 600 (Superr, bolder)', 'glca-600', 'glca-600'),
+    ('erode', 'Erode', 'erode-600', 'erode-700'),
+    ('garamond', 'EB Garamond', 'garamond-600', 'garamond-700'),
+    ('caslon', 'Libre Caslon', 'caslon-400', 'caslon-400'),
+    ('playfair', 'Playfair Display', 'playfair-600', 'playfair-700'),
+    ('besley', 'Besley', 'besley-600', 'besley-700'),
+    ('spectral', 'Spectral', 'spectral-600', 'spectral-700'),
+    ('marcellus', 'Marcellus', 'marcellus-400', 'marcellus-400'),
+    ('melodrama', 'Melodrama', 'melodrama-500', 'melodrama-600'),
+    ('bespoke', 'Bespoke Serif', 'bespoke-700', 'bespoke-800'),
+    ('young', 'Young Serif', 'young-400', 'young-400'),
+    ('caprasimo', 'Caprasimo', 'caprasimo-400', 'caprasimo-400'),
+    ('gambetta', 'Gambetta', 'gambetta-700', 'gambetta-700'),
+    ('zodiak', 'Zodiak', 'zodiak-700', 'zodiak-800'),
+    ('sentient', 'Sentient', 'sentient-700', 'sentient-700'),
+    ('means', "Means (Mailchimp, That's odd)", 'means-400', 'means-400'),
+]
+
+# the sans set: classic and friendly, some condensed (Holger, 29 Sep, "to see if that gives a different interesting expression")
+SHEET_SANS = [
+    ('futura', 'Futura (classic geometric)', 'futura-500', 'futura-700'),
+    ('futuracond', 'Futura Condensed', 'futuracond-500', 'futuracond-800'),
+    ('gillsans', 'Gill Sans (classic humanist)', 'gillsans-600', 'gillsans-700'),
+    ('avenir', 'Avenir Next', 'avenir-600', 'avenir-700'),
+    ('avenircond', 'Avenir Next Condensed', 'avenircond-600', 'avenircond-700'),
+    ('helvcond', 'Helvetica Neue Condensed', 'helvcond-700', 'helvcond-900'),
+    ('jost', 'Jost (the free Futura)', 'jost-500', 'jost-600'),
+    ('josefin', 'Josefin Sans (art deco)', 'josefin-600', 'josefin-700'),
+    ('oswald', 'Oswald (condensed gothic)', 'oswald-500', 'oswald-600'),
+    ('leaguegothic', 'League Gothic (condensed)', 'leaguegothic-400', 'leaguegothic-400'),
+    ('bebas', 'Bebas Neue (condensed capitals)', 'bebas-400', 'bebas-400'),
+    ('barlowcond', 'Barlow Condensed', 'barlowcond-600', 'barlowcond-700'),
+    ('yanone', 'Yanone Kaffeesatz (condensed, friendly)', 'yanone-600', 'yanone-700'),
+    ('passion', 'Passion One (condensed, fun)', 'passion-700', 'passion-900'),
+    ('tanker', 'Tanker (condensed display)', 'tanker-400', 'tanker-400'),
+    ('boogaloo', 'Boogaloo (narrow, fun)', 'boogaloo-400', 'boogaloo-400'),
+    ('nunito', 'Nunito (rounded)', 'nunito-700', 'nunito-800'),
+    ('quicksand', 'Quicksand (rounded geometric)', 'quicksand-600', 'quicksand-700'),
+    ('fredoka', 'Fredoka (rounded, fun)', 'fredoka-600', 'fredoka-700'),
+    ('baloo', 'Baloo 2 (fun)', 'baloo-700', 'baloo-800'),
+    ('chillax', 'Chillax (rounded geometric)', 'chillax-600', 'chillax-700'),
+    ('rubik', 'Rubik (rounded corners)', 'rubik-600', 'rubik-700'),
+    ('grandstander', 'Grandstander (playful)', 'grandstander-700', 'grandstander-800'),
+    ('lilita', 'Lilita One (fun, heavy)', 'lilita-400', 'lilita-400'),
+    ('paytone', 'Paytone One (fun, rounded)', 'paytone-400', 'paytone-400'),
+    ('clash', 'Clash Display (fun geometric)', 'clash-600', 'clash-700'),
+    ('telma', 'Telma (wonky)', 'telma-700', 'telma-700'),
+]
 
 
 def O(num, name, vid, title, lead, **kw):
@@ -1601,6 +1765,13 @@ VARIATIONS = [
     FV('S6', 'P22 Mackinac', 's6-mackinac', 'R2 in P22 Mackinac Bold on both lines', 'The sixth favourite (Mackinac + BuloRounded): a sturdy slab-ish serif with big ball terminals; one cut here, so both lines share it.', 'mackinac-700', 'mackinac-700'),
     R('R3', 'Out to the G by spacing', 'r3-to-the-g-spaced', 'N2\u2019s letter size kept, the letters spaced until the f ends three short of the G', 'The other reading: World of stays as tall as in N2 (0.52 of the big line) and its letters spread out to reach the G.', fitBy='tracking', lines=[L('World of', 'glca-600', 0.52), L('Card Games', 'glca-500', 1.0, arc=-0.05)]),
 ]
+for _i, (_key, _name, _big, _small) in enumerate(SHEET):
+    VARIATIONS.append(FV('%d' % (_i + 1), _name, 'f-' + _key, 'R2 in ' + _name, '', _small, _big, family='sheet', sheet='mixed'))
+    VARIATIONS.append(FV('%d' % (_i + 1), _name, 'fc-' + _key, 'R2 in ' + _name + ', in capitals', '', _small, _big, caps=True, family='sheet', sheet='caps'))
+for _i, (_key, _name, _big, _small) in enumerate(SHEET_SANS):
+    _n = '%d' % (len(SHEET) + _i + 1)
+    VARIATIONS.append(FV(_n, _name, 'g-' + _key, 'R2 in ' + _name, '', _small, _big, family='sheet', sheet='sans-mixed'))
+    VARIATIONS.append(FV(_n, _name, 'gc-' + _key, 'R2 in ' + _name + ', in capitals', '', _small, _big, caps=True, family='sheet', sheet='sans-caps'))
 TODAY_W32 = 170  # logo.png, 510x96, drawn at 32px
 
 
@@ -1705,6 +1876,86 @@ def page_html(rows_html, defs, marks, toc):
     return PAGE % dict(defs=hidden_defs(defs, {k: marks[k] for k in ('fan', 'happycard', 'smileheart', 'jokercap', 'friends', 'kingcard')}), rows=rows_html, toc=toc, css=CSS, js=JS)
 
 
+def faces_page(defs, marks, cells):
+    """logo-faces.html: R2 in every title face of the mockup's font menu, mixed case and in capitals, as two grids so
+    they can all be seen in one spot; a switch draws them 64, 48 or 32px tall."""
+    grids = {}
+    for v, lay, svg in cells:
+        big, small = FACES[v['lines'][1]['face']]['label'], FACES[v['lines'][0]['face']]['label']
+        note = 'Card Games %s, World of %s at %s of the big line; %s px on the bar' % (big, small, fmt(v['lines'][0]['size'], 2), fmt(lay['ratio'] * BAR_PX, 0))
+        grids.setdefault(v['sheet'], []).append('<div class="lf-cell" id="%s"><div class="lf-draw">%s</div><div class="lf-name"><b><span class="lf-num">%s</span>%s</b><span>%s</span></div></div>'
+                                                % (v['id'], svg, v['num'], escape(v['name']), escape(note)))
+    body = ('<h2 id="mixed">Serif, mixed case</h2><p class="lf-desc">R2 as it is, World of over Card Games, in each title face of the mockup\u2019s menu.</p><div class="lf-grid">%s</div>'
+            '<h2 id="caps">Serif, capitals</h2><p class="lf-desc">The same, both lines in capitals: WORLD OF over CARD GAMES, World of fitted to the G as before.</p><div class="lf-grid">%s</div>'
+            '<h2 id="sans-mixed">Sans, mixed case</h2><p class="lf-desc">Holger, 29 Sep: a bunch of interesting non-serif faces, classic and friendly or fun, some condensed, to see if that gives a different expression. The classics first (Futura, Gill Sans, Avenir Next, Helvetica Neue Condensed from the Mac; Jost and Josefin Sans), then the condensed ones, then the rounded and the fun ones.</p><div class="lf-grid">%s</div>'
+            '<h2 id="sans-caps">Sans, capitals</h2><p class="lf-desc">The same sans faces with both lines in capitals.</p><div class="lf-grid">%s</div>'
+            % (''.join(grids.get('mixed', [])), ''.join(grids.get('caps', [])), ''.join(grids.get('sans-mixed', [])), ''.join(grids.get('sans-caps', []))))
+    return FACES_PAGE % dict(defs=hidden_defs(defs, {'fan': marks['fan']}), body=body, n=len(grids.get('mixed', [])), m=len(grids.get('sans-mixed', [])))
+
+
+FACES_PAGE = r'''<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Generated by logo-lab-parts/make.py. Edit make.py, then run it. -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The logo: R2 in every title face &middot; sheet</title>
+<link rel="stylesheet" href="guide-fonts.css">
+<style>
+  :root { --lf-paper: #f9f6f2; --lf-band: #f4eee5; --lf-ink: #141414; --lf-label: #4e4d4c; --lf-quiet: #67635c; --lf-line: #d2cfca; --lf-h: 64px; }
+  html, body { margin: 0; }
+  body { background: var(--lf-paper); color: var(--lf-ink); font: 16px/24px "BuloRounded", "Verdana", sans-serif; -webkit-font-smoothing: antialiased; }
+  .lf-head { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; flex-wrap: wrap; gap: 8px 20px; padding: 12px 28px 10px; background: rgba(249, 246, 242, .96); box-shadow: 0 1px 0 var(--lf-line); }
+  .lf-head h1 { margin: 0; font: 500 26px/32px "GLCA", Georgia, serif; }
+  .lf-head p { margin: 0; color: var(--lf-label); font-size: 14px; line-height: 20px; max-width: 900px; }
+  .lf-switches { display: flex; gap: 8px; margin-left: auto; }
+  .lf-toc { display: flex; flex-wrap: wrap; gap: 6px 14px; width: 100%%; font-size: 14px; }
+  .lf-toc a { color: #1971c2; text-decoration: none; }
+  .lf-toc a:hover { text-decoration: underline; }
+  .lf-switches button { font: 700 13px/20px "BuloRounded", Verdana, sans-serif; padding: 6px 12px; border-radius: 999px; border: 0; background: #e6e0d6; color: var(--lf-ink); cursor: pointer; }
+  .lf-switches button.on { background: var(--lf-ink); color: #fff; }
+  .lf-page { padding: 8px 28px 96px; max-width: 1600px; }
+  .lf-page h2 { font: 500 24px/30px "GLCA", Georgia, serif; margin: 36px 0 4px; }
+  .lf-desc { color: var(--lf-label); font-size: 14px; line-height: 20px; margin: 0 0 14px; }
+  .lf-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 10px; }
+  .lf-cell { background: #fff; border-radius: 12px; corner-shape: squircle; box-shadow: inset 0 0 0 1px var(--lf-line); padding: 10px; }
+  .lf-draw { display: flex; align-items: center; height: calc(var(--lf-h) + 28px); padding: 0 14px; background: var(--lf-band); border-radius: 8px; corner-shape: squircle; }
+  .lf-draw svg { height: var(--lf-h); width: auto; display: block; }
+  .lf-name { display: flex; flex-direction: column; margin-top: 8px; font-size: 12px; line-height: 16px; color: var(--lf-quiet); }
+  .lf-name b { color: var(--lf-ink); font-size: 14px; line-height: 20px; }
+  .lf-num { display: inline-block; min-width: 22px; height: 18px; margin-right: 6px; padding: 0 6px; border-radius: 9px; background: var(--lf-ink); color: #fff; font-size: 11px; line-height: 18px; text-align: center; }
+  body.lf-48 { --lf-h: 48px; }
+  body.lf-32 { --lf-h: 32px; }
+  body.lf-32 .lf-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+</style>
+</head>
+<body>
+%(defs)s
+<header class="lf-head">
+  <h1>The logo: R2 in every title face</h1>
+  <p>Holger, 29 Sep: R2 (World of out to the G, on Card Games&rsquo; circle) in all %(n)d title faces of the frontpage mockup&rsquo;s font menu, side by side and above and below, then the same with both lines in capitals. Card Games in the menu&rsquo;s cut, World of one weight up where the family has one here. The numbers follow the menu&rsquo;s order. Then %(m)d sans faces the same two ways, classic and friendly, some condensed, at Holger&rsquo;s word the same evening.</p>
+  <nav class="lf-toc"><a href="#mixed">Serif, mixed case</a><a href="#caps">Serif, capitals</a><a href="#sans-mixed">Sans, mixed case</a><a href="#sans-caps">Sans, capitals</a></nav>
+  <div class="lf-switches"><button type="button" data-h="64" class="on">64px</button><button type="button" data-h="48">48px</button><button type="button" data-h="32">32px, the bar</button></div>
+</header>
+<main class="lf-page">
+%(body)s
+</main>
+<script>
+(function () {
+  var bs = Array.prototype.slice.call(document.querySelectorAll('.lf-switches button'));
+  bs.forEach(function (b) {
+    b.addEventListener('click', function () {
+      bs.forEach(function (o) { o.classList.toggle('on', o === b); });
+      document.body.className = b.getAttribute('data-h') === '64' ? '' : 'lf-' + b.getAttribute('data-h');
+    });
+  });
+})();
+</script>
+</body>
+</html>
+'''
+
+
 def check_html(rows):
     return CHECK % dict(fonts=fonts_css(), rows=''.join(rows))
 
@@ -1751,6 +2002,7 @@ def main():
     rows = {}
     check_rows = []
     lays = {}
+    sheet_cells = []
     for v in VARIATIONS:
         if v.get('layout') == 'todayswap':
             lay = layout_today_swap(v, boxes)
@@ -1820,6 +2072,9 @@ def main():
         lays[v['id']] = lay
         (OUT / ('%s.svg' % v['id'])).write_text(render(lay, 'file', defs, marks))
         (OUT / ('%s-white.svg' % v['id'])).write_text(render(lay, 'file', defs, marks, ink=WHITE))
+        if v.get('sheet'):
+            sheet_cells.append((v, lay, render(lay, 'inline')))
+            continue
         rows[v['id']] = row(v, lay, render(lay, 'inline'))
         for p in lay['parts']:
             if p['kind'] != 'line':
@@ -1854,8 +2109,9 @@ def main():
 
     today = ('<h2 class="ll-fam" id="fam-0">0 Today</h2><p class="ll-desc">The logo as the site draws it now: the fan and World of Card Games on one line in Bariol Bold, 32px tall on the bar. Every row below is measured against it.</p>'
              + today_row(text_group))
-    toc = '<a href="#00-today"><span class="ll-num">0</span>Today</a>' + toc_html(VARIATIONS)
+    toc = '<a href="#00-today"><span class="ll-num">0</span>Today</a>' + toc_html([v for v in VARIATIONS if not v.get('sheet')])
     (ROOT / 'logo-lab.html').write_text(page_html(today + grouped(rows), defs, marks, toc))
+    (ROOT / 'logo-faces.html').write_text(faces_page(defs, marks, sheet_cells))
     (ROOT / 'logo-lab-bar.html').write_text(BAR)
     (ROOT / 'logo-lab-check.html').write_text(check_html(check_rows))
     print('wrote logo-lab.html (%d KB), logo-lab-bar.html, logo-lab-check.html, %d files in logo-lab-out/'
@@ -1962,7 +2218,7 @@ PAGE = r'''<!DOCTYPE html>
 %(defs)s
 <header class="ll-head">
   <h1>The logo: the words on one wave with the cards</h1>
-  <p>Holger, 28 Sep, with a sketch: the wavy one is better, but can it feel even more like a wave; if you drew a helping line through the cards and the text, would that help it feel more connected, part of the same wave? So: the two lines on one sine that leaves the front card&rsquo;s corner at the card&rsquo;s own lean and runs back along its top edge, inside a band as tall as the card, five ways: the trough at the middle, the helping lines drawn, the trough later, a deeper wave, the trough earlier. N2 is kept as it was. Then, at his next word, the apps&rsquo; characters as the mark: the queen of Pinochle, the jack of Euchre, the queen of Gin Rummy, the king of Rummy and the joker of Canasta, each alone without the cards, read off its Photoshop layer with no shadow, its bottom finished with rounded corners and the black line, facing away from the words, at 1.32 times the fan&rsquo;s height beside the words of the logo the site uses now, at their size today. The keepers stay as they are. On 29 Sep Holger added a logo of his own, logo-test-transprent.png, drawn as one picture in row Q1 at the bar&rsquo;s 32px, and his third file, the words a weight lighter and the cards&rsquo; outline heavier, as Q2 (it replaced his second, which had only the lighter words); then N2 with World of out to the G of Games, R1 to R3, and R2 in the mockup&rsquo;s six favourite title faces, S1 to S6. Every row has a number and a name (say &ldquo;O3&rdquo;). Each row: the logo at 64px, then the site&rsquo;s bar at a desktop width with the logo 32px tall, and a phone with it 24px tall; the figure rows stand at the height that keeps today&rsquo;s words at today&rsquo;s size, and the tall switch grows every logo to 36px (27 on the phone).</p>
+  <p>Holger, 28 Sep, with a sketch: the wavy one is better, but can it feel even more like a wave; if you drew a helping line through the cards and the text, would that help it feel more connected, part of the same wave? So: the two lines on one sine that leaves the front card&rsquo;s corner at the card&rsquo;s own lean and runs back along its top edge, inside a band as tall as the card, five ways: the trough at the middle, the helping lines drawn, the trough later, a deeper wave, the trough earlier. N2 is kept as it was. Then, at his next word, the apps&rsquo; characters as the mark: the queen of Pinochle, the jack of Euchre, the queen of Gin Rummy, the king of Rummy and the joker of Canasta, each alone without the cards, read off its Photoshop layer with no shadow, its bottom finished with rounded corners and the black line, facing away from the words, at 1.32 times the fan&rsquo;s height beside the words of the logo the site uses now, at their size today. The keepers stay as they are. On 29 Sep Holger added a logo of his own, logo-test-transprent.png, drawn as one picture in row Q1 at the bar&rsquo;s 32px, and his third file, the words a weight lighter and the cards&rsquo; outline heavier, as Q2 (it replaced his second, which had only the lighter words); then N2 with World of out to the G of Games, R1 to R3, and R2 in the mockup&rsquo;s six favourite title faces, S1 to S6; the same in all 38 faces of that menu, mixed case and in capitals, and then in 27 sans faces, is the sheet <a href="logo-faces.html">logo-faces.html</a>. Every row has a number and a name (say &ldquo;O3&rdquo;). Each row: the logo at 64px, then the site&rsquo;s bar at a desktop width with the logo 32px tall, and a phone with it 24px tall; the figure rows stand at the height that keeps today&rsquo;s words at today&rsquo;s size, and the tall switch grows every logo to 36px (27 on the phone).</p>
   <div class="ll-switches"><button id="llToday" type="button"></button><button id="llTall" type="button"></button><button id="llZoom" type="button"></button></div>
 </header>
 <main class="ll-page">
