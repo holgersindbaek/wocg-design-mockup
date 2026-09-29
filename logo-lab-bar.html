@@ -37,16 +37,20 @@
   </nav>
 </div>
 <script>
-  var q = new URLSearchParams(location.search), v = q.get('v') || 'today', h = parseInt(q.get('h') || '0', 10);
-  var img = document.querySelector('#menuLogoContainer img');
-  if (v !== 'today') { img.removeAttribute('width'); img.removeAttribute('height'); img.src = 'logo-lab-out/' + v + '.svg'; }
+  // the logo (?v=<id>, or today) and its height (&h=<px>) come from the address, and afterwards by message from the
+  // lab page, so its switches change the logo in place without reloading the bar
   // logo-lab-static/ holds copies of the bar's images from worldofcardgames/static, made by make.py
-  if (h) {
-    // the site draws the logo 32px tall, 24 under 860px; this scales both by the same share
-    var s = document.createElement('style');
-    s.textContent = '#menuLogoContainer img { height: ' + h + 'px !important; } @media (max-width: 860px) { #menuLogoContainer img { height: ' + Math.round(h * 24 / 32) + 'px !important; } }';
-    document.head.appendChild(s);
+  var img = document.querySelector('#menuLogoContainer img');
+  var style = document.head.appendChild(document.createElement('style'));
+  function show(v, h) {
+    if (v === 'today') { img.setAttribute('width', '170'); img.setAttribute('height', '32'); img.src = 'logo-lab-static/logo.png'; }
+    else { img.removeAttribute('width'); img.removeAttribute('height'); img.src = 'logo-lab-out/' + v + '.svg'; }
+    // the site draws the logo 32px tall, 24 under 860px; a height scales both by the same share
+    style.textContent = h ? '#menuLogoContainer img { height: ' + h + 'px !important; } @media (max-width: 860px) { #menuLogoContainer img { height: ' + Math.round(h * 24 / 32) + 'px !important; } }' : '';
   }
+  var q = new URLSearchParams(location.search);
+  show(q.get('v') || 'today', parseInt(q.get('h') || '0', 10));
+  window.addEventListener('message', function (e) { if (e.data && e.data.type === 'logo') show(e.data.v, e.data.h); });
 </script>
 </body>
 </html>
