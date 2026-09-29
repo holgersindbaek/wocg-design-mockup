@@ -1487,6 +1487,7 @@ FAMILIES = [
     dict(key='O', title='O The words on one wave with the cards', lead='Holger, with a sketch of two red lines: the wavy one is better, but can it feel even more like a wave; if you drew a helping line through the cards and the text, would that make it feel more connected, part of the same wave? So: a sine leaves the front card\u2019s top-right corner at the card\u2019s own lean, dips to a trough under the words and rises again, and to the left of the corner it runs back along the card\u2019s top edge. Both lines are parallel offsets of that one curve, inside a band as tall as the card, so the band\u2019s top edge is the card\u2019s top edge carried on and its bottom edge the card\u2019s bottom edge carried on. Nothing else changes from N2: the size, the weight, the air between the lines, the starts, the gap to the card. One row draws the helping lines.'),
     dict(key='P', title='P The apps\u2019 characters as the mark, with today\u2019s logotype', lead='Holger: the character alone, no cards; the bottom with the same black line as the rest of the character; every character facing away from the words; and the character about 30% bigger against the words, then 15% bigger again, then 10% more, then 20% smaller, with the words at the size they have today. So the queen of Pinochle, the jack of Euchre, the queen of Gin Rummy, the king of Rummy and the joker of Canasta each stand in the fan\u2019s place at 1.32 times the fan\u2019s height, their right edge where the fan\u2019s box ended, with today\u2019s outlined Bariol Bold words at today\u2019s size and distance, centred on the mark; these rows are drawn and barred at the height that keeps the words at today\u2019s size, so the logo stands taller than today\u2019s 32px on the bar. Each character is read off its own layer in the app icon\u2019s Photoshop source with psd-tools, without the card layers and without the group\u2019s drop shadow; its white sticker outline is a stroke on its own group and comes with it. The illustrator\u2019s straight cut at the bottom is finished with rounded corners at 7% of the height, the black line at the thickness of the character\u2019s own line art, and the white outline outside it, so the bottom edge reads like every other edge. The jack and the joker face the words as drawn and are mirrored; the king and the two queens face away as drawn.'),
     dict(key='Q', title='Q Holger\u2019s test logo, as one picture', lead='Holger, 29 Sep: a new logo, logo-test-transprent.png in his Downloads, to add to the test. It is drawn here as one picture, the fan and the words together, nothing redrawn: scaled so its fan stands at the height the lab\u2019s fans do, and barred at the bar\u2019s 32px like every row but the figure rows. In it four aces of hearts fan out under a dark outline, and World of over Card Games stand to the right in a heavy rounded serif, both lines on a gentle bowl that falls from the front card and rises again, the block reaching a little below the fan. Q2 is his third file, in place of the second: the words a weight lighter, and the cards\u2019 outline heavier and rounder.'),
+    dict(key='R', title='R N2 with World of out to the G', lead='Holger, 29 Sep: a version of N2 where the top text extends further, so it almost goes out to the end of the G in Games. R1 grows World of until its f ends three short of the G\u2019s right edge, everything else as N2; R2 the same on Card Games\u2019 own circle, so the gap holds to the end; R3 keeps N2\u2019s letter size and spaces the letters out to the same end.'),
 ]
 
 SB = L('World of', 'glca-600', 0.56)  # 1a's small line
@@ -1537,6 +1538,12 @@ def Q(num, name, vid, title, lead, image, fan, caps, **kw):
     return v
 
 
+def R(num, name, vid, title, lead, **kw):
+    d = dict(family='R', fitTo='letter', fitLetter='G', fitPast=-3.0)
+    d.update(kw)
+    return M(num, name, vid, title, lead, **d)
+
+
 def O(num, name, vid, title, lead, **kw):
     v = dict(id=vid, num=num, name=name, title=title, lead=lead, family='O', layout='wave', mark='fan',
              lines=[SB, L('Card Games', 'glca-500', 1.0)], gap=0.40, markGap=0.16, trough=0.5, fitTo='stems', fitPast=3.0)
@@ -1566,6 +1573,9 @@ VARIATIONS = [
       'q1-logo-test', fan=860 / 956, caps=(366 / 956, 302 / 956)),
     Q('Q2', 'Logo test 3', 'q2-logo-test3', 'Holger\u2019s logo-test3.png, drawn as one picture', 'His third file, in place of the second (the same words a weight lighter, the cards alone as in Q1): the words a weight lighter than Q1\u2019s and the cards\u2019 outline heavier and rounder. The file as it came, 3888 by 1024, trimmed to its art at 3881 by 970 (logo-lab-parts/logos/q2-logo-test3.png is the original). Its fan is 888 of those 970; the big line\u2019s C is 367 tall and the small line\u2019s W 303.',
       'q2-logo-test3', fan=888 / 970, caps=(367 / 970, 303 / 970)),
+    R('R1', 'Out to the G', 'r1-to-the-g', 'N2 with World of grown until its f ends three short of the G\u2019s right edge', 'Everything else as N2: World of on its own circle tangent to Card Games\u2019 at the start and four fifths its size, both starts on the card\u2019s lean, the gap 0.40 of the capitals. Only the size of World of changes, until the f\u2019s hook stops three of the fan\u2019s 100 before the end of the G of Games.'),
+    R('R2', 'Out to the G, on Card Games\u2019 circle', 'r2-to-the-g-concentric', 'R1 with World of on Card Games\u2019 own circle, one line-space up', 'The same reach, but World of on the concentric circle instead of the tighter one, so the gap between the lines stays the same all the way to the G (on the tighter circle a longer World of turns up sooner than Card Games does).', smallCurve=1.0),
+    R('R3', 'Out to the G by spacing', 'r3-to-the-g-spaced', 'N2\u2019s letter size kept, the letters spaced until the f ends three short of the G', 'The other reading: World of stays as tall as in N2 (0.52 of the big line) and its letters spread out to reach the G.', fitBy='tracking', lines=[L('World of', 'glca-600', 0.52), L('Card Games', 'glca-500', 1.0, arc=-0.05)]),
 ]
 TODAY_W32 = 170  # logo.png, 510x96, drawn at 32px
 
@@ -1742,29 +1752,42 @@ def main():
             rows[v['id']] = row(v, lay, render(lay, 'inline'))
             print('%-22s %3s px on the bar, the figure %s px wide' % (v['id'], fmt(lay['ratio'] * 32, 0), fmt(MH * 32 / lay['vb'][3] * CHARS[v['image']]['w'] / CHARS[v['image']]['h'], 0)))
             continue
-        if v.get('fitTo') in ('word', 'stems'):
+        if v.get('fitTo') in ('word', 'stems', 'letter'):
             # World of sized so that it ends over the end of Card ('word': the f's ink on the d's ink; 'stems': the right
-            # side of the f's stem on the right side of the d's stem), its start left where the start rule puts it
+            # side of the f's stem on the right side of the d's stem; 'letter': the f's ink on the right edge of a letter
+            # of the big line, fitLetter, plus fitPast), its start left where the start rule puts it; fitBy 'tracking'
+            # reaches the same end by spacing the letters instead of growing them
             v['lines'] = [dict(v['lines'][0]), v['lines'][1]]
             for _ in range(8):
                 lay = layout_any(v, boxes, pips, marks, ref)
                 f_ = lay['fit']
+                small, big = lay['shaped'][0], lay['shaped'][-1]
                 if v['fitTo'] == 'stems':
-                    small, big = lay['shaped'][0], lay['shaped'][-1]
                     n = len(big['text'].split(' ')[0])
                     xd = big['T_final'][n - 1].transformPoint((stem_right(big['face'], big['names'][n - 1]), 0.5 * big['face'].xh))[0]
                     xf = small['T_final'][-1].transformPoint((stem_right(small['face'], small['names'][-1]), 0.5 * small['face'].xh))[0]
                     have, want = xf - f_['small_x0'], xd + v.get('fitPast', 0.0) - f_['small_x0']
                     f_.update(f_stem=xf, d_stem=xd)
+                elif v['fitTo'] == 'letter':
+                    gi = big['text'].index(v['fitLetter'])
+                    xg = big['face'].bounds_t([big['names'][gi]], [big['T_final'][gi]])[2]
+                    have, want = f_['small_x1'] - f_['small_x0'], xg + v.get('fitPast', 0.0) - f_['small_x0']
+                    f_.update(letter_x1=xg)
                 else:
                     have, want = f_['small_x1'] - f_['small_x0'], f_['word_x1'] - f_['small_x0']
                 if abs(have - want) < 0.05:
                     break
-                v['lines'][0]['size'] *= want / have
+                if v.get('fitBy') == 'tracking':
+                    ln = v['lines'][0]
+                    ln['tracking'] = ln.get('tracking', 0.0) + (want - have) / ((len(small['names']) - 1) * small['face'].upm * small['s'])
+                else:
+                    v['lines'][0]['size'] *= want / have
             print('%-22s World of fitted to Card: size %.3f of the big line (was 0.56); it starts %.1f right of the C and ends %.1f right of the d'
                   % (v['id'], v['lines'][0]['size'], f_['small_x0'] - f_['word_x0'], f_['small_x1'] - f_['word_x1']))
             if 'f_stem' in f_:
                 print('%-22s the f\'s stem ends %.2f right of the d\'s stem; the f\'s hook reaches %.1f past its stem' % (v['id'], f_['f_stem'] - f_['d_stem'], f_['small_x1'] - f_['f_stem']))
+            if 'letter_x1' in f_:
+                print('%-22s World of ends %.1f short of the %s\'s right edge; tracking %.3f em' % (v['id'], f_['letter_x1'] - f_['small_x1'], v['fitLetter'], v['lines'][0].get('tracking', 0.0)))
         lay = (layout_any(v, boxes, pips, marks, ref) if v.get('layout') in ('block', 'wave') else layout_badge(v, boxes, pips) if v.get('layout') == 'badge'
                else layout_middle(v, boxes, pips) if v.get('layout') == 'middle' else layout(v, boxes, pips))
         if lay.get('fit') and not v.get('fitTo'):
@@ -1915,7 +1938,7 @@ PAGE = r'''<!DOCTYPE html>
 %(defs)s
 <header class="ll-head">
   <h1>The logo: the words on one wave with the cards</h1>
-  <p>Holger, 28 Sep, with a sketch: the wavy one is better, but can it feel even more like a wave; if you drew a helping line through the cards and the text, would that help it feel more connected, part of the same wave? So: the two lines on one sine that leaves the front card&rsquo;s corner at the card&rsquo;s own lean and runs back along its top edge, inside a band as tall as the card, five ways: the trough at the middle, the helping lines drawn, the trough later, a deeper wave, the trough earlier. N2 is kept as it was. Then, at his next word, the apps&rsquo; characters as the mark: the queen of Pinochle, the jack of Euchre, the queen of Gin Rummy, the king of Rummy and the joker of Canasta, each alone without the cards, read off its Photoshop layer with no shadow, its bottom finished with rounded corners and the black line, facing away from the words, at 1.32 times the fan&rsquo;s height beside the words of the logo the site uses now, at their size today. The keepers stay as they are. On 29 Sep Holger added a logo of his own, logo-test-transprent.png, drawn as one picture in row Q1 at the bar&rsquo;s 32px, and his third file, the words a weight lighter and the cards&rsquo; outline heavier, as Q2 (it replaced his second, which had only the lighter words). Every row has a number and a name (say &ldquo;O3&rdquo;). Each row: the logo at 64px, then the site&rsquo;s bar at a desktop width with the logo 32px tall, and a phone with it 24px tall; the figure rows stand at the height that keeps today&rsquo;s words at today&rsquo;s size, and the tall switch grows every logo to 36px (27 on the phone).</p>
+  <p>Holger, 28 Sep, with a sketch: the wavy one is better, but can it feel even more like a wave; if you drew a helping line through the cards and the text, would that help it feel more connected, part of the same wave? So: the two lines on one sine that leaves the front card&rsquo;s corner at the card&rsquo;s own lean and runs back along its top edge, inside a band as tall as the card, five ways: the trough at the middle, the helping lines drawn, the trough later, a deeper wave, the trough earlier. N2 is kept as it was. Then, at his next word, the apps&rsquo; characters as the mark: the queen of Pinochle, the jack of Euchre, the queen of Gin Rummy, the king of Rummy and the joker of Canasta, each alone without the cards, read off its Photoshop layer with no shadow, its bottom finished with rounded corners and the black line, facing away from the words, at 1.32 times the fan&rsquo;s height beside the words of the logo the site uses now, at their size today. The keepers stay as they are. On 29 Sep Holger added a logo of his own, logo-test-transprent.png, drawn as one picture in row Q1 at the bar&rsquo;s 32px, and his third file, the words a weight lighter and the cards&rsquo; outline heavier, as Q2 (it replaced his second, which had only the lighter words); then N2 with World of out to the G of Games, R1 to R3. Every row has a number and a name (say &ldquo;O3&rdquo;). Each row: the logo at 64px, then the site&rsquo;s bar at a desktop width with the logo 32px tall, and a phone with it 24px tall; the figure rows stand at the height that keeps today&rsquo;s words at today&rsquo;s size, and the tall switch grows every logo to 36px (27 on the phone).</p>
   <div class="ll-switches"><button id="llToday" type="button"></button><button id="llTall" type="button"></button><button id="llZoom" type="button"></button></div>
 </header>
 <main class="ll-page">
