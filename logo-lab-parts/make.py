@@ -1765,9 +1765,13 @@ VARIATIONS = [
     FV('S6', 'P22 Mackinac', 's6-mackinac', 'R2 in P22 Mackinac Bold on both lines', 'The sixth favourite (Mackinac + BuloRounded): a sturdy slab-ish serif with big ball terminals; one cut here, so both lines share it.', 'mackinac-700', 'mackinac-700'),
     R('R3', 'Out to the G by spacing', 'r3-to-the-g-spaced', 'N2\u2019s letter size kept, the letters spaced until the f ends three short of the G', 'The other reading: World of stays as tall as in N2 (0.52 of the big line) and its letters spread out to reach the G.', fitBy='tracking', lines=[L('World of', 'glca-600', 0.52), L('Card Games', 'glca-500', 1.0, arc=-0.05)]),
 ]
-for _i, (_key, _name, _big, _small) in enumerate(SHEET):
-    VARIATIONS.append(FV('%d' % (_i + 1), _name, 'f-' + _key, 'R2 in ' + _name, '', _small, _big, family='sheet', sheet='mixed'))
-    VARIATIONS.append(FV('%d' % (_i + 1), _name, 'fc-' + _key, 'R2 in ' + _name + ', in capitals', '', _small, _big, caps=True, family='sheet', sheet='caps'))
+# the numbers follow the menu's order; Gelica 500 (R2, number 22) is shown first at Holger's word, its number kept
+SHEET_NUM = {e[0]: i + 1 for i, e in enumerate(SHEET)}
+SHEET_SHOWN = [e for e in SHEET if e[0] == 'gelicamd'] + [e for e in SHEET if e[0] != 'gelicamd']
+for _key, _name, _big, _small in SHEET_SHOWN:
+    _n = '%d' % SHEET_NUM[_key]
+    VARIATIONS.append(FV(_n, _name, 'f-' + _key, 'R2 in ' + _name, '', _small, _big, family='sheet', sheet='mixed'))
+    VARIATIONS.append(FV(_n, _name, 'fc-' + _key, 'R2 in ' + _name + ', in capitals', '', _small, _big, caps=True, family='sheet', sheet='caps'))
 for _i, (_key, _name, _big, _small) in enumerate(SHEET_SANS):
     _n = '%d' % (len(SHEET) + _i + 1)
     VARIATIONS.append(FV(_n, _name, 'g-' + _key, 'R2 in ' + _name, '', _small, _big, family='sheet', sheet='sans-mixed'))
@@ -1933,7 +1937,7 @@ FACES_PAGE = r'''<!DOCTYPE html>
 %(defs)s
 <header class="lf-head">
   <h1>The logo: R2 in every title face</h1>
-  <p>Holger, 29 Sep: R2 (World of out to the G, on Card Games&rsquo; circle) in all %(n)d title faces of the frontpage mockup&rsquo;s font menu, side by side and above and below, then the same with both lines in capitals. Card Games in the menu&rsquo;s cut, World of one weight up where the family has one here. The numbers follow the menu&rsquo;s order. Then %(m)d sans faces the same two ways, classic and friendly, some condensed, at Holger&rsquo;s word the same evening.</p>
+  <p>Holger, 29 Sep: R2 (World of out to the G, on Card Games&rsquo; circle) in all %(n)d title faces of the frontpage mockup&rsquo;s font menu, side by side and above and below, then the same with both lines in capitals. Card Games in the menu&rsquo;s cut, World of one weight up where the family has one here. The numbers follow the menu&rsquo;s order, with Gelica 500 (R2, number 22) first. Then %(m)d sans faces the same two ways, classic and friendly, some condensed, at Holger&rsquo;s word the same evening.</p>
   <nav class="lf-toc"><a href="#mixed">Serif, mixed case</a><a href="#caps">Serif, capitals</a><a href="#sans-mixed">Sans, mixed case</a><a href="#sans-caps">Sans, capitals</a></nav>
   <div class="lf-switches"><button type="button" data-h="64" class="on">64px</button><button type="button" data-h="48">48px</button><button type="button" data-h="32">32px, the bar</button></div>
 </header>
