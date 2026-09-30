@@ -53,7 +53,21 @@ def traced_words():
     """The words of logo@3x.png as SVG path data in the export's units (the PNG is 3 px per unit), with the colour
     the words are painted in."""
     im = np.array(Image.open(SRC / 'logo@3x.png').convert('RGBA'))
-    x0 = 3400                                     # the fan ends at 3300; the words start at 3500
+    vb_h = float(re.search(r'viewBox="[^"]*?\s([\d.]+)"', (SRC / 'logo.svg').read_text()).group(1))
+    k = im.shape[0] / vb_h                        # px per unit of the export (3 for a @3x export)
+    # the words start after the first empty column run of any width right of the fan's own columns (the fan is the
+    # first thing on the canvas; the widest gap would be the two word spaces lined up, as they are in the 30 Sep export)
+    cols = (im[:, :, 3] > 8).any(axis=0)
+    first = int(np.argmax(cols))
+    gaps, start = [], None
+    for x in range(first, im.shape[1]):
+        if not cols[x]:
+            start = x if start is None else start
+        elif start is not None:
+            if x - start >= 12:
+                gaps.append((start, x))
+            start = None
+    x0 = (gaps[0][0] + gaps[0][1]) // 2
     alpha = im[:, x0:, 3]
     mask = (alpha > 127).astype(np.uint8)
     contours, hier = cv2.findContours(mask, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE)
@@ -62,7 +76,7 @@ def traced_words():
         c = cv2.approxPolyDP(c, 1.2, True)        # 1.2 px at 3x: 0.4 of a unit, invisible at any web size
         if len(c) < 3:
             continue
-        pts = ['%s,%s' % (round((x + x0) / 3, 2), round(y / 3, 2)) for x, y in c[:, 0, :]]
+        pts = ['%s,%s' % (round((x + x0) / k, 2), round(y / k, 2)) for x, y in c[:, 0, :]]
         parts.append('M' + 'L'.join(pts) + 'Z')
     solid = im[:, x0:, :3][alpha > 250]
     colour = '#%02x%02x%02x' % tuple(int(v) for v in np.median(solid, axis=0))
