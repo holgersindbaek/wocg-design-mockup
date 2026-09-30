@@ -45,8 +45,9 @@
   function show(v, h) {
     if (v === 'today') { img.setAttribute('width', '170'); img.setAttribute('height', '32'); img.src = 'logo-lab-static/logo.png'; }
     else { img.removeAttribute('width'); img.removeAttribute('height'); img.src = 'logo-lab-out/' + v + '.svg'; }
-    // the site draws the logo 32px tall, 24 under 860px; a height scales both by the same share
-    style.textContent = h ? '#menuLogoContainer img { height: ' + h + 'px !important; } @media (max-width: 860px) { #menuLogoContainer img { height: ' + Math.round(h * 24 / 32) + 'px !important; } }' : '';
+    // the site draws the logo 32px tall, 24 under 860px; a height scales both by the same share. Since 30 Sep the site
+    // lifts its own logo 7% (its ink hangs low); a lab row is centred by its own box, so the lift is switched off with it
+    style.textContent = h ? '#menuLogoContainer img { height: ' + h + 'px !important; transform: none !important; } @media (max-width: 860px) { #menuLogoContainer img { height: ' + Math.round(h * 24 / 32) + 'px !important; } }' : '';
   }
   var q = new URLSearchParams(location.search);
   show(q.get('v') || 'today', parseInt(q.get('h') || '0', 10));
