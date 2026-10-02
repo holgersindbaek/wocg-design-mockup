@@ -1,0 +1,100 @@
+  /* The lab's own chrome. Its classes start with cl-, which site.css never declares, and every rule that names an
+     element carries :not(.site *), so none of it reaches a site piece: site.css alone paints the table. */
+  :root { --cl-paper: #f9f6f2; --cl-band: #f4eee5; --cl-ink: #141414; --cl-label: #4e4d4c; --cl-quiet: #67635c;
+    --cl-line: #d9d2c4; --cl-soft: #ebe7de; --cl-tray: #e4ddd0; --cl-tray-line: #c9c0ae; }
+  html:not(.site *), body:not(.site *) { margin: 0; }
+  body:not(.site *) { background: var(--cl-paper); color: var(--cl-ink); font: 16px/24px "BuloRounded", Verdana, sans-serif;
+    -webkit-font-smoothing: antialiased; }
+  .cl-head { position: sticky; top: 0; z-index: 20; padding: 14px 28px 12px; background: rgba(249, 246, 242, .96);
+    box-shadow: 0 1px 0 var(--cl-line); }
+  .cl-head h1:not(.site *) { margin: 0 0 2px; font: 500 26px/32px "GLCA", Georgia, serif; }
+  .cl-intro { margin: 0 0 10px; color: var(--cl-label); font-size: 14px; line-height: 20px; max-width: 980px; }
+  .cl-controls { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; }
+  .cl-ctl { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; line-height: 18px; color: var(--cl-label); }
+  .cl-seg { display: inline-flex; padding: 2px; border-radius: 14px; corner-shape: squircle; background: var(--cl-tray);
+    box-shadow: inset 0 0 0 1px var(--cl-tray-line); }
+  .cl-seg button:not(.site *) { border: 0; margin: 0; padding: 4px 10px; border-radius: 12px; corner-shape: squircle; cursor: pointer;
+    background: transparent; color: var(--cl-label); font: 700 13px/18px "BuloRounded", Verdana, sans-serif; }
+  .cl-seg button:not(.site *):hover { color: var(--cl-ink); }
+  .cl-seg button.cl-on:not(.site *) { background: #fff; color: var(--cl-ink); box-shadow: 0 0 0 1px var(--cl-tray-line), 0 1px 2px rgba(0, 0, 0, .08); }
+  .cl-page { padding: 18px 28px 96px; }
+  .cl-card { background: #fff; border-radius: 20px; corner-shape: squircle; box-shadow: inset 0 0 0 1px var(--cl-line);
+    padding: 16px 18px 18px; margin: 0 0 16px; }
+  .cl-card h2:not(.site *) { margin: 0 0 4px; font: 500 22px/28px "GLCA", Georgia, serif; display: flex; align-items: baseline; gap: 10px; }
+  .cl-tag { font: 700 11px/16px "BuloRounded", Verdana, sans-serif; padding: 1px 8px; border-radius: 8px; background: var(--cl-soft); color: var(--cl-quiet); }
+  .cl-tag.cl-today { background: #e7f5e4; color: #2b6a25; }
+  .cl-lead { margin: 0 0 4px; color: var(--cl-label); font-size: 14px; line-height: 20px; max-width: 980px; }
+  .cl-lead b:not(.site *) { color: var(--cl-ink); }
+  .cl-frames { display: flex; flex-wrap: wrap; gap: 18px 22px; align-items: flex-start; margin-top: 12px; }
+  .cl-frame { position: relative; isolation: isolate; }
+  .cl-frame-label { margin: 0 0 6px; font-size: 12px; line-height: 16px; font-weight: 700; color: var(--cl-label); }
+  .cl-frame-box { position: relative; border-radius: 12px; corner-shape: squircle; overflow: hidden; box-shadow: 0 0 0 1px rgba(0, 0, 0, .14); width: max-content; }
+  .cl-said { margin-top: 6px; min-height: 16px; font-size: 12px; line-height: 16px; color: var(--cl-quiet); }
+  .cl-said b:not(.site *) { color: var(--cl-ink); }
+  .cl-more { margin-top: 10px; font-size: 13px; line-height: 19px; color: var(--cl-label); max-width: 980px; }
+  .cl-more summary:not(.site *) { cursor: pointer; color: var(--cl-quiet); font-weight: 700; }
+  .cl-more ul:not(.site *) { margin: 6px 0 0; padding-left: 20px; }
+  .cl-more li:not(.site *) { margin: 0 0 4px; }
+  .cl-notes { max-width: 980px; font-size: 14px; line-height: 21px; color: var(--cl-label); }
+  .cl-notes h2:not(.site *) { font: 500 22px/28px "GLCA", Georgia, serif; color: var(--cl-ink); margin: 26px 0 6px; }
+  .cl-notes p:not(.site *), .cl-notes ul:not(.site *) { margin: 0 0 10px; }
+  .cl-notes b:not(.site *) { color: var(--cl-ink); }
+  .cl-zoom2 .cl-frame-box > .site { zoom: 2; }
+
+  /* A suit drawn inside a button's word (a proposal: "Bid 3" and the suit). It takes the drawing the pill masks. */
+  .cl-glyph { display: inline-block; width: .8em; height: .8em; margin-left: .06em; vertical-align: -.07em; background-color: currentColor;
+    -webkit-mask: var(--cl-glyph) center / contain no-repeat; mask: var(--cl-glyph) center / contain no-repeat; }
+
+  /* ---------------------------------------------------------------------------------------------------------------
+     Proposals: the rules a new piece needs, in the site's own tokens, scoped as site.css scopes the site's sheets.
+     --------------------------------------------------------------------------------------------------------------- */
+
+  /* A pill cell that carries a number or a word (Bridge's levels and No trump): the seventh card's type, centred,
+     since the 7th's step right is there for its 7 alone */
+  :where(.site):is(div).wm #mainContainer .piece.suitSelector.spotPrefix-suitSelector.trumpPillCell.cl-textCell:not(.onBackdrop):not(.id-7th) {
+    --trump-pill-ink: var(--ink);
+    font-size: 20px !important;
+    font-weight: bold;
+    text-indent: 0;
+  }
+  :where(.site):is(div).wm #mainContainer.playspace-compact .piece.suitSelector.spotPrefix-suitSelector.trumpPillCell.cl-textCell:not(.onBackdrop):not(.id-7th) {
+    font-size: 18px !important;
+  }
+
+  /* One chooser with two rows: the pill's own thumb, one per row, as pieces of their own (the pill draws its one
+     thumb on its ::after), and the line between the rows, the line the pill draws between its cells */
+  :where(.site):is(div).wm #mainContainer .piece.cl-thumb {
+    border-radius: calc(var(--radius-lg) - (1.75 * var(--space-tray)));
+    corner-shape: squircle;
+    background-color: var(--trump-pill-thumb);
+    box-shadow: inset 0 0 0 1px var(--trump-pill-thumb-ring), var(--trump-pill-thumb-lift);
+    opacity: 0;
+    pointer-events: none;
+    transition: left 220ms cubic-bezier(.645, .045, .355, 1), width 220ms cubic-bezier(.645, .045, .355, 1), opacity 110ms linear;
+  }
+  :where(.site):is(div).wm #mainContainer .piece.cl-thumb.cl-on { opacity: 1; }
+  :where(.site):is(div).wm #mainContainer .piece.cl-thumb.cl-still { transition: opacity 110ms linear; }
+  :where(.site):is(div).wm #mainContainer .piece.cl-rowRule { background-color: var(--line); pointer-events: none; }
+
+  /* No lines between the cells (Holger, 1 Oct 2026: "we shouldn't have divider lines in that chooser") */
+  :where(.site):is(div).wm.cl-noLines #mainContainer .piece.suitSelector.spotPrefix-suitSelector.trumpPillCell:not(.onBackdrop).trumpPillRule {
+    --trump-pill-rule-left: transparent;
+  }
+  :where(.site):is(div).wm.cl-noLines #mainContainer .piece.cl-rowRule.cl-followsLines { opacity: 0; }
+
+  /* The picked cell as a dialog's white card (Holger, 2 Oct 2026): the card's white, its line 1px inside and its lift.
+     The lift is written out, because --lift-card is declared on .wmModal and .wmNotice only, not on the table */
+  :where(.site):is(div).wm.cl-white #mainContainer {
+    --trump-pill-thumb: var(--paper-card);
+    --trump-pill-thumb-ring: var(--line);
+    --trump-pill-thumb-lift: 0 1px 2px rgba(60, 45, 25, .04), 0 2px 5px rgba(60, 45, 25, .05);
+  }
+
+  /* The pill on the band paper, the frontpage's paper a shade under the page paper (Holger, 1 Oct 2026), where a
+     cell under the pointer takes the soft line, the rung under the band (the kit's hover on a band-paper track) */
+  :where(.site):is(div).wm.cl-band #mainContainer .piece.backdrop.spotPrefix-trumpPill { background-color: var(--paper-band); }
+  @media (hover: hover) and (pointer: fine) {
+    :where(.site):is(div).wm.cl-band #mainContainer .piece.suitSelector.spotPrefix-suitSelector.trumpPillCell:not(.onBackdrop):not(.unselectable):not(.selected):hover {
+      background-color: var(--line-soft);
+    }
+  }
