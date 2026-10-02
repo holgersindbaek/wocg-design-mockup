@@ -162,6 +162,25 @@ try {
   for (let c = 0; c < suitCards; c++) for (let fi = 0; fi < 2; fi++) await frameShot(b, `${OUT}/suit-v${c}-${["desktop", "phone"][fi]}.png`, c, fi, 0);
   await b.evaluate(setSwitch("Size", "2x"));
   for (let c = 0; c < suitCards; c++) await frameShot(b, `${OUT}/suit-v${c}-desktop-2x.png`, c, 0, 0);
+  // ----- the many-bids lab: today's box per game and screen against the dev site's computed styles -----
+  await b.navigate("file://" + path.join(ROOT, "many-bids-lab.html"));
+  await sleep(1500);
+  const BID_KEYS = ["background-color", "box-shadow", "border-radius", "color", "font-size", "font-weight", "line-height"];
+  for (const [label, dir] of [["Pinochle", "pinochle"], ["Double Deck", "double-deck-pinochle"], ["Twenty-Nine", "twenty-nine"], ["Spades", "spades"]]) {
+    await b.evaluate(setSwitch("Game", label));
+    for (const [name, fi, cap] of [["desktop", 0, "desk"], ["phone", 1, "phone"], ["side", 2, "side"]]) {
+      const f = `${CAPS}/${dir}-${cap}/dump.json`;
+      if (!fs.existsSync(f)) { console.log("no capture for", label, name); continue; }
+      // A bid a bot had already made was greyed on dev; the lab has no bid to beat. Pieces in another state are counted
+      // apart, not compared
+      const dev = {}, devOff = {};
+      for (const p of JSON.parse(fs.readFileSync(f, "utf8")).pieces) { dev[p.spot] = Object.fromEntries(BID_KEYS.map((k) => [k, p.cs[k]])); devOff[p.spot] = /\bdisabled\b/.test(p.html.slice(0, p.html.indexOf('>'))); }
+      const lab = await b.evaluate(STYLES(0, fi, BID_KEYS));
+      const same = {}, other = [];
+      for (const k of Object.keys(dev)) { if (lab[k] && /\bdisabled\b/.test(lab[k].cls) !== devOff[k]) other.push(k); else same[k] = dev[k]; }
+      report.bid["many-" + dir + "-" + name] = compare(`many bids, today's ${label} box, ${name}` + (other.length ? ` (${other.length} in another state: ${other.join(", ")})` : ""), lab, same, BID_KEYS);
+    }
+  }
   const errs2 = b.takeErrors ? b.takeErrors() : [];
   if (errs2.length) console.log("page errors", JSON.stringify(errs2).slice(0, 2000));
 } catch (e) {

@@ -1,5 +1,7 @@
-// Writes ../bid-chooser-lab.html and ../suit-chooser-lab.html (Holger, 2 Oct 2026). The first tries Bridge's bid box
-// as a chooser like the suit pill; the second tries the suit pill with the picked suit as a dialog's white card.
+// Writes ../bid-chooser-lab.html, ../suit-chooser-lab.html and ../many-bids-lab.html (Holger, 2 Oct 2026). The first
+// tries Bridge's bid box as a chooser like the suit pill; the second tries the suit pill with the picked suit as a
+// dialog's white card; the third takes the Bridge pick to the bid boxes with many bids (Spades, Twenty-Nine, Pinochle
+// and Double Deck Pinochle).
 //   node chooser-lab-parts/build.js
 //
 // Both pages draw the site's own pieces with the site's own CSS. The shared ../site.css is older than the tree (and
@@ -10,7 +12,8 @@
 //
 // The facts the bid lab draws from the dev site are in captured.json, table-*.jpg: today's bid box (its markup, as
 // the site wrote it), the free room on the table, and the table behind the box. capture.mjs and room.mjs took them
-// on 2 Oct 2026 (dev, lobby-build, Bridge bots table, first bid turn); run them again after a layout change.
+// on 2 Oct 2026 (dev, lobby-build, Bridge bots table, first bid turn); run them again after a layout change. The
+// many-bids lab's are captured-bids.json and table-<game>-<screen>.jpg, taken by capture-bids.mjs the same day.
 const fs = require('fs'), path = require('path'), os = require('os'), cp = require('child_process');
 const HERE = __dirname, ROOT = path.join(HERE, '..');
 const STATIC = path.join(ROOT, 'static'); // a symlink to worldofcardgames/static
@@ -57,12 +60,15 @@ fs.writeFileSync(path.join(HERE, 'site.css'), '/* Written by chooser-lab-parts/b
 
 const SUITS = {};
 for (const s of ['club', 'diamond', 'heart', 'spade']) SUITS[s] = dataUri('static/images/wm/suit' + s[0].toUpperCase() + s.slice(1) + '.svg');
+const ARROWS = { left: dataUri('static/images/sortArrowLeft.svg'), right: dataUri('static/images/sortArrowRight.svg') };
 const fill = (page) => read(path.join(HERE, page))
   .replace('/*@@LABCSS@@*/', () => read(path.join(HERE, 'lab.css')))
   .replace('/*@@LABJS@@*/', () => read(path.join(HERE, 'lab.js')))
   .replace('/*@@SUITS@@*/', () => JSON.stringify(SUITS))
-  .replace('/*@@CAPTURED@@*/', () => read(path.join(HERE, 'captured.json')).replace(/<\//g, '<\\/'));
-for (const [page, out] of [['bid-page.html', 'bid-chooser-lab.html'], ['suit-page.html', 'suit-chooser-lab.html']]) {
+  .replace('/*@@ARROWS@@*/', () => JSON.stringify(ARROWS))
+  .replace('/*@@CAPTURED@@*/', () => read(path.join(HERE, 'captured.json')).replace(/<\//g, '<\\/'))
+  .replace('/*@@CAPTUREDBIDS@@*/', () => read(path.join(HERE, 'captured-bids.json')).replace(/<\//g, '<\\/'));
+for (const [page, out] of [['bid-page.html', 'bid-chooser-lab.html'], ['suit-page.html', 'suit-chooser-lab.html'], ['bids-page.html', 'many-bids-lab.html']]) {
   const html = fill(page);
   fs.writeFileSync(path.join(ROOT, out), html);
   console.log(out + ':', Math.round(html.length / 1024), 'KB');

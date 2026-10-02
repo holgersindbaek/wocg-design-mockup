@@ -119,6 +119,23 @@ window.CL = (function () {
     });
   }
 
+  // One pill cell in a box of its own width (a stepper's arrow or value, a slider's arrow). A cell with art draws it as
+  // the pill draws a suit: the drawing as a mask in the cell's ink (--trump-pill-suit, --trump-pill-ink)
+  function cell(f, b, id, n, opts) {
+    opts = opts || {};
+    const cls = 'id-' + id + ' suitSelector spot-suitSelector' + n + ' spotPrefix-suitSelector trumpPillCell' +
+      (opts.rule ? ' trumpPillRule' : '') + (opts.text != null ? ' cl-textCell' : '') + ' clickable';
+    const e = piece(f, cls, b);
+    e.style.lineHeight = b.h + 'px';
+    e.style.fontSize = '29px';
+    if (opts.text != null) e.textContent = opts.text;
+    if (opts.art) {
+      e.style.setProperty('--trump-pill-suit', 'url("' + opts.art + '")');
+      e.style.setProperty('--trump-pill-ink', 'var(--ink)');
+    }
+    return e;
+  }
+
   // The site's own suit pill: the paper (its ::after is the thumb) and its cells
   function pill(f, b, cells, base) {
     const paper = piece(f, 'id-simple backdrop spot-trumpPill spotPrefix-trumpPill', b, 8000);
@@ -183,5 +200,5 @@ window.CL = (function () {
     });
   }
 
-  return { DEVICES, SIGN, el, frame, place, piece, button, setEnabled, setWord, fit, pillCells, pill, pickPill, fadeCell, contrast, switches };
+  return { DEVICES, SIGN, el, frame, place, piece, button, setEnabled, setWord, fit, pillCells, cell, pill, pickPill, fadeCell, contrast, switches };
 })();

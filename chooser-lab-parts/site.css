@@ -10587,9 +10587,9 @@
   box-shadow: inset 0 0 0 1px var(--color-table-button-ring);
 }
 :where(.site):is(div).wm #mainContainer #playspace.pinochle .piece.button.spotPrefix-bidButtonMinus.disabled, :where(.site):is(div).wm #mainContainer #playspace.pinochle .piece.button.spotPrefix-bidButtonPlus.disabled, :where(.site):is(div).wm #mainContainer #playspace.pinochle .piece.button.spotPrefix-meldBack.disabled, :where(.site):is(div).wm #mainContainer #playspace.pinochle .piece.button.spotPrefix-meldNext.disabled, :where(.site):is(div).wm #mainContainer #playspace.pinochledd .piece.button.spotPrefix-bidButtonMinus.disabled, :where(.site):is(div).wm #mainContainer #playspace.pinochledd .piece.button.spotPrefix-bidButtonPlus.disabled, :where(.site):is(div).wm #mainContainer #playspace.pinochledd .piece.button.spotPrefix-meldBack.disabled, :where(.site):is(div).wm #mainContainer #playspace.pinochledd .piece.button.spotPrefix-meldNext.disabled {
-  --pager-ink: color-mix(in srgb, var(--ink-label) 70%, var(--line));
-  background-color: var(--line);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--line) 60%, var(--ink-label));
+  --pager-ink: var(--btn-inactive-ink);
+  background-color: var(--btn-inactive);
+  box-shadow: inset 0 0 0 1px var(--btn-inactive-ring);
   cursor: auto;
 }
 
@@ -13145,23 +13145,6 @@
 :where(.site) .piece.card.unselectable .background::after {
   opacity: 0.32;
 }
-:where(.site) .piece.card.uprightIndex:not(.id-back):not([class*=shim]) .background::before {
-  --index-ring: var(--card-border-width, 1px);
-  content: "";
-  position: absolute;
-  left: var(--index-ring);
-  top: var(--index-ring);
-  width: calc(var(--index-box-w) * 100% - var(--index-ring));
-  height: calc(var(--index-box-h) * 100% - var(--index-ring));
-  background-color: inherit;
-  background-image: inherit;
-  background-repeat: no-repeat;
-  background-size: calc((100% + var(--index-ring)) / var(--index-box-w)) calc((100% + var(--index-ring)) / var(--index-box-h));
-  background-position: calc(-1 * var(--index-ring)) calc(-1 * var(--index-ring));
-  border-bottom-right-radius: var(--card-border-radius, 8px);
-  transform: rotate(180deg);
-  pointer-events: none;
-}
 :where(.site) .piece.card:not(.clickable):not(.draggable):not(.unselectable) {
   pointer-events: none;
 }
@@ -14324,9 +14307,9 @@
   box-shadow: inset 0 0 0 1px var(--go-dark-ring) !important;
 }
 :where(.site):is(div).wm .piece.button.spotPrefix-gameOverLeave.disabled, :where(.site):is(div).wm .piece.button.spotPrefix-gameOverRematch.disabled {
-  background-color: var(--line);
-  color: color-mix(in srgb, var(--ink-label) 70%, var(--line));
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--line) 60%, var(--ink-label)) !important;
+  background-color: var(--btn-inactive);
+  color: var(--btn-inactive-ink);
+  box-shadow: inset 0 0 0 1px var(--btn-inactive-ring) !important;
   text-shadow: none;
   cursor: auto;
 }
@@ -14345,9 +14328,9 @@
   background-color: var(--go-green-hover);
 }
 :where(.site):is(div).wm .piece.button.green.spotPrefix-gameOverPlayAgain.disabled {
-  background-color: var(--line);
-  color: color-mix(in srgb, var(--ink-label) 70%, var(--line));
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--line) 60%, var(--ink-label));
+  background-color: var(--btn-inactive);
+  color: var(--btn-inactive-ink);
+  box-shadow: inset 0 0 0 1px var(--btn-inactive-ring);
   text-shadow: none;
   cursor: auto;
 }
@@ -14687,11 +14670,13 @@
   background-color: var(--paper-page);
 }
 
+:where(.site):is(div).wm #mainContainer .piece.button.disabled {
+  background-color: var(--btn-inactive);
+  color: var(--btn-inactive-ink);
+}
+
 :where(.site):is(div).wm #mainContainer .piece.button.onBackdrop:not(.green):not(.spotPrefix-meldBack):not(.spotPrefix-meldNext) {
   --table-button-ring-paper: var(--color-table-button-ring);
-  --table-button-grey-paper: var(--line);
-  --table-button-grey-ink-paper: color-mix(in srgb, var(--ink-label) 70%, var(--line));
-  --table-button-grey-ring-paper: color-mix(in srgb, var(--line) 60%, var(--ink-label));
   box-shadow: inset 0 0 0 1px var(--table-button-ring-paper);
 }
 @media (hover: hover) and (pointer: fine) {
@@ -14703,9 +14688,9 @@
   box-shadow: inset 0 0 0 1px var(--table-button-ring-paper);
 }
 :where(.site):is(div).wm #mainContainer .piece.button.onBackdrop:not(.green):not(.spotPrefix-meldBack):not(.spotPrefix-meldNext).disabled {
-  background-color: var(--table-button-grey-paper);
-  color: var(--table-button-grey-ink-paper);
-  box-shadow: inset 0 0 0 1px var(--table-button-grey-ring-paper);
+  background-color: var(--btn-inactive);
+  color: var(--btn-inactive-ink);
+  box-shadow: inset 0 0 0 1px var(--btn-inactive-ring);
 }
 
 :where(.site):is(div).wm #mainContainer .piece.suitSelector.spotPrefix-bidDenom.onBackdrop {
@@ -20195,6 +20180,9 @@
   --line-tray: #c9c0ae;
   --color-table-button-ring-chosen: #6a4901;
   --table-button-grey-ring-chosen: #4c473e;
+  --btn-inactive: var(--line);
+  --btn-inactive-ink: color-mix(in srgb, var(--ink-label) 70%, var(--line));
+  --btn-inactive-ring: color-mix(in srgb, var(--line) 60%, var(--ink-label));
   --line-tray-paper: #cfc9bc;
   --tray-track: var(--line-soft);
   --tray-hover: var(--plate-tray);
@@ -28518,6 +28506,9 @@
   --line-tray: #c9c0ae;
   --color-table-button-ring-chosen: #6a4901;
   --table-button-grey-ring-chosen: #4c473e;
+  --btn-inactive: var(--line);
+  --btn-inactive-ink: color-mix(in srgb, var(--ink-label) 70%, var(--line));
+  --btn-inactive-ring: color-mix(in srgb, var(--line) 60%, var(--ink-label));
   --line-tray-paper: #cfc9bc;
   --tray-track: var(--line-soft);
   --tray-hover: var(--plate-tray);

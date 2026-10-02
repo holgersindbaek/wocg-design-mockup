@@ -80,7 +80,7 @@
     box-shadow: inset 0 0 0 1px var(--trump-pill-thumb-ring), var(--trump-pill-thumb-lift);
     opacity: 0;
     pointer-events: none;
-    transition: left 220ms cubic-bezier(.645, .045, .355, 1), width 220ms cubic-bezier(.645, .045, .355, 1), opacity 110ms linear;
+    transition: left 220ms cubic-bezier(.645, .045, .355, 1), top 220ms cubic-bezier(.645, .045, .355, 1), width 220ms cubic-bezier(.645, .045, .355, 1), opacity 110ms linear;
   }
   :where(.site):is(div).wm #mainContainer .piece.cl-thumb.cl-on { opacity: 1; }
   :where(.site):is(div).wm #mainContainer .piece.cl-thumb.cl-still { transition: opacity 110ms linear; }
@@ -111,6 +111,29 @@
     :where(.site):is(div).wm.cl-ground #mainContainer .piece.suitSelector.spotPrefix-suitSelector.trumpPillCell:not(.onBackdrop):not(.unselectable):not(.selected):hover {
       background-color: var(--cl-ground-hover);
     }
+  }
+
+  /* Many bids (Holger, 2 Oct 2026: "a lab for the bid choosers where there are many many bids"). A mark that carries
+     its bid, as a slider's thumb does: the number in the ink, on the white card */
+  :where(.site):is(div).wm #mainContainer .piece.cl-thumb.cl-thumbText {
+    color: var(--ink);
+    font-weight: bold;
+    text-align: center;
+    z-index: 8002 !important;
+  }
+  /* A slider's rail: the line the pill draws between its cells, laid along the track, and the track that takes the drag */
+  :where(.site):is(div).wm #mainContainer .piece.cl-rail { background-color: var(--line); border-radius: 1px; pointer-events: none; }
+  :where(.site):is(div).wm #mainContainer .piece.cl-track { cursor: pointer; touch-action: none; }
+  /* A pager in a row of table buttons on the felt: the button's own coat, the site's sort arrow in its ink, at the
+     24px the bid box's pager draws it (base.scss) */
+  :where(.site):is(div).wm #mainContainer .piece.button.cl-pager::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-color: currentColor;
+    -webkit-mask: var(--cl-arrow) center / 24px 24px no-repeat;
+    mask: var(--cl-arrow) center / 24px 24px no-repeat;
+    pointer-events: none;
   }
 
 </style>
@@ -266,6 +289,23 @@ window.CL = (function () {
     });
   }
 
+  // One pill cell in a box of its own width (a stepper's arrow or value, a slider's arrow). A cell with art draws it as
+  // the pill draws a suit: the drawing as a mask in the cell's ink (--trump-pill-suit, --trump-pill-ink)
+  function cell(f, b, id, n, opts) {
+    opts = opts || {};
+    const cls = 'id-' + id + ' suitSelector spot-suitSelector' + n + ' spotPrefix-suitSelector trumpPillCell' +
+      (opts.rule ? ' trumpPillRule' : '') + (opts.text != null ? ' cl-textCell' : '') + ' clickable';
+    const e = piece(f, cls, b);
+    e.style.lineHeight = b.h + 'px';
+    e.style.fontSize = '29px';
+    if (opts.text != null) e.textContent = opts.text;
+    if (opts.art) {
+      e.style.setProperty('--trump-pill-suit', 'url("' + opts.art + '")');
+      e.style.setProperty('--trump-pill-ink', 'var(--ink)');
+    }
+    return e;
+  }
+
   // The site's own suit pill: the paper (its ::after is the thumb) and its cells
   function pill(f, b, cells, base) {
     const paper = piece(f, 'id-simple backdrop spot-trumpPill spotPrefix-trumpPill', b, 8000);
@@ -330,7 +370,7 @@ window.CL = (function () {
     });
   }
 
-  return { DEVICES, SIGN, el, frame, place, piece, button, setEnabled, setWord, fit, pillCells, pill, pickPill, fadeCell, contrast, switches };
+  return { DEVICES, SIGN, el, frame, place, piece, button, setEnabled, setWord, fit, pillCells, cell, pill, pickPill, fadeCell, contrast, switches };
 })();
 
 </script>
