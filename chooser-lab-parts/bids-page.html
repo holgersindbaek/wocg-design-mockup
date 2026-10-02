@@ -474,7 +474,9 @@
           if (!o.fine || span() <= K()) return Math.round(lo() + share * span());
           return Math.round(lo() + (share <= 0.5 ? (share / 0.5) * K() : K() + ((share - 0.5) / 0.5) * (span() - K())));
         };
-        CL.piece(f, 'cl-rail', { x: track.x + TW / 2, y: cb.y + H / 2 - 1, w: travel, h: 2 }, 8000);
+        // The rail runs to where the paper's corners begin, as the site draws it (Holger, 2 Oct 2026: "It looks too
+        // narrow when moved to one side"; it ran between the card's middles)
+        CL.piece(f, 'cl-rail', { x: track.x + 10, y: cb.y + H / 2 - 1, w: track.w - 20, h: 2 }, 8000);
         const thumb = CL.piece(f, 'cl-thumb cl-on cl-thumbText', { x: track.x, y: cb.y + P, w: TW, h: H - 2 * P }, 8002);
         thumb.style.removeProperty('opacity');
         thumb.style.fontSize = (d.compact ? 18 : 20) + 'px';
