@@ -92,11 +92,13 @@
   }
   :where(.site):is(div).wm.cl-noLines #mainContainer .piece.cl-rowRule.cl-followsLines { opacity: 0; }
 
-  /* The picked cell as a dialog's white card (Holger, 2 Oct 2026): the card's white, its line 1px inside and its lift.
-     The lift is written out, because --lift-card is declared on .wmModal and .wmNotice only, not on the table */
+  /* The picked cell as a dialog's white card (Holger, 2 Oct 2026): the card's white, a line 1px inside and its lift.
+     The lift is written out, because --lift-card is declared on .wmModal and .wmNotice only, not on the table. The line
+     was the dialog card's own, --line; Holger asked for it "a bit darker" the same day, so it is the tray line, the next
+     line rung down, and the suit lab's Border switch steps it (--cl-white-ring on the frame's root) */
   :where(.site):is(div).wm.cl-white #mainContainer {
     --trump-pill-thumb: var(--paper-card);
-    --trump-pill-thumb-ring: var(--line);
+    --trump-pill-thumb-ring: var(--cl-white-ring, var(--line-tray));
     --trump-pill-thumb-lift: 0 1px 2px rgba(60, 45, 25, .04), 0 2px 5px rgba(60, 45, 25, .05);
   }
 
@@ -145,7 +147,8 @@
     card&rsquo;s white, the line round it and its soft lift, as the Settings dialog draws its white cards. Version 2 has no
     lines between the suits. Versions 3a to 3e put a darker paper under them, one for each darker paper the site uses. The
     suits stand in the site&rsquo;s order, clubs, diamonds, spades and hearts, as every suit chooser on the site draws
-    them. Tap a suit to move the pick. Every piece is drawn by the site&rsquo;s own stylesheet.</p>
+    them. The white card&rsquo;s border is a step darker than the dialog&rsquo;s line, as you asked. The Border switch steps it
+    through the site&rsquo;s darker lines. Tap a suit to move the pick. Every piece is drawn by the site&rsquo;s own stylesheet.</p>
   <div class="cl-controls" id="clControls"></div>
 </header>
 <main class="cl-page">
@@ -153,8 +156,8 @@
   <section class="cl-notes">
     <h2>What to look for</h2>
     <p>Today the picked suit sits on the empty rating star, a darker warm grey with a dark edge. A white card on the
-      chooser&rsquo;s paper is much quieter, since the paper is almost white. Its edge, the dialog line, carries most of the
-      mark. The darker the paper, the more the white card stands out by itself.</p>
+      chooser&rsquo;s paper is much quieter, since the paper is almost white. Its edge carries most of the mark, so the Border
+      switch matters most on the light papers. The darker the paper, the more the white card stands out by itself.</p>
     <p>On each darker paper a suit under the pointer takes the hover that paper has elsewhere on the site, and a suit you
       cannot pick takes the paper&rsquo;s own line, so it stays as faint as today. On the quiet dark the cards&rsquo; red and
       black no longer read, which is why the dark papers stop there.</p>
@@ -379,7 +382,17 @@ window.CL = (function () {
   const SUITS = {"club":"data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iODBweCIgaGVpZ2h0PSI4MHB4IiB2aWV3Qm94PSIwIDAgODAgODAiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+CiAgICA8dGl0bGU+c3VpdENsdWI8L3RpdGxlPgogICAgPGcgaWQ9InN1aXRDbHViIiBzdHJva2U9Im5vbmUiIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCI+CiAgICAgICAgPHBhdGggZD0iTTM5Ljk5OCwxMSBDNDcuNzY2LDExIDU0LjA2NCwxNy4zIDU0LjA2NCwyNS4wNjggQzU0LjA2NCwyOC43OTg3Mjk2IDUyLjYxMTMxMzksMzIuMTg5OTMwMiA1MC4yNDA3NzgyLDM0LjcwNzIwODQgQzUxLjk4MTczNzMsMzMuOTMzMzkxNCA1My45MDk2ODg5LDMzLjUwNCA1NS45MzgsMzMuNTA0IEM2My43MDIsMzMuNTA0IDcwLDM5LjgwMiA3MCw0Ny41NyBDNzAsNTUuMzM2IDYzLjcwMiw2MS42MzQgNTUuOTM4LDYxLjYzNCBDNTAuOTU1ODIxMiw2MS42MzQgNDYuNTc5MTYxNyw1OS4wNDMyNjU5IDQ0LjA4MDc1NTMsNTUuMTM2MTE0NSBDNDQuMTQ2NzA2Myw1NS40MDAyOTIgNDQuMjExODgwOSw1NS42NjY1NTU5IDQ0LjI3NzExMTEsNTUuOTMzNzk2MyBMNDQuNDQzOTc0LDU2LjYxOTAwNjQgQzQ0LjQ3MTc3OTIsNTYuNzMzNDQ1MiA0NC40OTk1NzU0LDU2Ljg0Nzk3MzIgNDQuNTI3MzUzLDU2Ljk2MjU0NjIgTDQ0LjY5MzcxOTMsNTcuNjUwMTcyNSBMNDQuODU5MTgxMSw1OC4zMzY3NjMzIEM0Ni4xNzgwMzMxLDYzLjgxOTcwMjUgNDcuMzY2LDY5IDQ3LjM2Niw2OSBMMzIuOTMsNjkgQzMyLjkzLDY5IDMzLjkzMzA4NjUsNjQuMTkwNDkzMSAzNS4xMTk1NDEsNTguOTUxMTUzNSBMMzUuMjc1MjY4NSw1OC4yNjU2ODM3IEwzNS4zNTM3ODU4LDU3LjkyMTc5NTUgTDM1LjUxMTg3NSw1Ny4yMzMwNjI1IEMzNS42OTA4NzQ5LDU2LjQ1NjA3NzcgMzUuODcxOTE1Myw1NS42ODAwOTMzIDM2LjA1MjM4NTcsNTQuOTE5MDU3NyBDMzMuNTc4NTA4LDU4Ljk0NzM2NDUgMjkuMTMyOTQxMiw2MS42MzQgMjQuMDYyLDYxLjYzNCBDMTYuMjk0LDYxLjYzNCAxMCw1NS4zMzYgMTAsNDcuNTcgQzEwLDM5LjgwMiAxNi4yOTQsMzMuNTA0IDI0LjA2MiwzMy41MDQgQzI2LjA5MDgyMSwzMy41MDQgMjguMDE5NTM4MywzMy45MzQwNTAxIDI5Ljc2MTkzMzEsMzQuNzA4MDAzIEMyNy4zODk3MjAxLDMyLjE5MjM0MzUgMjUuOTM2LDI4LjgwMDA1NzEgMjUuOTM2LDI1LjA2OCBDMjUuOTM2LDE3LjMgMzIuMjM0LDExIDM5Ljk5OCwxMSBaIiBpZD0iY2xvdmVyX2V4dHJhX2JpZyIgZmlsbD0iIzBFMEQwRCI+PC9wYXRoPgogICAgPC9nPgo8L3N2Zz4=","diamond":"data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iODBweCIgaGVpZ2h0PSI4MHB4IiB2aWV3Qm94PSIwIDAgODAgODAiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+CiAgICA8dGl0bGU+c3VpdERpYW1vbmQ8L3RpdGxlPgogICAgPGcgaWQ9InN1aXREaWFtb25kIiBzdHJva2U9Im5vbmUiIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCIgc3Ryb2tlLXdpZHRoPSIyIj4KICAgICAgICA8cGF0aCBkPSJNNDAsMy42ODU4MzIzMiBMNjYuNzU3ODYxNiw0MC4wMDE5ODQ0IEw0MCw3Ni4zMTYyMjUyIEwxMy4yNDIxMzg0LDQwLjAwMTk4NDQgTDQwLDMuNjg1ODMyMzIgWiIgaWQ9ImRpYW1vbmRfZXh0cmFfYmlnIiBzdHJva2U9IiNENTFBMjIiIGZpbGw9IiNENTFBMjIiPjwvcGF0aD4KICAgIDwvZz4KPC9zdmc+","heart":"data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iODBweCIgaGVpZ2h0PSI4MHB4IiB2aWV3Qm94PSIwIDAgODAgODAiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+CiAgICA8dGl0bGU+c3VpdEhlYXJ0PC90aXRsZT4KICAgIDxnIGlkPSJzdWl0SGVhcnQiIHN0cm9rZT0ibm9uZSIgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIiBzdHJva2Utd2lkdGg9IjIiPgogICAgICAgIDxwYXRoIGQ9Ik01Mi4zNDk2NTE3LDEzLjk5OTk5OSBDNTYuOTM2ODc0MSwxMy45OTM0MTI2IDYxLjA4NzI4MzgsMTUuOTU3ODYxNyA2NC4wOTQ2MDY0LDE5LjEzMTE3MzcgQzY3LjEyMjUyODUsMjIuMzI2MjIyMiA2OC45OTMzNDk4LDI2Ljc0NTIwODMgNjkuMDAwMDAwOSwzMS42Mjc0MjcgQzY5LjAyOTE1NzYsNTMuMjAxODY3IDQzLjUyMTMyNjksNjUuMzUxNzI3NiA0MC4wNDMzNDcsNjYuOTA3NzM2IEMzNy43MTE1NTQ2LDY1Ljg1ODExNjQgMjYuMzkzOTMxNiw2MC40NDc5MTMgMTguNTcwMDQ2LDUwLjk5Njg4MTEgQzE0LjI2MTU0MTMsNDUuNzkyMzI5NiAxMS4wMDkwNDYzLDM5LjM0OTE3MDkgMTAuOTk5OTk5NywzMS43MDkzMTc0IEMxMC45OTYyMDg2LDI2LjgyNjY5NzggMTIuODU4MjgwOCwyMi40MDA3ODkzIDE1Ljg3OTM1NjIsMTkuMTk2MDY5NiBDMTguODc5NTI0NywxNi4wMTM1Mjc4IDIzLjAyNDUwMTcsMTQuMDM2NzM0NCAyNy42MDkzOTUsMTQuMDMyMDIzMiBDMzIuMTUwNjg5NywxNC4wMjQ0ODYgMzYuMjY0OTA1NiwxNS45NTY5NjAyIDM5LjI2NTAyNzIsMTkuMDc4MTc0IEMzOS41MTQ3OTMyLDE5LjMzODAyMTIgMzkuNzU2MDIxMiwxOS42MDUyNTgxIDM5Ljk4ODYyMTYsMTkuODc4NDkzMiBDNDAuMjE5ODY3NywxOS42MDM5OTY5IDQwLjQ2MDA3OTksMTkuMzM2NDIxNyA0MC43MDg4NDU4LDE5LjA3NjE4MDIgQzQzLjcwMTM0MjMsMTUuOTQ1NjM5MSA0Ny44MDk3NjUyLDE0LjAwMzc4NDcgNTIuMzQ5NjUxNywxMy45OTk5OTkgWiIgaWQ9ImhlYXJ0X2V4dHJhX2JpZyIgc3Ryb2tlPSIjRDUxQTIyIiBmaWxsPSIjRDUxQTIyIj48L3BhdGg+CiAgICA8L2c+Cjwvc3ZnPg==","spade":"data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iODBweCIgaGVpZ2h0PSI4MHB4IiB2aWV3Qm94PSIwIDAgODAgODAiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+CiAgICA8dGl0bGU+c3VpdFNwYWRlPC90aXRsZT4KICAgIDxnIGlkPSJzdWl0U3BhZGUiIHN0cm9rZT0ibm9uZSIgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj4KICAgICAgICA8cGF0aCBkPSJNMzkuOTU1OTczNyw5IEMzOS45NTU5NzM3LDkgNjkuOTcxOTY1OCwyMC44NTIgNzAsNDMuMDg0IEM3MC4wMTE5OTUxLDUyLjc1OCA2Mi4xMzAyMjAzLDYwLjYxOCA1Mi4zOTMwODYxLDYwLjYyOCBDNDkuNDIwODc0OSw2MC42MzA0NjQ4IDQ2LjYyMTE2OTIsNTkuOTAyNDA2OSA0NC4xNjM5NDg5LDU4LjYxNDYxNzcgTDQ4LDcxLjAwMiBMMzIsNzEuMDAyIEwzNS44MjYxMzEsNTguNjUwNDk2MSBDMzMuMzgzMjQ0NCw1OS45MzEwMzUgMzAuNjAwOTQ5Nyw2MC42NTc1NTM3IDI3LjY0ODk1NjYsNjAuNjYwMDA5NiBDMTcuOTExODIyNCw2MC42NyAxMC4wMTAwMzMsNTIuODM2IDEwLDQzLjE2MiBDOS45NjgwMDIxNywyMC45MjQgMzkuOTU1OTczNyw5IDM5Ljk1NTk3MzcsOSBaIiBpZD0ic3BhZGVfZXh0cmFfYmlnIiBmaWxsPSIjMEUwRDBEIj48L3BhdGg+CiAgICA8L2c+Cjwvc3ZnPg=="};
   // utils.SUITS, the site's order: every suit chooser, the old look's suit buttons and the frontpage's seams use it
   const ORDER = ['club', 'diamond', 'spade', 'heart'];
-  const S = { cells: 'four', screens: 'both', zoom: '1' };
+  const S = { cells: 'four', ring: 'tray', screens: 'both', zoom: '1' };
+  // The white card's border, from the dialog card's own line down the site's darker lines (Holger, 2 Oct 2026: "make the
+  // border a bit darker"): the value the frame sets, and its hex for the numbers. The quiet button's ring is declared for
+  // dialogs only, so it is written out; the greyed button's ring is its mix, as pieces.scss writes it
+  const RINGS = {
+    dialog: ['var(--line)', '#d2cfca'],
+    tray: ['var(--line-tray)', '#c9c0ae'],
+    quiet: ['#bfb5a1', '#bfb5a1'],
+    grey: ['color-mix(in srgb, var(--line) 60%, var(--ink-label))', '#9d9b98'],
+    star: ['var(--star-empty-stroke)', '#8a857c'],
+  };
   const el = CL.el;
   const RED = { diamond: true, heart: true };
 
@@ -391,7 +404,7 @@ window.CL = (function () {
     { num: '', title: 'Today', tag: 'As it ships', today: true, cls: '', paper: '#f9f6f2', faded: '#d2cfca', thumb: '#d9d2c4', ring: '#8a857c',
       lead: 'The picked suit sits on the empty rating star, a warm grey with a dark edge.' },
     { num: '1', title: 'White card', tag: 'Your variation', cls: 'cl-white', paper: '#f9f6f2', faded: '#d2cfca', thumb: '#ffffff', ring: '#d2cfca',
-      lead: 'The picked suit sits on a dialog&rsquo;s white card. It has the card&rsquo;s white, the dialog line 1px inside and the card&rsquo;s soft lift. The chooser keeps its paper and its lines.' },
+      lead: 'The picked suit sits on a dialog&rsquo;s white card. It has the card&rsquo;s white, a line 1px inside and the card&rsquo;s soft lift. The Border switch sets the line, and the dialog&rsquo;s own line is its first step. The chooser keeps its paper and its lines.' },
     { num: '2', title: 'White card, no lines', tag: 'Your note of 1 Oct', cls: 'cl-white cl-noLines', paper: '#f9f6f2', faded: '#d2cfca', thumb: '#ffffff', ring: '#d2cfca',
       lead: 'Version 1 with no lines between the suits (&ldquo;we shouldn&rsquo;t have divider lines in that chooser&rdquo;).' },
     { num: '3a', title: 'White card on the band paper', tag: 'Your note of 1 Oct', cls: 'cl-white cl-noLines cl-ground', paper: '#f4eee5', faded: '#d2cfca', thumb: '#ffffff', ring: '#d2cfca',
@@ -444,6 +457,7 @@ window.CL = (function () {
   }
 
   function numbers(v) {
+    if (v.cls.indexOf('cl-white') > -1) v = Object.assign({}, v, { ring: RINGS[S.ring][1] });
     const r = (a, b) => CL.contrast(a, b).toFixed(2) + ':1';
     return '<details class="cl-more"><summary>Numbers</summary><ul>' +
       '<li>On the chooser&rsquo;s paper (' + v.paper + ') the mark&rsquo;s fill ' + v.thumb + ' stands at ' + r(v.thumb, v.paper) + ' and its edge ' + v.ring + ' at ' + r(v.ring, v.paper) + '.</li>' +
@@ -481,6 +495,7 @@ window.CL = (function () {
         wrap.appendChild(saidBox);
         frames.appendChild(wrap);
         const f = CL.frame(d, gw + 2 * M, gh + 2 * M, { rootClass: v.cls, game: set.game });
+        if (v.cls.indexOf('cl-white') > -1) f.root.style.setProperty('--cl-white-ring', RINGS[S.ring][0]);
         if (v.ground) {
           f.root.style.setProperty('--cl-ground', v.ground.paper);
           f.root.style.setProperty('--cl-ground-hover', v.ground.hover);
@@ -495,6 +510,7 @@ window.CL = (function () {
 
   CL.switches(document.getElementById('clControls'), [
     { label: 'Suits', key: 'cells', options: [['four', 'Four suits'], ['faded', 'One you cannot pick'], ['seventh', 'Twenty-Nine, with the 7th']] },
+    { label: 'Border', key: 'ring', options: [['dialog', 'Dialog line'], ['tray', 'Tray line'], ['quiet', 'Quiet button ring'], ['grey', 'Greyed button ring'], ['star', 'Star edge']] },
     { label: 'Screens', key: 'screens', options: [['both', 'Both'], ['desktop', 'Desktop'], ['phone', 'Phone']] },
     { label: 'Size', key: 'zoom', options: [['1', 'Real'], ['2', '2x']] },
   ], S, build);

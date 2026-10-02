@@ -18,7 +18,8 @@
     card&rsquo;s white, the line round it and its soft lift, as the Settings dialog draws its white cards. Version 2 has no
     lines between the suits. Versions 3a to 3e put a darker paper under them, one for each darker paper the site uses. The
     suits stand in the site&rsquo;s order, clubs, diamonds, spades and hearts, as every suit chooser on the site draws
-    them. Tap a suit to move the pick. Every piece is drawn by the site&rsquo;s own stylesheet.</p>
+    them. The white card&rsquo;s border is a step darker than the dialog&rsquo;s line, as you asked. The Border switch steps it
+    through the site&rsquo;s darker lines. Tap a suit to move the pick. Every piece is drawn by the site&rsquo;s own stylesheet.</p>
   <div class="cl-controls" id="clControls"></div>
 </header>
 <main class="cl-page">
@@ -26,8 +27,8 @@
   <section class="cl-notes">
     <h2>What to look for</h2>
     <p>Today the picked suit sits on the empty rating star, a darker warm grey with a dark edge. A white card on the
-      chooser&rsquo;s paper is much quieter, since the paper is almost white. Its edge, the dialog line, carries most of the
-      mark. The darker the paper, the more the white card stands out by itself.</p>
+      chooser&rsquo;s paper is much quieter, since the paper is almost white. Its edge carries most of the mark, so the Border
+      switch matters most on the light papers. The darker the paper, the more the white card stands out by itself.</p>
     <p>On each darker paper a suit under the pointer takes the hover that paper has elsewhere on the site, and a suit you
       cannot pick takes the paper&rsquo;s own line, so it stays as faint as today. On the quiet dark the cards&rsquo; red and
       black no longer read, which is why the dark papers stop there.</p>
@@ -48,7 +49,17 @@
   const SUITS = /*@@SUITS@@*/;
   // utils.SUITS, the site's order: every suit chooser, the old look's suit buttons and the frontpage's seams use it
   const ORDER = ['club', 'diamond', 'spade', 'heart'];
-  const S = { cells: 'four', screens: 'both', zoom: '1' };
+  const S = { cells: 'four', ring: 'tray', screens: 'both', zoom: '1' };
+  // The white card's border, from the dialog card's own line down the site's darker lines (Holger, 2 Oct 2026: "make the
+  // border a bit darker"): the value the frame sets, and its hex for the numbers. The quiet button's ring is declared for
+  // dialogs only, so it is written out; the greyed button's ring is its mix, as pieces.scss writes it
+  const RINGS = {
+    dialog: ['var(--line)', '#d2cfca'],
+    tray: ['var(--line-tray)', '#c9c0ae'],
+    quiet: ['#bfb5a1', '#bfb5a1'],
+    grey: ['color-mix(in srgb, var(--line) 60%, var(--ink-label))', '#9d9b98'],
+    star: ['var(--star-empty-stroke)', '#8a857c'],
+  };
   const el = CL.el;
   const RED = { diamond: true, heart: true };
 
@@ -60,7 +71,7 @@
     { num: '', title: 'Today', tag: 'As it ships', today: true, cls: '', paper: '#f9f6f2', faded: '#d2cfca', thumb: '#d9d2c4', ring: '#8a857c',
       lead: 'The picked suit sits on the empty rating star, a warm grey with a dark edge.' },
     { num: '1', title: 'White card', tag: 'Your variation', cls: 'cl-white', paper: '#f9f6f2', faded: '#d2cfca', thumb: '#ffffff', ring: '#d2cfca',
-      lead: 'The picked suit sits on a dialog&rsquo;s white card. It has the card&rsquo;s white, the dialog line 1px inside and the card&rsquo;s soft lift. The chooser keeps its paper and its lines.' },
+      lead: 'The picked suit sits on a dialog&rsquo;s white card. It has the card&rsquo;s white, a line 1px inside and the card&rsquo;s soft lift. The Border switch sets the line, and the dialog&rsquo;s own line is its first step. The chooser keeps its paper and its lines.' },
     { num: '2', title: 'White card, no lines', tag: 'Your note of 1 Oct', cls: 'cl-white cl-noLines', paper: '#f9f6f2', faded: '#d2cfca', thumb: '#ffffff', ring: '#d2cfca',
       lead: 'Version 1 with no lines between the suits (&ldquo;we shouldn&rsquo;t have divider lines in that chooser&rdquo;).' },
     { num: '3a', title: 'White card on the band paper', tag: 'Your note of 1 Oct', cls: 'cl-white cl-noLines cl-ground', paper: '#f4eee5', faded: '#d2cfca', thumb: '#ffffff', ring: '#d2cfca',
@@ -113,6 +124,7 @@
   }
 
   function numbers(v) {
+    if (v.cls.indexOf('cl-white') > -1) v = Object.assign({}, v, { ring: RINGS[S.ring][1] });
     const r = (a, b) => CL.contrast(a, b).toFixed(2) + ':1';
     return '<details class="cl-more"><summary>Numbers</summary><ul>' +
       '<li>On the chooser&rsquo;s paper (' + v.paper + ') the mark&rsquo;s fill ' + v.thumb + ' stands at ' + r(v.thumb, v.paper) + ' and its edge ' + v.ring + ' at ' + r(v.ring, v.paper) + '.</li>' +
@@ -150,6 +162,7 @@
         wrap.appendChild(saidBox);
         frames.appendChild(wrap);
         const f = CL.frame(d, gw + 2 * M, gh + 2 * M, { rootClass: v.cls, game: set.game });
+        if (v.cls.indexOf('cl-white') > -1) f.root.style.setProperty('--cl-white-ring', RINGS[S.ring][0]);
         if (v.ground) {
           f.root.style.setProperty('--cl-ground', v.ground.paper);
           f.root.style.setProperty('--cl-ground-hover', v.ground.hover);
@@ -164,6 +177,7 @@
 
   CL.switches(document.getElementById('clControls'), [
     { label: 'Suits', key: 'cells', options: [['four', 'Four suits'], ['faded', 'One you cannot pick'], ['seventh', 'Twenty-Nine, with the 7th']] },
+    { label: 'Border', key: 'ring', options: [['dialog', 'Dialog line'], ['tray', 'Tray line'], ['quiet', 'Quiet button ring'], ['grey', 'Greyed button ring'], ['star', 'Star edge']] },
     { label: 'Screens', key: 'screens', options: [['both', 'Both'], ['desktop', 'Desktop'], ['phone', 'Phone']] },
     { label: 'Size', key: 'zoom', options: [['1', 'Real'], ['2', '2x']] },
   ], S, build);
