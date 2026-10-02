@@ -41,22 +41,28 @@ function dataUri(rel) {
   return 'data:' + type + ';base64,' + fs.readFileSync(file).toString('base64');
 }
 
-let css = siteCss();
-const viaVar = new Set();
-css.replace(/(?:-webkit-)?mask(?:-image)?\s*:[^;{}]*/g, (d) => {
-  (d.match(/var\((--[\w-]+)/g) || []).forEach((v) => viaVar.add(v.slice(4)));
-  return d;
-});
+// --keep-css keeps chooser-lab-parts/site.css as it is: the Bridge and suit labs record the looks of 2 Oct 2026 before
+// they were built into the site (the white card in the tray line, Bridge's bid chooser), so their pages are rebuilt
+// over that copy, and their captures still compare with it
+const KEEP = process.argv.includes('--keep-css') && fs.existsSync(path.join(HERE, 'site.css'));
+let css = KEEP ? null : siteCss();
 let inlined = 0;
-css = css.replace(/(--[\w-]+)\s*:\s*url\("([^"]+)"\)/g, (m, name, rel) => {
-  if (!viaVar.has(name)) return m;
-  const d = dataUri(rel);
-  if (!d) return m;
-  inlined++;
-  return name + ': url("' + d + '")';
-});
-css = css.replace(/url\((['"]?)static\//g, 'url($1../static/');
-fs.writeFileSync(path.join(HERE, 'site.css'), '/* Written by chooser-lab-parts/build.js from the wocg tree; do not edit. */\n' + css);
+if (!KEEP) {
+  const viaVar = new Set();
+  css.replace(/(?:-webkit-)?mask(?:-image)?\s*:[^;{}]*/g, (d) => {
+    (d.match(/var\((--[\w-]+)/g) || []).forEach((v) => viaVar.add(v.slice(4)));
+    return d;
+  });
+  css = css.replace(/(--[\w-]+)\s*:\s*url\("([^"]+)"\)/g, (m, name, rel) => {
+    if (!viaVar.has(name)) return m;
+    const d = dataUri(rel);
+    if (!d) return m;
+    inlined++;
+    return name + ': url("' + d + '")';
+  });
+  css = css.replace(/url\((['"]?)static\//g, 'url($1../static/');
+  fs.writeFileSync(path.join(HERE, 'site.css'), '/* Written by chooser-lab-parts/build.js from the wocg tree; do not edit. */\n' + css);
+}
 
 const SUITS = {};
 for (const s of ['club', 'diamond', 'heart', 'spade']) SUITS[s] = dataUri('static/images/wm/suit' + s[0].toUpperCase() + s.slice(1) + '.svg');
@@ -73,4 +79,4 @@ for (const [page, out] of [['bid-page.html', 'bid-chooser-lab.html'], ['suit-pag
   fs.writeFileSync(path.join(ROOT, out), html);
   console.log(out + ':', Math.round(html.length / 1024), 'KB');
 }
-console.log('chooser-lab-parts/site.css:', Math.round(css.length / 1024), 'KB,', inlined, 'mask urls in custom properties inlined');
+console.log(KEEP ? 'chooser-lab-parts/site.css kept as it is' : 'chooser-lab-parts/site.css: ' + Math.round(css.length / 1024) + ' KB, ' + inlined + ' mask urls in custom properties inlined');

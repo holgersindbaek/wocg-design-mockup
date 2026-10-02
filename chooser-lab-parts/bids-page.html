@@ -32,20 +32,46 @@
       chooser starts on 1.</p>
     <p>Two rows of seven show fourteen bids, so Spades and Twenty-Nine need no arrows. Pinochle needs six pages and Double
       Deck four. Each page starts at the lowest bid you can make, so a bid you cannot make is only shown near the top.</p>
+    <h2>The sliders</h2>
+    <p>A slider alone is too coarse for this many bids. Pinochle&rsquo;s 76 bids leave about 3px a bid on a desktop and 2px on a
+      phone. A touch can land about 4mm off, which is about twelve bids on a phone. The finger also hides the card, and
+      it nudges the card as it lifts.
+      The design systems we read agree that a slider suits rough values. An exact value needs a step beside it (Apple,
+      Microsoft, Material, Nielsen Norman Group). Poker apps put quick bets and small steps beside their sliders. No rival
+      Pinochle app uses a slider. NeuralPlay and KARMAN show the bid between a minus and a plus. All three Pinochle apps
+      we looked at open on the lowest bid.</p>
+    <p>Version 4 drops the arrows, as you asked. While you drag, the bid rises above your finger. Version 5 steps without
+      arrows. A tap beside the card moves it one bid toward the tap. A hold keeps it going, as Windows sliders do. Version 6
+      also gives the ten bids above the lowest half the chooser, since most bids are low. Version 7 is a ruler, as in the
+      iPhone photo editor. Versions 4 to 6 ignore the nudge as the finger lifts. On a desktop the arrow keys and the mouse
+      wheel step versions 5 and 6.</p>
     <h2>Questions for you</h2>
     <ul>
-      <li><b>Which version?</b> Two rows of seven, one row of seven, the stepper or the slider? It can differ by game.</li>
+      <li><b>Which version?</b> Two rows of seven, one row of seven, the stepper or one of the sliders? It can differ by game.</li>
+      <li><b>On a phone, is a tap beside the card enough?</b> The research expects it to work, but nobody can see it until
+        they try it. The other choice is small arrows on phones only.</li>
       <li><b>Where do the arrows go?</b> Here they sit in the row of buttons, where today&rsquo;s Pinochle box has them. They
         could also be cells at the ends of the chooser.</li>
       <li><b>What should be picked at the start?</b> The lowest bid you can make, or the hint&rsquo;s bid, the one the
         game&rsquo;s own bot would make?</li>
     </ul>
     <h2>How it would be built</h2>
-    <p>For the redesign only. The chooser is the suit pill&rsquo;s paper with number cells (the Bridge lab&rsquo;s text cell),
-      one mark and, for two rows, a mark that moves between them. The stepper and the slider are the same pill with an
-      arrow cell at each end, drawn as the pill draws a suit. The pager in the row of buttons is today&rsquo;s back and forth
-      button on the felt. The proposal rules are at the bottom of <code>chooser-lab-parts/lab.css</code>. In the code it
-      touches each game&rsquo;s <code>showBid</code> and the bid spots in its layout.</p>
+    <p>For the redesign only. The chooser is the suit pill&rsquo;s paper with number cells (the Bridge chooser&rsquo;s word
+      cells, built on 2 Oct), one mark and, for two rows, a mark that moves between them. The stepper is the same pill with
+      an arrow cell at each end, drawn as the pill draws a suit. A slider is the pill&rsquo;s paper with a rail in the tray
+      line and the white card on it. The bubble is that card again, above it. The pager in the row of buttons is
+      today&rsquo;s back and forth button on the felt. The proposal rules are at the bottom of
+      <code>chooser-lab-parts/lab.css</code>. In the code it touches each game&rsquo;s <code>showBid</code> and the bid spots in
+      its layout.</p>
+    <h2>Sources</h2>
+    <ul>
+      <li><a href="https://www.nngroup.com/articles/gui-slider-controls/" target="_blank">Nielsen Norman Group on slider controls</a></li>
+      <li><a href="https://developer.apple.com/design/human-interface-guidelines/sliders" target="_blank">Apple&rsquo;s guidelines for sliders</a></li>
+      <li><a href="https://learn.microsoft.com/en-us/windows/apps/design/controls/slider" target="_blank">Microsoft&rsquo;s guidelines for sliders</a></li>
+      <li><a href="https://github.com/material-components/material-components-android/blob/master/docs/components/Slider.md" target="_blank">Material&rsquo;s slider and its value label</a></li>
+      <li><a href="https://baymard.com/blog/slider-interfaces" target="_blank">Baymard on slider interfaces</a></li>
+      <li>Our own captures of NeuralPlay&rsquo;s and KARMAN&rsquo;s Pinochle, in <code>Design/Research/app-onboarding-2026-09</code></li>
+    </ul>
   </section>
 </main>
 <script>
@@ -82,8 +108,14 @@
       lead: 'One row of seven bids over one row of buttons, as in your Bridge pick. The arrows sit in the row of buttons, beside Pass and your bid.' },
     { key: 'stepper', form: 'stepper', title: 'A stepper', tag: 'One bid per tap',
       lead: 'Your bid in the middle on the white card, with an arrow each side that steps one bid up or down. The yellow button sends it.' },
-    { key: 'slider', form: 'slider', title: 'A slider', tag: 'Drag or step',
-      lead: 'Drag the white card along the chooser, or tap the track, to reach any bid at once. The arrows step one bid. The yellow button sends it.' },
+    { key: 'slider', form: 'slider', title: 'A slider', tag: 'Your edit',
+      lead: 'No arrows. Drag the white card along the chooser, or tap the rail, to reach any bid. On a phone your finger hides the card, so the bid rises above it while you drag. The card and the rail wear the tray line. The yellow button sends it.' },
+    { key: 'sliderSteps', form: 'slider', slider: { steps: true }, title: 'A slider that steps', tag: 'Taps step',
+      lead: 'Version 4, and a tap beside the card moves it one bid toward the tap. Hold to keep going. A phone gets its one-bid steps without arrows. On a desktop the arrow keys and the mouse wheel step it too.' },
+    { key: 'sliderFine', form: 'slider', slider: { steps: true, fine: true }, title: 'A slider, finer near the start', tag: 'Most bids are low',
+      lead: 'Version 5 with a finer scale near the start. The ten bids above the lowest take half the chooser, about 12px each on a desktop and 8 on a phone, where the even scale gives 3 and 2. Most bids are one or two over the last.' },
+    { key: 'ruler', form: 'slider', slider: { ruler: true }, title: 'A ruler', tag: 'After the iPhone photo editor',
+      lead: 'The card stays in the middle and the bids slide under it, 12px apart on a desktop and 10 on a phone. Drag or flick the scale, or tap a number on it. It settles on a bid.' },
   ];
 
   const game = () => GAMES[S.game];
@@ -246,9 +278,9 @@
           placeThumb(pick >= first && pick < first + size ? pick - first : -1);
         },
       };
-    } else {
-      // One row: an arrow cell each end and the bid between, on the white card (the stepper), or a track the card
-      // slides along (the slider), over the bids from the lowest you can make to the top
+    } else if (v.form === 'stepper') {
+      // One row: an arrow cell each end and the bid between on the white card, over the bids from the lowest you can
+      // make to the top
       const A = H;
       const left = CL.cell(f, { x: cb.x + P, y: cb.y + P, w: A - P, h: H - 2 * P }, 'prev', 0, { art: ARROW.left });
       const right = CL.cell(f, { x: cb.x + g.W - A, y: cb.y + P, w: A - P, h: H - 2 * P }, 'next', 2, { art: ARROW.right, rule: true });
@@ -257,58 +289,217 @@
       const step = (k) => { if (sent) return; pick = Math.max(lowestIdx(), Math.min(n - 1, (pick < 0 ? lowestIdx() : pick) + k)); render(); };
       left.addEventListener('click', () => step(-1));
       right.addEventListener('click', () => step(1));
-      if (v.form === 'stepper') {
-        const thumb = CL.piece(f, 'cl-thumb cl-on', { x: mid.x, y: cb.y + P, w: mid.w, h: H - 2 * P }, 8000);
-        thumb.style.removeProperty('opacity');
-        const value = CL.cell(f, { x: mid.x, y: cb.y + P, w: mid.w, h: H - 2 * P }, 'value', 1, { text: '', rule: true });
-        value.classList.add('selected');
-        right.classList.add('afterPicked');
+      const thumb = CL.piece(f, 'cl-thumb cl-on', { x: mid.x, y: cb.y + P, w: mid.w, h: H - 2 * P }, 8000);
+      thumb.style.removeProperty('opacity');
+      const value = CL.cell(f, { x: mid.x, y: cb.y + P, w: mid.w, h: H - 2 * P }, 'value', 1, { text: '', rule: true });
+      value.classList.add('selected');
+      right.classList.add('afterPicked');
+      api = {
+        render: () => {
+          value.textContent = pick < 0 ? '' : label(gm.bids[pick]);
+          CL.fadeCell(left, !!sent || pick <= lowestIdx());
+          CL.fadeCell(right, !!sent || pick >= n - 1);
+          value.classList.add('selected');
+        },
+      };
+    } else {
+      // A slider over the whole chooser, no arrows (Holger, 2 Oct 2026), from the lowest bid you can make to the top. The
+      // card carries the bid; while you drag, the bid also rises above your finger. The options are the research's
+      // (DESIGN notes at the foot of the page): steps beside the card, a finer scale near the start, or a ruler.
+      const o = v.slider || {};
+      const n = gm.bids.length;
+      const lo = () => lowestIdx();
+      const span = () => Math.max(1, n - 1 - lo());
+      const track = { x: cb.x + P, w: g.W - 2 * P };
+      const TW = Math.max(H - 2 * P, (d.compact ? 13 : 14) * String(gm.bids[n - 1]).length + 8);
+      const setPick = (i) => { if (!sent) { pick = Math.max(lo(), Math.min(n - 1, i)); render(); } };
+      const cur = () => (pick < 0 ? lo() : pick);
+
+      if (o.ruler) {
+        // The card stays in the middle and the scale slides under it, PB apart a bid; a drag or a flick moves it and it
+        // settles on a bid, and a tap on the scale moves it there
+        const PB = d.compact ? 10 : 12;
+        const win = CL.piece(f, 'cl-ruler', { x: track.x, y: cb.y + P, w: track.w, h: H - 2 * P }, 8001);
+        win.style.removeProperty('opacity');
+        const strip = el('div', 'cl-rulerStrip');
+        win.appendChild(strip);
+        let lastLabel = -1e9;
+        for (let i = 0; i < n; i++) {
+          const x = i * PB;
+          const major = x - lastLabel >= 34 && (gm.bids[i] % 5 === 0 || i === 0);
+          strip.appendChild(el('div', 'cl-tick' + (major ? ' cl-major' : ''), 'left:' + x + 'px'));
+          if (major) { strip.appendChild(el('div', 'cl-rulerLabel', 'left:' + x + 'px', label(gm.bids[i]))); lastLabel = x; }
+        }
+        const card = CL.piece(f, 'cl-thumb cl-on cl-thumbText', { x: track.x + Math.round((track.w - TW) / 2), y: cb.y + P, w: TW, h: H - 2 * P }, 8002);
+        card.style.removeProperty('opacity');
+        card.style.fontSize = (d.compact ? 18 : 20) + 'px';
+        card.style.lineHeight = (H - 2 * P) + 'px';
+        let pos = cur(), anim = 0, drag = null;
+        const show = () => {
+          strip.style.transform = 'translateX(' + (track.w / 2 - pos * PB) + 'px)';
+          card.textContent = label(gm.bids[Math.round(pos)]);
+        };
+        const glide = (to) => {
+          cancelAnimationFrame(anim);
+          const from = pos, t0 = performance.now();
+          const tick = (t) => {
+            const k = Math.min(1, (t - t0) / 220), e = 1 - Math.pow(1 - k, 3);
+            pos = from + (to - from) * e;
+            show();
+            if (k < 1) anim = requestAnimationFrame(tick);
+            else { anim = 0; setPick(to); }
+          };
+          anim = requestAnimationFrame(tick);
+        };
+        const scale = () => win.getBoundingClientRect().width / track.w;
+        win.addEventListener('pointerdown', (ev) => {
+          if (sent) return;
+          cancelAnimationFrame(anim);
+          try { win.setPointerCapture(ev.pointerId); } catch (e) {}
+          drag = { x: ev.clientX, pos: pos, moved: false, trail: [[performance.now(), ev.clientX]] };
+        });
+        win.addEventListener('pointermove', (ev) => {
+          if (!drag) return;
+          const dx = (ev.clientX - drag.x) / scale();
+          if (Math.abs(dx) > 4) drag.moved = true;
+          pos = Math.max(lo(), Math.min(n - 1, drag.pos - dx / PB));
+          drag.trail.push([performance.now(), ev.clientX]);
+          if (drag.trail.length > 6) drag.trail.shift();
+          show();
+          if (Math.round(pos) !== pick) { pick = Math.round(pos); render(); }
+        });
+        const end = (ev) => {
+          if (!drag) return;
+          const d0 = drag;
+          drag = null;
+          if (!d0.moved) {
+            const r = win.getBoundingClientRect();
+            const x = (ev.clientX - r.left) / scale();
+            glide(Math.max(lo(), Math.min(n - 1, Math.round(pos + (x - track.w / 2) / PB))));
+            return;
+          }
+          // A flick carries on as far as its speed takes it, then settles on a bid
+          const a = d0.trail[0], b = d0.trail[d0.trail.length - 1];
+          const v = (b[1] - a[1]) / scale() / Math.max(1, b[0] - a[0]);
+          glide(Math.max(lo(), Math.min(n - 1, Math.round(pos - (v * 160) / PB))));
+        };
+        win.addEventListener('pointerup', end);
+        win.addEventListener('pointercancel', end);
         api = {
           render: () => {
-            value.textContent = pick < 0 ? '' : label(gm.bids[pick]);
-            CL.fadeCell(left, !!sent || pick <= lowestIdx());
-            CL.fadeCell(right, !!sent || pick >= n - 1);
-            value.classList.add('selected');
+            if (!drag && !anim) pos = cur();
+            if (!drag) show();
+            card.style.opacity = pick < 0 ? '.55' : '';
           },
+          reset: () => { cancelAnimationFrame(anim); anim = 0; pos = cur(); },
         };
       } else {
-        // The card is as wide as the widest bid needs, at least a cell's width
-        const TW = Math.max(H - 2 * P, (d.compact ? 13 : 14) * String(gm.bids[n - 1]).length + 8);
-        const track = { x: mid.x + 2, w: mid.w - 4 };
-        CL.piece(f, 'cl-rail', { x: track.x + TW / 2, y: cb.y + H / 2 - 1, w: track.w - TW, h: 2 }, 8000);
+        // Where a bid stands, as a share of the travel: even, or finer near the start, where the ten bids above the
+        // lowest take the first half (Baymard on handles too sensitive; the iPhone's fine scrubbing)
+        const travel = track.w - TW;
+        const K = () => Math.min(10, span());
+        const shareOf = (i) => {
+          const k = i - lo();
+          if (!o.fine || span() <= K()) return k / span();
+          return k <= K() ? (0.5 * k) / K() : 0.5 + (0.5 * (k - K())) / (span() - K());
+        };
+        const indexOf = (share) => {
+          share = Math.max(0, Math.min(1, share));
+          if (!o.fine || span() <= K()) return Math.round(lo() + share * span());
+          return Math.round(lo() + (share <= 0.5 ? (share / 0.5) * K() : K() + ((share - 0.5) / 0.5) * (span() - K())));
+        };
+        CL.piece(f, 'cl-rail', { x: track.x + TW / 2, y: cb.y + H / 2 - 1, w: travel, h: 2 }, 8000);
         const thumb = CL.piece(f, 'cl-thumb cl-on cl-thumbText', { x: track.x, y: cb.y + P, w: TW, h: H - 2 * P }, 8002);
         thumb.style.removeProperty('opacity');
         thumb.style.fontSize = (d.compact ? 18 : 20) + 'px';
         thumb.style.lineHeight = (H - 2 * P) + 'px';
+        const BH = H - 2 * P + 4, BW = TW + 8;
+        const bubble = CL.piece(f, 'cl-bubble', { x: track.x - 4, y: cb.y - BH - 10, w: BW, h: BH }, 8004);
+        bubble.style.removeProperty('opacity');
+        bubble.style.fontSize = (d.compact ? 18 : 20) + 'px';
+        bubble.style.lineHeight = BH + 'px';
         const hit = CL.piece(f, 'cl-track', { x: track.x, y: cb.y, w: track.w, h: H }, 8003);
-        const span = () => Math.max(1, n - 1 - lowestIdx());
-        const xOf = (i) => track.x + ((track.w - TW) * (i - lowestIdx())) / span();
-        const fromX = (clientX) => {
-          const r = hit.getBoundingClientRect(), k = r.width / track.w;
-          const x = (clientX - r.left) / k - TW / 2;
-          return Math.round(lowestIdx() + Math.max(0, Math.min(1, x / (track.w - TW))) * span());
+        hit.tabIndex = 0;
+        const xOf = (i) => track.x + travel * shareOf(i);
+        const centreOf = (i) => xOf(i) - track.x + TW / 2;
+        const localX = (clientX) => { const r = hit.getBoundingClientRect(); return ((clientX - r.left) * track.w) / r.width; };
+        let mode = null, grab = 0, lastX = 0, trail = [], timer = 0;
+        // A tap beside the card moves it one bid toward the tap, and a hold keeps going until it reaches the finger
+        // (Windows sliders; the steppers of NeuralPlay's and KARMAN's Pinochle)
+        const stepToward = (x) => {
+          const c = centreOf(cur());
+          if (Math.abs(x - c) <= TW / 2) return false;
+          const before = pick;
+          setPick(cur() + (x > c ? 1 : -1));
+          return pick !== before;
         };
-        let dragging = false;
         hit.addEventListener('pointerdown', (ev) => {
           if (sent) return;
-          dragging = true;
           try { hit.setPointerCapture(ev.pointerId); } catch (e) {}
+          const x = localX(ev.clientX);
+          const onCard = Math.abs(x - centreOf(cur())) <= TW / 2 + 4;
+          lastX = x;
+          trail = [];
+          if (o.steps && !onCard) {
+            mode = 'step';
+            stepToward(x);
+            const again = () => { if (mode === 'step' && stepToward(lastX)) timer = setTimeout(again, 90); };
+            timer = setTimeout(again, 400);
+            return;
+          }
+          mode = 'drag';
+          grab = onCard ? x - centreOf(cur()) : 0;
           thumb.classList.add('cl-still');
-          pick = fromX(ev.clientX);
-          render();
+          bubble.classList.add('cl-on');
+          setPick(indexOf((x - grab - TW / 2) / travel));
         });
-        hit.addEventListener('pointermove', (ev) => { if (dragging) { pick = fromX(ev.clientX); render(); } });
-        const end = () => { dragging = false; thumb.classList.remove('cl-still'); };
+        hit.addEventListener('pointermove', (ev) => {
+          if (!mode) return;
+          lastX = localX(ev.clientX);
+          if (mode !== 'drag') return;
+          setPick(indexOf((lastX - grab - TW / 2) / travel));
+          trail.push([performance.now(), pick]);
+        });
+        const end = () => {
+          if (mode === 'drag') {
+            // The finger nudges the card as it lifts (Nielsen Norman Group): keep the bid it showed a moment before
+            const t = performance.now() - 80;
+            const held = trail.filter((e) => e[0] <= t).pop();
+            if (held && held[1] !== pick) setPick(held[1]);
+          }
+          clearTimeout(timer);
+          mode = null;
+          thumb.classList.remove('cl-still');
+          bubble.classList.remove('cl-on');
+        };
         hit.addEventListener('pointerup', end);
         hit.addEventListener('pointercancel', end);
+        if (o.steps) {
+          // On a desktop the keys and the wheel step it as well (the slider pattern of WAI-ARIA; PokerStars' wheel)
+          hit.addEventListener('keydown', (ev) => {
+            const k = { ArrowRight: 1, ArrowUp: 1, ArrowLeft: -1, ArrowDown: -1, PageUp: 5, PageDown: -5 }[ev.key];
+            if (k) setPick(cur() + k);
+            else if (ev.key === 'Home') setPick(lo());
+            else if (ev.key === 'End') setPick(n - 1);
+            else return;
+            ev.preventDefault();
+          });
+          let acc = 0;
+          hit.addEventListener('wheel', (ev) => {
+            ev.preventDefault();
+            acc -= ev.deltaY;
+            while (acc >= 40) { setPick(cur() + 1); acc -= 40; }
+            while (acc <= -40) { setPick(cur() - 1); acc += 40; }
+          }, { passive: false });
+        }
         api = {
           render: () => {
-            const i = pick < 0 ? lowestIdx() : pick;
+            const i = cur();
             thumb.textContent = label(gm.bids[i]);
             thumb.style.left = xOf(i) + 'px';
             thumb.style.opacity = pick < 0 ? '.55' : '';
-            CL.fadeCell(left, !!sent || pick <= lowestIdx());
-            CL.fadeCell(right, !!sent || pick >= n - 1);
+            bubble.textContent = label(gm.bids[i]);
+            bubble.style.left = (xOf(i) - 4) + 'px';
           },
         };
       }
