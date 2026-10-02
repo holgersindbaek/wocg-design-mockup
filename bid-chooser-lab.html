@@ -745,7 +745,9 @@ window.CL = (function () {
   const STRAINS = ['club', 'diamond', 'heart', 'spade', 'notrump'];
   const RED = { diamond: true, heart: true };
   const BEATS = { none: null, '1s': { L: 1, s: 'spade' }, '2h': { L: 2, s: 'heart' }, '4c': { L: 4, s: 'club' }, '7s': { L: 7, s: 'spade' } };
-  const S = { beat: 'none', calls: 'pass', start: 'none', word: 'live', mark: 'today', lines: 'on', width: 'today', around: 'felt', screens: 'all', zoom: '1' };
+  // The lab opens on Holger's settings of 2 Oct 2026 (his screenshot): the lowest bid picked, the bid on the button, the
+  // white card, no lines and square cells
+  const S = { beat: 'none', calls: 'pass', start: 'lowest', word: 'live', mark: 'white', lines: 'off', width: 'square', around: 'felt', screens: 'all', zoom: '1' };
   const el = CL.el;
 
   const VERSIONS = [
@@ -755,7 +757,7 @@ window.CL = (function () {
       lead: 'The levels and the suits in one chooser, each row with its own mark. The yellow button under it shows your bid and sends it. Pass, Double and Redouble stay under that.' },
     { key: 'two', form: 'two', buttons: 'stack', title: 'Two choosers', tag: 'Two suit pills',
       lead: 'The same as two suit pills. The levels are in one and the suits in the other. Each is the suit pill the other games use, unchanged.' },
-    { key: 'row', form: 'one', buttons: 'row', title: 'One chooser, one row of buttons', tag: 'One row less',
+    { key: 'row', form: 'one', buttons: 'row', title: 'One chooser, one row of buttons', tag: 'Your pick',
       lead: 'The chooser with one row of buttons under it, for Pass, Double and your bid. Double and Redouble can never both be made. So they share one button, which says Redouble when that is the call you can make.' },
   ];
 
@@ -796,8 +798,10 @@ window.CL = (function () {
     const roomW = 2 * Math.min(cx - room.left, room.right - cx);
     // As Layout.trumpPillShape: as wide as asked, narrower where the room between the side hands is, never under 24 a cell
     const W = Math.min(S.width === 'square' ? 7 * H + 2 * P : todayCalls, Math.max(roomW, 7 * 24 + 2 * P));
-    // The calls keep today's row, so Redouble keeps its size (a phone's row stands under the side hands' cards)
-    const CW = Math.max(W, todayCalls);
+    // The chooser and the buttons under it share one width, the smaller of the two (Holger, 2 Oct 2026: "make the top
+    // chooser and bottom buttons the same width ... in relation to whichever is smallest"). The chooser is the smaller:
+    // today's row of calls is as wide as today's box or wider
+    const CW = Math.min(W, Math.max(W, todayCalls));
     const g = { W: W, CW: CW, roomW: roomW, GW: Math.max(W, CW) };
     const x0 = Math.round((g.GW - W) / 2), xc = Math.round((g.GW - CW) / 2);
     const row3 = (y) => {
@@ -975,11 +979,13 @@ window.CL = (function () {
       CL.setEnabled(bid, ready);
       CL.setWord(bid, word(ready));
       CL.setEnabled(pass, !sent);
-      // Each word fits its own button, as Bridge's Pass, Double and Redouble do today (they are not a tied row)
+      // Versions 1 and 2 keep today's calls, each word fitting its own button as Bridge's do today (they are not a tied
+      // row); version 3's row is a new row of action buttons
       if (mid) {
         CL.setWord(mid, S.calls === 'redouble' ? 'Redouble' : 'Double');
         CL.setEnabled(mid, !sent && S.calls !== 'pass');
-        CL.fit(f, [pass, mid, bid], false);
+        // A row of action buttons prints its words at the smallest size any of them fits (button.js fitRow)
+        CL.fit(f, [pass, mid, bid], true);
       } else {
         CL.setEnabled(dbl, !sent && S.calls === 'double');
         CL.setEnabled(rdbl, !sent && S.calls === 'redouble');
