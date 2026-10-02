@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hearts phone layout lab · the table in the app, thirteen ways kept of twenty-five, and nine ways to bigger names on the first</title>
+<!--
+  The Hearts table in the game app, thirteen ways kept of twenty-five, in iPhone frames side by side (393 by 852 points, portrait; the
+  apps are locked to portrait). Version 1 is the table as lobby-build draws it today (the WoCG-3 redesign), in
+  the app's own frame: the status bar (59), the mobile banner ad the site reserves at the top (100), the
+  playspace, the safe area under it (34) and the sticky footer ad (100) the site reserves when the window is 760
+  or taller. Its numbers are not drawn by eye: hearts-layout-lab-parts/capture-phone.js replays the visual
+  sweep's recorded Hearts deal on the dev site at the app's page (?platform=mobile with the redesign forced on,
+  window.ReactNativeWebView present, the insets 59 and 34 written where the site reads env()) and measures every
+  piece; the JSON and the shots are in hearts-layout-lab-parts/measure/ (appframe-*). The next ten borrow their
+  layout from the rival Hearts apps' boards after the first deal (Design/Research/app-onboarding-2026-09,
+  section "Game board after the first deal") and from three ideas of our own, to give the game (your hand, the
+  trick) more of the screen and the people (avatars, plates, fans, pills) less. Every version keeps every element
+  of version 1: an element may move, shrink, merge with another or sit behind a tap, and the table at the top
+  says where each one went. Drawn in our own kit (DESIGN-GUIDE.md): the plates, pills, paper boxes, the yellow
+  felt button, the Anglo faces the site draws on small cards and the Medallion blue back; no rival art in the
+  drawings. Y held lays the picked rival's own screenshot of its table with cards played (Fiogonia, MobilityWare,
+  CardGames.io, from the research folder's shots) over every phone at the slider's opacity, for a direct compare.
+  Switches: State (4 cards: a full trick at the biggest size that keeps 12 from the users' cards and 16 from everything else drawn, 8 between its cards; pass, 3 picked, your play, their turn, TRAM); Seats (bots, the sweep's fixture, or people, which adds
+  the seat marks, the more tab, Chat in place of New game and a chat bubble); Ads (as today: top and bottom; top;
+  bottom; none); Size (100%, the default, or Device size, 78%); Plates (the plates', score plates' and board's colour: blue, red, yellow, the tray, the quiet button or the quiet dark button; c cycles); Rival (Fiogonia, MobilityWare, CardGames.io,
+  with the opacity slider; Y held shows it); which versions show. Keys: 1 shows or hides today's,
+  = 12, [ 13, ] 14, ' 16, \ 17, , 18, . 19, / 20, ` 21, o 22, u 23, h 25 (Holger's requests of 30 Sep and 1 Oct; the ten
+  after the rival boards, 2 to 11, and 15 were removed on 1 Oct at his word and live on in HEARTS-PHONE-LAYOUT.md), s state, p seats, a ads,
+  z size, r the next rival; T for today's layout over every version, whole, Y for the rival's picture: a hold peeks, a tap
+  keeps it until the next tap.
+  The strip under each phone is measured off the drawn page for the state the switches are in: your card's size
+  in points, and the share of the whole screen under the game (your hand, the trick, the pass, TRAM), the people
+  (avatars, plates, scores, fans, counts, marks), the chrome (pills, bars, seat buttons, the clock), the info
+  (board, notice, chips, toast, bubble), the ads, the system (status bar and home indicator zone) and the free
+  felt. Boxes are painted on a 3-point grid in that stacking order, so a cell under two things counts the upper
+  one; a turned card counts its bounding box.
+  Fonts: guide-fonts.css. Assets come through this folder's static/ symlink to wocg/worldofcardgames/static.
+  Tracking doc: HEARTS-PHONE-LAYOUT.md in the wocg repo root.
+-->
+<link rel="stylesheet" href="guide-fonts.css">
+<style>
+  :root {
+    --paper: #f9f6f2; --band: #f4eee5; --card: #fff;
+    --ink: #141414; --label: #4e4d4c; --quiet: #67635c; --mark: #9b9997;
+    --line: #d2cfca; --line-soft: #ebe7de; --line-felt: #393939;
+    --green: #43a038; --green-ring: #347d2c;
+    --yellow: #FFD43B; --yellow-ink: #3D2B00;
+    --plate: #ABD2FF; --plate-ink: #124F7E; --plate-track: #D0EBFF;
+    --felt: #327333;
+    --ring: 0 0 0 1px var(--line-felt), 0 0 8px rgba(0,0,0,.24);
+    --lift: 0 1px 2px rgba(60,45,25,.05), 0 3px 8px rgba(60,45,25,.09);
+    --ui: "BuloRounded", Verdana, Arial, sans-serif;
+    --display: "GLCA", Georgia, serif;
+  }
+  * { box-sizing: border-box; }
+  html { background: #e9e4dc; }
+  body { margin: 0; color: var(--ink); font: 16px/24px var(--ui); -webkit-font-smoothing: antialiased; }
+  body * { corner-shape: squircle; }
+
+  /* ── the lab page ─────────────────────────────────────────────────────── */
+  .lab { padding: 28px 28px 60px; }
+  .lab h1 { font: 500 38px/1.15 var(--display); margin: 0 0 6px; letter-spacing: -0.01em; }
+  .lab h2.sec { font: 500 26px/1.2 var(--display); margin: 26px 0 8px; }
+  .lab .lead { max-width: 960px; margin: 0 0 14px; color: var(--label); }
+  .lab .lead b, .lab p b { color: var(--ink); }
+  .lab p { max-width: 960px; margin: 0 0 10px; color: var(--label); font-size: 15px; line-height: 22px; }
+  .facts { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px 22px; max-width: 1240px; margin: 0 0 6px; padding: 0; list-style: none; font-size: 14px; line-height: 20px; color: var(--label); }
+  .facts li b { display: block; font: 700 22px/28px var(--ui); color: var(--ink); }
+  .facts li span { display: block; }
+  table.el { border-collapse: collapse; font-size: 13px; line-height: 17px; color: var(--label); max-width: 100%; margin: 0 0 8px; }
+  table.el th, table.el td { border-bottom: 1px solid var(--line); padding: 5px 8px; vertical-align: top; text-align: left; }
+  table.el th { font-weight: 700; color: var(--ink); background: var(--band); position: sticky; top: 52px; }
+  table.el td:first-child { font-weight: 700; color: var(--ink); white-space: nowrap; }
+  table.el td.same { color: var(--mark); }
+  .elwrap { overflow-x: auto; max-width: 100%; margin: 0 0 10px; }
+  .legend { font-size: 13px; color: var(--quiet); margin: 0 0 12px; }
+  .controls { position: sticky; top: 0; z-index: 50; display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center;
+    background: rgba(233,228,220,.94); backdrop-filter: blur(6px); padding: 12px 0; margin: 0 0 18px; border-bottom: 1px solid var(--line); }
+  .ctl { display: flex; align-items: center; gap: 8px; }
+  .ctl > span { font-weight: 700; font-size: 14px; color: var(--label); }
+  .tray { display: inline-flex; padding: 2px; background: var(--line-soft); border-radius: 14px; box-shadow: inset 0 0 0 1px #cfc9bc; }
+  .tray label { display: block; padding: 0 12px; height: 24px; line-height: 24px; border-radius: 10.5px; font-size: 14px; font-weight: 700; color: var(--label); cursor: pointer; user-select: none; white-space: nowrap; }
+  .tray label:hover { background: #e4ddd0; }
+  .ctl input[type=range] { width: 96px; accent-color: var(--green); }
+  .ctl .opv { font-size: 12px; color: var(--quiet); min-width: 32px; }
+  .rival { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 120; pointer-events: none; visibility: hidden; will-change: opacity; }
+  .lab.rivalY .rival { visibility: visible; }
+  .tray label.on { background: var(--green); color: #fff; text-shadow: 1px 0 0 var(--green-ring), -1px 0 0 var(--green-ring), 0 1px 0 var(--green-ring), 0 -1px 0 var(--green-ring); box-shadow: inset 0 0 0 1px var(--green-ring), 0 2px 4px rgba(0,0,0,.06); }
+  .vpick label { padding-left: 9px; padding-right: 9px; }
+  .keys { margin-left: auto; font-size: 13px; color: var(--quiet); }
+  .keys b { font-family: ui-monospace, Menlo, monospace; color: var(--label); }
+  .row { display: flex; gap: 28px; align-items: flex-start; overflow-x: auto; padding: 8px 4px 24px 40px; }
+  .version { flex: 0 0 auto; display: none; }
+  .version.on { display: block; }
+  /* one line per head at a fixed height, so every phone in the row starts on the same line (Holger, 1 Oct 2026); the basis and the Borrows line live in the note under the phone */
+  .version .vhead { height: 32px; margin: 0 0 14px; max-width: 421px; }
+  .version .vhead h2 { font: 500 26px/32px var(--display); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .version .vhead h2 small { font: 400 13px/32px var(--ui); color: #868e96; margin-left: 6px; vertical-align: 2px; }
+  .frames { display: flex; gap: 18px; align-items: flex-start; }
+  .note { max-width: 421px; margin: 12px 0 0; font-size: 14px; line-height: 20px; color: var(--label); }
+  .note p { margin: 0 0 6px; }
+  .note b { color: var(--ink); }
+  .strip { max-width: 421px; margin: 10px 0 0 14px; padding: 8px 10px; background: var(--card); border-radius: 12px; box-shadow: inset 0 0 0 1px var(--line); font-size: 13px; line-height: 18px; color: var(--label); }
+  .strip b { color: var(--ink); }
+  .strip .bars { display: flex; height: 10px; margin: 6px 0 4px; border-radius: 5px; overflow: hidden; box-shadow: inset 0 0 0 1px var(--line); }
+  .strip .bars i { display: block; height: 100%; }
+  .strip .bars .game { background: #43a038; } .strip .bars .people { background: #abd2ff; } .strip .bars .chrome { background: #9b9997; }
+  .strip .bars .info { background: #f2d767; } .strip .bars .ad { background: #5e574b; } .strip .bars .system { background: #141414; } .strip .bars .free { background: #cfe6c8; }
+  .strip .k { display: inline-block; width: 9px; height: 9px; border-radius: 3px; vertical-align: -1px; margin-right: 3px; }
+  .scale-78 .frames { zoom: .78; } .scale-100 .frames { zoom: 1; }
+  .summary { border-collapse: collapse; font-size: 13px; line-height: 17px; margin: 0 0 6px; }
+  .summary th, .summary td { border-bottom: 1px solid var(--line); padding: 4px 10px 4px 0; text-align: right; }
+  .summary th:first-child, .summary td:first-child { text-align: left; }
+  .summary th { color: var(--ink); }
+  .names { margin-top: 24px; }
+  .names p { max-width: 980px; font-size: 14px; line-height: 20px; }
+  .namesTable th { font-weight: 700; color: var(--ink); }
+  .rivals { margin-top: 24px; }
+  .rivals .strip2 { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 8px; }
+  .rivals figure { flex: 0 0 auto; margin: 0; width: 120px; }
+  .rivals img { width: 120px; display: block; border-radius: 10px; box-shadow: 0 0 0 1px rgba(0,0,0,.15); }
+  .rivals figure.wide { width: 260px; } .rivals figure.wide img { width: 260px; }
+  .rivals figcaption { font-size: 11px; line-height: 14px; color: var(--quiet); margin-top: 4px; }
+
+  /* ── the phone ────────────────────────────────────────────────────────── */
+  .phone { position: relative; width: 393px; height: 852px; border-radius: 54px; background: #000; overflow: hidden;
+    box-shadow: 0 0 0 12px #131313, 0 0 0 14px #3a3a3a, 0 24px 50px rgba(0,0,0,.35); margin: 26px 14px 14px; }
+  .screen { position: absolute; inset: 0; overflow: hidden; background: url("static/pieces/wallpaper/fabrics/green-felt.jpg") 0 0 / 100px 100px repeat, var(--felt); }
+  .island { position: absolute; left: 50%; top: 11px; width: 126px; height: 37px; margin-left: -63px; border-radius: 20px; corner-shape: round; background: #000; z-index: 30; }
+  .status { position: absolute; left: 0; right: 0; top: 0; height: 54px; z-index: 29; display: flex; justify-content: space-between; align-items: center; padding: 6px 30px 0 40px;
+    font: 600 17px/1 -apple-system, "SF Pro Text", "Helvetica Neue", Arial, sans-serif; color: #fff; pointer-events: none; }
+  .status .r { display: flex; gap: 6px; align-items: center; }
+  .status svg { display: block; }
+  .homebar { position: absolute; left: 50%; bottom: 8px; width: 134px; height: 5px; margin-left: -67px; border-radius: 3px; corner-shape: round; background: #fff; opacity: .9; z-index: 30; box-shadow: 0 0 2px rgba(0,0,0,.4); }
+  .sys { position: absolute; left: 0; right: 0; pointer-events: none; }
+  /* the ad bands are the table's desktop right rail (AdWidget.scss) turned for a top and a bottom band and made darker
+     (Holger, 1 Oct): 20% black on the felt against the rail's 12%, a 40% line on the band's own last row at the edge that
+     faces the table against the rail's 24%, a 6px falloff behind it at 28% against 16%, and no light lip; they run out over
+     the status bar and the home bar */
+  .adslot { position: absolute; left: 0; width: 393px; background: rgba(0,0,0,.2); }
+  .adslot::before { content: ""; position: absolute; left: 0; right: 0; height: 1px; background: rgba(0,0,0,.4); }
+  .adslot.top { box-shadow: inset 0 -6px 6px -6px rgba(0,0,0,.28); }
+  .adslot.top::before { bottom: 0; }
+  .adslot.bottom, .adslot.reserved { box-shadow: inset 0 6px 6px -6px rgba(0,0,0,.28); }
+  .adslot.bottom::before, .adslot.reserved::before { top: 0; }
+  .gapstrip { position: absolute; left: 0; width: 393px; box-shadow: inset 0 0 0 1px rgba(255,255,255,.28); display: flex; align-items: center; justify-content: center; font: 400 11px/14px var(--ui); color: rgba(255,255,255,.75); }
+  .tbl { position: absolute; left: 0; width: 393px; overflow: hidden; }
+
+  /* ── the table's pieces, in the redesign's own values (measured on dev, 30 Sep 2026) ── */
+  .pc { position: absolute; }
+  .card { position: absolute; background-size: 100% 100%; background-repeat: no-repeat; border-radius: 6px; will-change: transform; }
+  /* the site's card (pieces.scss .piece.card .background): a white face under the art, a 1px ring, an 8px shadow, the art inset a pixel */
+  .card.face, .card.back { background-color: #fff; padding: 1px; background-clip: content-box; background-origin: border-box; box-shadow: inset 0 0 0 1px rgba(37,37,37,1), 0 0 8px rgba(0,0,0,.2); }
+  .card.slot { background: rgba(0,0,0,.28); box-shadow: inset 0 0 0 1px rgba(255,255,255,.18); }
+  .arrow { position: absolute; width: 24px; height: 40px; background: url("static/images/wm/hintArrowDown.svg") center / contain no-repeat; z-index: 60; animation: blink .64s ease-in-out infinite alternate; }
+  @keyframes blink { from { opacity: 1; } to { opacity: .45; } }
+  /* the site's seat avatar (pieces.scss): a 1px ink line drawn by four drop-shadows, cut at the foot where it stands on its plate; the soft shadow is the lab's, at Holger's word (the site's 8px haze came off on 11 Sep 2026) */
+  .av { position: absolute; display: block; object-fit: contain; object-position: bottom; filter: drop-shadow(1px 0 #252525) drop-shadow(-1px 0 #252525) drop-shadow(0 1px #252525) drop-shadow(0 -1px #252525) drop-shadow(0 2px 3px rgba(0,0,0,.35)); }
+  .av.onplate { clip-path: inset(-50% -50% 0 -50%); }
+  /* hold T: today's layout (version 1) over every other version, whole, no fade */
+  /* the overlays switch by opacity on their own compositor layer, not by visibility: Holger saw only the overlay's first piece
+     come up over 22 in Chrome, a partial repaint a visibility switch over a big layer can leave behind; an opacity change is
+     done by the compositor whole (1 Oct) */
+  .ovl { position: absolute; inset: 0; z-index: 100; pointer-events: none; opacity: 0; will-change: opacity; }
+  .lab.today .ovl { opacity: 1; }
+  .plate.vert { flex-direction: column; justify-content: flex-start; gap: 0; padding: 6px 0; }
+  .plate.vert .vn { position: relative; z-index: 2; font: 700 15px/24px var(--ui); }
+  .plate.vert .fill { width: auto; right: 1px; height: 72%; border-radius: 11px 11px 0 0; }
+  .plate.auto { width: auto !important; }
+  .plate.edge { border-radius: 12px 12px 0 0; }
+  .plate.edge .fill { border-radius: 11px 0 0 0; }
+  .plate.tight { padding: 0 4px; min-width: 56px; }
+  /* 1a to 1i (Holger, 2 Oct): the name block on today's plates. The name is one span with its size set by fitName (not
+     fitAll), two lines with a <br> where the version wraps; cut: left-aligned with a 14 px fade at the box's end; sq: the
+     squeezed name as an inline block scaled on x; slide: the name slides once to show its end, then rests; card: the
+     name and the score row in one plate */
+  .plate.nb .nm2 { position: relative; z-index: 2; display: block; width: 100%; text-align: center; white-space: nowrap; overflow: hidden; }
+  .plate.nb .nm2.cut { text-align: left; -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 14px), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 14px), transparent); }
+  .plate.nb .nm2.sq { display: inline-block; width: auto; transform-origin: 50% 50%; }
+  .plate.nb .nm2.slide .run { display: inline-block; animation: nbslide 6s ease-in-out 1.2s 1 both; }
+  @keyframes nbslide { 0%, 8% { transform: translateX(0); } 42%, 58% { transform: translateX(var(--ov)); } 92%, 100% { transform: translateX(0); } }
+  .plate.nb.card { flex-direction: column; padding: 0; }
+  .plate.nb.card .nmwrap { position: relative; z-index: 2; flex: 1 1 auto; display: flex; align-items: center; width: 100%; box-sizing: border-box; min-height: 0; }
+  .plate.nb.card .srow { position: relative; z-index: 2; flex: 0 0 20px; width: 100%; display: flex; justify-content: space-around; align-items: center; font: 700 15px/20px var(--ui); background: var(--plate); box-shadow: inset 0 1px 0 0 var(--line-felt); }
+  .namesTable sup { font-size: 9px; color: var(--quiet); margin-left: 1px; } .namesTable small { color: var(--quiet); font-size: 11px; }
+  .splate.edgeL { border-radius: 0 0 12px 0; }
+  .splate.edgeR { border-radius: 0 0 0 12px; }
+  /* 25: a score plate on its own under an avatar, with the plate's full ring and round corners; 24 tall it takes the board's value row's type */
+  .splate.alone { border-radius: 12px; box-shadow: var(--ring); clip-path: none; }
+  .splate.h24 { height: 24px; font: 700 16px/24px var(--ui); }
+  .plate.edgeL { border-radius: 0 12px 12px 0; }
+  .plate.edgeR { border-radius: 12px 0 0 12px; }
+  .plate { position: absolute; height: 32px; background: var(--plate); color: var(--plate-ink); border-radius: 12px; box-shadow: var(--ring); font: 700 19px/24px var(--ui); display: flex; align-items: center; justify-content: center; padding: 0 8px; white-space: nowrap; overflow: hidden; z-index: 27; }
+  /* 23: the desktop's 40 plate, with its 24 px name (Layout.playerNameTextMaxSize off a compact board), the pills' 40 cells and the 40 seat buttons */
+  .plate.h40 { height: 40px; font-size: 24px; line-height: 28px; }
+  .pill.h40 { height: 40px; } .pill.h40 i { height: 40px; }
+  .sbtn.h40 { width: 40px; height: 40px; }
+  .board.tall .bh > span { height: 16px; line-height: 16px; } .board.tall .bv > span { height: 24px; }
+  /* 21: the board's value row 28 under the 20 title row (Holger, 1 Oct: the bottom part 4 taller), its numbers at 18 px: the
+     compact board's own ratio (16 on 24) carried to the taller row; the desktop board draws 24 on 38, the same ratio */
+  .board.rows2028 .bv > span { height: 28px; line-height: 28px; font-size: 18px; }
+  .plate.h24 { height: 24px; font-size: 14px; line-height: 20px; border-radius: 12px; padding: 0 8px; }
+  .plate.h20 { height: 20px; font-size: 12px; line-height: 20px; border-radius: 10px; padding: 0 6px; }
+  .plate.you { justify-content: flex-start; }
+  .plate .nm { position: relative; z-index: 2; flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: clip; text-align: center; }
+  .plate.you .nm { text-align: left; padding-left: 9px; }
+  .plate.you.ctr .nm { text-align: center; padding-left: 0; }
+  .ntext { position: absolute; font: 700 12px/14px var(--ui); color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,.75), 0 0 6px rgba(0,0,0,.35); white-space: nowrap; z-index: 29; transform: translateX(-50%); }
+  .plate .num { position: relative; z-index: 2; flex: 0 0 43px; text-align: center; }
+  .plate .num.w { flex-basis: 34px; }
+  .plate .cnt { position: relative; z-index: 2; margin-left: 8px; font-size: 12px; line-height: 16px; background: var(--paper); color: var(--ink); border-radius: 8px; padding: 0 5px; box-shadow: 0 0 0 1px var(--line-felt); }
+  .plate.active::before { content: ""; position: absolute; inset: 1px; border-radius: 11px; background: var(--plate-track); }
+  .plate .fill { position: absolute; left: 1px; top: 1px; bottom: 1px; width: 72%; border-radius: 11px 0 0 11px; background: var(--plate); }
+  .splate { position: absolute; height: 20px; background: var(--plate); color: var(--plate-ink); border-radius: 0 0 12px 12px; box-shadow: inset 0 1px 0 0 var(--line-felt), 1px 0 0 0 var(--line-felt), 0 1px 0 0 var(--line-felt), -1px 0 0 0 var(--line-felt), 0 0 8px 0 rgba(0,0,0,.24); clip-path: inset(0 -5px -5px -5px); font: 700 15px/20px var(--ui); display: flex; justify-content: space-around; align-items: center; z-index: 27; }
+  .tag { position: absolute; height: 20px; padding: 0 7px; background: var(--plate); color: var(--plate-ink); font: 700 13px/20px var(--ui); border-radius: 10px; box-shadow: 0 0 0 1px var(--line-felt), 0 0 6px rgba(0,0,0,.2); white-space: nowrap; z-index: 28; }
+  .tag.h16 { height: 16px; font-size: 11px; line-height: 16px; padding: 0 5px; border-radius: 8px; }
+  .tab { position: absolute; width: 20px; height: 31px; background: var(--paper) center 3px / 14px 14px no-repeat; border-radius: 10px; box-shadow: 0 0 0 1px var(--line-felt); z-index: 26; }
+  .tab.cnt { background-image: none; font: 700 12px/20px var(--ui); color: var(--ink); text-align: center; height: 20px; width: 20px; }
+  .tab.cntw { width: 28px; }
+  .pill { position: absolute; height: 32px; display: flex; background: var(--paper); border-radius: 12px; box-shadow: var(--ring); z-index: 90; }
+  /* the site's chrome pill (TableBar.scss, Holger, 30 Sep): every cell 40 wide, 32 tall on a phone, so both pills are 120 */
+  .pill i { display: block; width: 40px; height: 32px; background: center / 20px 20px no-repeat; }
+  .pill i + i { box-shadow: inset 1px 0 0 0 var(--line); }
+  .pill i.w36 { width: 40px; }
+  .pill i.leave { background-image: url("static/images/wm/tableLeave.svg"); background-size: 24px 24px; }
+  .pill i.table { background-image: url("static/images/wm/tableMenu.svg"); }
+  .pill i.play { background-image: url("static/images/wm/playRound.svg"); }
+  .pill i.hint { background-image: url("static/images/wm/hintMenu.svg"); background-size: 24px 24px; }
+  .pill i.chat { background-image: url("static/images/wm/chatMenu.svg"); }
+  /* the bell and Friends are 40 by 32 pictures; in the 40 px cells they sit at 0, centred (the -2px was for the old 36 px cells; Holger, 1 Oct) */
+  .pill i.bell { background-image: url("static/images/wm/menuActivity.svg"); background-size: 40px 32px; background-position: 0 0; }
+  .pill i.friends { background-image: url("static/images/wm/menuFriends.svg"); background-size: 40px 32px; background-position: 0 0; }
+  .pill i.me { display: flex; align-items: center; justify-content: center; }
+  /* the account cell draws the avatar as the bust it is, with the ink line (the site's .avFoot), 22px in the pill */
+  .pill i.me img { width: 22px; height: 22px; object-fit: contain; object-position: bottom; filter: drop-shadow(1px 0 #252525) drop-shadow(-1px 0 #252525) drop-shadow(0 1px #252525) drop-shadow(0 -1px #252525); }
+  .sbtn { position: absolute; width: 32px; height: 32px; background: var(--paper) center / 24px 24px no-repeat; border-radius: 12px; box-shadow: var(--ring); z-index: 55; }
+  /* 18: the pieces on the screen's edges keep their corners only where they do not touch */
+  /* a piece on the felt's top or bottom edge sits on the ad band (Holger, 1 Oct: no border against the rail), so the felt
+     clips its ring on that side and the band's own line is the only line there */
+  .pill.edgeTL { border-radius: 0 0 12px 0; } .pill.edgeTR { border-radius: 0 0 0 12px; }
+  .sbtn.edgeBL { border-radius: 0 12px 0 0; } .sbtn.edgeBR { border-radius: 12px 0 0 0; }
+  .sbtn.edgeTL { border-radius: 0 0 12px 0; } .sbtn.edgeTR { border-radius: 0 0 0 12px; }
+  .plate.edgeTop { border-radius: 0 0 12px 12px; }
+  .plate.edgeTop .fill { border-radius: 0 0 0 11px; }
+  .board.edgeR { border-radius: 12px 0 0 12px; }
+  .board.edgeTop { border-radius: 0 0 12px 12px; }
+  .sbtn.hint { background-image: url("static/images/wm/hintMenu.svg"); }
+  .sbtn.play { background-image: url("static/images/wm/playRound.svg"); background-size: 20px 20px; }
+  .sbtn.chat { background-image: url("static/images/wm/chatMenu.svg"); background-size: 20px 20px; }
+  /* the settings gear, drawn for the lab in the pill icons' style (hearts-layout-lab-parts/gear.svg: the scheme's warm grey, a light fill #C2BDB5, its 1 px line #858076, a real hole; eight square teeth as wide as their gaps, the body 14 and the tips 18 on a 20 grid; Holger's pick of six, 1 Oct) */
+  .sbtn.gear { background-image: url("hearts-layout-lab-parts/gear.svg"); background-size: 20px 20px; }
+  .notice { position: absolute; background: var(--paper); color: var(--ink); padding: 5px 8px 6px; border-radius: 12px; box-shadow: var(--ring); font: 400 12px/16px var(--ui); min-height: 32px; display: flex; align-items: center; z-index: 22; }
+  .notice.big { font-size: 16px; line-height: 20px; padding: 7px 12px 10px; min-height: 40px; }
+  .notice b { font-weight: 700; }
+  .chipi { position: absolute; height: 24px; padding: 0 8px; background: var(--paper); color: var(--ink); border-radius: 12px; box-shadow: var(--ring); font: 700 12px/24px var(--ui); white-space: nowrap; z-index: 22; }
+  .chipi span { font-weight: 400; color: var(--quiet); }
+  .board { position: absolute; border-radius: 12px; box-shadow: 0 0 0 1px var(--line-felt), 0 0 8px rgba(0,0,0,.24); overflow: hidden; background: #f8f9fa; z-index: 22; font-family: var(--ui); }
+  /* the two columns size to their widest word, as the site's table does, so a direction never cuts (Holger, 1 Oct) */
+  .board:not(.list) { display: grid; grid-template-columns: max-content max-content; }
+  .board:not(.list) .r { display: contents; }
+  .board.list .r { display: flex; }
+  /* 21: the board between the two pills, 137 wide, its columns sharing the extra room beyond their words; square on top, on the edge */
+  .board.wide:not(.list) { width: 137px; grid-template-columns: minmax(max-content, 1fr) minmax(max-content, 1fr); }
+  .board .r > span { padding: 0 4px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .board .r > span:first-child { box-shadow: inset -1px 0 0 0 var(--line-felt); }
+  .board .bh > span { height: 20px; font: 700 12px/20px var(--ui); color: #868e96; background: var(--band); }
+  .board .bv > span { height: 24px; font: 700 16px/24px var(--ui); color: var(--plate-ink); background: var(--plate); box-shadow: inset 0 1px 0 0 var(--line-felt); }
+  .board .bv > span:first-child { box-shadow: inset -1px 0 0 0 var(--line-felt), inset 0 1px 0 0 var(--line-felt); }
+  .board.list .bv > span { height: 18px; font-size: 12px; line-height: 18px; }
+  .board.list .bh > span { height: 18px; font-size: 11px; line-height: 18px; }
+  .board .r > span.l { text-align: left; }
+  .board .r > span.you { font-weight: 700; }
+  .ybtn { position: absolute; background: var(--yellow); color: var(--yellow-ink); font: 700 20px/32px var(--ui); text-align: center; height: 32px; border-radius: 12px; box-shadow: 0 0 0 1px var(--line-felt), 0 1px 2px rgba(0,0,0,.3); white-space: nowrap; overflow: hidden; z-index: 40; }
+  .ybtn.round { width: 32px; padding: 0; font-size: 18px; }
+  .timer { position: absolute; width: 24px; height: 24px; border-radius: 50%; corner-shape: round; background: #FFE066; box-shadow: 0 0 0 1px #343A40, inset 0 0 0 3px #F4BD45, 0 0 8px rgba(0,0,0,.24); z-index: 41; font: 700 11px/24px var(--ui); color: #C96800; text-align: center; }
+  .timer svg { position: absolute; inset: 0; width: 24px; height: 24px; transform: rotate(-90deg); }
+  .timer svg circle { fill: none; stroke: #C96800; stroke-width: 2.4; }
+  .bubble { position: absolute; max-width: 178px; background: var(--paper); color: var(--ink); padding: 5px 8px 6px; border-radius: 12px; box-shadow: var(--ring); font: 400 12px/16px var(--ui); z-index: 45; display: flex; align-items: center; gap: 6px; }
+  .bubble img { width: 20px; height: 20px; border-radius: 50%; corner-shape: round; object-fit: cover; object-position: top; background: #fff; box-shadow: 0 0 0 1px rgba(0,0,0,.18); flex: 0 0 auto; }
+  .bubble::after { content: ""; position: absolute; width: 12px; height: 12px; background: var(--paper); transform: rotate(45deg); }
+  .bubble.tl::after { left: -6px; top: 50%; margin-top: -6px; box-shadow: -1px 1px 0 var(--line-felt); }
+  .bubble.tr::after { right: -6px; top: 50%; margin-top: -6px; box-shadow: 1px -1px 0 var(--line-felt); }
+  .bubble.tb::after { left: 20px; bottom: -6px; box-shadow: -1px 1px 0 var(--line-felt); transform: rotate(-45deg); }
+  .bubble.tt::after { left: 50%; top: -6px; margin-left: -6px; box-shadow: -1px -1px 0 var(--line-felt); }
+  .toast { position: absolute; background: var(--paper); color: var(--ink); padding: 5px 8px 6px; border-radius: 12px; box-shadow: var(--ring); font: 400 12px/16px var(--ui); z-index: 22; }
+  .bar { position: absolute; left: 0; width: 393px; height: 56px; background: var(--paper); box-shadow: 0 0 0 1px var(--line-felt), 0 0 8px rgba(0,0,0,.24); display: flex; align-items: stretch; z-index: 20; }
+  .bar .it { flex: 1 1 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font: 700 11px/13px var(--ui); color: var(--label); }
+  .bar .it i { display: block; width: 24px; height: 24px; background: center / 20px 20px no-repeat; }
+  .bar .it i.leave { background-image: url("static/images/wm/tableLeave.svg"); background-size: 24px 24px; }
+  .bar .it i.table { background-image: url("static/images/wm/tableMenu.svg"); }
+  .bar .it i.play { background-image: url("static/images/wm/playRound.svg"); }
+  .bar .it i.hint { background-image: url("static/images/wm/hintMenu.svg"); background-size: 24px 24px; }
+  .bar .it i.chat { background-image: url("static/images/wm/chatMenu.svg"); }
+  .bar .it i.bell { background-image: url("static/images/wm/menuActivity.svg"); background-size: 30px 24px; }
+  .bar .it i.friends { background-image: url("static/images/wm/menuFriends.svg"); background-size: 30px 24px; }
+  .bar .it img { width: 24px; height: 24px; border-radius: 50%; corner-shape: round; object-fit: cover; object-position: top; background: #fff; box-shadow: 0 0 0 1px rgba(0,0,0,.18); }
+  .bar .plate { position: relative; z-index: 2; }
+  .bigarrow { position: absolute; z-index: 5; }
+  .vtab { position: absolute; height: 24px; background: var(--plate); color: var(--plate-ink); border-radius: 12px; box-shadow: var(--ring); font: 700 14px/24px var(--ui); padding: 0 8px; white-space: nowrap; z-index: 28; transform-origin: center; display: flex; align-items: center; gap: 6px; }
+  .vtab.active { background: var(--plate-track); box-shadow: var(--ring), inset 0 0 0 1px var(--plate); }
+  .tag.paper { background: var(--paper); color: var(--ink); }
+  .vtab .n2 { font-size: 12px; background: var(--paper); color: var(--ink); border-radius: 8px; padding: 0 5px; line-height: 16px; box-shadow: 0 0 0 1px var(--line-felt); }
+  .fit { white-space: nowrap; }
+</style>
+</head>
+<body>
+<div class="lab" id="lab">
+  <h1>Hearts phone layout lab</h1>
+  <p class="lead">The Hearts table in the game app, thirteen ways kept of twenty-five, and nine ways to make the names bigger on the first (1a to 1i; the sizes they give are tabled under <a href="#bigger">Bigger names on today’s plates</a>), drawn in an iPhone frame (393 by 852 points, portrait). <b>Version 1 is the table as lobby-build draws it today</b>, in the app’s own frame, measured on the dev site and not by eye. The ten that borrowed from the rival Hearts apps’ boards and from three ideas of our own (2 to 11), 15 and 24 were removed on 1 October at Holger’s word; they live on in HEARTS-PHONE-LAYOUT.md. 2 to 13 are Holger’s requests of 30 September and 1 October (the side seats turned; the opponents’ plates gone; the top seat on a full plate; the turned plate with upright words; the turned plates on the edge; today’s plates on the edge; everything on the edge; the top seat on a plate; the top row like yours; the board on top; the board on top with the fan 24 out; the big plates; no side plates with bigger scores). <b>Hold T</b> to lay today’s layout over every version, whole, and compare the places, or tap it to keep the overlay until the next tap. <b>Hold Y</b> (or tap it) to lay the picked rival’s screenshot (Fiogonia’s, MobilityWare’s or CardGames.io’s table with cards played) over every phone, see-through at the slider’s opacity. Since 1 October the versions are numbered by their order on the page, Holger’s order, and each heading keeps the number it was built under as “was”; the notes and findings written before that day name the old numbers. 13, the big plates, opens unchecked (24, the board 20 over 28, was removed on 1 October). <b>Every version keeps every element of version 1</b>; the table below says where each one went. The strip under each phone is measured off the drawn page for the state the switches are in.</p>
+  <h2 class="sec">What the app gives the game today</h2>
+  <ul class="facts">
+    <li><b>559 of 852</b><span>points of the screen are the playspace on a 393-wide iPhone in the app, 66%. The rest is the status bar (59), the mobile banner ad the site reserves at the top (100), the safe area under the felt (34) and the 100 it reserves for a sticky footer when the window is 760 or taller.</span></li>
+    <li><b>134 pt of empty felt</b><span>under the playable area in the app: the 34 safe area the site subtracts, and the 100 it reserves for a sticky footer whose placement rule skips the app’s page (<code>AdWidget.scss</code>: <code>:not([data-platform="mobile"])</code>), so the element is 0 tall there. Unless Raptive’s own script fixes a footer in, that band is bare felt today. The lab draws the reserved 100 directly under the felt with the safe area under it, as Holger asked on 30 September; the site’s math today puts the 34 above the footer.</span></li>
+    <li><b>100 pt of bare felt</b><span>above the pills in the sweep’s Safari shots is that top banner slot, empty on dev (<code>#ad.mobileTop</code>, <code>Y.wocg.getAdSize</code>). The app’s page keeps the ads: <code>AdWidget.isAdRemoved</code> shows them when <code>window.ReactNativeWebView</code> is present.</span></li>
+    <li><b>136 pt</b><span>is the top group: pills (8 to 40) beside the top seat’s avatar (9 to 77), its plate (76 to 108), its score plate (108 to 128) and the fan’s overhang. The notice and the score board sit beside the plate at 76.</span></li>
+    <li><b>86 pt a side</b><span>is each side column: the fan of backs (51 wide, at 24) and the plate (70 wide, at 8). Together 44% of the width, leaving 221 for the trick.</span></li>
+    <li><b>70 by 98</b><span>is your card. Thirteen cards at a 24 pitch span 12 to 384 (the Anglo faces the site draws under 90 px, the Medallion blue back). The bottom group (hand, plate, avatar, two buttons) shares 122 pt.</span></li>
+    <li><b>Two numbers</b><span>under each name are this hand’s points and the game total (<code>handScore</code>, <code>gameScore</code>). Hearts draws no dealer chip. A bot is marked by its robot art alone at the table (the badge is on the lobby tile and the end panels).</span></li>
+  </ul>
+  <div class="controls">
+    <div class="ctl"><span>State</span><div class="tray" id="state"><label class="on" data-v="full">4 cards</label><label data-v="pass">Pass</label><label data-v="picked">3 picked</label><label data-v="play">Your play</label><label data-v="wait">Their turn</label><label data-v="tram">TRAM</label></div></div>
+    <div class="ctl"><span>Seats</span><div class="tray" id="seats"><label class="on" data-v="bots">Bots</label><label data-v="people">People</label></div></div>
+    <div class="ctl"><span>Names</span><div class="tray" id="names"><label class="on" data-v="ladder">Ladder</label><label data-v="oneword">One word</label><label data-v="longest">Longest</label></div></div>
+    <div class="ctl"><span>Ads</span><div class="tray" id="ads"><label class="on" data-v="today">As today</label><label data-v="top">Top</label><label data-v="bottom">Bottom</label><label data-v="none">None</label></div></div>
+    <div class="ctl"><span>Size</span><div class="tray" id="scale"><label data-v="78">Device size</label><label class="on" data-v="100">100%</label></div></div>
+    <div class="ctl"><span>Plates</span><div class="tray" id="plates"><label class="on" data-v="blue">Blue</label><label data-v="red">Red</label><label data-v="yellow">Yellow</label><label data-v="tray">Tray</label><label data-v="quiet">Quiet</label><label data-v="quietdark">Quiet dark</label></div></div>
+    <div class="ctl"><span>Rival</span><div class="tray" id="rival"><label class="on" data-v="fiogonia">Fiogonia</label><label data-v="mobilityware">MobilityWare</label><label data-v="cardgames">CardGames.io</label></div><input type="range" id="rivalOp" min="0" max="100" value="100" title="The overlay’s opacity"><span class="opv" id="rivalOpV">100%</span><span class="opv">hold or tap <b>Y</b></span></div>
+    <div class="ctl"><span>Versions</span><div class="tray vpick" id="vpick"></div></div>
+    <span class="keys"><b>1</b> 1 today · <b>`</b> 2 · <b>=</b> 3 · <b>/</b> 4 · <b>]</b> 5 · <b>h</b> 6 · <b>\</b> 7 · <b>.</b> 8 · <b>o</b> 9 · <b>'</b> 10 · <b>,</b> 11 · <b>[</b> 12 · <b>u</b> 13 · <b>s</b> state · <b>p</b> seats · <b>n</b> names · <b>a</b> ads · <b>z</b> size · <b>r</b> next rival · <b>c</b> next plate colour · <b>T</b> today’s layout, <b>Y</b> the rival: hold to peek, tap to keep</span>
+  </div>
+  <div class="row" id="row"></div>
+  <h2 class="sec">Room by version <small style="font:400 14px/20px var(--ui);color:var(--quiet)">for the switches as they stand; the share of the whole 393 by 852 screen</small></h2>
+  <table class="summary" id="summary"></table>
+  <p class="legend">Game: your hand, the trick, the pass cards, TRAM. People: avatars, plates, scores, fans, counts, marks. Chrome: pills, bars, seat buttons, the clock. Info: board, notice, chips, toast, bubble. Ads: the banner and the reserved footer. Boxes are painted on a 3-point grid in that stacking order (people, info, chrome, game, ads, system), so a cell under two things counts the upper one; a turned card counts its bounding box. The <b>4 cards</b> state lays a full trick in every version at the biggest size its middle allows: the diamond stands 16 from the plates on every side with its cards 8 apart, so three cards and two gaps fill the width between the side plates less 32, or two cards and a gap the height between the top seat’s foot and your hand less 32, whichever binds (130 wide at most); the strip reads that card.</p>
+  <h2 class="sec">Every element, and where it sits in each version</h2>
+  <div class="elwrap"><table class="el" id="elements"></table></div>
+  <p class="legend">Grey cells: as in version 1.</p>
+    <div id="findings">
+    <h2 class="sec">Findings</h2>
+    <p><b>The ads and the system bars take more than any layout does.</b> On a 393 by 852 iPhone the app’s page keeps two ad slots by the site’s own rules (a 100 banner at the top, a 100 sticky footer once the window is 760 tall), and with the status bar and the home indicator zone 30% of the screen is spoken for before a card is dealt. The playspace is 559 of 852 points. Worse, the site reserves the footer’s 100 on the app’s page but never places the footer there (the rule in <code>AdWidget.scss</code> skips <code>data-platform="mobile"</code>; the element is 0 tall in the capture), and its math leaves the 34 safe area above the footer, under the felt: 134 points of bare felt under the playable area unless Raptive’s script fixes a footer in. (The lab draws the footer directly under the felt and the safe area under the footer, at Holger’s word.) Giving that band back to the felt makes the table 693 instead of 559, a quarter taller, more than any version below wins by moving the people. The Ads switch shows every version at each setting.</p>
+    <p><b>Today the game gets 13% of the screen and the people 14%.</b> In the pass state of version 1, your hand, the pass and the trick cover 13% of the whole screen, the avatars, plates, scores and fans 14%, the pills and buttons 2%, the boxes 3%, the ads and the band they reserve 23%, the system bars 11%, and 33% is bare felt. Your card is 70 by 98. The side columns are the cost: each is 86 wide (a 51 fan and a 70 plate), 44% of the width together, and the trick is squeezed into the 221 between them while 301 points of felt stand empty above and below it.</p>
+    <p><b>The ten after the rival boards and 15 were removed on 1 October</b> at Holger’s word (2 to 11: Fiogonia’s rim tabs, NeuralPlay’s edge stacks, MobilityWare’s icons and bar, KARMAN’s people first, Hearts+’s tiles, CardGames.io’s arrow, the smaller people, the opponents in a row, the board as a chip and the mix; 15, the turned plate with upright words). Their measurements and the findings drawn from them stay in HEARTS-PHONE-LAYOUT.md: the opponents in one row (9, 11) gave the biggest card and trick, and the recommendation of 30 September pointed at 11.</p>
+    <p><b>Holger’s 12 to 14 keep today’s cards, so the room they win shows as felt.</b> The side columns go from 86 to 56 or 66 wide (a 50 avatar flush with the side, 16 px of backs past a 32 turned plate or past the avatar), the people from 14% to 10 to 13%, the free felt from 34% to 35 to 37%, and the trick has 261 or 281 across instead of 221. Hold T to see the places move.</p>
+    <p><b>Every element survives.</b> The table above says where each went. In 20 the two pills are gone from the top and their cells live behind the settings gear, which is the one move that needs a decision.</p>
+    <h2 class="sec">Recommendation</h2>
+    <p>The recommendation of 30 September, version 11, went with the removed versions. What stands now is Holger’s own direction, built in steps from 12: the side seats turned and on the edge (16), everything on the edge (18), the top seat on a plate (19) or a row like yours (20), and the score board on top between the pills with the top seat under it (21, 22; 23 with 40 px plates). The lab leaves the pick among them to Holger; the measured differences are small (the trick 80 by 112 in 22, 82 by 114 in 19 and 21, 74 by 103 in 23) and the ad question still comes first: with the sticky footer gone the felt gains 100 points, with the banner gone too 200.</p>
+    <h2 class="sec">Questions for Holger</h2>
+    <p>1. <b>The ads.</b> Does the app show a sticky footer at all? The site reserves 100 for it but never places it on the app’s page, so today’s app may carry 134 points of empty felt under the hand. The lab reads the site’s rules, not a device. Which slots should the app keep: none, the top, the bottom, or both? The switch draws all four; with Top the felt gains 100, with None 200.</p>
+    <p>2. <b>The pills in 20.</b> With the top row built like yours, Leave, Table, the bell, Friends and the account live behind the settings gear and the Play cell is the right button. Is that the menu, or do some of them need their own place?</p>
+    <p>3. <b>The sizes in 23.</b> The 40 plate is the desktop’s, so the lab pairs it with the desktop’s 24 px names and with 58 avatars (the plate’s width plus 18). Keep the phone’s 19 px names, or the 50 avatars, with the 40 plates?</p>
+    <p>4. <b>Thirteen cards.</b> In every version the hand stays inside your plate: on the 313 plate of the edge versions 21.2 pitch for 12 cards and 19.4 for 13, on the 297 plate of the others 19.7 and 18.1, where the index is cut. Should the pass state run past the plate instead?</p>
+    <p>5. <b>The names on the side plates.</b> A 10-letter name reads at 15 px and a 12-letter one at 13 in the 84 box; the ladder says half the players have 8 letters or fewer. Is 84 the box, or is a longer plate worth the trick’s width?</p>
+    <p>6. <b>Landscape.</b> The apps are locked to portrait, so the lab draws none. Keep it so?</p>
+    <p>7. <b>Bigger names on today’s plates</b> (1a to 1i). Three rules to settle: a floor and a fade (never, as 1a to 1c, or at 12 as the mix), a word broken with a hyphen (never, as 1b; under 14, as 1c; under 13, as the mix, which breaks 7% of the players’ names: Conquistador, Wunderkind, Dr Zimmerman), and a plate whose height follows its name (the top fan moves 16 down under a two-line plate). The tighter plate alone (1a) takes the share reading at 14 px or more from 48% to 75% and needs no layout change at all; the mix takes it to 97% and nobody under 12.</p>
+  </div>
+  <div class="names">
+    <h2 class="sec">Names and the plate’s width</h2>
+    <p>The names people play under, from the nineteen public leaderboards’ daily boards on 30 September (564 rows, 461 distinct registered players who played a ranked game in the last day; guests play as <b>Guest #N</b>, 8 to 10 letters, 70 to 89 px, and never reach a board; a name is 3 to 20 letters). Each name is measured in the plate’s face, BuloRounded 700 at 19 px; a plate is the text plus 16 (8 padding a side); the site steps a name’s size down until it fits, so the last column is the largest whole size at which the rung’s widest name fits today’s 70 plate. Half the players have 8 letters or fewer, three quarters 10 or fewer, nine in ten 12 or fewer. <b>Version 17’s side plate is 70</b>, today’s width, with the 54 score plate, flush with the screen’s side.</p>
+    <table class="summary namesTable">
+      <thead><tr><th>Share of players</th><th>Letters, at most</th><th>Widest of them at 19 px</th><th>Plate at 19 px</th><th>Plate at 16 px</th><th>Plate at 14 px</th><th>Plate at 12 px</th><th>Size the widest gets in a 70 plate</th></tr></thead>
+      <tbody><tr><td>50%</td><td>8</td><td>74</td><td>91</td><td>79</td><td>71</td><td>63</td><td>13 px</td></tr><tr><td>60%</td><td>9</td><td>81</td><td>97</td><td>85</td><td>76</td><td>68</td><td>12 px</td></tr><tr><td>70%</td><td>10</td><td>86</td><td>103</td><td>89</td><td>80</td><td>71</td><td>11 px</td></tr><tr><td>75%</td><td>10</td><td>90</td><td>107</td><td>93</td><td>83</td><td>74</td><td>11 px</td></tr><tr><td>80%</td><td>10</td><td>95</td><td>112</td><td>97</td><td>87</td><td>77</td><td>10 px</td></tr><tr><td>85%</td><td>11</td><td>101</td><td>118</td><td>102</td><td>91</td><td>80</td><td>10 px</td></tr><tr><td>90%</td><td>12</td><td>107</td><td>123</td><td>107</td><td>95</td><td>84</td><td>9 px</td></tr><tr><td>95%</td><td>13</td><td>117</td><td>134</td><td>115</td><td>103</td><td>91</td><td>8 px</td></tr><tr><td>99%</td><td>16</td><td>145</td><td>161</td><td>138</td><td>123</td><td>108</td><td>7 px</td></tr><tr><td>100%</td><td>20</td><td>187</td><td>203</td><td>174</td><td>154</td><td>134</td><td>5 px</td></tr></tbody>
+    </table>
+    <p><b>Reading the ladder.</b> Each rung says: this share of the players have a name of at most this many letters, and a plate this wide shows every one of them at this size (the text plus 16 for the padding). Today’s 70 plate reads half the players at 13 px or better, three quarters at 11, nine in ten at 9. With 14 px as the floor for a phone, 71 serves half the players, 83 three quarters, 95 nine in ten, 103 nineteen in twenty, and the 20-letter worst case needs 154. At 12 px, the smallest the site’s small text goes, today’s 70 plate serves six in ten players, 74 three quarters, 84 nine in ten, 91 nineteen in twenty, and the worst case 134.</p>
+  </div>
+  <div class="names" id="bigger">
+    <h2 class="sec">Bigger names on today’s plates</h2>
+    <p>Holger, 2 October: people like the original design best, but its name plates are small and the names shrink in them; no rotation, no more width, no big layout change. Versions 1a to 1i in the row try nine answers on version 1’s own plates (70 at the sides, 88 at the top): the padding and letter-spacing, a second line, a broken word, a floor with a fade, a squeeze, the fan’s own 8 px, one card per seat, a slide, and the mix. The table gives the size each one lands for real names off the boards, in the 70 plate, with the lab’s own measure (BuloRounded 700, half-pixel steps; today’s plate fits in whole pixels, so its numbers may read half a pixel higher here). <sup>2</sup> marks a name on two lines, <sup>2‐</sup> a word broken with a hyphen, <i>cut</i> a name cut under the fade at the floor, ×0.80 a squeeze. The Names switch above the row puts the one-word and the longest names on the seats.</p>
+    <table class="summary namesTable" id="nbtable"></table>
+    <p class="legend" id="nbnote">The last five columns are the study’s 461 players (the daily boards of 30 September) run through each rule in the 70 plate: the median size a player’s name gets, the share at 14 px or more, the share under 11 px, the share on two lines, and the share cut at the floor.</p>
+  </div>
+  <div class="rivals">
+    <h2 class="sec">The boards this borrows from</h2>
+    <div class="strip2" id="strip"></div>
+  </div>
+</div>
+<script>
+(function () {
+  'use strict';
+  // ── the frame and the assets ───────────────────────────────────────────
+  var W = 393, STATUS = 59, HOME = 34;
+  var P = { anglo: 'static/pieces/card/anglo/', classic: 'static/pieces/card/classic/', back: 'static/pieces/back/medallion-blue.png', av: 'static/pieces/avatar/classic/', ic: 'static/images/wm/' };
+  var ICON = { more: 'playerMore.svg', liked: 'playerLiked.svg', crown: 'crown.svg', leaving: 'playerLeaving.svg' };
+  // seat 0 is you (south), 1 the left seat (west), 2 the top seat (north), 3 the right seat (east): the table's own order
+  var SEATS = {
+    // the side seats are people (Holger, 1 Oct) with names off the leaderboards' ladder: Monty Moon, the widest human-looking
+    // 10-letter name (the 75% rung, 101 px at 19 px), and Dr Zimmerman, the widest 12-letter name (the 90% rung, 122 px)
+    bots: [{ name: 'Sweep', av: 'AnimalFox' }, { name: 'Monty Moon', av: 'ManBusinessman' }, { name: 'EVE', av: 'RobotGirl', bot: true }, { name: 'Dr Zimmerman', av: 'WomanDoctor' }],
+    people: [{ name: 'Sweep', av: 'AnimalFox' }, { name: 'Ruth', av: 'WomanCowgirl', local: true, mark: 'liked' }, { name: 'PorchPete', av: 'ManCowboy', local: true, mark: 'crown' }, { name: 'ADBS', av: 'ManChef', local: true, mark: 'leaving' }]
+  };
+  // the states: the sweep's fixture (hearts.json) at its your-choose, mid-trick and their-turn points, plus a TRAM turn
+  var STATES = {
+    pass: { label: 'Pass', hand: ['4c', '9c', '7d', '9d', '11d', '2s', '5s', '10s', '11s', '9h', '10h', '11h', '13h'], raised: [], counts: [13, 13, 13, 13], trick: {}, scores: [[0, 0], [0, 0], [0, 0], [0, 0]], notice: 'Select 3 cards to pass left.', active: 0, round: 1, dir: 'Left' },
+    picked: { label: '3 picked', hand: ['4c', '9c', '7d', '9d', '11d', '2s', '5s', '10s', '11s', '9h', '10h', '11h', '13h'], raised: [10, 11, 12], counts: [13, 13, 13, 13], trick: {}, scores: [[0, 0], [0, 0], [0, 0], [0, 0]], notice: 'Select 3 cards to pass left.', passBtn: 'Pass left', active: 0, round: 1, dir: 'Left' },
+    play: { label: 'Your play', hand: ['7d', '9d', '11d', '10s', '9h', '10h', '13h'], counts: [7, 6, 6, 6], trick: { W: '2d', N: '6d', E: '5d' }, scores: [[14, 0], [4, 0], [0, 0], [0, 0]], active: 0, hint: 0, round: 1, dir: 'Left' },
+    wait: { label: 'Their turn', hand: ['11c', '7d', '9d', '11d', '2s', '5s', '10s', '11s', '3h', '9h', '10h', '13h'], counts: [12, 12, 13, 13], trick: { W: '10c', S: '2c' }, scores: [[0, 0], [0, 0], [0, 0], [0, 0]], active: 2, timer: { seat: 2, secs: 5 }, bubble: { seat: 1, text: 'watch out for the queen' }, toast: 'Fast card speed is on.', round: 1, dir: 'Left' },
+    tram: { label: 'TRAM', hand: ['1s', '13s', '1h', '13h', '12h'], counts: [5, 5, 5, 5], trick: {}, scores: [[3, 26], [9, 31], [14, 40], [0, 11]], active: 0, tram: true, round: 3, dir: 'Across' },
+    full: { label: '4 cards', hand: ['11c', '7d', '9d', '11d', '2s', '5s', '10s', '11s', '3h', '9h', '10h', '13h'], counts: [12, 12, 12, 12], trick: { W: '10c', N: '8c', E: '12c', S: '2c' }, scores: [[2, 26], [5, 31], [7, 40], [1, 11]], fullTrick: true, round: 3, dir: 'Across' }
+  };
+  var S = { state: 'full', seats: 'bots', names: 'ladder', ads: 'today', scale: '100', rival: 'fiogonia', rivalOp: 100, plates: 'blue', show: {} }; // the lab opens at 100% (Holger, 1 Oct)
+  // the plates' colour, for every name plate, score plate and the board's value row at once (Holger, 1 Oct: try red, the paper,
+  // a dark blue, the next darker paper); each is the plate's fill, its ink and the turn clock's track. Blue is today's. Red is
+  // the site's team-2 plate, yellow and green its yellow and green plates, paper and band the page's two papers, tray and line
+  // the next two rungs down the frontpage's grey ladder (--plate-tray, --line); dark blue is the blue ink as a fill, ink the
+  // felt's own line colour, smoke a see-through black on the felt
+  // the plates' colours (Holger, 1 Oct: blue, red, yellow and the tray kept of the eleven tried, and the kit's two quiet
+  // buttons added, DESIGN-GUIDE.md 3.4): the quiet button (#D9D2C4, the ink's words, a lighter track) and the quiet dark
+  // button (#5E574B, white words, its ring #484136 as the clock's track)
+  var PLATES = {
+    blue: ['#ABD2FF', '#124F7E', '#D0EBFF'], red: ['#FCBCB4', '#8B1A1A', '#FDDDD8'], yellow: ['#F2D767', '#664411', '#F8E9AE'], tray: ['#E4DDD0', '#141414', '#EEE9E0'],
+    quiet: ['#D9D2C4', '#141414', '#E6E1D7'], quietdark: ['#5E574B', '#FFFFFF', '#484136']
+  }; // the lab opens on the 4 cards state (Holger, 30 Sep)
+  // the rivals' own tables later in the hand, with points on the board (the app study's row "Hearts: later in the hand";
+  // iPhone Air, 1260 by 2736, drawn at the frame's 393 by 852)
+  var RIVAL = { fiogonia: 'shots-archive/01-fiogonia-hearts/16-trick10-01.png', mobilityware: 'shots-archive/07-mobilityware-hearts/20-trick12.png', cardgames: 'shots-archive/15-cardgames-io/13-trick.png' };
+  var RESEARCH = '../Research/app-onboarding-2026-09/';
+
+  function frameOf(ads) {
+    if (ads === 'today') return { top: 159, h: 559, ads: [{ y: 59, kind: 'top' }, { y: 718, kind: 'reserved' }], gap: null };
+    if (ads === 'top') return { top: 159, h: 659, ads: [{ y: 59, kind: 'top' }], gap: null };
+    if (ads === 'bottom') return { top: 59, h: 659, ads: [{ y: 718, kind: 'bottom' }], gap: null };
+    return { top: 59, h: 759, ads: [], gap: null };
+  }
+  function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
+  function avSrc(seat) { return (seat.local ? '' : P.av) + seat.av + '.svg'; }
+  function px(n) { return (Math.round(n * 100) / 100) + 'px'; }
+
+  // ── the pieces, in the redesign's own values ───────────────────────────
+  // a card by its id (rank 1-13 and suit letter) or 'back'; the site draws the Anglo faces under 90px and Classic above
+  function cardEl(id, cx, cy, w, h, rot, z, m, cls) {
+    var src = id === 'back' ? P.back : id ? P.anglo + id + '.png' : null;
+    var radius = w >= 100 ? 8 : w < 40 ? 4 : 6; // card.js: the corner by the card's width
+    return '<div class="card' + (cls ? ' ' + cls : '') + (id ? (id === 'back' ? ' back' : ' face') : '') + '" data-m="' + m + '" style="left:' + px(cx - w / 2) + ';top:' + px(cy - h / 2) + ';width:' + w + 'px;height:' + h + 'px;z-index:' + z + ';border-radius:' + radius + 'px' + (src ? ';background-image:url(' + src + ')' : '') + (rot ? ';transform:rotate(' + rot.toFixed(2) + 'deg)' : '') + '"></div>';
+  }
+  // a fan: n cards on an arc of radius R (0 for a straight row) about a pivot south of your hand, north of the top
+  // hand, west or east of a side column; the middle card's centre is (cx, cy); raised cards rise 8 along their axis
+  function fan(o) {
+    var n = o.ids ? o.ids.length : o.n, mid = (n - 1) / 2, R = o.R || 0, out = '';
+    for (var i = 0; i < n; i++) {
+      var d = i - mid, th = R ? d * o.pitch / R : 0, deg = th * 180 / Math.PI;
+      var s = Math.sin(th), c = Math.cos(th), bulge = R ? R * (1 - c) : 0, along = R ? R * s : d * o.pitch;
+      var cx, cy, rot;
+      if (o.pivot === 'S') { cx = o.cx + along; cy = o.cy + bulge; rot = deg; }
+      else if (o.pivot === 'N') { cx = o.cx + along; cy = o.cy - bulge; rot = -deg; }
+      else if (o.pivot === 'W') { cx = o.cx - bulge; cy = o.cy + along; rot = 90 + deg; }
+      else { cx = o.cx + bulge; cy = o.cy + along; rot = 90 - deg; }
+      if (o.raised && o.raised.indexOf(i) >= 0) { var lift = o.lift || 8; cx += lift * s; cy -= lift * c; }
+      out += cardEl(o.ids ? o.ids[i] : 'back', cx, cy, o.w, o.h, rot, (o.z || 10) + i, o.m || 'people', o.cls);
+      if (o.hint === i) out += '<div class="arrow" data-m="info" style="left:' + px(cx - 12) + ';top:' + px(cy - o.h / 2 - 44) + '"></div>';
+    }
+    return out;
+  }
+  // how far a fan reaches past its middle card's centre toward its owner: the end cards' bulge plus their turned box
+  function fanReach(n, pitch, R, w, h) { var th = (n - 1) / 2 * pitch / R; return R * (1 - Math.cos(th)) + (h * Math.cos(th) + w * Math.sin(th)) / 2; }
+  // the trick as the played arrangement lays it: north over the centre, south under it, west and east beside
+  function trick(cx, cy, w, h, t, z, gap) {
+    var out = '';
+    if (gap == null) {
+      // today's played arrangement: the side cards 35.5 (at 63 wide) out from the middle, 4 between north and south
+      var sx = 35.5 * w / 63, g = 3.5;
+      if (t.N) out += cardEl(t.N, cx, cy - g - h / 2, w, h, 0, z + 1, 'game', 'trick');
+      if (t.W) out += cardEl(t.W, cx - sx - w / 2, cy, w, h, 0, z, 'game', 'trick');
+      if (t.E) out += cardEl(t.E, cx + sx + w / 2, cy, w, h, 0, z + 2, 'game', 'trick');
+      if (t.S) out += cardEl(t.S, cx, cy + 0.5 + h / 2, w, h, 0, z + 3, 'game', 'trick');
+      return out;
+    }
+    if (t.N) out += cardEl(t.N, cx, cy - gap / 2 - h / 2, w, h, 0, z + 1, 'game', 'trick');
+    if (t.W) out += cardEl(t.W, cx - w / 2 - gap - w / 2, cy, w, h, 0, z, 'game', 'trick');
+    if (t.E) out += cardEl(t.E, cx + w / 2 + gap + w / 2, cy, w, h, 0, z + 2, 'game', 'trick');
+    if (t.S) out += cardEl(t.S, cx, cy + gap / 2 + h / 2, w, h, 0, z + 3, 'game', 'trick');
+    return out;
+  }
+  // the 4 cards state (Holger, 30 Sep): a full trick at the biggest size that keeps 12 from the users' cards (the fans,
+  // the stacks, your hand) and 16 from everything else drawn (plates, tags, boxes, pills, the felt's edge), with 8
+  // between its cards. The room is not typed per version: once a version's seats stand, placeTricks measures every
+  // drawn box and fits the trick (fitTrick). The other states draw today's 63 by 89 at today's places.
+  function trickSized(st, cx, cy, z) {
+    if (!st.fullTrick) return trick(cx, cy, 63, 89, st.trick, z);
+    // the version's own centre (the side players' middle) goes with the slot: the fitter keeps the trick there (Holger, 1 Oct)
+    return '<i class="trickslot" data-z="' + z + '" data-cy="' + cy + '" hidden></i>';
+  }
+  var CLEAR = 16, CLEAR_CARDS = 12, GAP = 8, RATIO = 0.71621622, SHIFT = 12;
+  // the visible art inside each avatar's square (left, top, right, bottom as fractions; read off a canvas), so a
+  // transparent margin does not hold the trick off: in 16 the 50 avatar's box reached 2 past the fan
+  var AV_BOUNDS = { AnimalFox: [0.115, 0.045, 0.875, 0.935], RobotBoy6: [0.065, 0.225, 0.93, 1], RobotGirl: [0.03, 0.175, 0.965, 1], RobotBoy4: [0.06, 0.115, 0.945, 1], WomanCowgirl: [0.09, 0.015, 0.93, 1], ManCowboy: [0.11, 0, 0.885, 1], ManChef: [0.115, 0.05, 0.865, 1], ManBusinessman: [0.17, 0.015, 0.835, 1], WomanDoctor: [0.13, 0.055, 0.875, 1] };
+  window.hlVisibleBox = function (el, r) { return visibleBox(el, r); }; // for the check script's clearance table
+  function visibleBox(el, r) {
+    var m = /\/([A-Za-z0-9]+)\.svg$/.exec(el.getAttribute('src') || ''), f = m && AV_BOUNDS[m[1]]; if (!f) return r;
+    var rot = /rotate\((-?\d+)deg\)/.exec(el.style.transform || ''), d = rot ? +rot[1] : 0, l = f[0], t = f[1], rr = f[2], bb = f[3];
+    if (d === 90) { var q = [1 - bb, l, 1 - t, rr]; l = q[0]; t = q[1]; rr = q[2]; bb = q[3]; }
+    else if (d === -90) { var q2 = [t, 1 - rr, bb, 1 - l]; l = q2[0]; t = q2[1]; rr = q2[2]; bb = q2[3]; }
+    else if (d === 180 || d === -180) { var q3 = [1 - rr, 1 - bb, 1 - l, 1 - t]; l = q3[0]; t = q3[1]; rr = q3[2]; bb = q3[3]; }
+    var w = r[2] - r[0], h = r[3] - r[1];
+    return [r[0] + w * l, r[1] + h * t, r[0] + w * rr, r[1] + h * bb];
+  }
+  function placeTricks(root) {
+    Array.prototype.forEach.call(root.querySelectorAll('.trickslot'), function (slot) {
+      var tbl = slot.parentNode, ovl = !!slot.closest('.ovl'), attr = ovl ? 'data-o' : 'data-m';
+      var tr = tbl.getBoundingClientRect(), zoom = tr.width / W, H = tr.height / zoom, obs = [];
+      Array.prototype.forEach.call(tbl.querySelectorAll('[' + attr + ']'), function (el) {
+        var r = el.getBoundingClientRect(); if (!r.width || !r.height) return;
+        var box = [(r.left - tr.left) / zoom, (r.top - tr.top) / zoom, (r.right - tr.left) / zoom, (r.bottom - tr.top) / zoom];
+        var clip = el.closest('.fanclip'); if (clip) { var cr = clip.getBoundingClientRect(); box[0] = Math.max(box[0], (cr.left - tr.left) / zoom); box[1] = Math.max(box[1], (cr.top - tr.top) / zoom); box[2] = Math.min(box[2], (cr.right - tr.left) / zoom); box[3] = Math.min(box[3], (cr.bottom - tr.top) / zoom); if (box[3] <= box[1] || box[2] <= box[0]) return; }
+        if (el.classList.contains('av')) box = visibleBox(el, box);
+        box.push(el.classList.contains('card') ? CLEAR_CARDS : CLEAR);
+        obs.push(box);
+      });
+      var t = fitTrick(obs, W, H, +slot.getAttribute('data-cy')), html = trick(t.cx, t.cy, t.w, t.h, STATES[S.state].trick, +slot.getAttribute('data-z'), GAP);
+      slot.insertAdjacentHTML('afterend', ovl ? html.replace(/data-m="/g, 'data-o="') : html);
+      slot.parentNode.removeChild(slot);
+    });
+  }
+  // the biggest trick (130 wide at most) whose four cards keep each drawn box's clearance (12 for a card, 16 for the
+  // rest and the felt's edge) with its centre on the version's own line, the side players' middle (Holger, 1 Oct); the
+  // centre may leave the felt's middle line by SHIFT at most (for seats of unequal width). If no size can stand on
+  // that line, the trick takes the middle of the longest free run of heights instead, as before
+  function fitTrick(obs, W, H, prefCy) {
+    var mid = W / 2, w, h, half, parts, k, cx, i, j, o, c, x0, x1;
+    var clear = function (cy) {
+      for (i = 0; i < parts.length; i++) {
+        var y0 = cy + parts[i][2], y1 = cy + parts[i][3];
+        if (cx + parts[i][0] - CLEAR < 0 || cx + parts[i][1] + CLEAR > W || y0 - CLEAR < 0 || y1 + CLEAR > H) return false;
+        for (j = 0; j < obs.length; j++) { o = obs[j]; c = o[4]; if (o[0] < cx + parts[i][1] + c && o[2] > cx + parts[i][0] - c && o[1] < y1 + c && o[3] > y0 - c) return false; }
+      }
+      return true;
+    };
+    if (prefCy) for (w = 130; w >= 12; w--) {
+      h = Math.round(w / RATIO); half = w / 2;
+      parts = [[-half, half, -GAP / 2 - h, -GAP / 2], [-half, half, GAP / 2, GAP / 2 + h], [-half - GAP - w, -half - GAP, -h / 2, h / 2], [half + GAP, half + GAP + w, -h / 2, h / 2]];
+      for (k = 0; k <= SHIFT * 4; k++) { cx = mid + (k % 2 ? -1 : 1) * Math.ceil(k / 2) * 0.5; if (clear(prefCy)) return { w: w, h: h, cx: cx, cy: prefCy }; }
+    }
+    for (w = 130; w >= 12; w--) {
+      h = Math.round(w / RATIO); half = w / 2;
+      parts = [[-half, half, -GAP / 2 - h, -GAP / 2], [-half, half, GAP / 2, GAP / 2 + h], [-half - GAP - w, -half - GAP, -h / 2, h / 2], [half + GAP, half + GAP + w, -h / 2, h / 2]];
+      for (k = 0; k <= SHIFT * 4; k++) {
+        cx = mid + (k % 2 ? -1 : 1) * Math.ceil(k / 2) * 0.5;
+        if (cx + parts[2][0] - CLEAR < 0 || cx + parts[3][1] + CLEAR > W) continue;
+        var lo = -parts[0][2] + CLEAR, hi = H - parts[1][3] - CLEAR, bans = [];
+        for (i = 0; i < parts.length; i++) {
+          for (j = 0; j < obs.length; j++) {
+            o = obs[j]; c = o[4]; x0 = cx + parts[i][0] - c; x1 = cx + parts[i][1] + c;
+            if (o[0] < x1 && o[2] > x0) bans.push([o[1] - parts[i][3] - c, o[3] - parts[i][2] + c]);
+          }
+        }
+        bans.sort(function (a, b) { return a[0] - b[0]; });
+        var cur = lo, best = null;
+        var take = function (a, b) { if (b < a) return; var len = b - a, c = (a + b) / 2; if (!best || len > best.len || (len === best.len && Math.abs(c - H / 2) < Math.abs(best.cy - H / 2))) best = { len: len, cy: c }; };
+        for (var q = 0; q < bans.length; q++) { if (bans[q][0] >= cur) take(cur, Math.min(bans[q][0], hi)); cur = Math.max(cur, bans[q][1]); if (cur > hi) break; }
+        if (cur <= hi) take(cur, hi);
+        if (best) return { w: w, h: h, cx: cx, cy: best.cy };
+      }
+    }
+    return { w: 12, h: 17, cx: mid, cy: H / 2 };
+  }
+  // a fan drawn under a plate and cropped at the plate's top edge, so no back shows above the plate (Holger, 1 Oct): the
+  // cards go in a box that starts at the plate's top and hides what lies above it; their places are kept
+  function fanUnder(plateTop, o) {
+    var inner = Object.assign({}, o, { cy: o.cy - plateTop });
+    return '<div class="fanclip" style="position:absolute;left:0;top:' + px(plateTop) + ';width:' + W + 'px;height:' + px(o.cy - plateTop + o.h) + ';overflow:hidden;z-index:' + (o.z || 10) + '">' + fan(inner) + '</div>';
+  }
+  // a fan that shows nothing outside x0 to x1 (3 and 5, the turned seats with a gutter: the side fans cut at their plate's
+  // outer edge, 8 from the side; Holger, 1 Oct)
+  function fanBetween(x0, x1, o) {
+    var inner = Object.assign({}, o, { cx: o.cx - x0 });
+    return '<div class="fanclip" style="position:absolute;left:' + px(x0) + ';top:0;bottom:0;width:' + px(x1 - x0) + ';overflow:hidden;z-index:' + (o.z || 10) + '">' + fan(inner) + '</div>';
+  }
+  // your hand inside your plate (Holger, 1 Oct: in every version; the edge versions had it since 30 Sep), centred on it:
+  // today's 24.2 pitch until the fan would pass the plate's ends, then the pitch that lands the end cards' corners 5 in from
+  // them (the end card's turned box is about 80 wide): on the 313 plate 21.2 for 12 cards and 19.4 for 13, on the 297
+  // plate 19.7 and 18.1, today's for 7
+  function handIn(st, plateW, cy) {
+    var hp = Math.min(24.2, (plateW - 80) / Math.max(1, st.hand.length - 1));
+    return fan({ ids: st.hand, w: 70, h: 98, pitch: hp, R: 1200, pivot: 'S', cx: 196.5, cy: cy, z: Z.hand, m: 'game', raised: st.raised, hint: st.hint, cls: 'hand' });
+  }
+  function avatar(x, y, s, seat, o) { o = o || {}; return '<img class="av' + (o.plate ? ' onplate' : '') + '" data-m="people" src="' + avSrc(seat) + '" alt="" style="left:' + px(x) + ';top:' + px(y) + ';width:' + s + 'px;height:' + s + 'px;z-index:' + (o.z || 25) + (o.rot ? ';transform:rotate(' + o.rot + 'deg)' : '') + '">'; }
+  // a word's width in the plate's face, for a plate that fits its name
+  var MEASURE = document.createElement('canvas').getContext('2d');
+  function textWidth(text, font) { MEASURE.font = font; return MEASURE.measureText(text).width; }
+  // a turned plate that keeps its words upright: the two numbers stacked at its top, 32 wide
+  function vplate(x, y, len, sc, active) { return '<div class="plate vert' + (active ? ' active' : '') + '" data-m="people" style="left:' + px(x) + ';top:' + px(y) + ';width:32px;height:' + len + 'px">' + (active ? '<span class="fill"></span>' : '') + '<span class="vn">' + sc[0] + '</span><span class="vn">' + sc[1] + '</span></div>'; }
+  // a name plate, 32 tall (24 or 20 on request); with num the two scores stand at its right end as on your own plate;
+  // active draws the turn clock's track with the fill where the clock stands
+  function plate(x, y, w, name, o) {
+    o = o || {};
+    var cls = 'plate' + (o.h === 40 ? ' h40' : o.h === 24 ? ' h24' : o.h === 20 ? ' h20' : '') + (o.num ? ' you' : '') + (o.ctr ? ' ctr' : '') + (o.active ? ' active' : '') + (o.cls ? ' ' + o.cls : '');
+    var nameEl = '<span class="nm fit"' + (o.padl || o.nameW ? ' style="' + (o.padl ? 'padding-left:' + o.padl + 'px;' : '') + (o.nameW ? 'flex:0 0 ' + o.nameW + 'px;' : '') + '"' : '') + '>' + esc(name) + '</span>';
+    var gapEl = o.gap ? '<span style="flex:1 1 ' + o.gap + 'px"></span>' : '';
+    var numEl = o.num ? '<span class="num' + (o.numW ? ' w' : '') + '"' + (o.nw ? ' style="flex:0 0 ' + o.nw + 'px"' : '') + '>' + o.num[0] + '</span><span class="num' + (o.numW ? ' w' : '') + '"' + (o.nw ? ' style="flex:0 0 ' + o.nw + 'px"' : '') + '>' + o.num[1] + '</span>' : '';
+    // rev (the right turned plate, Holger, 1 Oct): the numbers first, then the name, so the name stands at the top of the
+    // plate and the numbers at its foot, as on the left plate
+    var inner = (o.active ? '<span class="fill" style="width:' + (o.fill || 72) + '%"></span>' : '') + (o.balance ? '<span style="flex:0 0 ' + (o.numW ? 68 : 86) + 'px"></span>' : '') +
+      (o.rev ? numEl + gapEl + nameEl : nameEl + gapEl + numEl) +
+      (o.cnt != null ? '<span class="cnt">' + o.cnt + '</span>' : '');
+    if (w == null) cls += ' auto';
+    return '<div class="' + cls + '" data-m="' + (o.m || 'people') + '" style="left:' + px(x) + ';top:' + px(y) + (w != null ? ';width:' + w + 'px' : '') + (o.z ? ';z-index:' + o.z : '') + (o.right != null ? ';left:auto;right:' + o.right + 'px' : '') + (o.rot ? ';transform:rotate(' + o.rot + 'deg)' : '') + '">' + inner + '</div>';
+  }
+  function splate(x, y, w, a, b, cls) { return '<div class="splate' + (cls ? ' ' + cls : '') + '" data-m="people" style="left:' + px(x) + ';top:' + px(y) + ';width:' + w + 'px"><span>' + a + '</span><span>' + b + '</span></div>'; }
+  function tag(x, y, text, o) { o = o || {}; return '<div class="tag' + (o.h16 ? ' h16' : '') + (o.cls ? ' ' + o.cls : '') + '" data-m="' + (o.m || 'people') + '" style="' + (o.cx != null ? 'left:' + px(o.cx) + ';transform:translateX(-50%)' : 'left:' + px(x)) + ';top:' + px(y) + (o.right != null ? ';left:auto;right:' + o.right + 'px' : '') + '">' + text + '</div>'; }
+  // the marks as tabs standing behind a plate: 8 in from its left end, 8 apart, 20 square, the foot under the plate
+  function tabs(x, y, list) { return list.map(function (ic, i) { return '<div class="tab" data-m="people" style="left:' + px(x + i * 28) + ';top:' + px(y - 20) + ';background-image:url(' + P.ic + ICON[ic] + ')"></div>'; }).join(''); }
+  function seatTabs(px0, py, seat, people) { return people && seat.mark ? tabs(px0 + 8, py, ['more', seat.mark]) : ''; }
+  function pill(x, y, cells, o) {
+    o = o || {};
+    return '<div class="pill' + (o.cls ? ' ' + o.cls : '') + '" data-m="chrome" style="left:' + px(x) + ';top:' + px(y) + (o.right != null ? ';left:auto;right:' + o.right + 'px' : '') + '">' + cells.map(function (c) {
+      return c === 'me' ? '<i class="me' + (o.w36 ? ' w36' : '') + '"><img src="' + avSrc(YOU) + '" alt=""></i>' : '<i class="' + c + (o.w36 ? ' w36' : '') + '"></i>';
+    }).join('') + '</div>';
+  }
+  function sbtn(x, y, kind, cls) { return '<div class="sbtn ' + kind + (cls ? ' ' + cls : '') + '" data-m="chrome" style="left:' + px(x) + ';top:' + px(y) + '"></div>'; }
+  function notice(x, y, w, text, o) {
+    o = o || {};
+    return '<div class="notice' + (o.big ? ' big' : '') + '" data-m="info" style="left:' + px(x) + ';top:' + px(y) + ';' + (w ? 'width:' + w + 'px' : 'max-width:' + (o.max || 260) + 'px') + (o.center ? ';text-align:center;justify-content:center;transform:translateX(-50%)' : '') + (o.right != null ? ';left:auto;right:' + o.right + 'px' : '') + '">' + text + '</div>';
+  }
+  function chip(x, y, html, o) { o = o || {}; return '<div class="chipi" data-m="info" style="left:' + px(x) + ';top:' + px(y) + (o.right != null ? ';left:auto;right:' + o.right + 'px' : '') + (o.center ? ';transform:translateX(-50%)' : '') + '">' + html + '</div>'; }
+  function board(x, y, st, o) {
+    o = o || {};
+    // the site's board on a phone (base.scss, measured on dev): 44 tall, each column as wide as its widest word plus 4 px
+    // of padding a side (Round 41, Direction 54, 95 in all); 8 from the screen's right side (Holger, 30 Sep: in every layout)
+    var right = o.right != null ? o.right : 8;
+    var place = o.left != null ? 'left:' + px(o.left) + ';right:auto' : 'left:auto;right:' + right + 'px';
+    return '<div class="board' + (o.cls ? ' ' + o.cls : '') + '" data-m="info" style="top:' + px(y) + ';' + place + '"><div class="r bh"><span>Round</span><span>Direction</span></div><div class="r bv"><span>' + st.round + '</span><span>' + st.dir + '</span></div></div>';
+  }
+  function ybtn(x, y, w, text, o) { o = o || {}; return '<div class="ybtn' + (o.round ? ' round' : '') + '" data-m="game" style="left:' + px(x) + ';top:' + px(y) + ';width:' + w + 'px' + (o.fs ? ';font-size:' + o.fs + 'px' : '') + '">' + text + '</div>'; }
+  function timerRing(x, y, secs) {
+    var circ = 2 * Math.PI * 9, off = circ * (1 - Math.min(1, secs / 15));
+    return '<div class="timer" data-m="chrome" style="left:' + px(x) + ';top:' + px(y) + '"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke-dasharray="' + circ.toFixed(2) + '" stroke-dashoffset="' + off.toFixed(2) + '"></circle></svg>' + secs + '</div>';
+  }
+  function bubble(x, y, text, tail, seat, o) {
+    o = o || {};
+    return '<div class="bubble ' + tail + '" data-m="info" style="left:' + px(x) + ';top:' + px(y) + (o.right != null ? ';left:auto;right:' + o.right + 'px' : '') + (o.max ? ';max-width:' + o.max + 'px' : '') + '">' + (seat ? '<img src="' + avSrc(seat) + '" alt="">' : '') + (o.name ? '<b>' + esc(o.name) + '</b>&nbsp;' : '') + esc(text) + '</div>';
+  }
+  function toast(x, y, w, text, o) { o = o || {}; return '<div class="toast" data-m="info" style="left:' + px(x) + ';top:' + px(y) + ';width:' + w + 'px' + (o.right != null ? ';left:auto;right:' + o.right + 'px' : '') + '">' + text + '</div>'; }
+  function adSlot(a) {
+    // the band runs out over the safe area it borders: the top one from the screen's top (59 + 100), the bottom one to its foot (100 + 34)
+    var y = a.kind === 'top' ? 0 : 718, h = a.kind === 'top' ? 159 : 134;
+    return '<div class="adslot ' + a.kind + '" data-m="ad" style="top:' + y + 'px;height:' + h + 'px" title="' + (a.kind === 'reserved' ? 'reserved for the sticky footer, 100, run out over the home bar' : a.kind === 'top' ? 'the mobile banner, 393 by 100, run out over the status bar' : 'the bottom banner, 393 by 100, run out over the home bar') + '"></div>';
+  }
+  function gapStrip(g) { return g ? '<div class="gapstrip" data-m="ad" style="top:' + g.y + 'px;height:' + g.h + 'px"><span>safe area 34, left empty</span></div>' : ''; }
+  function status() {
+    return '<div class="status"><span>9:41</span><span class="r">' +
+      '<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>' +
+      '<svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 9.5a1.6 1.6 0 1 1 0 3.2 1.6 1.6 0 0 1 0-3.2zM8 6c1.7 0 3.2.7 4.3 1.8l-1.4 1.4A4 4 0 0 0 8 8a4 4 0 0 0-2.9 1.2L3.7 7.8A6 6 0 0 1 8 6zm0-4c2.9 0 5.5 1.2 7.4 3.1L14 6.5A8.4 8.4 0 0 0 8 4a8.4 8.4 0 0 0-6 2.5L.6 5.1A10.4 10.4 0 0 1 8 2z"/></svg>' +
+      '<svg width="27" height="13" viewBox="0 0 27 13" fill="currentColor"><rect x=".5" y=".5" width="23" height="12" rx="3.5" fill="none" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="20" height="9" rx="2"/><path d="M25 4.5v4a2 2 0 0 0 0-4z" opacity=".4"/></svg></span></div>';
+  }
+  function phone(tableHtml, fr, extra) {
+    return '<div class="phone"><div class="screen"><div class="island"></div>' + status() +
+      '<div class="sys" data-m="system" style="top:0;height:' + STATUS + 'px"></div><div class="sys" data-m="system" style="top:' + (852 - HOME) + 'px;height:' + HOME + 'px"></div>' +
+      fr.ads.map(adSlot).join('') + gapStrip(fr.gap) + '<div class="tbl" style="top:' + fr.top + 'px;height:' + fr.h + 'px">' + tableHtml + '</div>' + (extra || '') + '<div class="homebar"></div>' + rivalImg() + '</div></div>';
+  }
+  var YOU = SEATS.bots[0];
+  // the picked rival's picture stands in every phone, hidden until Y is held (Holger, 1 Oct: no delay on the key)
+  function rivalImg() { return '<img class="rival" src="' + RESEARCH + RIVAL[S.rival] + '" alt="" style="opacity:' + (S.rivalOp / 100) + '">'; }
+  var Z = { fan: 10, av: 25, plate: 27, trick: 30, hand: 40, youAv: 56, youPlate: 54 };
+  function rd(st, dir) { return 'Round ' + st.round + ' <span>·</span> ' + (dir || st.dir); }
+  function markDot(x, y, seat) { return '<div class="tab" data-m="people" style="left:' + px(x) + ';top:' + px(y) + ';width:16px;height:16px;border-radius:8px;background-size:11px 11px;background-position:center;background-image:url(' + P.ic + ICON[seat.mark] + ');z-index:29"></div>'; }
+  function youRow(H, st, S, people, o) {
+    // with edge (18, 19) the row sits on the screen's bottom, with no ring on that side: the two buttons in the corners, the
+    // plate 313 wide between them
+    var edge = !!o.edge, big = !!o.big, y = o.y != null ? o.y : (edge ? (big ? H - 40 : H - 32) : H - 40);
+    // the name centred in its box, which on the full plate is the site's 86 from the plate's padding (its centre 51 from the
+    // plate's left edge, as measured on dev; Holger, 30 Sep)
+    var full = !o.plateW || o.plateW >= 297;
+    var bcls = big ? ' h40' : '';
+    return sbtn(edge ? 0 : 8, y, 'hint', (edge ? 'edgeBL' : '') + bcls) + plate(o.plateX || (edge ? 40 : 48), y, o.plateW || (edge ? 313 : 297), S[0].name, { num: st.scores[0], numW: o.numW, z: Z.youPlate, padl: o.padl, ctr: true, nameW: full ? 86 : null, gap: full ? 68 : null, cls: edge ? 'edge' : undefined, h: big ? 40 : undefined }) + sbtn(edge ? (big ? 353 : 361) : 353, y, 'chat', (edge ? 'edgeBR' : '') + bcls);
+  }
+  // with edges (18) the pills sit in the top corners on the screen's top and sides, square where they touch
+  function pills(edges, big) { return edges ? pill(0, 0, ['leave', 'table', 'play'], { cls: 'edgeTL' + (big ? ' h40' : '') }) + pill(273, 0, ['bell', 'friends', 'me'], { w36: true, cls: 'edgeTR' + (big ? ' h40' : '') }) : pill(8, 8, ['leave', 'table', 'play']) + pill(265, 8, ['bell', 'friends', 'me'], { w36: true }); }
+  function ringAt(st, spots) { if (!st.timer) return ''; var p = spots[st.timer.seat]; return p ? timerRing(p[0], p[1], st.timer.secs) : ''; }
+  function bubbleAt(st, people, S, spots, withFace) {
+    if (!st.bubble || !people) return '';
+    var b = st.bubble, p = spots[b.seat]; if (!p) return '';
+    return bubble(p[0], p[1], b.text, p[2], withFace ? S[b.seat] : null, { right: p[3], name: p[4] ? S[b.seat].name : null });
+  }
+
+  // 1 · today, measured on dev (appframe-your-choose.json): the pills at 8, the top seat under them, the side seats at
+  // playspaceCenter (the middle between the top fan's foot and your hand's top), your row 8 up from the floor
+  function v1(T, st, S, people, o2) {
+    var H = T.h, C = 136 + (H - 258) / 2, o = '';
+    o += pills();
+    o += fan({ n: st.counts[2], w: 36, h: 51, pitch: 12.5, R: 384, pivot: 'N', cx: 197, cy: 110.5, z: Z.fan });
+    o += avatar(163, 9, 68, S[2], { plate: true }) + seatTabs(153, 76, S[2], people) + plate(153, 76, 88, S[2].name, { active: st.active === 2 }) + splate(161, 108, 72, st.scores[2][0], st.scores[2][1]);
+    o += o2 && o2.chip ? chip(0, 76, rd(st), { right: 8 }) : board(290, 76, st);
+    if (st.notice) o += notice(8, 76, 137, st.notice);
+    if (st.toast) o += toast(8, st.notice ? 127 : 76, 137, st.toast);
+    o += fan({ n: st.counts[1], w: 36, h: 51, pitch: 12.6, R: 384, pivot: 'W', cx: 61, cy: C - 2.5, z: Z.fan });
+    o += avatar(9, C - 67, 68, S[1], { plate: true }) + seatTabs(8, C, S[1], people) + plate(8, C, 70, S[1].name, { active: st.active === 1 }) + splate(16, C + 32, 54, st.scores[1][0], st.scores[1][1]);
+    o += fan({ n: st.counts[3], w: 36, h: 51, pitch: 12.6, R: 384, pivot: 'E', cx: 333, cy: C - 2.5, z: Z.fan });
+    o += avatar(316, C - 67, 68, S[3], { plate: true }) + seatTabs(315, C, S[3], people) + plate(315, C, 70, S[3].name, { active: st.active === 3 }) + splate(323, C + 32, 54, st.scores[3][0], st.scores[3][1]);
+    o += trickSized(st, 196.5, C + 1, Z.trick);
+    if (st.passBtn) o += ybtn(166, C - 16, 62, st.passBtn, { fs: 13 });
+    if (st.tram) o += ybtn(164, C - 16, 66, 'TRAM');
+    o += fan({ ids: st.hand, w: 70, h: 98, pitch: 24.2, R: 1200, pivot: 'S', cx: 198, cy: H - 73, z: Z.hand, m: 'game', raised: st.raised, hint: st.hint, cls: 'hand' });
+    o += avatar(163, H - 68, 68, S[0], { z: Z.youAv, plate: true });
+    o += youRow(H, st, S, people, {});
+    o += ringAt(st, { 0: [329, H - 52], 1: [66, C - 12], 2: [229, 64], 3: [303, C - 12] });
+    o += bubbleAt(st, people, S, { 0: [239, H - 221, 'tb'], 1: [85, C + 8, 'tl'], 2: [239, 84, 'tl'], 3: [0, C + 8, 'tr', 85] });
+    return o;
+  }
+
+  // 12 · Holger, 30 Sep: today with the left and right seats turned, so their plate reads like your own (the name in
+  // its box, the avatar's room, the two numbers) along the felt's edge; the fan tucked in at the very edge behind it; a
+  // 50 avatar (the plate's 32 and 18) flush with the screen's side, standing on the plate's middle; the top avatar
+  // 48 as in 17 (Holger, 30 Sep), 1 from the felt's top, so its plate, the notice and the board stand 8 under the
+  // pills. The cards keep today's sizes.
+  // With topFull (14) the top seat stands on a plate as wide as your own, and the notice and the board go under it.
+  function v12(T, st, S, people, o2) {
+    var H = T.h, o = '', topFull = !!(o2 && o2.topFull), upright = !!(o2 && o2.upright), flush = !!(o2 && o2.flush), edges = !!(o2 && o2.edges), topPlate = !!(o2 && o2.topPlate), topRow = !!(o2 && o2.topRow), topBoard = !!(o2 && o2.topBoard), fo = (o2 && o2.fanOut) || 16, big = !!(o2 && o2.big), bRows = (o2 && o2.boardRows) || (big || (o2 && o2.boardTop16) ? [16, 24] : [20, 24]), PH = big ? 40 : 32, AV = big ? 58 : 50;
+    // the side seats' line (and the trick's) is the middle between the top seat's cards' foot and your cards' top (Holger,
+    // 1 Oct): the foot per top arrangement, your hand's top 49 above its centre line
+    var topFoot = topFull ? 96 : topRow ? 32 + fo : topBoard ? bRows[0] + bRows[1] + 8 + PH + fo : topPlate ? 88 : 116;
+    // on the edge the row sits on the bottom band (H - 32, H - 40 big), so the hand keeps its 40 over the plate's top
+    var handCy = edges ? (big ? H - 80 : H - 72) : H - 73, handTop = handCy - 49, C = (topFoot + handTop) / 2;
+    if (!topRow) o += pills(edges, big);
+    if (topFull) {
+      // 14: the full plate 8 under the pills (at 48), the fan 16 out under it (its foot at 96, cropped at the plate's top), the
+      // board and the notice 8 under the plate (at 88; Holger, 1 Oct); the board's left end covers the fan's right end by a
+      // few pixels, the board standing in front
+      o += fanUnder(48, { n: st.counts[2], w: 36, h: 51, pitch: 12.5, R: 384, pivot: 'N', cx: 197, cy: 70.5, z: Z.fan });
+      o += seatTabs(8, 48, S[2], people) + plate(8, 48, 377, S[2].name, { num: st.scores[2], active: st.active === 2, ctr: true, balance: true }) + avatar(173, 0, 48, S[2], { z: 28, plate: true });
+      o += board(290, 88, st);
+      if (st.notice) o += notice(8, 88, 137, st.notice);
+      if (st.toast) o += toast(8, st.notice ? 139 : 88, 137, st.toast);
+    } else if (topRow) {
+      // 20 (Holger, 1 Oct): the top seat's row built like your own and on the top edge: a settings gear in the left corner,
+      // the 313 plate (the name in its 86 box, the 50 avatar over the plate's band turned to face the table, the two
+      // numbers), the Play button in the right corner; the pills' other cells (Leave, Table, the bell, Friends, the
+      // account) live behind the gear; the fan 16 out under the plate, its tops cropped by the felt's edge at the band;
+      // the board 8 under the plate on the right edge, the notice beside it
+      o += fan({ n: st.counts[2], w: 36, h: 51, pitch: 12.5, R: 384, pivot: 'N', cx: 197, cy: 22.5, z: Z.fan });
+      o += sbtn(0, 0, 'gear', 'edgeTL') + seatTabs(40, 0, S[2], people) + plate(40, 0, 313, S[2].name, { num: st.scores[2], nameW: 86, gap: 68, active: st.active === 2, ctr: true, cls: 'edgeTop' }) + avatar(171.5, 0, 50, S[2], { z: 28, rot: 180, plate: true }) + sbtn(361, 0, 'play', 'edgeTR');
+      o += board(290, 40, st, { right: 0, cls: 'edgeR' });
+      if (st.notice) o += notice(8, 40, 137, st.notice);
+      if (st.toast) o += toast(8, st.notice ? 91 : 40, 137, st.toast);
+    } else if (topBoard) {
+      // 21 (Holger, 1 Oct): 19 with the score board in the top centre between the two pills, 8 from each (the pills end at 120
+      // and start at 273, so the board runs 128 to 265, 137 wide, its columns sharing the room beyond their words), on
+      // the top edge like the pills and square on top; the top seat's 313 plate 8 under the board (at 52), the 50 avatar
+      // over its band turned to face the table, the fan 16 out under the plate (its foot at 101); the notice under the
+      // fan's foot on the left
+      // 22 (Holger, 1 Oct): the same with the fan 24 out under the plate instead of 16 (fanOut); 23 (big): the board 40 tall
+      // (a 16 title row over the 24 value row) like the 40 pills, the plate 40 at 8 under it, the avatar 58 (the plate's 40
+      // and 18, as the 50 is the 32 plate's), the fan 24 out
+      // 22 and 23: the board's title row 16 instead of 20 (boardTop16), so the board is 40 tall and the plate moves up 4
+      var ptop = bRows[0] + bRows[1] + 8, foot = ptop + PH + fo, bcls = bRows[0] === 16 ? ' tall' : bRows[1] === 28 ? ' rows2028' : '';
+      o += fanUnder(ptop, { n: st.counts[2], w: 36, h: 51, pitch: 12.5, R: 384, pivot: 'N', cx: 197, cy: foot - 25.5, z: Z.fan });
+      o += board(0, 0, st, { left: 128, cls: 'wide edgeTop' + bcls });
+      o += seatTabs(40, ptop, S[2], people) + plate(40, ptop, 313, S[2].name, { num: st.scores[2], nameW: 86, gap: 68, active: st.active === 2, ctr: true, h: big ? 40 : undefined }) + avatar(196.5 - AV / 2, ptop, AV, S[2], { z: 28, rot: 180, plate: true });
+      if (st.notice) o += notice(8, foot + 8, 137, st.notice);
+      if (st.toast) o += toast(8, st.notice ? foot + 59 : foot + 8, 137, st.toast);
+    } else if (topPlate) {
+      // 19 (Holger, 1 Oct): the top seat on your own plate's size, 313, 8 under the pills (at 40): the name in its 86 box left
+      // of the avatar, the two numbers right of it; the 50 avatar (the side avatars' size) over the plate's band from its top
+      // edge, hanging 18 below it and turned to face the table (180, its head toward the middle), the way the side avatars
+      // sit over theirs turned with their plates; the fan 16 out under the plate; the board 8 under the plate on the right
+      // edge, the notice beside it
+      o += fanUnder(40, { n: st.counts[2], w: 36, h: 51, pitch: 12.5, R: 384, pivot: 'N', cx: 197, cy: 62.5, z: Z.fan });
+      o += seatTabs(40, 40, S[2], people) + plate(40, 40, 313, S[2].name, { num: st.scores[2], nameW: 86, gap: 68, active: st.active === 2, ctr: true }) + avatar(171.5, 40, 50, S[2], { z: 28, rot: 180, plate: true });
+      o += board(290, 80, st, { right: 0, cls: 'edgeR' });
+      if (st.notice) o += notice(8, 80, 137, st.notice);
+      if (st.toast) o += toast(8, st.notice ? 131 : 80, 137, st.toast);
+    } else {
+      o += fan({ n: st.counts[2], w: 36, h: 51, pitch: 12.5, R: 384, pivot: 'N', cx: 197, cy: 90.5, z: Z.fan });
+      o += avatar(173, 1, 48, S[2], { plate: true }) + seatTabs(153, 48, S[2], people) + plate(153, 48, 88, S[2].name, { active: st.active === 2 }) + splate(161, 80, 72, st.scores[2][0], st.scores[2][1]);
+      // with edges (18) the board sits on the right edge, 8 under the pill (the pills are on the top edge, at 1), square on that side
+      o += board(290, edges ? 40 : 48, st, edges ? { right: 0, cls: 'edgeR' } : undefined);
+      if (st.notice) o += notice(8, edges ? 40 : 48, 137, st.notice);
+      if (st.toast) o += toast(8, st.notice ? (edges ? 91 : 99) : (edges ? 40 : 48), 137, st.toast);
+    }
+    // the fans stand 16 out from the turned plate's inner edge (40 + 16 = 56; Holger, 30 Sep); with the plate on the
+    // edge (16) the inner edge is the plate's 32, so the fan's outer 3 px pass the screen's edge; 22 takes them 24 out
+    // (fanOut) and 23 has the 40 plate: the fan's inner edge is the plate's width plus the reach
+    var fx = flush ? PH + fo - 25.5 : 30.5;
+    var fanL = { n: st.counts[1], w: 36, h: 51, pitch: 12.6, R: 384, pivot: 'W', cx: fx, cy: C, z: Z.fan }, fanR = { n: st.counts[3], w: 36, h: 51, pitch: 12.6, R: 384, pivot: 'E', cx: W - fx, cy: C, z: Z.fan };
+    // with a gutter (3 and 5) the side fans show nothing outside their plate's outer edge, 8 from the side (Holger, 1 Oct:
+    // the cards crop behind the plates); on the edge the screen's side cuts them
+    o += flush ? fan(fanL) + fan(fanR) : fanBetween(8, W, fanL) + fanBetween(0, W - 8, fanR);
+    // 12, 14 and 16: each side seat is your own seat turned to that side, the left clockwise and the right anticlockwise
+    // (Holger, 30 Sep: the avatars turn with their plates), so every head points at the table's middle; the left plate
+    // reads downward with its numbers at the foot, the right upward with its name at the top and its numbers at its foot
+    // too (the parts reversed; Holger, 1 Oct), so the two sides mirror
+    if (flush) {
+      // 16, 18, 19 and 20: the turned plates flush with the screen's sides, no gutter, square on the outer side; 232 long
+      // (Holger, 1 Oct: 16 more a side than the 200 of the twentieth look): the name part 84 and the score part 84 (two
+      // numbers of 42) around the avatar's 48 room on the felt's middle, so the plate is centred on it
+      o += plate(PH / 2 - 116, C - PH / 2, 232, S[1].name, { num: st.scores[1], numW: true, nw: 42, nameW: 84, gap: 48, active: st.active === 1, rot: 90, ctr: true, cls: 'edge', h: big ? 40 : undefined }) + avatar(0, C - AV / 2, AV, S[1], { z: 28, rot: 90, plate: true }) + (people && S[1].mark ? markDot(38, C - 32, S[1]) : '');
+      o += plate(W - PH / 2 - 116, C - PH / 2, 232, S[3].name, { num: st.scores[3], numW: true, nw: 42, nameW: 84, gap: 48, active: st.active === 3, rot: -90, ctr: true, cls: 'edge', rev: true, h: big ? 40 : undefined }) + avatar(W - AV, C - AV / 2, AV, S[3], { z: 28, rot: -90, plate: true }) + (people && S[3].mark ? markDot(339, C - 32, S[3]) : '');
+    } else if (upright) {
+      // 15: the turned plate keeps its words upright: the two numbers stacked at its top, the name in a 20 plate under the avatar
+      o += vplate(8, C - 75, 150, st.scores[1], st.active === 1) + avatar(0, C - 25, 50, S[1], { z: 28 }) + plate(8, C + 27, null, S[1].name, { h: 20, z: 29 }) + (people && S[1].mark ? markDot(38, C - 32, S[1]) : '');
+      o += vplate(353, C - 75, 150, st.scores[3], st.active === 3) + avatar(343, C - 25, 50, S[3], { z: 28 }) + plate(0, C + 27, null, S[3].name, { h: 20, z: 29, right: 8 }) + (people && S[3].mark ? markDot(339, C - 32, S[3]) : '');
+    } else {
+      o += plate(24 - 94, C - 16, 188, S[1].name, { num: st.scores[1], numW: true, nameW: 56, gap: 48, active: st.active === 1, rot: 90, ctr: true }) + avatar(0, C - 25, 50, S[1], { z: 28, rot: 90, plate: true }) + (people && S[1].mark ? markDot(38, C - 32, S[1]) : '');
+      o += plate(369 - 94, C - 16, 188, S[3].name, { num: st.scores[3], numW: true, nameW: 56, gap: 48, active: st.active === 3, rot: -90, ctr: true, rev: true }) + avatar(343, C - 25, 50, S[3], { z: 28, rot: -90, plate: true }) + (people && S[3].mark ? markDot(339, C - 32, S[3]) : '');
+    }
+    // the trick's centre on the side players' own line, C, not today's C + 1 (Holger, 1 Oct: their centre at the side players' centre)
+    o += trickSized(st, 196.5, C, Z.trick);
+    if (st.passBtn) o += ybtn(166, C - 16, 62, st.passBtn, { fs: 13 });
+    if (st.tram) o += ybtn(164, C - 16, 66, 'TRAM');
+    // the hand inside the plate: 313 on the edge versions, 297 with a gutter (handIn)
+    o += handIn(st, edges ? 313 : 297, handCy);
+    o += avatar(163, edges ? H - 60 : H - 68, 68, S[0], { z: Z.youAv, plate: true }) + youRow(H, st, S, people, edges ? { edge: true, big: big } : {});
+    o += ringAt(st, { 0: edges ? [big ? 329 : 337, big ? H - 48 : H - 44] : [329, H - 52], 1: upright ? [12, C - 87] : flush ? [4, C + 104] : [12, C + 82], 2: topFull ? [373, 36] : topRow ? [341, 5] : topBoard ? [341, 1 + bRows[0] + bRows[1] + 4] : topPlate ? [341, 37] : [229, 36], 3: upright ? [357, C - 87] : flush ? [365, C + 104] : [357, C + 82] });
+    o += bubbleAt(st, people, S, { 0: [239, edges ? H - 213 : H - 221, 'tb'], 1: [58, C - 20, 'tl'], 2: topFull ? [100, 136, 'tt'] : topRow ? [100, 57, 'tt'] : topBoard ? [100, topFoot + 8, 'tt'] : topPlate ? [100, 97, 'tt'] : [239, 56, 'tl'], 3: [0, C - 20, 'tr', 58] });
+    return o;
+  }
+
+  // 13 · Holger, 30 Sep: today without the opponents' plates: a 50 avatar flush with the screen's side over each fan at
+  // the very edge (40 at the top), the two numbers as a tag under it, no name on the felt (a tap, the Table panel and
+  // the notice's words carry it); your row as it is; the cards at today's sizes
+  function v13(T, st, S, people, o2) {
+    // 25 (Holger, 1 Oct): the scores on a 56 by 24 score plate under each avatar instead of the 16 px tag; the top plate's
+    // top on the board's top (48) with a 50 avatar over it like the sides'; every avatar 1 up from its plate, so its ink
+    // line ends on the plate's top edge; the side plates 8 from the screen's side with their avatars centred on them; the
+    // side fans reaching 16 past the side; the side seats and the trick on the middle between the top cards' foot and the
+    // hand's top
+    var H = T.h, o = '', sp = !!(o2 && o2.scorePlates);
+    var TAV = sp ? 50 : 40, PW = 56, PT = 24, topPlateY = 48, topAvY = sp ? topPlateY - TAV - 1 : 8, topFoot = sp ? topPlateY + PT + 16 : 82;
+    var C = sp ? (topFoot + H - 122) / 2 : H / 2 - 28, avY = sp ? C - 26 : C - 25;
+    var fxL = sp ? -16 + fanReach(st.counts[1], 12.6, 384, 36, 51) : 40.5, fxR = sp ? -16 + fanReach(st.counts[3], 12.6, 384, 36, 51) : 40.5;
+    var avL = sp ? 8 + (PW - 50) / 2 : 0, avR = W - avL - 50, topAvX = 197 - TAV / 2;
+    o += pills();
+    o += fan({ n: st.counts[2], w: 36, h: 51, pitch: 9, R: 384, pivot: 'N', cx: 197, cy: topFoot - 25.5, z: Z.fan });
+    o += avatar(topAvX, topAvY, TAV, S[2], { z: 28 }) + (sp ? splate(197 - PW / 2, topPlateY, PW, st.scores[2][0], st.scores[2][1], 'alone h24') : tag(0, 50, st.scores[2][0] + ' · ' + st.scores[2][1], { cx: 197, h16: true })) + (people && S[2].mark ? markDot(topAvX + TAV - 4, sp ? topAvY + TAV - 12 : topAvY - 4, S[2]) : '');
+    o += board(290, 48, st);
+    if (st.notice) o += notice(8, 48, 105, st.notice);
+    if (st.toast) o += toast(8, st.notice ? 99 : 48, 105, st.toast);
+    o += fan({ n: st.counts[1], w: 36, h: 51, pitch: 12.6, R: 384, pivot: 'W', cx: fxL, cy: C, z: Z.fan });
+    o += avatar(avL, avY, 50, S[1], { z: 28 }) + (sp ? splate(8, C + 25, PW, st.scores[1][0], st.scores[1][1], 'alone h24') : tag(0, C + 27, st.scores[1][0] + ' · ' + st.scores[1][1], { cx: 25, h16: true })) + (people && S[1].mark ? markDot(avL + 38, avY - 7, S[1]) : '');
+    o += fan({ n: st.counts[3], w: 36, h: 51, pitch: 12.6, R: 384, pivot: 'E', cx: W - fxR, cy: C, z: Z.fan });
+    o += avatar(avR, avY, 50, S[3], { z: 28 }) + (sp ? splate(W - 8 - PW, C + 25, PW, st.scores[3][0], st.scores[3][1], 'alone h24') : tag(0, C + 27, st.scores[3][0] + ' · ' + st.scores[3][1], { cx: 368, h16: true })) + (people && S[3].mark ? markDot(avR - 4, avY - 7, S[3]) : '');
+    o += trickSized(st, 196.5, sp ? C : C + 1, Z.trick);
+    if (st.passBtn) o += ybtn(166, C - 16, 62, st.passBtn, { fs: 13 });
+    if (st.tram) o += ybtn(164, C - 16, 66, 'TRAM');
+    o += handIn(st, 297, H - 73);
+    o += avatar(163, H - 68, 68, S[0], { z: Z.youAv, plate: true }) + youRow(H, st, S, people, {});
+    o += ringAt(st, { 0: [329, H - 52], 1: [avL + 38, avY - 8], 2: [topAvX + TAV - 12, sp ? topAvY + TAV - 16 : topAvY - 8], 3: [avR - 12, avY - 8] });
+    o += bubbleAt(st, people, S, { 0: [239, H - 221, 'tb'], 1: [avL + 58, C - 20, 'tl'], 2: [140, sp ? 102 : 96, 'tt'], 3: [0, C - 20, 'tr', W - avR + 8] });
+    return o;
+  }
+
+  // 17 · Holger, 30 Sep: today with the side seats' plate and score plate flush with the screen's side (no gutter), at
+  // today's widths (70 and 54), a 48 avatar centred on the plate; the top seat as today with a 48 avatar, moved up 8;
+  // the fans behind the plates out to the plate's inner edge; the cards at today's sizes
+  function v17(T, st, S, people) {
+    var H = T.h, o = '', C = H / 2 + 1;
+    o += pills();
+    // the three opponents' avatars one size, 48 (Holger, 30 Sep); the top seat moved up 8 (the avatar 1 from the felt's top,
+    // as today's 68 stands 9 under it with the plate at 76), so its plate, the board and the notice stand 8 under the pills;
+    // the fan 16 under its score plate (today's 8 and 8 more: Holger, 1 Oct, the cards 8 further in toward the board)
+    o += fan({ n: st.counts[2], w: 36, h: 51, pitch: 12.5, R: 384, pivot: 'N', cx: 197, cy: 90.5, z: Z.fan });
+    o += avatar(173, 1, 48, S[2], { plate: true }) + seatTabs(153, 48, S[2], people) + plate(153, 48, 88, S[2].name, { active: st.active === 2 }) + splate(161, 80, 72, st.scores[2][0], st.scores[2][1]);
+    o += board(290, 48, st);
+    if (st.notice) o += notice(8, 48, 137, st.notice);
+    if (st.toast) o += toast(8, st.notice ? 99 : 48, 137, st.toast);
+    // the side plates at today's width, 70, flush with the screen's side (Holger, 30 Sep: the two plates the same, as on
+    // the default layout, on the edge), the score plate 46, 8 narrower than today's 54 (Holger, 1 Oct); the fan behind
+    // them 16 past the plate's inner edge, 8 more than today (Holger, 1 Oct: the cards 8 further in toward the board)
+    var pw = 70, sw = 46, fo = 16;
+    o += fan({ n: st.counts[1], w: 36, h: 51, pitch: 12.6, R: 384, pivot: 'W', cx: pw + fo - 25.5, cy: C, z: Z.fan });
+    o += avatar(pw / 2 - 24, C - 47, 48, S[1], { plate: true }) + seatTabs(0, C, S[1], people) + plate(0, C, pw, S[1].name, { active: st.active === 1, cls: 'edgeL' }) + splate(0, C + 32, sw, st.scores[1][0], st.scores[1][1], 'edgeL');
+    o += fan({ n: st.counts[3], w: 36, h: 51, pitch: 12.6, R: 384, pivot: 'E', cx: W - pw - fo + 25.5, cy: C, z: Z.fan });
+    o += avatar(W - pw / 2 - 24, C - 47, 48, S[3], { plate: true }) + seatTabs(W - pw, C, S[3], people) + plate(W - pw, C, pw, S[3].name, { active: st.active === 3, cls: 'edgeR' }) + splate(W - sw, C + 32, sw, st.scores[3][0], st.scores[3][1], 'edgeR');
+    o += trickSized(st, 196.5, C + 1, Z.trick);
+    if (st.passBtn) o += ybtn(166, C - 16, 62, st.passBtn, { fs: 13 });
+    if (st.tram) o += ybtn(164, C - 16, 66, 'TRAM');
+    o += handIn(st, 297, H - 73);
+    o += avatar(163, H - 68, 68, S[0], { z: Z.youAv, plate: true }) + youRow(H, st, S, people, {});
+    o += ringAt(st, { 0: [329, H - 52], 1: [pw - 12, C - 12], 2: [229, 36], 3: [W - pw - 12, C - 12] });
+    o += bubbleAt(st, people, S, { 0: [239, H - 221, 'tb'], 1: [pw + 8, C + 8, 'tl'], 2: [239, 48, 'tl'], 3: [0, C + 8, 'tr', pw + 8] });
+    return o;
+  }
+
+  // ── 1a to 1i: bigger names on today's plates (Holger, 2 Oct: people like the original best, but the names read too
+  // small; no rotation, no more width, no big layout change) ────────────────────────────────────────────────────────
+  // the Names switch: the ladder names the seats carry (Monty Moon at the 75% rung, Dr Zimmerman at the 90%), the widest
+  // one-word names of the study at 8, 10 and 12 letters, and the longest names on the boards (a 20-letter two-word name,
+  // a 16-letter camelCase name with digits, a 15-letter camelCase name); the top seat becomes a person in the last two
+  var NAMES = {
+    oneword: [{ name: 'Conquistador', av: 'ManBusinessman', bot: false }, { name: 'Wunderkind', av: 'ManChef', bot: false }, { name: 'MoonRush', av: 'WomanDoctor', bot: false }],
+    longest: [{ name: 'Boratunevski Sagayad', av: 'ManBusinessman', bot: false }, { name: 'BeggarsBanquet36', av: 'ManChef', bot: false }, { name: 'ComeKissTheDoor', av: 'WomanDoctor', bot: false }]
+  };
+  // the modes: pad is the plate's side padding, cap the one-line size, lines 2 allows a second line at cap2 when one line
+  // would fall under oneLineMin, anyBelow breaks inside a word (with a hyphen) when the word-boundary split still falls
+  // under it and the break gains a whole pixel, floor is the smallest size (the name is cut with a fade past it, or squeezed on x down to squeeze first,
+  // or slides once), extra widens the plate inward to the fan's reach, card draws the score row in the same plate
+  var NB = {
+    today:   { pad: 8, cap: 19 },
+    tight:   { pad: 3, cap: 19, track: -0.3 },
+    wrap:    { pad: 8, cap: 19, lines: 2, cap2: 16, oneLineMin: 14 },
+    wrapany: { pad: 8, cap: 19, lines: 2, cap2: 16, oneLineMin: 14, anyBelow: 14 },
+    cut:     { pad: 8, cap: 19, floor: 14, fade: true },
+    squeeze: { pad: 8, cap: 19, floor: 14, squeeze: 0.75 },
+    reach:   { pad: 8, cap: 19, extra: 8 },
+    card:    { pad: 8, cap: 19, lines: 2, cap2: 16, oneLineMin: 14, card: true },
+    slide:   { pad: 4, cap: 18, floor: 14, slide: true }, // as built on the site 2 Oct: 4 px of room a side (8 on a desktop), the name at most 18 (20), the floor 14 (16)
+    mix:     { pad: 3, cap: 19, track: -0.3, lines: 2, cap2: 16, oneLineMin: 14, anyBelow: 13, floor: 12, fade: true }
+  };
+  var NB_ORDER = [['today', '1 Today'], ['tight', '1a Tighter plate'], ['wrap', '1b Two lines'], ['wrapany', '1c Two lines, broken words'], ['cut', '1d Cut with a fade'], ['squeeze', '1e Squeezed'], ['reach', '1f To the fan’s reach'], ['card', '1g One card per seat'], ['slide', '1h Slides once'], ['mix', '1i The mix']];
+  // real names off the boards: the widest two-word and one-word 8-letter names (the 50% rung), the lab's two ladder names,
+  // the widest one-word 12-letter name, and the longest name on the boards
+  var NB_SAMPLES = ['SGT BEAR', 'MoonRush', 'Monty Moon', 'Conquistador', 'Dr Zimmerman', 'Boratunevski Sagayad'];
+  // per mode over the 461 players of the names study in the 70 plate (the daily boards of 30 September), computed 2 Oct with
+  // hlFitName in Playwright: the median size, the shares at 14 px or more and under 11 px, on two lines, with a broken word,
+  // cut at the floor, squeezed
+  var NB_STATS = {"today": {"median": 13.5, "ge14": 48, "lt11": 22, "two": 0, "hyph": 0, "cut": 0, "sq": 0}, "tight": {"median": 16.5, "ge14": 75, "lt11": 5, "two": 0, "hyph": 0, "cut": 0, "sq": 0}, "wrap": {"median": 16, "ge14": 78, "lt11": 9, "two": 35, "hyph": 0, "cut": 0, "sq": 0}, "wrapany": {"median": 16, "ge14": 98, "lt11": 0, "two": 52, "hyph": 21, "cut": 0, "sq": 0}, "cut": {"median": 14, "ge14": 100, "lt11": 0, "two": 0, "hyph": 0, "cut": 52, "sq": 0}, "squeeze": {"median": 14, "ge14": 81, "lt11": 3, "two": 0, "hyph": 0, "cut": 0, "sq": 51}, "reach": {"median": 15.5, "ge14": 67, "lt11": 10, "two": 0, "hyph": 0, "cut": 0, "sq": 0}, "card": {"median": 16, "ge14": 78, "lt11": 9, "two": 35, "hyph": 0, "cut": 0, "sq": 0}, "slide": {"median":15.5,"ge14":100,"lt11":0,"two":0,"hyph":0,"cut":33,"sq":0}, "mix": {"median": 16.5, "ge14": 97, "lt11": 0, "two": 23, "hyph": 7, "cut": 0, "sq": 0}};
+  function nbGlyphs(text) { return textWidth(text, '700 19px BuloRounded'); }
+  function nbHalf(x) { return Math.floor(x * 2) / 2; }
+  // the size at which text fits box (at most cap); letter-spacing is a fixed number of px per letter, so it comes off the box
+  function nbSize(text, box, cap, m) { var g = nbGlyphs(text); return g > 0 ? Math.max(1, Math.min(cap, nbHalf((box - (m.track || 0) * text.length) * 19 / g))) : cap; }
+  function nbWidthAt(text, pxs, m) { return nbGlyphs(text) * pxs / 19 + (m.track || 0) * text.length; }
+  // where a name may break into two lines: after a space, underscore, hyphen or dot, between a small and a capital letter
+  // (camelCase), and between letters and digits
+  function nbBreaks(name) {
+    var pts = [];
+    for (var i = 1; i < name.length; i++) {
+      var a = name[i - 1], b = name[i];
+      if (/[ _\-.]/.test(a)) pts.push({ i: i });
+      else if (/[ _\-.]/.test(b)) continue;
+      else if (/[a-z]/.test(a) && /[A-Z]/.test(b)) pts.push({ i: i });
+      else if (/[A-Za-z]/.test(a) && /\d/.test(b)) pts.push({ i: i });
+      else if (/\d/.test(a) && /[A-Za-z]/.test(b)) pts.push({ i: i });
+    }
+    return pts;
+  }
+  function nbTwo(name, i, hyphen) { var l1 = name.slice(0, i).replace(/\s+$/, ''), l2 = name.slice(i).replace(/^\s+/, ''); return [hyphen ? l1 + '-' : l1, l2]; }
+  // the split that gives the biggest shared size for the two lines; ties go to the more even pair
+  function nbBest(name, box, m, cands) {
+    var best = null;
+    cands.forEach(function (c) {
+      var ls = nbTwo(name, c.i, c.hyphen); if (!ls[0] || !ls[1]) return;
+      var pxs = Math.min(nbSize(ls[0], box, m.cap2, m), nbSize(ls[1], box, m.cap2, m)), bal = Math.abs(nbGlyphs(ls[0]) - nbGlyphs(ls[1]));
+      if (!best || pxs > best.px || (pxs === best.px && bal < best.bal)) best = { lines: ls, px: pxs, bal: bal, hyphen: !!c.hyphen };
+    });
+    return best;
+  }
+  function fitName(name, Wp, m) {
+    var box = Wp + (m.extra || 0) - 2 * m.pad, one = nbSize(name, box, m.cap, m), r;
+    if (!m.lines || one >= m.oneLineMin) r = { lines: [name], px: one };
+    else {
+      r = nbBest(name, box, m, nbBreaks(name)) || { lines: [name], px: one };
+      if (m.anyBelow && r.px < m.anyBelow) {
+        var any = [];
+        for (var i = 2; i <= name.length - 2; i++) any.push({ i: i, hyphen: /[A-Za-z]/.test(name[i - 1]) && /[A-Za-z]/.test(name[i]) });
+        var a = nbBest(name, box, m, any); if (a && a.px >= r.px + 1) r = a; // a broken word only for a whole pixel more
+      }
+    }
+    if (m.floor && r.px < m.floor) {
+      if (m.squeeze) {
+        var sc = Math.max(m.squeeze, box / nbWidthAt(name, m.floor, m));
+        r = { lines: [name], px: sc > m.squeeze ? m.floor : nbSize(name, box / m.squeeze, m.floor, m), scale: Math.round(sc * 100) / 100 };
+      } else { r.px = m.floor; r.cut = true; if (m.slide) { r.slide = true; r.over = Math.max.apply(null, r.lines.map(function (l) { return nbWidthAt(l, m.floor, m); })) - box + 14; } }
+    }
+    r.box = box; r.W = Wp + (m.extra || 0);
+    return r;
+  }
+  window.hlFitName = function (name, Wp, mode) { return fitName(name, Wp, NB[mode]); }; // for the stats pass
+  // the name block in a version: the plate (one or two lines) and, unless the mode draws the card, the score plate under it
+  // as today (8 in from the plate's ends); side is L, R or T (a wider plate grows inward, or both ways at the top)
+  function nameBlock(x, y, Wp, seat, sc, mode, o) {
+    var m = NB[mode], f = fitName(seat.name, Wp, m), two = f.lines.length === 2;
+    var W2 = f.W, x2 = o.side === 'R' ? x + Wp - W2 : o.side === 'T' ? x + (Wp - W2) / 2 : x;
+    var nameH = two ? 48 : 32, h = nameH + (m.card ? 20 : 0), lh = two ? 20 : 24;
+    var style = 'font-size:' + f.px + 'px;line-height:' + lh + 'px' + (m.track ? ';letter-spacing:' + m.track + 'px' : '') + (f.scale ? ';transform:scaleX(' + f.scale + ')' : '');
+    var text = f.lines.map(esc).join('<br>');
+    var nm = f.scale ? '<span class="nm2 sq" style="' + style + '">' + text + '</span>'
+      : f.slide ? '<span class="nm2 cut slide" style="' + style + '"><span class="run" style="--ov:' + (-f.over).toFixed(1) + 'px">' + text + '</span></span>'
+      : '<span class="nm2' + (f.cut ? ' cut' : '') + '" style="' + style + '">' + text + '</span>';
+    var fill = o.active ? '<span class="fill" style="width:72%"></span>' : '';
+    var inner = m.card ? fill + '<span class="nmwrap" style="padding:0 ' + m.pad + 'px">' + nm + '</span><span class="srow"><b>' + sc[0] + '</b><b>' + sc[1] + '</b></span>' : fill + nm;
+    var html = seatTabs(x2, y, seat, o.people) + '<div class="plate nb' + (m.card ? ' card' : '') + (o.active ? ' active' : '') + '" data-m="people" style="left:' + px(x2) + ';top:' + px(y) + ';width:' + W2 + 'px;height:' + h + 'px' + (m.card ? '' : ';padding:0 ' + m.pad + 'px') + '">' + inner + '</div>';
+    if (!m.card) html += splate(x + 8, y + nameH, Wp - 16, sc[0], sc[1]);
+    return { html: html, h: h, fit: f };
+  }
+  // version 1 with the opponents' name blocks in a mode; everything else as v1
+  function v1n(T, st, S, people, mode) {
+    var H = T.h, C = 136 + (H - 258) / 2, o = '', m = NB[mode];
+    o += pills();
+    var top = nameBlock(153, 76, 88, S[2], st.scores[2], mode, { active: st.active === 2, people: people, side: 'T' });
+    // the fan's foot 8 under the score plate as today (136); a two-line plate moves it 16 down
+    var foot = 76 + top.h + (m.card ? 0 : 20) + 8;
+    o += fan({ n: st.counts[2], w: 36, h: 51, pitch: 12.5, R: 384, pivot: 'N', cx: 197, cy: foot - 25.5, z: Z.fan });
+    o += avatar(163, 9, 68, S[2], { plate: true }) + top.html;
+    o += board(290, 76, st);
+    if (st.notice) o += notice(8, 76, 137, st.notice);
+    if (st.toast) o += toast(8, st.notice ? 127 : 76, 137, st.toast);
+    o += fan({ n: st.counts[1], w: 36, h: 51, pitch: 12.6, R: 384, pivot: 'W', cx: 61, cy: C - 2.5, z: Z.fan });
+    o += avatar(9, C - 67, 68, S[1], { plate: true }) + nameBlock(8, C, 70, S[1], st.scores[1], mode, { active: st.active === 1, people: people, side: 'L' }).html;
+    o += fan({ n: st.counts[3], w: 36, h: 51, pitch: 12.6, R: 384, pivot: 'E', cx: 333, cy: C - 2.5, z: Z.fan });
+    o += avatar(316, C - 67, 68, S[3], { plate: true }) + nameBlock(315, C, 70, S[3], st.scores[3], mode, { active: st.active === 3, people: people, side: 'R' }).html;
+    o += trickSized(st, 196.5, C + 1, Z.trick);
+    if (st.passBtn) o += ybtn(166, C - 16, 62, st.passBtn, { fs: 13 });
+    if (st.tram) o += ybtn(164, C - 16, 66, 'TRAM');
+    o += fan({ ids: st.hand, w: 70, h: 98, pitch: 24.2, R: 1200, pivot: 'S', cx: 198, cy: H - 73, z: Z.hand, m: 'game', raised: st.raised, hint: st.hint, cls: 'hand' });
+    o += avatar(163, H - 68, 68, S[0], { z: Z.youAv, plate: true });
+    o += youRow(H, st, S, people, {});
+    o += ringAt(st, { 0: [329, H - 52], 1: [66, C - 12], 2: [229, 64], 3: [303, C - 12] });
+    o += bubbleAt(st, people, S, { 0: [239, H - 221, 'tb'], 1: [85, C + 8, 'tl'], 2: [239, 84, 'tl'], 3: [0, C + 8, 'tr', 85] });
+    return o;
+  }
+  function nbCell(f) { var t = f.px % 1 ? f.px.toFixed(1) : String(f.px); if (f.lines.length === 2) t += '<sup>2' + (f.hyphen ? '‐' : '') + '</sup>'; if (f.scale) t += ' <small>×' + f.scale + '</small>'; if (f.cut) t += ' <small>' + (f.slide ? 'slides' : 'cut') + '</small>'; return t; }
+  // the table under Names and the plate's width, and the live numbers in the 1a to 1i notes ([data-nbpx="mode:name"])
+  function drawNameTable() {
+    var el = document.getElementById('nbtable');
+    if (el) {
+      var h = '<thead><tr><th>In the 70 plate</th>' + NB_SAMPLES.map(function (n) { return '<th>' + esc(n) + '<br><small>' + n.length + ' letters</small></th>'; }).join('') + (NB_STATS ? '<th>Median of the 461</th><th>14 px or more</th><th>Under 11 px</th><th>Two lines</th><th>Cut</th>' : '') + '</tr></thead><tbody>';
+      NB_ORDER.forEach(function (pr) {
+        var m = NB[pr[0]], st = NB_STATS && NB_STATS[pr[0]];
+        h += '<tr><td>' + pr[1] + '</td>' + NB_SAMPLES.map(function (n) { return '<td>' + nbCell(fitName(n, 70, m)) + '</td>'; }).join('') + (st ? '<td>' + st.median + ' px</td><td>' + st.ge14 + '%</td><td>' + st.lt11 + '%</td><td>' + (st.two ? st.two + '%' + (st.hyph ? ' <small>' + st.hyph + '% broken</small>' : '') : '–') + '</td><td>' + (st.cut ? st.cut + '%' : st.sq ? '<small>' + st.sq + '% squeezed</small>' : '–') + '</td>' : '') + '</tr>';
+      });
+      el.innerHTML = h + '</tbody>';
+    }
+    Array.prototype.forEach.call(document.querySelectorAll('[data-nbpx]'), function (b) { var a = b.getAttribute('data-nbpx').split(':'); b.innerHTML = nbCell(fitName(a[1], 70, NB[a[0]])); });
+    if (NB_STATS) Array.prototype.forEach.call(document.querySelectorAll('[data-nbstat]'), function (b) { var st = NB_STATS[b.getAttribute('data-nbstat')], t = NB_STATS.today; b.innerHTML = st.ge14 + '% read their name at 14 px or more (' + t.ge14 + '% today) and ' + st.lt11 + '% under 11 (' + t.lt11 + '% today)' + (st.two ? ', ' + st.two + '% on two lines' + (st.hyph ? ', ' + st.hyph + '% with a broken word' : '') : '') + (st.cut ? ', ' + st.cut + '% cut' : '') + (st.sq ? ', ' + st.sq + '% squeezed' : ''); });
+  }
+  function nbWhere(plate, score) { return Object.assign({}, V1WHERE, { oppPlate: plate, oppScore: score || V1WHERE.oppScore }); }
+  function nbRender(mode) { return function (T, st, S, people) { return v1n(T, st, S, people, mode); }; }
+
+  var ELEMENTS = [
+    ['pillL', 'Left pill: Leave, Table, Play menu'], ['pillR', 'Right pill: bell, Friends, your account'],
+    ['oppAv', 'Opponent avatars (3)'], ['oppPlate', 'Opponent name plates (3)'], ['oppScore', 'Opponent scores: hand points and game total (3)'], ['oppHand', 'Opponent hands: the backs (3)'],
+    ['youAv', 'Your avatar'], ['youPlate', 'Your name plate'], ['youScore', 'Your two scores'], ['hint', 'Hint button'], ['seat2', 'Second seat button: Chat (the table has people at it; New game only on a solo table)'],
+    ['hand', 'Your hand, 13 cards'], ['board', 'Score board: Round and Direction'], ['notice', 'Notice'], ['trick', 'The trick, up to 4 cards'], ['pass', 'The pass: 3 picked cards and the Pass button'],
+    ['timer', 'Turn clock'], ['bubble', 'Chat bubbles'], ['toast', 'Toast'], ['tram', 'TRAM'], ['hintArrow', 'Hint arrow'], ['marks', 'Seat marks: crown, star, door, the more tab'], ['bot', 'Bot marking'], ['ads', 'Ad banners']
+  ];
+  var V1WHERE = {
+    pillL: 'Top-left at 8: three 32 px cells', pillR: 'Top-right: bell, Friends, your avatar in 36 px cells', oppAv: '68 px: the top seat under the pills, the side seats at mid-height on the felt’s edges', oppPlate: '32 px plates under the avatars (88 at the top, 70 at the sides)', oppScore: 'A 20 px score plate hanging under each plate', oppHand: 'Fans of 36 by 51 backs behind the plates: across at the top, a column at each side',
+    youAv: '68 px, standing on your plate', youPlate: '297 px plate at the floor, 8 up', youScore: 'At the plate’s right end, 19 px; the name centred in the box left of your avatar', hint: 'A 32 px square at the plate’s left', seat2: 'A 32 px square at the plate’s right', hand: '13 cards 70 by 98 on a 1200 radius, pitch 24, over the plate’s row',
+    board: '95 by 44 under the right pill', notice: 'Under the left pill, at most 137 wide', trick: 'The centre: 63 by 89 cards in a diamond; the 4 cards state draws a full trick at the biggest size that keeps 12 from the users’ cards and 16 from everything else drawn, 8 between its cards', pass: 'In the 3 picked state: the picked cards rise 8; a 62 by 32 Pass button at the centre', timer: 'The active plate fills; a 24 px ring at the plate’s right end for the last seconds',
+    bubble: 'Beside the speaker’s plate, at most 178 wide', toast: 'Under the notice, in its column', tram: '66 by 32 at the centre', hintArrow: '24 by 40 over the card', marks: '20 px tabs standing behind the plate (people tables; a bots table draws none)', bot: 'The robot art alone', ads: 'A 100 banner under the status bar, a 100 sticky footer at the very bottom (852 tall windows)'
+  };
+  var VERSIONS = [
+    { id: 'v1', num: 1, title: 'Today', basis: 'lobby-build, 30 Sep, measured on dev', hl: 'nothing; the reference', render: v1, where: V1WHERE,
+      note: '<p><b>What it is:</b> the redesign as the app’s page draws it at 393 by 852 with the phone’s insets (hearts-layout-lab-parts/measure/appframe-*.json). The site reserves the two ad slots itself in the app; the status bar stands over the felt.</p><p><b>Where the room goes:</b> the top group is 136 pt (pills beside a 68 avatar, a plate, a score plate, the fan’s foot), each side column 86 pt (a 51 fan and a 70 plate), the bottom group 122. The trick gets 221 by 301 between them; your card is 70 by 98.</p><p><b>Under the felt:</b> 34 pt of safe area the site subtracts, then the 100 it reserves for a sticky footer. On the app’s page the site never places that footer (its rule skips <code>data-platform="mobile"</code>), so unless the ad script fixes one in, the band is empty felt.</p>' },
+    { id: 'v1a', num: '1a', title: 'Tighter plate', basis: 'Holger, 2 Oct: people like the original best, but the names read too small; no rotation, no more width, no big change', hl: 'today’s plate with 3 px of padding a side instead of 8 and the letters 0.3 px closer, so the name’s box is 64 in the 70 plate instead of 54', render: nbRender('tight'), where: nbWhere('As 1, with 3 px of padding a side and the letters 0.3 px closer: a 64 box in the 70 plate, 82 in the 88'),
+      note: '<p><b>What it does:</b> nothing moves. The plate keeps its 70, the name gets the room the padding had (3 px a side instead of 8) and the letters stand 0.3 px closer. Every name gains about a fifth: Monty Moon reads at <b data-nbpx="tight:Monty Moon"></b> and Dr Zimmerman at <b data-nbpx="tight:Dr Zimmerman"></b>, against <b data-nbpx="today:Monty Moon"></b> and <b data-nbpx="today:Dr Zimmerman"></b> today. Over the 461 players of the names study, <b data-nbstat="tight"></b>.</p><p><b>The catch:</b> the name runs close to the plate’s round ends, and a fifth is not a lot. The cheapest change, and the one every other version here can take as well (1i does).</p>' },
+    { id: 'v1b', num: '1b', title: 'Two lines', basis: 'Holger, 2 Oct: people like the original best, but the names read too small; no rotation, no more width, no big change', hl: 'the name wraps to a second line at a space, a capital inside the name or a digit, up to 16 px a line, when one line would fall under 14 px; the plate grows to 48', render: nbRender('wrap'), where: nbWhere('As 1; a name that would fall under 14 px on one line breaks at a space, a capital inside the name or a digit into two lines of up to 16 px, and the plate is 48 tall instead of 32 (the score plate hangs under it as today, the top fan 16 lower)'),
+      note: '<p><b>What it does:</b> a name that would read under 14 px on one line breaks into two, at a space, at a capital inside the name (PorchPete) or at a digit (Alan748), both lines at one size of up to 16 px, and the plate grows down to 48. A short name keeps today’s one line at 19 px. Monty Moon reads at <b data-nbpx="wrap:Monty Moon"></b> and Dr Zimmerman at <b data-nbpx="wrap:Dr Zimmerman"></b>, against <b data-nbpx="today:Monty Moon"></b> and <b data-nbpx="today:Dr Zimmerman"></b> today: the second gains little because Zimmerman is one word. Over the 461 players of the names study, <b data-nbstat="wrap"></b>.</p><p><b>The catch:</b> the plate’s height changes with the name, and a long single word still shrinks. The side columns have the room; at the top the fan moves 16 down with the plate, which costs the trick a little.</p>' },
+    { id: 'v1c', num: '1c', title: 'Two lines, broken words', basis: 'Holger, 2 Oct: people like the original best, but the names read too small; no rotation, no more width, no big change', hl: '1b, and a word that would still fall under 14 px breaks inside itself with a hyphen', render: nbRender('wrapany'), where: nbWhere('As 1b, and a word that still falls under 14 px breaks inside itself with a hyphen (Zim‐merman)'),
+      note: '<p><b>What it does:</b> as 1b, and when the two lines would still read under 14 px (one long word), the word breaks inside itself with a hyphen at the place that gives the biggest size. Monty Moon reads at <b data-nbpx="wrapany:Monty Moon"></b> and Dr Zimmerman at <b data-nbpx="wrapany:Dr Zimmerman"></b>, against <b data-nbpx="today:Monty Moon"></b> and <b data-nbpx="today:Dr Zimmerman"></b> today. Over the 461 players of the names study, <b data-nbstat="wrapany"></b>.</p><p><b>The catch:</b> a broken username reads as two things (Conquis‐ / tador), and the hyphen is not the player’s. The size is won at the cost of the name’s shape.</p>' },
+    { id: 'v1d', num: '1d', title: 'Cut with a fade', basis: 'Holger, 2 Oct: people like the original best, but the names read too small; no rotation, no more width, no big change', hl: 'the name never goes under 14 px; a name that does not fit at 14 is cut at the box’s end under a short fade, the whole name on a tap', render: nbRender('cut'), where: nbWhere('As 1; the name never goes under 14 px, and a name that does not fit at 14 is cut at the box’s end under a 14 px fade (the whole name on a tap, as the apps do)'),
+      note: '<p><b>What it does:</b> a floor. The name shrinks to 14 px and no further; what does not fit is cut under a fade at the box’s end, and a tap on the plate shows the whole name (as the music and chat apps do). Monty Moon reads at <b data-nbpx="cut:Monty Moon"></b> and Dr Zimmerman at <b data-nbpx="cut:Dr Zimmerman"></b>, against <b data-nbpx="today:Monty Moon"></b> and <b data-nbpx="today:Dr Zimmerman"></b> today. Over the 461 players of the names study, <b data-nbstat="cut"></b>.</p><p><b>The catch:</b> the player does not see their whole name, and two players with the same start (Monty Moon, Monty Mo…) look alike. About half the players show whole at 14 in this box; the other half are cut.</p>' },
+    { id: 'v1e', num: '1e', title: 'Squeezed', basis: 'Holger, 2 Oct: people like the original best, but the names read too small; no rotation, no more width, no big change', hl: 'the name never goes under 14 px; a name that does not fit at 14 is condensed on the x axis, to three quarters of its width at most, before it shrinks', render: nbRender('squeeze'), where: nbWhere('As 1; the name never goes under 14 px before it is condensed on the x axis, to three quarters of its width at most, and only then shrinks'),
+      note: '<p><b>What it does:</b> a floor with a squeeze. The name shrinks to 14 px, then its letters are condensed sideways (CSS scaleX) to three quarters of their width at most, and only then does it shrink further. Monty Moon reads at <b data-nbpx="squeeze:Monty Moon"></b> and Dr Zimmerman at <b data-nbpx="squeeze:Dr Zimmerman"></b>, against <b data-nbpx="today:Monty Moon"></b> and <b data-nbpx="today:Dr Zimmerman"></b> today. Over the 461 players of the names study, <b data-nbstat="squeeze"></b>.</p><p><b>The catch:</b> a squeezed bold face is the trick type designers frown on: the verticals thin and the round letters go oval, and beside an unsqueezed name the two look like two faces. BuloRounded has no condensed cut, in the repo or in the family as sold (ten weights with italics, no widths), and its regular weight is only 3% narrower than the bold; the site ships Regular, Bold and Black.</p>' },
+    { id: 'v1f', num: '1f', title: 'To the fan’s reach', basis: 'Holger, 2 Oct: people like the original best, but the names read too small; no rotation, no more width, no big change', hl: 'the side plates grow 8 inward to the fan’s own edge (78), the top plate 8 (96), since the cards already stand there; nothing else moves', render: nbRender('reach'), where: nbWhere('78 at the sides (the plate’s inner edge on the fan’s own edge, which already stands 8 past it) and 96 at the top, the score plates as today'),
+      note: '<p><b>What it does:</b> the cards behind the plate already reach 8 past its inner edge, so the plate grows to that edge (78 at the sides, 96 at the top) and the seat’s footprint on the felt stays the same. Monty Moon reads at <b data-nbpx="reach:Monty Moon"></b> and Dr Zimmerman at <b data-nbpx="reach:Dr Zimmerman"></b>, against <b data-nbpx="today:Monty Moon"></b> and <b data-nbpx="today:Dr Zimmerman"></b> today. Over the 461 players of the names study, <b data-nbstat="reach"></b>.</p><p><b>The catch:</b> the trick keeps 16 from a plate but only 12 from a card, so the trick loses 3 px a side (60 by 84 to 57 by 80 in the 4 cards state; the clearance table at the foot reads it); and the plate now hides the fan’s inner column, so the cards show less. It is the one version that takes width, if only the width the cards already had.</p>' },
+    { id: 'v1g', num: '1g', title: 'One card per seat', basis: 'Holger, 2 Oct: people like the original best, but the names read too small; no rotation, no more width, no big change', hl: '1b’s two lines, with the two scores as a row inside the same plate instead of a score plate under it: one 70 card per seat', render: nbRender('card'), where: nbWhere('As 1b, with the scores inside the same plate: one 70 card per seat, the name on one or two lines over a 20 px score row', 'A 20 px row at the foot of the seat’s card, the plate’s own top line over it'),
+      note: '<p><b>What it does:</b> 1b’s two lines, and the two scores move into the same plate as a row at its foot, so each seat is one card: avatar, name, scores. Same width, the same sizes as 1b (Monty Moon reads at <b data-nbpx="card:Monty Moon"></b> and Dr Zimmerman at <b data-nbpx="card:Dr Zimmerman"></b>, against <b data-nbpx="today:Monty Moon"></b> and <b data-nbpx="today:Dr Zimmerman"></b> today). Over the 461 players of the names study, <b data-nbstat="card"></b>.</p><p><b>The catch:</b> it is a new piece (the site draws a name plate and a score plate), and the turn clock’s fill would run under the scores too. The card reads calmer than the plate-and-tab pair; it is here for the look, the numbers are 1b’s.</p>' },
+    { id: 'v1h', num: '1h', title: 'Slides once (built)', basis: 'Holger, 2 Oct: people like the original best, but the names read too small; no rotation, no more width, no big change', hl: 'the name never goes under 15 px; a name that does not fit slides once to show its end when the seat is taken, then rests cut under a fade', render: nbRender('slide'), where: nbWhere('As 1d with a 15 px floor; a cut name slides once to its end and back when the seat is taken, then rests under the fade'),
+      note: '<p><b>Built on the site, 2 October</b> (Holger’s pick): the name’s room 4 px a side on a phone and 8 on a desktop (today’s 6 and 12; not the lab’s 3), the name at most 18 px on a phone and 20 on a desktop (the box 80% of the plate; the site’s 19 and 22 before), the floor 14 and 16 (15 and 18, then 14 and 17, for an hour each), the yellow buttons’ words 18 and 20 too, the slide 6 s after 1.2 s when the seat is taken or the name changes (none under Settings &gt; Animations Off or reduced motion), and the whole name in the plate’s hover tip, over the like, block and mute row. New look only; Layout.playerNameTextMinSize, text.js showOverflow, pieces.scss .textCut, Table.cutNameTip. This version now draws the built room (4 px), so its numbers are the site’s.</p><p><b>What it does:</b> 1d with a 15 px floor and a single move: when the seat is taken (and in the lab, when the page draws) a name that does not fit slides to show its end, waits, and slides back to rest under the fade. Monty Moon reads at <b data-nbpx="slide:Monty Moon"></b> and Dr Zimmerman at <b data-nbpx="slide:Dr Zimmerman"></b>, against <b data-nbpx="today:Monty Moon"></b> and <b data-nbpx="today:Dr Zimmerman"></b> today. Over the 461 players of the names study, <b data-nbstat="slide"></b>.</p><p><b>The catch:</b> motion at the table’s edges while people play, three times over at a table of long names, and a device shot catches it at rest, where it is 1d. The music apps do this for song titles; nobody does it for players.</p>' },
+    { id: 'v1i', num: '1i', title: 'The mix', basis: 'Holger, 2 Oct: people like the original best, but the names read too small; no rotation, no more width, no big change', hl: '1a’s tighter plate, 1b’s two lines, 1c’s broken word only when the lines would still fall under 13 px, and 1d’s floor at 12 px with the fade', render: nbRender('mix'), where: nbWhere('As 1a (3 px padding, tight letters), then 1b’s two lines under 14 px, a word broken with a hyphen only under 13 px, and a 12 px floor with the fade'),
+      note: '<p><b>What it does:</b> the small changes stacked in the order that costs least: the tighter plate first (every name), two lines where one would fall under 14 px (names with a space, a capital or a digit), a broken word only where even two lines fall under 13 px, and a 12 px floor with the fade for what is left. Monty Moon reads at <b data-nbpx="mix:Monty Moon"></b> and Dr Zimmerman at <b data-nbpx="mix:Dr Zimmerman"></b>, against <b data-nbpx="today:Monty Moon"></b> and <b data-nbpx="today:Dr Zimmerman"></b> today. Over the 461 players of the names study, <b data-nbstat="mix"></b>.</p><p><b>The catch:</b> four rules where today has one, and the plate’s height still changes with the name. It is the version that gives the most players a readable name without touching the layout; the table under Names and the plate’s width has the shares.</p>' },
+    { id: 'v21', num: 2, was: 21, title: 'Board on top', basis: 'Holger, 1 Oct: 19 with the score board in the top centre between the pills, the top seat under it', hl: '19 with the score board in the top centre between the two pills, 8 from each and on the top edge, the top seat’s plate 8 under it, and every fan 24 out', render: function (T, st, S, people) { return v12(T, st, S, people, { flush: true, edges: true, topBoard: true, boardRows: [20, 28], fanOut: 24 }); },
+      where: { board: 'In the top centre, on the top edge between the two pills with 8 to each (128 to 265, 137 wide), 48 tall (the title row 20 over the 28 value row), its top corners square, its two columns sharing the room beyond their words', oppPlate: 'The top seat on your own plate’s size, 313 by 32, at 57, 8 under the board: the name in its 86 box left of the avatar, the two numbers right of it; the side seats as 16, 232 long on the edges', oppScore: 'Inside the plates: the top seat’s right of its avatar, the side seats’ at the plate’s foot', oppAv: '50 at the top over the plate’s band from its top edge, turned to face the table; 50 at the sides, turned with the plates', oppHand: 'Every fan 24 out: the top fan under the plate with its foot at 113, cropped at the plate’s top so no back shows above it; the side fans 24 past the plates’ inner edge (their inner edge at 56)', notice: 'Under the top fan’s foot at 121, on the left', pillL: 'As 18: the top-left corner on the edges', pillR: 'As 18: the top-right corner on the edges', youPlate: 'As 18: 1 px from the bottom edge, 313 wide', hint: 'As 18: the bottom-left corner', seat2: 'As 18: the bottom-right corner, Chat', hand: 'As 18: the fan inside the plate’s 313' },
+      note: '<p><b>Holger’s request:</b> version 19 with the score board somewhere in the top centre between the left and right menus, 8 from each, and the top user 8 below it. The board takes the whole gap: the pills end at 120 and start at 273, so it runs 128 to 265, 137 wide against its own 95, and its two columns share the extra room beyond their words; it stands on the top edge like the pills, square on top. The board’s value row is 28, 4 taller than the site’s 24 (Holger, 1 Oct), so the board is 48 tall; the top plate drops to 57 and the fan with it, and the notice goes under the fan’s foot on the left, the place beside the board being gone. Every fan stands 24 out from its plate (Holger, 1 Oct), as in 22. The trick keeps its line at the side players’ middle.</p>' },
+    { id: 'v12', num: 3, was: 12, title: 'Side seats turned', basis: 'Holger, 30 Sep', hl: 'today with the left and right seats turned: their plate reads like your own, along the edge; the fan tucked in behind it; a 50 avatar flush with the side', render: v12,
+      where: { oppAv: '50 px at the sides (the plate’s 32 and 18), flush with the screen’s side, turned with the plate so the head points at the table’s middle, standing on the plate’s middle; 48 px at the top as in 17, 1 from the felt’s top, its plate at 48', oppPlate: 'The side seats: your own seat turned to the side, the left clockwise and the right anticlockwise: a 188 by 32 plate along the edge (the left reads downward, the right upward) with the name centred in its box, the avatar’s room and the two numbers at the end; the top plate at 48', oppScore: 'Inside the side plates, at the end; the top seat’s score plate at 80', oppHand: 'The side fans behind their plate, 16 px of backs showing past its inner edge; the top fan 16 under its score plate', hand: 'As today: 13 cards 70 by 98', trick: 'As today, 63 by 89, with 291 across', timer: 'The plate fills along its length; the ring at the plate’s far end', marks: 'A 16 px dot at the avatar’s corner', notice: 'Under the left pill at 48, 8 under the pills', board: 'Under the right pill at 48, 8 under the pills' },
+      note: '<p><b>Holger’s request:</b> version 1 with the left and right players turned so their name plate and score read like player 0’s: one plate along the felt’s edge with the name centred in its box, the avatar’s room and the two numbers at the end. The fan stands behind the plate with 16 px of backs past its inner edge, and the avatar is 50 px (the plate’s 32 and 18), flush with the screen’s side, standing on the plate’s middle. The side columns fall from 86 to 56 wide. The cards keep today’s sizes, so the room won shows as felt: the trick has 291 across.</p><p><b>The top avatar at 40</b> is the size that lands the top plate at 48, so the notice and the score board sit 8 under the pills.</p><p><b>Turned as one seat</b> (Holger, 30 Sep): the avatar turns with the plate, so each side seat is your own seat turned to that side, the left clockwise and the right anticlockwise, every head toward the table’s middle. The left plate therefore reads downward with its numbers at the foot, the right upward with its name at the top and its numbers at the foot, mirroring the left.</p>' },
+    { id: 'v20', num: 4, was: 20, title: 'Top row like yours', basis: 'Holger, 1 Oct: 19 with the top seat’s row built like your own, a gear and the Play button at its ends', hl: '19 with the top seat on your own row: a settings gear in the top-left corner, the 313 plate with the name, the avatar and the two numbers, the Play button in the top-right corner, all on the top edge; the pills’ other cells behind the gear; the board under the plate', render: function (T, st, S, people) { return v12(T, st, S, people, { flush: true, edges: true, topRow: true }); },
+      where: { pillL: 'Gone from the top: Leave and Table live behind the settings gear in the top-left corner (a 32 button on the top and left edges, square where it touches); the Play cell is the top-right button', pillR: 'Gone from the top: the bell, Friends and your account live behind the gear too', oppPlate: 'The top seat on your own row’s plate, 313 by 32, on the top edge between the gear and the Play button (40 to 353), square on top; the side seats as 16, 232 long on the edges', oppScore: 'Inside the plates: the top seat’s at the plate’s right end, the side seats’ at the plate’s foot', oppAv: '50 at the top over the plate’s band from its top edge, turned to face the table; 50 at the sides, turned with the plates', oppHand: 'The top fan 16 out under the plate, its tops cropped by the felt’s edge where the ad band begins; the side fans as 16', board: 'On the right edge at 41, 8 under the top plate, square on that side', notice: 'Under the gear at 41, beside the board', youPlate: 'As 18: 1 px from the bottom edge, 313 wide', hint: 'As 18: the bottom-left corner', seat2: 'As 18: the bottom-right corner, Chat', hand: 'As 18: the fan inside the plate’s 313' },
+      note: '<p><b>Holger’s request:</b> version 19 with the top user’s row laid out like the bottom user’s: a button, the plate, a button. The left button is a settings gear drawn for the lab in the pill icons’ style (the scheme’s warm grey, a light fill with its 1 px line .20 deeper and a real hole, on a 20 grid like the chat, <code>hearts-layout-lab-parts/gear.svg</code>; the site has no gear in the redesign’s set, only master’s flat orange <code>tableSettings.svg</code>), the right one the round Play. Everything the two pills carried has to live somewhere: the lab puts Leave, Table, the bell, Friends and the account behind the gear and makes the Play cell the right button; whether that is the menu Holger wants is a question. The top fan stands behind the plate and 16 under it, and the felt’s edge crops its tops at the ad band instead of letting them over it. The gear is Holger’s pick of six drawn in the same colours (1 Oct): eight square teeth as wide as their gaps, the body 14 and the tips 18, a 3 px hole.</p>' },
+    { id: 'v14', num: 5, was: 14, title: 'Full top plate', basis: 'Holger, 30 Sep: 12 with the top seat on a plate as wide as your own', hl: 'the side seats turned as in 12; the top seat on a 297 plate like the bottom one; the notice and the board under it', render: function (T, st, S, people) { return v12(T, st, S, people, { topFull: true }); },
+      where: { oppAv: '50 px at the sides, turned with their plates as in 12; 48 px at the top, standing above the full plate as today’s top seat stands above its own', oppPlate: 'The top seat: a 377 by 32 plate at 48, 8 under the pills, the phone’s width less the 8 gutters, the name centred in it as today and the numbers at its right end; the side plates turned as in 12', oppScore: 'Inside every plate', oppHand: 'The top fan behind the full plate, 16 out below it (its foot at 96) and cropped at the plate’s top; the side fans as in 12', hand: 'As today: 13 cards 70 by 98', trick: 'As today, 63 by 89', timer: 'The plate fills; the ring at the plate’s right end', marks: 'The tabs behind the top plate’s left end, as at your own; a dot at the side avatars’ corner', notice: '8 under the plate, at 88', board: '8 under the plate, at 88, its left end over the fan’s right end' },
+      note: '<p><b>Holger’s request:</b> version 12 with the top player on a plate the phone’s width less 8 a side (377 by 32, at 56, under the pills), the name centred in it as in today’s design and the numbers at its right end, the avatar standing above it, and the score board and the notice under that plate. The top group is 156 tall to the board’s foot, against 136 today, and the middle starts a row lower than in 12; what it buys is one shape for the top and bottom seats and a notice that no longer squeezes beside a plate.</p>' },
+    { id: 'v25', num: 6, was: 25, title: 'No side plates, bigger scores', basis: 'Holger, 1 Oct: 13 with a 56 by 24 score plate under each avatar, the top one’s top on the board’s top, and the side fans 16 past the side', hl: '13 with the two numbers on a 56 by 24 score plate under each avatar instead of a 16 px tag, the top plate’s top on the board’s top with a 50 avatar over it, every avatar 1 up from its plate so its ink line ends on the plate’s edge, the side plates 8 from the screen’s side with their avatars centred on them, the side fans reaching 16 past the side, and the side seats and the trick on the middle between the top cards’ foot and the hand’s top', render: function (T, st, S, people) { return v13(T, st, S, people, { scorePlates: true }); },
+      where: { oppScore: 'A 56 by 24 score plate under each avatar, the two numbers at the board’s 16 px: the top one’s top on the board’s top (48 to 72), the side ones 8 from the screen’s side under their avatars', oppHand: 'The side fans behind the avatars, their outer reach (the end cards’ corners) 16 past the screen’s side, the middle card’s outer edge 7 past it (its inner edge at 44); the top fan 16 under its score plate, its foot at 88', oppAv: '50 everywhere, each centred on its score plate and 1 up from it, so the ink line ends on the plate’s edge: the top one’s box from -3 to 47, between the pills, the side ones 11 from the side', oppPlate: 'As 13: gone from the felt', notice: 'As 13: under the left pill at 48, at most 105 wide', board: 'As 13' },
+      note: '<p><b>Holger’s request:</b> version 13 with a bigger score plate, about 48, and the side hands further toward the side, 12 from it; then, on his look, the top plate aligned with the board, the top avatar the sides’ size, every avatar aligned with its plate, the side plates 8 from the side, the side cards 16 from the side, and the plates 56 by 24; then, on his next, the side cards 16 past the side, the top plate’s top on the board’s top, and the avatars 1 up to meet their plates. Each seat’s two numbers stand on a 56 by 24 score plate under its avatar, the plate kind the table draws under a name plate, here on its own with the full ring and the board’s value row’s type. The top plate’s top is on the board’s top, 48, with its 50 avatar over it, which puts the avatar between the pills with its box from -3 to 47; every avatar stands 1 up from its plate, so its ink line ends on the plate’s top edge; the side plates stand 8 from the side with their avatars centred on them; the side fans reach 16 past the side, measured at the end cards’ corners (fanReach: the bulge plus the turned box, per card count), the middle card cut 7 by the edge; and the side seats and the trick take the middle line between the top cards’ foot (88) and the hand’s top (437), 262.5, as the turned-seat versions do.</p>' },
+    { id: 'v17', num: 7, was: 17, title: 'Plates on the edge', basis: 'Holger, 30 Sep: today with the side plates flush to the sides', hl: 'today with the side seats’ plate and score plate on the screen’s edge and a smaller avatar', render: v17,
+      where: { oppAv: '48 px for all three, centred on the side plates and above the top plate, 1 from the felt’s top', oppPlate: 'The side seats: today’s 70 plate flush with the screen’s side, square on that side; the top plate as today, at 48, 8 under the pills', oppScore: 'Today’s 54 score plate under it, flush with the same edge and square on that side; the top seat’s under its plate', oppHand: 'The side fans behind the plates, 16 past the plate’s inner edge; the top fan 8 under its score plate, as today', hand: 'As today: 13 cards 70 by 98', trick: 'As today, 63 by 89, with 237 across between the fans', notice: 'Under the left pill at 48, 8 under the pills', board: 'Under the right pill at 48, 8 under the pills' },
+      note: '<p><b>Holger’s request:</b> version 1 with the side seats’ plate and score plate aligned to the screen’s edge, no space to the side, and the avatar smaller (48 against 68). The plates keep today’s widths, 70 and 46, so the left and right seats read the same (a round of plates fitted to their names made them unequal, which Holger sent back). The fans stand behind the plates and reach 16 past the plate’s inner edge, as today’s do. The seat keeps today’s shape: the avatar above, the plate, the score plate under it, both square on the edge side. The three opponents’ avatars are one size, 48, and the top seat is moved up 8 (the avatar 1 from the felt’s top, as today’s stands 9 under it), so its plate, the board and the notice stand 8 under the pills.</p>' },
+    { id: 'v19', num: 8, was: 19, title: 'Top seat on a plate', basis: 'Holger, 1 Oct: 18 with the top seat on a plate like your own', hl: '18 with the top seat on your own plate’s size, 8 under the pills: the name left of the avatar, the two numbers right of it; the board 8 under it', render: function (T, st, S, people) { return v12(T, st, S, people, { flush: true, edges: true, topPlate: true }); },
+      where: { oppPlate: 'The top seat on your own plate’s size, 313 by 32, at 41, 8 under the pills: the name in its 86 box left of the avatar, the two numbers right of it; the side seats as 16 and 18, 232 long on the edges', oppScore: 'Inside the plates: the top seat’s right of its avatar, the side seats’ at the plate’s far end', oppHand: 'The top fan 16 out under the plate (its foot at 89), cropped at the plate’s top so no back shows above it; the side fans as 16', oppAv: '50 at the top as at the sides, over the plate’s band from its top edge and hanging 18 below it, turned to face the table (its head toward the middle), the way the side avatars sit over theirs turned with their plates', board: 'On the right edge at 81, 8 under the top plate, square on that side', notice: 'Under the left pill at 81, beside the board', pillL: 'As 18: the top-left corner on the edges', pillR: 'As 18: the top-right corner on the edges', youPlate: 'As 18: on the bottom edge, 313 wide', hand: 'As 18: the fan inside the plate’s 313, 21.2 pitch for 12 cards, 19.4 for 13', hint: 'As 18: the bottom-left corner', seat2: 'As 18: the bottom-right corner' },
+      note: '<p><b>Holger’s request:</b> version 18 with the top user on the same plate as the bottom user: 313 by 32 at 41, 8 under the pills, the name in its 86 box, the two numbers at the right end, the avatar the side avatars’ 50, over the plate’s band from its top edge, hanging 18 below it and turned to face the table, as the side avatars sit over theirs turned with their plates, instead of standing upright on the plate as today’s top avatar does. The fan stands 16 out under the plate, and the board 8 under the plate on the right edge with the notice beside it. The pills are the site’s since 30 September: every cell 40 wide, 32 tall on a phone, both pills 120 (the first builds of the lab had 32 and 36 cells, from before that change); this holds in every version.</p>' },
+    { id: 'v22', num: 9, was: 22, title: 'Board on top, the fan 24 out', basis: 'Holger, 1 Oct: 21 with the fans 24 out from the plates', hl: '21 with every seat’s cards 24 out from its plate instead of 16; the notice follows the top fan’s foot', render: function (T, st, S, people) { return v12(T, st, S, people, { flush: true, edges: true, topBoard: true, fanOut: 24, boardTop16: true }); },
+      where: { oppHand: 'Every fan 24 out: the top fan under the plate with its foot at 105, cropped at the plate’s top; the side fans 24 past the plates’ inner edge (their inner edge at 56)', notice: 'Under the top fan’s foot at 113, on the left', board: 'As 21 in the top centre between the pills, 137 wide, on the top edge, but 40 tall: the title row 16 over the 24 value row', oppPlate: 'Your own plate’s size at 49, 8 under the 40 board; the side seats as 16', oppScore: 'As 21', oppAv: 'As 21: 50 at the top, the side avatars’ size, over the plate’s band turned to face the table', pillL: 'As 18', pillR: 'As 18', youPlate: 'As 18', hint: 'As 18', seat2: 'As 18', hand: 'As 18' },
+      note: '<p><b>Holger’s request:</b> version 21 with the cards 24 out from the plates rather than 16, at every seat. The side fans’ inner edges go from 48 to 56, which takes 16 from the trick’s width. The board’s title row is 16 instead of 20 (Holger, 1 Oct), so the board is 40 tall, the plate sits at 49, the fan’s foot at 105 and the notice at 113. The top avatar is the side avatars’ 50 here as in 21; the robot’s art stands 41 tall in that square where the two humans’ busts fill 49, which is why it reads smaller. The trick keeps the side players’ line.</p>' },
+    { id: 'v16', num: 10, was: 16, title: 'Turned plates on the edge', basis: 'Holger, 30 Sep: 12 with the plates flush to the sides', hl: '12 with the turned plates on the screen’s edge, no gutter, square on the outer side', render: function (T, st, S, people) { return v12(T, st, S, people, { flush: true }); },
+      where: { oppPlate: 'The side seats: the 232 by 32 turned plate flush with the screen’s side (0 to 32, no gutter), its outer corners square, the inner ones the plate’s 12; its name part and its score part the same, 84 each, around the avatar’s 48 room on the felt’s middle; the top plate at 48 as in 12', oppHand: 'The side fans 16 past the plate’s inner edge (32 + 16 = 48), their outer 3 px past the screen’s edge; the top fan 16 under its score plate', oppAv: '50 px flush with the side, turned with the plate as in 12, standing on the plate’s middle; 48 at the top, as in 17' },
+      note: '<p><b>Holger’s request:</b> version 12 with the side plates carried to the screen’s edge: no 8 px gutter, and no corner radius on the side that meets the edge. The plate reads as a tab growing out of the phone’s side. The fan keeps its 16 px past the plate’s inner edge, which now puts its outer 3 px off the screen. The side columns are 48 wide where the trick is, 8 less than 12.</p>' },
+    { id: 'v18', num: 11, was: 18, title: 'Everything on the edge', basis: 'Holger, 1 Oct: 16 with your row, the pills and the board on the edges', hl: '16 with your plate and the two seat buttons on the bottom edge, the two pills in the top corners and the score board on the right edge, every corner square where it touches', render: function (T, st, S, people) { return v12(T, st, S, people, { flush: true, edges: true }); },
+      where: { pillL: 'The top-left corner, on the top edge against the band, with no ring on that side, on the left edge, only its bottom-right corner round', pillR: 'The top-right corner, on the top edge, on the right edge, only its bottom-left corner round', youPlate: '1 px from the bottom edge so its ring shows against the band, 313 wide between the two buttons (40 to 353), its bottom corners square', youAv: '68 px standing on the plate as today, 7 lower with it', hand: '70 by 98 cards at today’s 24.2 pitch until the fan would pass the plate’s ends, then closer so it stays inside the plate’s 313: 21.2 for 12 cards, 19.4 for 13', hint: 'The bottom-left corner, 1 px from the bottom, on the left edge, only its top-right corner round', seat2: 'The bottom-right corner, 1 px from the bottom, on the right edge, only its top-left corner round', board: 'On the right edge at 41, 8 under the pill, square on that side', notice: 'Under the left pill at 41', oppPlate: 'The side seats as 16: the 232 by 32 turned plate flush with the screen’s side, square on the outer side, its name part and score part 84 each; the top plate at 48', oppHand: 'As 16: the side fans 16 past the plate’s inner edge, the top fan 16 under its score plate', oppAv: 'As 16: 50 px flush with the side, turned with the plate; 48 at the top' },
+      note: '<p><b>Holger’s request:</b> version 16 with the bottom plate on the screen’s bottom like the side plates on the sides, the two seat buttons in the bottom corners, the two pills in the top corners and the score board on the right edge, each losing its corner radius where it touches an edge. The row drops 7 and the pills rise 7: each stands 1 px from its edge so its own ring shows against the band’s line (Holger, 1 Oct), and the board and the notice follow the pills to 41. The hand and the trick do not move.</p>' },
+    { id: 'v13', num: 12, was: 13, title: 'No side plates', basis: 'Holger, 30 Sep', hl: 'today without the opponents’ plates: a smaller avatar flush with the side over each fan at the edge, the numbers as a tag, no name on the felt', render: v13,
+      where: { oppAv: '50 px at the sides, flush with the screen’s side, over the middle of the fan; 40 px at the top', oppPlate: 'Gone. The name is not on the felt: a tap on the avatar shows it, the Table panel lists the seats, and the notice names people in words', oppScore: 'A 16 px tag under the avatar', oppHand: 'The fans behind the avatars, 16 px past the avatar’s inner edge at the sides and 16 under the tag at the top; the top fan packed to stand between the pills', youPlate: 'As today (297 px); the request was for the players’ plates', hand: 'As today: 13 cards 70 by 98', trick: 'As today, 63 by 89, with 291 across', timer: 'The ring at the avatar’s corner; no plate to fill', marks: 'A 16 px dot at the avatar’s corner', notice: 'Under the left pill at 48, at most 105 wide, clear of the top fan', board: 'Under the right pill at 48' },
+      note: '<p><b>Holger’s request:</b> version 1 without the opponents’ name plates. Each opponent is a 50 px avatar flush with the screen’s side over the middle of their fan, 16 px of backs past it, with the two numbers in a tag under it. The side columns are 66 wide, the top group 82 tall (136 today). Your own plate and row stay.</p><p><b>The names:</b> not on the felt. At a bots table they are redundant, the three robots are fixed faces with fixed names. At a people table the face is the seat during play, and the name is still one tap away, in the Table panel, in the bubbles’ tails and in the notice’s words ("Waiting for Ruth to pass"), and it is on every end panel. The turn clock is the ring alone here, since no plate can fill.</p>' },
+    { id: 'v23', num: 13, was: 23, title: 'Big plates', basis: 'Holger, 1 Oct: 22 with 40 px plates, buttons and board', hl: '22 with the plates, the seat buttons, the pills and the score board 40 tall instead of 32 (the board a 16 title row over the 24 value row), the names at the desktop’s 24 px and the avatars 58', render: function (T, st, S, people) { return v12(T, st, S, people, { flush: true, edges: true, topBoard: true, fanOut: 24, big: true }); },
+      where: { pillL: 'As 18, 40 tall: the cells 40 by 40', pillR: 'As 18, 40 tall', board: 'In the top centre between the pills as 21, 40 tall: the title row 16, the value row 24', oppPlate: 'The top seat on your own plate’s size, 313 by 40, at 49, 8 under the board, the name at the desktop’s 24 px; the side seats 232 by 40 on the edges, the name part 84 and the score part 84', oppScore: 'Inside the plates, 24 px', oppAv: '58 (the plate’s 40 and 18, as the 50 is the 32 plate’s), the top one over the plate’s band turned to face the table, the side ones turned with their plates', oppHand: 'Every fan 24 out: the top fan under the plate with its foot at 113, the side fans 24 past the plates’ inner edge (their inner edge at 64)', notice: 'Under the top fan’s foot at 121, on the left', youPlate: '1 px from the bottom edge, 313 by 40, the name at 24 px', youAv: '68 on the plate as today, 20 above its top', hint: 'The bottom-left corner, 40 square', seat2: 'The bottom-right corner, 40 square, Chat', hand: 'Inside the plate’s 313, 8 higher with the taller row' },
+      note: '<p><b>Holger’s request:</b> version 22 with the name plates and the buttons 40 px instead of 32, and the score board 40 with a 16 px top part. The 40 plate is the desktop’s (Layout.playerNamePlateHeight off a compact board), so the lab pairs it with the desktop’s name size, 24 px at most, and keeps the side avatars at the plate’s width plus 18 (Holger’s rule of the fifth look), 58 here; the board’s value row stays 24 with its 16 px numbers. The side fans move in with the wider plates, so the trick is narrower than 22’s.</p>' }
+  ];
+  VERSIONS.forEach(function (v) { S.show[v.id] = true; });
+  S.show.v23 = false; // Big plates stands last and opens unchecked (Holger, 1 Oct)
+
+  // ── the page ──────────────────────────────────────────────────────────────
+  var row = document.getElementById('row');
+  // the overlay: today's layout (version 1) over a version, shown whole while T is held
+  function overlayFor(v, fr, st, seats, people) {
+    if (v.id === 'v1') return '';
+    return '<div class="ovl"><div class="tbl" style="top:' + fr.top + 'px;height:' + fr.h + 'px">' + v1({ w: W, h: fr.h }, st, seats, people).replace(/data-m="/g, 'data-o="') + '</div></div>';
+  }
+  function render() {
+    var fr = frameOf(S.ads), st = STATES[S.state], seats = SEATS[S.seats].slice(), people = S.seats === 'people';
+    if (NAMES[S.names]) NAMES[S.names].forEach(function (n, i) { seats[i + 1] = Object.assign({}, seats[i + 1], n); }); // the Names switch (2 Oct)
+    YOU = seats[0];
+    var out = '';
+    VERSIONS.forEach(function (v) {
+      out += '<section class="version' + (S.show[v.id] ? ' on' : '') + '" id="' + v.id + '"><div class="vhead"><h2>' + v.num + ' ' + v.title + (v.was ? ' <small>was ' + v.was + '</small>' : '') + '</h2></div>' +
+        '<div class="frames">' + phone(v.render({ w: W, h: fr.h }, st, seats, people), fr, overlayFor(v, fr, st, seats, people)) + '</div><div class="strip" data-strip="' + v.id + '">…</div><div class="note">' + v.note + '</div></section>';
+    });
+    row.innerHTML = out;
+    var labEl = document.getElementById('lab'); labEl.classList.remove('scale-78', 'scale-100'); labEl.classList.add('scale-' + S.scale); // the T and Y latches on the same element stay
+    fitAll(row);
+    placeTricks(row);
+    requestAnimationFrame(measureAll);
+    drawNameTable();
+  }
+  // the plates fit their words as the site does (FitText.js grows the size from 1 until the word no longer fits, so there
+  // is no floor): the size steps down until the name fits its box; a 12-letter name in today's 70 plate lands at 8 px
+  function fitAll(root) {
+    Array.prototype.forEach.call(root.querySelectorAll('.plate .nm.fit'), function (el) {
+      var size = parseFloat(getComputedStyle(el).fontSize);
+      while (el.scrollWidth > el.clientWidth + 0.5 && size > 1) { size -= 1; el.style.fontSize = size + 'px'; }
+    });
+  }
+  // the strip: every box with a data-m painted on a 3-point grid of the whole screen, later categories over earlier
+  var CATS = ['people', 'info', 'chrome', 'game', 'ad', 'system'];
+  var CAT_COLOR = { game: '#43a038', people: '#abd2ff', chrome: '#9b9997', info: '#f2d767', ad: '#5e574b', system: '#141414', free: '#cfe6c8' };
+  var CAT_WORD = { game: 'game', people: 'people', chrome: 'chrome', info: 'info', ad: 'ads', system: 'system', free: 'free felt' };
+  function measure(screen) {
+    var sr = screen.getBoundingClientRect(), zoom = sr.width / W, cell = 3, cols = Math.ceil(W / cell), rows = Math.ceil(852 / cell);
+    var grid = new Uint8Array(cols * rows);
+    var els = Array.prototype.map.call(screen.querySelectorAll('[data-m]'), function (e) {
+      var r = e.getBoundingClientRect();
+      return { m: e.getAttribute('data-m'), x: (r.left - sr.left) / zoom, y: (r.top - sr.top) / zoom, w: r.width / zoom, h: r.height / zoom };
+    }).filter(function (e) { return e.w > 0 && e.h > 0 && CATS.indexOf(e.m) >= 0; });
+    els.sort(function (a, b) { return CATS.indexOf(a.m) - CATS.indexOf(b.m); });
+    els.forEach(function (e) {
+      var code = CATS.indexOf(e.m) + 1;
+      var c0 = Math.max(0, Math.floor(e.x / cell)), c1 = Math.min(cols, Math.ceil((e.x + e.w) / cell)), r0 = Math.max(0, Math.floor(e.y / cell)), r1 = Math.min(rows, Math.ceil((e.y + e.h) / cell));
+      for (var r = r0; r < r1; r++) for (var c = c0; c < c1; c++) grid[r * cols + c] = code;
+    });
+    var count = { free: 0 }; CATS.forEach(function (k) { count[k] = 0; });
+    for (var i = 0; i < grid.length; i++) count[grid[i] ? CATS[grid[i] - 1] : 'free']++;
+    var total = grid.length, share = {};
+    Object.keys(count).forEach(function (k) { share[k] = count[k] / total; });
+    var card = screen.querySelector('.card.hand'), tcard = screen.querySelector('.card.trick');
+    return { share: share, card: card ? [Math.round(card.offsetWidth), Math.round(card.offsetHeight)] : null, tcard: tcard ? [Math.round(tcard.offsetWidth), Math.round(tcard.offsetHeight)] : null };
+  }
+  var LAST = {};
+  function measureAll() {
+    Array.prototype.forEach.call(row.querySelectorAll('.version.on'), function (sec) {
+      var m = measure(sec.querySelector('.screen'));
+      LAST[sec.id] = m;
+      var pct = function (k) { return Math.round(m.share[k] * 100) + '%'; };
+      var order = ['game', 'people', 'chrome', 'info', 'ad', 'system', 'free'];
+      sec.querySelector('.strip').innerHTML = '<b>Your card ' + (m.card ? m.card[0] + ' × ' + m.card[1] : '–') + ' pt</b>' + (m.tcard ? ' · trick card <b>' + m.tcard[0] + ' × ' + m.tcard[1] + '</b>' : '') + ' · game <b>' + pct('game') + '</b> · people <b>' + pct('people') + '</b> · free felt <b>' + pct('free') + '</b>' +
+        '<div class="bars">' + order.map(function (k) { return '<i class="' + k + '" style="width:' + (m.share[k] * 100).toFixed(2) + '%" title="' + CAT_WORD[k] + ' ' + pct(k) + '"></i>'; }).join('') + '</div>' +
+        order.map(function (k) { return '<span class="k" style="background:' + CAT_COLOR[k] + '"></span>' + CAT_WORD[k] + ' ' + pct(k); }).join(' · ');
+    });
+    summary();
+  }
+  function summary() {
+    var t = document.getElementById('summary');
+    var head = '<tr><th>Version</th><th>Your card</th><th>Trick card</th><th>Game</th><th>People</th><th>Chrome</th><th>Info</th><th>Ads</th><th>System</th><th>Free felt</th></tr>';
+    t.innerHTML = head + VERSIONS.filter(function (v) { return S.show[v.id] && LAST[v.id]; }).map(function (v) {
+      var m = LAST[v.id], p = function (k) { return Math.round(m.share[k] * 100) + '%'; };
+      return '<tr><td>' + v.num + ' ' + v.title + '</td><td>' + (m.card ? m.card[0] + ' × ' + m.card[1] : '–') + '</td><td>' + (m.tcard ? m.tcard[0] + ' × ' + m.tcard[1] : '–') + '</td><td>' + p('game') + '</td><td>' + p('people') + '</td><td>' + p('chrome') + '</td><td>' + p('info') + '</td><td>' + p('ad') + '</td><td>' + p('system') + '</td><td>' + p('free') + '</td></tr>';
+    }).join('');
+  }
+  // the element table
+  (function () {
+    var t = document.getElementById('elements');
+    var html = '<tr><th>Element</th>' + VERSIONS.map(function (v) { return '<th>' + v.num + ' ' + v.title + '</th>'; }).join('') + '</tr>';
+    ELEMENTS.forEach(function (e) {
+      html += '<tr><td>' + e[1] + '</td>' + VERSIONS.map(function (v) { var w = v.where[e[0]]; return w ? '<td>' + w + '</td>' : '<td class="same">as 1</td>'; }).join('') + '</tr>';
+    });
+    t.innerHTML = html;
+  })();
+  // the controls
+  function tray(id, key) {
+    var el = document.getElementById(id);
+    el.addEventListener('click', function (e) {
+      var l = e.target.closest('label'); if (!l) return;
+      Array.prototype.forEach.call(el.querySelectorAll('label'), function (x) { x.classList.toggle('on', x === l); });
+      S[key] = l.getAttribute('data-v'); render();
+    });
+  }
+  function setTray(id, v) { Array.prototype.forEach.call(document.getElementById(id).querySelectorAll('label'), function (x) { x.classList.toggle('on', x.getAttribute('data-v') === v); }); }
+  ['state:state', 'seats:seats', 'names:names', 'ads:ads', 'scale:scale'].forEach(function (s) { var a = s.split(':'); tray(a[0], a[1]); });
+  // the rival tray swaps the pictures in place (no redraw); the three pictures are fetched and decoded once, so the swap and the key are instant
+  Object.keys(RIVAL).forEach(function (k) { var im = new Image(); im.src = RESEARCH + RIVAL[k]; if (im.decode) im.decode().catch(function () {}); });
+  function setPlates(v) { S.plates = v; setTray('plates', v); var c = PLATES[v], st = document.getElementById('lab').style; st.setProperty('--plate', c[0]); st.setProperty('--plate-ink', c[1]); st.setProperty('--plate-track', c[2]); }
+  document.getElementById('plates').addEventListener('click', function (e) { var l = e.target.closest('label'); if (l) setPlates(l.getAttribute('data-v')); });
+  function setRival(v) { S.rival = v; setTray('rival', v); Array.prototype.forEach.call(document.querySelectorAll('.rival'), function (im) { im.src = RESEARCH + RIVAL[v]; }); }
+  document.getElementById('rival').addEventListener('click', function (e) { var l = e.target.closest('label'); if (l) setRival(l.getAttribute('data-v')); });
+  var rivalOp = document.getElementById('rivalOp'), rivalOpV = document.getElementById('rivalOpV');
+  rivalOp.addEventListener('input', function () { S.rivalOp = +rivalOp.value; rivalOpV.textContent = S.rivalOp + '%'; Array.prototype.forEach.call(document.querySelectorAll('.rival'), function (im) { im.style.opacity = S.rivalOp / 100; }); });
+  // T: today's layout over every version, whole; Y: the rival's picture. A hold is a peek, on while the key is down; a tap
+  // (under 300 ms) keeps it on until the next tap (Holger, 1 Oct: a tap had shown nothing, the overlay going with the key)
+  var lab = document.getElementById('lab'), held = {};
+  function holdOrTap(key, cls) {
+    window.addEventListener('keydown', function (e) { if (e.key.toLowerCase() !== key || e.repeat) return; held[key] = { at: Date.now(), was: lab.classList.contains(cls) }; lab.classList.add(cls); });
+    window.addEventListener('keyup', function (e) {
+      if (e.key.toLowerCase() !== key || !held[key]) return;
+      var h = held[key]; held[key] = null;
+      if (Date.now() - h.at < 300) { if (h.was) lab.classList.remove(cls); } // a tap: on if it was off, off if it was on
+      else if (!h.was) lab.classList.remove(cls); // a hold: a peek, unless it was kept on by a tap
+    });
+  }
+  holdOrTap('t', 'today'); holdOrTap('y', 'rivalY');
+  window.addEventListener('blur', function () { lab.classList.remove('today'); lab.classList.remove('rivalY'); held = {}; });
+  var vp = document.getElementById('vpick');
+  function drawPicker() { vp.innerHTML = '<label data-v="all">All</label><label data-v="none">None</label>' + VERSIONS.map(function (v) { return '<label' + (S.show[v.id] ? ' class="on"' : '') + ' data-v="' + v.id + '">' + v.num + '</label>'; }).join(''); }
+  drawPicker();
+  vp.addEventListener('click', function (e) {
+    var l = e.target.closest('label'); if (!l) return;
+    var id = l.getAttribute('data-v');
+    if (id === 'all' || id === 'none') { VERSIONS.forEach(function (v) { S.show[v.id] = id === 'all'; }); drawPicker(); render(); return; }
+    S.show[id] = !S.show[id]; l.classList.toggle('on', S.show[id]); render();
+  });
+  function cycle(id, key, values) { var i = values.indexOf(S[key]); S[key] = values[(i + 1) % values.length]; setTray(id, S[key]); render(); }
+  window.addEventListener('keydown', function (e) {
+    if (e.target && /input|textarea/i.test(e.target.tagName)) return;
+    var k = e.key.toLowerCase();
+    if (k >= '0' && k <= '9') { var n = k === '0' ? 10 : Number(k); var id = 'v' + n; if (!(id in S.show)) return; S.show[id] = !S.show[id]; drawPicker(); render(); }
+    else if (k === '=') { S.show.v12 = !S.show.v12; drawPicker(); render(); }
+    else if (k === '[') { S.show.v13 = !S.show.v13; drawPicker(); render(); }
+    else if (k === 's') cycle('state', 'state', ['full', 'pass', 'picked', 'play', 'wait', 'tram']);
+    else if (k === "'") { S.show.v16 = !S.show.v16; drawPicker(); render(); }
+    else if (k === '\\') { S.show.v17 = !S.show.v17; drawPicker(); render(); }
+    else if (k === ',') { S.show.v18 = !S.show.v18; drawPicker(); render(); }
+    else if (k === '.') { S.show.v19 = !S.show.v19; drawPicker(); render(); }
+    else if (k === '/') { S.show.v20 = !S.show.v20; drawPicker(); render(); }
+    else if (k === '`') { S.show.v21 = !S.show.v21; drawPicker(); render(); }
+    else if (k === 'o') { S.show.v22 = !S.show.v22; drawPicker(); render(); }
+    else if (k === 'u') { S.show.v23 = !S.show.v23; drawPicker(); render(); }
+    else if (k === 'h') { S.show.v25 = !S.show.v25; drawPicker(); render(); }
+    else if (k === ']') { S.show.v14 = !S.show.v14; drawPicker(); render(); }
+    else if (k === 'p') cycle('seats', 'seats', ['bots', 'people']);
+    else if (k === 'n') cycle('names', 'names', ['ladder', 'oneword', 'longest']);
+    else if (k === 'a') cycle('ads', 'ads', ['today', 'top', 'bottom', 'none']);
+    else if (k === 'z') cycle('scale', 'scale', ['100', '78']);
+    else if (k === 'r') { var rv = ['fiogonia', 'mobilityware', 'cardgames']; setRival(rv[(rv.indexOf(S.rival) + 1) % rv.length]); }
+    else if (k === 'c') { var pk = Object.keys(PLATES); setPlates(pk[(pk.indexOf(S.plates) + 1) % pk.length]); }
+  });
+  render();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(render);
+  window.addEventListener('load', function () { setTimeout(measureAll, 300); });
+
+  // the boards this borrows from
+  var R = '../Research/app-onboarding-2026-09/';
+  var RIVALS = [['Fiogonia Hearts (2)', 'shots-archive/01-fiogonia-hearts/06-after-pass-02'], ['NeuralPlay Hearts (3)', 'shots-archive/03-neuralplay-hearts/04-deal'], ['MobilityWare Hearts (4)', 'shots-archive/07-mobilityware-hearts/08-after-pass-02'], ['KARMAN Hearts (5)', 'shots/02-karman-hearts/05-pass-picked'], ['Hearts+ (6, landscape)', 'shots-archive/08-hearts-plus/05-deal-05'], ['CardGames.io (7)', 'shots/15-cardgames-io/05-deal-03'], ['Spades Plus (landscape, for the trick)', 'shots/16-spades-plus/07-play-now-10']];
+  document.getElementById('strip').innerHTML = RIVALS.map(function (r) { return '<figure' + (/landscape/.test(r[0]) ? ' class="wide"' : '') + '><img src="' + R + r[1] + '.small.png" alt="" loading="lazy"><figcaption>' + r[0] + '</figcaption></figure>'; }).join('') +
+    '<figure><img src="hearts-layout-lab-parts/measure/appframe-your-choose.png" alt=""><figcaption>Today on dev, the app frame (version 1’s source)</figcaption></figure><figure><img src="hearts-layout-lab-parts/measure/appframe-mid-trick.png" alt=""><figcaption>Today on dev, your play with cards on the table</figcaption></figure>';
+})();
+</script>
+</body>
+</html>
