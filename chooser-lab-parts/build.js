@@ -13,7 +13,8 @@
 // The facts the bid lab draws from the dev site are in captured.json, table-*.jpg: today's bid box (its markup, as
 // the site wrote it), the free room on the table, and the table behind the box. capture.mjs and room.mjs took them
 // on 2 Oct 2026 (dev, lobby-build, Bridge bots table, first bid turn); run them again after a layout change. The
-// many-bids lab's are captured-bids.json and table-<game>-<screen>.jpg, taken by capture-bids.mjs the same day.
+// many-bids lab's are captured-bids.json and table-<game>-<screen>.jpg, taken by capture-bids.mjs the same day, and
+// for its example of a bid to beat captured-beat.json and table-pinochle-<screen>-beat31-*.jpg (capture-beat.mjs).
 const fs = require('fs'), path = require('path'), os = require('os'), cp = require('child_process');
 const HERE = __dirname, ROOT = path.join(HERE, '..');
 const STATIC = path.join(ROOT, 'static'); // a symlink to worldofcardgames/static
@@ -73,7 +74,8 @@ const fill = (page) => read(path.join(HERE, page))
   .replace('/*@@SUITS@@*/', () => JSON.stringify(SUITS))
   .replace('/*@@ARROWS@@*/', () => JSON.stringify(ARROWS))
   .replace('/*@@CAPTURED@@*/', () => read(path.join(HERE, 'captured.json')).replace(/<\//g, '<\\/'))
-  .replace('/*@@CAPTUREDBIDS@@*/', () => read(path.join(HERE, 'captured-bids.json')).replace(/<\//g, '<\\/'));
+  .replace('/*@@CAPTUREDBIDS@@*/', () => read(path.join(HERE, 'captured-bids.json')).replace(/<\//g, '<\\/'))
+  .replace('/*@@CAPTUREDBEAT@@*/', () => read(path.join(HERE, 'captured-beat.json')).replace(/<\//g, '<\\/'));
 for (const [page, out] of [['bid-page.html', 'bid-chooser-lab.html'], ['suit-page.html', 'suit-chooser-lab.html'], ['bids-page.html', 'many-bids-lab.html']]) {
   const html = fill(page);
   fs.writeFileSync(path.join(ROOT, out), html);

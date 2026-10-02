@@ -52,11 +52,19 @@
       can hit a bid 3px wide, but a finger cannot hit one 2px wide.</p>
     <p>So I would build one slider for both, version 6. The keys only work where there is a keyboard, and the bigger touch
       area costs a desktop nothing. Material&rsquo;s slider is also one slider for touch, mouse and keys.</p>
+    <h2>The bid to beat</h2>
+    <p>The bid to beat already shows on the bidder&rsquo;s plate, as KARMAN&rsquo;s Pinochle shows a bid under the name. The
+      slider starts on the lowest bid you can make, and the yellow button names it. So I would add nothing (example A). The
+      chooser needs no question in the notice either, since its buttons say what to do. The notice could say the bid to
+      beat in words (B), but that only repeats the plate. The top bid only matters if you drag to the end, where the tooltip
+      shows it. Both ends on the slider (C) take about a third of its room on a phone.</p>
     <h2>Questions for you</h2>
     <ul>
       <li><b>Which version?</b> Two rows of seven, one row of seven, the stepper or one of the sliders? It can differ by game.</li>
       <li><b>Should the low bids get more room?</b> Version 6 gives the ten bids above the lowest half the chooser. The bids
         more than ten over then get less room than in version 4.</li>
+      <li><b>Does the bid to beat need more than the plate?</b> Example B puts it in the notice, and C puts it on the
+        slider with the top bid.</li>
       <li><b>Should a tap beside the card step one bid?</b> Version 5 does this. It makes every bid easy to reach on a phone,
         but a tap then acts in a less usual way.</li>
       <li><b>Where do the arrows go?</b> Here they sit in the row of buttons, where today&rsquo;s Pinochle box has them. They
@@ -92,13 +100,15 @@
 <script>
 (function () {
   const CAP = /*@@CAPTUREDBIDS@@*/;
+  // The example's Pinochle tables, where the player on your right has bid 31 (capture-beat.mjs)
+  const BEAT = /*@@CAPTUREDBEAT@@*/;
   const ARROW = /*@@ARROWS@@*/;
   const el = CL.el;
   const range = (a, b, step) => { const o = []; for (let x = a; x <= b; x += step || 1) o.push(x); return o; };
 
   // Each game's bids as the site lists them (C.js), today's page size, and three bids to beat
   const GAMES = {
-    pinochle: { name: 'Pinochle', bids: range(25, 100), pass: true, page: 12, beats: { low: 30, mid: 49, top: 97 },
+    pinochle: { name: 'Pinochle', bids: range(25, 100), pass: true, page: 12, beats: { low: 31, mid: 49, top: 97 },
       today: 'Twelve bids at a time out of 76, with arrows to page on. A tap sends the bid.' },
     pinochledd: { name: 'Double Deck Pinochle', bids: range(50, 60).concat(range(65, 250, 5)), pass: true, page: 12, beats: { low: 59, mid: 120, top: 240 },
       today: 'Twelve bids at a time out of 49, with arrows to page on. A tap sends the bid.' },
@@ -128,6 +138,18 @@
       lead: 'Version 4 with more room for the low bids. The ten bids above the lowest take half the chooser. That gives them about 12px each on a desktop and 8 on a phone, where the even scale gives 3 and 2. Most bids are one or two over the last. It acts as the usual slider does.' },
     { key: 'ruler', form: 'slider', slider: { ruler: true }, title: 'A ruler', tag: 'After the iPhone photo editor',
       lead: 'The card stays in the middle and the bids slide under it, 12px apart on a desktop and 10 on a phone. Drag or flick the scale, or tap a number on it. It settles on a bid.' },
+  ];
+
+  // An example of a bid to beat (Holger, 2 Oct 2026: "How do we deal with showing that people have bid 31 and you have
+  // to bid higher than that? Make an example of that."): Pinochle on the tables capture-beat.mjs took, where the player
+  // on your right has bid 31, with version 6's slider three ways
+  const EXAMPLES = [
+    { key: 'beatPlate', form: 'slider', slider: { fine: true }, beat: 31, example: { notice: false }, title: 'The plate says it', tag: 'My pick',
+      lead: 'Nothing new. The plate on your right already says Bid 31, as KARMAN&rsquo;s Pinochle shows a bid under the name. The card starts on 32 and the yellow button says Bid 32. The notice asks nothing.' },
+    { key: 'beatNotice', form: 'slider', slider: { fine: true }, beat: 31, example: { notice: true }, title: 'The notice says it too', tag: 'In words',
+      lead: 'The notice also says it in words, for example &ldquo;Pris bid 31.&rdquo; It repeats the plate in the place where the table speaks to you.' },
+    { key: 'beatEnds', form: 'slider', slider: { fine: true, ends: true }, beat: 31, example: { notice: false }, title: 'The slider says it too', tag: 'Both ends',
+      lead: 'The slider also shows its two ends, the bid to beat at the left and the top bid at the right. The numbers take about a third of the rail on a phone, so each bid near the start gets 5px there instead of 8.' },
   ];
 
   const game = () => GAMES[S.game];
@@ -234,7 +256,20 @@
   }
 
   // ----- A chooser version --------------------------------------------------------------------------------------------
+  // The bids a chooser offers under the switches, or under an example's own bid to beat (v.beat)
+  function rules(v) {
+    const g = game(), b = v.beat != null ? v.beat : beat();
+    const ok = (x) => b === null || x > b;
+    return {
+      beat: b,
+      valid: ok,
+      lowestIdx: () => { const at = g.startAt != null ? g.bids.indexOf(g.startAt) : 0; for (let i = at; i < g.bids.length; i++) if (ok(g.bids[i])) return i; return g.bids.length - 1; },
+      firstValidIdx: () => { for (let i = 0; i < g.bids.length; i++) if (ok(g.bids[i])) return i; return g.bids.length - 1; },
+    };
+  }
+
   function drawChooser(f, v, dev, origin, saidBox) {
+    const R = rules(v), valid = R.valid, lowestIdx = R.lowestIdx, firstValidIdx = R.firstValidIdx;
     const d = f.dev, H = d.H, G = d.G, P = d.P;
     const g = chooserGeo(v, dev), gm = game();
     const at = (b) => ({ x: origin.x + b.x, y: origin.y + b.y, w: b.w, h: b.h });
@@ -322,7 +357,26 @@
       const n = gm.bids.length;
       const lo = () => lowestIdx();
       const span = () => Math.max(1, n - 1 - lo());
-      const track = { x: cb.x + P, w: g.W - 2 * P };
+      // The slider's two ends in words (Holger, 2 Oct 2026: "Should people be able to see what the max and min value
+      // is?"): the bid to beat at the left and the top bid at the right, in the label ink, taken off the travel
+      let LW = 0, RW = 0;
+      if (o.ends) {
+        const end = (text) => {
+          const e = CL.piece(f, 'cl-sliderEnd', { x: 0, y: cb.y + P, w: 0, h: H - 2 * P }, 8001);
+          e.textContent = text;
+          e.style.lineHeight = (H - 2 * P) + 'px';
+          e.style.width = 'auto';
+          const w = e.offsetWidth + 2 * (d.compact ? 5 : 6);
+          e.style.width = w + 'px';
+          return { e: e, w: w };
+        };
+        const left = R.beat != null ? end(label(R.beat)) : null, right = end(label(gm.bids[n - 1]));
+        LW = left ? left.w : 0;
+        RW = right.w;
+        if (left) left.e.style.left = (cb.x + P) + 'px';
+        right.e.style.left = (cb.x + g.W - P - RW) + 'px';
+      }
+      const track = { x: cb.x + P + LW, w: g.W - 2 * P - LW - RW };
       const TW = Math.max(H - 2 * P, (d.compact ? 13 : 14) * String(gm.bids[n - 1]).length + 8);
       const setPick = (i) => { if (!sent) { pick = Math.max(lo(), Math.min(n - 1, i)); render(); } };
       const cur = () => (pick < 0 ? lo() : pick);
@@ -611,7 +665,12 @@
     const rootClass = (S.mark === 'white' ? 'cl-white ' : '') + (S.lines === 'off' ? 'cl-noLines' : '');
     const g = geoOf(v, dev);
     let f, origin;
-    if (S.around === 'table') {
+    if (v.example) {
+      const cap = CAP.pinochle[dev];
+      f = CL.frame(d, cap.viewport[0], cap.viewport[1], { rootClass: rootClass, game: 'pinochle', picture: 'chooser-lab-parts/table-pinochle-' + dev + '-beat31-' + (v.example.notice ? 'named' : 'plain') + '.jpg',
+        psX: cap.playspace[0], psY: cap.playspace[1], psW: cap.playspace[2], psH: cap.playspace[3] });
+      origin = tablePlace(v, dev, g);
+    } else if (S.around === 'table') {
       const path = { pinochle: 'pinochle', pinochledd: 'double-deck-pinochle', twentynine: 'twenty-nine', spades: 'spades' }[S.game];
       f = CL.frame(d, cap.viewport[0], cap.viewport[1], { rootClass: rootClass, game: S.game, picture: 'chooser-lab-parts/table-' + path + '-' + dev + '.jpg',
         psX: cap.playspace[0], psY: cap.playspace[1], psW: cap.playspace[2], psH: cap.playspace[3] });
@@ -634,16 +693,26 @@
       (gm.pass ? ' and Pass' : ', no Pass') + '. ' + (gm.beats ? (b === null ? 'No bid yet.' : 'The bid to beat is ' + b + '.') : 'Spades has no bid to beat.');
     const cards = document.getElementById('clCards');
     cards.innerHTML = '';
-    VERSIONS.forEach((v, n) => {
+    const addCard = (v, mark) => {
       const card = el('section', 'cl-card');
-      card.appendChild(el('h2', null, null, (n ? n + ' ' : '') + v.title + ' <span class="cl-tag' + (v.today ? ' cl-today' : '') + '">' + v.tag + '</span>'));
+      card.appendChild(el('h2', null, null, (mark ? mark + ' ' : '') + v.title + ' <span class="cl-tag' + (v.today ? ' cl-today' : '') + '">' + v.tag + '</span>'));
       card.appendChild(el('p', 'cl-lead', null, v.today ? gm.today : v.lead));
       const frames = el('div', 'cl-frames');
       screens().forEach((dev) => frames.appendChild(drawFrame(v, dev)));
       card.appendChild(frames);
       cards.appendChild(card);
       frames.querySelectorAll('.cl-frame').forEach((w) => w._draw());
-    });
+    };
+    VERSIONS.forEach((v, n) => addCard(v, n ? String(n) : ''));
+    cards.appendChild(el('h2', 'cl-groupHead', null, 'Example: someone bid 31'));
+    if (S.game !== 'pinochle') {
+      cards.appendChild(el('p', 'cl-intro', null, 'The example is a Pinochle table. Pick Pinochle above to see it.'));
+      return;
+    }
+    cards.appendChild(el('p', 'cl-intro', null, 'Real Pinochle tables from the dev site, where the player on your right has bid 31 (' + BEAT.desktop.name +
+      ' on the desktop, ' + BEAT.phone.name + ' on the phone and ' + BEAT.side.name + ' on its side, since each screen is its own table). Your lowest bid ' +
+      'is 32. All three use version 6, my pick. Try a bid.'));
+    EXAMPLES.forEach((v, n) => addCard(v, 'ABC'[n]));
   }
 
   CL.switches(document.getElementById('clControls'), [
