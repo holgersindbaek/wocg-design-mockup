@@ -127,33 +127,6 @@
      that takes the drag, a tap, the keys and the wheel */
   :where(.site):is(div).wm #mainContainer .piece.cl-rail { background-color: var(--line-tray); border-radius: 1px; pointer-events: none; }
   :where(.site):is(div).wm #mainContainer .piece.cl-track { cursor: pointer; touch-action: none; outline: none; }
-  /* The number above your finger while you drag, which hides the card on a phone (Material's value label; Windows:
-     "the slider's thumb is covered during scrubbing"): the card again, a little larger, with a tail down to it */
-  :where(.site):is(div).wm #mainContainer .piece.cl-bubble {
-    border-radius: calc(var(--radius-lg) - (1.75 * var(--space-tray)));
-    corner-shape: squircle;
-    background-color: var(--paper-card);
-    box-shadow: inset 0 0 0 1px var(--line-tray), 0 1px 2px rgba(60, 45, 25, .04), 0 2px 5px rgba(60, 45, 25, .05);
-    color: var(--ink);
-    font-weight: bold;
-    text-align: center;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 110ms linear;
-  }
-  :where(.site):is(div).wm #mainContainer .piece.cl-bubble.cl-on { opacity: 1; }
-  :where(.site):is(div).wm #mainContainer .piece.cl-bubble::after {
-    content: "";
-    position: absolute;
-    left: calc(50% - 5px);
-    bottom: -5px;
-    width: 10px;
-    height: 10px;
-    background-color: var(--paper-card);
-    box-shadow: inset -1px -1px 0 0 var(--line-tray);
-    transform: rotate(45deg);
-    z-index: -1;
-  }
   /* A ruler: the scale slides in a window under a card that stays in its middle (the iPhone photo editor's dial) */
   :where(.site):is(div).wm #mainContainer .piece.cl-ruler {
     overflow: hidden;
@@ -209,16 +182,25 @@
       Microsoft, Material, Nielsen Norman Group). Poker apps put quick bets and small steps beside their sliders. No rival
       Pinochle app uses a slider. NeuralPlay and KARMAN show the bid between a minus and a plus. All three Pinochle apps
       we looked at open on the lowest bid.</p>
-    <p>Version 4 drops the arrows, as you asked. While you drag, the bid rises above your finger. Version 5 steps without
-      arrows. A tap beside the card moves it one bid toward the tap. A hold keeps it going, as Windows sliders do. Version 6
-      also gives the ten bids above the lowest half the chooser, since most bids are low. Version 7 is a ruler, as in the
-      iPhone photo editor. Versions 4 to 6 ignore the nudge as the finger lifts. On a desktop the arrow keys and the mouse
-      wheel step versions 5 and 6.</p>
+    <p>Version 4 is the usual slider. It acts as sliders do in a desktop browser and on Android. While you drag, the bid
+      shows in our own tooltip, as Material&rsquo;s slider shows its value in Material&rsquo;s own tooltip. Version 5 adds
+      one-bid steps on a tap beside the card. Version 6 is version 4 with more room for the low bids, since most bids are
+      low. Version 7 is a ruler, as in the iPhone photo editor. Versions 4 to 6 ignore the nudge as the finger lifts.</p>
+    <h2>Desktop and phone</h2>
+    <p>Sliders look and act the same on both. The difference is the hand. A finger hides the card, so the tooltip matters
+      most on a phone. A finger also needs a touch area of 44px (Apple) or 48px (Material), so the slider takes a touch a
+      little above and below its edge. A desktop adds the arrow keys. A tap on the rail jumps there in a desktop browser
+      and on Android. On an iPhone, Safari&rsquo;s own slider ignores that tap. Our slider jumps there everywhere. A mouse
+      can hit a bid 3px wide, but a finger cannot hit one 2px wide.</p>
+    <p>So I would build one slider for both, version 6. The keys only work where there is a keyboard, and the bigger touch
+      area costs a desktop nothing. Material&rsquo;s slider is also one slider for touch, mouse and keys.</p>
     <h2>Questions for you</h2>
     <ul>
       <li><b>Which version?</b> Two rows of seven, one row of seven, the stepper or one of the sliders? It can differ by game.</li>
-      <li><b>On a phone, is a tap beside the card enough?</b> The research expects it to work, but nobody can see it until
-        they try it. The other choice is small arrows on phones only.</li>
+      <li><b>Should the low bids get more room?</b> Version 6 gives the ten bids above the lowest half the chooser. The bids
+        more than ten over then get less room than in version 4.</li>
+      <li><b>Should a tap beside the card step one bid?</b> Version 5 does this. It makes every bid easy to reach on a phone,
+        but a tap then acts in a less usual way.</li>
       <li><b>Where do the arrows go?</b> Here they sit in the row of buttons, where today&rsquo;s Pinochle box has them. They
         could also be cells at the ends of the chooser.</li>
       <li><b>What should be picked at the start?</b> The lowest bid you can make, or the hint&rsquo;s bid, the one the
@@ -228,7 +210,9 @@
     <p>For the redesign only. The chooser is the suit pill&rsquo;s paper with number cells (the Bridge chooser&rsquo;s word
       cells, built on 2 Oct), one mark and, for two rows, a mark that moves between them. The stepper is the same pill with
       an arrow cell at each end, drawn as the pill draws a suit. A slider is the pill&rsquo;s paper with a rail in the tray
-      line and the white card on it. The bubble is that card again, above it. The pager in the row of buttons is
+      line and the white card on it. The bid shows in the site&rsquo;s tooltip, <code>#wtip</code> from
+      <code>FrontpageTooltip.js</code>. It opens on a hover or a tap today, so it needs one more call that keeps it over a
+      moving card. The pager in the row of buttons is
       today&rsquo;s back and forth button on the felt. The proposal rules are at the bottom of
       <code>chooser-lab-parts/lab.css</code>. In the code it touches each game&rsquo;s <code>showBid</code> and the bid spots in
       its layout.</p>
@@ -237,8 +221,9 @@
       <li><a href="https://www.nngroup.com/articles/gui-slider-controls/" target="_blank">Nielsen Norman Group on slider controls</a></li>
       <li><a href="https://developer.apple.com/design/human-interface-guidelines/sliders" target="_blank">Apple&rsquo;s guidelines for sliders</a></li>
       <li><a href="https://learn.microsoft.com/en-us/windows/apps/design/controls/slider" target="_blank">Microsoft&rsquo;s guidelines for sliders</a></li>
-      <li><a href="https://github.com/material-components/material-components-android/blob/master/docs/components/Slider.md" target="_blank">Material&rsquo;s slider and its value label</a></li>
+      <li><a href="https://github.com/material-components/material-components-android/blob/master/docs/components/Slider.md" target="_blank">Material&rsquo;s slider, whose value label is its tooltip</a></li>
       <li><a href="https://baymard.com/blog/slider-interfaces" target="_blank">Baymard on slider interfaces</a></li>
+      <li><a href="https://github.com/sampotts/rangetouch" target="_blank">RangeTouch, on a tap on a slider&rsquo;s rail on a phone</a></li>
       <li>Our own captures of NeuralPlay&rsquo;s and KARMAN&rsquo;s Pinochle, in <code>Design/Research/app-onboarding-2026-09</code></li>
     </ul>
   </section>
@@ -1986,12 +1971,12 @@ window.CL = (function () {
       lead: 'One row of seven bids over one row of buttons, as in your Bridge pick. The arrows sit in the row of buttons, beside Pass and your bid.' },
     { key: 'stepper', form: 'stepper', title: 'A stepper', tag: 'One bid per tap',
       lead: 'Your bid in the middle on the white card, with an arrow each side that steps one bid up or down. The yellow button sends it.' },
-    { key: 'slider', form: 'slider', title: 'A slider', tag: 'Your edit',
-      lead: 'No arrows. Drag the white card along the chooser, or tap the rail, to reach any bid. On a phone your finger hides the card, so the bid rises above it while you drag. The card and the rail wear the tray line. The yellow button sends it.' },
+    { key: 'slider', form: 'slider', title: 'A slider', tag: 'The usual one',
+      lead: 'The usual slider, with no arrows. Drag the white card or tap the rail to reach any bid. While you drag, our own tooltip shows the bid above the card, since on a phone your finger hides it. On a desktop the arrow keys step it too. The yellow button sends it.' },
     { key: 'sliderSteps', form: 'slider', slider: { steps: true }, title: 'A slider that steps', tag: 'Taps step',
-      lead: 'Version 4, and a tap beside the card moves it one bid toward the tap. Hold to keep going. A phone gets its one-bid steps without arrows. On a desktop the arrow keys and the mouse wheel step it too.' },
-    { key: 'sliderFine', form: 'slider', slider: { steps: true, fine: true }, title: 'A slider, finer near the start', tag: 'Most bids are low',
-      lead: 'Version 5 with a finer scale near the start. The ten bids above the lowest take half the chooser, about 12px each on a desktop and 8 on a phone, where the even scale gives 3 and 2. Most bids are one or two over the last.' },
+      lead: 'Like version 4, but a tap beside the card moves it one bid toward the tap. Hold to keep going. A phone gets one-bid steps without arrows. On a desktop the mouse wheel steps it too.' },
+    { key: 'sliderFine', form: 'slider', slider: { fine: true }, title: 'A slider, finer near the start', tag: 'My pick',
+      lead: 'Version 4 with more room for the low bids. The ten bids above the lowest take half the chooser. That gives them about 12px each on a desktop and 8 on a phone, where the even scale gives 3 and 2. Most bids are one or two over the last. It acts as the usual slider does.' },
     { key: 'ruler', form: 'slider', slider: { ruler: true }, title: 'A ruler', tag: 'After the iPhone photo editor',
       lead: 'The card stays in the middle and the bids slide under it, 12px apart on a desktop and 10 on a phone. Drag or flick the scale, or tap a number on it. It settles on a bid.' },
   ];
@@ -2182,7 +2167,7 @@ window.CL = (function () {
       };
     } else {
       // A slider over the whole chooser, no arrows (Holger, 2 Oct 2026), from the lowest bid you can make to the top. The
-      // card carries the bid; while you drag, the bid also rises above your finger. The options are the research's
+      // card carries the bid; while you drag, the site's tooltip shows it above the card. The options are the research's
       // (DESIGN notes at the foot of the page): steps beside the card, a finer scale near the start, or a ruler.
       const o = v.slider || {};
       const n = gm.bids.length;
@@ -2291,14 +2276,33 @@ window.CL = (function () {
         thumb.style.removeProperty('opacity');
         thumb.style.fontSize = (d.compact ? 18 : 20) + 'px';
         thumb.style.lineHeight = (H - 2 * P) + 'px';
-        const BH = H - 2 * P + 4, BW = TW + 8;
-        const bubble = CL.piece(f, 'cl-bubble', { x: track.x - 4, y: cb.y - BH - 10, w: BW, h: BH }, 8004);
-        bubble.style.removeProperty('opacity');
-        bubble.style.fontSize = (d.compact ? 18 : 20) + 'px';
-        bubble.style.lineHeight = BH + 'px';
-        const hit = CL.piece(f, 'cl-track', { x: track.x, y: cb.y, w: track.w, h: H }, 8003);
+        // A finger needs 44px (Apple) or 48 (Material), so the slider takes a touch a little above and below its edge
+        const HT = Math.max(H, 44);
+        const hit = CL.piece(f, 'cl-track', { x: track.x, y: cb.y - (HT - H) / 2, w: track.w, h: HT }, 8003);
         hit.tabIndex = 0;
         const xOf = (i) => track.x + travel * shareOf(i);
+        // The bid while you drag, in the site's own tooltip (Holger, 2 Oct 2026: "Should we use our own tooltip?"):
+        // #wtip as FrontpageTooltip.js builds it and CustomTooltip.scss paints it, placed over the card as its place()
+        // places a tip, with its fade. Material's slider shows its value in Material's own tooltip the same way. It
+        // hangs off the table's root, as #wtip hangs off the body, so every frame has one.
+        const tip = el('div', null, 'position:absolute;');
+        tip.id = 'wtip';
+        tip.appendChild(el('div', 'wtipBox'));
+        f.root.appendChild(tip);
+        const tipOver = (i) => {
+          tip.firstChild.innerHTML = '<b>' + label(gm.bids[i]) + '</b>';
+          const r = { left: f.mc.offsetLeft + f.ps.offsetLeft + xOf(i), top: f.mc.offsetTop + f.ps.offsetTop + cb.y + P, width: TW, height: H - 2 * P };
+          tip.classList.remove('below');
+          tip.style.left = '0px';
+          tip.style.top = '0px';
+          const w = tip.offsetWidth, h = tip.offsetHeight;
+          const x = Math.max(-6, Math.min(Math.round(r.left + r.width / 2 - w / 2), f.root.offsetWidth - w + 6));
+          let y = Math.round(r.top - h + 1);
+          if (y < -6) { tip.classList.add('below'); y = Math.round(r.top + r.height - 1); }
+          tip.style.left = x + 'px';
+          tip.style.top = y + 'px';
+          tip.style.setProperty('--ax', Math.max(26, Math.min(Math.round(r.left + r.width / 2 - x), w - 26)) + 'px');
+        };
         const centreOf = (i) => xOf(i) - track.x + TW / 2;
         const localX = (clientX) => { const r = hit.getBoundingClientRect(); return ((clientX - r.left) * track.w) / r.width; };
         let mode = null, grab = 0, lastX = 0, trail = [], timer = 0;
@@ -2328,7 +2332,7 @@ window.CL = (function () {
           mode = 'drag';
           grab = onCard ? x - centreOf(cur()) : 0;
           thumb.classList.add('cl-still');
-          bubble.classList.add('cl-on');
+          tip.classList.add('on');
           setPick(indexOf((x - grab - TW / 2) / travel));
         });
         hit.addEventListener('pointermove', (ev) => {
@@ -2348,20 +2352,21 @@ window.CL = (function () {
           clearTimeout(timer);
           mode = null;
           thumb.classList.remove('cl-still');
-          bubble.classList.remove('cl-on');
+          tip.classList.remove('on');
         };
         hit.addEventListener('pointerup', end);
         hit.addEventListener('pointercancel', end);
+        // On a desktop the arrow keys step it, as every slider's do (the slider pattern of WAI-ARIA)
+        hit.addEventListener('keydown', (ev) => {
+          const k = { ArrowRight: 1, ArrowUp: 1, ArrowLeft: -1, ArrowDown: -1, PageUp: 5, PageDown: -5 }[ev.key];
+          if (k) setPick(cur() + k);
+          else if (ev.key === 'Home') setPick(lo());
+          else if (ev.key === 'End') setPick(n - 1);
+          else return;
+          ev.preventDefault();
+        });
         if (o.steps) {
-          // On a desktop the keys and the wheel step it as well (the slider pattern of WAI-ARIA; PokerStars' wheel)
-          hit.addEventListener('keydown', (ev) => {
-            const k = { ArrowRight: 1, ArrowUp: 1, ArrowLeft: -1, ArrowDown: -1, PageUp: 5, PageDown: -5 }[ev.key];
-            if (k) setPick(cur() + k);
-            else if (ev.key === 'Home') setPick(lo());
-            else if (ev.key === 'End') setPick(n - 1);
-            else return;
-            ev.preventDefault();
-          });
+          // Version 5 steps on the mouse wheel as well (PokerStars' wheel)
           let acc = 0;
           hit.addEventListener('wheel', (ev) => {
             ev.preventDefault();
@@ -2376,8 +2381,7 @@ window.CL = (function () {
             thumb.textContent = label(gm.bids[i]);
             thumb.style.left = xOf(i) + 'px';
             thumb.style.opacity = pick < 0 ? '.55' : '';
-            bubble.textContent = label(gm.bids[i]);
-            bubble.style.left = (xOf(i) - 4) + 'px';
+            if (tip.classList.contains('on')) tipOver(i);
           },
         };
       }
