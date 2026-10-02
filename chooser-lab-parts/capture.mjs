@@ -112,14 +112,10 @@ try {
     if (d.union) await shotRect(b, `${OUT}/felt.png`, d.union, 60);
     await b.screenshot(`${OUT}/full-nobox.png`);
   } else {
-    // A suit pill on a Crazy Eights table, drawn by the site's own showTrumpPill
+    // A suit pill on a Crazy Eights table, opened by the game's own suit picker, so the suits stand in the order
+    // the site draws them (utils.SUITS)
     await sleep(3000);
-    await b.evaluate(`
-      const t = Y.wocg.Table.getCurrentTable();
-      const ui = t.game.ui || t.game;
-      const anim = Y.Animation.createSpotGroupAnimation(t);
-      t.showTrumpPill({ suits: ["club", "diamond", "heart", "spade"], unavailable: ["spade"], scope: t, cellHandler: (p) => t.pickTrumpPillSuit(p.getId()), pickHandler: () => {}, buttonText: "Choose suit", animation: anim });
-      return 1;`);
+    await b.evaluate(`const t = Y.wocg.Table.getCurrentTable(); t.game.ui.showSuitPicker(null, () => {}); return 1;`);
     await sleep(1500);
     const ids = ["trumpPill", "suitSelector0", "suitSelector1", "suitSelector2", "suitSelector3", "trumpPick"];
     const d = await b.evaluate(DUMP(ids));

@@ -10820,13 +10820,9 @@
 }
 
 :where(.site):is(div).wm #scoreBoard tr.title {
-  line-height: 14px;
+  line-height: 16px;
   height: 16px;
   color: var(--ink-label);
-}
-
-:where(.site):is(div).wm #scoreBoard tr.title td, :where(.site):is(div).wm #mainContainer.playspace-compact #scoreBoard tr.title td {
-  padding-top: 2px;
 }
 
 :where(.site):is(div).wm #scoreBoard tr.team1 td, :where(.site):is(div).wm #scoreBoard tr.team2 td, :where(.site):is(div).wm #scoreBoard tr.player td {
@@ -13148,6 +13144,23 @@
 }
 :where(.site) .piece.card.unselectable .background::after {
   opacity: 0.32;
+}
+:where(.site) .piece.card.uprightIndex:not(.id-back):not([class*=shim]) .background::before {
+  --index-ring: var(--card-border-width, 1px);
+  content: "";
+  position: absolute;
+  left: var(--index-ring);
+  top: var(--index-ring);
+  width: calc(var(--index-box-w) * 100% - var(--index-ring));
+  height: calc(var(--index-box-h) * 100% - var(--index-ring));
+  background-color: inherit;
+  background-image: inherit;
+  background-repeat: no-repeat;
+  background-size: calc((100% + var(--index-ring)) / var(--index-box-w)) calc((100% + var(--index-ring)) / var(--index-box-h));
+  background-position: calc(-1 * var(--index-ring)) calc(-1 * var(--index-ring));
+  border-bottom-right-radius: var(--card-border-radius, 8px);
+  transform: rotate(180deg);
+  pointer-events: none;
 }
 :where(.site) .piece.card:not(.clickable):not(.draggable):not(.unselectable) {
   pointer-events: none;
@@ -21063,7 +21076,7 @@
   padding-bottom: var(--space-section);
 }
 
-@container fp-page (width < 861px) {
+@container fp-page (width < 688px) {
   :where(.site):is(div).fp #popsec {
     padding-top: calc(var(--space-section) - 16px);
   }
@@ -21863,7 +21876,7 @@
   line-height: 1.15em;
 }
 
-@container fp-page (width < 861px) {
+@container fp-page (width < 688px) {
   :where(.site):is(div).fp .popular {
     padding: var(--space-section) min(var(--space-edge), 24px);
   }
@@ -21915,7 +21928,7 @@
     margin-top: 16px;
   }
 }
-@container fp-page (width < 861px) {
+@container fp-page (width < 688px) {
   :where(.site):is(div).fp .games {
     grid-template-columns: repeat(3, 1fr);
   }
@@ -24338,7 +24351,7 @@
     transition: none;
   }
 }
-@container fp-page (width < 861px) {
+@container fp-page (width < 688px) {
   :where(.site):is(div).fp .catgrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -24743,7 +24756,7 @@
   white-space: nowrap;
 }
 
-@container fp-page (width < 861px) {
+@container fp-page (width < 688px) {
   :where(.site):is(div).fp #sec-about .fgrid.tiles {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -27902,7 +27915,7 @@
   min-width: 0;
   height: 64px;
   padding: 0 8px;
-  border-radius: 18px;
+  border-radius: var(--radius);
   background: var(--ah-tint);
   color: #fff;
   font-weight: 700;
@@ -28058,7 +28071,7 @@
   display: block;
   height: 18px;
   padding: 0;
-  border-radius: 12px;
+  border-radius: var(--radius);
   background: var(--plate-blue);
   color: #124f7e;
   font-size: 14px;
@@ -28130,7 +28143,7 @@
   gap: 8px;
   height: 32px;
   padding: 0 12px;
-  border-radius: 12px;
+  border-radius: var(--radius);
   font: 700 16px/32px var(--font-ui);
   white-space: nowrap;
 }
@@ -28399,8 +28412,7 @@
   align-items: center;
   justify-content: center;
   aspect-ratio: 4/3;
-  border-radius: 12px;
-  corner-shape: squircle;
+  border-radius: 20px;
   overflow: hidden;
   background-position: center;
   background-size: cover;
@@ -28412,8 +28424,7 @@
   content: "";
   position: absolute;
   inset: 0;
-  border-radius: 12px;
-  corner-shape: squircle;
+  border-radius: 20px;
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.75);
   mix-blend-mode: soft-light;
   pointer-events: none;

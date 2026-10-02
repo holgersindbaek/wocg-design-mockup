@@ -15,9 +15,10 @@
 <header class="cl-head">
   <h1>The suit chooser&rsquo;s picked suit</h1>
   <p class="cl-intro">First the suit chooser as it ships. Then the picked suit as a dialog&rsquo;s white card, with the
-    card&rsquo;s white, the line round it and its soft lift, as the Settings dialog draws its white cards. Versions 2 and 3
-    add your two notes of 1 Oct. Version 2 has no lines between the suits. Version 3 also puts the frontpage&rsquo;s darker
-    paper under them. Tap a suit to move the pick. Every piece is drawn by the site&rsquo;s own stylesheet.</p>
+    card&rsquo;s white, the line round it and its soft lift, as the Settings dialog draws its white cards. Version 2 has no
+    lines between the suits. Versions 3a to 3e put a darker paper under them, one for each darker paper the site uses. The
+    suits stand in the site&rsquo;s order, clubs, diamonds, spades and hearts, as every suit chooser on the site draws
+    them. Tap a suit to move the pick. Every piece is drawn by the site&rsquo;s own stylesheet.</p>
   <div class="cl-controls" id="clControls"></div>
 </header>
 <main class="cl-page">
@@ -26,16 +27,17 @@
     <h2>What to look for</h2>
     <p>Today the picked suit sits on the empty rating star, a darker warm grey with a dark edge. A white card on the
       chooser&rsquo;s paper is much quieter, since the paper is almost white. Its edge, the dialog line, carries most of the
-      mark. On the darker band paper the white card stands out more. It stands out more still with no lines between the
-      suits.</p>
-    <p>A suit you cannot pick is drawn in the line in every version, as today.</p>
+      mark. The darker the paper, the more the white card stands out by itself.</p>
+    <p>On each darker paper a suit under the pointer takes the hover that paper has elsewhere on the site, and a suit you
+      cannot pick takes the paper&rsquo;s own line, so it stays as faint as today. On the quiet dark the cards&rsquo; red and
+      black no longer read, which is why the dark papers stop there.</p>
     <h2>How it would be built</h2>
     <p>Version 1 changes the three colours of the mark in <code>pieces.scss</code> (<code>--trump-pill-thumb</code>, its ring and
       its lift) and nothing else. The lift is written out, since the card&rsquo;s own <code>--lift-card</code> token is declared
-      for dialogs only. Version 2 also drops the line between the suits. Version 3 also turns the chooser&rsquo;s paper to the
-      band paper, with the soft line as the hover. The rules are at the bottom of <code>chooser-lab-parts/lab.css</code>.</p>
+      for dialogs only. Version 2 also drops the line between the suits. Versions 3a to 3e also set the chooser&rsquo;s paper,
+      its hover and the faded suit&rsquo;s colour. The rules are at the bottom of <code>chooser-lab-parts/lab.css</code>.</p>
     <p>Round 8 of the second bug hunt asked the same question on 1 Oct (its lab&rsquo;s page R8-SUIT-BAND, still unanswered),
-      with pictures from the dev site. Its V1 is version 3 here with today&rsquo;s smaller lift.</p>
+      with pictures from the dev site. Its V1 is version 3a here with today&rsquo;s smaller lift.</p>
   </section>
 </main>
 <script>
@@ -44,33 +46,52 @@
 <script>
 (function () {
   const SUITS = /*@@SUITS@@*/;
+  // utils.SUITS, the site's order: every suit chooser, the old look's suit buttons and the frontpage's seams use it
+  const ORDER = ['club', 'diamond', 'spade', 'heart'];
   const S = { cells: 'four', screens: 'both', zoom: '1' };
   const el = CL.el;
   const RED = { diamond: true, heart: true };
-  const PAPER = { page: '#f9f6f2', band: '#f4eee5' };
 
+  // A darker paper: the paper, its hover and its line (the faded suit's colour), as tokens where the table can read
+  // them, and as hex for the numbers. The quiet button's hover and ring are declared for dialogs only, so 3d writes
+  // them out.
+  const ground = (paper, hover, faded) => ({ paper: paper, hover: hover, faded: faded });
   const VERSIONS = [
-    { key: 'today', title: 'Today', tag: 'As it ships', today: true, cls: '', paper: 'page', thumb: '#d9d2c4', ring: '#8a857c',
+    { num: '', title: 'Today', tag: 'As it ships', today: true, cls: '', paper: '#f9f6f2', faded: '#d2cfca', thumb: '#d9d2c4', ring: '#8a857c',
       lead: 'The picked suit sits on the empty rating star, a warm grey with a dark edge.' },
-    { key: 'white', title: 'A white card', tag: 'Your variation', cls: 'cl-white', paper: 'page', thumb: '#ffffff', ring: '#d2cfca',
+    { num: '1', title: 'White card', tag: 'Your variation', cls: 'cl-white', paper: '#f9f6f2', faded: '#d2cfca', thumb: '#ffffff', ring: '#d2cfca',
       lead: 'The picked suit sits on a dialog&rsquo;s white card. It has the card&rsquo;s white, the dialog line 1px inside and the card&rsquo;s soft lift. The chooser keeps its paper and its lines.' },
-    { key: 'white-nolines', title: 'A white card, no lines', tag: 'Your note of 1 Oct', cls: 'cl-white cl-noLines', paper: 'page', thumb: '#ffffff', ring: '#d2cfca',
+    { num: '2', title: 'White card, no lines', tag: 'Your note of 1 Oct', cls: 'cl-white cl-noLines', paper: '#f9f6f2', faded: '#d2cfca', thumb: '#ffffff', ring: '#d2cfca',
       lead: 'Version 1 with no lines between the suits (&ldquo;we shouldn&rsquo;t have divider lines in that chooser&rdquo;).' },
-    { key: 'white-band', title: 'A white card on the band paper', tag: 'Your note of 1 Oct', cls: 'cl-white cl-noLines cl-band', paper: 'band', thumb: '#ffffff', ring: '#d2cfca',
-      lead: 'Version 2 on the frontpage&rsquo;s band paper, the shade darker than the page paper, so the white card stands out. A suit under the pointer takes the soft line.' },
+    { num: '3a', title: 'White card on the band paper', tag: 'Your note of 1 Oct', cls: 'cl-white cl-noLines cl-ground', paper: '#f4eee5', faded: '#d2cfca', thumb: '#ffffff', ring: '#d2cfca',
+      ground: ground('var(--paper-band)', 'var(--line-soft)', 'var(--line)'),
+      lead: 'Version 2 on the band paper, the shade under the page paper. The site uses it for the menu bar, the footer, a banded section of a page and the score board&rsquo;s head row.' },
+    { num: '3b', title: 'White card on the soft line', tag: 'A darker paper', cls: 'cl-white cl-noLines cl-ground', paper: '#ebe7de', faded: '#cfc9bc', thumb: '#ffffff', ring: '#d2cfca',
+      ground: ground('var(--line-soft)', 'var(--plate-tray)', 'var(--line-tray-paper)'),
+      lead: 'The track of a tray on the page paper: the games bar and the trays in the dialogs. It is also the line between the rows of a white card.' },
+    { num: '3c', title: 'White card on the tray', tag: 'A darker paper', cls: 'cl-white cl-noLines cl-ground', paper: '#e4ddd0', faded: '#c9c0ae', thumb: '#ffffff', ring: '#d2cfca',
+      ground: ground('var(--plate-tray)', 'var(--plate-tray-hover)', 'var(--line-tray)'),
+      lead: 'The track of a tray on the band: the open tables&rsquo; games bar. It is also a tag and a game over chip, and the suit buttons wore it before the pill.' },
+    { num: '3d', title: 'White card on the quiet button&rsquo;s paper', tag: 'A darker paper', cls: 'cl-white cl-noLines cl-ground', paper: '#d9d2c4', faded: '#bfb5a1', thumb: '#ffffff', ring: '#d2cfca',
+      ground: ground('var(--line-warm)', '#d1c8b8', '#bfb5a1'),
+      lead: 'The paper of the quiet buttons (Cancel, Close and Got it) and the catalog menu&rsquo;s lattice. Today&rsquo;s mark is this colour too.' },
+    { num: '3e', title: 'White card on the quiet dark', tag: 'The darkest', cls: 'cl-white cl-noLines cl-ground', paper: '#5e574b', faded: '#484136', thumb: '#ffffff', ring: '#d2cfca',
+      ground: ground('var(--btn-quiet-dark)', 'var(--btn-quiet-dark-hover)', 'var(--btn-quiet-dark-ring)'),
+      lead: 'The quiet dark buttons: the social buttons and the buttons in the people lists. The white card stands out most here, but the cards&rsquo; red and black do not read on it.' },
   ];
   const CELLS = {
-    four: { game: 'crazyeights', word: 'Choose suit', ids: ['club', 'diamond', 'heart', 'spade'], faded: [] },
-    faded: { game: 'sheepshead', word: 'Pick trump', ids: ['club', 'diamond', 'heart', 'spade'], faded: ['club'] },
-    seventh: { game: 'twentynine', word: 'Pick trump', ids: ['club', 'diamond', 'heart', 'spade', '7th'], faded: [] },
+    four: { game: 'crazyeights', word: 'Choose suit', ids: ORDER, faded: [] },
+    // Sheepshead calls a fail suit, and diamonds are trump there, so diamonds can never be called
+    faded: { game: 'sheepshead', word: 'Pick trump', ids: ORDER, faded: ['diamond'] },
+    seventh: { game: 'twentynine', word: 'Pick trump', ids: ORDER.concat(['7th']), faded: [] },
   };
 
   const glyph = (s) => '<span class="cl-glyph" style="--cl-glyph:url(\'' + SUITS[s] + '\');color:' + (RED[s] ? '#eb1b28' : '#000') + '"></span>';
 
   function drawPill(f, origin, set, saidBox) {
-    const d = f.dev, H = d.H, G = d.G, P = d.P;
-    const W = set.ids.length * H + 2 * P;
-    const p = CL.pill(f, { x: origin.x, y: origin.y, w: W, h: H }, set.ids.map((id) => (id === '7th' ? { id: '7th' } : { id: id })), 0);
+    const d = f.dev, H = d.H, G = d.G;
+    const W = set.ids.length * H + 2 * d.P;
+    const p = CL.pill(f, { x: origin.x, y: origin.y, w: W, h: H }, set.ids.map((id) => ({ id: id })), 0);
     p.cells.forEach((c, i) => { if (set.ids[i] === '7th') c.textContent = '7th'; });
     const btn = CL.button(f, 'trumpPick', { x: origin.x, y: origin.y + H + G, w: W, h: H }, set.word, { id: 'undefined' });
     CL.fit(f, [btn], false);
@@ -89,16 +110,15 @@
       clearTimeout(timer);
       timer = setTimeout(() => CL.pickPill(p, first()), 1400);
     });
-    return { W: W, H: 2 * H + G };
   }
 
   function numbers(v) {
-    const paper = PAPER[v.paper];
     const r = (a, b) => CL.contrast(a, b).toFixed(2) + ':1';
     return '<details class="cl-more"><summary>Numbers</summary><ul>' +
-      '<li>On the chooser&rsquo;s paper (' + paper + ') the mark&rsquo;s fill ' + v.thumb + ' stands at ' + r(v.thumb, paper) + ' and its edge ' + v.ring + ' at ' + r(v.ring, paper) + '.</li>' +
+      '<li>On the chooser&rsquo;s paper (' + v.paper + ') the mark&rsquo;s fill ' + v.thumb + ' stands at ' + r(v.thumb, v.paper) + ' and its edge ' + v.ring + ' at ' + r(v.ring, v.paper) + '.</li>' +
       '<li>On the mark&rsquo;s own fill its edge stands at ' + r(v.ring, v.thumb) + '.</li>' +
       '<li>On the mark the cards&rsquo; red #eb1b28 stands at ' + r('#eb1b28', v.thumb) + ' and their black #000 at ' + r('#000000', v.thumb) + '.</li>' +
+      '<li>Off the mark, on the paper, the red stands at ' + r('#eb1b28', v.paper) + ' and the black at ' + r('#000000', v.paper) + '. A suit you cannot pick (' + v.faded + ') stands at ' + r(v.faded, v.paper) + '.</li>' +
       '</ul></details>';
   }
 
@@ -111,9 +131,9 @@
     const set = CELLS[S.cells];
     const cards = document.getElementById('clCards');
     cards.innerHTML = '';
-    VERSIONS.forEach((v, n) => {
+    VERSIONS.forEach((v) => {
       const card = el('section', 'cl-card');
-      card.appendChild(el('h2', null, null, (n ? n + ' ' : '') + v.title + ' <span class="cl-tag' + (v.today ? ' cl-today' : '') + '">' + v.tag + '</span>'));
+      card.appendChild(el('h2', null, null, (v.num ? v.num + ' ' : '') + v.title + ' <span class="cl-tag' + (v.today ? ' cl-today' : '') + '">' + v.tag + '</span>'));
       card.appendChild(el('p', 'cl-lead', null, v.lead));
       const frames = el('div', 'cl-frames');
       card.appendChild(frames);
@@ -130,6 +150,11 @@
         wrap.appendChild(saidBox);
         frames.appendChild(wrap);
         const f = CL.frame(d, gw + 2 * M, gh + 2 * M, { rootClass: v.cls, game: set.game });
+        if (v.ground) {
+          f.root.style.setProperty('--cl-ground', v.ground.paper);
+          f.root.style.setProperty('--cl-ground-hover', v.ground.hover);
+          f.root.style.setProperty('--cl-ground-faded', v.ground.faded);
+        }
         box.appendChild(f.root);
         drawPill(f, { x: M, y: M }, set, saidBox);
       });

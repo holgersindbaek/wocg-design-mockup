@@ -124,41 +124,44 @@ try {
   await sleep(1500);
   await b.evaluate(`document.querySelector('.cl-head').style.position = 'static'; return 1;`);
   console.log("suit lab", JSON.stringify(await b.evaluate(`return { frames: document.querySelectorAll('#clCards .cl-frame').length, pieces: document.querySelectorAll('#clCards .piece').length };`)));
-  // today's pill against the dev site's Crazy Eights pill with hearts picked and spades faded
-  await b.evaluate(setSwitch("Suits", "One you cannot pick"));
+  // today's pill against the dev site's Crazy Eights pill (the game's own suit picker) with hearts picked
   const devPill = (() => {
     const f = `${CAPS}/pilldesk/dump-heart.json`;
     if (!fs.existsSync(f)) return null;
     const d = JSON.parse(fs.readFileSync(f, "utf8"));
     const out = {};
-    for (const p of d.pieces) if (!p.spotEl) out[p.spot.startsWith("suitSelector") ? "suit:" + p.id : p.spot] = { cs: Object.fromEntries(KEYS.map((k) => [k, p.cs[k]])), after: p.after };
+    for (const p of d.pieces) if (!p.spotEl) out[p.spot.startsWith("suitSelector") ? "suit:" + p.id : p.spot] = { cs: Object.fromEntries(KEYS.map((k) => [k, p.cs[k]])), after: p.after, x: p.rect.x };
     return out;
   })();
   console.log("suit today hearts:", await b.evaluate(clickIn(0, 0, ".id-heart")));
   const labPill = await b.evaluate(STYLES(0, 0, KEYS));
+  const labOrder = await b.evaluate(`return Array.from(document.querySelectorAll('#clCards .cl-card')[0].querySelectorAll('.cl-frame')[0].querySelectorAll('.piece.trumpPillCell')).sort((a, b) => a.getBoundingClientRect().left - b.getBoundingClientRect().left).map((c) => (c.className.match(/\\bid-(\\w+)/) || [])[1]).join(', ');`);
+  console.log("suit lab order, left to right:", labOrder);
   if (devPill) {
-    const lab = {}, dev = {};
+    const devOrder = Object.entries(devPill).filter(([k]) => k.startsWith("suit:")).sort((a, b) => a[1].x - b[1].x).map(([k]) => k.slice(5)).join(", ");
+    console.log("dev pill order, left to right:", devOrder);
+    const lab = {};
     for (const [k, v] of Object.entries(labPill)) { const id = (v.cls.match(/\bid-(\w+)/) || [])[1]; lab[k.startsWith("suitSelector") ? "suit:" + id : k] = v; }
-    // the faded cell differs on purpose (club in the lab, spade on dev), so it is compared by role
-    const role = (o, key) => (o[key] && o[key].cls && o[key].cls.includes("unselectable") ? "faded" : key);
-    const pairs = [["trumpPill", "trumpPill"], ["trumpPick", "trumpPick"], ["suit:heart", "suit:heart"], ["suit:diamond", "suit:diamond"], ["suit:club", "suit:spade"]];
+    const keys = ["trumpPill", "trumpPick", "suit:club", "suit:diamond", "suit:spade", "suit:heart"];
     const bad = [];
-    for (const [lk, dk] of pairs) {
-      const L = lab[lk], D = devPill[dk];
-      if (!L || !D) { bad.push(lk + " missing"); continue; }
-      for (const k of KEYS) if (String(L.cs[k]) !== String(D.cs[k])) bad.push(`${lk}/${dk} ${k}: lab ${L.cs[k]} | dev ${D.cs[k]}`);
-      for (const k of ["background-color", "box-shadow", "border-radius", "width", "height", "left"]) if (D.after && D.after.content !== "none" && String(L.after[k]) !== String(D.after[k])) bad.push(`${lk}/${dk} ::after ${k}: lab ${L.after[k]} | dev ${D.after[k]}`);
-      if (D.after && /url\(/.test(D.after["mask-image"] || "") && !/url\("data:/.test(L.after["mask-image"])) bad.push(`${lk} mask: lab ${String(L.after["mask-image"]).slice(0, 60)}`);
+    if (labOrder !== devOrder) bad.push(`order: lab ${labOrder} | dev ${devOrder}`);
+    for (const key of keys) {
+      const L = lab[key], D = devPill[key];
+      if (!L || !D) { bad.push(key + " missing"); continue; }
+      for (const k of KEYS) if (String(L.cs[k]) !== String(D.cs[k])) bad.push(`${key} ${k}: lab ${L.cs[k]} | dev ${D.cs[k]}`);
+      for (const k of ["background-color", "box-shadow", "border-radius", "width", "height", "left"]) if (D.after && D.after.content !== "none" && String(L.after[k]) !== String(D.after[k])) bad.push(`${key} ::after ${k}: lab ${L.after[k]} | dev ${D.after[k]}`);
+      if (D.after && /url\(/.test(D.after["mask-image"] || "") && !/url\("data:/.test(L.after["mask-image"])) bad.push(`${key} mask: lab ${String(L.after["mask-image"]).slice(0, 60)}`);
     }
-    console.log(`today's suit pill, desktop: ${pairs.length} pieces compared, ${bad.length} differences`);
+    console.log(`today's suit pill, desktop: ${keys.length} pieces compared, ${bad.length} differences`);
     bad.forEach((x) => console.log("   ", x));
     report.suit.desktop = bad;
   }
   await b.evaluate(setSwitch("Suits", "Four suits"));
   await b.screenshot(`${OUT}/suit-page.png`, { full: true });
-  for (let c = 0; c < 4; c++) for (let fi = 0; fi < 2; fi++) await frameShot(b, `${OUT}/suit-v${c}-${["desktop", "phone"][fi]}.png`, c, fi, 0);
+  const suitCards = await b.evaluate(`return document.querySelectorAll('#clCards .cl-card').length;`);
+  for (let c = 0; c < suitCards; c++) for (let fi = 0; fi < 2; fi++) await frameShot(b, `${OUT}/suit-v${c}-${["desktop", "phone"][fi]}.png`, c, fi, 0);
   await b.evaluate(setSwitch("Size", "2x"));
-  for (let c = 0; c < 4; c++) await frameShot(b, `${OUT}/suit-v${c}-desktop-2x.png`, c, 0, 0);
+  for (let c = 0; c < suitCards; c++) await frameShot(b, `${OUT}/suit-v${c}-desktop-2x.png`, c, 0, 0);
   const errs2 = b.takeErrors ? b.takeErrors() : [];
   if (errs2.length) console.log("page errors", JSON.stringify(errs2).slice(0, 2000));
 } catch (e) {
