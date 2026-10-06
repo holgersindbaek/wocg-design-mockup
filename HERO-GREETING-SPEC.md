@@ -11,7 +11,7 @@ The guest hero ("Play card games" plus the weekday-and-hour tail) is a separate 
 
 ```
 Evening PiLady10            <- line one: hour word + name (see 3 for the fallback ladder)
-the cards are ready         <- line two: one of eight card-room lines, drawn per visit (see 4)
+the cards are waiting       <- line two: one of eight card-room lines, drawn per visit (see 4)
 
 Good to see you again! Sneak in a hand before anyone notices. We won't say a word.
                             <- subtitle: an opener (see 5) and a clause (see 6), one paragraph that wraps on its own
@@ -26,14 +26,6 @@ line ("Take tricks, build melds & play classics with", 46 characters, which rend
 words inside a 416px box). Measured in BuloRounded 16px: "Good to see you again! Have fun. That's the only" is 309px and
 "...the only house" is 352px, so 320px breaks after "only", as intended. Opener plus clause run 80 to 93 characters so the
 paragraph fills two lines and never a third. Capsule 28px below.
-
-The text column is fixed (Holger, 6 Oct 2026): **336px** (`TEXT_FIT` in `FrontpageHero.js`), the widest line the hero
-sets. The scene's clearing is that column plus a gap to the tiles that closes as the page column narrows, 40px at a 1160
-column and 16px at 800, where the hero stacks (`clearingFor` in `FrontpageHero.js`, mirrored by the `--clx` clamp in
-`_fp-hero.scss`). It never follows the copy: the copy is fitted to it.
-A greeting that ran wider moved the mosaic 14px right and the page under it 10.6px. So:
-- Every headline line is at most **336px** as rendered. See 3 and 4.
-- The subtitle is at most **two lines** at its 320px measure. A third line moved the headline 10.8px. See 5 and 6.
 
 Nothing in the hero mentions friends, leaderboards, rank, Elo, the daily challenge or deal, stats, streaks, last night, or
 seats open. Those live in the zones below the hero.
@@ -53,30 +45,27 @@ switches to evening at 18:00; align it to 17:00 (or change this table), but use 
 
 ## 3. Line one: the name ladder
 
-Line one must never be wider than the widest possible line two, and never wider than the 336px text column (see
-1). Measure in pixels as the headline renders: its own computed font (`font-weight font-size font-family` of the H1/H2
-element) AND its letter-spacing (-0.01em, -0.38px at 38px). `canvas.measureText` leaves the letter-spacing out unless the
-context's `letterSpacing` is set from the computed style; without it the widest lines measure about 8px too wide (the
-old "about 370px" was that error: "the cards are waiting" renders at 362px). An offscreen span inside the headline also
-works, but only while the hero has a box. Never count characters: "WMWM" is twice the width of "illi".
+Line one must never be wider than the widest possible line two. Measure in pixels, in the headline's own computed font
+(`font-weight font-size font-family` of the H1/H2 element), with `canvas.measureText` or an offscreen span. Never count
+characters: "WMWM" is twice the width of "illi".
 
 ```
-budget  = min( max( width(line) for line in POOL ), 336 )   // 334px today: "the deck is shuffled"
-if width(hour + " " + name) <= budget  -> "Evening PiLady10"       (hour word + name)
+budget  = max( width(line) for line in POOL )          // about 370px in Gelica Medium 38px
+if width(hour + " " + name) <= budget  -> "Afternoon PiLady10"     (hour word + name)
 else if width("Hi " + name) <= budget  -> "Hi cardShark52"         ("Hi" + name)
 else                                    -> "Good afternoon"        (hour word alone; the name stays in the top bar)
 ```
 
-Guide values at 38px with the 334px budget: the hour word holds names of about 7 characters after "Afternoon" and about
-9 after "Morning" or "Evening"; "Hi" holds about 14. Usernames are 3 to 20 characters (`C.MAX_USERNAME_LENGTH = 20`;
-letters, digits, spaces, underscores, hyphens; at least two thirds letters), so the third rung is needed for the long tail.
+Guide values at 38px: the hour word holds names of about 9 characters after "Afternoon" and about 11 after "Morning" or
+"Evening"; "Hi" holds about 15. Usernames are 3 to 20 characters (`C.MAX_USERNAME_LENGTH = 20`; letters, digits, spaces,
+underscores, hyphens; at least two thirds letters), so the third rung is needed for the long tail.
 
 Rules:
 - Use the username exactly as the top bar shows it. No case changes, no trimming, no ellipsis.
 - Line one is `white-space: nowrap`; names may contain spaces.
 - Measure after the web font has loaded (`document.fonts.ready`), or measure with the fallback font and re-run once the
   font arrives. The lab does the second; do not let the page flash between rungs more than once.
-- When the third rung is used, the subtitle opener carries the name instead, if the subtitle stays at two lines (see 5).
+- When the third rung is used, the subtitle opener carries the name instead (see 5).
 
 ## 4. Line two: the pool
 
@@ -84,7 +73,7 @@ Eight lines, drawn once per page load, never re-drawn on a re-render or a poll w
 
 ```
 the table is set
-the cards are ready
+the cards are waiting
 your seat is saved
 the deck is shuffled
 the table is yours
@@ -95,10 +84,6 @@ the game is on
 
 Remember the last line shown (localStorage `wocg-pool-last` in the mockup) and skip it, so two visits in a row never
 repeat. The pool does not depend on the hour or the weekday.
-
-Every line must render at 336px or less (see 1). "the cards are ready" replaced "the cards are waiting" (362px) on
-6 Oct 2026; the words are Holger's to change. As a guard for future copy, line two is drawn only from the lines that
-measure 336px or less.
 
 ## 5. Subtitle line one: the opener
 
@@ -129,15 +114,12 @@ Good to have you back
   hour clause or a return clause. Never an em dash.
 - The name joins the opener only when line one had to drop it (rung three): `Nice to see you again, spades_grandma_62!`.
   Otherwise the opener has no name; the headline already said it.
-- The name joins only if the subtitle still fits two lines (see 6, step 5). A long name often does not: measured on dev,
-  a 20-character name stays in about 1 draw in 20 and a 16-character name in about half. When it is left out, it is
-  still in the top bar.
 
 ## 6. Subtitle line two: the clause
 
 Five groups. The lab keeps these lists in `COZY`.
 
-Each clause is two short sentences, so the subtitle reaches about two lines at its 320px measure, and never more (step 5).
+Each clause is two short sentences, so the subtitle reaches about two lines at 416px.
 
 Any hour:
 ```
@@ -189,12 +171,6 @@ Drawing a clause:
 3. Skip the clause shown last time.
    Tie short phrasal verbs with a non-breaking space so the wrap never splits them ("Go&nbsp;on").
 4. Draw once per page load and keep it for the visit.
-5. Keep the subtitle at two lines at its 320px measure. Measure the rendered paragraph (its height against two
-   line-heights) before the frame paints; never count characters. If the opener plus the drawn clause makes three lines,
-   try the other clauses of the same group (after rules 2 and 3) in turn and show the first that makes two. If none does
-   and the opener carries the name, leave the name out and try again from the drawn clause. If still none does (only a
-   column narrower than the measure), show the drawn clause without the name. The clause shown is the one remembered for
-   rule 3. The choice is deterministic, so a re-render in the same visit shows the same subtitle.
 
 ## 7. The return view
 
@@ -228,11 +204,8 @@ No server call is needed beyond what the page already has. Guests never see this
 
 - Font not loaded yet: see 3. Prefer rendering the greeting after `document.fonts.ready`; the headline is a client-side
   swap for signed-in visitors anyway (the H1 in the HTML stays the guest headline for search engines).
-- Narrow viewports: the text column is the same 336px at every width the hero is side by side (only the gap to the
-  tiles narrows), so the 336px rule holds at every size. Stacked (a narrow column) the headline is smaller (30px, 26px on a phone), and line one is still never
-  wider than the widest line two; the ladder is not re-run on a resize.
-- A greeting rendered while the lobby is hidden (at a table) measures the headline from computed styles, and fits the
-  subtitle when the hero has a box again, before that frame paints.
+- Narrow viewports: the same budget rule holds because line two sets the column width at every size; re-measure on
+  resize only if the headline font size changes with the viewport.
 - A name that is a common word ("Nobody", "Dealer") still reads correctly because the name is never a sentence subject.
 - Names with a trailing space or double spaces cannot exist (validation), so no trimming is needed.
 - Late night uses the Evening word and the Evening clauses; there is no separate late group by design.

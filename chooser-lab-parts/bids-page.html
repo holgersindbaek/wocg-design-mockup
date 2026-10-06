@@ -67,8 +67,10 @@
         slider with the top bid.</li>
       <li><b>Should a tap beside the card step one bid?</b> Version 5 does this. It makes every bid easy to reach on a phone,
         but a tap then acts in a less usual way.</li>
-      <li><b>Where do the arrows go?</b> Here they sit in the row of buttons, where today&rsquo;s Pinochle box has them. They
-        could also be cells at the ends of the chooser.</li>
+      <li><b>Where do the arrows go?</b> Versions 1 and 2 put them in the row of buttons, where today&rsquo;s Pinochle box
+        has them. Version 8 makes them cells of the chooser: the last cell is an arrow on while more bids follow, the first an
+        arrow back once you have paged on. Only Pinochle and Double Deck ever page, so the other games keep a row of only Pass
+        and your bid.</li>
       <li><b>What should be picked at the start?</b> The lowest bid you can make, or the hint&rsquo;s bid, the one the
         game&rsquo;s own bot would make?</li>
     </ul>
@@ -138,6 +140,8 @@
       lead: 'Version 4 with more room for the low bids. The ten bids above the lowest take half the chooser. That gives them about 12px each on a desktop and 8 on a phone, where the even scale gives 3 and 2. Most bids are one or two over the last. It acts as the usual slider does.' },
     { key: 'ruler', form: 'slider', slider: { ruler: true }, title: 'A ruler', tag: 'After the iPhone photo editor',
       lead: 'The card stays in the middle and the bids slide under it, 12px apart on a desktop and 10 on a phone. Drag or flick the scale, or tap a number on it. It settles on a bid.' },
+    { key: 'gridCells', form: 'grid', rows: 2, pager: 'cells', start: 'bygame', title: 'Arrows in the chooser', tag: 'Arrows only where there is more',
+      lead: 'Two rows of seven as in version 1, but the arrows are cells of the chooser. While more bids follow, the last cell is an arrow that pages on. Once you have paged on, the first cell is an arrow back. Spades and Twenty-Nine never show an arrow. The row under it is only Pass and your bid. It starts on the lowest bid you can make, but Spades starts with nothing picked, so Nil is never one tap away. The Starts with switch leaves this version alone.' },
   ];
 
   // An example of a bid to beat (Holger, 2 Oct 2026: "How do we deal with showing that people have bid 31 and you have
@@ -276,7 +280,10 @@
     const cb = at({ x: 0, y: 0, w: g.W, h: g.CH });
     CL.piece(f, 'id-simple backdrop spot-bidChooser spotPrefix-trumpPill', cb, 8000);
     const inner = g.W - 2 * P;
-    let pick = S.start === 'lowest' ? lowestIdx() : -1, sent = null, timer = 0;
+    // Version 8 starts by game: on the lowest bid you can make, but with nothing picked in Spades, where every bid is a
+    // choice of its own and Nil should never be one tap away
+    const startPick = () => (v.start === 'bygame' ? (S.game === 'spades' ? -1 : lowestIdx()) : S.start === 'lowest' ? lowestIdx() : -1);
+    let pick = startPick(), sent = null, timer = 0;
     const lo = firstValidIdx();
     let api;
 
@@ -285,6 +292,34 @@
       const R = v.rows, size = 7 * R, n = gm.bids.length;
       const minFirst = Math.max(0, Math.min(lowestIdx(), n - size)), maxFirst = Math.max(0, n - size);
       let first = minFirst;
+      // Version 8 (Holger, 6 Oct 2026: "How should we implement the prev and next buttons in this design?"): the arrows
+      // are cells of the chooser, only where there is more. The last cell is › while bids follow, the first is ‹ once
+      // you have paged on (back holds the pages before), and the last page holds the highest bids in full.
+      const cellPager = v.pager === 'cells';
+      let back = [];
+      const layout = () => {
+        if (!cellPager) return { prev: false, next: false, lead: 0, count: Math.min(size, n - first) };
+        const prev = first > minFirst, room = size - (prev ? 1 : 0), next = n - first > room;
+        return { prev: prev, next: next, lead: prev ? 1 : 0, count: next ? room - 1 : n - first };
+      };
+      const slotKind = (slot) => {
+        const L = layout();
+        if (L.prev && slot === 0) return { arrow: 'prev' };
+        if (L.next && slot === size - 1) return { arrow: 'next' };
+        const k = slot - L.lead;
+        return { i: k < L.count ? first + k : -1 };
+      };
+      // An arrow cell draws its arrow as the pill draws a suit, as the stepper's arrows do
+      const setArrow = (c, which) => {
+        c.classList.toggle('cl-textCell', !which);
+        if (which) {
+          c.style.setProperty('--trump-pill-suit', 'url("' + (which === 'prev' ? ARROW.left : ARROW.right) + '")');
+          c.style.setProperty('--trump-pill-ink', 'var(--ink)');
+        } else {
+          c.style.removeProperty('--trump-pill-suit');
+          c.style.removeProperty('--trump-pill-ink');
+        }
+      };
       for (let r = 1; r < R; r++) CL.piece(f, 'cl-rowRule cl-followsLines', { x: cb.x, y: cb.y + r * (H + 1) - 1, w: cb.w, h: 1 }, 8000);
       const thumb = CL.piece(f, 'cl-thumb', { x: cb.x + P, y: cb.y + P, w: inner / 7, h: H - 2 * P }, 8000);
       thumb.style.removeProperty('opacity');
@@ -302,27 +337,41 @@
         if (firstShow) { thumb.getBoundingClientRect(); thumb.classList.remove('cl-still'); }
       };
       cells.forEach((c, slot) => c.addEventListener('click', () => {
-        const i = first + slot;
-        if (sent || i >= n || !valid(gm.bids[i])) return;
+        if (sent) return;
+        const s = slotKind(slot);
+        if (s.arrow === 'prev') { first = back.length ? back.pop() : minFirst; render(); return; }
+        if (s.arrow === 'next') { back.push(first); first = Math.min(first + layout().count, n - (size - 1)); render(); return; }
+        const i = s.i;
+        if (i < 0 || !valid(gm.bids[i])) return;
         pick = i;
         render();
       }));
       api = {
-        paged: maxFirst > minFirst,
+        paged: !cellPager && maxFirst > minFirst,
         canPrev: () => first > minFirst,
         canNext: () => first < maxFirst,
         prev: () => { first = Math.max(minFirst, first - size); render(); },
         next: () => { first = Math.min(maxFirst, first + size); render(); },
-        reset: () => { first = minFirst; },
+        reset: () => { first = minFirst; back = []; },
         render: () => {
+          let pickSlot = -1;
           cells.forEach((c, slot) => {
-            const i = first + slot, has = i < n;
+            const s = slotKind(slot);
+            setArrow(c, s.arrow);
+            if (s.arrow) {
+              c.textContent = '';
+              CL.fadeCell(c, !!sent);
+              c.classList.remove('selected');
+              return;
+            }
+            const i = s.i, has = i >= 0;
             c.textContent = has ? label(gm.bids[i]) : '';
             CL.fadeCell(c, !has || (sent ? i !== pick : !valid(gm.bids[i])));
             c.classList.toggle('selected', has && i === pick);
-            c.classList.toggle('afterPicked', has && i - 1 === pick && slot % 7 !== 0);
+            if (has && i === pick) pickSlot = slot;
           });
-          placeThumb(pick >= first && pick < first + size ? pick - first : -1);
+          cells.forEach((c, slot) => c.classList.toggle('afterPicked', pickSlot >= 0 && slot - 1 === pickSlot && slot % 7 !== 0));
+          placeThumb(pickSlot);
         },
       };
     } else if (v.form === 'stepper') {
@@ -641,7 +690,7 @@
       clearTimeout(timer);
       timer = setTimeout(() => {
         sent = null;
-        pick = S.start === 'lowest' ? lowestIdx() : -1;
+        pick = startPick();
         if (api.reset) api.reset();
         render();
       }, 1600);
