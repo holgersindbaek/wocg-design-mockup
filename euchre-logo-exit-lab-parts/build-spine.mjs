@@ -7,7 +7,8 @@
 // (hidden in the setup pose), a `wipe` bone and clipping slot in front of the word that clips the word and the
 // letters (no attachment in the setup pose), and one animation per exit named exit_<id>. Writes
 //   spine-data.js                      the skeleton, atlas and images inlined for the lab (file://)
-//   for-khang/euchre-logo-exits.json   the skeleton for Spine: Import Data makes a project of it
+//   for-khang/euchre-*.json            the skeleton for Spine: Import Data makes a project of it (with --pick <slug or id>
+//                                      only that exit's animation, and the file named after it)
 //   for-khang/images/*.png             every attachment's image, so the imported project is whole
 //   for-khang/README.md                how to open it and what each animation is
 //
@@ -73,6 +74,7 @@ const letters = lettersInfo.letters.map((l) => {
 });
 const wipe = { bone: "wipe", slot: "wipe", attachment: "wipe", rect: { x0: -700, y0: -310, x1: 700, y1: 210 } };
 const WITH_LETTERS = process.argv.includes("--letters");
+const PICK = (() => { const i = process.argv.indexOf("--pick"); return i > -1 ? process.argv[i + 1] : null; })();
 
 // --- the skeleton additions ---
 const out = JSON.parse(JSON.stringify(skel));
@@ -126,23 +128,33 @@ if (WITH_LETTERS) for (const l of letters) {
 const data = { json: JSON.stringify(out), atlas, images, exits, handoff, pivot };
 writeAtomic(path.join(HERE, "spine-data.js"), "// made by build-spine.mjs: Khang's skeleton with the exits, inlined for file://\nwindow.EUCHRE_EXITS = " + JSON.stringify(data) + ";\n");
 
-// --- Khang's folder ---
+// --- Khang's folder: with --pick <slug or id>, only that exit's animation ---
+const picked = PICK ? exits.find((e) => e.slug === PICK || e.id === PICK) : null;
+if (PICK && !picked) throw new Error("no exit " + PICK + " to pick; built: " + exits.map((e) => e.slug).join(", "));
+const forKhang = JSON.parse(JSON.stringify(out));
+if (picked) for (const name of Object.keys(forKhang.animations)) if (/^exit_/.test(name) && name !== picked.animation) delete forKhang.animations[name];
+const khangExits = picked ? [picked] : exits;
 fs.mkdirSync(path.join(OUT, "images"), { recursive: true });
-writeAtomic(path.join(OUT, "euchre-logo-exits.json"), JSON.stringify(out));
+fs.rmSync(path.join(OUT, "euchre-logo-exits.json"), { force: true });
+const JSON_NAME = picked ? "euchre-" + picked.animation.replace(/_/g, "-") + ".json" : "euchre-logo-exits.json";
+for (const f of fs.readdirSync(OUT)) if (/^euchre-.*\.json$/.test(f) && f !== JSON_NAME) fs.rmSync(path.join(OUT, f));
+writeAtomic(path.join(OUT, JSON_NAME), JSON.stringify(forKhang));
 if (WITH_LETTERS) for (const l of letters) fs.copyFileSync(path.join(HERE, "letters", l.file), path.join(OUT, "images", l.file));
 else for (const l of letters) fs.rmSync(path.join(OUT, "images", l.file), { force: true });
 unpackAtlas();
 fs.writeFileSync(path.join(OUT, "README.md"), readme());
-const zipped = spawnSync("zip", ["-q", "-r", "-X", path.join(HERE, "euchre-logo-exits-for-khang.zip"), "for-khang"], { cwd: HERE });
+for (const f of fs.readdirSync(HERE)) if (/-for-khang\.zip$/.test(f)) fs.rmSync(path.join(HERE, f));
+const ZIP = picked ? "euchre-" + picked.animation.replace(/_/g, "-") + "-for-khang.zip" : "euchre-logo-exits-for-khang.zip";
+const zipped = spawnSync("zip", ["-q", "-r", "-X", path.join(HERE, ZIP), "for-khang"], { cwd: HERE });
 if (zipped.status !== 0) console.log("could not zip for-khang: " + String(zipped.stderr).trim());
-console.log("wrote spine-data.js and for-khang/ with " + exits.length + " exits; hand-off keys logo2 translate " + handoff.translate.join(", ") + " scale " + handoff.scale + "; pivot " + pivot.x + ", " + pivot.y);
+console.log("wrote spine-data.js with " + exits.length + " exits and for-khang/" + JSON_NAME + " with " + khangExits.length + " (" + ZIP + "); hand-off keys logo2 translate " + handoff.translate.join(", ") + " scale " + handoff.scale + "; pivot " + pivot.x + ", " + pivot.y);
 
 function round(v) { return Math.round(v * 100) / 100; }
 // logo2's scale and translate keys that put the word's centre at a point of the frame (scene px) at a scale
 function wordKeys(time, scale, centre) {
   const sx = typeof scale === "number" ? scale : scale.x, sy = typeof scale === "number" ? scale : scale.y;
   const c = toSpine(centre.x, centre.y);
-  return { scale: [time, round(sx), round(sy)], translate: [time, round(c.x - logoAtt.x * sx - logo2.x), round(c.y - logoAtt.y * sy - logo2.y)] };
+  return { scale: [time, Math.round(sx * 1000) / 1000, Math.round(sy * 1000) / 1000], translate: [time, round(c.x - logoAtt.x * sx - logo2.x), round(c.y - logoAtt.y * sy - logo2.y)] };
 }
 function writeAtomic(file, text) { fs.writeFileSync(file + ".tmp", text); fs.renameSync(file + ".tmp", file); }
 
@@ -169,22 +181,31 @@ function unpackAtlas() {
 }
 
 function readme() {
-  const real = exits.filter((e) => !/^00-/.test(e.slug)).length;
-  const rows = exits.map((e) => "- `" + e.animation + "` (" + (e.duration / 1000).toFixed(2) + " s): " + e.name + ". " + e.summary + (e.spine ? " In Spine: " + e.spine : "")).join("\n");
+  const real = khangExits.filter((e) => !/^00-/.test(e.slug)).length;
+  const rows = khangExits.map((e) => "- `" + e.animation + "` (" + (e.duration / 1000).toFixed(2) + " s): " + e.name + ". " + e.summary + (e.spine ? " In Spine: " + e.spine : "")).join("\n");
   return `# Euchre logo exits, for Spine 4.2
 
-This is your 13 Oct export of the Euchre skeleton with ${real} extra animation${real === 1 ? "" : "s"}: your own shrink of the word
+${picked ? `This is your 13 Oct export of the Euchre skeleton with one extra animation, \`${picked.animation}\`: the way Holger wants
+the word EUCHRE to leave once the jack has sunk behind it. It starts from the pose your 13 Oct render has at
+1.60 s, the first frame with the jack gone, and replaces the shrink that follows it there. A reference render of
+the whole move (your run-up and this exit) is beside this file, at normal and at quarter speed.` : `This is your 13 Oct export of the Euchre skeleton with ${real} extra animation${real === 1 ? "" : "s"}: your own shrink of the word
 EUCHRE after the jack has sunk into it, varied. \`exit_shrink\` is your shrink as it is in the 13 Oct render, rebuilt
 from measurements of the video (the lab used it to check that its hand-off from your render is exact); the others
-are the variations. Holger picks one; this file shows how it moves.
+are the variations. Holger picks one; this file shows how it moves.`}
 
 ## Open it
 
-1. In Spine 4.2.43 or later: File > Import Data, choose \`euchre-logo-exits.json\`, into a new project.
+1. In Spine 4.2.43 or later: File > Import Data, choose \`${JSON_NAME}\`, into a new project.
 2. The images are in \`images/\` beside it (the JSON's images path points there): your own attachment images
-   unpacked from the atlas, plus the six letters.
-3. Save the project. To bring one animation into your own project, use File > Import Project on that saved
-   project and choose the animation; the bones and slots it keys (below) must exist there by the same names.
+   unpacked from the atlas${WITH_LETTERS ? ", plus the six letters" : ""}.
+3. Save the project. To bring the animation into your own project, use File > Import Project on that saved
+   project and choose the animation; it keys only \`logo2\` (translate, scale) and the \`logo\` slot (alpha), which
+   your project has.${picked ? `
+4. In your active animation, find the frame where the jack is fully behind the word (1.60 s in the 13 Oct render),
+   delete your word keys from there on, and paste \`${picked.animation}\`'s keys at that frame: its frame 0 is the pose
+   your word already has there (logo2 translate ${handoff.translate.join(", ")}, scale ${handoff.scale}), so nothing jumps.
+   The word is gone ${(picked.duration / 1000).toFixed(2)} s later; the animation can end there.
+5. Export as before (JSON, atlas, PNG) and a video render; Holger needs the export for the site.` : ""}
 
 ${WITH_LETTERS ? `## What was added
 
@@ -204,9 +225,9 @@ Nothing but the animations: no new bones, slots or images. The skeleton is your 
 
 `}## The animations
 
-Every exit starts from the pose your 13 Oct render has at 1.60 s (frame 48), the first frame with the jack gone:
-\`logo2\` translate ${handoff.translate.join(", ")} and scale ${handoff.scale} (keys at 0). Paste an exit's keys after your
-jack move so they continue from there. The shine \`light_1\` is keyed invisible unless the exit uses it.
+${picked ? "The animation starts" : "Every exit starts"} from the pose your 13 Oct render has at 1.60 s (frame 48), the first frame with the jack gone:
+\`logo2\` translate ${handoff.translate.join(", ")} and scale ${handoff.scale} (keys at 0). Paste the keys after your jack move
+so they continue from there. The shine \`light_1\` is keyed invisible${picked ? "" : " unless the exit uses it"}.
 
 ${rows}
 `;

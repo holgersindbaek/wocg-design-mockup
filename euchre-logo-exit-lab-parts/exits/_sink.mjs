@@ -29,12 +29,12 @@ export function sinkExit(N, note) {
   };
 }
 function hermite(p0, m0, p1, m1, s) { const s2 = s * s, s3 = s2 * s; return (2 * s3 - 3 * s2 + 1) * p0 + (s3 - 2 * s2 + s) * m0 + (-2 * s3 + 3 * s2) * p1 + (s3 - s2) * m1; }
-export function frame(k, i) {
+export function frame(k, i, x) {
   const s = i / k.N;
   const y = hermite(Y0, V0 * k.N, k.y1, k.v1 * k.N, s), sx = hermite(S0, DS0 * k.N, k.s1, k.ds1 * k.N, s);
-  return { centre: { x: 960.5, y }, scale: { x: sx, y: sx * (1 - k.flatten * s * s) } };
+  return { centre: { x, y }, scale: { x: sx, y: sx * (1 - k.flatten * s * s) } };
 }
 export function sinkKeys(tl, ctx, k) {
-  const keys = []; for (let i = 0; i <= k.N; i++) { const f = frame(k, i); keys.push(ctx.wordKeys(i / 30, f.scale, f.centre)); }
+  const keys = []; for (let i = 0; i <= k.N; i++) { const f = frame(k, i, ctx.handoffCentre.x); keys.push(ctx.wordKeys(i / 30, f.scale, f.centre)); }
   tl.bone("logo2").scale(keys.map((x) => x.scale)).translate(keys.map((x) => x.translate));
 }

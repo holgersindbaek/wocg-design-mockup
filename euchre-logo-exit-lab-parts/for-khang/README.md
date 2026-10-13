@@ -1,17 +1,23 @@
 # Euchre logo exits, for Spine 4.2
 
-This is your 13 Oct export of the Euchre skeleton with 6 extra animations: your own shrink of the word
-EUCHRE after the jack has sunk into it, varied. `exit_shrink` is your shrink as it is in the 13 Oct render, rebuilt
-from measurements of the video (the lab used it to check that its hand-off from your render is exact); the others
-are the variations. Holger picks one; this file shows how it moves.
+This is your 13 Oct export of the Euchre skeleton with one extra animation, `exit_sink-8`: the way Holger wants
+the word EUCHRE to leave once the jack has sunk behind it. It starts from the pose your 13 Oct render has at
+1.60 s, the first frame with the jack gone, and replaces the shrink that follows it there. A reference render of
+the whole move (your run-up and this exit) is beside this file, at normal and at quarter speed.
 
 ## Open it
 
-1. In Spine 4.2.43 or later: File > Import Data, choose `euchre-logo-exits.json`, into a new project.
+1. In Spine 4.2.43 or later: File > Import Data, choose `euchre-exit-sink-8.json`, into a new project.
 2. The images are in `images/` beside it (the JSON's images path points there): your own attachment images
-   unpacked from the atlas, plus the six letters.
-3. Save the project. To bring one animation into your own project, use File > Import Project on that saved
-   project and choose the animation; the bones and slots it keys (below) must exist there by the same names.
+   unpacked from the atlas.
+3. Save the project. To bring the animation into your own project, use File > Import Project on that saved
+   project and choose the animation; it keys only `logo2` (translate, scale) and the `logo` slot (alpha), which
+   your project has.
+4. In your active animation, find the frame where the jack is fully behind the word (1.60 s in the 13 Oct render),
+   delete your word keys from there on, and paste `exit_sink-8`'s keys at that frame: its frame 0 is the pose
+   your word already has there (logo2 translate -0.26, 64.68, scale 0.968), so nothing jumps.
+   The word is gone 0.27 s later; the animation can end there.
+5. Export as before (JSON, atlas, PNG) and a video render; Holger needs the export for the site.
 
 ## What was added
 
@@ -19,14 +25,8 @@ Nothing but the animations: no new bones, slots or images. The skeleton is your 
 
 ## The animations
 
-Every exit starts from the pose your 13 Oct render has at 1.60 s (frame 48), the first frame with the jack gone:
-`logo2` translate -0.26, 64.68 and scale 0.968 (keys at 0). Paste an exit's keys after your
-jack move so they continue from there. The shine `light_1` is keyed invisible unless the exit uses it.
+The animation starts from the pose your 13 Oct render has at 1.60 s (frame 48), the first frame with the jack gone:
+`logo2` translate -0.26, 64.68 and scale 0.968 (keys at 0). Paste the keys after your jack move
+so they continue from there. The shine `light_1` is keyed invisible.
 
-- `exit_shrink` (0.37 s): Khang's shrink, rebuilt. The current exit from the hand-off frame on, as measured from his render: the word rises for two frames, then sinks and eases out while it fades. If this tile looks like the one before it, the hand-off is right. In Spine: What the active animation already does: scale and translate on logo2, alpha on the logo slot over the last four frames.
-- `exit_sink-14` (0.47 s): Sink, fading, 14 frames. The first pick (13 Oct): the word keeps the rise it already has, slows to a soft top about 40 px up, then sinks away faster and faster while it shrinks, flattens a little and fades from the first frame. Gone 0.47 s after the jack. In Spine: On logo2: translate and scale keyed per frame along two cubics that start at the speeds the word has when the jack is gone (centre rising 24 px a frame, scale falling 0.1 a frame) and end 75 px lower at scale 0.12 after 14 frames, scale y 30% under scale x by the end; the logo slot's alpha 1 at frame 0 to 0 at frame 14 on an ease-in.
-- `exit_sink-10` (0.33 s): Sink, fading, 10 frames. The same move in ten frames: the rise runs out after two and a half frames, the sink is shorter and the shrink keeps its arriving pace all the way, with the fade biting earlier. Gone 0.33 s after the jack. In Spine: On logo2: translate and scale keyed per frame along two cubics that start at the speeds the word has when the jack is gone (centre rising 24 px a frame, scale falling 0.1 a frame) and end 65 px lower at scale 0.1 after 10 frames, scale y 30% under scale x by the end; the logo slot's alpha 1 at frame 0 to 0 at frame 10 on an ease-in.
 - `exit_sink-8` (0.27 s): Sink, fading, 8 frames. The same move in eight frames: the top after two frames, a 55 px sink. Gone 0.27 s after the jack. In Spine: On logo2: translate and scale keyed per frame along two cubics that start at the speeds the word has when the jack is gone (centre rising 24 px a frame, scale falling 0.1 a frame) and end 55 px lower at scale 0.1 after 8 frames, scale y 30% under scale x by the end; the logo slot's alpha 1 at frame 0 to 0 at frame 8 on an ease-in.
-- `exit_sink-7` (0.23 s): Sink, fading, 7 frames. The same move in seven frames: the rise runs out after a frame and a half, the word sinks 50 px while the shrink speeds up past its arriving pace. Gone 0.23 s after the jack. In Spine: On logo2: translate and scale keyed per frame along two cubics that start at the speeds the word has when the jack is gone (centre rising 24 px a frame, scale falling 0.1 a frame) and end 50 px lower at scale 0.1 after 7 frames, scale y 30% under scale x by the end; the logo slot's alpha 1 at frame 0 to 0 at frame 7 on an ease-in.
-- `exit_sink-6` (0.20 s): Sink, fading, 6 frames. The same move in six frames: the top inside the first frame and a half, a 40 px sink, the fade taking over early. Gone 0.20 s after the jack. In Spine: On logo2: translate and scale keyed per frame along two cubics that start at the speeds the word has when the jack is gone (centre rising 24 px a frame, scale falling 0.1 a frame) and end 42 px lower at scale 0.09 after 6 frames, scale y 30% under scale x by the end; the logo slot's alpha 1 at frame 0 to 0 at frame 6 on an ease-in.
-- `exit_sink-5` (0.17 s): Sink, fading, 5 frames. The same move in five frames: the rise runs out inside the first frame, the word collapses and sinks 35 px while the fade takes most of it. Gone 0.17 s after the jack. In Spine: On logo2: translate and scale keyed per frame along two cubics that start at the speeds the word has when the jack is gone (centre rising 24 px a frame, scale falling 0.1 a frame) and end 35 px lower at scale 0.08 after 5 frames, scale y 30% under scale x by the end; the logo slot's alpha 1 at frame 0 to 0 at frame 5 on an ease-in.
