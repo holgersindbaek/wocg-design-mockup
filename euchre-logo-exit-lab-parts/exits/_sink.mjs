@@ -9,7 +9,8 @@ export const SINKS = {
   //        frames, end centre y, end speed (px a frame), end scale, end scale speed, scale y under scale x at the end
   easy:  { N: 14, y1: 985, v1: 6, s1: 0.12, ds1: -0.012, flatten: 0.3 },
   quick: { N: 10, y1: 975, v1: 8, s1: 0.10, ds1: -0.03, flatten: 0.3 },
-  snap:  { N: 7, y1: 960, v1: 10, s1: 0.10, ds1: -0.03, flatten: 0.3 }
+  snap:  { N: 7, y1: 960, v1: 10, s1: 0.10, ds1: -0.03, flatten: 0.3 },
+  blink: { N: 5, y1: 945, v1: 12, s1: 0.08, ds1: -0.05, flatten: 0.3 }
 };
 function hermite(p0, m0, p1, m1, s) { const s2 = s * s, s3 = s2 * s; return (2 * s3 - 3 * s2 + 1) * p0 + (s3 - 2 * s2 + s) * m0 + (-2 * s3 + 3 * s2) * p1 + (s3 - s2) * m1; }
 export function frame(k, i) {
