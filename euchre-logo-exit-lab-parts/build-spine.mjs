@@ -11,7 +11,8 @@
 //   for-khang/images/*.png             every attachment's image, so the imported project is whole
 //   for-khang/README.md                how to open it and what each animation is
 //
-// An exit module exports default { id, name, summary, spine, duration?, light?, build(tl, ctx) }:
+// An exit module (a file not starting with _, which marks shared helpers) exports default { id, name, summary, spine,
+// duration?, light?, build(tl, ctx) }:
 //   id         short, [a-z0-9-]; the animation is exit_<id> and the tile anchors on it
 //   name       the tile's title; summary: a sentence or two on what the viewer sees
 //   spine      one sentence to Khang: which bones and keys do it, and anything he needs to redo (per-letter art)
@@ -20,8 +21,9 @@
 //   build(tl, ctx)   fills a Timeline (spine-keys.mjs) given ctx:
 //     ctx.handoff      { translate: [x, y], scale }   logo2's keys at t=0, the pose at the hand-off frame
 //     ctx.handoffCentre  { x, y }  the word's centre at the hand-off, in scene px (1920 x 1447, y down)
-//     ctx.wordKeys(time, scale, { x, y })  -> { scale: [t, s, s], translate: [t, x, y] }: logo2's keys that put the
-//                      word's centre at that point of the frame (scene px) at that scale; add an ease as a 4th/5th item
+//     ctx.wordKeys(time, scale, { x, y })  -> { scale: [t, sx, sy], translate: [t, x, y] }: logo2's keys that put the
+//                      word's centre at that point of the frame (scene px) at that scale (a number, or { x, y } to
+//                      squash); add an ease as a 4th/5th item
 //     ctx.pivot        { x, y }  the point Khang's shrink pulls the word to, in logo2's local space (its setup pose)
 //     ctx.word         { x, y, width, height }  the logo attachment's box in logo2's local space (y up)
 //     ctx.letters      (with --letters, else [])  [{ name, bone, slot, attachment, x, y, width, height }], left to right; x, y
@@ -92,7 +94,7 @@ if (WITH_LETTERS) {
 }
 
 // --- the exits ---
-const files = fs.readdirSync(path.join(HERE, "exits")).filter((f) => /\.mjs$/.test(f)).sort();
+const files = fs.readdirSync(path.join(HERE, "exits")).filter((f) => /\.mjs$/.test(f) && !f.startsWith("_")).sort();
 const exits = [];
 for (const f of files) {
   let mod;
@@ -138,8 +140,9 @@ console.log("wrote spine-data.js and for-khang/ with " + exits.length + " exits;
 function round(v) { return Math.round(v * 100) / 100; }
 // logo2's scale and translate keys that put the word's centre at a point of the frame (scene px) at a scale
 function wordKeys(time, scale, centre) {
+  const sx = typeof scale === "number" ? scale : scale.x, sy = typeof scale === "number" ? scale : scale.y;
   const c = toSpine(centre.x, centre.y);
-  return { scale: [time, scale, scale], translate: [time, round(c.x - logoAtt.x * scale - logo2.x), round(c.y - logoAtt.y * scale - logo2.y)] };
+  return { scale: [time, round(sx), round(sy)], translate: [time, round(c.x - logoAtt.x * sx - logo2.x), round(c.y - logoAtt.y * sy - logo2.y)] };
 }
 function writeAtomic(file, text) { fs.writeFileSync(file + ".tmp", text); fs.renameSync(file + ".tmp", file); }
 
