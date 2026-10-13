@@ -19,13 +19,16 @@
 //   light      true when the exit keys light_1 itself (the additive shine); otherwise it is kept invisible
 //   build(tl, ctx)   fills a Timeline (spine-keys.mjs) given ctx:
 //     ctx.handoff      { translate: [x, y], scale }   logo2's keys at t=0, the pose at the hand-off frame
+//     ctx.handoffCentre  { x, y }  the word's centre at the hand-off, in scene px (1920 x 1447, y down)
+//     ctx.wordKeys(time, scale, { x, y })  -> { scale: [t, s, s], translate: [t, x, y] }: logo2's keys that put the
+//                      word's centre at that point of the frame (scene px) at that scale; add an ease as a 4th/5th item
 //     ctx.pivot        { x, y }  the point Khang's shrink pulls the word to, in logo2's local space (its setup pose)
 //     ctx.word         { x, y, width, height }  the logo attachment's box in logo2's local space (y up)
-//     ctx.letters      [{ name, bone, slot, attachment, x, y, width, height }]  the six letters, left to right; x, y
+//     ctx.letters      (with --letters, else [])  [{ name, bone, slot, attachment, x, y, width, height }], left to right; x, y
 //                      are each letter bone's position in logo2's local space (the letter's centre); the attachment
 //                      sits at the bone's origin. Keying letters: hide the word (slot logo attachment null at 0) and
 //                      show each letter slot's attachment at 0, then move the letter bones.
-//     ctx.wipe         { bone, slot, attachment, rect: { x0, y0, x1, y1 } }  the clipping rectangle (bone-local) that
+//     ctx.wipe         (with --letters, else null)  { bone, slot, attachment, rect: { x0, y0, x1, y1 } }  the clipping rectangle that
 //                      shows what is inside it once its attachment is keyed on; move or scale the bone to wipe.
 //     ctx.fps          30
 import fs from "node:fs";
@@ -67,23 +70,26 @@ const letters = lettersInfo.letters.map((l) => {
   };
 });
 const wipe = { bone: "wipe", slot: "wipe", attachment: "wipe", rect: { x0: -700, y0: -310, x1: 700, y1: 210 } };
+const WITH_LETTERS = process.argv.includes("--letters");
 
 // --- the skeleton additions ---
 const out = JSON.parse(JSON.stringify(skel));
 out.skeleton.images = "./images/";
 out.skeleton.audio = "";
-letters.forEach((l) => out.bones.push({ name: l.bone, parent: "logo2", x: l.x, y: l.y }));
-out.bones.push({ name: wipe.bone, parent: "logo2" });
-const logoIndex = out.slots.findIndex((s) => s.name === "logo");
-out.slots.splice(logoIndex + 1, 0, ...letters.map((l) => ({ name: l.slot, bone: l.bone })));
-out.slots.splice(logoIndex, 0, { name: wipe.slot, bone: wipe.bone });
-const skin = out.skins[0].attachments;
-// Khang's closing circle (mask2, the iris of active_1) clips every slot up to the word; a clip cannot start inside
-// another's range, so the circle now ends at the jack's last slot and the wipe can clip the word and the letters.
-skin.mask2.mask2.end = "crown";
-letters.forEach((l) => { skin[l.slot] = {}; skin[l.slot][l.attachment] = { width: l.width, height: l.height }; });
-const R = wipe.rect;
-skin[wipe.slot] = {}; skin[wipe.slot][wipe.attachment] = { type: "clipping", end: letters[letters.length - 1].slot, vertexCount: 4, vertices: [R.x0, R.y0, R.x0, R.y1, R.x1, R.y1, R.x1, R.y0] };
+if (WITH_LETTERS) {
+  letters.forEach((l) => out.bones.push({ name: l.bone, parent: "logo2", x: l.x, y: l.y }));
+  out.bones.push({ name: wipe.bone, parent: "logo2" });
+  const logoIndex = out.slots.findIndex((s) => s.name === "logo");
+  out.slots.splice(logoIndex + 1, 0, ...letters.map((l) => ({ name: l.slot, bone: l.bone })));
+  out.slots.splice(logoIndex, 0, { name: wipe.slot, bone: wipe.bone });
+  const skin = out.skins[0].attachments;
+  // Khang's closing circle (mask2, the iris of active_1) clips every slot up to the word; a clip cannot start inside
+  // another's range, so the circle then ends at the jack's last slot and the wipe can clip the word and the letters.
+  skin.mask2.mask2.end = "crown";
+  letters.forEach((l) => { skin[l.slot] = {}; skin[l.slot][l.attachment] = { width: l.width, height: l.height }; });
+  const R = wipe.rect;
+  skin[wipe.slot] = {}; skin[wipe.slot][wipe.attachment] = { type: "clipping", end: letters[letters.length - 1].slot, vertexCount: 4, vertices: [R.x0, R.y0, R.x0, R.y1, R.x1, R.y1, R.x1, R.y0] };
+}
 
 // --- the exits ---
 const files = fs.readdirSync(path.join(HERE, "exits")).filter((f) => /\.mjs$/.test(f)).sort();
@@ -94,7 +100,7 @@ for (const f of files) {
   catch (e) { console.log("skip " + f + ": it does not load: " + (e && e.message)); continue; }
   if (!mod || !mod.id || !mod.build) { console.log("skip " + f + ": no default export with id and build"); continue; }
   const tl = new Timeline();
-  try { mod.build(tl, { handoff, pivot, word: { x: logoAtt.x, y: logoAtt.y, width: logoAtt.width, height: logoAtt.height }, letters, wipe, fps: 30 }); }
+  try { mod.build(tl, { handoff, handoffCentre: { x: centrePx.x, y: centrePx.y }, wordKeys, pivot, word: { x: logoAtt.x, y: logoAtt.y, width: logoAtt.width, height: logoAtt.height }, letters: WITH_LETTERS ? letters : [], wipe: WITH_LETTERS ? wipe : null, fps: 30 }); }
   catch (e) { console.log("skip " + f + ": build threw: " + (e && e.stack || e)); continue; }
   if (!tl.bones.logo2 || !tl.bones.logo2.translate) tl.bone("logo2").translate([[0, handoff.translate[0], handoff.translate[1]]]);
   if (!tl.bones.logo2.scale) tl.bone("logo2").scale([[0, handoff.scale, handoff.scale]]);
@@ -111,17 +117,18 @@ for (const f of files) {
 const dataUrl = (file, type) => "data:" + type + ";base64," + fs.readFileSync(file).toString("base64");
 let atlas = atlasText.trimEnd() + "\n";
 const images = { "euchre.png": dataUrl(path.join(K, "euchre.png"), "image/png"), "euchre_2.png": dataUrl(path.join(K, "euchre_2.png"), "image/png") };
-for (const l of letters) {
+if (WITH_LETTERS) for (const l of letters) {
   atlas += "\n" + l.file + "\nsize:" + l.width + "," + l.height + "\nfilter:Linear,Linear\n" + l.attachment + "\nbounds:0,0," + l.width + "," + l.height + "\n";
   images[l.file] = dataUrl(path.join(HERE, "letters", l.file), "image/png");
 }
-const data = { json: JSON.stringify(out), atlas, images, exits, handoff, pivot, letters: letters.map((l) => ({ name: l.name, bone: l.bone })) };
+const data = { json: JSON.stringify(out), atlas, images, exits, handoff, pivot };
 writeAtomic(path.join(HERE, "spine-data.js"), "// made by build-spine.mjs: Khang's skeleton with the exits, inlined for file://\nwindow.EUCHRE_EXITS = " + JSON.stringify(data) + ";\n");
 
 // --- Khang's folder ---
 fs.mkdirSync(path.join(OUT, "images"), { recursive: true });
 writeAtomic(path.join(OUT, "euchre-logo-exits.json"), JSON.stringify(out));
-for (const l of letters) fs.copyFileSync(path.join(HERE, "letters", l.file), path.join(OUT, "images", l.file));
+if (WITH_LETTERS) for (const l of letters) fs.copyFileSync(path.join(HERE, "letters", l.file), path.join(OUT, "images", l.file));
+else for (const l of letters) fs.rmSync(path.join(OUT, "images", l.file), { force: true });
 unpackAtlas();
 fs.writeFileSync(path.join(OUT, "README.md"), readme());
 const zipped = spawnSync("zip", ["-q", "-r", "-X", path.join(HERE, "euchre-logo-exits-for-khang.zip"), "for-khang"], { cwd: HERE });
@@ -129,6 +136,11 @@ if (zipped.status !== 0) console.log("could not zip for-khang: " + String(zipped
 console.log("wrote spine-data.js and for-khang/ with " + exits.length + " exits; hand-off keys logo2 translate " + handoff.translate.join(", ") + " scale " + handoff.scale + "; pivot " + pivot.x + ", " + pivot.y);
 
 function round(v) { return Math.round(v * 100) / 100; }
+// logo2's scale and translate keys that put the word's centre at a point of the frame (scene px) at a scale
+function wordKeys(time, scale, centre) {
+  const c = toSpine(centre.x, centre.y);
+  return { scale: [time, scale, scale], translate: [time, round(c.x - logoAtt.x * scale - logo2.x), round(c.y - logoAtt.y * scale - logo2.y)] };
+}
 function writeAtomic(file, text) { fs.writeFileSync(file + ".tmp", text); fs.renameSync(file + ".tmp", file); }
 
 // every region of Khang's atlas as its own image, the stripped whitespace put back, so Import Data finds them all
@@ -158,9 +170,10 @@ function readme() {
   const rows = exits.map((e) => "- `" + e.animation + "` (" + (e.duration / 1000).toFixed(2) + " s): " + e.name + ". " + e.summary + (e.spine ? " In Spine: " + e.spine : "")).join("\n");
   return `# Euchre logo exits, for Spine 4.2
 
-This is your 13 Oct export of the Euchre skeleton with ${real} extra animations, one per way the word EUCHRE
-can leave after the jack has sunk into it, plus \`exit_shrink\`, a copy of your own shrink that the lab used to check
-that its hand-off from your render is exact. Holger picks one; this file shows how it moves.
+This is your 13 Oct export of the Euchre skeleton with ${real} extra animation${real === 1 ? "" : "s"}: your own shrink of the word
+EUCHRE after the jack has sunk into it, varied. \`exit_shrink\` is your shrink as it is in the 13 Oct render, rebuilt
+from measurements of the video (the lab used it to check that its hand-off from your render is exact); the others
+are the variations. Holger picks one; this file shows how it moves.
 
 ## Open it
 
@@ -170,7 +183,7 @@ that its hand-off from your render is exact. Holger picks one; this file shows h
 3. Save the project. To bring one animation into your own project, use File > Import Project on that saved
    project and choose the animation; the bones and slots it keys (below) must exist there by the same names.
 
-## What was added
+${WITH_LETTERS ? `## What was added
 
 - Bones \`letter_E1\`, \`letter_U\`, \`letter_C\`, \`letter_H\`, \`letter_R\`, \`letter_E2\` under \`logo2\`, each at its
   letter's centre, with slots of the same names right after \`logo\` in the draw order and attachments
@@ -182,7 +195,11 @@ that its hand-off from your render is exact. Holger picks one; this file shows h
   on. For that to work, your closing circle \`mask2\` now ends at \`crown\` instead of \`logo\` (a clip cannot start
   inside another clip's range), so in active_1 the circle no longer clips the word.
 
-## The animations
+` : `## What was added
+
+Nothing but the animations: no new bones, slots or images. The skeleton is your export as it was.
+
+`}## The animations
 
 Every exit starts from the pose your 13 Oct render has at 1.60 s (frame 48), the first frame with the jack gone:
 \`logo2\` translate ${handoff.translate.join(", ")} and scale ${handoff.scale} (keys at 0). Paste an exit's keys after your
