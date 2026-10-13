@@ -1,0 +1,37 @@
+<!doctype html><meta charset="utf-8"><body style="margin:0;background:#000">
+<script>
+const load = (src) => new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; });
+const bbox = (data, w, h, test) => { let x0 = w, y0 = h, x1 = -1, y1 = -1; for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const i = (y * w + x) * 4; if (test(data, i)) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; } } return x1 < 0 ? null : { x: x0, y: y0, w: x1 - x0 + 1, h: y1 - y0 + 1 }; };
+window.__logo = async () => {
+  const img = await load("logo.png");
+  const c = document.createElement("canvas"); c.width = img.width; c.height = img.height;
+  const g = c.getContext("2d"); g.drawImage(img, 0, 0);
+  const d = g.getImageData(0, 0, c.width, c.height).data;
+  const cols = new Array(c.width).fill(0);
+  for (let y = 0; y < c.height; y++) for (let x = 0; x < c.width; x++) if (d[(y * c.width + x) * 4 + 3] >= 200) cols[x]++;
+  return { size: [img.width, img.height], opaque: bbox(d, c.width, c.height, (d, i) => d[i + 3] >= 200), any: bbox(d, c.width, c.height, (d, i) => d[i + 3] >= 8), cols };
+};
+window.__frames = async (times) => {
+  const bg = await load("bg.png");
+  const v = document.createElement("video"); v.muted = true; v.preload = "auto"; v.src = "active.webm"; document.body.appendChild(v);
+  await new Promise((res, rej) => { v.onloadeddata = res; v.onerror = () => rej(new Error("video failed")); });
+  const W = v.videoWidth, H = v.videoHeight;
+  const cb = document.createElement("canvas"); cb.width = W; cb.height = H; cb.getContext("2d").drawImage(bg, 0, 0);
+  const B = cb.getContext("2d").getImageData(0, 0, W, H).data;
+  const c = document.createElement("canvas"); c.width = W; c.height = H; const g = c.getContext("2d");
+  const out = [];
+  for (const t of times) {
+    await new Promise((res) => { v.onseeked = res; v.currentTime = t; });
+    g.drawImage(v, 0, 0);
+    const D = g.getImageData(0, 0, W, H).data;
+    const diff = bbox(D, W, H, (d, i) => Math.abs(d[i] - B[i]) > 48 || Math.abs(d[i + 1] - B[i + 1]) > 48 || Math.abs(d[i + 2] - B[i + 2]) > 48);
+    // the logo's pale body: the white outline (all channels high) and the orange (r high, b low)
+    const white = bbox(D, W, H, (d, i) => d[i] > 225 && d[i + 1] > 225 && d[i + 2] > 225);
+    // the jack's red crown / coat: strong red, low green
+    const red = bbox(D, W, H, (d, i) => d[i] > 150 && d[i + 1] < 70 && d[i + 2] < 70);
+    const crop = document.createElement("canvas"); crop.width = 1400; crop.height = 700; crop.getContext("2d").drawImage(c, 260, 500, 1400, 700, 0, 0, 1400, 700);
+    out.push({ t, diff, white, red, crop: crop.toDataURL("image/png") });
+  }
+  return { W, H, duration: v.duration, out };
+};
+</script></body>

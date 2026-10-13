@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Euchre logo exit lab: ten ways the word can leave after the jack sinks into it</title>
+<style>
+  @font-face { font-family: "BuloRounded"; src: url("BuloRounded-Regular.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+  @font-face { font-family: "BuloRounded"; src: url("BuloRounded-Bold.woff2") format("woff2"); font-weight: 700; font-display: swap; }
+  @font-face { font-family: "Gelica"; src: url("Gelica-SemiBold.woff2") format("woff2"); font-weight: 600; font-display: swap; }
+  :root { --paper: #f6f2ea; --card: #fffdf8; --ink: #2b2620; --muted: #6f665a; --line: #e2dacb; --chip: #ebe4d6; --felt: #2f6d31; --accent: #43a038; }
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: 72px; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font: 15px/1.5 "BuloRounded", Verdana, sans-serif; }
+  nav { position: sticky; top: 0; z-index: 5; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 18px; padding: 10px 24px; background: rgba(246, 242, 234, .96); border-bottom: 1px solid var(--line); font-size: 13px; }
+  nav .group { display: flex; align-items: center; gap: 4px; }
+  nav .group span { color: var(--muted); margin-right: 4px; }
+  nav button { font: inherit; font-weight: 700; color: var(--ink); background: var(--chip); border: 0; border-radius: 999px; padding: 4px 12px; cursor: pointer; }
+  nav button.on { background: var(--accent); color: #fff; }
+  nav button.big { background: var(--felt); color: #fff; padding: 6px 16px; }
+  nav label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+  nav .links { display: flex; flex-wrap: wrap; gap: 2px 12px; width: 100%; }
+  nav .links a { color: var(--muted); text-decoration: none; }
+  nav .links a:hover { color: var(--ink); }
+  main { max-width: 1680px; margin: 0 auto; padding: 32px 24px 96px; }
+  h1, h2, h3 { font-family: "Gelica", Georgia, serif; font-weight: 600; line-height: 1.2; }
+  h1 { font-size: 34px; margin: 0 0 8px; }
+  h2 { font-size: 26px; margin: 48px 0 12px; }
+  p { max-width: 820px; }
+  .intro { color: var(--muted); }
+  .lead { font-size: 18px; }
+  code { font: 13px ui-monospace, Menlo, monospace; background: var(--chip); padding: 1px 5px; border-radius: 4px; }
+  table { border-collapse: collapse; font-size: 13px; background: var(--card); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin: 12px 0; }
+  th, td { text-align: left; padding: 7px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { background: #efe8da; font-weight: 700; }
+  tr:last-child td { border-bottom: 0; }
+  #tiles { display: flex; flex-wrap: wrap; gap: 28px 24px; align-items: flex-start; margin-top: 20px; }
+  .tile { margin: 0; width: min-content; }
+  .stage { position: relative; overflow: hidden; border-radius: 14px; background: var(--felt); }
+  .stage video { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .scene { position: absolute; inset: 0; visibility: hidden; }
+  .scene .bg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .scene .draw { position: absolute; left: 0; top: 0; display: block; }
+  figcaption { margin-top: 10px; font-size: 13px; color: var(--muted); max-width: 100%; }
+  figcaption .head { display: flex; align-items: baseline; gap: 8px; font-size: 16px; color: var(--ink); }
+  figcaption .num { display: inline-block; min-width: 26px; text-align: center; font-size: 12px; font-weight: 700; color: #fff; background: var(--felt); border-radius: 999px; padding: 1px 6px; }
+  figcaption p { margin: 4px 0 0; }
+  figcaption .spine b { color: var(--ink); }
+  figcaption .file { font: 11px ui-monospace, Menlo, monospace; opacity: .7; }
+  .err { color: #b23; }
+  .bar { display: flex; align-items: center; gap: 8px; margin-top: 8px; font-size: 12px; color: var(--muted); }
+  .bar button { font: inherit; font-weight: 700; color: var(--ink); background: var(--chip); border: 0; border-radius: 999px; padding: 3px 12px; cursor: pointer; min-width: 56px; }
+  .bar input[type=range] { flex: 1; accent-color: var(--accent); }
+  .bar .time { min-width: 48px; text-align: right; font-variant-numeric: tabular-nums; }
+  .facts td:first-child { white-space: nowrap; color: var(--muted); }
+</style>
+</head>
+<body>
+<nav>
+  <div class="group"><button id="play-all" class="big">Play all</button><button id="stop-all">Stop all</button></div>
+  <div class="group"><span>Speed</span><button data-speed="1" class="on">1x</button><button data-speed="0.5">½x</button><button data-speed="0.25">¼x</button></div>
+  <div class="group"><span>Size</span><button data-size="320">320</button><button data-size="480">480</button><button data-size="640">640</button></div>
+  <div class="group"><label><input type="checkbox" id="loop"> Loop</label></div>
+  <div class="links" id="exit-links"></div>
+</nav>
+<main>
+  <h1>Euchre logo exit lab</h1>
+  <p class="intro lead">Ten ways the word can leave the tile after Khang's jack has sunk into it. Every tile plays his 13 Oct render up to the frame where the jack is gone, then his Spine skeleton takes the word over and plays one exit, authored as Spine keys.</p>
+  <p class="intro">Khang animates in <b>Spine 4.2.43</b> (Esoteric Software's Spine; the skeleton JSON names the version). The 13 Oct folder holds the same Spine export as 1 Oct; only the video <code>active.webm</code> is new, so the new jack move exists only as a render so far. The tile marked <b>Now</b> is that render untouched. Each numbered tile keeps everything up to the hand-off and changes only what the word does next; the exits are animations in a Spine file he can open: <code>euchre-logo-exit-lab-parts/for-khang/euchre-logo-exits.json</code> (File → Import Data in Spine 4.2 makes a project of it, with its images beside it; the README there says the rest). Press <b>Play</b> on a tile, scrub its slider, or set the speed to ¼x to study a move.</p>
+  <div id="tiles"></div>
+
+  <h2>How the hand-off works</h2>
+  <p class="intro">The video's own last frame sits under every tile's scene, and on it the Spine runtime draws the skeleton with the jack's slots hidden: its own banner background, the word, and whatever an exit adds (the background is drawn in the same canvas so additive light blends on the felt as it does in Spine). The exit animation's first keys put the word where the video has it at frame 48. The numbers were measured in headless Chrome from the video (<code>euchre-logo-exit-lab-parts/measure2.mjs</code>). The six letters are cut from the word's own image along the dark seam between letters (<code>cut-letters.mjs</code>): together they draw the word exactly, and a letter alone shows a cut edge where it touched its neighbour, which Khang's real per-letter art will not. Each exit is one file in <code>euchre-logo-exit-lab-parts/exits/</code>, written with <code>spine-keys.mjs</code>; <code>build-spine.mjs</code> builds the Spine file and this page's data from them, and <code>shots.mjs</code> dumps an exit's frames as a contact sheet.</p>
+  <table class="facts">
+    <tr><td>Scene</td><td>1920 x 1447 px, the video's frame; Spine's origin is its centre, y up; the word's image is 1266 x 424 px (1252 x 413 without its clear margin)</td></tr>
+    <tr><td>Hand-off</td><td>frame 48 of 60 at 30 fps, 1.600 s; the word at 0.968 of its size, its centre at scene px (960, 910); as Spine keys on the bone <code>logo2</code>: translate (−0.3, 64.7), scale 0.968</td></tr>
+    <tr><td>Khang's shrink</td><td>from there towards a point at scene px (960, 670), the jack's vanishing place; 0.968 → 0 over nine frames, the last frames fading</td></tr>
+    <tr><td>Rest pose</td><td>frame 0: the word at scale 1 with its centre at scene px (960, 976); the swell before the hand-off lifts it 65 px</td></tr>
+    <tr><td>Letters</td><td>E U C H R E, bones <code>letter_E1</code> … <code>letter_E2</code> under <code>logo2</code>, each at its letter's centre; slots of the same names after <code>logo</code> in the draw order</td></tr>
+    <tr><td>Wipe</td><td>bone <code>wipe</code> under <code>logo2</code> with a clipping slot <code>wipe</code> before <code>logo</code>, a 1400 x 520 rectangle around the word, no attachment until an exit keys it</td></tr>
+  </table>
+</main>
+<script src="euchre-logo-exit-lab-parts/spine-player.js"></script>
+<script src="euchre-logo-exit-lab-parts/spine-data.js"></script>
+<script src="euchre-logo-exit-lab-parts/lab.js"></script>
+</body>
+</html>
