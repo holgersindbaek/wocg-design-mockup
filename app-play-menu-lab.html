@@ -1,0 +1,577 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>App Play menu lab: a menu for the game apps' Play pill</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="guide-fonts.css">
+<!--
+  The app Play menu lab (20 Oct 2026). Holger: "we need to do something about the play menu in the app. People know
+  it's a euchre game and they don't need to see the x open tables. And we should link to the tutorial and the
+  leaderboards as well somehow. Create a lab where you experiment with different ways of doing this. Maybe also try to
+  have a header like the activity dropdown and so forth."
+  The phones are the Euchre app on an iPhone Air (420 by 912 points, safe area 68 on top), screenshots of dev in WebKit
+  with an iPhone's user agent (node app-play-menu-lab/capture.mjs, from Design/WoCG-3). The menus are drawn on top of
+  home.jpg with the looks read off dev (app-play-menu-lab/styles.json): the Play menu's paper panel and white card, the
+  Activity panel's white panel with its 32px paper strip. Each panel stands where dev puts it: 8 from the left, 8 under
+  the pill (top 124).
+-->
+<style>
+  :root {
+    --paper-page: #f9f6f2;
+    --paper-card: #ffffff;
+    --paper-band: #f4eee5;
+    --ink: #141414;
+    --ink-label: #4e4d4c;
+    --ink-quiet: #67635c;
+    --ink-mark: #9b9997;
+    --line: #d2cfca;
+    --line-soft: #ebe7de;
+    --line-felt: #393939;
+    --link: #1971c2;
+    --btn-green: #43a038;
+    --btn-green-ring: #347d2c;
+    --btn-quiet: #d9d2c4;
+    --btn-quiet-ring: #bfb5a1;
+    --yellow: #ffd43b;
+    --yellow-ink: #3d2b00;
+    --ui: "BuloRounded", Verdana, Arial, Helvetica, sans-serif;
+    --display: "Gelica", Georgia, serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper-page); color: var(--ink); font: 16px/24px var(--ui); }
+  main { max-width: 1320px; margin: 0 auto; padding: 32px 28px 120px; }
+  h1 { font: 500 38px/44px var(--display); margin: 0 0 8px; }
+  h2 { font: 500 26px/32px var(--display); margin: 48px 0 6px; }
+  .lead { color: var(--ink-label); max-width: 860px; margin: 0 0 8px; }
+  .sub { color: var(--ink-label); max-width: 860px; margin: 0 0 20px; }
+  code { font: 14px/20px ui-monospace, Menlo, monospace; background: var(--paper-band); padding: 1px 5px; border-radius: 5px; }
+  q { font-style: italic; }
+
+  .box { background: #fff; border: 1px solid var(--line); border-radius: 16px; corner-shape: squircle; padding: 18px 22px; margin: 16px 0; }
+  .box h3 { font: 700 20px/28px var(--ui); margin: 0 0 6px; }
+  .box p { margin: 6px 0; }
+  .box ol, .box ul { margin: 6px 0; padding-left: 22px; }
+  .box li { margin: 4px 0; }
+  .row4 { display: flex; gap: 28px; flex-wrap: wrap; align-items: flex-start; margin-top: 18px; }
+  .row4 figure { margin: 0; }
+  figcaption { font-size: 14px; line-height: 20px; color: var(--ink-label); max-width: 278px; margin-top: 10px; }
+
+  /* Ideas */
+  .ideas { display: grid; grid-template-columns: repeat(auto-fill, minmax(590px, 1fr)); gap: 36px 34px; margin-top: 18px; }
+  .idea { display: grid; grid-template-columns: 278px 1fr; gap: 20px; align-items: start; }
+  .idea.wide { grid-column: 1 / -1; grid-template-columns: 278px 278px minmax(0, 560px); }
+  .idea h3 { font: 700 20px/26px var(--ui); margin: 2px 0 6px; }
+  .idea p { margin: 0 0 8px; font-size: 15px; line-height: 22px; }
+  .idea dl { margin: 8px 0 0; display: grid; grid-template-columns: 62px 1fr; gap: 4px 10px; font-size: 14px; line-height: 20px; }
+  .idea dt { color: var(--ink-quiet); font-weight: 700; }
+  .idea dd { margin: 0; }
+  .idea code { font-size: 12.5px; line-height: 18px; }
+  .why { margin-top: 10px; padding: 8px 12px; border-radius: 12px; corner-shape: squircle; background: #eef7ec; box-shadow: inset 0 0 0 1px #cfe6c9; font-size: 14px; line-height: 20px; }
+  .tagrow { display: flex; align-items: center; gap: 8px; }
+  .tag { font-size: 13px; line-height: 18px; font-weight: 700; color: var(--ink-label); background: var(--paper-band); border: 1px solid var(--line); border-radius: 9px; padding: 1px 8px; }
+  .mine { font-size: 13px; line-height: 18px; font-weight: 700; color: #fff; background: var(--btn-green); border-radius: 9px; padding: 1px 8px; }
+  .star { margin-left: auto; font: 700 14px/20px var(--ui); color: var(--ink-label); background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 3px 12px; cursor: pointer; }
+  .star[aria-pressed="true"] { background: var(--yellow); border-color: var(--line-felt); color: var(--yellow-ink); }
+  .picks { position: fixed; left: 0; right: 0; bottom: 0; background: #fff; border-top: 1px solid var(--line); padding: 10px 28px; display: flex; gap: 12px; align-items: center; font-size: 15px; box-shadow: 0 -4px 14px rgba(60, 45, 25, .08); z-index: 5; }
+  .picks button { font: 700 14px/20px var(--ui); border: 0; border-radius: 12px; padding: 3px 12px; background: var(--btn-green); color: #fff; cursor: pointer; }
+  .cap { font: 700 13px/18px var(--ui); color: var(--ink-label); margin: 0 0 6px; }
+
+  /* The phone: 420 by 912 points, drawn at 0.662 so it is 278 wide */
+  .phone { position: relative; width: 420px; height: 912px; overflow: hidden; border-radius: 58px; background: #000; zoom: .662;
+    box-shadow: 0 0 0 9px #1d1d1f, 0 0 0 10px #48484a, 0 18px 40px rgba(40, 30, 15, .28); }
+  .shot { position: absolute; inset: 0; background: url(app-play-menu-lab/home.jpg) 0 0 / 100% auto no-repeat; }
+  .scrim { position: absolute; inset: 0; background: rgba(0, 0, 0, .4); }
+  .ringMark { position: absolute; border: 3px solid #f03e3e; border-radius: 10px; box-shadow: 0 0 0 4px rgba(240, 62, 62, .25); }
+  .ringMark::after { content: attr(data-n); position: absolute; right: -14px; top: -14px; width: 26px; height: 26px; border-radius: 50%; background: #f03e3e; color: #fff; font: 700 16px/26px var(--ui); text-align: center; }
+  .ringMark.l::after { right: auto; left: -14px; }
+  .ringMark.ok { border-color: #2b8a3e; box-shadow: 0 0 0 4px rgba(43, 138, 62, .25); }
+  .ringMark.ok::after { background: #2b8a3e; }
+
+  /* The app's pieces, as dev draws them (styles.json) */
+  .btnG, .btnQ { display: inline-flex; align-items: center; justify-content: center; flex: none; height: 24px; padding: 0 10px; border-radius: 12px; corner-shape: squircle; font: 700 16px/24px var(--ui); white-space: nowrap; }
+  .btnG { background: var(--btn-green); color: #fff; box-shadow: inset 0 0 0 1px var(--btn-green-ring);
+    text-shadow: -1px -1px 0 var(--btn-green-ring), 1px -1px 0 var(--btn-green-ring), -1px 1px 0 var(--btn-green-ring), 1px 1px 0 var(--btn-green-ring); }
+  .btnQ { background: var(--btn-quiet); color: var(--ink); box-shadow: inset 0 0 0 1px var(--btn-quiet-ring); }
+  .btnG.lg { height: 32px; font-size: 18px; padding: 0 14px; }
+  .av { flex: none; display: grid; place-items: center; overflow: hidden; border-radius: 50%; background: var(--paper-band); box-shadow: inset 0 0 0 1px var(--line); }
+  .av img { width: 100%; height: 100%; display: block; }
+  .ic { flex: none; width: 40px; height: 40px; display: grid; place-items: center; border-radius: 50%; background: var(--paper-band); box-shadow: inset 0 0 0 1px var(--line); }
+  .pill { position: absolute; height: 40px; display: flex; background: var(--paper-page); border-radius: 16px; corner-shape: squircle; box-shadow: 0 0 0 1px var(--line-felt), 0 0 8px rgba(0, 0, 0, .24); overflow: hidden; }
+  .pill .cell { width: 40px; height: 40px; flex: none; display: grid; place-items: center; background: center / 20px 20px no-repeat; }
+  .pill .cell + .cell { box-shadow: inset 1px 0 0 var(--line); }
+
+  /* The dropdown panel: 8 from the left, 8 under the pill; the felt line outside it with the table's small shadow, the 12 corner dev computes on the phone */
+  .dd { position: absolute; left: 8px; top: 124px; border-radius: 12px; corner-shape: squircle; overflow: hidden; color: var(--ink); font: 16px/24px var(--ui);
+    box-shadow: 0 0 0 1px var(--line-felt), 0 0 8px rgba(0, 0, 0, .24); }
+  /* Today's Play menu: page paper, the white card inside it */
+  .dd.paper { background: var(--paper-page); padding: 8px 12px 12px; }
+  .dd.paper.bare { padding: 12px; }
+  .playHead { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; line-height: 20px; white-space: nowrap; }
+  .playHead b { font-size: 18px; }
+  .playHead span { color: var(--ink-quiet); }
+  /* The Activity panel: white, a 32px page-paper strip with the line under it, 16 bold */
+  .dd.act { background: var(--paper-card); }
+  .ddh { display: flex; align-items: center; justify-content: space-between; gap: 8px; height: 33px; line-height: 32px; padding: 0 12px; background: var(--paper-page); border-bottom: 1px solid var(--line); font-weight: 700; white-space: nowrap; }
+  .ddh.btn { padding-right: 4px; }
+  .ddh small { font-size: 14px; font-weight: 400; color: var(--ink-label); }
+  .ddh.back { justify-content: flex-start; padding-left: 4px; gap: 2px; }
+  .ddh.back svg { width: 24px; height: 24px; }
+
+  /* The two-column cells: in a ringed white card on paper (today), or across a white panel (the Activity look) */
+  .gcard { display: grid; grid-template-columns: 1fr 1fr; background: var(--paper-card); border: 1px solid var(--line); border-radius: 12px; corner-shape: squircle; overflow: hidden;
+    box-shadow: 0 1px 2px rgba(60, 45, 25, .04), 0 2px 5px rgba(60, 45, 25, .05); }
+  .playHead + .gcard { margin-top: 8px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; }
+  .gcard > span, .grid > span { padding: 4px 12px; border-bottom: 1px solid var(--line-soft); text-align: center; white-space: nowrap; }
+  .gcard > span:nth-child(odd), .grid > span:nth-child(odd) { box-shadow: inset -1px 0 0 var(--line-soft); }
+  .gcard > span:nth-last-child(-n + 2), .grid.end > span:nth-last-child(-n + 2) { border-bottom: 0; }
+  .gcard > span.full, .grid > span.full { grid-column: 1 / -1; box-shadow: none; }
+  .gcard i, .grid i { font-style: normal; font-size: 14px; color: var(--ink-quiet); margin-left: 4px; }
+
+  /* One column: the account panel's 32px rows */
+  .li { display: flex; align-items: center; justify-content: space-between; gap: 8px; height: 32px; padding: 4px 12px; box-shadow: inset 0 -1px 0 var(--line-soft); white-space: nowrap; }
+  .li:last-child { box-shadow: none; }
+  .li small { font-size: 14px; color: var(--ink-quiet); }
+  .lcard { background: var(--paper-card); border: 1px solid var(--line); border-radius: 12px; corner-shape: squircle; overflow: hidden; box-shadow: 0 1px 2px rgba(60, 45, 25, .04), 0 2px 5px rgba(60, 45, 25, .05); }
+  .lbl { font: 700 14px/20px var(--ui); color: var(--ink-label); margin: 0 0 4px 4px; }
+  * + .lbl { margin-top: 10px; }
+
+  /* The iOS-style list: 40px rows, the word at the left, the glyph at the right, a band between the groups */
+  .io { display: flex; align-items: center; justify-content: space-between; gap: 10px; height: 40px; padding: 0 12px 0 14px; box-shadow: inset 0 -1px 0 var(--line-soft); white-space: nowrap; }
+  .io.two { height: 48px; line-height: 20px; }
+  .io.two small { display: block; font-size: 13px; line-height: 18px; color: var(--ink-quiet); }
+  .io:last-child, .io:has(+ .band) { box-shadow: none; }
+  .band { height: 8px; background: var(--paper-band); box-shadow: inset 0 1px 0 var(--line-soft), inset 0 -1px 0 var(--line-soft); }
+  .gl { width: 20px; height: 20px; flex: none; fill: none; stroke: var(--ink-label); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* The tutorial's row, its choice rows and the full-width rows */
+  .learn { display: flex; align-items: center; gap: 10px; padding: 8px 8px 8px 10px; background: #eef7ec; border-bottom: 1px solid #cfe6c9; line-height: 20px; }
+  .learn b { display: block; }
+  .learn small { display: block; font-size: 14px; line-height: 18px; color: var(--ink-label); }
+  .learn .btnG { margin-left: auto; }
+  .choice { display: flex; align-items: center; gap: 10px; padding: 10px 12px 10px 10px; box-shadow: inset 0 -1px 0 var(--line-soft); line-height: 20px; }
+  .choice:last-child { box-shadow: none; }
+  .choice b { display: block; }
+  .choice small { display: block; font-size: 14px; line-height: 18px; color: var(--ink-quiet); }
+  .choice > svg:last-child { margin-left: auto; flex: none; }
+  .wrow { display: flex; align-items: center; justify-content: center; gap: 6px; height: 33px; box-shadow: inset 0 1px 0 var(--line-soft); }
+  .lbrow { display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 12px 0 10px; border-bottom: 1px solid var(--line-soft); }
+  .lbrow img { width: 26px; height: 24px; }
+  .lbrow span { margin-left: auto; font-size: 14px; color: var(--ink-quiet); }
+
+  /* V9 the Play sheet: the app sheet's paper, its band head and grabber (_app-sheet.scss) */
+  .psheet { position: absolute; left: 0; right: 0; bottom: 0; background: var(--paper-page); border-radius: 20px 20px 0 0; corner-shape: squircle; overflow: hidden; box-shadow: 0 -4px 20px rgba(0, 0, 0, .25); }
+  .psheet .grab { position: absolute; left: 50%; top: 5px; width: 36px; height: 5px; margin-left: -18px; border-radius: 2.5px; background: rgba(0, 0, 0, .3); }
+  .shead { display: flex; align-items: center; justify-content: space-between; height: 52px; padding: 8px 12px 8px 12px; background: var(--paper-band); box-shadow: inset 0 -1px 0 var(--line); font: 700 20px/28px var(--ui); }
+  .shead .x { font: 400 30px/28px var(--ui); color: var(--ink-label); }
+  .sbody { padding: 12px 12px 34px; display: grid; gap: 12px; }
+  .wcard { background: var(--paper-card); border-radius: 16px; corner-shape: squircle; overflow: hidden; box-shadow: inset 0 0 0 1px var(--line), 0 2px 4px rgba(60, 45, 25, .04), 0 4px 12px rgba(60, 45, 25, .08); }
+  .learnCard { display: flex; gap: 12px; padding: 12px; }
+  .learnCard b { display: block; font: 700 18px/24px var(--ui); }
+  .learnCard .t > span { display: block; font-size: 14px; line-height: 20px; color: var(--ink-label); }
+  .learnCard .acts { display: flex; align-items: center; gap: 14px; margin-top: 8px; }
+  .learnCard a { color: var(--link); font-weight: 700; text-decoration: none; }
+  .chead { display: flex; align-items: center; justify-content: space-between; height: 40px; padding: 0 8px 0 12px; background: var(--paper-band); box-shadow: inset 0 -1px 0 var(--line); }
+  .chead b { font-size: 18px; }
+  .chead b small { font: 400 16px/24px var(--ui); color: var(--ink-quiet); margin-left: 6px; }
+  .lb { display: flex; align-items: center; gap: 10px; height: 40px; padding: 0 12px; box-shadow: inset 0 -1px 0 var(--line-soft); }
+  .lb .n { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font: 700 13px/1 var(--ui); color: var(--yellow-ink); flex: none; }
+  .lb .r { margin-left: auto; font-weight: 700; }
+  .lbme { padding: 8px 12px; font-size: 14px; line-height: 20px; color: var(--ink-quiet); }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-table" viewBox="0 0 20 20"><rect x="4.5" y="6" width="11" height="8" rx="2.5"/><path d="M10 2.6v.2M10 17.2v.2M1.6 10h.2M18.2 10h.2"/></symbol>
+  <symbol id="i-crown" viewBox="0 0 20 20"><path d="M3.2 15.5 2.4 6.6l4.2 3.3L10 4.2l3.4 5.7 4.2-3.3-.8 8.9z"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7.6"/><path d="M10 6.6v6.8M6.6 10h6.8"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 20 20"><rect x="4.4" y="9" width="11.2" height="8.2" rx="2"/><path d="M7 9V6.6a3 3 0 0 1 6 0V9"/></symbol>
+  <symbol id="i-cap" viewBox="0 0 20 20"><path d="M1.6 7.8 10 4l8.4 3.8L10 11.6z"/><path d="M5.2 9.5v4.2c0 1.2 2.2 2.5 4.8 2.5s4.8-1.3 4.8-2.5V9.5M18.4 7.8v4.6"/></symbol>
+  <symbol id="i-book" viewBox="0 0 20 20"><path d="M10 5.6C8 4.1 5.5 3.7 2.4 4v11.2c3.1-.3 5.6.1 7.6 1.6 2-1.5 4.5-1.9 7.6-1.6V4c-3.1-.3-5.6.1-7.6 1.6zM10 5.6v11.2"/></symbol>
+  <symbol id="i-trophy" viewBox="0 0 20 20"><path d="M6 3.2h8v4.4a4 4 0 0 1-8 0zM6 4.8H3.4a2.6 2.6 0 0 0 2.9 3.6M14 4.8h2.6a2.6 2.6 0 0 1-2.9 3.6M10 11.6v3.4M6.8 16.8h6.4"/></symbol>
+  <symbol id="i-sliders" viewBox="0 0 20 20"><path d="M2.8 6h7.2M14.4 6h2.8M2.8 14h2.8M10 14h7.2"/><circle cx="12.2" cy="6" r="2.2"/><circle cx="7.8" cy="14" r="2.2"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 8 12"><path d="M1.5 1l5 5-5 5" fill="none" stroke="#4E4D4C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="M14.5 6 8.5 12l6 6" fill="none" stroke="#4E4D4C" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-learnCell" viewBox="0 0 20 20"><path d="M10 4.6C7.8 3 5 2.6 1.5 3v12.6c3.5-.4 6.3 0 8.5 1.6 2.2-1.6 5-2 8.5-1.6V3C15 2.6 12.2 3 10 4.6z" fill="#A9E09A" stroke="#2F7D32" stroke-width="1.2" stroke-linejoin="round"/><path d="M10 4.6v12.6" stroke="#2F7D32" stroke-width="1.2"/></symbol>
+</svg>
+<main>
+  <h1>The app's Play menu</h1>
+  <p class="lead">20 Oct 2026. Holger: <q>People know it's a euchre game and they don't need to see the x open tables. And we should link to the tutorial and the leaderboards as well somehow.</q> This lab shows the menu today, then 11 ways to change it.</p>
+  <p class="sub">The phones are the Euchre app on an iPhone Air (420 by 912), screenshots of dev in WebKit. The menus are drawn on top in the app's own styles, read off dev. The tutorial is about 4 minutes for Euchre. Press ☆ Pick on the ones you like. The bar at the foot collects them for you to copy.</p>
+
+  <h2>Today</h2>
+  <div class="box">
+    <div class="row4" style="margin-top:0">
+      <figure>
+        <div class="phone"><div class="shot" style="background-image:url(app-play-menu-lab/home-play.jpg)"></div>
+          <div class="ringMark" data-n="1" style="left:14px;top:127px;width:288px;height:31px"></div>
+          <div class="ringMark" data-n="2" style="left:15px;top:163px;width:286px;height:104px"></div></div>
+        <figcaption>The Play menu today: the game's name with its open tables (1), then six ways to a table (2).</figcaption>
+      </figure>
+      <figure>
+        <div class="phone"><div class="shot" style="background-image:url(app-play-menu-lab/home-rules.jpg)"></div>
+          <div class="ringMark" data-n="3" style="left:251px;top:162px;width:132px;height:28px"></div>
+          <div class="ringMark l" data-n="4" style="left:7px;top:202px;width:88px;height:28px"></div></div>
+        <figcaption>Rules opens How to play. The tutorial (3) and the board (4) are only links in its second paragraph.</figcaption>
+      </figure>
+      <figure>
+        <div class="phone"><div class="shot" style="background-image:url(app-play-menu-lab/home-activity.jpg)"></div>
+          <div class="ringMark l ok" data-n="A" style="left:129px;top:121px;width:286px;height:39px"></div></div>
+        <figcaption>The bell's Activity panel: a white panel with a 32px paper strip and a line under it (A). The ideas copy this head.</figcaption>
+      </figure>
+      <figure>
+        <div class="phone"><div class="shot" style="background-image:url(app-play-menu-lab/home-account.jpg)"></div>
+          <div class="ringMark l ok" data-n="B" style="left:217px;top:121px;width:198px;height:39px"></div></div>
+        <figcaption>The account panel has the same strip, titled Profile (B), with 32px rows under it.</figcaption>
+      </figure>
+    </div>
+    <h3 style="margin-top:20px">What is wrong</h3>
+    <ol>
+      <li><b>The game's name in the head.</b> The player is in the Euchre app. The Euchre logo stands right under the menu.</li>
+      <li><b>“6 open tables” in the head.</b> Players do not need it here. The home's “Join a table · 6 open” card under it shows the same number.</li>
+      <li><b>No tutorial.</b> The only way in is the “interactive tutorial” link inside the Rules box. From the code, that link leaves the app for Safari (tutorial-entry lab).</li>
+      <li><b>No leaderboard.</b> On the home it is only a link in the same paragraph. At a table it is a button in the Table panel.</li>
+      <li><b>The two corners do not match.</b> Activity and Profile are white panels with a paper strip. The Play menu is paper with a bold title over a white card.</li>
+    </ol>
+  </div>
+
+  <div class="box">
+    <h3>My pick: V2</h3>
+    <p>The Activity panel's head, titled Play, over today's grid with one more row. It fixes all five points with the smallest change. The two corners then open the same kind of panel.</p>
+    <p>If the tutorial must stand out more, take V4 for new players only (V10). The Professor's peek at launch (TutorialPeek.js, on dev) already asks new players once. So the menu only needs a plain way back to the tutorial.</p>
+  </div>
+
+  <h2>Ideas</h2>
+  <div class="ideas">
+
+    <article class="idea" id="V1">
+      <div class="phone"><div class="shot"></div>
+        <div class="dd paper bare" style="width:300px">
+          <div class="gcard">
+            <span>Open tables</span><span>Play ranked</span>
+            <span>Host table</span><span>Join private</span>
+            <span>Tutorial<i>4 min</i></span><span>Rules</span>
+            <span>Leaderboard</span><span>Options</span>
+          </div>
+        </div></div>
+      <div>
+        <div class="tagrow"><span class="tag">V1 · No head</span><button class="star" data-id="V1">☆ Pick</button></div>
+        <h3>No head, eight cells</h3>
+        <p>Today's menu without its head. The card gets one more row: Tutorial with Rules, then Leaderboard with Options.</p>
+        <dl><dt>Good</dt><dd>The smallest change. Nothing to read before the choices. Only 12px taller than today.</dd>
+          <dt>Risk</dt><dd>The menu has no name. It still looks different from the right pill's panels.</dd>
+          <dt>Build</dt><dd>Tiny: two rows in <code>playRows()</code>, the head hidden in home mode.</dd></dl>
+      </div>
+    </article>
+
+    <article class="idea" id="V2">
+      <div class="phone"><div class="shot"></div>
+        <div class="dd act" style="width:300px">
+          <div class="ddh">Play</div>
+          <div class="grid end">
+            <span>Open tables</span><span>Play ranked</span>
+            <span>Host table</span><span>Join private</span>
+            <span>Tutorial<i>4 min</i></span><span>Rules</span>
+            <span>Leaderboard</span><span>Options</span>
+          </div>
+        </div></div>
+      <div>
+        <div class="tagrow"><span class="tag">V2 · Activity head</span><span class="mine">My pick</span><button class="star" data-id="V2">☆ Pick</button></div>
+        <h3>A head like Activity's: Play</h3>
+        <p>The panel takes the Activity panel's look: white, with a 32px paper strip on top. The strip says Play, the name of the pill's cell. The eight cells run the full width under it.</p>
+        <dl><dt>Good</dt><dd>Both corners open the same kind of panel. The grid players know stays. The head names the menu, not the game.</dd>
+          <dt>Risk</dt><dd>Rules and Leaderboard are not quite “Play”. The tutorial gets no more weight than Options.</dd>
+          <dt>Build</dt><dd>Small: a home-mode head in <code>TableBar.scss</code>, two rows in <code>playRows()</code>.</dd></dl>
+        <p class="why">My pick: it fixes all five points with the smallest change, in the look the right pill already has.</p>
+      </div>
+    </article>
+
+    <article class="idea" id="V3">
+      <div class="phone"><div class="shot"></div>
+        <div class="dd act" style="width:232px">
+          <div class="ddh">More ways to play</div>
+          <div class="li">Open tables</div>
+          <div class="li">Play ranked</div>
+          <div class="li">Host table</div>
+          <div class="li">Join private</div>
+          <div class="li">Tutorial<small>4 min</small></div>
+          <div class="li">Rules</div>
+          <div class="li">Leaderboard</div>
+          <div class="li">Options</div>
+        </div></div>
+      <div>
+        <div class="tagrow"><span class="tag">V3 · One column</span><button class="star" data-id="V3">☆ Pick</button></div>
+        <h3>One column under “More ways to play”</h3>
+        <p>The account panel's look: the head strip, then one 32px row per choice, the words at the left. The tutorial shows its time at the right.</p>
+        <dl><dt>Good</dt><dd>Easy to read from top to bottom. A row has room for a detail. The same rows as the Profile panel beside it.</dd>
+          <dt>Risk</dt><dd>Twice as tall as today (289px). The doors under it are covered.</dd>
+          <dt>Build</dt><dd>Small: the same rows as a list.</dd></dl>
+      </div>
+    </article>
+
+    <article class="idea" id="V4">
+      <div class="phone"><div class="shot"></div>
+        <div class="dd act" style="width:300px">
+          <div class="ddh btn">Play<span class="btnQ">Options</span></div>
+          <div class="learn"><span class="av" style="width:40px;height:40px"><img src="app-play-menu-lab/professor.svg" alt=""></span>
+            <div><b>Learn to play</b><small>Tutorial · 4 min</small></div><span class="btnG">Start</span></div>
+          <div class="grid end">
+            <span>Open tables</span><span>Play ranked</span>
+            <span>Host table</span><span>Join private</span>
+            <span>Rules</span><span>Leaderboard</span>
+          </div>
+        </div></div>
+      <div>
+        <div class="tagrow"><span class="tag">V4 · Tutorial first</span><button class="star" data-id="V4">☆ Pick</button></div>
+        <h3>The tutorial as a green first row</h3>
+        <p>Under the Play head, a green row with the Professor: Learn to play, Tutorial · 4 min, Start. Then six cells. Options moves into the head as a small button.</p>
+        <dl><dt>Good</dt><dd>A new player sees the tutorial first. The six cells keep today's three rows.</dd>
+          <dt>Risk</dt><dd>Players who know the game see the green row each time (V10 answers this). Options in the head is easy to miss.</dd>
+          <dt>Build</dt><dd>Medium: a row with the avatar, a button in the head.</dd></dl>
+      </div>
+    </article>
+
+    <article class="idea" id="V5">
+      <div class="phone"><div class="shot"></div>
+        <div class="dd paper" style="width:252px">
+          <div class="lbl">Play with people</div>
+          <div class="lcard"><div class="li">Open tables</div><div class="li">Play ranked</div><div class="li">Host table</div><div class="li">Join private</div></div>
+          <div class="lbl">Learn</div>
+          <div class="lcard"><div class="li">Tutorial<small>4 min</small></div><div class="li">Rules</div></div>
+          <div class="lbl">More</div>
+          <div class="lcard"><div class="li">Leaderboard</div><div class="li">Options</div></div>
+        </div></div>
+      <div>
+        <div class="tagrow"><span class="tag">V5 · Groups</span><button class="star" data-id="V5">☆ Pick</button></div>
+        <h3>Three groups, one column</h3>
+        <p>The rows in three groups with a label over each, as the settings box has them: Play with people, Learn, More.</p>
+        <dl><dt>Good</dt><dd>The labels say what each row is for. A new player finds Learn at once.</dd>
+          <dt>Risk</dt><dd>The tallest list (377px). Three labels to read in a small menu.</dd>
+          <dt>Build</dt><dd>Small to medium: labels and cards in the panel.</dd></dl>
+      </div>
+    </article>
+
+    <article class="idea" id="V6">
+      <div class="phone"><div class="shot"></div>
+        <div class="dd paper" style="width:300px">
+          <div class="lbl">Play with people</div>
+          <div class="gcard"><span>Open tables</span><span>Play ranked</span><span>Host table</span><span>Join private</span></div>
+          <div class="lbl">Learn</div>
+          <div class="gcard"><span>Tutorial<i>4 min</i></span><span>Rules</span></div>
+          <div class="lbl">More</div>
+          <div class="gcard"><span>Leaderboard</span><span>Options</span></div>
+        </div></div>
+      <div>
+        <div class="tagrow"><span class="tag">V6 · Groups, grid</span><button class="star" data-id="V6">☆ Pick</button></div>
+        <h3>Three groups, the grid kept</h3>
+        <p>The same three groups, each a small two-column card under its label. The labels take the head's place.</p>
+        <dl><dt>Good</dt><dd>Grouped, but 125px shorter than V5. Today's look stays.</dd>
+          <dt>Risk</dt><dd>Learn and More are thin cards of one row each.</dd>
+          <dt>Build</dt><dd>Small.</dd></dl>
+      </div>
+    </article>
+
+    <article class="idea" id="V7">
+      <div class="phone"><div class="shot"></div>
+        <div class="dd act" style="width:248px">
+          <div class="io">Open tables<svg class="gl"><use href="#i-table"/></svg></div>
+          <div class="io">Play ranked<svg class="gl"><use href="#i-crown"/></svg></div>
+          <div class="io">Host table<svg class="gl"><use href="#i-plus"/></svg></div>
+          <div class="io">Join private<svg class="gl"><use href="#i-lock"/></svg></div>
+          <div class="band"></div>
+          <div class="io two"><span>Tutorial<small>About 4 minutes</small></span><svg class="gl"><use href="#i-cap"/></svg></div>
+          <div class="io">Rules<svg class="gl"><use href="#i-book"/></svg></div>
+          <div class="band"></div>
+          <div class="io">Leaderboard<svg class="gl"><use href="#i-trophy"/></svg></div>
+          <div class="io">Options<svg class="gl"><use href="#i-sliders"/></svg></div>
+        </div></div>
+      <div>
+        <div class="tagrow"><span class="tag">V7 · Icons</span><button class="star" data-id="V7">☆ Pick</button></div>
+        <h3>A list with icons, as iOS menus</h3>
+        <p>One white list with no head. 40px rows, the word at the left, a glyph at the right, as an iOS context menu. A band parts the three groups.</p>
+        <dl><dt>Good</dt><dd>It looks at home on an iPhone. The glyphs help a player find a row without reading it. 40px rows are easy to tap.</dd>
+          <dt>Risk</dt><dd>Tall (344px). Eight glyphs to draw to the icon lab's rules (these are sketches). Android players get an iOS look.</dd>
+          <dt>Build</dt><dd>Medium: eight icons, a list style.</dd></dl>
+      </div>
+    </article>
+
+    <article class="idea" id="V8">
+      <div class="phone"><div class="shot"></div><div class="scrim"></div>
+        <div class="psheet" style="top:332px"><i class="grab"></i>
+          <div class="shead"><span>Play</span><span class="x">×</span></div>
+          <div class="sbody">
+            <div class="wcard learnCard">
+              <span class="av" style="width:56px;height:56px"><img src="app-play-menu-lab/professor.svg" alt=""></span>
+              <div class="t"><b>Learn Euchre</b><span>The Professor plays a hand with you. About 4 minutes.</span>
+                <div class="acts"><span class="btnG">Start</span><a>Read the rules</a></div></div>
+            </div>
+            <div class="wcard">
+              <div class="chead"><b>Leaderboard<small>Today</small></b><span class="btnG">See all</span></div>
+              <div class="lb"><span class="n" style="background:#ffd43b">1</span><span class="av" style="width:28px;height:28px"><img src="AnimalFox.svg" alt=""></span>RocknRoll<span class="r">1,624</span></div>
+              <div class="lb"><span class="n" style="background:#dcdad6">2</span><span class="av" style="width:28px;height:28px"><img src="AnimalCat.svg" alt=""></span>McGreen<span class="r">1,588</span></div>
+              <div class="lb"><span class="n" style="background:#f0b98a">3</span><span class="av" style="width:28px;height:28px"><img src="AnimalBee.svg" alt=""></span>Godfather<span class="r">1,571</span></div>
+              <div class="lbme">Play ranked to get your name on the board.</div>
+            </div>
+            <div class="gcard">
+              <span>Open tables</span><span>Play ranked</span>
+              <span>Host table</span><span>Join private</span>
+              <span class="full">Options</span>
+            </div>
+          </div>
+        </div></div>
+      <div>
+        <div class="tagrow"><span class="tag">V8 · Bold: a sheet</span><button class="star" data-id="V8">☆ Pick</button></div>
+        <h3>A Play sheet, not a menu</h3>
+        <p>The Play pill opens the app's sheet from the foot of the screen. It holds three things: Learn Euchre (the Professor, Start, Read the rules), today's leaderboard (the top three, See all), then the ways to a table.</p>
+        <dl><dt>Good</dt><dd>Room to show the board itself, not only a link to it. A thumb reaches it. The app has the sheet already (<code>AppSheet.js</code>).</dd>
+          <dt>Risk</dt><dd>It covers the home. It is no longer the same thing as the table's Play menu. The board needs a new feed of the top three.</dd>
+          <dt>Build</dt><dd>Large: a sheet body, a top-three request to the venue.</dd></dl>
+      </div>
+    </article>
+
+    <article class="idea wide" id="V9">
+      <div><p class="cap">The menu</p>
+        <div class="phone"><div class="shot"></div>
+          <div class="dd act" style="width:300px">
+            <div class="ddh">Play</div>
+            <div class="grid end">
+              <span>Open tables</span><span>Play ranked</span>
+              <span>Host table</span><span>Join private</span>
+              <span>Leaderboard</span><span>Options</span>
+            </div>
+            <div class="wrow">How to play<svg width="8" height="12"><use href="#i-chev"/></svg></div>
+          </div></div></div>
+      <div><p class="cap">After a tap on How to play</p>
+        <div class="phone"><div class="shot"></div>
+          <div class="dd act" style="width:300px">
+            <div class="ddh back"><svg><use href="#i-back"/></svg>How to play</div>
+            <div class="choice"><span class="av" style="width:40px;height:40px"><img src="app-play-menu-lab/professor.svg" alt=""></span>
+              <div><b>Tutorial</b><small>Play a hand with the Professor. About 4 minutes.</small></div><svg width="8" height="12"><use href="#i-chev"/></svg></div>
+            <div class="choice"><span class="ic"><svg class="gl"><use href="#i-book"/></svg></span>
+              <div><b>Rules</b><small>Read how the game is played.</small></div><svg width="8" height="12"><use href="#i-chev"/></svg></div>
+          </div></div></div>
+      <div>
+        <div class="tagrow"><span class="tag">V9 · One way to learn</span><button class="star" data-id="V9">☆ Pick</button></div>
+        <h3>Rules and Tutorial as one “How to play”</h3>
+        <p>The grid holds the four table ways, Leaderboard and Options. Under it, one full row: How to play. A tap slides the panel to a second view, as the Friends panel slides to a chat. There the player picks the tutorial or the rules, with a line on each.</p>
+        <dl><dt>Good</dt><dd>The menu stays at three rows of cells. The second view says what each one is before the player picks. “How to play” is the name the site uses for both.</dd>
+          <dt>Risk</dt><dd>One more tap for both. A back arrow in a small panel is easy to miss.</dd>
+          <dt>Build</dt><dd>Medium: the Friends panel's slider in the Play panel.</dd></dl>
+      </div>
+    </article>
+
+    <article class="idea wide" id="V10">
+      <div><p class="cap">Before the first finished game</p>
+        <div class="phone"><div class="shot"></div>
+          <div class="dd act" style="width:300px">
+            <div class="ddh btn">New here?<span class="btnQ">Options</span></div>
+            <div class="learn"><span class="av" style="width:48px;height:48px"><img src="app-play-menu-lab/professor.svg" alt=""></span>
+              <div><b>Learn to play</b><small>A practice hand with the Professor · 4 min</small></div><span class="btnG">Start</span></div>
+            <div class="grid end">
+              <span>Open tables</span><span>Play ranked</span>
+              <span>Host table</span><span>Join private</span>
+              <span>Rules</span><span>Leaderboard</span>
+            </div>
+          </div></div></div>
+      <div><p class="cap">After it, for a ranked player</p>
+        <div class="phone"><div class="shot"></div>
+          <div class="dd act" style="width:300px">
+            <div class="ddh btn">Play<span class="btnQ">Options</span></div>
+            <div class="grid">
+              <span>Open tables</span><span>Play ranked</span>
+              <span>Host table</span><span>Join private</span>
+            </div>
+            <div class="lbrow"><img src="app-play-menu-lab/trophy.svg" alt="">Leaderboard<span>You are 214th · 1,482</span></div>
+            <div class="grid end"><span>Tutorial<i>4 min</i></span><span>Rules</span></div>
+          </div></div></div>
+      <div>
+        <div class="tagrow"><span class="tag">V10 · Bold: it follows the player</span><button class="star" data-id="V10">☆ Pick</button></div>
+        <h3>The menu follows the player</h3>
+        <p>Until a player finishes a first game, the tutorial is the green first row. After it, the tutorial drops to a plain cell. The Leaderboard row then shows the player's own place.</p>
+        <dl><dt>Good</dt><dd>Each player sees what they need. A new player gets the tutorial. A regular gets a reason to open the board.</dd>
+          <dt>Risk</dt><dd>The menu changes under the player once. Guests have no place to show (the row then says “Today's top players”).</dd>
+          <dt>Build</dt><dd>Medium: the finished-games count (the server has it for the auto hints), the player's place on the board.</dd></dl>
+      </div>
+    </article>
+
+    <article class="idea wide" id="V11">
+      <div><p class="cap">The Learn cell's panel</p>
+        <div class="phone"><div class="shot"></div>
+          <div class="pill" style="left:8px;top:76px;width:80px"><span class="cell" style="background-image:url(app-play-menu-lab/playRound.svg)"></span><span class="cell"><svg width="20" height="20"><use href="#i-learnCell"/></svg></span></div>
+          <div class="dd act" style="width:280px">
+            <div class="ddh">Learn</div>
+            <div class="choice"><span class="av" style="width:40px;height:40px"><img src="app-play-menu-lab/professor.svg" alt=""></span>
+              <div><b>Tutorial</b><small>A practice hand with the Professor · 4 min</small></div><svg width="8" height="12"><use href="#i-chev"/></svg></div>
+            <div class="choice"><span class="ic"><svg class="gl"><use href="#i-book"/></svg></span>
+              <div><b>Rules</b><small>How the game is played</small></div><svg width="8" height="12"><use href="#i-chev"/></svg></div>
+          </div></div></div>
+      <div><p class="cap">The Play cell's menu beside it</p>
+        <div class="phone"><div class="shot"></div>
+          <div class="pill" style="left:8px;top:76px;width:80px"><span class="cell" style="background-image:url(app-play-menu-lab/playRound.svg)"></span><span class="cell"><svg width="20" height="20"><use href="#i-learnCell"/></svg></span></div>
+          <div class="dd act" style="width:300px">
+            <div class="ddh">Play</div>
+            <div class="grid end">
+              <span>Open tables</span><span>Play ranked</span>
+              <span>Host table</span><span>Join private</span>
+              <span>Leaderboard</span><span>Options</span>
+            </div>
+          </div></div></div>
+      <div>
+        <div class="tagrow"><span class="tag">V11 · Bold: a Learn cell</span><button class="star" data-id="V11">☆ Pick</button></div>
+        <h3>A Learn cell in the left pill</h3>
+        <p>The home's left pill gets a second cell beside Play: a book. It opens a small Learn panel with the tutorial and the rules. The Play menu keeps the ways to a table, the Leaderboard and Options.</p>
+        <dl><dt>Good</dt><dd>The way to the tutorial is in plain sight on the home, one tap away. The Play menu is only about playing.</dd>
+          <dt>Risk</dt><dd>A new icon for players to learn. The pill grows from 40 to 80px. The table's pill has no such cell.</dd>
+          <dt>Build</dt><dd>Medium: a pill cell, a panel, a book icon in the icon lab.</dd></dl>
+      </div>
+    </article>
+  </div>
+
+  <h2>Notes</h2>
+  <div class="box">
+    <ul>
+      <li>Where the rows go in code. The tutorial starts as the Professor's peek starts it: <code>Y.wocg.GameSelectors.getGameSelector(gameid).tutorialClickHandler(null)</code> (<code>TutorialPeek.js</code>). Its minutes are the <code>MINUTES</code> table in the same file (Euchre 4).</li>
+      <li>The board: <code>TableBar.openLeaderboard()</code> reads <code>table.gameid</code>, so it fails on the home, where no table is. The home needs its own call with the app's game: <code>new Y.ModalWebview().show("https://worldofcardgames.com/euchre-leaderboard?text-only=true")</code>, as the Table panel's button does on a phone.</li>
+      <li>The look: the panel's corner is 12 on the phone (dev computes <code>--radius-lg</code> as 12 there; 16 on a desktop). The Activity head is 33px: a 32px strip on <code>--paper-page</code> with a 1px <code>--line</code> under it, 16 bold. Today's Play menu is 300 wide on <code>--paper-page</code> with the white card inside it.</li>
+      <li>Not captured: the board in the app's web sheet. Dev has no <code>/euchre-leaderboard</code> page (the daily job writes the game boards on the server only). Dev's <code>/leaderboards</code> page in the sheet logs the home out (“The site is open somewhere else”). V8's board rows are made up.</li>
+      <li>The glyphs in V7, V9 and V11 are sketches. Real ones go through <code>icon-lab-all.html</code> first.</li>
+      <li>Rerun the screenshots and styles: <code>node app-play-menu-lab/capture.mjs</code> from <code>Design/WoCG-3</code> (dev must be up). The page check: <code>node app-play-menu-lab/check.mjs</code>.</li>
+    </ul>
+  </div>
+</main>
+<div class="picks"><b>Your picks:</b><span id="pickList">none yet</span><button id="pickCopy" type="button">Copy</button></div>
+<script>
+  (function () {
+    var KEY = "app-play-menu-lab-picks";
+    var picks = [];
+    try { picks = JSON.parse(localStorage.getItem(KEY) || "[]"); } catch (e) {}
+    var stars = Array.prototype.slice.call(document.querySelectorAll(".star"));
+    function label(id) {
+      var art = document.getElementById(id);
+      return art.querySelector(".tag").textContent.split(" · ")[0] + " " + art.querySelector("h3").textContent;
+    }
+    function render() {
+      stars.forEach(function (s) {
+        var on = picks.indexOf(s.dataset.id) >= 0;
+        s.setAttribute("aria-pressed", on ? "true" : "false");
+        s.textContent = on ? "★ Picked" : "☆ Pick";
+      });
+      document.getElementById("pickList").textContent = picks.length ? picks.map(label).join(" · ") : "none yet";
+      try { localStorage.setItem(KEY, JSON.stringify(picks)); } catch (e) {}
+    }
+    stars.forEach(function (s) {
+      s.addEventListener("click", function () {
+        var i = picks.indexOf(s.dataset.id);
+        if (i >= 0) picks.splice(i, 1); else picks.push(s.dataset.id);
+        render();
+      });
+    });
+    document.getElementById("pickCopy").addEventListener("click", function () {
+      navigator.clipboard.writeText("App Play menu lab picks: " + (picks.length ? picks.map(label).join("; ") : "none"));
+    });
+    render();
+  })();
+</script>
+</body>
+</html>

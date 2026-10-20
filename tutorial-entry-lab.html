@@ -1,0 +1,601 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Tutorial entry lab: ways to lead players into the tutorial</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="guide-fonts.css">
+<!--
+  The tutorial entry lab (20 Oct 2026). Holger: "so there's no way to actually go through the tutorial? Now while
+  playing a game either? Create a lab and come up with a bunch of different ways we could lead people into the
+  tutorial."
+  The phones are the Canasta app on an iPhone Air (420 by 912 points, safe area 68 on top), screenshots of dev in
+  WebKit with an iPhone's user agent (node tutorial-entry-lab/capture.mjs, from Design/WoCG-3). The game over and the
+  tutorial's meld step are the visual sweep's shots at 390 by 664 (scripts/visual-sweep, run tutorial-entry-lab).
+  The new parts are drawn on top, with the looks read off dev (node tutorial-entry-lab/styles.mjs, styles.json).
+  The home ideas cut the whole page (home-full.jpg) in two and put the new card between the halves.
+-->
+<style>
+  :root {
+    --paper-page: #f9f6f2;
+    --paper-card: #ffffff;
+    --paper-band: #f4eee5;
+    --ink: #141414;
+    --ink-label: #4e4d4c;
+    --ink-quiet: #67635c;
+    --ink-mark: #9b9997;
+    --line: #d2cfca;
+    --line-soft: #ebe7de;
+    --link: #1971c2;
+    --btn-green: #43a038;
+    --btn-green-ring: #347d2c;
+    --btn-red: #c92a2a;
+    --btn-red-ring: #9d2121;
+    --btn-quiet: #d9d2c4;
+    --btn-quiet-ring: #bfb5a1;
+    --btn-dark: #5e574b;
+    --yellow: #ffd43b;
+    --yellow-ink: #3d2b00;
+    --ring: #393939;
+    --ui: "BuloRounded", Verdana, Arial, Helvetica, sans-serif;
+    --display: "Gelica", Georgia, serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper-page); color: var(--ink); font: 16px/24px var(--ui); }
+  main { max-width: 1320px; margin: 0 auto; padding: 32px 28px 120px; }
+  h1 { font: 700 38px/44px var(--display); margin: 0 0 8px; }
+  h2 { font: 700 26px/32px var(--display); margin: 48px 0 6px; }
+  .lead { color: var(--ink-label); max-width: 820px; margin: 0 0 8px; }
+  .sub { color: var(--ink-label); max-width: 820px; margin: 0 0 20px; }
+  code { font: 14px/20px ui-monospace, Menlo, monospace; background: var(--paper-band); padding: 1px 5px; border-radius: 5px; }
+
+  /* The summary and the table of today's ways in */
+  .box { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 18px 22px; margin: 16px 0; }
+  .box h3 { font: 700 20px/28px var(--ui); margin: 0 0 6px; }
+  .box p { margin: 6px 0; }
+  .box ol, .box ul { margin: 6px 0; padding-left: 22px; }
+  .box li { margin: 4px 0; }
+  table.today { border-collapse: collapse; width: 100%; font-size: 15px; line-height: 22px; }
+  table.today th { text-align: left; font-weight: 700; color: var(--ink-label); padding: 6px 10px; border-bottom: 1px solid var(--line); }
+  table.today td { padding: 8px 10px; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+  .no { color: var(--btn-red); font-weight: 700; }
+  .half { color: #b35c00; font-weight: 700; }
+  .ok { color: #2b8a3e; font-weight: 700; }
+  .row3 { display: flex; gap: 28px; flex-wrap: wrap; align-items: flex-start; margin-top: 18px; }
+  .row3 figure { margin: 0; }
+  figcaption { font-size: 14px; line-height: 20px; color: var(--ink-label); max-width: 278px; margin-top: 10px; }
+
+  /* Ideas */
+  .ideas { display: grid; grid-template-columns: repeat(auto-fill, minmax(590px, 1fr)); gap: 30px 34px; margin-top: 18px; }
+  .idea { display: grid; grid-template-columns: 278px 1fr; gap: 20px; align-items: start; }
+  .idea.text { align-self: start; grid-template-columns: 1fr; background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 18px 22px; }
+  .idea h3 { font: 700 20px/26px var(--ui); margin: 2px 0 6px; }
+  .idea p { margin: 0 0 8px; font-size: 15px; line-height: 22px; }
+  .idea dl { margin: 8px 0 0; display: grid; grid-template-columns: 62px 1fr; gap: 4px 10px; font-size: 14px; line-height: 20px; }
+  .idea dt { color: var(--ink-quiet); font-weight: 700; }
+  .idea dd { margin: 0; }
+  .tagrow { display: flex; align-items: center; gap: 8px; }
+  .tag { font-size: 13px; line-height: 18px; font-weight: 700; color: var(--ink-label); background: var(--paper-band); border: 1px solid var(--line); border-radius: 9px; padding: 1px 8px; }
+  .mine { font-size: 13px; line-height: 18px; font-weight: 700; color: #fff; background: var(--btn-green); border-radius: 9px; padding: 1px 8px; }
+  .star { margin-left: auto; font: 700 14px/20px var(--ui); color: var(--ink-label); background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 3px 12px; cursor: pointer; }
+  .star[aria-pressed="true"] { background: var(--yellow); border-color: var(--ring); color: var(--yellow-ink); }
+  .picks { position: fixed; left: 0; right: 0; bottom: 0; background: #fff; border-top: 1px solid var(--line); padding: 10px 28px; display: flex; gap: 12px; align-items: center; font-size: 15px; box-shadow: 0 -4px 14px rgba(60, 45, 25, .08); z-index: 5; }
+  .picks button { font: 700 14px/20px var(--ui); border: 0; border-radius: 12px; padding: 3px 12px; background: var(--btn-green); color: #fff; cursor: pointer; }
+
+  /* The phone: 420 by 912 points, drawn at 0.662 so it is 278 wide */
+  .phone { position: relative; width: 420px; height: 912px; overflow: hidden; border-radius: 58px; background: #000; zoom: .662;
+    box-shadow: 0 0 0 9px #1d1d1f, 0 0 0 10px #48484a, 0 18px 40px rgba(40, 30, 15, .28); }
+  .phone.se { width: 390px; height: 664px; border-radius: 40px; zoom: .713; }
+  .shot { position: absolute; inset: 0; background: 0 0 / 100% auto no-repeat; }
+  .stack { position: absolute; inset: 0; background: #00bb88; }
+  .sl { height: calc(var(--h) * 1px); background: url(tutorial-entry-lab/home-full.jpg) 0 calc(var(--y) * -1px) / 420px auto no-repeat; }
+  .abs { position: absolute; }
+  .scrim { position: absolute; inset: 0; background: rgba(20, 14, 6, .45); }
+
+  /* The app's pieces, as dev draws them */
+  .btnG, .btnR, .btnQ, .btnY, .btnD { display: inline-flex; align-items: center; justify-content: center; height: 24px; padding: 0 10px; border-radius: 12px; font: 700 16px/24px var(--ui); white-space: nowrap; }
+  .btnG { background: var(--btn-green); color: #fff; box-shadow: inset 0 0 0 1px var(--btn-green-ring), 0 2px 4px rgba(0, 0, 0, .06);
+    text-shadow: -1px -1px 0 var(--btn-green-ring), 1px -1px 0 var(--btn-green-ring), -1px 1px 0 var(--btn-green-ring), 1px 1px 0 var(--btn-green-ring); }
+  .btnR { background: var(--btn-red); color: #fff; box-shadow: inset 0 0 0 1px var(--btn-red-ring);
+    text-shadow: -1px -1px 0 var(--btn-red-ring), 1px -1px 0 var(--btn-red-ring), -1px 1px 0 var(--btn-red-ring), 1px 1px 0 var(--btn-red-ring); }
+  .btnQ { background: var(--btn-quiet); color: var(--ink); box-shadow: inset 0 0 0 1px var(--btn-quiet-ring); }
+  .btnY { background: var(--yellow); color: var(--yellow-ink); box-shadow: 0 0 0 1px var(--ring), 0 1px 2px rgba(0, 0, 0, .3); }
+  .btnD { background: var(--btn-dark); color: #fff; box-shadow: 0 0 0 1px #484136; }
+  .lg { height: 36px; border-radius: 14px; font-size: 18px; padding: 0 16px; }
+  .card { background: #fff; border: 1px solid var(--ring); border-radius: 20px; box-shadow: 0 2px 4px rgba(60, 45, 25, .04), 0 4px 12px rgba(60, 45, 25, .12); }
+  .head { display: flex; align-items: center; justify-content: space-between; gap: 12px; background: var(--paper-band); border-radius: 19px 19px 0 0;
+    box-shadow: inset 0 -1px 0 var(--line); padding: 8px 8px 9px; }
+  .head h5 { margin: 0; padding-left: 8px; font: 700 20px/28px var(--ui); }
+  .head h5 small { font: 400 16px/24px var(--ui); color: var(--ink-quiet); margin-left: 6px; }
+  .av { flex: none; border-radius: 50%; background: var(--paper-band); border: 1px solid var(--line); overflow: hidden; display: grid; place-items: center; }
+  .av img { width: 100%; height: 100%; display: block; }
+  .pill { position: absolute; height: 40px; display: flex; background: #f9f6f2; border-radius: 16px; box-shadow: 0 0 0 1px var(--ring), 0 0 8px rgba(0, 0, 0, .24); overflow: hidden; }
+  .cell { width: 40px; height: 40px; flex: none; background: center / 40px 40px no-repeat; display: grid; place-items: center; }
+  .cell + .cell { box-shadow: inset 1px 0 0 var(--line); }
+  .bubble { position: absolute; background: #fff; border-radius: 12px; box-shadow: 0 0 0 1px rgba(0, 0, 0, .18), 0 2px 8px rgba(0, 0, 0, .2); padding: 10px 14px; font: 16px/22px var(--ui); color: var(--ink); }
+  .bubble::after { content: ""; position: absolute; width: 16px; height: 16px; background: #fff; transform: rotate(45deg); box-shadow: 1px 1px 0 rgba(0, 0, 0, .18); }
+  .bubble.down::after { bottom: -8px; left: var(--tail, 30px); }
+  .bubble.up::after { top: -8px; left: var(--tail, 30px); box-shadow: -1px -1px 0 rgba(0, 0, 0, .18); }
+  .bubble.dark { background: #141414; color: #fff; font-weight: 700; font-size: 15px; white-space: nowrap; }
+  .bubble.dark::after { background: #141414; box-shadow: none; }
+  .bubble .acts { display: flex; gap: 8px; margin-top: 10px; }
+  .notice { position: absolute; background: #f9f6f1; border-radius: 10px; box-shadow: 0 0 0 1px rgba(0, 0, 0, .22); padding: 8px 12px; font: 16px/24px var(--ui); color: var(--ink); }
+  .notice a { color: var(--link); font-weight: 700; text-decoration: none; display: block; margin-top: 6px; }
+  .ringMark { position: absolute; border: 3px solid #f03e3e; border-radius: 10px; box-shadow: 0 0 0 4px rgba(240, 62, 62, .25); }
+  .ringMark::after { content: attr(data-n); position: absolute; right: -14px; top: -14px; width: 26px; height: 26px; border-radius: 50%; background: #f03e3e; color: #fff; font: 700 16px/26px var(--ui); text-align: center; }
+
+  /* A1 the first-open sheet */
+  .sheet { position: absolute; left: 0; right: 0; bottom: 0; background: #f9f6f2; border-radius: 22px 22px 0 0; padding: 12px 16px 40px; box-shadow: 0 -4px 20px rgba(0, 0, 0, .25); }
+  .grab { display: block; width: 40px; height: 5px; border-radius: 3px; background: #b6ae9f; margin: 0 auto 12px; }
+  .sheet h4 { font: 700 22px/28px var(--ui); text-align: center; margin: 10px 0 2px; }
+  .sheet .sheetSub { text-align: center; color: var(--ink-quiet); font-size: 15px; margin: 0 0 14px; }
+  .opt { display: flex; align-items: center; gap: 12px; background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 10px 14px; margin-top: 8px; }
+  .opt b { display: block; font: 700 18px/24px var(--ui); }
+  .opt small { display: block; font: 14px/20px var(--ui); color: var(--ink-label); }
+  .opt .chev { margin-left: auto; color: var(--ink-mark); font-size: 22px; }
+  .opt .num { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font: 700 16px/1 var(--ui); flex: none; }
+
+  /* B1 the new-player card */
+  .npCard { position: relative; margin: 0 12px 0; display: flex; align-items: center; gap: 12px; padding: 12px 14px 12px 12px; }
+  .npCard .t b { display: block; font: 700 18px/24px var(--ui); }
+  .npCard .t span { display: block; font: 14px/20px var(--ui); color: var(--ink-label); }
+  .x { position: absolute; top: 6px; right: 8px; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font: 700 15px/1 var(--ui); color: var(--ink-mark); background: var(--paper-band); }
+
+  /* B2 the capsule with a second tab */
+  .tabs2 { position: absolute; height: 26px; display: flex; background: #017052; border-radius: 0 0 14px 14px; color: #fff; font: 16px/24px var(--ui); overflow: hidden; }
+  .tabs2 > span { display: flex; align-items: center; gap: 6px; padding: 0 14px 3px; }
+  .tabs2 > span + span { box-shadow: inset 1px 0 0 rgba(255, 255, 255, .28); font-weight: 700; color: var(--yellow); }
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: #58d04a; display: inline-block; }
+
+  /* B3 and B8 the learn section */
+  .secPad { padding: 0 12px 12px; }
+  .learnBody { display: flex; gap: 14px; align-items: center; padding: 14px 16px 12px; font-size: 16px; line-height: 22px; }
+  .dstat { display: flex; justify-content: space-between; padding: 8px 16px; font: 14px/20px var(--ui); color: var(--ink-label); box-shadow: inset 0 1px 0 var(--line-soft); }
+  .chap { display: flex; align-items: center; gap: 12px; padding: 9px 12px 9px 16px; box-shadow: inset 0 1px 0 var(--line-soft); font-size: 16px; line-height: 22px; }
+  .chap:first-of-type { box-shadow: none; }
+  .chk { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--line); flex: none; display: grid; place-items: center; font: 700 14px/1 var(--ui); color: #fff; }
+  .chk.done { background: var(--btn-green); border-color: var(--btn-green-ring); }
+  .chap .btnG { margin-left: auto; }
+  .chap small { color: var(--ink-quiet); font-size: 14px; margin-left: auto; }
+
+  /* B6 the Play menu, redrawn below its head */
+  .menuRest { position: absolute; background: #f9f6f2; border-radius: 0 0 12px 12px; box-shadow: 0 0 0 1px var(--ring), 0 0 8px rgba(0, 0, 0, .24); clip-path: inset(0 -20px -20px -20px); }
+  .mcard { position: absolute; background: #fff; border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 1px 2px rgba(60, 45, 25, .04), 0 2px 5px rgba(60, 45, 25, .05); display: grid; grid-template-columns: 1fr 1fr; overflow: hidden; }
+  .mcard > div { height: 33px; padding: 4px 12px; text-align: center; font: 16px/24px var(--ui); box-shadow: inset -1px 0 0 var(--line-soft), inset 0 -1px 0 var(--line-soft); }
+  .mcard > .wide { grid-column: 1 / -1; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 700; color: #2b8a3e; background: #f1f8ec; }
+  .newBadge { font: 700 12px/16px var(--ui); color: var(--yellow-ink); background: var(--yellow); border-radius: 8px; padding: 0 6px; box-shadow: 0 0 0 1px var(--ring); }
+
+  /* B7 the tutorial card in the How to play box */
+  .boxCard { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 12px; }
+  .boxCard .top { display: flex; gap: 12px; align-items: center; margin-bottom: 10px; }
+  .boxCard b { display: block; font: 700 18px/24px var(--ui); }
+  .boxCard .top span { display: block; font: 14px/20px var(--ui); color: var(--ink-label); }
+
+  /* C1 the prompt before the first deal, D1 the end card's foot */
+  .prompt { position: absolute; background: #f9f6f1; border-radius: 20px; box-shadow: 0 6px 24px rgba(0, 0, 0, .35); padding: 18px 18px 16px; text-align: center; }
+  .prompt h4 { font: 700 22px/28px var(--ui); margin: 10px 0 4px; }
+  .prompt p { font: 16px/22px var(--ui); color: var(--ink-label); margin: 0 0 14px; }
+  .prompt .acts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .prompt .acts > span { height: 44px; border-radius: 12px; font-size: 18px; }
+  .endFoot { position: absolute; background: #f9f6f1; border-radius: 0 0 20px 20px; box-shadow: 0 8px 14px rgba(0, 0, 0, .3); clip-path: inset(0 -20px -30px -20px); padding: 10px 14px 12px;
+    display: flex; align-items: center; gap: 10px; }
+  .endFoot .t { font: 15px/20px var(--ui); color: var(--ink); }
+  .endFoot .t b { display: block; }
+  .glow { position: absolute; border-radius: 14px; box-shadow: 0 0 0 3px var(--yellow), 0 0 18px 6px rgba(255, 212, 59, .8); animation: pulse 1.6s ease-in-out infinite; }
+  @keyframes pulse { 50% { box-shadow: 0 0 0 3px var(--yellow), 0 0 6px 2px rgba(255, 212, 59, .4); } }
+
+  /* B9 three doors */
+  .tray { position: absolute; background: #02654c; border-radius: 26px; padding: 6px; display: flex; }
+  .door { flex: 1; height: 56px; background: var(--yellow); color: var(--yellow-ink); display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 0 0 1px var(--ring); }
+  .door:first-child { border-radius: 20px 0 0 20px; }
+  .door:last-child { border-radius: 0 20px 20px 0; }
+  .door b { font: 700 21px/24px var(--ui); }
+  .door small { font: 700 13px/16px var(--ui); }
+  .door.learn { background: #fff3bf; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Ways into the tutorial</h1>
+  <p class="lead">20 Oct 2026. Every game has an interactive tutorial with the Professor. Today a new player cannot find it in the app. This lab shows where it is today, then 18 ways to lead players into it.</p>
+  <p class="sub">The phones are the Canasta app on an iPhone Air (420 by 912), screenshots of dev in WebKit. The new parts are drawn on top in the app's own styles. Press ☆ Pick on the ones you like. The bar at the foot collects them for you to copy.</p>
+
+  <h2>Where the tutorial is today</h2>
+  <div class="box">
+    <table class="today">
+      <tr><th style="width:150px">Place</th><th>The way in</th><th style="width:330px">Result</th></tr>
+      <tr><td>App home</td><td>Play pill → Rules → the blue words “interactive tutorial” in the second paragraph of the box (1).</td><td><span class="no">Hidden.</span> The link has <code>target="_blank"</code>. In the app, Capacitor gives such links to the system browser, so by the code it opens the website in Safari. I did not tap it on a phone.</td></tr>
+      <tr><td>App table</td><td>Table panel (i) → Rules → the same link (2).</td><td><span class="no">Hidden.</span> The same as the home.</td></tr>
+      <tr><td>Web front page</td><td>A game's menu → Rules.</td><td><span class="half">Works, with the wrong name.</span> It opens the How to play page. That page starts the tutorial at once, with the rules under it.</td></tr>
+      <tr><td>Web table</td><td>Table panel → Rules → the link in the box.</td><td><span class="half">Hidden.</span> It opens the tutorial in a new tab.</td></tr>
+      <tr><td>Search</td><td><code>/how-to-play-&lt;game&gt;</code></td><td><span class="ok">Used.</span> 5,270 views in 30 days for the 18 games (Hearts 707, Euchre 656, Hand &amp; Foot 540, Spades 526, Canasta 198).</td></tr>
+      <tr><td>Tracking</td><td>None.</td><td><span class="no">Not known.</span> The tutorial sends no event. We cannot see who starts it, who finishes it or where they stop.</td></tr>
+    </table>
+    <div class="row3">
+      <figure>
+        <div class="phone"><div class="shot" style="background-image:url(tutorial-entry-lab/home-rules.jpg)"></div>
+          <div class="ringMark" data-n="1" style="left:250px;top:160px;width:134px;height:29px"></div></div>
+        <figcaption>The home's How to play box. The only way to the tutorial is the blue link in the text.</figcaption>
+      </figure>
+      <figure>
+        <div class="phone"><div class="shot" style="background-image:url(tutorial-entry-lab/table-panel.jpg)"></div>
+          <div class="ringMark" data-n="2" style="left:16px;top:139px;width:142px;height:32px"></div></div>
+        <figcaption>At the table, Rules opens the same box over the game.</figcaption>
+      </figure>
+      <figure>
+        <div class="phone se"><div class="shot" style="background-image:url(tutorial-entry-lab/tutorial-meld.jpg)"></div></div>
+        <figcaption>What a player gets: the Professor plays the hand with them, one line at a time. Canasta's tutorial has about 35 lines.</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <div class="box">
+    <h3>My pick: four together, then measure</h3>
+    <ol>
+      <li><b>B8</b>, a tutorial card at the top of the How to play box, with the link fixed so the tutorial starts in the app. This is the fix for today's gap. Small to build.</li>
+      <li><b>B1</b>, a card for new players on the home, under the doors, until the first finished game. Most new players see the home first.</li>
+      <li><b>C4</b>, a Tutorial button in the Table panel, beside Rules. A player who is lost mid-game finds it where Rules is.</li>
+      <li><b>C2</b>, the hint lamp offers the tutorial when a new player is stuck. This catches the players who need it most, at the moment they need it.</li>
+    </ol>
+    <p>Then add the events: <code>TutorialStarted</code> (with the place it came from), <code>TutorialFinished</code> and <code>TutorialExited</code> (with the step). After two weeks we can see which place brings players in. We can also see if they play a second game more often.</p>
+  </div>
+
+  <h2>A. When the app opens for the first time</h2>
+  <div class="ideas">
+    <article class="idea" id="A1">
+      <div class="phone"><div class="shot" style="background-image:url(tutorial-entry-lab/home.jpg)"></div><div class="scrim"></div>
+        <div class="sheet"><i class="grab"></i>
+          <div class="av" style="width:84px;height:84px;margin:0 auto"><img src="tutorial-entry-lab/professor.svg" alt=""></div>
+          <h4>Do you know how to play Canasta?</h4>
+          <p class="sheetSub">Pick one. It sets how much help you get.</p>
+          <div class="opt"><span class="num btnG" style="height:34px">1</span><div><b>No, teach me</b><small>A practice game with the Professor</small></div><span class="chev">›</span></div>
+          <div class="opt"><span class="num btnY" style="height:34px">2</span><div><b>A little</b><small>Play now, with tips on the way</small></div><span class="chev">›</span></div>
+          <div class="opt"><span class="num btnQ" style="height:34px">3</span><div><b>Yes, I know it</b><small>Go straight to the game</small></div><span class="chev">›</span></div>
+        </div></div>
+      <div>
+        <div class="tagrow"><span class="tag">A1 · First open</span><button class="star" data-id="A1">☆ Pick</button></div>
+        <h3>Ask once: do you know the game?</h3>
+        <p>A sheet after the launch, one time per app. “No” starts the tutorial. “A little” plays a game with the hints on. “Yes” goes to the home.</p>
+        <dl><dt>Good</dt><dd>Every new player sees it. The answer also tells us who is new, so the hints can follow it.</dd>
+          <dt>Risk</dt><dd>One more tap before the first hand. Cribbage Pro asks the same; most apps in the onboarding lab ask nothing.</dd>
+          <dt>Build</dt><dd>Medium: a sheet, one saved answer, the hints set from it.</dd></dl>
+      </div>
+    </article>
+
+    <article class="idea" id="A2">
+      <div class="phone"><div class="shot" style="background-image:url(tutorial-entry-lab/home.jpg)"></div>
+        <div class="tray" style="left:12px;top:277px;width:396px;height:68px">
+          <div class="door"><b>Join table</b><small>With people</small></div>
+          <div class="door"><b>Play solo</b><small>With bots</small></div>
+          <div class="door learn"><b>Learn</b><small>The tutorial</small></div>
+        </div></div>
+      <div>
+        <div class="tagrow"><span class="tag">A2 · First open</span><button class="star" data-id="A2">☆ Pick</button></div>
+        <h3>A third door: Learn</h3>
+        <p>For a new player the doors get a third choice beside Join table and Play solo. It goes away after the first finished game, or stays as a lighter door.</p>
+        <dl><dt>Good</dt><dd>The strongest place on the home. It says “you can learn here” before the player picks.</dd>
+          <dt>Risk</dt><dd>Three doors are tight at 420 wide (the words drop to 21 px). It takes taps from Play solo.</dd>
+          <dt>Build</dt><dd>Small: one more door, a “new player” test.</dd></dl>
+      </div>
+    </article>
+  </div>
+
+  <h2>B. On the home</h2>
+  <div class="ideas">
+    <article class="idea" id="B1">
+      <div class="phone"><div class="stack">
+          <div class="sl" style="--y:0;--h:395"></div>
+          <div class="card npCard"><span class="x">×</span>
+            <div class="av" style="width:60px;height:60px"><img src="tutorial-entry-lab/professor.svg" alt=""></div>
+            <div class="t"><b>New to Canasta?</b><span>Learn it in a practice game with the Professor.</span></div>
+            <span class="btnG lg" style="margin-left:auto">Learn</span></div>
+          <div class="sl" style="--y:395;--h:520"></div>
+        </div></div>
+      <div>
+        <div class="tagrow"><span class="tag">B1 · Home</span><span class="mine">My pick</span><button class="star" data-id="B1">☆ Pick</button></div>
+        <h3>A card for new players</h3>
+        <p>A card between the doors and the open tables. It shows until the player finishes a first game, or closes it with ×.</p>
+        <dl><dt>Good</dt><dd>Seen by every new player, but it asks for nothing. Players who know the game scroll past.</dd>
+          <dt>Risk</dt><dd>It pushes the open tables down by one card.</dd>
+          <dt>Build</dt><dd>Small: a card, a closed flag, the finished-games count (the server has it for the auto hints).</dd></dl>
+      </div>
+    </article>
+
+    <article class="idea" id="B2">
+      <div class="phone"><div class="shot" style="background-image:url(tutorial-entry-lab/home.jpg)"></div>
+        <div class="tabs2" style="left:56px;top:345px">
+          <span><i class="dot"></i><b>3</b> people playing</span>
+          <span><svg width="18" height="18" viewBox="0 0 24 24"><path d="M2.5 5.5c3-1.1 6.2-.9 9.5 1.1v13c-3.3-2-6.5-2.2-9.5-1.1z" fill="#ffd43b" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/><path d="M21.5 5.5c-3-1.1-6.2-.9-9.5 1.1v13c3.3-2 6.5-2.2 9.5-1.1z" fill="#fff3bf" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg>How to play</span>
+        </div></div>
+      <div>
+        <div class="tagrow"><span class="tag">B2 · Home</span><button class="star" data-id="B2">☆ Pick</button></div>
+        <h3>A second tab under the doors</h3>
+        <p>The tab that says how many people play gets a neighbour: How to play. It opens the tutorial, with the rules one tap further.</p>
+        <dl><dt>Good</dt><dd>Always there, close to the doors, but quiet. No new card on the page.</dd>
+          <dt>Risk</dt><dd>Small text on the felt. Some players will not see it as a button.</dd>
+          <dt>Build</dt><dd>Small.</dd></dl>
+      </div>
+    </article>
+
+    <article class="idea" id="B3">
+      <div class="phone"><div class="stack">
+          <div class="sl" style="--y:0;--h:395"></div>
+          <div class="secPad"><div class="card">
+            <div class="head"><h5>Learn Canasta</h5><span class="btnG">Start</span></div>
+            <div class="learnBody"><div class="av" style="width:72px;height:72px"><img src="tutorial-entry-lab/professor.svg" alt=""></div>
+              <div>A practice game with the Professor. He shows each rule when it comes up.</div></div>
+            <div class="dstat"><span><b>About 35 steps</b> · stop at any time</span><span>Not started</span></div>
+          </div></div>
+          <div class="sl" style="--y:395;--h:520"></div>
+        </div></div>
+      <div>
+        <div class="tagrow"><span class="tag">B3 · Home</span><button class="star" data-id="B3">☆ Pick</button></div>
+        <h3>A Learn section, like the daily challenge</h3>
+        <p>A full section in the home's own look. For a new player it sits above Join a table. After the tutorial it moves under the daily challenge and says “Finished · Play again”.</p>
+        <dl><dt>Good</dt><dd>Clear and calm. It fits the home's sections. It can show progress.</dd>
+          <dt>Risk</dt><dd>Big. A player who knows Canasta must scroll past a whole section.</dd>
+          <dt>Build</dt><dd>Small to medium: the section, a saved “finished” flag.</dd></dl>
+      </div>
+    </article>
+
+    <article class="idea" id="B4">
+      <div class="phone"><div class="stack">
+          <div class="sl" style="--y:0;--h:395"></div>
+          <div class="secPad"><div class="card">
+            <div class="head"><h5>Learn Canasta<small>1 of 4 done</small></h5></div>
+            <div class="chap"><span class="chk done">✓</span>The deal and red threes<small>Done</small></div>
+            <div class="chap"><span class="chk"></span>Melds and canastas<span class="btnG">Start</span></div>
+            <div class="chap"><span class="chk"></span>Taking the pile</div>
+            <div class="chap"><span class="chk"></span>Going out and scoring</div>
+          </div></div>
+          <div class="sl" style="--y:395;--h:520"></div>
+        </div></div>
+      <div>
+        <div class="tagrow"><span class="tag">B4 · Home</span><button class="star" data-id="B4">☆ Pick</button></div>
+        <h3>Short lessons with ticks</h3>
+        <p>The tutorial cut into three to five short lessons. Each lesson is a minute or two, with a tick when done. This is how Tricky Bridge teaches.</p>
+        <dl><dt>Good</dt><dd>A short lesson is easy to start. Ticks make players come back for the next one.</dd>
+          <dt>Risk</dt><dd>The most work: 18 scripts must be cut into lessons that each start from their own deal.</dd>
+          <dt>Build</dt><dd>Large.</dd></dl>
+      </div>
+    </article>
+
+    <article class="idea" id="B5">
+      <div class="phone"><div class="shot" style="background-image:url(tutorial-entry-lab/home.jpg)"></div>
+        <div class="bubble down" style="left:70px;top:672px;width:236px;--tail:190px">New here? I can teach you Canasta.<div class="acts"><span class="btnG">Teach me</span><span class="btnQ">Not now</span></div></div>
+        <img class="abs" src="tutorial-entry-lab/professor.svg" alt="" style="left:262px;top:788px;width:150px;transform:rotate(-10deg)">
+      </div>
+      <div>
+        <div class="tagrow"><span class="tag">B5 · Home</span><button class="star" data-id="B5">☆ Pick</button></div>
+        <h3>The Professor peeks in</h3>
+        <p>The Professor looks up from the foot of the screen, a few seconds after the home opens. He asks once. “Not now” sends him away for good.</p>
+        <dl><dt>Good</dt><dd>Warm. It shows the teacher before the tutorial starts. It uses the art we have.</dd>
+          <dt>Risk</dt><dd>It covers the page. Some players find a character that pops up annoying.</dd>
+          <dt>Build</dt><dd>Small to medium: the motion and the bubble.</dd></dl>
+      </div>
+    </article>
+
+    <article class="idea" id="B6">
+      <div class="phone"><div class="shot" style="background-image:url(tutorial-entry-lab/home.jpg)"></div>
+        <div class="pill" style="left:8px;top:76px;width:80px">
+          <span class="cell" style="background-image:url(tutorial-entry-lab/playRound.svg)"></span>
+          <span class="cell"><svg width="26" height="26" viewBox="0 0 24 24"><path d="M2.5 5.5c3-1.1 6.2-.9 9.5 1.1v13c-3.3-2-6.5-2.2-9.5-1.1z" fill="#74c0fc" stroke="#1864ab" stroke-width="1.6" stroke-linejoin="round"/><path d="M21.5 5.5c-3-1.1-6.2-.9-9.5 1.1v13c3.3-2 6.5-2.2 9.5-1.1z" fill="#d0ebff" stroke="#1864ab" stroke-width="1.6" stroke-linejoin="round"/></svg></span>
+        </div>
+        <div class="bubble up dark" style="left:28px;top:128px;--tail:34px">New here? Learn Canasta</div>
+      </div>
+      <div>
+        <div class="tagrow"><span class="tag">B6 · Home</span><button class="star" data-id="B6">☆ Pick</button></div>
+        <h3>A How to play button in the corner pill</h3>
+        <p>A book beside the Play button in the top corner. It opens the tutorial, with the rules one tap further. A new player gets a small label under it once.</p>
+        <dl><dt>Good</dt><dd>Always in the same place, also at the table, as the pill goes with you.</dd>
+          <dt>Risk</dt><dd>An icon alone is easy to miss. It adds a cell to a pill we keep short.</dd>
+          <dt>Build</dt><dd>Small.</dd></dl>
+      </div>
+    </article>
+
+    <article class="idea" id="B7">
+      <div class="phone"><div class="shot" style="background-image:url(tutorial-entry-lab/home-play.jpg)"></div>
+        <div class="menuRest" style="left:8px;top:156px;width:300px;height:160px"></div>
+        <div class="mcard" style="left:20px;top:161px;width:276px">
+          <div class="wide"><svg width="20" height="20" viewBox="0 0 24 24"><path d="M2.5 5.5c3-1.1 6.2-.9 9.5 1.1v13c-3.3-2-6.5-2.2-9.5-1.1z" fill="#8ce99a" stroke="#2b8a3e" stroke-width="1.6" stroke-linejoin="round"/><path d="M21.5 5.5c-3-1.1-6.2-.9-9.5 1.1v13c3.3-2 6.5-2.2 9.5-1.1z" fill="#d3f9d8" stroke="#2b8a3e" stroke-width="1.6" stroke-linejoin="round"/></svg>Play the tutorial<span class="newBadge">New player</span></div>
+          <div>Open tables</div><div>Play ranked</div><div>Host table</div><div>Join private</div><div>Options</div><div>Rules</div>
+        </div></div>
+      <div>
+        <div class="tagrow"><span class="tag">B7 · Home</span><button class="star" data-id="B7">☆ Pick</button></div>
+        <h3>A Tutorial row in the Play menu</h3>
+        <p>The Play pill's menu gets a wide first row: Play the tutorial. Rules stays where it is. For a new player the row has a mark.</p>
+        <dl><dt>Good</dt><dd>The menu is the place for “other ways to play”. It is also there at the table.</dd>
+          <dt>Risk</dt><dd>A new player must first find the menu. On its own it is not enough.</dd>
+          <dt>Build</dt><dd>Small: one row in <code>AppHome.playRows</code>, one at the table.</dd></dl>
+      </div>
+    </article>
+
+    <article class="idea" id="B8">
+      <div class="phone"><div class="shot" style="background-image:url(tutorial-entry-lab/home-rules.jpg)"></div>
+        <div class="abs" style="left:0;top:158px;width:420px;height:140px;background:#f9f6f1;padding:4px 12px 0">
+          <div class="boxCard"><div class="top"><div class="av" style="width:56px;height:56px"><img src="tutorial-entry-lab/professor.svg" alt=""></div>
+            <div><b>Learn by playing</b><span>A practice game with the Professor. You can stop at any time.</span></div></div>
+            <span class="btnG lg" style="width:100%">Play the tutorial</span></div>
+        </div></div>
+      <div>
+        <div class="tagrow"><span class="tag">B8 · Home and table</span><span class="mine">My pick</span><button class="star" data-id="B8">☆ Pick</button></div>
+        <h3>A tutorial card at the top of How to play</h3>
+        <p>The box that Rules opens starts with the tutorial: a card with a green button, then the rules. The button starts the tutorial in the app, not in Safari. Report bug moves to the end of the box.</p>
+        <dl><dt>Good</dt><dd>The cheapest fix. It works on the home, at the table and on the web, as all three open this box.</dd>
+          <dt>Risk</dt><dd>Only players who press Rules see it. At a table, starting the tutorial leaves the game (it must ask first).</dd>
+          <dt>Build</dt><dd>Small: the card in <code>FooterBar.gameHelpParts</code>, the button calls the tutorial in place.</dd></dl>
+      </div>
+    </article>
+  </div>
+
+  <h2>C. At the table</h2>
+  <div class="ideas">
+    <article class="idea" id="C1">
+      <div class="phone"><div class="shot" style="background-image:url(tutorial-entry-lab/table.jpg)"></div><div class="scrim" style="background:rgba(20,14,6,.3)"></div>
+        <div class="prompt" style="left:36px;top:300px;width:348px">
+          <div class="av" style="width:76px;height:76px;margin:0 auto"><img src="tutorial-entry-lab/professor.svg" alt=""></div>
+          <h4>Your first game of Canasta?</h4>
+          <p>The Professor can teach you the rules in a practice game first.</p>
+          <div class="acts"><span class="btnY">Learn first</span><span class="btnD">Just play</span></div>
+        </div></div>
+      <div>
+        <div class="tagrow"><span class="tag">C1 · First solo game</span><button class="star" data-id="C1">☆ Pick</button></div>
+        <h3>Ask before the first deal</h3>
+        <p>The first time a player presses Play solo, the table asks before it deals. “Learn first” turns the table into the tutorial. “Just play” deals.</p>
+        <dl><dt>Good</dt><dd>It asks at the moment the player shows they want to play, not on the home.</dd>
+          <dt>Risk</dt><dd>It stops the first game. If most players press “Just play”, it is only a delay.</dd>
+          <dt>Build</dt><dd>Small to medium: the prompt, the switch to the tutorial table.</dd></dl>
+      </div>
+    </article>
+
+    <article class="idea" id="C2">
+      <div class="phone"><div class="shot" style="background-image:url(tutorial-entry-lab/table.jpg)"></div>
+        <div class="glow" style="left:8px;top:864px;width:40px;height:40px"></div>
+        <div class="bubble down" style="left:8px;top:722px;width:300px;--tail:14px">Stuck? A hint shows a good move. The tutorial teaches the rules.
+          <div class="acts"><span class="btnQ">Show a hint</span><span class="btnG">Tutorial</span></div></div>
+      </div>
+      <div>
+        <div class="tagrow"><span class="tag">C2 · When stuck</span><span class="mine">My pick</span><button class="star" data-id="C2">☆ Pick</button></div>
+        <h3>The hint lamp offers the tutorial</h3>
+        <p>When a new player is stuck, the lamp lights up and asks. Stuck can mean two moves the game refused, or the third automatic hint in one game.</p>
+        <dl><dt>Good</dt><dd>It finds the players who need help, at the moment they need it. Hint is 91% guests. In Rummy it is pressed 81 times per 100 game starts.</dd>
+          <dt>Risk</dt><dd>A wrong signal shows it to players who only think slowly. It must show at most once a game.</dd>
+          <dt>Build</dt><dd>Medium: the signal, the bubble on the lamp.</dd></dl>
+      </div>
+    </article>
+
+    <article class="idea" id="C3">
+      <div class="phone"><div class="shot" style="background-image:url(tutorial-entry-lab/table.jpg)"></div>
+        <div class="notice" style="left:8px;top:76px;width:150px;box-shadow:0 0 0 1px rgba(0,0,0,.22),0 0 0 4px rgba(240,62,62,.35)">Must keep at least 1 card in hand until going out.<a>Learn the rules ›</a></div>
+      </div>
+      <div>
+        <div class="tagrow"><span class="tag">C3 · A refused move</span><button class="star" data-id="C3">☆ Pick</button></div>
+        <h3>A link in the game's own messages</h3>
+        <p>When the game refuses a move, its message ends with “Learn the rules”. The words above are the real message from Canasta.</p>
+        <dl><dt>Good</dt><dd>It comes exactly when a rule is not clear. No new screen.</dd>
+          <dt>Risk</dt><dd>The tutorial starts from its beginning, not at this rule. To jump to the rule needs lessons (B4).</dd>
+          <dt>Build</dt><dd>Small for a link to the tutorial. Large for a link to the rule.</dd></dl>
+      </div>
+    </article>
+
+    <article class="idea" id="C4">
+      <div class="phone"><div class="shot" style="background-image:url(tutorial-entry-lab/table-panel.jpg)"></div>
+        <div class="abs" style="left:16px;top:139px;width:286px;height:66px;background:#f9f6f2"></div>
+        <span class="abs btnQ" style="left:20px;top:143px;width:134px">Rules</span>
+        <span class="abs btnG" style="left:162px;top:143px;width:134px">Tutorial</span>
+        <span class="abs btnQ" style="left:20px;top:175px;width:134px">Leaderboard</span>
+        <span class="abs btnR" style="left:162px;top:175px;width:134px">Report bug</span>
+      </div>
+      <div>
+        <div class="tagrow"><span class="tag">C4 · Table panel</span><span class="mine">My pick</span><button class="star" data-id="C4">☆ Pick</button></div>
+        <h3>A Tutorial button beside Rules</h3>
+        <p>The Table panel (i) gets Tutorial next to Rules. Leaderboard and Report bug share the second row.</p>
+        <dl><dt>Good</dt><dd>A player who is lost in a game looks here first: Help is a rules lookup 98% of the time.</dd>
+          <dt>Risk</dt><dd>It leaves the game. It must ask first at a table with people, as the leave warning does.</dd>
+          <dt>Build</dt><dd>Small: one button in <code>TableBar.buildTableInfoActions</code>.</dd></dl>
+      </div>
+    </article>
+  </div>
+
+  <h2>D. After a game</h2>
+  <div class="ideas">
+    <article class="idea" id="D1">
+      <div class="phone se"><div class="shot" style="background-image:url(tutorial-entry-lab/game-over.jpg)"></div>
+        <div class="endFoot" style="left:9px;top:582px;width:372px;height:66px">
+          <div class="av" style="width:42px;height:42px"><img src="tutorial-entry-lab/professor.svg" alt=""></div>
+          <div class="t"><b>Lost this one?</b>Learn the tricks with the Professor.</div>
+          <span class="btnG" style="margin-left:auto">Tutorial</span></div>
+      </div>
+      <div>
+        <div class="tagrow"><span class="tag">D1 · Game over</span><button class="star" data-id="D1">☆ Pick</button></div>
+        <h3>An offer on the game over card</h3>
+        <p>For a player in their first games who lost, the end card gets a line under Play again. A winner gets nothing, or “Want to learn the finer points?”.</p>
+        <dl><dt>Good</dt><dd>A loss is a good moment to learn. It never stops a game.</dd>
+          <dt>Risk</dt><dd>Only players who finish a game see it. Players who quit in the first hand never get here.</dd>
+          <dt>Build</dt><dd>Small. The phone is the visual sweep's 390 by 664 shot.</dd></dl>
+      </div>
+    </article>
+
+    <article class="idea text" id="D2">
+      <div>
+        <div class="tagrow"><span class="tag">D2 · The tutorial's end</span><button class="star" data-id="D2">☆ Pick</button></div>
+        <h3>Lead out of the tutorial into a real game</h3>
+        <p>Today Canasta's tutorial ends with “The first team to reach 5,000 points wins. Good luck!”. The player must then find Exit. Instead, end on a card: “You know the basics. Play a real game?” with Play solo (hints on) and Back to the home.</p>
+        <dl><dt>Good</dt><dd>The tutorial only helps if the player then plays. This makes the next step one tap.</dd>
+          <dt>Risk</dt><dd>None that I can see.</dd>
+          <dt>Build</dt><dd>Small: one card at the end of <code>Tutorial.js</code> for all 18 games.</dd></dl>
+      </div>
+    </article>
+  </div>
+
+  <h2>E. Outside the app</h2>
+  <div class="ideas">
+    <article class="idea text" id="E1">
+      <div>
+        <div class="tagrow"><span class="tag">E1 · Web front page</span><button class="star" data-id="E1">☆ Pick</button></div>
+        <h3>Call the web menu's Rules “How to play”</h3>
+        <p>On the website a game's menu has Rules. It already opens the How to play page, which starts the tutorial at once. Rename it “How to play”, or split it into Tutorial and Rules. The Table panel on the web gets the same Tutorial button as C4.</p>
+        <dl><dt>Good</dt><dd>Almost free. The page already gets 5,270 views a month from search.</dd>
+          <dt>Risk</dt><dd>A player who wants only the rules gets the tutorial first, as today.</dd>
+          <dt>Build</dt><dd>Small: <code>FrontpageCatalog.js</code>.</dd></dl>
+      </div>
+    </article>
+
+    <article class="idea text" id="E2">
+      <div>
+        <div class="tagrow"><span class="tag">E2 · App Store</span><button class="star" data-id="E2">☆ Pick</button></div>
+        <h3>Say it in the store listing</h3>
+        <p>One screenshot of the Professor teaching, with the line “New to Canasta? The Professor teaches you.” Players who do not know the game then know before they install that the app will teach them.</p>
+        <dl><dt>Good</dt><dd>It can bring in players who would not try a game they do not know.</dd>
+          <dt>Risk</dt><dd>It takes one of the ten screenshot places.</dd>
+          <dt>Build</dt><dd>Small: one screenshot per app.</dd></dl>
+      </div>
+    </article>
+  </div>
+
+  <h2>Notes</h2>
+  <div class="box">
+    <ul>
+      <li>The data: How to play page views from OpenPanel (<code>screen_view</code>, path contains <code>/how-to-play-</code>, last 30 days). Hint and Help use from September 2026 (hint-button-usage and help-button-intent).</li>
+      <li>From the code, not tested on a phone: the rules box's link is <code>rules-fragment.dust</code> line 11 (<code>target="_blank"</code>). The shell's <code>shouldOverrideLoad</code> only catches main-frame loads. Capacitor's <code>createWebViewWith</code> sends a new-window link to <code>UIApplication.shared.open</code>, which is Safari.</li>
+      <li>A study with 45,000 players (Andersen et al., CHI 2012) found tutorials helped most in the complex game (play time up by as much as 29%). In the two simple games they gave no clear gain. So a tutorial is worth more in Canasta, Hand &amp; Foot, Pinochle, Bridge and Cribbage than in Go Fish or Old Maid.</li>
+      <li>Rerun the screenshots: <code>node tutorial-entry-lab/capture.mjs</code> and <code>node tutorial-entry-lab/styles.mjs</code> from <code>Design/WoCG-3</code> (dev must be up).</li>
+    </ul>
+  </div>
+</main>
+<div class="picks"><b>Your picks:</b><span id="pickList">none yet</span><button id="pickCopy" type="button">Copy</button></div>
+<script>
+  (function () {
+    var KEY = "tutorial-entry-lab-picks";
+    var picks = [];
+    try { picks = JSON.parse(localStorage.getItem(KEY) || "[]"); } catch (e) {}
+    var stars = Array.prototype.slice.call(document.querySelectorAll(".star"));
+    function label(id) {
+      var tag = document.querySelector('.star[data-id="' + id + '"]').parentNode.querySelector(".tag").textContent;
+      var title = document.getElementById(id).querySelector("h3").textContent;
+      return tag.split(" · ")[0] + " " + title;
+    }
+    function render() {
+      stars.forEach(function (s) {
+        var on = picks.indexOf(s.dataset.id) >= 0;
+        s.setAttribute("aria-pressed", on ? "true" : "false");
+        s.textContent = on ? "★ Picked" : "☆ Pick";
+      });
+      document.getElementById("pickList").textContent = picks.length ? picks.map(label).join(" · ") : "none yet";
+      localStorage.setItem(KEY, JSON.stringify(picks));
+    }
+    stars.forEach(function (s) {
+      s.addEventListener("click", function () {
+        var i = picks.indexOf(s.dataset.id);
+        if (i >= 0) picks.splice(i, 1); else picks.push(s.dataset.id);
+        render();
+      });
+    });
+    document.getElementById("pickCopy").addEventListener("click", function () {
+      navigator.clipboard.writeText("Tutorial entry lab picks: " + (picks.length ? picks.map(label).join("; ") : "none"));
+    });
+    render();
+  })();
+</script>
+</body>
+</html>
